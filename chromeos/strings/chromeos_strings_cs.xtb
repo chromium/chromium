@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuální</translation>
 <translation id="2480034874476596812">Vypnout ručně</translation>
+<translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
 <translation id="2491955442992294626">Když používáte jiné okno, klíče nejsou testovány</translation>
 <translation id="2493126929778606526">Vaše nejlepší fotky, vybrané automaticky</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6611280807952151149">Ukončit opravu zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
+<translation id="6624819909909965616">Nelze nahrát soubor větší než 10 MB</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6644568396961840069">Soubor se nepodařilo uložit. Zkuste připojit jiné externí úložiště nebo to zkuste znovu později.</translation>
 <translation id="6647510110698214773">Šifrovací algoritmus</translation>
@@ -696,6 +698,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
 <translation id="6995564396478647735">Zkontrolujte, zda je zapnutá ochrana proti zápisu</translation>
+<translation id="7005833343836210400">Zařízení je offline</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7041549558901442110">Zařízení není připojeno.</translation>
@@ -809,6 +812,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
+<translation id="8094062939584182041">Povolit Googlu informovat vás o problému e-mailem</translation>
 <translation id="8104083085214006426">Používáte otevřenou, nezabezpečenou síť</translation>
 <translation id="8109786307828817014">Pokračovat s neúspěšnými kalibracemi?</translation>
 <translation id="811820734797650957">(Android) Pingnutí brány</translation>

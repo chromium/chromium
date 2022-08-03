@@ -902,6 +902,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">&amp;Намаляване</translation>
 <translation id="1830550083491357902">Не сте в профила си</translation>
+<translation id="1831848493690504725">Не можем да установим връзка с Google чрез свързаната мрежа. Изберете друга мрежа или проверете настройките за мрежата или за прокси сървъра (ако използвате такъв).</translation>
 <translation id="1832459821645506983">Да, ще участвам</translation>
 <translation id="1832511806131704864">Промяната на телефона е актуализирана</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
@@ -4747,6 +4748,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> иска да</translation>
 <translation id="5534304873398226603">Отхвърляне на снимката или видеоклипа</translation>
 <translation id="5537725057119320332">Предаване</translation>
+<translation id="5539070192556911367">Няма връзка с Google</translation>
 <translation id="5539221284352502426">Въведената от вас парола бе отхвърлена от сървъра. Ето някои от възможните причини: паролата е твърде кратка; необходимо е да съдържа цифри или символи; трябва да е различна от предишните пароли.</translation>
 <translation id="5541694225089836610">Действието е деактивирано от администратора ви</translation>
 <translation id="5542132724887566711">Потребителски профил</translation>
@@ -4810,6 +4812,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5585912436068747822">Форматирането не бе успешно</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Приложенията се зареждат...</translation>
+<translation id="5590418976913374224">Възпроизвеждане на звук при стартиране на устройството</translation>
 <translation id="5592595402373377407">Още не са налице достатъчно данни.</translation>
 <translation id="5595307023264033512">Общо хранилище, използвано от сайтовете: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
@@ -6355,6 +6358,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7102687220333134671">Автоматичните актуализации са включени</translation>
 <translation id="7102832101143475489">Времето за изчакване на заявката изтече</translation>
 <translation id="710640343305609397">Отваряне на настройките за мрежата</translation>
+<translation id="7107609441453408294">Възпроизвеждане на един и същ звук през всички високоговорители</translation>
 <translation id="7108338896283013870">Скриване</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Заключване сега</translation>
@@ -6585,6 +6589,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7364745943115323529">Предаване...</translation>
 <translation id="7364796246159120393">Избор на файл</translation>
 <translation id="7365076891350562061">Размер на елементите на монитора</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – Фиксирано</translation>
 <translation id="7366316827772164604">Сканира се за устройства в близост...</translation>
 <translation id="7366415735885268578">Добавяне на сайт</translation>
 <translation id="7366909168761621528">Данни за сърфирането</translation>

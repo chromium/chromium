@@ -1071,6 +1071,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3835233591525155343">Uporaba naprave</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov Google Dokument</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3853684360927654006">Računalo za zapletenost gesla</translation>
 <translation id="3858027520442213535">Posodobi datum in uro</translation>
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3872834068356954457">Znanost</translation>
@@ -1681,6 +1682,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5518670652865028077">Umetnost in zabava</translation>
 <translation id="5519516356611866228">Z vašimi spremembami</translation>
 <translation id="5523118979700054094">Ime pravilnika</translation>
+<translation id="5525755241743357906">Datoteka je kopirana ali premaknjena</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite osebno prilagoditi orodja za ljudi s posebnimi potrebami v nastavitvah sistema Chrome OS.</translation>
 <translation id="5528532273234423708">Avtomatizacija doma</translation>
 <translation id="55293785478302737">Robni šiv</translation>
@@ -2933,6 +2935,7 @@ Dodatne podrobnosti:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato tipko Enter, če želite nastaviti Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS.</translation>
 <translation id="9096679202588811390">Televizijske oddaje in programi</translation>
 <translation id="9101630580131696064">Pladenj 1</translation>
+<translation id="9102081333385212048">Datoteke, ki jih kopirate ali premaknete, so poslane storitvi Google Cloud ali tretjim osebam v analizo. Lahko jih na primer pregledamo, da bi ugotovili, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo.</translation>
 <translation id="9103537084693478942">Programska oprema za videoposnetke</translation>
 <translation id="9103872766612412690">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chromium tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chromium pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="9106062320799175032">Dodajanje naslova za izstavitev računa</translation>

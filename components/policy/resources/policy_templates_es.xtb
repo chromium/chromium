@@ -1323,7 +1323,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
-<translation id="2301048990069984110">Amplía la compatibilidad de aplicaciones de Chrome en Windows, Mac y Linux.</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>
 <translation id="2304009805995145854">Desde <ph name="PRODUCT_NAME" /> 67, el aislamiento de sitios web ha estado habilitado de forma predeterminada en todas las versiones para ordenador, lo que hace que todos los sitios se ejecuten en su propio proceso. Un sitio consiste en un esquema más el eTLD+1 (por ejemplo, https://example.com). Si se habilita esta política, no cambia ese comportamiento. Solo evita que los usuarios cambien esta opción (por ejemplo, inhabilitando el aislamiento de sitio web de chrome://flags). Desde <ph name="PRODUCT_NAME" /> 76, si se inhabilita la política o no se establece, no se desactiva el aislamiento de sitios web, pero los usuarios pueden inhabilitar esta opción.
 
@@ -5168,7 +5167,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6553143066970470539">Porcentaje de brillo de la pantalla</translation>
 <translation id="6555557921186817432">Programa un reinicio automático después de que se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" />.
 
-      Si se le asigna el valor true a esta política, se programará un reinicio automático cuando se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" /> y sea necesario reiniciar para completar el proceso de actualización. El reinicio se programará automáticamente, pero puede retrasarse en el dispositivo hasta 24 horas si un usuario lo está usando en ese momento.
+      Si se le asigna el valor true a esta política, se programará un reinicio automático cuando se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" /> y sea necesario reiniciar para completar el proceso de actualización. El reinicio se programará inmediatamente, pero puede retrasarse en el dispositivo hasta 24 horas si un usuario lo está usando en ese momento.
 
       Si se le asigna el valor false a está política, no se programará ningún reinicio automático tras aplicar una actualización de <ph name="PRODUCT_OS_NAME" />. El proceso de actualización se completará cuando el usuario reinicie el dispositivo.
 
@@ -6619,10 +6618,6 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
 <translation id="8099880303030573137">Retraso de inactividad cuando el dispositivo funciona con la batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
-<translation id="8103563905615378194">Especifica si se permite que el modelo de Carga inteligente suspenda el proceso de carga para prolongar la duración de la batería.
-
-      Cuando el dispositivo está conectado a la red eléctrica, el modelo de Carga inteligente evalúa si se debe suspender el proceso de carga para aumentar la duración de la batería. Si el modelo de Carga inteligente suspende el proceso de carga, mantendrá la batería a un determinado nivel (por ejemplo, al 80 %) y, después, cargará el dispositivo al 100 % cuando el usuario lo necesite.
-      Si se le asigna el valor True a esta política o no se establece, el modelo de Carga inteligente se habilitará y se permitirá que suspenda el proceso de carga para prolongar la duración de la batería. Si se le asigna el valor False, el modelo de Carga inteligente no influirá en el proceso de carga.</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Permite establecer si los sitios web pueden comprobar si el usuario tiene algún método de pago guardado.
@@ -7450,10 +7445,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
-<translation id="8967125680876068695">Las aplicaciones de Chrome ya no están disponibles en Windows, Mac y Linux.
-      Si se habilita esta política, <ph name="PRODUCT_NAME" /> seguirá permitiendo que se ejecuten aplicaciones de Chrome en esas plataformas hasta la fecha límite en la que se eliminará la compatibilidad con todas las plataformas (junio del 2022).
-      Si esta política se inhabilita o no se establece, es posible que no se puedan ejecutar aplicaciones de Chrome, según la fase de desactivación en que se encuentren.
-      En cualquiera de estos casos, las aplicaciones de Chrome cuya instalación sea forzada mediante una política seguirán estando permitidas.</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Permitir la autenticación gnubby para los hosts de acceso remoto</translation>
 <translation id="8976531594979650914">Usar impresora predeterminada del sistema como opción predeterminada</translation>

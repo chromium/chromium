@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">種類</translation>
 <translation id="2461822463642141190">現在</translation>
 <translation id="2480034874476596812">手動で無効にする</translation>
+<translation id="248546197012830854">デバイスはオフラインです。ヘルプ コンテンツを表示するには、Wi-Fi ネットワークに接続してください。</translation>
 <translation id="2491955442992294626">別のウィンドウを使用している場合、キーはテストされません。</translation>
 <translation id="2493126929778606526">自動的に選択されたベストショットです</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> の修復を終了</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
+<translation id="6624819909909965616">10 MB を超えるファイルはアップロードできません</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6644568396961840069">ファイルを保存できませんでした。別の外部ストレージに接続するか、しばらくしてからもう一度お試しください。</translation>
 <translation id="6647510110698214773">暗号化アルゴリズム</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
 <translation id="6995564396478647735">書き込み保護がオンになっていることを確認してください</translation>
+<translation id="7005833343836210400">デバイスはオフラインです</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7041549558901442110">デバイスは接続されていません。</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
+<translation id="8094062939584182041">この問題に関するメールの送信を Google に許可する</translation>
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>
 <translation id="8109786307828817014">キャリブレーションに失敗しましたが続行しますか？</translation>
 <translation id="811820734797650957">（Android）ゲートウェイへの ping</translation>

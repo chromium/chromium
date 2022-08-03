@@ -1068,6 +1068,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3835233591525155343">Utilizzo del tuo dispositivo</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo documento Google</translation>
 <translation id="385051799172605136">Indietro</translation>
+<translation id="3853684360927654006">Calcolatore della sicurezza delle password</translation>
 <translation id="3858027520442213535">Aggiorna data e ora</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3872834068356954457">Scienze</translation>
@@ -1900,7 +1901,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Rimuovi tutto dalla cronologia</translation>
 <translation id="6157877588268064908">Seleziona un indirizzo per conoscere i requisiti e i metodi di spedizione</translation>
-<translation id="6165508094623778733">Ulteriori informazioni</translation>
+<translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6167577165590485365">Ultimo tentativo di recupero:</translation>
 <translation id="6169916984152623906">Ora puoi navigare in privato. Le altre persone che usano questo dispositivo non vedranno le tue attività, ma i download e i preferiti verranno salvati.</translation>
 <translation id="6176716740821145453">Dedica un istante alla valutazione dell'accuratezza</translation>
@@ -2720,7 +2721,7 @@ Ulteriori dettagli:
 <translation id="8438786541497918448">Usare videocamera e microfono?</translation>
 <translation id="8443613539889492016">Rap e Hip-hop</translation>
 <translation id="8444543005280733648">Reti di computer</translation>
-<translation id="8446884382197647889">Ulteriori informazioni</translation>
+<translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8449836157089738489">Apri tutto in un nuovo gruppo di schede</translation>
 <translation id="8457125768502047971">Indeterminato</translation>
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>

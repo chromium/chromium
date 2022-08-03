@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Актуелно</translation>
 <translation id="2480034874476596812">Ручно искључивање</translation>
+<translation id="248546197012830854">Уређај је офлајн. Повежите се на WiFi мрежу да бисте видели садржај помоћи.</translation>
 <translation id="2491955442992294626">Тастери се не тестирају када користите други прозор</translation>
 <translation id="2493126929778606526">Најбоље аутоматски изабране слике</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">Затвори поправку уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">У току је</translation>
 <translation id="6620487321149975369">Задаци штампања ће се појавити у историји ако их не уклоните ручно</translation>
+<translation id="6624819909909965616">Не можете да отпремите фајл већи од 10 MB</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6644568396961840069">Чување фајла није успело. Прикључите другу спољну меморију или пробајте поново касније.</translation>
 <translation id="6647510110698214773">Алгоритам шифровања</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
 <translation id="6995564396478647735">Уверите се да је заштита од уписивања укључена</translation>
+<translation id="7005833343836210400">Уређај је офлајн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
 <translation id="7041549558901442110">Уређај није повезан.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
+<translation id="8094062939584182041">Дозволите Google-у да вам пошаље имејл о овом проблему</translation>
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
 <translation id="8109786307828817014">Желите да наставите са калибрацијом која није успела?</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>

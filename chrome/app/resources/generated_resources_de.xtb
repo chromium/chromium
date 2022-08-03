@@ -892,6 +892,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="1829192082282182671">Ver&amp;kleinern</translation>
 <translation id="1830550083491357902">Nicht angemeldet</translation>
+<translation id="1831848493690504725">Wir können Google über das verbundene Netzwerk nicht erreichen. Versuche es mit einem anderen Netzwerk oder überprüfe dein Netzwerk- oder Proxyeinstellungen (falls du einen Proxy verwendest).</translation>
 <translation id="1832459821645506983">Ok</translation>
 <translation id="1832511806131704864">Änderung übernommen</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
@@ -4731,6 +4732,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> möchte:</translation>
 <translation id="5534304873398226603">Foto oder Video verwerfen</translation>
 <translation id="5537725057119320332">Streamen</translation>
+<translation id="5539070192556911367">Keine Verbindung mit Google möglich</translation>
 <translation id="5539221284352502426">Das eingegebene Passwort wurde vom Server zurückgewiesen. Mögliche Ursachen: Das Passwort ist zu kurz. Das Passwort muss Zahlen oder Symbole enthalten. Das Passwort muss sich von vorherigen Passwörtern unterscheiden.</translation>
 <translation id="5541694225089836610">Die Aktion wurde von deinem Administrator deaktiviert</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4794,6 +4796,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5585912436068747822">Fehler bei der Formatierung</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
+<translation id="5590418976913374224">Ton beim Gerätestart abspielen</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
 <translation id="5595307023264033512">Von Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
@@ -6335,6 +6338,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7102687220333134671">Automatische Updates sind aktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
 <translation id="710640343305609397">Netzwerkeinstellungen öffnen</translation>
+<translation id="7107609441453408294">Dieselben Audioinhalte über alle Lautsprecher wiedergeben</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108668606237948702">Eingabe</translation>
 <translation id="7108933416628942903">Jetzt sperren</translation>
@@ -6565,6 +6569,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7364745943115323529">Streamen...</translation>
 <translation id="7364796246159120393">Datei auswählen</translation>
 <translation id="7365076891350562061">Monitorgröße</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – angepinnt</translation>
 <translation id="7366316827772164604">Geräte in der Nähe werden gesucht…</translation>
 <translation id="7366415735885268578">Website hinzufügen</translation>
 <translation id="7366909168761621528">Browserdaten</translation>

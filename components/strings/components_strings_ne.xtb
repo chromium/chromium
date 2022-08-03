@@ -1068,6 +1068,7 @@
 <translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Docs प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3853684360927654006">पासवर्डको सबलता जाँच गर्ने सेवा</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
@@ -1678,6 +1679,7 @@
 <translation id="5518670652865028077">कला तथा मनोरञ्जन</translation>
 <translation id="5519516356611866228">तपाईंले गर्नुभएका परिवर्तन लागू गरेर</translation>
 <translation id="5523118979700054094">नीति नाम</translation>
+<translation id="5525755241743357906">फाइल कपी गरिएका वा सारिएका छन्</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं ChromeOS का सेटिङमा गई एक्सेसिबिलिटी टुलहरू पर्सनलाइज गर्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="5528532273234423708">घरका स्वचालित डिभाइस</translation>
 <translation id="55293785478302737">किनारमा स्टिच</translation>
@@ -2930,6 +2932,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न ट्याब थिचेर इन्टर थिच्नुहोस्</translation>
 <translation id="9096679202588811390">टिभी सो तथा कार्यक्रमहरू</translation>
 <translation id="9101630580131696064">ट्रे १</translation>
+<translation id="9102081333385212048">तपाईंले कपी गर्नुभएका वा सार्नुभएका फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ।</translation>
 <translation id="9103537084693478942">भिडियो सफ्टवेयर</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> ले सामान्यतया तपाईंको जानकारीको सुरक्षा गर्न इन्क्रिप्सन प्रयोग गर्दछ। Chromium ले यस समयमा <ph name="SITE" /> मा जडान गर्ने प्रयास गर्दा वेबसाइटले असामान्य र गलत प्रमाणहरू फिर्ता पठायो। यस्तो आक्रमणकारीले <ph name="SITE" /> भएको बहाना गर्ने प्रयास गर्दा वा Wi-Fi साइन इन स्क्रिनले जडानलाई अवरोध पुर्याउँदा हुन सक्छ। कुनै पनि डेटा आदानप्रदान हुन पूर्व Chromium ले जडान रोकेका कारण तपाईंको जानकारी अझै पनि सुरक्षित छ।</translation>
 <translation id="9106062320799175032">बिल पठाउने ठेगाना थप्नुहोस्</translation>

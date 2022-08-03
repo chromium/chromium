@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">유형</translation>
 <translation id="2461822463642141190">현재</translation>
 <translation id="2480034874476596812">수동으로 사용 중지</translation>
+<translation id="248546197012830854">기기가 오프라인 상태입니다. 도움말 콘텐츠를 보려면 Wi-Fi 네트워크에 연결하세요.</translation>
 <translation id="2491955442992294626">다른 창을 사용 중일 때는 키가 테스트되지 않습니다.</translation>
 <translation id="2493126929778606526">가장 잘 나온 사진이 자동으로 선별됩니다.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> 수리 종료</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
+<translation id="6624819909909965616">10MB를 초과하는 파일은 업로드할 수 없습니다.</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6644568396961840069">파일을 저장할 수 없습니다. 다른 외부 저장소에 연결해 보거나 나중에 다시 시도해 주세요.</translation>
 <translation id="6647510110698214773">암호화 알고리즘</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
 <translation id="6995564396478647735">쓰기 방지가 사용 설정되어 있는지 확인</translation>
+<translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7041549558901442110">기기가 연결되어 있지 않습니다.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
 <translation id="8109786307828817014">보정에 실패해도 계속할까요?</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>

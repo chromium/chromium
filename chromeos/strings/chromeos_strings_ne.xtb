@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2480034874476596812">म्यानुअल रूपमा अफ गरियोस्</translation>
+<translation id="248546197012830854">डिभाइस अफलाइन छ। मद्दतसम्बन्धी सामग्री हेर्न Wi-Fi नेटवर्कमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="2491955442992294626">तपाईंले अर्को विन्डो प्रयोग गरिरहेका बेला कीहरू परीक्षण गरिँदैन</translation>
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -660,6 +661,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> मर्मत गर्ने प्रक्रियाबाट बाहिरिनुहोस्</translation>
 <translation id="6618744767048954150">जाँच हुँदै छ</translation>
 <translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
+<translation id="6624819909909965616">१० एम.बि. भन्दा ठुलो फाइल अपलोड गर्न मिल्दैन।</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6644568396961840069">फाइल सेभ गर्न सकिएन। अर्कै बाह्य भण्डारण घुसाई हेर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6647510110698214773">इन्क्रिप्सनसम्बन्धी एल्गोरिदम</translation>
@@ -695,6 +697,7 @@
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
 <translation id="6995564396478647735">राइट प्रोटेक्ट अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="7005833343836210400">डिभाइस अफलाइन छ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
 <translation id="7041549558901442110">डिभाइस कनेक्ट गरिएको छैन।</translation>
@@ -808,6 +811,7 @@
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
+<translation id="8094062939584182041">Google लाई तपाईंलाई यो समस्याका बारेमा इमेल पठाउने अनुमति दिनुहोस्</translation>
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="8109786307828817014">क्यालिब्रेट नगरिकन अगाडि बढ्ने हो?</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>

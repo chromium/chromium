@@ -2196,6 +2196,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3021065318976393105">Počas napájania z batérie</translation>
 <translation id="3021066826692793094">Motýľ</translation>
 <translation id="3021678814754966447">&amp;Zobraziť zdrojový kód rámca</translation>
+<translation id="3022361196600037287">Zariadenie <ph name="DEVICE" /> bude z tohto Chromebooku odstránené a do účtu <ph name="PRIMARY_EMAIL" /> sa neuloží.</translation>
 <translation id="3022978424994383087">Nebolo rozumieť.</translation>
 <translation id="3023464535986383522">Počúvanie vybraného textu</translation>
 <translation id="3024374909719388945">Použiť 24-hodinový režim hodín</translation>
@@ -3734,6 +3735,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4535127706710932914">Predvolený profil</translation>
 <translation id="4535767533210902251">Senzor odtlačkov prstov je pravý horný kláves na klávesnici. Zľahka sa ho dotknite ľubovoľným prstom.</translation>
 <translation id="4536140153723794651">Weby, ktoré môžu vždy používať súbory cookie</translation>
+<translation id="4536769240747010177">Možnosti zdieľania dátového pripojenia:</translation>
 <translation id="4538417792467843292">Odstrániť slovo</translation>
 <translation id="4538792345715658285">Nainštalované na základe podnikových pravidiel.</translation>
 <translation id="4541123282641193691">Účet sa nepodarilo overiť. Skúste to neskôr alebo reštartujte Chromebook.</translation>
@@ -3761,6 +3763,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4561893854334016293">Žiadne nedávno zmenené povolenia</translation>
 <translation id="4562155214028662640">Pridať odtlačok</translation>
 <translation id="4563210852471260509">Úvodný jazyk vstupu: čínština</translation>
+<translation id="4563382028841851106">Odstrániť z účtu</translation>
 <translation id="4563880231729913339">3. prst</translation>
 <translation id="4564245002465020751">Dokončenie nastavovania v telefóne</translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
@@ -6183,6 +6186,10 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6943939122536910181">Odpojené od siete <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="694592694773692225">Presmerovanie bolo zablokované na tejto stránke.</translation>
+<translation id="6947015141909171112">Zobrazujú sa recepty na základe vašej nedávnej aktivity vyhľadávania receptov.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950627417367801484">Obnoviť aplikácie</translation>
 <translation id="6952242901357037157">Môžete si tu zobraziť aj heslá zo svojho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
@@ -6978,6 +6985,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7737115349420013392">Páruje sa so zariadením <ph name="DEVICE_NAME" />...</translation>
 <translation id="7737846262459425222">Túto možnosť môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Asistent Google &gt; Kontext obrazovky.</translation>
 <translation id="7737948071472253612">Nemôže používať vašu kameru</translation>
+<translation id="77381465218432215">Zobrazovať diakritické znamienka a špeciálne znaky</translation>
 <translation id="7740996059027112821">Štandardne</translation>
 <translation id="7741307896921365578">Povolí bočný panel na úrovni prehliadača zaisťujúci užitočný a trvalý spôsob prístupu k čitateľskému zoznamu a záložkám.</translation>
 <translation id="7742558784808143689">Chcete vymazať dáta a povolenia webu <ph name="SITE_NAME" />, všetky jeho podriadené weby a nainštalované aplikácie?</translation>
@@ -7767,6 +7775,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8486666913807228950">Dôvod: V zozname „Vynútiť otvorenie v prehliadači“ bolo nájdené invertované pravidlo <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">K fotoaparátu sa snaží získať prístup určitá aplikácia. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
 <translation id="8487678622945914333">Priblížiť</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Osobné návrhy sa zobrazujú iba vo vašom účte</translation>
 <translation id="8490896350101740396">Aplikácie Kiosku (<ph name="UPDATED_APPS" />) boli aktualizované. Reštartujte zariadenie a dokončite tak proces aktualizácie.</translation>
 <translation id="8492685019009920170">Klepnite na senzor odtlačkov prstov. Vaše údaje sú uložené bezpečne a nikdy sa nedostanú mimo zariadenia <ph name="DEVICE_TYPE" />.</translation>
@@ -8262,6 +8271,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # other tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
 <translation id="8977811652087512276">Nesprávne heslo alebo poškodený súbor</translation>
 <translation id="8978154919215542464">Zapnuté – synchronizovať všetko</translation>
+<translation id="8978670037548431647">Obnoviť možnosti zdieľania dátového pripojenia</translation>
 <translation id="897939795688207351">Na <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Hlásenia spätnej väzby</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Zlyhanie</translation>
@@ -8526,6 +8536,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="935854577147268200">Zmenil sa telefón spojený s funkciou Smart Lock. Ak chcete Smart Lock aktualizovať, zadajte heslo. Zariadenie <ph name="DEVICE_TYPE" /> nabudúce odomknete telefónom. Smart Lock vypnete v Nastaveniach.</translation>
 <translation id="936646668635477464">Kamera a mikrofón</translation>
 <translation id="936801553271523408">Údaje o diagnostike systému</translation>
+<translation id="937053962468712792">Chcete z účtu <ph name="PRIMARY_EMAIL" /> zariadenie <ph name="DEVICE" /> odstrániť?</translation>
 <translation id="93766956588638423">Opraviť rozšírenie</translation>
 <translation id="938568644810664664">Vyskúšajte „Hey Google, what song is this?“ (Hey Google, aká je toto skladba?) alebo „Hey Google, what's on my screen?“ (Hey Google, čo je na mojej obrazovke?)</translation>
 <translation id="938623846785894166">Nezvyčajný súbor</translation>

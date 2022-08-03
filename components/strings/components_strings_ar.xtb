@@ -1684,6 +1684,7 @@
 <translation id="5518670652865028077">فنون وترفيه</translation>
 <translation id="5519516356611866228">مع التغييرات التي أجريتها</translation>
 <translation id="5523118979700054094">اسم السياسة</translation>
+<translation id="5525755241743357906">تعمل هذه الميزة على نسخ الملف أو نقله.</translation>
 <translation id="5526617258931667850">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على المفتاح Tab ثم المفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات نظام التشغيل Chrome.</translation>
 <translation id="5528532273234423708">التشغيل الآلي للأجهزة المنزلية</translation>
 <translation id="55293785478302737">خزم الحواف</translation>
@@ -2939,6 +2940,7 @@
 <translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لضبط Chrome كمتصفِّح تلقائي للنظام في إعدادات iOS</translation>
 <translation id="9096679202588811390">عروض وبرامج تلفزيونية</translation>
 <translation id="9101630580131696064">الدُرج 1</translation>
+<translation id="9102081333385212048">‏إنّ الملفات التي تنسخها أو تنقلها يتم إرسالها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، من المُحتمل أن يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة.</translation>
 <translation id="9103537084693478942">برامج للفيديوهات</translation>
 <translation id="9103872766612412690">‏يستخدم <ph name="SITE" /> التشفير عادة لحماية معلوماتك. عندما حاول Chromium الاتصال بموقع <ph name="SITE" /> هذه المرة، أرجَع الموقع الإلكتروني بيانات اعتماد غير عادية وغير صحيحة. وقد يحدث هذا عندما يحاول أحد المهاجمين التظاهر بأنه موقع <ph name="SITE" />، أو إذا قاطعت شاشة تسجيل دخول Wi-Fi الاتصال. ولكن لا تزال معلوماتك آمنة نظرًا لأن Chromium أوقَفَ الاتصال قبل تبادل أي بيانات.</translation>
 <translation id="9106062320799175032">إضافة عنوان إرسال الفواتير</translation>

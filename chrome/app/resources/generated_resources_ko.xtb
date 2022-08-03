@@ -906,6 +906,7 @@
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="1829192082282182671">축소(&amp;O)</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
+<translation id="1831848493690504725">연결된 네트워크를 통해 Google에 연결할 수 없습니다. 다른 네트워크를 선택하거나 네트워크 설정 또는 프록시 설정(프록시 사용 시)을 확인해 보세요.</translation>
 <translation id="1832459821645506983">예</translation>
 <translation id="1832511806131704864">휴대전화 변경사항이 업데이트됨</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
@@ -2209,6 +2210,7 @@
 <translation id="3021065318976393105">배터리 사용 시</translation>
 <translation id="3021066826692793094">나비</translation>
 <translation id="3021678814754966447">프레임 소스 보기(&amp;V)</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" />가 Chromebook에서 삭제되며 <ph name="PRIMARY_EMAIL" />에 저장되지 않습니다.</translation>
 <translation id="3022978424994383087">인식하지 못했습니다.</translation>
 <translation id="3023464535986383522">텍스트 읽어주기</translation>
 <translation id="3024374909719388945">24시간 단위 사용</translation>
@@ -3746,6 +3748,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4535127706710932914">기본 프로필</translation>
 <translation id="4535767533210902251">지문 센서는 키보드 오른쪽 상단의 키에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="4536140153723794651">쿠키를 언제든지 사용할 수 있는 사이트</translation>
+<translation id="4536769240747010177">테더링 기능:</translation>
 <translation id="4538417792467843292">단어 삭제</translation>
 <translation id="4538792345715658285">엔터프라이즈 정책에 의해 설치됨</translation>
 <translation id="4541123282641193691">계정을 확인할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
@@ -3773,6 +3776,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4561893854334016293">최근 변경된 권한 없음</translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
+<translation id="4563382028841851106">계정에서 삭제</translation>
 <translation id="4563880231729913339">손가락 3</translation>
 <translation id="4564245002465020751">휴대전화 설정 마치기</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
@@ -4749,6 +4753,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
 <translation id="5534304873398226603">사진 또는 동영상 삭제</translation>
 <translation id="5537725057119320332">전송</translation>
+<translation id="5539070192556911367">Google에 연결할 수 없음</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
 <translation id="5541694225089836610">관리자가 사용 중지한 작업입니다.</translation>
 <translation id="5542132724887566711">프로필</translation>
@@ -4812,6 +4817,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5585912436068747822">포맷 실패</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />개)</translation>
 <translation id="558918721941304263">앱 로드 중...</translation>
+<translation id="5590418976913374224">기기 시작 시 소리 재생</translation>
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
 <translation id="5595307023264033512">사이트에서 사용 중인 총 저장용량: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">주소 수정</translation>
@@ -6189,6 +6195,10 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" />에서 연결 해제됨</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="694592694773692225">이 페이지에서 리디렉션이 차단되었습니다.</translation>
+<translation id="6947015141909171112">최근 레시피 검색 활동을 기반으로 표시되는 레시피입니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="6949434160682548041">비밀번호(선택사항)</translation>
 <translation id="6950627417367801484">앱 복원</translation>
 <translation id="6952242901357037157">여기에서 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장된 비밀번호를 표시할 수도 있습니다.</translation>
@@ -6356,6 +6366,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7102687220333134671">자동 업데이트가 사용 설정되어 있습니다.</translation>
 <translation id="7102832101143475489">요청 제한 시간 초과</translation>
 <translation id="710640343305609397">네트워크 설정 열기</translation>
+<translation id="7107609441453408294">모든 스피커에서 동일한 오디오 재생</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108668606237948702">입력</translation>
 <translation id="7108933416628942903">지금 잠그기</translation>
@@ -6586,6 +6597,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7364745943115323529">전송...</translation>
 <translation id="7364796246159120393">파일 선택</translation>
 <translation id="7365076891350562061">모니터 크기</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - 고정됨</translation>
 <translation id="7366316827772164604">주변 기기 검색 중...</translation>
 <translation id="7366415735885268578">사이트 추가</translation>
 <translation id="7366909168761621528">인터넷 사용정보</translation>
@@ -6982,6 +6994,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
 <translation id="7737846262459425222">언제든지 설정 &gt; Google 어시스턴트 &gt; 화면 컨텍스트에서 변경할 수 있습니다.</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
+<translation id="77381465218432215">악센트 표시 및 특수문자 표시</translation>
 <translation id="7740996059027112821">표준</translation>
 <translation id="7741307896921365578">읽기 목록과 북마크에 항상 유용하게 액세스할 수 있도록 브라우저 수준의 측면 패널을 사용 설정합니다.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
@@ -7773,6 +7786,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8486666913807228950">이유: 반전된 규칙인 <ph name="REVERT_RULE" />이(가) "강제로 열기" 목록에 있습니다.</translation>
 <translation id="848666842773560761">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="8487678622945914333">확대</translation>
+<translation id="8487699605742506766">핫스팟</translation>
 <translation id="8489156414266187072">개인 추천 항목은 내 계정에만 표시됩니다.</translation>
 <translation id="8490896350101740396">다음 Kiosk 앱 '<ph name="UPDATED_APPS" />'이(가) 업데이트되었습니다. 기기를 재부팅하여 업데이트 절차를 완료하세요.</translation>
 <translation id="8492685019009920170">손가락으로 지문 센서를 터치하세요. 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
@@ -8266,6 +8280,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
 <translation id="8977811652087512276">잘못된 비밀번호이거나 손상된 파일입니다.</translation>
 <translation id="8978154919215542464">사용 - 모든 항목 동기화</translation>
+<translation id="8978670037548431647">테더링 기능 새로고침</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />에서</translation>
 <translation id="8980345560318123814">의견 보고서</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 비정상 종료됨</translation>
@@ -8530,6 +8545,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="935854577147268200">Smart Lock 휴대전화가 변경되었습니다. Smart Lock을 업데이트하려면 비밀번호를 입력하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="936646668635477464">카메라 및 마이크</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" />에서 <ph name="DEVICE" />를 삭제하시겠습니까?</translation>
 <translation id="93766956588638423">확장 프로그램 복구</translation>
 <translation id="938568644810664664">“Hey Google, 이거 무슨 노래야?” 또는 “Hey Google, 내 화면에 뭐가 표시되어 있어?”라고 말해 보세요.</translation>
 <translation id="938623846785894166">일반적이지 않은 파일</translation>

@@ -906,6 +906,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="1829192082282182671">Per&amp;kecil</translation>
 <translation id="1830550083491357902">Belum masuk</translation>
+<translation id="1831848493690504725">Kami tidak dapat menjangkau Google melalui jaringan yang terhubung. Coba pilih jaringan lain atau periksa setelan jaringan atau setelan proxy Anda (jika Anda menggunakan proxy).</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
 <translation id="1832511806131704864">Perubahan ponsel diperbarui</translation>
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
@@ -2208,6 +2209,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3021065318976393105">Saat menggunakan baterai</translation>
 <translation id="3021066826692793094">Kupu-kupu</translation>
 <translation id="3021678814754966447">&amp;Lihat Sumber Bingkai</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> akan dihapus dari Chromebook ini dan tidak akan disimpan ke <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Tidak mengerti.</translation>
 <translation id="3023464535986383522">Klik untuk Diucapkan</translation>
 <translation id="3024374909719388945">Gunakan model waktu 24 jam</translation>
@@ -3747,6 +3749,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4535127706710932914">Profil Default</translation>
 <translation id="4535767533210902251">Sensor sidik jari adalah tombol di sebelah kanan atas pada keyboard Anda. Sentuh sensornya menggunakan jari apa pun.</translation>
 <translation id="4536140153723794651">Situs yang selalu bisa menggunakan cookie</translation>
+<translation id="4536769240747010177">Kemampuan Tethering:</translation>
 <translation id="4538417792467843292">Hapus kata</translation>
 <translation id="4538792345715658285">Dipasang oleh kebijakan perusahaan.</translation>
 <translation id="4541123282641193691">Tidak dapat memverifikasi akun Anda. Coba lagi atau mulai ulang Chromebook.</translation>
@@ -3774,6 +3777,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4561893854334016293">Tidak ada izin yang diubah baru-baru ini</translation>
 <translation id="4562155214028662640">Tambahkan Sidik Jari</translation>
 <translation id="4563210852471260509">Bahasa masukan awal adalah Aksara China</translation>
+<translation id="4563382028841851106">Hapus dari akun</translation>
 <translation id="4563880231729913339">Jari 3</translation>
 <translation id="4564245002465020751">Selesaikan penyiapan di ponsel</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
@@ -4750,6 +4754,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ingin</translation>
 <translation id="5534304873398226603">Hapus foto atau video</translation>
 <translation id="5537725057119320332">Transmisikan</translation>
+<translation id="5539070192556911367">Tidak dapat terhubung ke Google</translation>
 <translation id="5539221284352502426">Sandi yang Anda masukkan ditolak oleh server. Kemungkinan alasannya adalah: Sandi terlalu pendek. Sandi harus menyertakan angka atau simbol. Sandi harus berbeda dari sandi sebelumnya.</translation>
 <translation id="5541694225089836610">Tindakan dinonaktifkan oleh administrator Anda</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4813,6 +4818,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5585912436068747822">Pemformatan gagal</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Memuat aplikasi...</translation>
+<translation id="5590418976913374224">Putar suara saat perangkat dinyalakan</translation>
 <translation id="5592595402373377407">Data yang tersedia belum cukup.</translation>
 <translation id="5595307023264033512">Total penyimpanan yang digunakan oleh situs: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Edit alamat</translation>
@@ -6190,6 +6196,10 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6943939122536910181">Terputus dari <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="694592694773692225">Pengalihan diblokir di halaman ini.</translation>
+<translation id="6947015141909171112">Anda melihat resep berdasarkan Aktivitas penelusuran terbaru Anda terkait resep.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda dapat mengelola setelan dari menu kartu atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
 <translation id="6949434160682548041">Sandi (opsional)</translation>
 <translation id="6950627417367801484">Pulihkan aplikasi</translation>
 <translation id="6952242901357037157">Anda juga dapat menampilkan sandi dari <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /> Anda di sini</translation>
@@ -6357,6 +6367,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7102687220333134671">Update otomatis diaktifkan</translation>
 <translation id="7102832101143475489">Waktu permintaan habis</translation>
 <translation id="710640343305609397">Buka setelan jaringan</translation>
+<translation id="7107609441453408294">Putar audio yang sama melalui semua speaker</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108668606237948702">masuk</translation>
 <translation id="7108933416628942903">Kunci sekarang</translation>
@@ -6587,6 +6598,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7364745943115323529">Transmisi...</translation>
 <translation id="7364796246159120393">Pilih File</translation>
 <translation id="7365076891350562061">Ukuran monitor</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Disematkan</translation>
 <translation id="7366316827772164604">Memindai perangkat di sekitar ...</translation>
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7366909168761621528">Data browsing</translation>
@@ -6983,6 +6995,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7737115349420013392">Menyambungkan dengan "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737846262459425222">Anda dapat mengubahnya kapan saja di Setelan &gt; Asisten Google &gt; Konteks layar.</translation>
 <translation id="7737948071472253612">Tidak diizinkan menggunakan kamera Anda</translation>
+<translation id="77381465218432215">Tampilkan tanda aksen dan karakter khusus</translation>
 <translation id="7740996059027112821">Standar</translation>
 <translation id="7741307896921365578">Mengaktifkan panel samping tingkat browser untuk cara akses Daftar Bacaan dan Bookmark yang berguna dan persisten.</translation>
 <translation id="7742558784808143689">Hapus data situs dan izin untuk <ph name="SITE_NAME" />, semua situs di bawahnya, dan aplikasi terinstal?</translation>
@@ -7773,6 +7786,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8486666913807228950">Alasan: Aturan terbalik <ph name="REVERT_RULE" /> ditemukan dalam daftar "Buka paksa di".</translation>
 <translation id="848666842773560761">Sebuah aplikasi sedang mencoba mengakses kamera. Nonaktifkan tombol mode privasi kamera untuk mengizinkan akses.</translation>
 <translation id="8487678622945914333">Perbesar</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Saran pribadi hanya ditampilkan di akun Anda</translation>
 <translation id="8490896350101740396">Aplikasi kios "<ph name="UPDATED_APPS" />" berikut telah diperbarui. Booting ulang perangkat untuk menyelesaikan proses pembaruan.</translation>
 <translation id="8492685019009920170">Sentuh sensor sidik jari dengan jari Anda. Data Anda disimpan dengan aman dan hanya ada di <ph name="DEVICE_TYPE" />.</translation>
@@ -8266,6 +8280,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dan 1 tab lainnya}other{"<ph name="TAB_TITLE" />" dan # tab lainnya}}</translation>
 <translation id="8977811652087512276">Sandi salah atau file rusak</translation>
 <translation id="8978154919215542464">Aktif - sinkronkan semuanya</translation>
+<translation id="8978670037548431647">Refresh Kemampuan Tethering</translation>
 <translation id="897939795688207351">Di <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Laporan masukan</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Mogok</translation>
@@ -8530,6 +8545,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="935854577147268200">Ponsel Smart Lock diubah. Masukkan sandi Anda untuk memperbarui Smart Lock. Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan</translation>
 <translation id="936646668635477464">Kamera &amp; mikrofon</translation>
 <translation id="936801553271523408">Data diagnosis sistem</translation>
+<translation id="937053962468712792">Hapus <ph name="DEVICE" /> dari <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Perbaiki ekstensi</translation>
 <translation id="938568644810664664">Coba “Ok Google, lagu apa ini?” atau “Ok Google, konten apa yang ada di layar saya?”</translation>
 <translation id="938623846785894166">File tidak biasa</translation>

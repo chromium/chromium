@@ -894,6 +894,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">Zoom &amp;Out (Умањи)</translation>
 <translation id="1830550083491357902">Нисте пријављени</translation>
+<translation id="1831848493690504725">Не можемо да приступимо Google-у преко повезане мреже. Изаберите другу мрежу или проверите подешавања мреже или подешавања проксија (ако користите прокси).</translation>
 <translation id="1832459821645506983">Да, омогући</translation>
 <translation id="1832511806131704864">Промена телефона је ажурирана</translation>
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
@@ -2192,6 +2193,7 @@
 <translation id="3021065318976393105">Током коришћења батерије</translation>
 <translation id="3021066826692793094">Лептир</translation>
 <translation id="3021678814754966447">&amp;Прикажи извор оквира</translation>
+<translation id="3022361196600037287">Уређај <ph name="DEVICE" /> ће бити уклоњен са овог Chromebook-а и неће бити сачуван на <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Нисмо вас разумели.</translation>
 <translation id="3023464535986383522">Изаберите за говор</translation>
 <translation id="3024374909719388945">Користи 24-часовни сат</translation>
@@ -3730,6 +3732,7 @@
 <translation id="4535127706710932914">Подразумевани профил</translation>
 <translation id="4535767533210902251">Сензор за отисак прста је тастер у горњем десном углу тастатуре. Лагано га додирните прстом.</translation>
 <translation id="4536140153723794651">Сајтови који увек могу да користе колачиће</translation>
+<translation id="4536769240747010177">Могућности привезивања:</translation>
 <translation id="4538417792467843292">Брисање речи</translation>
 <translation id="4538792345715658285">Инсталирано је према смерницама за предузеће.</translation>
 <translation id="4541123282641193691">Верификација налога није успела. Пробајте поново или рестартујте Chromebook.</translation>
@@ -3757,6 +3760,7 @@
 <translation id="4561893854334016293">Нема недавно промењених дозвола</translation>
 <translation id="4562155214028662640">Додај дигитални отисак</translation>
 <translation id="4563210852471260509">Почетни језик за унос је кинески</translation>
+<translation id="4563382028841851106">Уклони са налога</translation>
 <translation id="4563880231729913339">Прст 3</translation>
 <translation id="4564245002465020751">Довршите подешавање телефона</translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
@@ -4732,6 +4736,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> жели да</translation>
 <translation id="5534304873398226603">Одбаци слику или видео</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
+<translation id="5539070192556911367">Google није доступан</translation>
 <translation id="5539221284352502426">Сервер је одбио лозинку коју сте унели. Могући разлози обухватају: Лозинка је прекратка. Лозинка мора да садржи бројеве или симболе. Лозинка мора да се разликује од претходних лозинки.</translation>
 <translation id="5541694225089836610">Администратор је онемогућио радњу</translation>
 <translation id="5542132724887566711">Профил</translation>
@@ -4795,6 +4800,7 @@
 <translation id="5585912436068747822">Форматирање није успело</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Апликације се учитавају…</translation>
+<translation id="5590418976913374224">Пусти звук при покретању уређаја</translation>
 <translation id="5592595402373377407">Још увек није доступна довољна количина података.</translation>
 <translation id="5595307023264033512">Укупан меморијски простор који користе сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Измена адресе</translation>
@@ -6177,6 +6183,10 @@
 <translation id="6943939122536910181">Прекинута је веза са уређајем <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="694592694773692225">Преусмеравање је блокирано на овој страници.</translation>
+<translation id="6947015141909171112">Приказују вам се рецепти на основу недавне активности претраге за рецепте.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="6949434160682548041">Лозинка (опционално)</translation>
 <translation id="6950627417367801484">Врати апликације</translation>
 <translation id="6952242901357037157">Овде можете и да прикажете лозинке са <ph name="BEGIN_LINK" />Google налога<ph name="END_LINK" /></translation>
@@ -6344,6 +6354,7 @@
 <translation id="7102687220333134671">Аутоматска ажурирања су укључена</translation>
 <translation id="7102832101143475489">Захтев је истекао</translation>
 <translation id="710640343305609397">Отвори подешавања мреже</translation>
+<translation id="7107609441453408294">Пушта исти звук на свим звучницима</translation>
 <translation id="7108338896283013870">Сакриј</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Закључај</translation>
@@ -6574,6 +6585,7 @@
 <translation id="7364745943115323529">Пребацуј...</translation>
 <translation id="7364796246159120393">Одабери фајл</translation>
 <translation id="7365076891350562061">Величина монитора</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – закачено је</translation>
 <translation id="7366316827772164604">Траже се уређаји у близини…</translation>
 <translation id="7366415735885268578">Додајте сајт</translation>
 <translation id="7366909168761621528">Подаци прегледања</translation>
@@ -6970,6 +6982,7 @@
 <translation id="7737115349420013392">Упарује се са „<ph name="DEVICE_NAME" />“ ...</translation>
 <translation id="7737846262459425222">Ово можете да промените у сваком тренутку у Подешавањима &gt; Google помоћник &gt; Контекст екрана.</translation>
 <translation id="7737948071472253612">Није им дозвољено да користе камеру</translation>
+<translation id="77381465218432215">Приказуј ознаке акцента и специјалне знакове</translation>
 <translation id="7740996059027112821">Стандардно</translation>
 <translation id="7741307896921365578">Омогућава бочну таблу на нивоу прегледача да бисте на користан и доследан начин могли да приступате листи за читање и обележивачима.</translation>
 <translation id="7742558784808143689">Желите да обришете податке о сајтовима и дозволе за <ph name="SITE_NAME" />, све подређене сајтове и инсталиране апликације?</translation>
@@ -7759,6 +7772,7 @@
 <translation id="8486666913807228950">Разлог: Инверзно правило <ph name="REVERT_RULE" /> је пронађено на листи Принудно отвори на.</translation>
 <translation id="848666842773560761">Апликација покушава да приступи камери. Искључите прекидач за приватност камере да бисте омогућили приступ.</translation>
 <translation id="8487678622945914333">Увећај</translation>
+<translation id="8487699605742506766">Хотспот</translation>
 <translation id="8489156414266187072">Лични предлози се приказују само на вашем налогу</translation>
 <translation id="8490896350101740396">Следеће киоск апликације „<ph name="UPDATED_APPS" />“ су ажуриране. Рестартујте уређај да бисте завршили процес ажурирања.</translation>
 <translation id="8492685019009920170">Додирните прстом сензор за отисак прста. Подаци се безбедно чувају искључиво на уређају <ph name="DEVICE_TYPE" />.</translation>
@@ -8254,6 +8268,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и још 1 картица}one{„<ph name="TAB_TITLE" />“ и још # картица}few{„<ph name="TAB_TITLE" />“ и још # картице}other{„<ph name="TAB_TITLE" />“ и још # картица}}</translation>
 <translation id="8977811652087512276">Нетачна лозинка или оштећена датотека</translation>
 <translation id="8978154919215542464">Укључено – синхронизуј све</translation>
+<translation id="8978670037548431647">Освежи могућности привезивања</translation>
 <translation id="897939795688207351">На <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Извештаји са повратним информацијама</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Отказао је</translation>
@@ -8518,6 +8533,7 @@
 <translation id="935854577147268200">Smart Lock телефон је промењен. Унесите лозинку да бисте ажурирали Smart Lock. Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Системски дијагностички подаци</translation>
+<translation id="937053962468712792">Желите да уклоните уређај <ph name="DEVICE" /> са <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Поправи додатак</translation>
 <translation id="938568644810664664">Пробајте да питате „Хеј Google, која је ово песма?“ или „Хеј Google, шта је приказано на мом екрану?“</translation>
 <translation id="938623846785894166">Неуобичајен фајл</translation>

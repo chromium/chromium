@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">ტიპი</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="2480034874476596812">ხელით გამორთვა</translation>
+<translation id="248546197012830854">მოწყობილობა ხაზგარეშე რეჟიმშია. დამხმარე კონტენტის სანახავად დაუკავშირდით Wi-Fi ქსელს.</translation>
 <translation id="2491955442992294626">კლავიშების ტესტირება ვერ მოხერხდება, როცა სხვა ფანჯარას იყენებთ</translation>
 <translation id="2493126929778606526">ავტომატურად არჩეული თქვენი საუკეთესო ფოტოები</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />-ის შეკეთებიდან გასვლა</translation>
 <translation id="6618744767048954150">მიმდინარეობს</translation>
 <translation id="6620487321149975369">ბეჭდვის დავალებები გამოჩნდება ისტორიაში, თუ მათ ხელით არ ამოშლით</translation>
+<translation id="6624819909909965616">10 მბაიტზე დიდი ზომის ფაილის ატვირთვა ვერ მოხერხდება</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6644568396961840069">ფაილის შენახვა ვერ მოხერხდა. ცადეთ სხვა გარე მეხსიერების მიერთება, ან ცადეთ მოგვიანებით.</translation>
 <translation id="6647510110698214773">დაშიფვრის ალგორითმი</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
 <translation id="6995564396478647735">დარწმუნდით, რომ ჩაწერისგან დაცვა ჩართულია</translation>
+<translation id="7005833343836210400">მოწყობილობა ხაზგარეშე რეჟიმშია</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7041549558901442110">მოწყობილობა დაკავშირებული არ არის.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">დარჩენილი მუხტი</translation>
 <translation id="8082366717211101304">DNS-ის დარეგულირება ვერ მოხერხდა Android აპებიდან</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
+<translation id="8094062939584182041">ამ პრობლემის თაობაზე ელფოსტით დაკავშირების დაშვება Google-ისთვის</translation>
 <translation id="8104083085214006426">თქვენ ღია და არასტაბილური ქსელით სარგებლობთ</translation>
 <translation id="8109786307828817014">გსურთ წარუმატებელი კალიბრაციით გაგრძელება?</translation>
 <translation id="811820734797650957">(Android) გეითვეის ping-მეთოდით ტესტირება</translation>

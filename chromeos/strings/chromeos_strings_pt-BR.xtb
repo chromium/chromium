@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2480034874476596812">Desativar manualmente</translation>
+<translation id="248546197012830854">O dispositivo está off-line. Conecte-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
 <translation id="2491955442992294626">As chaves não são testadas enquanto você usa outra janela</translation>
 <translation id="2493126929778606526">Suas melhores fotos, selecionadas automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6611280807952151149">Sair do reparo do <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">Os trabalhos de impressão aparecerão no histórico, a menos que sejam removidos manualmente</translation>
+<translation id="6624819909909965616">Não é possível fazer upload de arquivos com mais de 10 MB</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6644568396961840069">Não foi possível salvar o arquivo. Conecte outro tipo armazenamento externo ou tente novamente mais tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de criptografia</translation>
@@ -696,6 +698,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
 <translation id="6995564396478647735">Confira se a proteção contra gravação está ativada</translation>
+<translation id="7005833343836210400">O dispositivo está off-line</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">Dispositivo não conectado.</translation>
@@ -809,6 +812,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Não foi possível resolver o DNS em apps Android</translation>
 <translation id="808894953321890993">Alterar senha</translation>
+<translation id="8094062939584182041">Permitir que o Google envie um e-mail para você sobre esse problema</translation>
 <translation id="8104083085214006426">Você está usando uma rede aberta e não segura</translation>
 <translation id="8109786307828817014">Continuar com as calibragens que falharam?</translation>
 <translation id="811820734797650957">(Android) O gateway pode receber um ping</translation>

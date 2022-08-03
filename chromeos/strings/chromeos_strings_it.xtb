@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2480034874476596812">Disattiva manualmente</translation>
+<translation id="248546197012830854">Il dispositivo è offline. Connettiti alla rete Wi-Fi per vedere i contenuti di assistenza.</translation>
 <translation id="2491955442992294626">I tasti non vengono testati quando utilizzi un'altra finestra</translation>
 <translation id="2493126929778606526">Le tue foto migliori selezionate automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -606,7 +607,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6137767437444130246">Certificato utente</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
-<translation id="6165508094623778733">Ulteriori informazioni</translation>
+<translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
@@ -661,6 +662,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6611280807952151149">Esci dalla riparazione di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
+<translation id="6624819909909965616">Impossibile caricare file di dimensioni superiori a 10 MB</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6644568396961840069">Impossibile salvare il file. Prova a collegare un dispositivo di archiviazione esterno diverso oppure riprova più tardi.</translation>
 <translation id="6647510110698214773">Algoritmo di crittografia</translation>
@@ -696,6 +698,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6995564396478647735">Assicurati che la protezione della scrittura sia attiva</translation>
+<translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7040230719604914234">Operatore</translation>
 <translation id="7041549558901442110">Il dispositivo non è collegato.</translation>
@@ -809,6 +812,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
 <translation id="808894953321890993">Cambia password</translation>
+<translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
 <translation id="8109786307828817014">Vuoi procedere anche se alcune calibrazioni non sono andate a buon fine?</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>

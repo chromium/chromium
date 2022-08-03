@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">დაუცველი</translation>
 <translation id="3533202363250687977">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3533436815740441613">ახალი ჩანართი</translation>
+<translation id="3547799431091898961">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chrome-იდან<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">ჩანართის დახურვა</translation>
 <translation id="3581564640715911333">სხვა ენებზე არსებული გვერდების თარგმნის შემოთავაზება</translation>
 <translation id="3588820906588687999">გამოსახულების გახსნა ახალ ჩანართზე</translation>
@@ -680,6 +681,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6561262006871132942">მასშტაბის გადიდება</translation>
 <translation id="6583087784430677195">გამოსართავად გახსენით <ph name="BEGIN_LINK" />პარამეტრები<ph name="END_LINK" /> და გადადით „პაროლების ავტომატურ შევსებაზე“.</translation>
 <translation id="6585618849026997638">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
+<translation id="6596481460663245319">სურათის ძიება Google-ით</translation>
 <translation id="6598875554591387303">დალაგება გამომცემლის მიხედვით</translation>
 <translation id="6603393121510733479">თქვენმა ორგანიზაციამ გამორთო კონფიდენციალური დათვალიერება.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>

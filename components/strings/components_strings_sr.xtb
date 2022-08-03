@@ -1071,6 +1071,7 @@
 <translation id="3835233591525155343">Коришћење уређаја</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов Google документ</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3853684360927654006">Калкулатор снаге лозинке</translation>
 <translation id="3858027520442213535">Ажурирајте датум и време</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3872834068356954457">Наука</translation>
@@ -1681,6 +1682,7 @@
 <translation id="5518670652865028077">Уметност и забава</translation>
 <translation id="5519516356611866228">Са променама</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
+<translation id="5525755241743357906">Фајл је копиран или премештен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome ОС-а</translation>
 <translation id="5528532273234423708">Аутоматизација дома</translation>
 <translation id="55293785478302737">Спајање ивица шавом</translation>
@@ -2933,6 +2935,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните tab, па Enter да бисте подесили Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="9096679202588811390">ТВ емисије и програми</translation>
 <translation id="9101630580131696064">1. фиока</translation>
+<translation id="9102081333385212048">Фајлови које копирате или преместите се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће се скенирати у потрази за осетљивим подацима или малвером.</translation>
 <translation id="9103537084693478942">Софтвер за обраду видеа</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> обично користи шифровање да би заштитио информације. Када је Chromium овог пута покушао да се повеже са <ph name="SITE" />, веб-сајт је вратио необичне и нетачне акредитиве. Или нападач покушава да се представи као <ph name="SITE" /> или је екран за WiFi пријављивање прекинуо везу. Информације су и даље безбедне зато што је Chromium прекинуо везу пре него што су размењени било какви подаци.</translation>
 <translation id="9106062320799175032">Додајте адресу за обрачун</translation>

@@ -1070,6 +1070,7 @@
 <translation id="3835233591525155343">Құрылғыны пайдалануыңыз</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google құжатын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="385051799172605136">Артқа</translation>
+<translation id="3853684360927654006">Құпия сөздің күшін есептеу құралы</translation>
 <translation id="3858027520442213535">Күні мен уақытын жаңарту</translation>
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3872834068356954457">Ғылым</translation>
@@ -1680,6 +1681,7 @@
 <translation id="5518670652865028077">Өнер және ойын-сауық</translation>
 <translation id="5519516356611866228">Өзгертулеріңізбен</translation>
 <translation id="5523118979700054094">Саясат атауы</translation>
+<translation id="5525755241743357906">Файл көшіріледі немесе жылжытылады.</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. ChromeOS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="5528532273234423708">Үй құрылғыларын автоматтандыру</translation>
 <translation id="55293785478302737">Жиекті тігу</translation>
@@ -2932,6 +2934,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. iOS параметрлерінде Chrome-ды жүйенің әдепкі браузері етіп орнату үшін Tab, кейін Enter пернесін басыңыз.</translation>
 <translation id="9096679202588811390">Телешоулар мен бағдарламалар</translation>
 <translation id="9101630580131696064">1-науа</translation>
+<translation id="9102081333385212048">Сіз көшірген немесе жылжытқан файлдар Google Cloud немесе үшінші тарапқа жіберіліп, талданады. Мысалы, онда құпия деректердің немесе зиянды бағдарламалардың бар-жоғы тексеріледі.</translation>
 <translation id="9103537084693478942">Бейнеге арналған бағдарламалық құрал</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> әдетте ақпаратыңызды қорғау үшін шифрлауды қолданады. Осы жолы Chromium <ph name="SITE" /> сайтына қосылуға әрекет еткенде, веб-сайт әдеттен тыс және қате тіркелгі деректерін жіберді. Бұл жағдай қаскүнем <ph name="SITE" /> болып көрінгісі келгенде немесе Wi-Fi кіру экраны байланысқа кедергі болғанда пайда болуы мүмкін. Ақпаратыңыз қауіпсіз күйде, себебі Chromium ешқандай дерек алмасу болмай тұрып байланысты үзді.</translation>
 <translation id="9106062320799175032">Төлем мекенжайын қосу</translation>

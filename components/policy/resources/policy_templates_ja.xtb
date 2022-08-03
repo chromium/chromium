@@ -96,6 +96,7 @@
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
 <translation id="1099282607296956954">すべてのサイトに対してサイト分離を有効にする</translation>
+<translation id="1100840127293327071">既存の閲覧データを保持するオプションをデフォルトでオンにしない</translation>
 <translation id="1105572260329131950">安全な接続にデフォルトのアイコンを使用する</translation>
 <translation id="1107538157073168076">分析情報の拡張機能を無効にする</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
@@ -721,6 +722,14 @@
 <translation id="1781356041596378058">このポリシーでは、Android 開発者向けオプションへのアクセスも管理できます。このポリシーを true に設定した場合、ユーザーは開発者向けオプションにアクセスできません。このポリシーを false に設定するか未設定のままにした場合、ユーザーは Android 設定アプリのビルド番号を 7 回タップすれば開発者向けオプションにアクセスできます。</translation>
 <translation id="1787790976045065845">このポリシーは、<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> ポリシーが <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> または <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> に設定されている場合に、スマートカードで認証を行うユーザーがスマートカードを取り出したときにのみ適用されます。このポリシーでは、行われる処理の通知を何秒間表示するかを指定できます。この通知は画面を占拠して表示され、指定した表示時間が経過して通知が非表示になった後に処理が行われます。ユーザーは、通知が非表示になる前にスマートカードを入れ直すことで、処理が行われないようにすることができます。このポリシーを 0 に設定すると、通知は表示されず、処理がすぐに行われます。</translation>
 <translation id="1793346220873697538">デフォルトで PIN の印刷を無効にします</translation>
+<translation id="1794457906032475749">このポリシーを有効に設定した場合、企業プロファイルの作成時に既存の閲覧データを保持するオプションがデフォルトでオンになります。
+
+このポリシーを未設定のままにするか無効にした場合は、企業プロファイルの作成時に既存の閲覧データを保持するオプションがデフォルトでオンになりません。
+
+このポリシーで設定した値に関係なく、ユーザーは企業プロファイルの作成時に既存の閲覧データを保持するかどうかを選択できます。
+
+既存の閲覧データを保持するオプションが利用できない場合、このポリシーは無視されます。たとえば、企業プロファイルの分離が厳密に行われている場合やデータがすでに管理対象プロファイルにある場合などです。
+</translation>
 <translation id="179694024208061102">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は一部の URL に対して <ph name="IE_PRODUCT_NAME" /> などの代替ブラウザの起動を試みます。この機能は、<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" /> グループのポリシーを使って設定します。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は指定された URL に対して代替ブラウザを起動しません。</translation>
@@ -1231,7 +1240,6 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="2299220924812062390">有効なプラグインのリストを指定する</translation>
-<translation id="2301048990069984110">Windows、Mac、Linux で Chrome アプリを使用できるようサポートを拡張する。</translation>
 <translation id="2303795211377219696">クレジット カードの自動入力を有効にする</translation>
 <translation id="2304009805995145854"><ph name="PRODUCT_NAME" /> 67 以降、サイト分離はすべてのデスクトップ プラットフォームでデフォルトで有効になっており、すべてのサイトが独自のプロセスで実行されます。サイトは、スキームと eTLD+1 で構成されます（例: https://example.com）。このポリシーを有効にしても、ユーザーによる無効化（サイト分離を無効にする chrome://flags の使用など）ができなくなる点以外に、動作の変更はありません。<ph name="PRODUCT_NAME" /> 76 以降では、このポリシーを無効に設定するか未設定のままにしても、サイト分離は依然として有効のままですが、ユーザーが無効にできるようになります。<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用して、サイト単位でなく、より細かいレベルで発行元を指定して分離することもできます（例: https://a.example.com）。<ph name="PRODUCT_OS_NAME" /> バージョン 76 以前では、<ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> デバイス ポリシーを同じ値に設定してください（値が異なる場合、ユーザー セッションの開始時に遅延が生じる可能性があります）。注: Android では代わりに <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> ポリシーを使用してください。</translation>
 <translation id="2306505001667207184">自動選択ポリシーが複数の証明書と一致した場合に常にクライアント証明書を選択するよう求めるメッセージがユーザーに表示されます。</translation>
@@ -1523,6 +1531,7 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、Chrome ブラウザ クラウド管理に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、この機能は MDM を介して管理されるか MCX を介してドメインに追加されたインスタンスでのみ使用できます。</translation>
 <translation id="2623014935069176671">最初のユーザー操作を待機する</translation>
+<translation id="2625026032335150744">既存の閲覧データを保持するオプションをデフォルトでオンにする</translation>
 <translation id="2625398797484317969">クイック アンサーの設定を管理します。</translation>
 <translation id="262740370354162807"><ph name="CLOUD_PRINT_NAME" /> へのドキュメントの送信を有効にします。</translation>
 <translation id="2633084400146331575">音声フィードバックを有効にする</translation>
@@ -1937,6 +1946,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="305106159605171619">ユーザー エージェントの削減を無効にして、フィールド トライアルやオリジン トライアルによる有効化を許可しない。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">スクリーンキャストを無効にする</translation>
 <translation id="3064530882228745118">Kerberos 認証時に CNAME 検索を使用する</translation>
 <translation id="3066446511111537292">このデバイスの関連ユーザーに ADB サイドローディングの使用を許可します</translation>
 <translation id="3070119171976169951">サードパーティの画像による認証プロンプトの表示を許可しない</translation>
@@ -2140,6 +2150,7 @@
 <translation id="3255762580838224124">このポリシーを設定した場合、各ディスプレイは再起動のたびに指定した方向に回転します。ポリシーの値を変更した後、初めて接続したときにも、指定した方向に回転します。ユーザーはログイン後に設定ページからディスプレイの回転方法を変更することができますが、次に再起動したときにはポリシーの値に戻ります。このポリシーは、メインと予備のディスプレイに適用されます。
 
       このポリシーを設定しない場合、デフォルト値として 0 度が使用され、ユーザーはこの値を自由に変更できます。この場合、再起動時にデフォルト値が再適用されることはありません。</translation>
+<translation id="3257786863492892609">スクリーンキャストのポリシーを管理します。</translation>
 <translation id="3258380413685430793">すべての <ph name="FLASH_PLUGIN_NAME" /> コンテンツを実行する</translation>
 <translation id="325883417142483505">このポリシーでは、企業のログイン URL のリストを設定できます（HTTP と HTTPS プロトコルのみ）。パスワード保護サービスでは、これらの URL で入力されたパスワードのソルトハッシュを取得し、パスワードの再利用を検出する目的で使用します。<ph name="PRODUCT_NAME" /> でパスワードのソルトハッシュが適切に取得されるようにするには、ログインページが https://www.chromium.org/developers/design-documents/create-amazing-password-forms のガイドラインに沿っていることを確認します。
 
@@ -3088,6 +3099,7 @@
 <translation id="441686537793821907">外部の拡張機能のインストールを許可しない</translation>
 <translation id="4423597592074154136">プロキシ設定を手動で指定する</translation>
 <translation id="4424004842303301809">データ漏洩防止イベントのレポートを無効にする</translation>
+<translation id="4426601693403743089">ファミリー リンクのユーザーに対してスクリーンキャスト dogfood を無効にする</translation>
 <translation id="4427173305799125784">PDF ビューアで PDF に注釈を追加できない</translation>
 <translation id="4432762137771104529">セーフ ブラウジングの詳細レポートを有効にする</translation>
 <translation id="443454694385851356">以前の暗号化タイプ（安全ではありません）</translation>
@@ -4599,6 +4611,7 @@
       このポリシーの各リスト項目には、拡張機能 ID と「更新」URL（省略可）をセミコロン（<ph name="SEMICOLON" />）で区切った文字列を指定します。拡張機能 ID は 32 文字の文字列で、たとえばデベロッパー モードで <ph name="CHROME_EXTENSIONS_LINK" /> を開くと確認できます。「更新」URL を指定する場合は、更新マニフェスト XML ドキュメントを指定する必要があります（<ph name="LINK_TO_EXTENSION_DOC1" /> の説明をご覧ください）。デフォルトでは Chrome ウェブストアの更新 URL（現時点では「https://clients2.google.com/service/update2/crx」）が使用されます。なお、このポリシーで設定された「更新」URL は初回のインストールでのみ使用され、その後の拡張機能の更新には、拡張機能のマニフェストで指定されている更新 URL が使用されます。
 
       たとえば、<ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> では、標準の Chrome ウェブストアの「更新」URL から <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> アプリがインストールされます。拡張機能のホスティングについて詳しくは、<ph name="LINK_TO_EXTENSION_DOC2" /> をご確認ください。</translation>
+<translation id="6274202259872570803">スクリーンキャスト</translation>
 <translation id="6275497712828649588">危険性のあるコマンドライン フラグが使用されたときにセキュリティ警告を表示しない</translation>
 <translation id="6275833043726517413">新しい <ph name="CORS" /> の実装ではなく以前の <ph name="CORS" /> の実装を使用します。
 
@@ -4632,7 +4645,9 @@
 
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> の設定は、<ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> が False に設定されている場合にのみ適用されます。</translation>
 <translation id="6305373713165475629">このポリシーでは、デフォルトのカラー印刷モードをオーバーライドできます。このモードを使用できない場合、このポリシーは無視されます。</translation>
+<translation id="6308109234708949641">ファミリー リンクのユーザーの場合は、このポリシーがスクリーンキャストの機能を有効にし、画面録画の作成および文字起こしと Google ドライブへのアップロードの権限をスクリーンキャストに付与します。ファミリー リンク以外のユーザーには影響しません。企業ユーザーに対する <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> ポリシーには影響しません。このポリシーを有効にすると、ファミリー リンクのユーザーに対してスクリーンキャスト dogfood が有効になります。このポリシーを無効にすると、ファミリー リンクのユーザーに対してスクリーンキャスト dogfood が無効になります。このポリシーを設定しないと、ファミリー リンクのユーザーに対してスクリーンキャスト dogfood がデフォルトで無効になります。</translation>
 <translation id="6310223829319187614">ユーザーのログイン中にドメイン名のオートコンプリートを有効にする</translation>
+<translation id="6310756730808079944">スクリーンキャストを有効にする</translation>
 <translation id="631081324835911099">ユーザーのメインのアカウントの認証トークンが無効になると、強制的にログアウトします。
         これにより、Google ウェブ プロパティの制限付きコンテンツにユーザーがアクセスしないよう保護できます。
         このポリシーを True に設定した場合、認証トークンが無効になったユーザーは即座にログアウトされ、このトークンの復元の試行は失敗します。
@@ -4980,6 +4995,12 @@
           false に設定されている場合や未設定の場合は、監視対象ユーザーの作成とログインはできません。既存の監視対象ユーザーはすべて非表示になります。
 
           注: デフォルトの動作は、個人向けのデバイスと企業向けのデバイスとで異なります。個人向けデバイスでは、監視対象ユーザーはデフォルトで有効になっていますが、企業向けデバイスではそうではありません。</translation>
+<translation id="6648746349186337075">企業ユーザーの場合は、このポリシーが画面録画の作成および文字起こしと Google ドライブへのアップロードの権限をスクリーンキャストに付与します。
+      ファミリー リンクのユーザーには影響しません。
+      ファミリー リンクのユーザー向けの <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> ポリシーには影響しません。
+
+      ポリシーを未設定のままにするか有効にすると、スクリーンキャストが有効になります。
+      このポリシーを無効にすると、スクリーンキャストが無効になります。</translation>
 <translation id="665023848306499203">どのバージョンに更新するかの選択をデバイスに許可する</translation>
 <translation id="6652197835259177259">ローカルの管理対象ユーザーの設定</translation>
 <translation id="6653897159826215341">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> ではユーザーが印刷をリクエストしたときに組み込みの印刷プレビューではなくシステムの印刷ダイアログが開きます。
@@ -5842,6 +5863,7 @@
       このポリシーを有効にした場合、または設定しない場合、クイック アンサーの単位変換が有効になります。
       このポリシーを無効にした場合、クイック アンサーの単位変換が無効になります。</translation>
 <translation id="7587345076013230465">ログイン画面で自動選択ポリシーが複数の証明書と一致した場合に、クライアント証明書を選択するよう求めるメッセージを常にユーザーに表示する</translation>
+<translation id="7587921466180902617">ファミリー リンクのユーザーに対してスクリーンキャスト dogfood を有効にする</translation>
 <translation id="759957074386651883">セーフ ブラウジングの設定</translation>
 <translation id="7604169113182304895">このリストを使用するかどうかは Android アプリ側の選択となります。Android アプリにリストの使用を強制することはできません。</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> 起動時にシステム全体のフラグを適用</translation>
@@ -6075,6 +6097,7 @@
 
       推奨: 停止時の画面ロックを有効にしてアイドル時に画面がロックされるようにし、アイドル時間経過後に <ph name="PRODUCT_OS_NAME" /> を停止します。このポリシーは、停止状態になるのを待たずに画面をロックする場合、またはアイドル時の停止を希望しない場合にのみ使用してください。</translation>
 <translation id="7895553628261067384">リモート アクセス</translation>
+<translation id="7900469325540540107">企業プロファイルの作成時にデフォルトで閲覧データを保持する</translation>
 <translation id="7902040092815978832">パスワード入力用に数字キーボードを表示する</translation>
 <translation id="7904177352786629708">このポリシーを有効に設定した場合、CNAME 検索はスキップされます。Kerberos SPN の生成時には、入力されたサーバー名が使用されます。
 
@@ -6227,10 +6250,6 @@
 <translation id="8099880303030573137">アイドル状態になるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="8101381354936029836">ポリシーの最小単位グループ:</translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
-<translation id="8103563905615378194">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留するかどうかを指定します。
-
-      アダプティブ充電モデルでは、デバイスが AC 電源に接続されている場合、バッテリー寿命を延ばすため充電プロセスを保留すべきかどうかを評価します。アダプティブ充電モデルで充電プロセスを保留する場合、バッテリーを一定の残量（80% など）に維持し、ユーザーが必要とするときは 100% まで充電します。
-      このポリシーを True に設定するか未設定のままにした場合、アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留します。このポリシーを False に設定した場合、アダプティブ充電モデルは充電プロセスに適用されません。</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
 <translation id="8114382167597081590">YouTube で制限モードを強制適用しない</translation>
 <translation id="8117921351531866504">保存されているお支払い方法の確認をウェブサイトに許可するかどうかを設定します。
@@ -7027,10 +7046,6 @@
 <translation id="8951350807133946005">ディスクのキャッシュ ディレクトリの設定</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
-<translation id="8967125680876068695">Chrome アプリは、Windows、Mac、Linux でのサポートが終了しています。
-      このポリシーを有効に設定した場合、2022 年 6 月にすべてのプラットフォームで Chrome アプリのサポートが廃止される日まで、これらのプラットフォームでは引き続き <ph name="PRODUCT_NAME" /> で Chrome アプリを実行できます。
-      このポリシーを無効に設定するか未設定のままにした場合、サポート終了の段階に応じて、一部の Chrome アプリは実行できなくなります。
-      いずれの場合も、ポリシーにより自動インストールされた Chrome アプリについては引き続き実行できます。</translation>
 <translation id="8970205333161758602"><ph name="PRODUCT_FRAME_NAME" /> のサポート終了メッセージを抑制する</translation>
 <translation id="8976248126101463034">リモート アクセス ホストに対して gnubby 認証を許可する</translation>
 <translation id="8976531594979650914">システムのデフォルト プリンタをデフォルトとして使用</translation>

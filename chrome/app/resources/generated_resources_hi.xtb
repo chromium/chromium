@@ -907,6 +907,7 @@
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="1829192082282182671">ज़ूम &amp;आउट करें</translation>
 <translation id="1830550083491357902">प्रवेश नहीं है</translation>
+<translation id="1831848493690504725">हम मौजूदा नेटवर्क से, Google सर्वर को ऐक्सेस नहीं कर सकते. कोई दूसरा नेटवर्क चुनकर देखें या अपनी नेटवर्क सेटिंग की जांच करें. इसके अलावा, अगर प्रॉक्सी का इस्तेमाल किया जा रहा हो, तो प्रॉक्सी सेटिंग की जांच करें.</translation>
 <translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
 <translation id="1832511806131704864">फ़ोन बदलाव अपडेट किया गया</translation>
 <translation id="1832848789136765277">यह पक्का करने के लिए कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें, अपनी पहचान की पुष्टि करें</translation>
@@ -2741,7 +2742,7 @@
 <translation id="3569382839528428029">क्या आप चाहते हैं कि <ph name="APP_NAME" /> आपकी स्क्रीन को शेयर करे?</translation>
 <translation id="3569407787324516067">स्क्रीन सेवर</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर काे देख सकती है</translation>
-<translation id="3571734092741541777">सेट करें</translation>
+<translation id="3571734092741541777">सेट अप करें</translation>
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> हार्डवेयर डेटा क्लेकशन</translation>
 <translation id="3578594933904494462">इस टैब की सामग्री को शेयर किया जा रहा है.</translation>
@@ -3521,7 +3522,7 @@
 <translation id="431076611119798497">&amp;विवरण</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google खाता}one{<ph name="EXTRA_ACCOUNTS" /> Google खाता}other{<ph name="EXTRA_ACCOUNTS" /> Google खाते}}</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
-<translation id="4314497418046265427">बेहतर तरीके से काम करने के लिए, अपने फ़ोन को <ph name="DEVICE_TYPE" /> से कनेक्ट करें</translation>
+<translation id="4314497418046265427">फ़ोन को <ph name="DEVICE_TYPE" /> से कनेक्ट करके, ज़्यादा और बेहतर काम करें</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
 <translation id="4315933848520197627">खाता अनलिंक करें</translation>
 <translation id="4316850752623536204">डेवलपर वेबसाइट</translation>
@@ -3965,7 +3966,7 @@
 <translation id="474609389162964566">अपनी Assistant को "Ok Google" बोलकर ऐक्सेस करें</translation>
 <translation id="4746351372139058112">मैसेज</translation>
 <translation id="4748783296226936791">आम तौर पर, साइटें उन सुविधाओं के लिए एचआईडी डिवाइसों से कनेक्ट करती हैं जो असामान्य कीबोर्ड, गेम कंट्रोलर, और दूसरे डिवाइस इस्तेमाल करती हैं</translation>
-<translation id="4750185073185658673">ज़्यादा अनुमतियों की समीक्षा करने के लिए फ़ोन पर, अनुमतियों वाला सेक्शन देखें. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
+<translation id="4750185073185658673">कुछ और अनुमतियां देखने के लिए अपने फ़ोन के अनुमतियों वाले सेक्शन पर जाएं. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
 <translation id="4750394297954878236">सुझाव</translation>
 <translation id="475088594373173692">पहला उपयोगकर्ता</translation>
 <translation id="4756378406049221019">रोकें/फिर से लोड करें</translation>
@@ -4750,6 +4751,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> को अनुमति चाहिए</translation>
 <translation id="5534304873398226603">फ़ोटो या वीडियो खारिज करें</translation>
 <translation id="5537725057119320332">कास्‍ट करें</translation>
+<translation id="5539070192556911367">Google सर्वर को ऐक्सेस नहीं किया जा सकता</translation>
 <translation id="5539221284352502426">आपने जो पासवर्ड डाला है, उसे सर्वर ने अस्वीकार कर दिया है. संभावित कारण ये हो सकते हैं: पासवर्ड बहुत छोटा है. पासवर्ड में संख्याएं या चिह्न होने चाहिए. पासवर्ड, पिछले पासवर्ड से अलग होना चाहिए.</translation>
 <translation id="5541694225089836610">आपके एडमिन ने कार्रवाई बंद कर दी है</translation>
 <translation id="5542132724887566711">प्रोफ़ाइल</translation>
@@ -4813,6 +4815,7 @@
 <translation id="5585912436068747822">फ़ॉर्मेटिंग विफल रही</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ऐप्लिकेशन लोड हो रहे हैं...</translation>
+<translation id="5590418976913374224">डिवाइस चालू होने पर, आवाज़ होने की सुविधा चालू करें</translation>
 <translation id="5592595402373377407">अभी काफ़ी डेटा उपलब्ध नहीं है.</translation>
 <translation id="5595307023264033512">साइटों ने कुल इतना स्टोरेज इस्तेमाल किया है: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">पते में बदलाव करें</translation>
@@ -5360,7 +5363,7 @@
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">वाई-फ़ाई जोड़ें</translation>
 <translation id="6130887916931372608">कीबोर्ड का बटन</translation>
-<translation id="6135823405800500595">पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू है</translation>
+<translation id="6135823405800500595">पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो</translation>
 <translation id="6136114942382973861">डाउनलोड बार बंद करें</translation>
 <translation id="6136287496450963112">आपकी सुरक्षा कुंजी को पिन से सुरक्षित नहीं किया गया है. फ़िंगरप्रिंट प्रबंधित करने के लिए, पहले एक पिन बनाएं.</translation>
 <translation id="6138680304137685902">SHA-384 के साथ X9.62 ECDSA हस्ताक्षर</translation>
@@ -5690,7 +5693,7 @@
 <translation id="6466258437571594570">साइटें आपसे बार-बार सूचनाएं भेजने की अनुमति मांगकर, आपके काम में रुकावट नहीं डाल सकतीं</translation>
 <translation id="6466988389784393586">सभी बुकमार्क &amp;खोलें</translation>
 <translation id="6467304607960172345">फ़ुलस्क्रीन वीडियो ऑप्टिमाइज़ करें</translation>
-<translation id="6467377768028664108">इसके बाद, आपका <ph name="DEVICE_TYPE" /> ऐसा कर सकता है:</translation>
+<translation id="6467377768028664108">इसके बाद, <ph name="DEVICE_TYPE" /> से ये काम किए जा सकते हैं:</translation>
 <translation id="6468485451923838994">फ़ॉन्ट</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> फ़ाइलें</translation>
 <translation id="6469557521904094793">सेल्युलर नेटवर्क चालू करें</translation>
@@ -6359,6 +6362,7 @@
 <translation id="7102687220333134671">ऑटोमैटिक अपडेट चालू हैं</translation>
 <translation id="7102832101143475489">अनुरोध का समय खत्म हो गया</translation>
 <translation id="710640343305609397">नेटवर्क सेटिंग खोलें</translation>
+<translation id="7107609441453408294">सभी स्पीकर से एक ही ऑडियो चलाएं</translation>
 <translation id="7108338896283013870">छुपाएं</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">अभी लॉक करें</translation>
@@ -6589,6 +6593,7 @@
 <translation id="7364745943115323529">कास्‍ट करें...</translation>
 <translation id="7364796246159120393">फ़ाइल चुनें</translation>
 <translation id="7365076891350562061">मॉनिटर का साइज़</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - पिन किया गया</translation>
 <translation id="7366316827772164604">आस-पास के डिवाइस के लिए स्कैन किया जा रहा है...</translation>
 <translation id="7366415735885268578">साइट जोड़ें</translation>
 <translation id="7366909168761621528">ब्राउज़िंग डेटा</translation>
@@ -7312,7 +7317,7 @@
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
-<translation id="8041267120753677077">अपने फ़ोन के ऐप्लिकेशन को स्ट्रीम करें</translation>
+<translation id="8041267120753677077">अपने फ़ोन के ऐप्लिकेशन स्ट्रीम करें</translation>
 <translation id="8042142357103597104">टेक्स्ट की ओपैसिटी</translation>
 <translation id="8042331986490021244">Google पासवर्ड मैनेजर में सेव होने से पहले, आपके डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) किए जाते हैं</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है.</translation>
@@ -7635,7 +7640,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="8342221978608739536">कोशिश नहीं की गई</translation>
 <translation id="8342861492835240085">कोई संग्रह चुनें</translation>
-<translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
+<translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="834785183489258869">गुप्त मोड इस्तेमाल करने पर, अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें, कुकी इस्तेमाल नहीं कर सकतीं. जैसे, लोगों के हिसाब से विज्ञापन दिखाने के लिए. हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें.</translation>
 <translation id="8350789879725387295">डॉक में स्टाइलस टूल</translation>

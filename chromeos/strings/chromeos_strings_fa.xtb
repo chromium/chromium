@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2480034874476596812">خاموش کردن به‌صورت دستی</translation>
+<translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
 <translation id="2491955442992294626">وقتی درحال استفاده از پنجره دیگری هستید، کلیدها آزمایش نمی‌شوند</translation>
 <translation id="2493126929778606526">بهترین عکس‌هایتان که به‌طور خودکار انتخاب شده‌اند</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">خروج از تعمیر <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
+<translation id="6624819909909965616">امکان بارگذاری فایل‌های بزرگ‌تر از ۱۰ مگابایت وجود ندارد</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6644568396961840069">فایل ذخیره نشد. فضای ذخیره‌سازی خارجی دیگری را وصل کنید یا بعداً دوباره امتحان کنید.</translation>
 <translation id="6647510110698214773">الگوریتم رمزگذاری</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
 <translation id="6995564396478647735">مطمئن شوید «محافظت دربرابر نوشتن» روشن باشد</translation>
+<translation id="7005833343836210400">دستگاه آفلاین است</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7041549558901442110">دستگاه متصل نشده است.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
+<translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
 <translation id="8109786307828817014">با وجود واسنجی‌های ناموفق، ادامه می‌دهید؟</translation>
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>

@@ -1279,7 +1279,6 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="2299220924812062390">指定已启用插件的列表</translation>
-<translation id="2301048990069984110">扩展对 Chrome 应用的支持以涵盖 Windows、Mac 和 Linux。</translation>
 <translation id="2303795211377219696">允许使用“自动填充”功能填写信用卡信息</translation>
 <translation id="2304009805995145854">从 <ph name="PRODUCT_NAME" /> 67 版起，系统已默认在所有桌面平台上启用网站隔离功能，因此每个网站都会在自己的进程中运行。网站的网址格式为架构加上 eTLD+1（例如，https://example.com）。如果此政策已启用，系统并不会更改相应行为，只会禁止用户选择停用此功能（例如，通过使用 chrome://flags 中的“停用网站隔离”）。从 <ph name="PRODUCT_NAME" /> 76 版起，如果此政策已停用或未设置，系统将不会关闭网站隔离功能，但会允许用户选择停用此功能。
 
@@ -6496,10 +6495,6 @@
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102913158860568230">默认 mediastream 设置</translation>
-<translation id="8103563905615378194">指定是否允许启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命。
-
-      当设备已连接到交流电源时，“自适应充电”模式会评估是否应暂缓充电进程以延长电池寿命。如果“自适应充电”模式暂缓充电进程，电池电量将会保持在某个水平（例如 80%），并会在用户需要时充到 100%。
-      如果此政策设为 True 或未设置，“自适应充电”模式将会启用，并会暂缓充电进程以延长电池寿命。如果此政策设为 False，“自适应充电”模式将不会影响充电进程。</translation>
 <translation id="8104962233214241919">自动选择这些网站的客户端证书</translation>
 <translation id="8114382167597081590">不强制启用 YouTube 受限模式</translation>
 <translation id="8117921351531866504">该政策让您能够设置是否允许网站检查用户有无已保存的付款方式。
@@ -7309,10 +7304,6 @@
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
-<translation id="8967125680876068695">在 Windows、Mac 和 Linux 上，Chrome 应用已被弃用。
-      如果此政策已启用，<ph name="PRODUCT_NAME" /> 会允许 Chrome 应用在这些平台上继续运行，直到从所有平台上移除对 Chrome 应用的支持的截止日期（2022 年 6 月）来临为止。
-      如果此政策已停用或未设置，Chrome 应用可能会无法运行，具体取决于弃用安排的状态。
-      无论在哪种情况下，系统都允许由政策强制安装的 Chrome 应用继续运行。</translation>
 <translation id="8970205333161758602">阻止显示 <ph name="PRODUCT_FRAME_NAME" />停止支持的提示</translation>
 <translation id="8976248126101463034">允许针对远程访问主机进行 gnubby 身份验证</translation>
 <translation id="8976531594979650914">使用系统默认打印机作为默认选项</translation>

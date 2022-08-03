@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2480034874476596812">Nonaktifkan secara manual</translation>
+<translation id="248546197012830854">Perangkat sedang offline. Hubungkan ke jaringan Wi-Fi untuk melihat konten bantuan.</translation>
 <translation id="2491955442992294626">Tombol tidak diuji saat Anda sedang menggunakan jendela lain</translation>
 <translation id="2493126929778606526">Foto terbaik Anda, dipilih otomatis</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6611280807952151149">Keluar dari perbaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
+<translation id="6624819909909965616">Tidak dapat mengupload file yang lebih besar dari 10 MB</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6644568396961840069">File tidak dapat disimpan. Coba colokkan penyimpanan eksternal lain, atau coba lagi nanti.</translation>
 <translation id="6647510110698214773">Algoritme enkripsi</translation>
@@ -696,6 +698,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="6995564396478647735">Pastikan Proteksi Tulis aktif</translation>
+<translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Perangkat tidak terhubung.</translation>
@@ -809,6 +812,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="8082366717211101304">Tidak dapat me-resolve DNS dari aplikasi Android</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
+<translation id="8094062939584182041">Izinkan Google mengirim email kepada Anda tentang masalah ini</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
 <translation id="8109786307828817014">Lanjutkan dengan kalibrasi yang gagal?</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>

@@ -898,6 +898,7 @@
 <translation id="1829129547161959350">بطريق</translation>
 <translation id="1829192082282182671">ت&amp;صغير</translation>
 <translation id="1830550083491357902">لم يتم تسجيل الدخول</translation>
+<translation id="1831848493690504725">‏لا يمكننا التواصل مع Google من خلال الشبكة المتصلة. يُرجى تجربة شبكة مختلفة أو التحقُّق من إعدادات الشبكة أو إعدادات الخادم الوكيل (في حال استخدام خادم وكيل).</translation>
 <translation id="1832459821645506983">نعم، أوافق</translation>
 <translation id="1832511806131704864">تم تحديث تغيير الهاتف</translation>
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
@@ -1012,7 +1013,7 @@
 <translation id="1936157145127842922">عرض في المجلد</translation>
 <translation id="1936931585862840749">استخدِم رقمًا للإشارة إلى عدد النُسخ المطلوب طباعتها (من 1 إلى <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">يتعذّر استيراد نوع بنية الحاوية <ph name="ARCHITECTURE_CONTAINER" /> باستخدام هذا الجهاز الذي يمثل <ph name="ARCHITECTURE_DEVICE" />.يمكنك محاولة استعادة هذه الحاوية على جهاز مختلف، أو يمكنك الوصول إلى الملفات داخل صورة الحاوية هذه عن طريق فتح تطبيق "الملفات".</translation>
-<translation id="1938320257168860255">‏حدث خطأ. يجب أن يكون هاتفك قريبًا وغير مُقفَل وأنّ يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
+<translation id="1938320257168860255">‏حدث خطأ. يجب أن يكون هاتفك قريبًا وغير مُقفَل وأن يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
 <translation id="1938351510777341717">‏مفتاح Command الخارجي</translation>
 <translation id="1940546824932169984">الأجهزة المتصلة</translation>
 <translation id="1941410638996203291">وقت البدء: <ph name="TIME" /></translation>
@@ -1100,7 +1101,7 @@
 <translation id="2030455719695904263">لوحة اللمس</translation>
 <translation id="2031639749079821948">‏تم حفظ كلمة المرور في حسابك على Google.</translation>
 <translation id="2031914984822377766">يمكنك إضافة <ph name="LINK_BEGIN" />اللغات المفضَّلة التي تريد عرض المواقع الإلكترونية<ph name="LINK_END" /> بها. سيتم استخدام اللغة الواردة في أعلى القائمة لترجمة المواقع الإلكترونية إلى تلك اللغة.</translation>
-<translation id="2033758234986231162">‏لا يمكن مواصلة الاتصال بهاتفك. يجب أن يكون هاتفك قريبًا وغير مُقفَل وأنّ يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
+<translation id="2033758234986231162">‏لا يمكن مواصلة الاتصال بهاتفك. يجب أن يكون هاتفك قريبًا وغير مُقفَل وأن يكون البلوتوث وشبكة Wi-Fi مفعَّلين.</translation>
 <translation id="2034346955588403444">‏إضافة شبكة WiFi أخرى</translation>
 <translation id="203574396658008164">تفعيل تدوين الملاحظات من شاشة القفل</translation>
 <translation id="2037445849770872822">‏تم إعداد الإشراف من أجل حساب Google هذا. ولإعداد المزيد من أدوات الرقابة الأبوية، يُرجى اختيار "مواصلة".
@@ -4737,6 +4738,7 @@
 <translation id="5533001281916885985">يريد <ph name="SITE_NAME" /></translation>
 <translation id="5534304873398226603">إلغاء صورة أو فيديو</translation>
 <translation id="5537725057119320332">بث</translation>
+<translation id="5539070192556911367">‏لا يمكن التواصل مع Google</translation>
 <translation id="5539221284352502426">رفض الخادم كلمة المرور التي أدخلتَها. وتتضمن الأسباب المحتملة ما يلي: كلمة المرور قصيرة جدًا. يجب أن تتضمن كلمة المرور أرقامًا أو رموزًا. يجب أن تكون كلمة المرور مختلفة عن كلمات المرور السابقة.</translation>
 <translation id="5541694225089836610">تم إيقاف الإجراء من قِبل المشرف.</translation>
 <translation id="5542132724887566711">الملف التعريفي</translation>
@@ -4800,6 +4802,7 @@
 <translation id="5585912436068747822">تعذّر إتمام عملية التنسيق</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">جارٍ تحميل التطبيقات...</translation>
+<translation id="5590418976913374224">تشغيل صوت عند بدء تشغيل الجهاز</translation>
 <translation id="5592595402373377407">لم تتوفر بيانات كافية بعد.</translation>
 <translation id="5595307023264033512">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
@@ -5347,7 +5350,7 @@
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6130692320435119637">‏إضافة شبكة Wi-Fi</translation>
 <translation id="6130887916931372608">مفتاح لوحة المفاتيح</translation>
-<translation id="6135823405800500595">‏يجب أن يكون هاتفك قريبًا وغير مُقفَل وأنّ يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
+<translation id="6135823405800500595">‏يجب أن يكون هاتفك قريبًا وغير مُقفَل وأن يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
 <translation id="6136114942382973861">إغلاق شريط عمليات التنزيل</translation>
 <translation id="6136287496450963112">مفتاح الأمان غير محمي برقم تعريف شخصي. لإدارة بصمات الإصبع، يجب إنشاء رقم تعريف شخصي.</translation>
 <translation id="6138680304137685902">‏توقيع X9.62 ECDSA باستخدام SHA-384</translation>
@@ -6352,6 +6355,7 @@
 <translation id="7102687220333134671">تم تفعيل التحديثات التلقائية</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
 <translation id="710640343305609397">فتح إعدادات الشبكة</translation>
+<translation id="7107609441453408294">تشغيل الصوت نفسه من خلال جميع مكبِّرات الصوت</translation>
 <translation id="7108338896283013870">إخفاء</translation>
 <translation id="7108668606237948702">إدخال</translation>
 <translation id="7108933416628942903">قفل الآن</translation>
@@ -6583,6 +6587,7 @@
 <translation id="7364745943115323529">إرسال...</translation>
 <translation id="7364796246159120393">اختيار ملفّ</translation>
 <translation id="7365076891350562061">حجم الشاشة</translation>
+<translation id="7365995455115045224">تم تثبيت علامة التبويب "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="7366316827772164604">جارٍ البحث عن أجهزة قريبة...</translation>
 <translation id="7366415735885268578">إضافة موقع إلكتروني</translation>
 <translation id="7366909168761621528">بيانات التصفح</translation>

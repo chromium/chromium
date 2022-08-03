@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Mota</translation>
 <translation id="2461822463642141190">Oraingo kontsumoa</translation>
 <translation id="2480034874476596812">Desaktibatu eskuz</translation>
+<translation id="248546197012830854">Gailua deskonektatuta dago. Konektatu wifi-sarera laguntza-edukia ikusteko.</translation>
 <translation id="2491955442992294626">Teklei ez zaie probarik egingo beste leiho bat erabili bitartean</translation>
 <translation id="2493126929778606526">Zure argazkirik onenak, automatikoki hautatuta</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6611280807952151149">Irten <ph name="DEVICE_TYPE" /> gailuaren konponketatik</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6620487321149975369">Inprimatze-lanak historian agertuko dira, eskuz kendu ezean</translation>
+<translation id="6624819909909965616">Ezin da kargatu 10 MB baino gehiagoko fitxategirik</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6644568396961840069">Ezin izan da gorde fitxategia. Saiatu kanpoko memoria bat entxufatzen edo saiatu berriro geroago.</translation>
 <translation id="6647510110698214773">Enkriptatze-algoritmoa</translation>
@@ -696,6 +698,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
 <translation id="6995564396478647735">Ziurtatu idazketaren aurkako babesa aktibatuta dagoela</translation>
+<translation id="7005833343836210400">Deskonektatuta dago gailua</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
 <translation id="7041549558901442110">Gailua ez dago konektatuta.</translation>
@@ -809,6 +812,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
+<translation id="8094062939584182041">Eman arazo honi buruzko mezu elektronikoak bidaltzeko baimena Google-ri</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
 <translation id="8109786307828817014">Aurrera egin nahi duzu huts egin duten kalibrazioekin?</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>

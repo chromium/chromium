@@ -1677,6 +1677,7 @@
 <translation id="5518670652865028077">艺术与娱乐</translation>
 <translation id="5519516356611866228">含您所做更改</translation>
 <translation id="5523118979700054094">政策名</translation>
+<translation id="5525755241743357906">文件已复制或移动</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="5528532273234423708">家居自动化</translation>
 <translation id="55293785478302737">边缘装订</translation>
@@ -2929,6 +2930,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="9096679202588811390">电视节目</translation>
 <translation id="9101630580131696064">纸匣 1</translation>
+<translation id="9102081333385212048">系统会将您复制或移动的文件发送给 Google Cloud 或第三方以供分析。例如，可能通过扫描来确定文件是否包含敏感数据或恶意软件。</translation>
 <translation id="9103537084693478942">视频软件</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chromium 此次尝试连接到 <ph name="SITE" /> 时，此网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chromium 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="9106062320799175032">添加帐单邮寄地址</translation>

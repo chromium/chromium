@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Түрү</translation>
 <translation id="2461822463642141190">Учурда</translation>
 <translation id="2480034874476596812">Кол менен өчүрүү</translation>
+<translation id="248546197012830854">Түзмөк офлайн режиминде. Жардам берүү бөлүмүнө өтүү үчүн Wi-Fi тармагына туташыңыз.</translation>
 <translation id="2491955442992294626">Башка терезени колдонуп жатканда баскычтар сыналбайт</translation>
 <translation id="2493126929778606526">Автоматтык түрдө тандалган мыкты сүрөттөрүңүз</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> түзмөгүн оңдоодон чыгуу</translation>
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
+<translation id="6624819909909965616">10 Мб ашуун файлды жүктөөгө болбойт</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6644568396961840069">Файл сакталган жок. Башка тышкы сактагычты сайып көрүңүз же кийинчерээк кайталаңыз.</translation>
 <translation id="6647510110698214773">Шифрлөөнүн алгоритми</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Орнотулган программаны оңдоо</translation>
 <translation id="6995564396478647735">Жазуудан коргоонун күйгүзүлгөнүн текшериңиз</translation>
+<translation id="7005833343836210400">Түзмөк офлайн режиминде</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Түзмөк туташкан жок.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Батареянын кубаты</translation>
 <translation id="8082366717211101304">Android колдонмолорунан DNS чечилбей жатат</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
+<translation id="8094062939584182041">Google'га бул маселе жөнүндө сизге электрондук кат жөнөтүүгө уруксат берүү</translation>
 <translation id="8104083085214006426">Ачык жана кооптуу тармакты колдонуп жатасыз</translation>
 <translation id="8109786307828817014">Курамдык бөлүктөр калибрленсинби?</translation>
 <translation id="811820734797650957">(Android) Шлюздун байланышын текшерүүгө болот</translation>

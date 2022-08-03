@@ -2212,6 +2212,7 @@
 <translation id="3021065318976393105">Якщо пристрій не заряджається</translation>
 <translation id="3021066826692793094">Метелик</translation>
 <translation id="3021678814754966447">&amp;Переглянути джерело фрейму</translation>
+<translation id="3022361196600037287">Пристрій "<ph name="DEVICE" />" буде вилучено з цього пристрою Chromebook. Також його не буде збережено в обліковому записі <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Незрозуміло.</translation>
 <translation id="3023464535986383522">Читання з екрана</translation>
 <translation id="3024374909719388945">Використовувати 24-годинний формат</translation>
@@ -3751,6 +3752,7 @@
 <translation id="4535127706710932914">Профіль за умовчанням</translation>
 <translation id="4535767533210902251">Сканер відбитків пальців – це верхня клавіша праворуч на клавіатурі. Легко торкніться її будь-яким пальцем.</translation>
 <translation id="4536140153723794651">Сайти, які завжди можуть використовувати файли cookie</translation>
+<translation id="4536769240747010177">Можливості використання телефона як модема</translation>
 <translation id="4538417792467843292">Видалити слово</translation>
 <translation id="4538792345715658285">Установлено політикою підприємства.</translation>
 <translation id="4541123282641193691">Не вдалося підтвердити ваш обліковий запис. Повторіть спробу або перезапустіть Chromebook.</translation>
@@ -3778,6 +3780,7 @@
 <translation id="4561893854334016293">Немає нещодавно змінених дозволів</translation>
 <translation id="4562155214028662640">Додати відбиток пальця</translation>
 <translation id="4563210852471260509">Початкова мова введення – китайська</translation>
+<translation id="4563382028841851106">Вилучити з облікового запису</translation>
 <translation id="4563880231729913339">Палець 3</translation>
 <translation id="4564245002465020751">Завершіть налаштування на телефоні</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
@@ -6199,6 +6202,10 @@
 <translation id="6943939122536910181">Відключено від пристрою "<ph name="DEVICE" />"</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="694592694773692225">Переспрямування заблоковано на цій сторінці.</translation>
+<translation id="6947015141909171112">Ви бачите рецепти, підібрані на основі вашої нещодавньої історії пошуку.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
 <translation id="6949434160682548041">Пароль (необов’язково)</translation>
 <translation id="6950627417367801484">Відновити додатки</translation>
 <translation id="6952242901357037157">Ви також можете переглядати тут паролі, збережені у вашому <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
@@ -6994,6 +7001,7 @@
 <translation id="7737115349420013392">Підключення до пристрою "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Цей параметр можна будь-коли змінити в розділі "Налаштування" &gt; "Google Асистент" &gt; "Екранний контекст".</translation>
 <translation id="7737948071472253612">Заборонено використовувати камеру</translation>
+<translation id="77381465218432215">Показувати діакритичні знаки та спеціальні символи</translation>
 <translation id="7740996059027112821">Стандартно</translation>
 <translation id="7741307896921365578">Вмикає бічну панель у веб-переглядачі, щоб користувач мав постійну можливість переходити до списку читання та закладок.</translation>
 <translation id="7742558784808143689">Очистити дані та дозволи для сайту <ph name="SITE_NAME" />, усіх сайтів його групи та встановлених додатків?</translation>
@@ -7784,6 +7792,7 @@
 <translation id="8486666913807228950">Причина: у списку "Де примусово відкривати" виявлено зворотне правило <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">Додаток намагається отримати доступ до камери. Щоб надати його, вимкніть перемикач конфіденційності камери.</translation>
 <translation id="8487678622945914333">Збільшити</translation>
+<translation id="8487699605742506766">Точка доступу</translation>
 <translation id="8489156414266187072">Персональні підказки з'являються лише у вашому обліковому записі</translation>
 <translation id="8490896350101740396">Оновлено такі додатки-термінали: <ph name="UPDATED_APPS" />. Перезавантажте пристрій, щоб завершити оновлення.</translation>
 <translation id="8492685019009920170">Торкніться пальцем сканера відбитків. <ph name="DEVICE_TYPE" /> надійно зберігає ваші дані й нікуди не надсилає їх.</translation>
@@ -8280,6 +8289,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і ще 1 вкладка}one{"<ph name="TAB_TITLE" />" і ще # вкладка}few{"<ph name="TAB_TITLE" />" і ще # вкладки}many{"<ph name="TAB_TITLE" />" і ще # вкладок}other{"<ph name="TAB_TITLE" />" і ще # вкладки}}</translation>
 <translation id="8977811652087512276">Неправильний пароль або пошкоджений файл</translation>
 <translation id="8978154919215542464">Увімкнено – синхронізувати все</translation>
+<translation id="8978670037548431647">Оновити можливості використання телефона як модема</translation>
 <translation id="897939795688207351">На сайті <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Надсилати відгуки</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – аварійне завершення роботи</translation>
@@ -8544,6 +8554,7 @@
 <translation id="935854577147268200">Телефон для Smart Lock змінено. Щоб оновити Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях</translation>
 <translation id="936646668635477464">Камера та мікрофон</translation>
 <translation id="936801553271523408">Дані діагностики системи</translation>
+<translation id="937053962468712792">Вилучити пристрій "<ph name="DEVICE" />" з облікового запису <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>
 <translation id="938568644810664664">Спробуйте запитати "Ok Google, що це за пісня?" або "Ok Google, що в мене на екрані?"</translation>
 <translation id="938623846785894166">Незвичний файл</translation>

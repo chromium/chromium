@@ -1320,7 +1320,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
-<translation id="2301048990069984110">Extender la compatibilidad de las Apps de Chrome en Windows, Mac y Linux</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>
 <translation id="2304009805995145854">A partir de <ph name="PRODUCT_NAME" /> 67, se habilitó el aislamiento de sitios de forma predeterminada en todas las plataformas de escritorio, lo que hace que los sitios se ejecuten en su propio proceso. Un sitio es un esquema más eTLD+1 (p. ej., https://example.com). Si habilitas esta política, no se modificará ese comportamiento; solo evita que los usuarios cambien la configuración (p. ej., inhabilitar el aislamiento de sitios en chrome://flags). A partir de <ph name="PRODUCT_NAME" /> 76, si inhabilitas la política o no la estableces, no se desactivará el aislamiento de sitios, pero los usuarios podrán inhabilitar esta configuración.
 
@@ -6600,10 +6599,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Configuración de mediastream predeterminada</translation>
-<translation id="8103563905615378194">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
-
-      Cuando el dispositivo funciona con CA, el modelo de carga adaptable evalúa si el proceso de carga se debe detener para extender la duración de la batería. Si el modelo de carga adaptable detiene el proceso de carga, la batería se mantendrá en cierto nivel (p. ej., al 80%) y luego cargará el dispositivo hasta el 100% cuando el usuario lo necesite.
-      Si estableces esta política como verdadera o no la configuras, el modelo de carga adaptable se habilitará y podrá detener el proceso de carga para extender la duración de la batería. Si la estableces como falsa, el modelo de carga adaptable no modificará el proceso de carga.</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de clientes para estos sitios</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Te permite establecer si los sitios web están autorizados a verificar que el usuario tenga formas de pago guardadas.
@@ -7448,10 +7443,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8951350807133946005">Configurar el directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
-<translation id="8967125680876068695">Las Apps de Chrome dejaron de estar disponibles en Windows, Mac y Linux.
-      Si se habilita esta política, <ph name="PRODUCT_NAME" /> seguirá permitiendo que se ejecuten las Apps de Chrome en estas plataformas hasta la fecha final en la que se quite su compatibilidad con todas las plataformas (junio de 2022).
-      Si se inhabilita esta política o no se establece, es posible que no se puedan ejecutar las Apps de Chrome (en función del estado del lanzamiento de la desactivación).
-      En cualquier caso, las Apps de Chrome que están instaladas de manera automática por la política seguirán habilitadas.</translation>
 <translation id="8970205333161758602">Elimina el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8976248126101463034">Permitir autenticación gnubby para hosts de acceso remoto</translation>
 <translation id="8976531594979650914">Usar la impresora predeterminada del sistema como predeterminada</translation>

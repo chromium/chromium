@@ -1069,6 +1069,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új Google-dokumentum gyors létrehozásához</translation>
 <translation id="385051799172605136">Vissza</translation>
+<translation id="3853684360927654006">Jelszóerősség-kalkulátor</translation>
 <translation id="3858027520442213535">Dátum és idő frissítése</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3872834068356954457">Természettudományok</translation>
@@ -1679,6 +1680,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5518670652865028077">Művészet és szórakoztatás</translation>
 <translation id="5519516356611866228">Az Ön módosításaival</translation>
 <translation id="5523118979700054094">Az irányelv neve</translation>
+<translation id="5525755241743357906">Fájl másolva vagy áthelyezve</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a kisegítő eszközöknek a ChromeOS beállításaiban való személyre szabásához.</translation>
 <translation id="5528532273234423708">Otthonautomatizálás</translation>
 <translation id="55293785478302737">Éltűzés</translation>
@@ -2932,6 +2934,7 @@ További részletek:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot, ha a Chrome-ot szeretné beállítani a rendszer alapértelmezett böngészőjeként az iOS beállításaiban</translation>
 <translation id="9096679202588811390">Televíziós show-k és műsorok</translation>
 <translation id="9101630580131696064">1. tálca</translation>
+<translation id="9102081333385212048">A másolt vagy áthelyezett fájlokat elküldjük a Google Cloudnak vagy harmadik feleknek elemzésre. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban.</translation>
 <translation id="9103537084693478942">Videós szoftverek</translation>
 <translation id="9103872766612412690">A(z) <ph name="SITE" /> webhely rendes esetben titkosítást alkalmaz az Ön adatainak védelme érdekében. Amikor a Chromium most csatlakozni próbált, a(z) <ph name="SITE" /> webhely szokatlan és helytelen hitelesítési adatokat küldött vissza.Ez olyankor fordulhat elő, amikor egy támadó megpróbálja magát kiadni a(z) <ph name="SITE" /> webhelynek, vagy valamilyen Wi-Fi-bejelentkezési képernyő megszakította a kapcsolatot. Adatai továbbra is biztonságban vannak, mivel a Chromium még azt megelőzően megszakította a kapcsolatot, hogy bármiféle adatcserére sor kerülhetett volna.</translation>
 <translation id="9106062320799175032">Számlázási cím hozzáadása</translation>

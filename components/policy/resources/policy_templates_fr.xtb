@@ -1316,7 +1316,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
-<translation id="2301048990069984110">Étendre la compatibilité pour les applis Chrome sur Windows, Mac et Linux.</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>
 <translation id="2304009805995145854">Depuis <ph name="PRODUCT_NAME" /> 67, l'isolation de sites a été activée par défaut sur toutes les plates-formes de bureau. Chaque site exécute ainsi son propre processus. Un site est un schéma avec eTLD+1 (ex. : https://example.com). Activer cette règle ne change pas ce comportement. Cela empêche seulement les utilisateurs de s'y soustraire (par exemple, via l'option "Désactiver l'isolation de sites" sur chrome://flags). Depuis <ph name="PRODUCT_NAME" /> 76, si cette règle est désactivée ou qu'elle n'est pas configurée, l'isolation de sites n'est pas désactivée, mais les utilisateurs peuvent s'y soustraire.
 
@@ -6562,10 +6561,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
-<translation id="8103563905615378194">Indique si un modèle de recharge adaptative est autorisé pour suspendre le processus de charge et allonger la durée de vie de la batterie.
-
-      Lorsque l'appareil est branché sur le secteur, le modèle de recharge adaptative évalue la nécessité de suspendre le processus de charge pour allonger la durée de vie de la batterie. Si le modèle de recharge adaptative suspend le processus de charge, il maintient la batterie à un certain niveau (par ex. 80 %), puis il la charge à 100 % lorsque l'utilisateur en a besoin.
-      Si cette règle est définie sur "True" ou si elle n'est pas définie, le modèle de recharge adaptative sera activé et autorisé à suspendre le processus de charge pour allonger la durée de vie de la batterie. Si cette règle est configurée sur "False", le modèle de recharge adaptative sera sans effet sur le processus de charge.</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
 <translation id="8114382167597081590">Ne pas appliquer le mode restreint sur YouTube</translation>
 <translation id="8117921351531866504">Permet de définir si les sites Web sont autorisés à vérifier si l'utilisateur a enregistré des modes de paiement.
@@ -7381,10 +7376,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
-<translation id="8967125680876068695">Les applis Chrome sont obsolètes sur Windows, Mac et Linux.
-      Si cette règle est activée, <ph name="PRODUCT_NAME" /> permettra toujours aux applis Chrome de s'exécuter sur ces plates-formes jusqu'en juin 2022, date à laquelle elles ne seront plus compatibles sur aucune plate-forme.
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, il se peut que les applis Chrome ne soient pas autorisées à s'exécuter, selon l'état d'avancement du processus d'abandon.
-      Dans les deux cas, les applis Chrome qui sont installées d'office par cette règle seront toujours autorisées.</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Autoriser l'authentification gnubby pour les hôtes d'accès à distance</translation>
 <translation id="8976531594979650914">Utiliser l'imprimante système par défaut</translation>

@@ -1291,7 +1291,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="2299220924812062390">Lijst met aangezette plug-ins specificeren</translation>
-<translation id="2301048990069984110">Breid de ondersteuning uit voor Chrome-apps op Windows, Mac en Linux.</translation>
 <translation id="2303795211377219696">Automatisch invullen aanzetten voor creditcards</translation>
 <translation id="2304009805995145854">Sinds <ph name="PRODUCT_NAME" /> 67 staat site-isolatie standaard aan op alle desktopplatforms, waardoor elke site zijn eigen proces uitvoert. Een site is een schema plus eTLD+1 (bijvoorbeeld https://example.com). Dit gedrag verandert niet als je dit beleid toepast, maar het verhindert wel dat gebruikers deze functie kunnen uitzetten (bijvoorbeeld door site-isolatie uit te zetten in chrome://flags). Sinds <ph name="PRODUCT_NAME" /> 76 wordt site-isolatie niet uitgezet als je het beleid niet toepast of niet instelt, maar kunnen gebruikers deze functie zelf uitzetten.
 
@@ -6533,10 +6532,6 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 <translation id="8099880303030573137">Inactieve vertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="8101381354936029836">Beleid van atomische groep:</translation>
 <translation id="8102913158860568230">Standaardinstelling voor mediastreams</translation>
-<translation id="8103563905615378194">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
-
-      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat helemaal opgeladen als de gebruiker dat nodig heeft.
-      Als je dit beleid toepast of niet instelt, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid niet toepast, is het model voor aangepast opladen niet van invloed op het oplaadproces.</translation>
 <translation id="8104962233214241919">Clientcertificaten automatisch selecteren voor deze sites</translation>
 <translation id="8114382167597081590">'Beperkte modus' niet afdwingen op YouTube</translation>
 <translation id="8117921351531866504">Hiermee kun je instellen of websites controleren of de gebruiker betaalmethoden heeft opgeslagen.
@@ -7350,10 +7345,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8951350807133946005">Directory voor schijfcache instellen</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
-<translation id="8967125680876068695">Chrome-apps worden beëindigd voor Windows, Mac en Linux.
-      Als je dit beleid aanzet, staat <ph name="PRODUCT_NAME" /> nog steeds toe dat Chrome-apps worden uitgevoerd op deze platforms, tot de einddatum van juni 2022. Op dat moment wordt ondersteuning voor Chrome-apps op alle platforms verwijderd.
-      Als je dit beleid uitzet of niet instelt, kunnen Chrome-apps misschien niet worden uitgevoerd, afhankelijk van de status van de uitrol van de beëindiging.
-      In beide gevallen zijn Chrome-apps die door het beleid afgedwongen worden geïnstalleerd, nog steeds toegestaan.</translation>
 <translation id="8970205333161758602">De prompt <ph name="PRODUCT_FRAME_NAME" /> negeren</translation>
 <translation id="8976248126101463034">Gnubby-verificatie toestaan voor hosts voor externe toegang</translation>
 <translation id="8976531594979650914">Standaardprinter van systeem gebruiken als standaard</translation>

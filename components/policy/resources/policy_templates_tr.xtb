@@ -1297,7 +1297,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="2299220924812062390">Etkinleştirilmiş eklentilerin listesini belirt</translation>
-<translation id="2301048990069984110">Windows, Mac ve Linux'taki Chrome Uygulamaları desteğini artırma.</translation>
 <translation id="2303795211377219696">Kredi kartları için Otomatik Doldurma özelliğini etkinleştirme</translation>
 <translation id="2304009805995145854">Site izolasyonu, 67. <ph name="PRODUCT_NAME" /> sürümünden itibaren tüm masaüstü platformlarda varsayılan olarak etkinleştirilerek her sitenin kendi işleminde çalışmasına neden olur. Site, şema artı eTLD+1 olarak tanımlanır (ör. https://example.com). Bu politikanın Etkin değerine ayarlanması bu davranışı değiştirmez, yalnızca kullanıcıların bu ayarı devre dışı bırakmasını (örneğin, chrome://flags'te Site izolasyonunu devre dışı bırak seçeneğini kullanarak) engeller. 76. <ph name="PRODUCT_NAME" /> sürümünden itibaren, bu politikanın Devre dışı değerine ayarlanması veya ayarlanmadan bırakılması, site izolasyonunu kapatmaz ancak kullanıcılar tarafından devre dışı bırakılmasına izin verir.
 
@@ -6563,10 +6562,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="8099880303030573137">Pil gücüyle çalışırken boşta kalma gecikmesi</translation>
 <translation id="8101381354936029836">Politika atom grubu:</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
-<translation id="8103563905615378194">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin verilip verilmeyeceğini belirtir.
-
-      Uyarlanabilir şarj modeli, cihaz AC gücünde çalışırken pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına gerek olup olmadığını değerlendirir. Uyarlanabilir şarj modeli ile şarj süreci geçici olarak durdurulursa pil belirli bir seviyede (ör. %80) tutulur, daha sonra kullanıcı ihtiyaç duyduğunda cihaz %100'e kadar şarj edilir.
-      Bu politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir şarj modeli etkinleştirilir. Böylece pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına izin verilmiş olur. Bu politika, Yanlış değerine ayarlanırsa uyarlanabilir şarj modeli, şarj sürecini etkilemez.</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
 <translation id="8114382167597081590">YouTube'da Kısıtlı Mod'u zorunlu kılma</translation>
 <translation id="8117921351531866504">Web sitelerinin kullanıcının kaydettiği ödeme yöntemleri olup olmadığını kontrol etmesine izin verilip verilmeyeceğini ayarlamanıza olanak sağlar.
@@ -7376,10 +7371,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8951350807133946005">Disk önbellek dizinini ayarla</translation>
 <translation id="8955719471735800169">Başa dön</translation>
 <translation id="8956312248048980644">Varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.</translation>
-<translation id="8967125680876068695">Chrome Uygulamaları; Windows, Mac ve Linux'ta kullanımdan kaldırıldı.
-      Bu politika etkinleştirilirse <ph name="PRODUCT_NAME" />, Chrome Uygulamaları desteğinin tüm platformlardan kaldırılacağı son tarih olan Haziran 2022'ye kadar Chrome Uygulamalarının bu platformlarda çalıştırılmasına izin verir.
-      Bu politika devre dışı bırakılır veya ayarlanmazsa, kullanımdan kaldırma durumuna bağlı olarak Chrome Uygulamalarının çalışmasına izin verilmeyebilir.
-      Her iki durumda da, politika gereği zorunlu yüklenmiş Chrome Uygulamalarına izin verilmeye devam edilir.</translation>
 <translation id="8970205333161758602"><ph name="PRODUCT_FRAME_NAME" /> reddetme sorusunu engelle</translation>
 <translation id="8976248126101463034">Uzak erişim ana makineleri için gnubby kimlik doğrulamasına izin ver</translation>
 <translation id="8976531594979650914">Varsayılan Olarak Sistem Varsayılan Yazıcısını Kullan</translation>

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2480034874476596812">Tắt theo cách thủ công</translation>
+<translation id="248546197012830854">Thiết bị hiện không có kết nối mạng. Hãy kết nối với mạng Wi-Fi để xem nội dung trợ giúp.</translation>
 <translation id="2491955442992294626">Không thể thử phím khi bạn đang dùng một cửa sổ khác</translation>
 <translation id="2493126929778606526">Những ảnh đẹp nhất của bạn được chọn tự động</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6611280807952151149">Thoát khỏi việc sửa <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
+<translation id="6624819909909965616">Không thể tải tệp lên nếu tệp lớn hơn 10 MB</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6644568396961840069">Không thể lưu tệp. Hãy thử sử dụng một bộ nhớ ngoài khác hoặc thử lại sau.</translation>
 <translation id="6647510110698214773">Thuật toán mã hoá</translation>
@@ -696,6 +698,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
 <translation id="6995564396478647735">Hãy đảm bảo rằng bạn đã bật tính năng Chống ghi</translation>
+<translation id="7005833343836210400">Thiết bị hiện không có kết nối mạng</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
 <translation id="7041549558901442110">Thiết bị chưa được kết nối.</translation>
@@ -809,6 +812,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="8082366717211101304">Không thể phân giải DNS từ các ứng dụng Android</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
+<translation id="8094062939584182041">Cho phép Google gửi email về vấn đề này cho bạn</translation>
 <translation id="8104083085214006426">Bạn đang dùng mạng mở và không an toàn</translation>
 <translation id="8109786307828817014">Tiếp tục kể cả khi có thành phần không hiệu chỉnh được?</translation>
 <translation id="811820734797650957">(Android) Có thể ping cổng vào</translation>

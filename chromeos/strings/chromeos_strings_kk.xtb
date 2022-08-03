@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Түрі</translation>
 <translation id="2461822463642141190">Қазіргі</translation>
 <translation id="2480034874476596812">Қолмен өшіру</translation>
+<translation id="248546197012830854">Құрылғы офлайн режимде. Анықтамалық мазмұнды көру үшін Wi-Fi желісіне қосылыңыз.</translation>
 <translation id="2491955442992294626">Басқа терезе ашық тұрған кезде, пернетақта тексерілмейді.</translation>
 <translation id="2493126929778606526">Сіздің ең әдемі фотосуреттеріңіз автоматты түрде таңдалады</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -660,6 +661,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> құрылғысын жөндеу бетінен шығу</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
+<translation id="6624819909909965616">10 МБ-тан үлкен файлды жүктеп салу мүмкін емес.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6644568396961840069">Файл сақталмады. Басқа сыртқы жадты қосып көріңіз немесе әрекетті кейінірек қайталаңыз.</translation>
 <translation id="6647510110698214773">Шифрлау алгоритмі</translation>
@@ -695,6 +697,7 @@
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
 <translation id="6995564396478647735">Write Protect функциясы қосулы екеніне көз жеткізіңіз</translation>
+<translation id="7005833343836210400">Құрылғы офлайн режимде.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Құрылғы жалғанбаған.</translation>
@@ -808,6 +811,7 @@
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="8082366717211101304">Android қолданбаларынан DNS-ті анықтау мүмкін емес.</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
+<translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
 <translation id="8109786307828817014">Калибрленбеген құрамдастармен жалғастыра бересіз бе?</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>

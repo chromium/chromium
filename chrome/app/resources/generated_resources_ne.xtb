@@ -892,6 +892,7 @@
 <translation id="1829129547161959350">पेन्गुइन</translation>
 <translation id="1829192082282182671">जुम &amp;घटाउनुहोस्</translation>
 <translation id="1830550083491357902">साइन इन भएको छैन</translation>
+<translation id="1831848493690504725">हामीले हालको नेटवर्कमार्फत Google का सर्भरमा कनेक्ट गर्न सकेनौँ। अर्कै नेटवर्क छनौट गरी हेर्नुहोस् वा आफ्नो नेटवर्कका सेटिङ वा प्रोक्सीसम्बन्धी सेटिङको जाँच गर्नुहोस् (तपाईं प्रोक्सी प्रयोग गर्दै हुनुहुन्छ भने)।</translation>
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
 <translation id="1832511806131704864">फोन परिवर्तन अद्यावधिक गरियो</translation>
 <translation id="1832848789136765277">तपाईं आफूले सिंक गरेका डेटा जुनसुकै बेला हेर्न तथा प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -2191,6 +2192,7 @@
 <translation id="3021065318976393105">ब्याट्री प्रयोग भइरहेका बेला</translation>
 <translation id="3021066826692793094">पुतली</translation>
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;हेर्नुहोस्</translation>
+<translation id="3022361196600037287">यो Chromebook बाट <ph name="DEVICE" /> हटाइने छ र उक्त डिभाइस अब <ph name="PRIMARY_EMAIL" /> मा सेभ गरिने छैन।</translation>
 <translation id="3022978424994383087">मैले बुझिनँ।</translation>
 <translation id="3023464535986383522">सेलेक्ट टु स्पिक सुविधा</translation>
 <translation id="3024374909719388945">24-घण्टे घडी प्रयोग गर्नुहोस</translation>
@@ -3728,6 +3730,7 @@
 <translation id="4535127706710932914">डिफल्ट प्रोफाइल</translation>
 <translation id="4535767533210902251">तपाईंको किबोर्डको दायाँतिर सबैभन्दा माथि रहेको कुञ्जी फिंगरप्रिन्ट सेन्सर हो। यसलाई कुनै एक औँलाले हल्का छुनुहोस्।</translation>
 <translation id="4536140153723794651">कुकीहरू सधैँ प्रयोग गर्न पाउने साइटहरू</translation>
+<translation id="4536769240747010177">टेदरिङसम्बन्धी सुविधाहरू:</translation>
 <translation id="4538417792467843292">शब्द मेट्नुहोस्</translation>
 <translation id="4538792345715658285">उद्योग नीतिद्वारा स्थपित।</translation>
 <translation id="4541123282641193691">तपाईंको खाता पुष्टि गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
@@ -3755,6 +3758,7 @@
 <translation id="4561893854334016293">हालै परिवर्तन गरिएको कुनै पनि अनुमति छैन</translation>
 <translation id="4562155214028662640">फिंगरप्रिन्ट हाल्नुहोस्</translation>
 <translation id="4563210852471260509">प्रारम्भिक आगत भाषा चिनियाँ हो</translation>
+<translation id="4563382028841851106">खाताबाट हटाउनुहोस्</translation>
 <translation id="4563880231729913339">औँला ३</translation>
 <translation id="4564245002465020751">आफ्नो फोनमा सेटअप गर्ने कार्य पूरा गर्नुहोस्</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
@@ -4731,6 +4735,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> निम्न कुराका लागि अनुमति चाहन्छ</translation>
 <translation id="5534304873398226603">तस्बिर वा भिडियो खारेज गर्नुहोस्</translation>
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
+<translation id="5539070192556911367">Google का सर्भरमा कनेक्ट गर्न सकिएन</translation>
 <translation id="5539221284352502426">तपाईंले प्रविष्ट गर्नुभएको पासवर्ड सर्भरद्वारा अस्वीकार गरियो। यसका सम्भावित कारणहरू निम्न हुन सक्छन्: पासवर्ड निकै छोटो छ। पासवर्डमा अनिवार्य रूपमा सङ्ख्या वा चिन्हहरू समावेश हुनु पर्छ। पासवर्ड अनिवार्य रूपमा अघिल्ला पासवर्डहरूभन्दा फरक हुनु पर्छ।</translation>
 <translation id="5541694225089836610">तपाईंका प्रशासकले कारबाहीसम्बन्धी सुविधा असक्षम पार्नुभएको छ</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
@@ -4794,6 +4799,7 @@
 <translation id="5585912436068747822">फर्म्याटिङ असफल भयो</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">एपहरू लोड गर्दै...</translation>
+<translation id="5590418976913374224">डिभाइस अन हुँदा ध्वनि बजाइयोस्</translation>
 <translation id="5592595402373377407">अझै पर्याप्त डाटा उपलब्ध छैन।</translation>
 <translation id="5595307023264033512">साइटहरूले प्रयोग गरेको कुल भण्डारण: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">ठेगाना सम्पादन गर्नुहोस्</translation>
@@ -6170,6 +6176,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> बाट डिस्कनेक्ट गरिएको छ</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="694592694773692225">यो पृष्ठमा रिडिरेक्ट गर्ने सेवामाथि रोक लगाइयो।</translation>
+<translation id="6947015141909171112">तपाईंले हालसालै गरेका पाकविधिसम्बन्धी खोजका आधारमा तपाईंलाई यी पाकविधि देखाइएको हो।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईं कार्ड मेनुमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="6949434160682548041">पासवर्ड (ऐच्छिक)</translation>
 <translation id="6950627417367801484">एपहरू पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="6952242901357037157">तपाईं यहाँ आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" />मा सुरक्षित गरिएका पासवर्डहरू पनि देखाउन सक्नुहुन्छ</translation>
@@ -6337,6 +6347,7 @@
 <translation id="7102687220333134671">स्वतःअद्यावधिकहरू सक्रिय गरिएका छन्</translation>
 <translation id="7102832101143475489">यो अनुरोधको समयावधि सकियो</translation>
 <translation id="710640343305609397">नेटवर्कका सेटिङहरू खोल्नुहोस्</translation>
+<translation id="7107609441453408294">सबै स्पिकरहरूबाट उही अडियो प्ले गर्नुहोस्</translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7108668606237948702">प्रविष्टि गर्नुहोस्</translation>
 <translation id="7108933416628942903">अब लक गर्नुहोस्</translation>
@@ -6567,6 +6578,7 @@
 <translation id="7364745943115323529">Cast...</translation>
 <translation id="7364796246159120393">फाइल छान्नुहोस्</translation>
 <translation id="7365076891350562061">मनिटरको आकार</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - पिन गरिएको</translation>
 <translation id="7366316827772164604">नजिकैका डिभाइसहरू स्क्यान गरिँदै छ…</translation>
 <translation id="7366415735885268578">कुनै साइट थप्नुहोस्</translation>
 <translation id="7366909168761621528">ब्राउजिङको डेटा</translation>
@@ -6963,6 +6975,7 @@
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउँदै ...</translation>
 <translation id="7737846262459425222">तपाईं सेटिङ &gt; Google सहायक &gt; स्क्रिन कन्टेक्स्ट नामक खण्डमा गएर जुनसुकै बेला यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
 <translation id="7737948071472253612">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
+<translation id="77381465218432215">एक्सेन्ट चिन्ह तथा विशेष वर्णहरू देखाइऊन्</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="7741307896921365578">तपाईंले पछि पढ्न सेभ गरेका वेबपेजका सूची र बुकमार्कहरू जुनसुकै बेला सजिलैसँग भेट्टाउन सकियोस् भन्नाका लागि ब्राउजरमा साइड प्यानल सक्षम पार्छ।</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" />, यसअन्तर्गत रहेका सबै साइट र इन्स्टल गरिएका सम्बन्धित वेब एपका साइट डेटा मेटाउनुका साथै ती साइट र एपलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
@@ -7752,6 +7765,7 @@
 <translation id="8486666913807228950">कारण: <ph name="REVERT_RULE" /> इन्भर्टेड रुल "जे भए पनि यो ब्राउजरमा खोलियोस्" को सूचीमा भेटिएको थियो।</translation>
 <translation id="848666842773560761">कुनै एपले क्यामेरा प्रयोग गर्न खोज्दै छ। उक्त एपलाई क्यामेरा प्रयोग गर्ने अनुमति दिन क्यामेराको गोपनीयता स्विच अफ गर्नुहोस्।</translation>
 <translation id="8487678622945914333">जुम बढाउनुहोस्</translation>
+<translation id="8487699605742506766">हटस्पट</translation>
 <translation id="8489156414266187072">व्यक्तिगत सिफारिस तपाईंको खातामा मात्र देखाइन्छन्</translation>
 <translation id="8490896350101740396">निम्न kisok एपहरू " <ph name="UPDATED_APPS" /> "अद्यावधिक गरिएका छन्। अद्यावधिक प्रक्रिया पूरा गर्न यन्त्रलाई रिबुट गर्नुहोस्।</translation>
 <translation id="8492685019009920170">औँलाले फिंगरप्रिन्ट सेन्सरमा छुनुहोस्। तपाईंको जानकारी सुरक्षित रूपमा भण्डारण गरिन्छ र यो जानकारी तपाईंको <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
@@ -8245,6 +8259,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" र अरू १ ट्याब}other{"<ph name="TAB_TITLE" />" र अरू # ट्याबहरू}}</translation>
 <translation id="8977811652087512276">गलत पासवर्ड वा बिग्रिएको फाइल</translation>
 <translation id="8978154919215542464">सक्रिय - सबै सिंक गर्नुहोस्</translation>
+<translation id="8978670037548431647">टेदरिङसम्बन्धी सुविधाहरू रिफ्रेस गर्नुहोस्</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> मा</translation>
 <translation id="8980345560318123814">प्रतिक्रियासम्बन्धी रिपोर्टहरू</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्र्याश भएको छ</translation>
@@ -8509,6 +8524,7 @@
 <translation id="935854577147268200">Smart Lock रहेको फोन परिवर्तन गरियो। Smart Lock अद्यावधिक गर्न आफ्नो पासवर्ड प्रविष्टि गर्नुहोस्। अर्को पटकदेखि, तपाईंको फोनले तपाईंको <ph name="DEVICE_TYPE" />अनलक गर्ने छ। तपाईं सेटिङहरूमा गई Smart Lock निष्क्रिय पार्न सक्नुहुन्छ</translation>
 <translation id="936646668635477464">क्यामेरा र माइक्रोफोन</translation>
 <translation id="936801553271523408">प्रणाली विकर्ण लगत</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" /> बाट <ph name="DEVICE" /> हटाउने हो?</translation>
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
 <translation id="938568644810664664">“Ok Google, यो कुन गीत हो?” वा “Ok Google, मेरो स्क्रिनमा के छ?” भनी हेर्नुहोस्।</translation>
 <translation id="938623846785894166">असामान्य फाइल</translation>

@@ -1284,7 +1284,6 @@
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="2299220924812062390">指定停用的外掛程式清單</translation>
-<translation id="2301048990069984110">延長在 Windows、Mac 和 Linux 上支援 Chrome 應用程式的時間。</translation>
 <translation id="2303795211377219696">啟用信用卡的自動填入功能</translation>
 <translation id="2304009805995145854">自 <ph name="PRODUCT_NAME" /> 第 67 版起，系統預設已在所有電腦平台上啟用網站隔離功能，因此每個網站都會以獨立程序執行。網站是指加上 eTLD+1 的配置 (例如 https://example.com)。將這項政策設為 Enabled 並不會改變這項行為，只會禁止使用者停用這項設定 (例如在 chrome://flags 中使用「停用網站隔離」功能)。自 <ph name="PRODUCT_NAME" /> 第 76 版起，如果將這項政策設為 Disabled 或不設定，系統並不會關閉網站隔離功能，只會開放使用者停用這項設定。
 
@@ -6469,10 +6468,6 @@
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
-<translation id="8103563905615378194">指定是否允許自動調節充電模式調整充電速度，進而延長電池壽命。
-
-      裝置連接 AC 電源時，自動調節充電模式會評估是否要調整充電速度以延長電池壽命。如果自動調節充電模式調整了充電速度，電池電量會固定維持在 80%，並在使用者需要時充飽至 100%。
-      如果將這項政策設為 True 或不設定，系統會啟用自動調節充電模式，並允許調整充電速度以延長電池壽命。如果將這項政策設為 False，則自動調節充電模式不會調整充電速度。</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
 <translation id="8114382167597081590">不強制執行 YouTube 嚴格篩選模式</translation>
 <translation id="8117921351531866504">你可以設定網站是否能檢查使用者有沒有已儲存的付款方式。
@@ -7277,10 +7272,6 @@
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
-<translation id="8967125680876068695">Chrome 應用程式已在 Windows、Mac 和 Linux 上遭到淘汰。
-      如果啟用這項政策，<ph name="PRODUCT_NAME" /> 會繼續允許 Chrome 應用程式在這些平台上執行，直到 2022 年 6 月對所有平台停止支援 Chrome 應用程式為止。
-      如果停用或不設定這項政策，系統可能會不允許執行 Chrome 應用程式，具體做法取決於淘汰實施狀態。
-      不過，無論是上述哪種情況，系統都將繼續允許透過政策強制安裝的 Chrome 應用程式。</translation>
 <translation id="8970205333161758602">隱藏停止支援 <ph name="PRODUCT_FRAME_NAME" />的提示</translation>
 <translation id="8976248126101463034">允許針對遠端存取主機進行 gnubby 驗證機制</translation>
 <translation id="8976531594979650914">使用系統預設印表機做為預設值</translation>

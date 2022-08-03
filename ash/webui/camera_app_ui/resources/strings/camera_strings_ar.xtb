@@ -72,7 +72,6 @@
 <translation id="3838931309141338733">مسح الرمز الشريطي ضوئيًا</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ميغا بكسل</translation>
-<translation id="4096701159033358951">جارٍ تنزيل ميزة المسح الضوئي للمستندات</translation>
 <translation id="4118525110028899586">إيقاف التسجيل مؤقتًا</translation>
 <translation id="4121305183798804752">تم رصد مستند.</translation>
 <translation id="414641094616694804">لا يمكن تغيير درجة الدقة في هذه الكاميرا.</translation>
@@ -94,7 +93,6 @@
 <translation id="5057360777601936059">الكاميرا غير مُتاحة حاليًا.
         يُرجى التحقُّق من اتصال الكاميرا بشكلٍ صحيح.</translation>
 <translation id="5163387177077603948">جارٍ نقل زاوية المستند في اتجاه اليمين</translation>
-<translation id="520537883758714667">تتوفّر الآن ميزة مسح المستندات ضوئيًا.</translation>
 <translation id="5235304959032763950">16 إلى 9</translation>
 <translation id="5266635337630551423">الزاوية العلوية اليسرى للمستند</translation>
 <translation id="5317780077021120954">حفظ</translation>

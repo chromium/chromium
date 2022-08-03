@@ -894,6 +894,7 @@
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">ログインしていません</translation>
+<translation id="1831848493690504725">接続されたネットワーク経由で Google に接続できません。別のネットワークを選択するか、ネットワーク設定またはプロキシ設定（プロキシを使用している場合）を確認してください。</translation>
 <translation id="1832459821645506983">同意する</translation>
 <translation id="1832511806131704864">スマートフォンの変更が反映されました</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
@@ -2187,6 +2188,7 @@
 <translation id="3021065318976393105">バッテリー駆動時</translation>
 <translation id="3021066826692793094">蝶</translation>
 <translation id="3021678814754966447">フレームのソースを表示(&amp;V)</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> がこの Chromebook から削除され、<ph name="PRIMARY_EMAIL" /> には保存されません。</translation>
 <translation id="3022978424994383087">聞き取れませんでした。</translation>
 <translation id="3023464535986383522">選択して読み上げ</translation>
 <translation id="3024374909719388945">24 時間形式を使用する</translation>
@@ -3720,6 +3722,7 @@
 <translation id="4535127706710932914">デフォルトのプロフィール</translation>
 <translation id="4535767533210902251">指紋認証センサーはキーボードの右上のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="4536140153723794651">常に Cookie を使用できるサイト</translation>
+<translation id="4536769240747010177">テザリング機能:</translation>
 <translation id="4538417792467843292">1 語削除する</translation>
 <translation id="4538792345715658285">会社のポリシーによってインストール済み。</translation>
 <translation id="4541123282641193691">アカウントを確認できませんでした。もう一度お試しになるか、Chromebook を再起動してください。</translation>
@@ -3747,6 +3750,7 @@
 <translation id="4561893854334016293">最近変更した権限はありません</translation>
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
+<translation id="4563382028841851106">アカウントから削除</translation>
 <translation id="4563880231729913339">指 3</translation>
 <translation id="4564245002465020751">スマートフォンで設定を完了</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -4720,6 +4724,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> が次の許可を求めています</translation>
 <translation id="5534304873398226603">写真または動画を破棄</translation>
 <translation id="5537725057119320332">キャスト</translation>
+<translation id="5539070192556911367">Google に接続できません</translation>
 <translation id="5539221284352502426">入力したパスワードはサーバーによって拒否されました。考えられる原因は次のとおりです。パスワードが短すぎる。パスワードに数字または記号が含まれていない。以前と同じパスワードを指定した。</translation>
 <translation id="5541694225089836610">操作が管理者によって無効にされています</translation>
 <translation id="5542132724887566711">プロフィール</translation>
@@ -4783,6 +4788,7 @@
 <translation id="5585912436068747822">フォーマット エラー</translation>
 <translation id="5588033542900357244">（<ph name="RATING_COUNT" />）</translation>
 <translation id="558918721941304263">アプリを読み込んでいます...</translation>
+<translation id="5590418976913374224">デバイスの起動時に音を鳴らす</translation>
 <translation id="5592595402373377407">利用可能なデータがまだ十分にありません。</translation>
 <translation id="5595307023264033512">サイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">住所の編集</translation>
@@ -6155,6 +6161,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> との接続を解除しました</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="694592694773692225">このページでリダイレクトがブロックされました。</translation>
+<translation id="6947015141909171112">最近の検索アクティビティに基づくレシピが表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="6949434160682548041">パスワード（任意）</translation>
 <translation id="6950627417367801484">アプリを復元</translation>
 <translation id="6952242901357037157"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードもここに表示できます</translation>
@@ -6322,6 +6332,7 @@
 <translation id="7102687220333134671">自動更新が有効です</translation>
 <translation id="7102832101143475489">リクエストがタイムアウトになりました</translation>
 <translation id="710640343305609397">ネットワーク設定を開く</translation>
+<translation id="7107609441453408294">すべてのスピーカーで同じオーディオを再生する</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7108933416628942903">今すぐロック</translation>
@@ -6551,6 +6562,7 @@
 <translation id="7364745943115323529">キャスト...</translation>
 <translation id="7364796246159120393">ファイルを選択</translation>
 <translation id="7365076891350562061">モニターサイズ</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - 固定済み</translation>
 <translation id="7366316827772164604">付近のデバイスをスキャンしています…</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7366909168761621528">閲覧履歴データ</translation>
@@ -6947,6 +6959,7 @@
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7737846262459425222">この設定は、[設定] &gt; [Google アシスタント] &gt; [画面のコンテキスト] でいつでも変更できます。</translation>
 <translation id="7737948071472253612">カメラの使用を許可しないサイト</translation>
+<translation id="77381465218432215">アクセント記号と特殊文字を表示</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7741307896921365578">ブラウザレベルのサイドパネルを有効にすると、リーディング リストやブックマークにいつでもすばやくアクセスできます。</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびインストール済みのアプリを削除しますか？</translation>
@@ -7735,6 +7748,7 @@
 <translation id="8486666913807228950">理由: 反転ルール <ph name="REVERT_RULE" /> が「次で強制的に開く」のリストに含まれています。</translation>
 <translation id="848666842773560761">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="8487678622945914333">拡大</translation>
+<translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
 <translation id="8492685019009920170">指紋認証センサーに指を置いてください。お客様のデータは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
@@ -8228,6 +8242,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
 <translation id="8977811652087512276">パスワードが間違っているか、ファイルが壊れています</translation>
 <translation id="8978154919215542464">オン - すべて同期</translation>
+<translation id="8978670037548431647">テザリング機能を更新</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">フィードバック レポート</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - クラッシュしました</translation>
@@ -8492,6 +8507,7 @@
 <translation id="935854577147268200">Smart Lock に使用するスマートフォンが変更されました。パスワードを入力して Smart Lock を更新すると、次回から、新しいスマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="936646668635477464">カメラとマイク</translation>
 <translation id="936801553271523408">システム診断データ</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>
 <translation id="938568644810664664">「OK Google, この曲はなに？」、「OK Google, 画面になにが表示されている？」のようにきいてみましょう。</translation>
 <translation id="938623846785894166">一般的ではないファイル</translation>

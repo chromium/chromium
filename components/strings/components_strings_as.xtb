@@ -1068,6 +1068,7 @@
 <translation id="3835233591525155343">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Doc ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
+<translation id="3853684360927654006">পাছৱৰ্ডৰ শক্তি জোখা কেলকুলেটৰ</translation>
 <translation id="3858027520442213535">তাৰিখ আৰু সময় আপডে’ট কৰক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
@@ -1677,6 +1678,7 @@
 <translation id="5518670652865028077">কলা আৰু মনোৰঞ্জন</translation>
 <translation id="5519516356611866228">আপুনি কৰা সালসলনিসমূহৰ সৈতে</translation>
 <translation id="5523118979700054094">নীতিৰ নাম</translation>
+<translation id="5525755241743357906">ফাইলটো প্ৰতিলিপি কৰা অথবা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOSৰ ছেটিঙত আপোনাৰ সাধ্য সুবিধাৰ সঁজুলি ব্যক্তিগতকৰণ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="5528532273234423708">হ’ম অট’মেশ্বন</translation>
 <translation id="55293785478302737">কাষত চিলাওক</translation>
@@ -2928,6 +2930,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="9096679202588811390">টিভি শ্ব’ আৰু প্ৰ’গ্ৰাম</translation>
 <translation id="9101630580131696064">ট্ৰে’ ১</translation>
+<translation id="9102081333385212048">আপুনি প্ৰতিলিপি কৰা অথবা স্থানান্তৰ কৰা ফাইলসমূহ বিশ্লেষণৰ বাবে Google Cloud অথবা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইসমূহ সংবেদনশীল ডেটা অথবা মালৱেৰৰ বাবে স্কেন কৰা হ’ব পাৰে।</translation>
 <translation id="9103537084693478942">ভিডিঅ’ ছফ্টৱেৰ</translation>
 <translation id="9103872766612412690">আপোনাৰ তথ্য সুৰক্ষিত কৰিবলৈ <ph name="SITE" />এ সচৰাচৰতে এনক্ৰিপশ্বন ব্যৱহাৰ কৰে৷ Chromiumএ <ph name="SITE" />ৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰোঁতে ৱেবছাইটটোৱে সচৰাচৰতে ব্যৱহাৰ নোহোৱা আৰু অশুদ্ধ ক্ৰেডেনশ্বিয়েল পঠিয়াইছে৷ কোনো আক্ৰমণকাৰীয়ে <ph name="SITE" />ৰ ভেশ ধৰিলে বা কোনো ৱাই-ফাই ছাইন ইন স্ক্ৰীণে সংযোগত বাধা প্ৰদান কৰিলে এনে হ’ব পাৰে৷ আপোনাৰ ডেটা এতিয়াও সুৰক্ষিত হৈ আছে কিয়নো Chromiumএ কোনো ডেটা আদান-প্ৰদান হোৱাৰ পূৰ্বেই সংযোগ বন্ধ কৰিছে৷</translation>
 <translation id="9106062320799175032">বিলিঙৰ ঠিকনা যোগ কৰক</translation>

@@ -2194,6 +2194,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3021065318976393105">Durante l'utilizzo della batteria</translation>
 <translation id="3021066826692793094">Farfalla</translation>
 <translation id="3021678814754966447">&amp;Visualizza sorgente frame</translation>
+<translation id="3022361196600037287">Il dispositivo <ph name="DEVICE" /> verrà rimosso da questo Chromebook e non verrà salvato in <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Non ho capito.</translation>
 <translation id="3023464535986383522">Seleziona per ascoltare</translation>
 <translation id="3024374909719388945">Usa orologio 24 ore</translation>
@@ -3732,6 +3733,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4535127706710932914">Profilo predefinito</translation>
 <translation id="4535767533210902251">Il sensore di impronte digitali è il tasto in alto a destra della tastiera. Toccalo leggermente con un dito.</translation>
 <translation id="4536140153723794651">Siti che possono usare sempre i cookie</translation>
+<translation id="4536769240747010177">Funzionalità di tethering:</translation>
 <translation id="4538417792467843292">Elimina parola</translation>
 <translation id="4538792345715658285">Installata per norma aziendale.</translation>
 <translation id="4541123282641193691">Impossibile verificare l'account. Riprova o riavvia il tuo Chromebook.</translation>
@@ -3759,6 +3761,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4561893854334016293">Nessuna autorizzazione modificata di recente</translation>
 <translation id="4562155214028662640">Aggiungi impronta digitale</translation>
 <translation id="4563210852471260509">La lingua di input iniziale è il cinese</translation>
+<translation id="4563382028841851106">Rimuovi dall'account</translation>
 <translation id="4563880231729913339">Dito 3</translation>
 <translation id="4564245002465020751">Completa la configurazione sul telefono</translation>
 <translation id="4565377596337484307">Nascondi password</translation>
@@ -5372,7 +5375,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6163363155248589649">&amp;Normale</translation>
 <translation id="6163376401832887457">Impostazioni Kerberos</translation>
 <translation id="6163522313638838258">Espandi tutto...</translation>
-<translation id="6165508094623778733">Ulteriori informazioni</translation>
+<translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6166185671393271715">Importa le password in Chrome</translation>
 <translation id="6169040057125497443">Controlla il microfono.</translation>
 <translation id="6169967265765719844">È possibile gestire le autorizzazioni per app e giochi installati tramite Steam nelle <ph name="LINK_BEGIN" />impostazioni dell'app Steam<ph name="LINK_END" />.</translation>
@@ -6174,6 +6177,10 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6943939122536910181">Disconnesso da <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="694592694773692225">Reindirizzamento bloccato in questa pagina.</translation>
+<translation id="6947015141909171112">Le ricette ti vengono mostrate in base alla tua attività di ricerca di ricette recente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="6949434160682548041">Password (facoltativa)</translation>
 <translation id="6950627417367801484">Ripristina le app</translation>
 <translation id="6952242901357037157">Puoi visualizzare le password del tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /> anche qui</translation>
@@ -6969,6 +6976,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7737115349420013392">Accoppiamento con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; Assistente Google &gt; Contesto dello schermo.</translation>
 <translation id="7737948071472253612">Non possono utilizzare la videocamera</translation>
+<translation id="77381465218432215">Mostra lettere accentate e caratteri speciali</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Attiva un riquadro laterale a livello di browser che offre un modo utile e comodo di accedere ai contenuti in Elenco di lettura e Segnalibri.</translation>
 <translation id="7742558784808143689">Cancellare le autorizzazioni e i dati dei siti per <ph name="SITE_NAME" />, tutti i siti al di sotto e le app installate?</translation>
@@ -7719,7 +7727,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8440630305826533614">App Linux</translation>
 <translation id="844063558976952706">Sempre su questo sito</translation>
 <translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
-<translation id="8446884382197647889">Ulteriori informazioni</translation>
+<translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>
 <translation id="844850004779619592">Nessun comando trovato</translation>
 <translation id="8448729345478502352">Ingrandisci o rimpicciolisci gli elementi sullo schermo</translation>
@@ -7759,6 +7767,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8486666913807228950">Motivo: la regola invertita <ph name="REVERT_RULE" /> è stata rilevata nell'elenco "Forza l'apertura in".</translation>
 <translation id="848666842773560761">Un'app sta tentando di accedere alla videocamera. Disattiva l'opzione Privacy videocamera per consentire l'accesso.</translation>
 <translation id="8487678622945914333">Ingrandisci</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">I suggerimenti personali vengono mostrati soltanto nel tuo account</translation>
 <translation id="8490896350101740396">Le seguenti app kiosk "<ph name="UPDATED_APPS" />" sono state aggiornate. Riavvia il dispositivo per completare la procedura di aggiornamento.</translation>
 <translation id="8492685019009920170">Tocca il sensore di impronte digitali con il dito. I tuoi dati vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo dal tuo <ph name="DEVICE_TYPE" />.</translation>
@@ -8032,7 +8041,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8757203080302669031">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth.</translation>
 <translation id="8757368836647541092">Utente <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8758418656925882523">Attiva dettatura (parla per digitare)</translation>
-<translation id="8759753423332885148">Ulteriori informazioni.</translation>
+<translation id="8759753423332885148">Scopri di più.</translation>
 <translation id="8761945298804995673">Questo utente esiste già</translation>
 <translation id="8762886931014513155">Il dispositivo <ph name="DEVICE_TYPE" /> richiede un aggiornamento</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -8252,6 +8261,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 altra scheda}other{"<ph name="TAB_TITLE" />" e altre # schede}}</translation>
 <translation id="8977811652087512276">Password errata o file danneggiato</translation>
 <translation id="8978154919215542464">On: sincronizza tutto</translation>
+<translation id="8978670037548431647">Aggiorna funzionalità di tethering</translation>
 <translation id="897939795688207351">Su <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Report di feedback</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Bloccata</translation>
@@ -8516,6 +8526,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="935854577147268200">Telefono con Smart Lock cambiato. Inserisci la password per aggiornare Smart Lock. La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni</translation>
 <translation id="936646668635477464">Videocamera e microfono</translation>
 <translation id="936801553271523408">Dati diagnostica di sistema</translation>
+<translation id="937053962468712792">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Ripara estensione</translation>
 <translation id="938568644810664664">Prova "Hey Google, qual è il titolo di questa canzone?" oppure "Hey Google, cosa c'è sul mio schermo?"</translation>
 <translation id="938623846785894166">File insolito</translation>

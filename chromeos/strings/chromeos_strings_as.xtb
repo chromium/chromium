@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
 <translation id="2480034874476596812">মেনুৱেলী অফ কৰক</translation>
+<translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
 <translation id="2491955442992294626">আপুনি আন এখন ৱিণ্ড’ ব্যৱহাৰ কৰি থাকোঁতে কীসমূহ পৰীক্ষা কৰা নহয়</translation>
 <translation id="2493126929778606526">স্বয়ংক্ৰিয়ভাৱে বাছনি কৰা আপোনাৰ শ্ৰেষ্ঠ ফট’সমূহ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> মেৰামতি কৰাৰ পৰা বাহিৰ হওক</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
+<translation id="6624819909909965616">১০ এমবিতকৈ ডাঙৰ ফাইল আপল’ড কৰিব নোৱাৰি</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6644568396961840069">ফাইলটো ছেভ কৰিব পৰা নগ’ল। বেলেগ এটা বাহ্যিক ষ্ট’ৰেজত প্লাগ ইন কৰি চাওক অথবা পাছত পুনৰ চেষ্টা কাৰক।</translation>
 <translation id="6647510110698214773">এনক্ৰিপশ্বনৰ এলগ’ৰিডম</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="6995564396478647735">ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো অন হৈ থকাটো নিশ্চিত কৰক</translation>
+<translation id="7005833343836210400">ডিভাইচটো অফলাইন হৈ আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
 <translation id="7041549558901442110">ডিভাইচটো সংযোগ কৰা হোৱা নাই।</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="8082366717211101304">Android এপৰ পৰা DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
+<translation id="8094062939584182041">Googleক এই সমস্যাটোৰ বিষয়ে আপোনালৈ ইমেইল কৰিবলৈ দিয়ক</translation>
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
 <translation id="8109786307828817014">বিফল হোৱা কেলিব্ৰে’শ্বনৰ সৈতে আগবাঢ়িবনে?</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>

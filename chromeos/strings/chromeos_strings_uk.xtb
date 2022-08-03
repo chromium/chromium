@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="2480034874476596812">Вимкнути вручну</translation>
+<translation id="248546197012830854">Пристрій не підключено до Інтернету. Щоб переглянути довідковий контент, підключіться до мережі Wi-Fi.</translation>
 <translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">Закрити сторінку ремонту пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Виконується</translation>
 <translation id="6620487321149975369">Завдання друку відображатимуться в історії, доки ви не вилучите їх вручну</translation>
+<translation id="6624819909909965616">Не можна завантажити файл, розмір якого перевищує 10 МБ</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6644568396961840069">Не вдалося зберегти файл. Підключіть інший зовнішній носій або спробуйте пізніше.</translation>
 <translation id="6647510110698214773">Алгоритм шифрування</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
 <translation id="6995564396478647735">Переконайтеся, що захист від запису ввімкнено</translation>
+<translation id="7005833343836210400">Пристрій не підключено до Інтернету</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Пристрій не підключено.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
+<translation id="8094062939584182041">Дозволити Google надсилати вам електронні листи щодо цієї проблеми</translation>
 <translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
 <translation id="8109786307828817014">Продовжити з невдалим калібруванням?</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>

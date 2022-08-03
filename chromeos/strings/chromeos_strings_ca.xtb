@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipus</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactiva manualment</translation>
+<translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
 <translation id="2491955442992294626">Les tecles no es proven quan fas servir una altra finestra</translation>
 <translation id="2493126929778606526">Les teves millors fotos, seleccionades automàticament</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
@@ -661,6 +662,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6611280807952151149">Surt de la reparació del <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
+<translation id="6624819909909965616">No es pot penjar un fitxer de més de 10 MB</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6644568396961840069">El fitxer no s'ha pogut desar. Prova de connectar-lo a un altre emmagatzematge extern o torna-ho a provar més tard.</translation>
 <translation id="6647510110698214773">Algoritme d'encriptació</translation>
@@ -696,6 +698,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="6995564396478647735">Assegura't que la protecció contra l'escriptura estigui activada</translation>
+<translation id="7005833343836210400">El dispositiu no té connexió</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositiu no està connectat.</translation>
@@ -809,6 +812,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
+<translation id="8094062939584182041">Permet que Google t'enviï un correu electrònic sobre aquest problema</translation>
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
 <translation id="8109786307828817014">Vols continuar amb les calibracions fallides?</translation>
 <translation id="811820734797650957">(Android) Es pot fer ping a la passarel·la</translation>

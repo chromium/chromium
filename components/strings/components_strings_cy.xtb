@@ -1071,6 +1071,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3835233591525155343">Eich defnydd dyfais</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i greu Google Doc yn gyflym</translation>
 <translation id="385051799172605136">Nôl</translation>
+<translation id="3853684360927654006">Cyfrifiannell Cryfder Cyfrinair</translation>
 <translation id="3858027520442213535">Diweddaru'r dyddiad a'r amser</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3872834068356954457">Gwyddoniaeth</translation>
@@ -1681,6 +1682,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5518670652865028077">Y celfyddydau ac adloniant</translation>
 <translation id="5519516356611866228">Gyda'ch newidiadau</translation>
 <translation id="5523118979700054094">Enw'r polisi</translation>
+<translation id="5525755241743357906">Mae'r ffeil yn cael ei chopïo neu ei symud</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="5528532273234423708">Awtomatiaeth cartref</translation>
 <translation id="55293785478302737">Pwyth ymyl</translation>
@@ -2933,6 +2935,7 @@ Manylion ychwanegol:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i osod Chrome fel porwr diofyn y system yng ngosodiadau iOS</translation>
 <translation id="9096679202588811390">Rhaglenni teledu</translation>
 <translation id="9101630580131696064">Hambwrdd 1</translation>
+<translation id="9102081333385212048">Anfonir ffeiliau rydych yn eu copïo neu eu symud i Google Cloud neu drydydd partïon i'w dadansoddi. Er enghraifft, mae'n bosib y byddant yn cael eu sganio am ddata sensitif neu ddrwgwedd.</translation>
 <translation id="9103537084693478942">Meddalwedd fideo</translation>
 <translation id="9103872766612412690">Mae <ph name="SITE" /> fel arfer yn defnyddio amgryptio i amddiffyn eich gwybodaeth. Pan geisiodd Chromium gysylltu â <ph name="SITE" /> y tro hwn, anfonodd y wefan manylion adnabod anarferol ac anghywir yn ôl. Gall hyn ddigwydd pan fydd ymosodwr yn ceisio gweithredu fel <ph name="SITE" />, neu pan fydd sgrîn mewngofnodi Wi-Fi wedi torri ar draws y cysylltiad. Mae eich gwybodaeth yn dal yn ddiogel oherwydd stopiodd Chromium y cysylltiad cyn i unrhyw ddata gael eu cyfnewid.</translation>
 <translation id="9106062320799175032">Ychwanegu Cyfeiriad Bilio</translation>

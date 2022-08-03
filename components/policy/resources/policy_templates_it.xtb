@@ -101,6 +101,7 @@
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
 </translation>
+<translation id="1100840127293327071">Non selezionare l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
 <translation id="1107538157073168076">Disattiva estensione Insights</translation>
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -744,6 +745,14 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1781356041596378058">Questa norma controlla anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su true, gli utenti non possono accedere alle Opzioni sviluppatore. Se la norma viene impostata su false o non viene impostata, gli utenti possono accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="1787790976045065845">Questo criterio viene applicato soltanto se il criterio <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostato su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Consente inoltre di specificare per quanti secondi viene visualizzata una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questo criterio viene impostato su 0, non viene visualizzata alcuna notifica e l'azione viene compiuta immediatamente.</translation>
 <translation id="1793346220873697538">Disattiva la stampa PIN per impostazione predefinita</translation>
+<translation id="1794457906032475749">Se questo criterio viene attivato, l'opzione per mantenere i dati di navigazione esistenti durante la creazione di un profilo aziendale sarà selezionata per impostazione predefinita.
+
+Se questo criterio viene disattivato o se non viene configurato, l'opzione per mantenere i dati di navigazione esistenti durante la creazione di un profilo aziendale non sarà selezionata per impostazione predefinita.
+
+Indipendentemente dal valore, l'utente potrà decidere se mantenere o meno i dati di navigazione esistenti durante la creazione di un profilo aziendale.
+
+Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione esistenti non è disponibile. Questo accade se viene applicata in modo forzato la separazione dei profili aziendali o se i dati provengono da un profilo già gestito.
+</translation>
 <translation id="179694024208061102">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> proverà ad avviare alcuni URL in un browser alternativo, ad esempio <ph name="IE_PRODUCT_NAME" />. Questa funzionalità viene impostata con i criteri del gruppo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Se il criterio viene impostato su Disattivato o se non viene impostato, <ph name="PRODUCT_NAME" /> non proverà ad avviare gli URL impostati in un browser alternativo.</translation>
@@ -1318,7 +1327,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="2299220924812062390">Consente di specificare un elenco dei plug-in attivati</translation>
-<translation id="2301048990069984110">Estendi il supporto delle app di Chrome su Windows, Mac e Linux</translation>
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>
 <translation id="2304009805995145854">A partire da <ph name="PRODUCT_NAME" /> 67, l'isolamento dei siti è stato attivato per impostazione predefinita su tutte le piattaforme desktop, così che ogni sito venga eseguito nel proprio processo. Ogni sito è uno schema più eTLD+1 (ad es. https://example.com). Se il criterio viene impostato su Attivato, il comportamento non cambia; impedisce solo la disattivazione da parte degli utenti (ad esempio, utilizzando la voce "Disattiva l'isolamento dei siti" in chrome://flags). A partire da <ph name="PRODUCT_NAME" /> 76, se il criterio viene impostato su Disattivato o se non viene configurato, l'isolamento dei siti non viene disattivato, ma è consentita la disattivazione da parte degli utenti.
 
@@ -1640,6 +1648,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="2623014935069176671">Attesa dell'attività iniziale dell'utente</translation>
+<translation id="2625026032335150744">Seleziona l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="2625398797484317969">Controlla le impostazioni di Risposte rapide.</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Attiva la funzione di lettura vocale</translation>
@@ -2062,6 +2071,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
 <translation id="3066446511111537292">Consenti agli utenti affiliati di questo dispositivo di utilizzare il processo sideload ADB</translation>
 <translation id="3070119171976169951">Impedisci la visualizzazione di immagini di terze parti in un prompt di autenticazione</translation>
@@ -2278,6 +2288,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3255762580838224124">La configurazione del criterio comporta la rotazione di ogni display nell'orientamento specificato a ogni riavvio e la prima volta che viene eseguita la connessione del display dopo la modifica del valore del criterio. Gli utenti possono modificare la rotazione del display tramite la pagina delle impostazioni dopo aver effettuato l'accesso, ma la rotazione tornerà allo stato precedente al riavvio successivo. Questo criterio si applica ai display primari e secondari.
 
       Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
+<translation id="3257786863492892609">Controlla i criteri relativi alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">La configurazione del criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
@@ -3241,6 +3252,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="441686537793821907">Blocca l'installazione di estensioni esterne</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
 <translation id="4424004842303301809">Disattiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
+<translation id="4426601693403743089">Disattiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
 <translation id="443454694385851356">Precedente (non sicuro)</translation>
@@ -4845,6 +4857,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL "di aggiornamento" separati da punto e virgola (<ph name="SEMICOLON" />). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo <ph name="CHROME_EXTENSIONS_LINK" /> quando è attiva la modalità sviluppatore. L'URL "di aggiornamento", se specificato, deve indirizzare a un documento XML manifest di aggiornamento come descritto all'indirizzo <ph name="LINK_TO_EXTENSION_DOC1" />. Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store (che attualmente è "https://clients2.google.com/service/update2/crx"). Tieni presente che l'URL "di aggiornamento" impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento indicato nel file manifest dell'estensione.
 
       Ad esempio, <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> installa l'app <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> dall'URL "di aggiornamento" standard del Chrome Web Store. Ulteriori informazioni sulle estensioni in hosting sono disponibili all'indirizzo: <ph name="LINK_TO_EXTENSION_DOC2" />.</translation>
+<translation id="6274202259872570803">Registra schermo</translation>
 <translation id="6275497712828649588">Nascondi avvisi di sicurezza quando vengono usati flag della riga di comando potenzialmente pericolosi</translation>
 <translation id="6275833043726517413">Consente di usare l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" />.
 
@@ -4878,7 +4891,15 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="6305373713165475629">La configurazione di questo criterio consente di sostituire la modalità di stampa a colori predefinita. Se la modalità non è disponibile, questo criterio viene ignorato.</translation>
+<translation id="6308109234708949641">Questo criterio consente di attivare la funzionalità Registra schermo per gli utenti di Family Link e la autorizza a creare e trascrivere la registrazione dello schermo e a caricarla su Drive.
+      Questo criterio non influisce su altri tipi di utenti.
+      Questo criterio non influisce sul criterio <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> per gli utenti aziendali.
+
+      Se il criterio viene attivato, la versione sperimentale di Registra schermo verrà attivata per gli utenti di Family Link.
+      Se viene disattivato, la versione sperimentale di Registra schermo verrà disattivata per gli utenti di Family Link.
+      Se non viene configurato, la versione sperimentale di Registra schermo sarà disattivata per impostazione predefinita per gli utenti di Family Link.</translation>
 <translation id="6310223829319187614">Consente il completamento automatico del nome di dominio durante l'accesso dell'utente</translation>
+<translation id="6310756730808079944">Attiva Registra schermo</translation>
 <translation id="631081324835911099">Consente di forzare la disconnessione dell'utente quando il token di autenticazione del suo account principale non è più valido.
         Questo criterio può proteggere l'utente dall'accesso a contenuti con limitazioni sulle proprietà web di Google.
         Se questo criterio viene impostato su True, l'utente sarà disconnesso dall'account non appena il suo token di autenticazione non sarà più valido e se i tentativi di ripristinarlo non andranno a buon fine.
@@ -5255,6 +5276,12 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questa norma è impostata su false o non è configurata, la creazione di utenti supervisionati e il relativo accesso saranno disattivati. Tutti gli utenti supervisionati esistenti saranno nascosti.
 
           NOTA. Il comportamento predefinito per dispositivi consumer ed enterprise è diverso: sui dispositivi consumer, gli utenti supervisionati sono abilitati per impostazione predefinita, mentre sui dispositivi enterprise sono disabilitati per impostazione predefinita.</translation>
+<translation id="6648746349186337075">Questo criterio consente di autorizzare Registra schermo a creare e trascrivere la registrazione dello schermo e a caricarla su Drive per gli utenti aziendali.
+      Questo criterio non influisce sugli utenti di Family Link.
+      Questo criterio non influisce sul criterio <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> per gli utenti di Family Link.
+
+      Se il criterio viene attivato o se non viene configurato, la funzionalità Registra schermo verrà attivata.
+      Se il criterio viene disattivato, la funzionalità Registra schermo verrà disattivata.</translation>
 <translation id="665023848306499203">Consenti ai dispositivi di selezionare una versione specifica per l'aggiornamento</translation>
 <translation id="6652197835259177259">Impostazioni degli utenti gestiti localmente</translation>
 <translation id="6653897159826215341">Se il criterio viene impostato su Attivato, in <ph name="PRODUCT_NAME" /> viene aperta la finestra di dialogo di stampa di sistema anziché l'anteprima di stampa integrata quando un utente richiede una stampa.
@@ -6158,6 +6185,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
+<translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
 <translation id="7604169113182304895">Le app Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
 <translation id="7612157962821894603">Contrassegni a livello di sistema da applicare all'avvio di <ph name="PRODUCT_NAME" /></translation>
@@ -6405,6 +6433,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Consiglio: blocca lo schermo in caso di inattività attivando il blocco schermo in caso di sospensione e fai in modo che <ph name="PRODUCT_OS_NAME" /> entri in sospensione dopo il ritardo di inattività. Usa questo criterio soltanto quando il blocco dello schermo dovrebbe avvenire molto tempo prima della sospensione o quando non vuoi che venga attivata la sospensione in caso di inattività.</translation>
 <translation id="7895553628261067384">Accesso remoto</translation>
+<translation id="7900469325540540107">Mantieni i dati di navigazione per impostazione predefinita durante la creazione di un profilo aziendale</translation>
 <translation id="7902040092815978832">Mostra la tastiera numerica per la password</translation>
 <translation id="7904177352786629708">Impostando il criterio su Attivato, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
 
@@ -6567,10 +6596,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
-<translation id="8103563905615378194">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
-
-      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
-      Se questo criterio viene impostato su True o se non viene configurato, il modello di ricarica adattiva verrà attivato e potrà sospendere la procedura di ricarica per prolungare la durata della batteria. Se questo criterio viene impostato su False, il modello di ricarica adattiva non influirà sulla procedura di ricarica.</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
 <translation id="8114382167597081590">Non imporre la Modalità con restrizioni su YouTube</translation>
 <translation id="8117921351531866504">Consente di stabilire se consentire o meno ai siti web di controllare se l'utente ha salvato dei metodi di pagamento.
@@ -7385,10 +7410,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
-<translation id="8967125680876068695">Le app di Chrome sono state ritirate su Windows, Mac e Linux.
-      Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.
-      Se questo criterio viene disattivato o se non viene configurato, potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.
-      In ogni caso, continueranno a essere consentite le app di Chrome con installazione forzata in base al criterio.</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Consenti l'autenticazione Gnubby per gli host di accesso remoto</translation>
 <translation id="8976531594979650914">Usa stampante di sistema come predefinita</translation>

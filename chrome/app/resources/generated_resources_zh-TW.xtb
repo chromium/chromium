@@ -4661,6 +4661,7 @@
 <translation id="5470735824776589490">你必須先重新啟動裝置，才能透過 Powerwash 重設裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">你好！這是文字轉語音的語音。</translation>
 <translation id="5472627187093107397">儲存這個網站的密碼</translation>
+<translation id="5473062644742711742">前往 Chrome 線上應用程式商店尋找更多無障礙工具</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、貴子女的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>

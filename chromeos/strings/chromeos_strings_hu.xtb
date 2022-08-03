@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Típus</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2480034874476596812">Manuális kikapcsolás</translation>
+<translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
 <translation id="2491955442992294626">A rendszer nem teszteli a billentyűket, amikor másik ablakot használ</translation>
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6611280807952151149">A(z) <ph name="DEVICE_TYPE" /> javításának megszakítása</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
 <translation id="6620487321149975369">A nyomtatási feladatok láthatók az előzmények között, ha nem távolítják el őket manuálisan</translation>
+<translation id="6624819909909965616">Nem lehet 10 MB-nál nagyobb fájlt feltölteni</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6644568396961840069">Nem sikerült menteni a fájlt. Próbálkozzon másik külső tárhely csatlakoztatásával, vagy próbálja újra később.</translation>
 <translation id="6647510110698214773">Titkosítási algoritmus</translation>
@@ -696,6 +698,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
 <translation id="6995564396478647735">Győződjön meg arról, hogy az Írásvédelem funkció be van kapcsolva</translation>
+<translation id="7005833343836210400">Az eszköz offline állapotú</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
 <translation id="7041549558901442110">Az eszköz nincs csatlakoztatva.</translation>
@@ -809,6 +812,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="8082366717211101304">Nem sikerült feloldani a DNS-t androidos alkalmazásokról</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>
+<translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
 <translation id="8109786307828817014">Folytatja a sikertelen kalibrálásokkal együtt?</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>

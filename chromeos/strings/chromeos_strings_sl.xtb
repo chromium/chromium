@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2480034874476596812">Ročno izklopi</translation>
+<translation id="248546197012830854">Naprava nima vzpostavljene povezave. Če si želite ogledati vsebino s pomočjo, vzpostavite povezavo z omrežjem Wi-Fi.</translation>
 <translation id="2491955442992294626">Tipke se ne preizkušajo, če uporabljate drugo okno.</translation>
 <translation id="2493126929778606526">Vaše najboljše fotografije, izbrane samodejno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6611280807952151149">Zapri popravilo naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
 <translation id="6620487321149975369">Tiskalna opravila bodo prikazana v zgodovini, razen če jih ročno odstranite</translation>
+<translation id="6624819909909965616">Datoteke, večje od 10 MB, ni mogoče naložiti.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6644568396961840069">Datoteke ni bilo mogoče shraniti. Poskusite priključiti drugo zunanjo shrambo ali poskusite znova pozneje.</translation>
 <translation id="6647510110698214773">Algoritem šifriranja</translation>
@@ -696,6 +698,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
 <translation id="6995564396478647735">Prepričajte se, da je zaščita pred pisanjem vklopljena</translation>
+<translation id="7005833343836210400">Naprava nima vzpostavljene povezave</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Naprava ni povezana.</translation>
@@ -809,6 +812,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
+<translation id="8094062939584182041">Googlu dovolite, da se po e-pošti obrne na vas glede te težave</translation>
 <translation id="8104083085214006426">Uporabljate odprto omrežje, ki ni varno.</translation>
 <translation id="8109786307828817014">Želite nadaljevati z neuspešnimi umerjanji?</translation>
 <translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>

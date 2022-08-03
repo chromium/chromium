@@ -100,6 +100,7 @@
 <translation id="1095209545735032039">Bloquear a API Serial nesses sites</translation>
 <translation id="1096105751829466145">Provedor de pesquisa padrão</translation>
 <translation id="1099282607296956954">Ativar o isolamento de todos os sites</translation>
+<translation id="1100840127293327071">Não marcar a opção para manter os dados de navegação existentes por padrão</translation>
 <translation id="1105572260329131950">Usar os ícones padrão em conexões seguras</translation>
 <translation id="1107538157073168076">Desativar extensão de insights</translation>
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -740,6 +741,14 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1781356041596378058">Esta política também controla o acesso às Opções do desenvolvedor Android. Se você configurar essa política como true, os usuários não poderão acessar as Opções do desenvolvedor. Se configurá-la como false ou deixá-la sem definição, os usuários poderão acessar as Opções do desenvolvedor tocado sete vezes no número da versão no app Config. do Android.</translation>
 <translation id="1787790976045065845">Esta política só terá efeito quando a <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> estiver definida como <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e um usuário que faz a autenticação por um cartão inteligente remover o cartão. Esta política especificará por quantos segundos uma notificação que informa o usuário sobre a ação futura será exibida. Essa notificação bloqueia a tela, e a ação só acontecerá depois que a notificação expirar. O usuário pode evitar o acontecimento da ação reinserindo o cartão inteligente antes que a notificação expire. Se esta política for definida como zero, nenhuma notificação será exibida e a ação acontecerá imediatamente.</translation>
 <translation id="1793346220873697538">Desativar impressão com PIN como padrão</translation>
+<translation id="1794457906032475749">Se esta política for ativada, a opção de manter os dados de navegação existentes ao criar um perfil de trabalho vai ser marcada por padrão.
+
+Se a política for desativada ou deixada sem definição, a opção de manter os dados de navegação existentes ao criar um perfil de trabalho não vai ser marcada por padrão.
+
+Seja qual for o valor, o usuário vai poder decidir se quer ou não manter os dados de navegação existentes ao criar um perfil corporativo.
+
+Esta política não vai ter efeito se a opção de manter os dados de navegação existentes não estiver disponível. Isso acontece quando a separação de perfil corporativo é aplicada de forma rigorosa ou quando os dados são de um perfil já gerenciado.
+</translation>
 <translation id="179694024208061102">Se a política for definida como ativada, o <ph name="PRODUCT_NAME" /> tentará abrir alguns URLs em um navegador alternativo, como o <ph name="IE_PRODUCT_NAME" />. Esse recurso é configurado por meio das políticas no grupo do <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Se a política for definida como desativada ou não for definida, o <ph name="PRODUCT_NAME" /> não tentará abrir URLs designados em um navegador alternativo.</translation>
@@ -1316,7 +1325,6 @@ Web e PWAs. No momento, com suporte apenas no
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
-<translation id="2301048990069984110">Oferecer suporte para apps do Chrome no Windows, Mac e Linux.</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
 <translation id="2304009805995145854">Desde o <ph name="PRODUCT_NAME" /> 67, o isolamento de sites é ativado por padrão em todas as plataformas para computador, obrigando cada site a executar um processo próprio. Um site é um esquema + eTLD+1 (por exemplo, https://example.com). Se a política for ativada, esse comportamento não mudará. Ela apenas evita que usuários possam escolher outra opção (por exemplo, desativar o isolamento de sites em chrome://flags). Desde o <ph name="PRODUCT_NAME" /> 76, desativar esta política ou deixá-la sem definição não desativa o isolamento de sites, mas permite que os usuários escolham outra opção.
 
@@ -1638,6 +1646,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no Gerenciamento de nuvem do navegador Chrome. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="2623014935069176671">Aguardar atividade inicial do usuário</translation>
+<translation id="2625026032335150744">Marcar a opção para manter os dados de navegação existentes por padrão</translation>
 <translation id="2625398797484317969">Controla as configurações das Respostas rápidas.</translation>
 <translation id="262740370354162807">Ativar o envio de documentos para <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Ativar resposta falada</translation>
@@ -2060,6 +2069,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="305106159605171619">A redução do user agent foi desativada e não foi ativada por testes de campo e de origem.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Desativar o Screencast</translation>
 <translation id="3064530882228745118">Usar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
 <translation id="3066446511111537292">Permite que usuários afiliados deste dispositivo usem sideload com adb</translation>
 <translation id="3070119171976169951">Impedir que imagens de terceiros enviem um prompt de autenticação</translation>
@@ -2277,6 +2287,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3255762580838224124">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
 
       Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mudá-lo. Neste caso, o valor padrão não será reaplicado após a reinicialização.</translation>
+<translation id="3257786863492892609">Controla as políticas do Screencast.</translation>
 <translation id="3258380413685430793">Executar todo o conteúdo do <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Se a política for definida, será possível definir uma lista de URLs de login corporativos (apenas protocolos HTTP e HTTPS). O serviço de proteção de senhas capturará hashes com sal de senhas nesses URLs e os usará para detectar a reutilização. Para que o <ph name="PRODUCT_NAME" /> capture hashes com sal de senhas corretamente, verifique se a página de login segue estas diretrizes (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
@@ -3250,6 +3261,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="441686537793821907">Bloquear a instalação de extensões externas</translation>
 <translation id="4423597592074154136">Especificar manualmente as configurações de proxy</translation>
 <translation id="4424004842303301809">Desativar relatórios de eventos para prevenção de vazamento de dados</translation>
+<translation id="4426601693403743089">Desativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="4427173305799125784">O visualizador de PDF não pode fazer anotações em PDFs</translation>
 <translation id="4432762137771104529">Ativar relatórios estendidos do Navegação segura</translation>
 <translation id="443454694385851356">Legado (não seguro)</translation>
@@ -4854,6 +4866,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de "atualização" separados por ponto e vírgula (<ph name="SEMICOLON" />). O ID de extensão é a string de 32 letras encontrada, por exemplo, em <ph name="CHROME_EXTENSIONS_LINK" /> no modo de desenvolvedor. O URL de "atualização", se especificado, apontará para um documento XML de manifesto de atualização, conforme descrito em <ph name="LINK_TO_EXTENSION_DOC1" />. Por padrão, o URL de "atualização" da Chrome Web Store é usado (atualmente, https://clients2.google.com/service/update2/crx). O URL de "atualização" definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL de "atualização" indicado no manifesto da extensão.
 
       Por exemplo, <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> instala o app <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> a partir do URL de "atualização" padrão da Chrome Web Store. Para ver mais informações sobre hospedagem de extensões, consulte <ph name="LINK_TO_EXTENSION_DOC2" />.</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6275497712828649588">Ocultar avisos de segurança quando sinalizações de linha de comando potencialmente perigosa forem usadas</translation>
 <translation id="6275833043726517413">Use a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" />.
 
@@ -4887,7 +4900,15 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
 <translation id="6305373713165475629">A definição da política substitui o modo de cor de impressão padrão. Se o modo não estiver disponível, a política será ignorada.</translation>
+<translation id="6308109234708949641">Esta política ativa o recurso do Screencast para usuários do Family Link e permite criar e transcrever gravações da tela e fazer upload delas no Drive.
+      Esta política não afeta outros tipos de usuários.
+      Esta política não afeta a <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> para usuários corporativos.
+
+      Se ela estiver ativada, o dogfood do Screencast vai ficar ativado para usuários do Family Link.
+      Se ela estiver desativada, o dogfood do Screencast vai ficar desativado para esses usuários.
+      Se ela não for definida, o dogfood do Screencast vai ficar desativado por padrão para esses usuários.</translation>
 <translation id="6310223829319187614">Ativar preenchimento automático do nome de domínio durante login do usuário</translation>
+<translation id="6310756730808079944">Ativar o Screencast</translation>
 <translation id="631081324835911099">Força a saída do usuário quando o token de autenticação da conta principal se torna inválido.
         Esta política pode proteger o usuário de acesso a conteúdo restrito em propriedades da Web do Google.
         Se ela for definida como verdadeira, o usuário será desconectado assim que o token de autenticação se tornar inválido e as tentativas de restauração dele falharem.
@@ -5275,6 +5296,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           Se definida como falsa ou não configurada, a criação e o login de usuários supervisionados serão desativados. Todos os usuários supervisionados existentes serão ocultos.
 
           OBSERVAÇÃO: há uma diferença entre o comportamento padrão em dispositivos corporativos e de consumidores: em dispositivos de consumidores, os usuários supervisionados são ativados por padrão. Já em dispositivos corporativos, o padrão é os usuários supervisionados estarem desativados.</translation>
+<translation id="6648746349186337075">Esta política permite que o Screencast crie, transcreva e faça upload de gravações de tela no Drive para usuários corporativos.
+      Ela não afeta usuários do Family Link nem a política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para esses usuários.
+
+      Se a política for deixada sem definição, o Screencast vai ser ativado.
+      Se ela for desativada, o Screencast também vai ser desativado.</translation>
 <translation id="665023848306499203">Permitir que dispositivos selecionem uma versão de atualização específica</translation>
 <translation id="6652197835259177259">Configurações de usuários gerenciados localmente</translation>
 <translation id="6653897159826215341">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> abrirá a caixa de diálogo de impressão do sistema em vez da integrada quando os usuários solicitarem uma impressão.
@@ -5614,7 +5640,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a opção U2F for selecionada, o segundo fator integrado se comportará de acordo com a especificação FIDO U2F.
 
       Se a opção U2F_EXTENDED for selecionada, o segundo fator integrado fornecerá as funções de U2F, além de algumas extensões para declaração individual.</translation>
-<translation id="6998179760789945134">Desativar o WebSQL em contextos não seguros, a menos que ele seja ativado pela Sinalização do Chrome.</translation>
+<translation id="6998179760789945134">Desativar o WebSQL em contextos não seguros, a menos que ele seja ativado pela Flag do Chrome.</translation>
 <translation id="6999948519306285655">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, você poderá especificar um URL de um arquivo proxy .pac. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6013,7 +6039,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política não for definida, a ação padrão será a de suspensão.
 
       Observação: se a ação for a de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
-<translation id="7477149584454865826">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
+<translation id="7477149584454865826">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7477526482439041787">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
       Os vazamentos podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
@@ -6174,6 +6200,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se ela estiver ativada ou for deixada sem definição, a conversão de unidades das Respostas rápidas ficará ativada.
       Se a política for desativada, a conversão de unidades das Respostas rápidas ficará desativada.</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
+<translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
 <translation id="7604169113182304895">Os apps Android podem optar voluntariamente por respeitar essa lista. Não é possível forçá-los a respeitá-la.</translation>
 <translation id="7612157962821894603">Sinalizações amplas do sistema que devem ser aplicadas na inicialização do <ph name="PRODUCT_NAME" /></translation>
@@ -6422,6 +6449,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Recomendação: ative o bloqueio de tela depois de um período de inatividade quando o dispositivo estiver suspenso e suspenda o <ph name="PRODUCT_OS_NAME" /> depois do intervalo de inatividade. Use esta política apenas quando o bloqueio de tela ocorrer muito antes da suspensão ou quando você não quiser a suspensão por inatividade.</translation>
 <translation id="7895553628261067384">Acesso remoto</translation>
+<translation id="7900469325540540107">Manter os dados de navegação por padrão ao criar um perfil corporativo</translation>
 <translation id="7902040092815978832">Mostrar teclado numérico para senha</translation>
 <translation id="7904177352786629708">Definir a política como "Ativada" faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
 
@@ -6580,14 +6608,10 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8080200590486938727">Desativar o localizador de plug-ins</translation>
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8089236320223488328">Usar o comportamento padrão ao determinar se sites não seguros podem fazer solicitações para qualquer endpoint da rede</translation>
-<translation id="8091982561085048989">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
+<translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
-<translation id="8103563905615378194">Especifica se um modelo de carregamento adaptável tem permissão para controlar o processo de carregamento e prolongar a duração da bateria.
-
-      Quando o dispositivo está no carregamento adaptável, o modelo avalia se o processo de carregamento precisa ser controlado para prolongar a duração da bateria. Quando o modelo controla o processo de carregamento, ele mantém a bateria carregada até certo nível, como 80%, e carrega o dispositivo até 100% quando o usuário precisa.
-      Se esta política for definida como verdadeira ou for deixada sem definição, o modelo de carregamento adaptável será ativado e terá permissão para controlar o processo de carregamento e prolongar a duração da bateria. Se esta política for definida como falsa, o modelo de carregamento adaptável não vai influenciar no processo de carregamento.</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>
 <translation id="8117921351531866504">Permite que você defina se os sites têm permissão de verificar se os usuários salvaram formas de pagamento.
@@ -7410,10 +7434,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>
-<translation id="8967125680876068695">Os apps do Chrome foram descontinuados no Windows, Mac e Linux.
-      Se esta política for ativada, o <ph name="PRODUCT_NAME" /> continuará permitindo a execução de apps do Chrome nessas plataformas até que o suporte a eles seja removido de todas as plataformas na data final, em junho de 2022.
-      Se esta política for desativada ou deixada sem definição, a execução de apps do Chrome poderá ser bloqueada, dependendo do status da descontinuação.
-      Nos dois casos, a execução dos apps do Chrome que forem instalados à força por políticas ainda será permitida.</translation>
 <translation id="8970205333161758602">Remover a solicitação de recusa do <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Permitir autenticação gnubby para hosts de acesso remoto</translation>
 <translation id="8976531594979650914">Usar a impressora padrão do sistema como padrão</translation>

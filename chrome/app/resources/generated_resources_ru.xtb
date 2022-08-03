@@ -134,7 +134,7 @@
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
 <translation id="1128090040635299943">Выполняется настройка Linux. Это займет несколько минут.</translation>
 <translation id="1128591060186966949">Изменить поисковую систему</translation>
-<translation id="1129420403709586868">Просмотр фотографий и медиафайлов с телефона</translation>
+<translation id="1129420403709586868">Смотреть фотографии и медиафайлы с телефона</translation>
 <translation id="1129850422003387628">Управление приложениями</translation>
 <translation id="113050636487300043">Укажите имя и установите цветовую тему, чтобы отличать свой профиль от других.</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
@@ -2318,7 +2318,7 @@
 <translation id="3151539355209957474">Время начала</translation>
 <translation id="3151562827395986343">Удалить файлы cookie и данные сайтов, очистить историю и кеш</translation>
 <translation id="3151786313568798007">Ориентация</translation>
-<translation id="3152356229013609796">Просматривайте и скрывайте уведомления с телефона, а также отвечайте на них.</translation>
+<translation id="3152356229013609796">Просматривать и скрывать уведомления с телефона, а также отвечать на них</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3158033540161634471">Добавьте отпечаток пальца</translation>
@@ -2772,7 +2772,7 @@
 <translation id="3616741288025931835">Очистить данные просмотров...</translation>
 <translation id="3617891479562106823">Фоновые изображения недоступны. Повторите попытку позже.</translation>
 <translation id="3619115746895587757">Капучино</translation>
-<translation id="3619962278978697442">Выбирайте один из способов при каждом входе.</translation>
+<translation id="3619962278978697442">Выбирайте способ входа при каждой разблокировке устройства.</translation>
 <translation id="3621807901162200696">Помогать повышать производительность и улучшать функции Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="362333465072914957">Ожидание выдачи сертификата центром сертификации</translation>
@@ -3508,7 +3508,7 @@
 <translation id="431076611119798497">&amp;Подробнее</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 аккаунт Google}one{<ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{<ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
-<translation id="4314497418046265427">Работайте эффективнее, подключив телефон к устройству "<ph name="DEVICE_TYPE" />"</translation>
+<translation id="4314497418046265427">Работайте эффективнее, подключив телефон к устройству <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
 <translation id="4315933848520197627">Отменить связь</translation>
 <translation id="4316850752623536204">Сайт разработчика</translation>
@@ -3761,7 +3761,7 @@
 <translation id="4562155214028662640">Добавить отпечаток пальца</translation>
 <translation id="4563210852471260509">Первоначальный язык ввода – китайский</translation>
 <translation id="4563880231729913339">3-й палец</translation>
-<translation id="4564245002465020751">Завершите настройку телефона</translation>
+<translation id="4564245002465020751">Завершите настройку на телефоне</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4565917129334815774">Сохранить системные журналы</translation>
 <translation id="4566170377336116390">Чтобы сменить режим после регистрации, необходимо сбросить устройство до заводских настроек (Powerwash).</translation>
@@ -4018,7 +4018,7 @@
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
 <translation id="4821935166599369261">&amp;Сбор данных включен</translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
-<translation id="4823894915586516138">Этот PIN-код или пароль будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, в том числе сведения, к которым вы получаете доступ с телефона.</translation>
+<translation id="4823894915586516138">Этот PIN-код или пароль будут защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, в том числе информацию, получаемую с телефона.</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
 <translation id="4827675678516992122">Ошибка подключения</translation>
@@ -5676,7 +5676,7 @@
 <translation id="6466258437571594570">Сайтам запрещено прерывать вашу работу запросами на показ уведомлений</translation>
 <translation id="6466988389784393586">&amp;Открыть все закладки</translation>
 <translation id="6467304607960172345">Оптимизация полноэкранного видео</translation>
-<translation id="6467377768028664108">На устройстве "<ph name="DEVICE_TYPE" />" теперь доступно:</translation>
+<translation id="6467377768028664108">Теперь на устройстве <ph name="DEVICE_TYPE" /> вы можете:</translation>
 <translation id="6468485451923838994">Шрифты</translation>
 <translation id="6468773105221177474">Файлов: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Включить мобильную сеть</translation>
@@ -6049,7 +6049,7 @@
 <translation id="6815376457351236663">Все равно открыть</translation>
 <translation id="6817174620439930047">Уведомлять меня о сайтах, пытающихся использовать системные сообщения для доступа к MIDI-устройствам (рекомендуется)</translation>
 <translation id="6818198425579322765">Исходный язык страницы</translation>
-<translation id="6818547713623251698">Просмотр фотографий, медиафайлов, уведомлений и приложений с телефона</translation>
+<translation id="6818547713623251698">Просматривайте фотографии, медиафайлы, уведомления и приложения с телефона</translation>
 <translation id="6818802132960437751">Встроенная защита от вирусов</translation>
 <translation id="6818920801736417483">Сохранить пароли?</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
@@ -7302,7 +7302,7 @@
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
-<translation id="8041267120753677077">Трансляция приложений с телефона</translation>
+<translation id="8041267120753677077">Транслировать приложения с телефона</translation>
 <translation id="8042142357103597104">Прозрачность текста</translation>
 <translation id="8042331986490021244">Ваши пароли шифруются на устройстве и только потом сохраняются в Диспетчере паролей Google.</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не отвечает</translation>
