@@ -65,6 +65,31 @@ TEST_F(NGInlineLayoutAlgorithmTest, Types) {
   EXPECT_TRUE(empty.Current()->LineBoxFragment()->IsEmptyLineBox());
 }
 
+TEST_F(NGInlineLayoutAlgorithmTest, TypesForFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div::first-line { font-size: 2em; }
+    </style>
+    <div id="normal">normal</div>
+    <div id="empty"><span></span></div>
+  )HTML");
+  NGInlineCursor normal(
+      *To<LayoutBlockFlow>(GetLayoutObjectByElementId("normal")));
+  normal.MoveToFirstLine();
+  EXPECT_FALSE(normal.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_EQ(normal.Current().StyleVariant(), NGStyleVariant::kFirstLine);
+  EXPECT_EQ(normal.Current()->LineBoxFragment()->StyleVariant(),
+            NGStyleVariant::kFirstLine);
+
+  NGInlineCursor empty(
+      *To<LayoutBlockFlow>(GetLayoutObjectByElementId("empty")));
+  empty.MoveToFirstLine();
+  EXPECT_TRUE(empty.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_EQ(empty.Current().StyleVariant(), NGStyleVariant::kFirstLine);
+  EXPECT_EQ(empty.Current()->LineBoxFragment()->StyleVariant(),
+            NGStyleVariant::kFirstLine);
+}
+
 TEST_F(NGInlineLayoutAlgorithmTest, TypesForBlockInInline) {
   ScopedLayoutNGBlockInInlineForTest block_in_inline_scope(true);
   SetBodyInnerHTML(R"HTML(
