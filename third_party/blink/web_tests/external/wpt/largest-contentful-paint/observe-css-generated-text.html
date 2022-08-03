@@ -45,13 +45,17 @@
       // and 100px across based on font size and text length.
       const elemSizeLowerBound = 1200;
       promise_test(t => {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
           assert_implements(window.LargestContentfulPaint,
             "LargestContentfulPaint is not implemented");
           const observer = new PerformanceObserver(resolve);
           observer.observe({ type: 'largest-contentful-paint' });
           beforeRender = performance.now();
           document.body.appendChild(element);
+
+          step_timeout(() => {
+            reject(new Error('timeout, LCP candidate not detected'));
+          }, 1000)
         }).then(entryList => {
           assert_equals(entryList.getEntries().length, 1);
           const entry = entryList.getEntries()[0];
@@ -72,9 +76,12 @@
     runTest(cssGeneratedTextAttrElem,
       "Text generated with CSS using content:attr() is observable as a LargestContentfulPaint candidate");
 
+    const cssGeneratedTextAttrInlineElemBlockWrapper = document.createElement('div');
+    cssGeneratedTextAttrInlineElemBlockWrapper.id = 'css-generated-text-inline-elem-block-wrapper';
     const cssGeneratedTextInlineElem = document.createElement('span');
     cssGeneratedTextInlineElem.id = 'css-generated-text-inline-elem';
-    runTest(cssGeneratedTextInlineElem,
+    cssGeneratedTextAttrInlineElemBlockWrapper.appendChild(cssGeneratedTextInlineElem);
+    runTest(cssGeneratedTextAttrInlineElemBlockWrapper,
       "CSS generated text on a inline element is observable as a LargestContentfulPaint candidate");
   </script>
 </body>
