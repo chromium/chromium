@@ -237,6 +237,29 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyAllow) {
 }
 
 TEST(PrivateNetworkAccessCheckerTest,
+     CheckAllowedByPolicyWarnInconsistentIpAddressSpace) {
+  base::HistogramTester histogram_tester;
+
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->client_security_state = mojom::ClientSecurityState::New();
+  factory_params->client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPublic;
+  factory_params->client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kWarn;
+
+  PrivateNetworkAccessChecker checker(ResourceRequest(), factory_params.get(),
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
+            Result::kAllowedByPolicyWarn);
+
+  // Even though this is inconsistent with the previous IP address space, the
+  // inconsistency is ignored because of the `kWarn` policy.
+  EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
+            Result::kAllowedByPolicyWarn);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedByPolicyAllowInconsistentIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
