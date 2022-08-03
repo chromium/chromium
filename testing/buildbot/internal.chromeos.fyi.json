@@ -1061,7 +1061,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R104-14909.90.0",
+        "cros_img": "octopus-release/R104-14909.100.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_BETA",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1107,7 +1107,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R104-14909.90.0",
+        "cros_img": "octopus-release/R104-14909.100.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1160,7 +1160,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R104-14909.90.0",
+        "cros_img": "strongbad-release/R104-14909.100.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_BETA",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1206,7 +1206,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R104-14909.90.0",
+        "cros_img": "strongbad-release/R104-14909.100.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1250,7 +1250,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R104-14909.90.0",
+        "cros_img": "strongbad-release/R104-14909.100.0",
         "name": "viz_unittests STRONGBAD_RELEASE_BETA",
         "swarming": {},
         "test": "viz_unittests",

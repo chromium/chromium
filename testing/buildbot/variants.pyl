@@ -908,8 +908,8 @@
   'CROS_ATLAS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '104.0.5112.64',
-      'cros_img': 'atlas-release/R104-14909.90.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'atlas-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_BETA',
@@ -953,8 +953,8 @@
   'CROS_EVE_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '104.0.5112.57',
-      'cros_img': 'eve-release/R104-14909.79.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'eve-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_BETA',
@@ -998,8 +998,8 @@
   'CROS_HANA_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '104.0.5112.57',
-      'cros_img': 'hana-release/R104-14909.79.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'hana-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_BETA',
@@ -1043,8 +1043,8 @@
   'CROS_JACUZZI_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '104.0.5112.64',
-      'cros_img': 'jacuzzi-release/R104-14909.90.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'jacuzzi-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_BETA',
@@ -1088,8 +1088,8 @@
   'CROS_OCTOPUS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '104.0.5112.64',
-      'cros_img': 'octopus-release/R104-14909.90.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'octopus-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_BETA',
@@ -1124,8 +1124,8 @@
   'CROS_STRONGBAD_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '104.0.5112.64',
-      'cros_img': 'strongbad-release/R104-14909.90.0',
+      'cros_chrome_version': '104.0.5112.83',
+      'cros_img': 'strongbad-release/R104-14909.100.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_BETA',
