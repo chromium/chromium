@@ -180,6 +180,11 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
   chrome::ShowSiteSettings(browser, site_url);
 }
 
+void ChromePageInfoDelegate::ShowCookiesSettings() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
+}
+
 void ChromePageInfoDelegate::OpenCookiesDialog() {
   TabDialogs::FromWebContents(web_contents_)->ShowCollectedCookies();
 }

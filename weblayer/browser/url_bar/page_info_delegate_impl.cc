@@ -74,6 +74,11 @@ void PageInfoDelegateImpl::ShowSiteSettings(const GURL& site_url) {
   NOTREACHED();
 }
 
+void PageInfoDelegateImpl::ShowCookiesSettings() {
+  // Used for desktop only. Doesn't need implementation for WebLayer.
+  NOTREACHED();
+}
+
 void PageInfoDelegateImpl::OpenCookiesDialog() {
   // Used for desktop only. Doesn't need implementation for WebLayer.
   NOTREACHED();

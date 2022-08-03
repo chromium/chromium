@@ -64,6 +64,7 @@ class PageInfoDelegate {
   virtual bool CreateInfoBarDelegate() = 0;
 
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
+  virtual void ShowCookiesSettings() = 0;
   virtual void OpenCookiesDialog() = 0;
   virtual void OpenCertificateDialog(net::X509Certificate* certificate) = 0;
   virtual void OpenConnectionHelpCenterPage(const ui::Event& event) = 0;

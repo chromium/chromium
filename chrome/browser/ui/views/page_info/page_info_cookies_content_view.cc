@@ -96,7 +96,5 @@ void PageInfoCookiesContentView::EnsureCookieInfo() {
 
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
     const ui::Event& event) {
-  // TODO(crbug.com/1346305): Add a new function to PageInfo for opening cookies
-  // settings.
-  presenter_->OpenSiteSettingsView();
+  presenter_->OpenCookiesSettingsView();
 }
