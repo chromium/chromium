@@ -8,6 +8,12 @@ import {CustomElement} from '../../js/custom_element.js';
 
 import {getTemplate} from './cr_tab_box.html.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'selected-index-change': CustomEvent<number>;
+  }
+}
+
 export class CrTabBoxElement extends CustomElement {
   static override get template() {
     return getTemplate();

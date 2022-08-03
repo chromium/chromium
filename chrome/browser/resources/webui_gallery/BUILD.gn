@@ -2,14 +2,64 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/build_webui.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("webui_gallery.gni")
 
 assert(!is_android)
 
-build_webui("build") {
-  grd_prefix = "webui_gallery"
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
 
-  static_files = [
+  outputs = [
+    "grit/webui_gallery_resources.h",
+    "grit/webui_gallery_resources_map.cc",
+    "grit/webui_gallery_resources_map.h",
+    "webui_gallery_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+}
+
+html_to_wrapper("html_wrapper_files_native") {
+  in_files = html_files_native
+  template = "native"
+}
+
+copy("copy_ts_files") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + html_wrapper_files + html_wrapper_files_native
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_ts_files",
+    ":html_wrapper_files",
+    ":html_wrapper_files_native",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "webui_gallery"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files = [
     "demos/demo.css",
     "demos/cr_a11y_announcer_demo.html",
     "demos/cr_action_menu_demo.html",
@@ -19,22 +69,13 @@ build_webui("build") {
     "demos/cr_input/cr_input_demo.html",
     "demos/cr_radio_demo.html",
     "demos/cr_slider/cr_slider_demo.html",
+    "demos/cr_tab_box/cr_tab_box_demo.html",
     "demos/cr_toggle_demo.html",
     "webui_gallery.html",
   ]
 
-  # Files holding a Polymer element definition AND have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "demos/cr_a11y_announcer_demo_component.ts",
-    "demos/cr_action_menu_demo_component.ts",
-    "demos/cr_dialog_demo_component.ts",
-    "demos/cr_input/cr_input_demo_component.ts",
-    "demos/cr_slider/cr_slider_demo_component.ts",
-  ]
-
-  ts_deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
