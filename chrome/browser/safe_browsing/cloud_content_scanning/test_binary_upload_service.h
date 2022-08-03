@@ -19,6 +19,7 @@ class TestBinaryUploadService : public BinaryUploadService {
   ~TestBinaryUploadService() override = default;
 
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
+  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {}
   void SetResponse(Result result,
                    enterprise_connectors::ContentAnalysisResponse response);
 

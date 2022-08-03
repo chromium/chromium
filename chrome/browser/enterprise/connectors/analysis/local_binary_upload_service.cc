@@ -27,6 +27,13 @@ content_analysis::sdk::Client::Config SDKConfigFromRequest(
           request->cloud_or_local_settings().user_specific()};
 }
 
+// Build a content analysis SDK client config based on the ack being sent.
+content_analysis::sdk::Client::Config SDKConfigFromAck(
+    const safe_browsing::BinaryUploadService::Ack* ack) {
+  return {ack->cloud_or_local_settings().local_path(),
+          ack->cloud_or_local_settings().user_specific()};
+}
+
 // Convert enterprise connector ContentAnalysisRequest into the SDK equivalent.
 // SDK ContentAnalysisRequest is a strict subset of the enterprise connector
 // version, therefore the function should always work.
@@ -58,6 +65,20 @@ ContentAnalysisResponse ConvertSDKResponseToChromeResponse(
   return response;
 }
 
+content_analysis::sdk::ContentAnalysisAcknowledgement ConvertChromeAckToSDKAck(
+    const ContentAnalysisAcknowledgement& ack) {
+  content_analysis::sdk::ContentAnalysisAcknowledgement sdk_ack;
+
+  // TODO(b/226679912): Add unit tests to
+  // components/enterprise/common/proto/connectors_unittest.cc to ensure the
+  // conversion methods here and below always work.
+  if (!sdk_ack.ParseFromString(ack.SerializeAsString())) {
+    return content_analysis::sdk::ContentAnalysisAcknowledgement();
+  }
+
+  return sdk_ack;
+}
+
 // Sends a request to the local server provider and waits for a response.
 absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
@@ -67,8 +88,8 @@ absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
 
   content_analysis::sdk::ContentAnalysisResponse response;
   if (wrapped && wrapped->client()) {
-    int sts = wrapped->client()->Send(sdk_request, &response);
-    if (sts == 0)
+    int status = wrapped->client()->Send(sdk_request, &response);
+    if (status == 0)
       return response;
   }
   return absl::nullopt;
@@ -93,6 +114,28 @@ void HandleResponseFromSDK(
   request->FinishRequest(result, std::move(response));
 }
 
+int SendAckToSDK(
+    scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    content_analysis::sdk::ContentAnalysisAcknowledgement sdk_ack) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  int status = -1;
+  if (wrapped && wrapped->client())
+    status = wrapped->client()->Acknowledge(sdk_ack);
+
+  return status;
+}
+
+void HandleAckResponse(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack,
+    int status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (status != 0)
+    ContentAnalysisSdkManager::Get()->ResetClient(SDKConfigFromAck(ack.get()));
+}
+
 // Sends a request's data to the local service provider.  Handles the response
 // the service provider asynchronously.
 void DoLocalContentAnalysis(
@@ -106,8 +149,8 @@ void DoLocalContentAnalysis(
   }
 
   request->SetRandomRequestToken();
-
   DCHECK(request->cloud_or_local_settings().is_local_analysis());
+
   auto client = ContentAnalysisSdkManager::Get()->GetClient(
       SDKConfigFromRequest(request.get()));
   content_analysis::sdk::ContentAnalysisRequest sdk_request =
@@ -121,8 +164,6 @@ void DoLocalContentAnalysis(
     NOTREACHED();
   }
 
-  // TODO(b/238897238): Manage SDK client pointer via
-  // ChromeBrowserPolicyConnector.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
@@ -147,6 +188,22 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   Request* raw_request = request.get();
   raw_request->GetRequestData(
       base::BindOnce(&DoLocalContentAnalysis, std::move(request)));
+}
+
+void LocalBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto client =
+      ContentAnalysisSdkManager::Get()->GetClient(SDKConfigFromAck(ack.get()));
+  content_analysis::sdk::ContentAnalysisAcknowledgement sdk_ack =
+      ConvertChromeAckToSDKAck(ack->ack());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&SendAckToSDK, client, std::move(sdk_ack)),
+      base::BindOnce(&HandleAckResponse, std::move(ack)));
 }
 
 }  // namespace enterprise_connectors

@@ -37,6 +37,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // Upload the given file contents for deep scanning if the browser is
   // authorized to upload data, otherwise queue the request.
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
+  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
 
   // Indicates whether the DM token/Connector combination is allowed to upload
   // data.

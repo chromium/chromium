@@ -113,10 +113,6 @@ void BinaryUploadService::Request::set_device_token(const std::string& token) {
   content_analysis_request_.set_device_token(token);
 }
 
-void BinaryUploadService::Request::set_request_token(const std::string& token) {
-  content_analysis_request_.set_request_token(token);
-}
-
 void BinaryUploadService::Request::set_filename(const std::string& filename) {
   content_analysis_request_.mutable_request_data()->set_filename(filename);
 }
@@ -164,10 +160,12 @@ void BinaryUploadService::Request::set_content_type(const std::string& type) {
 }
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
+  DCHECK(request_token().empty());
+
   std::string token = base::RandBytesAsString(128);
-  token = base::HexEncode(token.data(), token.size());
-  set_request_token(token);
-  return token;
+  content_analysis_request_.set_request_token(
+      base::HexEncode(token.data(), token.size()));
+  return content_analysis_request_.request_token();
 }
 
 enterprise_connectors::AnalysisConnector
@@ -261,6 +259,21 @@ const std::string& BinaryUploadService::Request::access_token() const {
 void BinaryUploadService::Request::set_access_token(
     const std::string& access_token) {
   access_token_ = access_token;
+}
+
+BinaryUploadService::Ack::Ack(
+    enterprise_connectors::CloudOrLocalAnalysisSettings settings)
+    : cloud_or_local_settings_(std::move(settings)) {}
+
+BinaryUploadService::Ack::~Ack() = default;
+
+void BinaryUploadService::Ack::set_request_token(const std::string& token) {
+  ack_.set_request_token(token);
+}
+
+void BinaryUploadService::Ack::set_status(
+    enterprise_connectors::ContentAnalysisAcknowledgement::Status status) {
+  ack_.set_status(status);
 }
 
 // static

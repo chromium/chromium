@@ -142,11 +142,19 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
     }
   }
 
+  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
+    ++num_acks_;
+    ASSERT_NE(requests_tokens_.end(),
+              std::find(requests_tokens_.begin(), requests_tokens_.end(),
+                        ack->ack().request_token()));
+  }
+
   void SetResponse(const base::FilePath& path,
                    BinaryUploadService::Result result,
                    enterprise_connectors::ContentAnalysisResponse response) {
     saved_results_[path.AsUTF8Unsafe()] = result;
     saved_responses_[path.AsUTF8Unsafe()] = response;
+    requests_tokens_.push_back(response.request_token());
   }
 
   const enterprise_connectors::ContentAnalysisRequest& last_request() {
@@ -158,11 +166,14 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   }
 
   size_t num_finished_requests() { return num_finished_requests_; }
+  size_t num_acks() { return num_acks_; }
 
   void Reset() {
     saved_results_.clear();
     saved_responses_.clear();
+    requests_tokens_.clear();
     num_finished_requests_ = 0;
+    num_acks_ = 0;
   }
 
  private:
@@ -171,9 +182,11 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   base::flat_map<std::string, enterprise_connectors::ContentAnalysisResponse>
       saved_responses_;
   enterprise_connectors::ContentAnalysisRequest last_request_;
+  std::vector<std::string> requests_tokens_;
 
   base::RepeatingClosure quit_on_last_request_;
   size_t num_finished_requests_ = 0;
+  size_t num_acks_ = 0;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {
@@ -1146,6 +1159,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::DEEP_SCANNED_SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 
@@ -1218,6 +1234,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 
@@ -1318,6 +1337,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 }

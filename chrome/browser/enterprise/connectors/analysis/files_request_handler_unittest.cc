@@ -232,6 +232,13 @@ class FilesRequestHandlerTest : public BaseTest {
 
     fake_files_request_handler_->UploadData();
     RunUntilDone();
+
+    EXPECT_GE(paths.size(),
+              fake_files_request_handler_->GetRequestTokensForTesting().size());
+    for (auto& token :
+         fake_files_request_handler_->GetRequestTokensForTesting()) {
+      EXPECT_FALSE(token.empty());
+    }
   }
 
   enterprise_connectors::AnalysisSettings GetSettings() {
@@ -330,6 +337,8 @@ class FilesRequestHandlerTest : public BaseTest {
       *response.add_results() = dlp_response_.value().results(0);
     }
 
+    // Set any non empty request token.
+    response.set_request_token("request_token");
     return response;
   }
 

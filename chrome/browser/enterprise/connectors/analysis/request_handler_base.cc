@@ -26,6 +26,14 @@ bool RequestHandlerBase::UploadData() {
   return UploadDataImpl();
 }
 
+void RequestHandlerBase::AppendRequestTokensTo(
+    std::vector<std::string>* request_tokens) {
+  request_tokens->reserve(request_tokens->size() + request_tokens_.size());
+  std::move(std::begin(request_tokens_), std::end(request_tokens_),
+            std::back_inserter(*request_tokens));
+  request_tokens_.clear();
+}
+
 void RequestHandlerBase::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     safe_browsing::BinaryUploadService::Request* request) {

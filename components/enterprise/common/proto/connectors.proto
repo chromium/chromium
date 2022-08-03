@@ -195,3 +195,24 @@ message ContentAnalysisResponse {
   // Reserved to make sure there is no overlap with DeepScanningClientResponse.
   reserved 2 to 3;
 }
+
+// An Acknowledgement is sent by the browser following the receipt of a response
+// from the agent.
+message ContentAnalysisAcknowledgement {
+  // Token used to correlate with the corresponding request and response.
+  optional string request_token = 1;
+
+  // The action taken by google Chrome with the content analysis response.
+  enum Status {
+    // The response was handled as specified by the agent.
+    SUCCESS = 1;
+
+    // The response from the agent was not properly formatted.
+    INVALID_RESPONSE = 2;
+
+    // The response from the agent was too late and Google Chrome took the
+    // default action.
+    TOO_LATE = 3;
+  };
+  optional Status status = 2;
+}

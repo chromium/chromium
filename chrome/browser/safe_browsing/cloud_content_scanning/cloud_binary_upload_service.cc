@@ -216,6 +216,10 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
       std::move(request), can_upload_enterprise_data_[token_and_connector]);
 }
 
+void CloudBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
+  // Nothing to do for cloud upload service.
+}
+
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<CloudBinaryUploadService::Request> request,
     bool authorized) {

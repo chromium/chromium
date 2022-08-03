@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_REQUEST_HANDLER_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_REQUEST_HANDLER_BASE_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -38,11 +41,22 @@ class RequestHandlerBase {
   // the background and false if there is nothing to do.
   bool UploadData();
 
+  // Moves the tokens of all file requests being handled to the end of the
+  // given vector.
+  void AppendRequestTokensTo(std::vector<std::string>* request_tokens);
+
   // This method is called after a user has bypassed a scanning warning and is
   // expected to send one or more reports corresponding to the data that was
   // allowed to be transferred by the user.
   virtual void ReportWarningBypass(
       absl::optional<std::u16string> user_justification) = 0;
+
+  // After All file requests have been processed, this call can be used to
+  // retrieve any request tokens stored internally.  There should one for
+  // each successful request and they must all be non-empty.
+  const std::vector<std::string>& GetRequestTokensForTesting() const {
+    return request_tokens_;
+  }
 
  private:
   // Uploads the actual requests. To be implemented by child classes.
@@ -64,6 +78,10 @@ class RequestHandlerBase {
   const enterprise_connectors::AnalysisSettings& analysis_settings_;
   GURL url_;
   safe_browsing::DeepScanAccessPoint access_point_;
+
+  // The request tokens of all the requests that make up the user action
+  // represented by this ContentAnalysisDelegate instance.
+  std::vector<std::string> request_tokens_;
 
   base::TimeTicks upload_start_time_;
 };

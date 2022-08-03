@@ -340,6 +340,10 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
 void ContentAnalysisDelegate::StringRequestCallback(
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
+  // Remember to send an ack for this response.
+  if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
+    request_tokens_.push_back(response.request_token());
+
   int64_t content_size = 0;
   for (const std::string& entry : data_.text)
     content_size += entry.size();
@@ -378,6 +382,9 @@ void ContentAnalysisDelegate::StringRequestCallback(
 
 void ContentAnalysisDelegate::FilesRequestCallback(
     std::vector<RequestHandlerResult> results) {
+  // Remember to send acks for any responses.
+  files_request_handler_->AppendRequestTokensTo(&request_tokens_);
+
   // No reporting here, because the MultiFileRequestHandler does that.
   DCHECK_EQ(results.size(), result_.paths_results.size());
   for (size_t index = 0; index < results.size(); ++index) {
@@ -417,6 +424,10 @@ bool ContentAnalysisDelegate::CancelDialog() {
 void ContentAnalysisDelegate::PageRequestCallback(
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
+  // Remember to send an ack for this response.
+  if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
+    request_tokens_.push_back(response.request_token());
+
   RecordDeepScanMetrics(access_point_,
                         base::TimeTicks::Now() - upload_start_time_,
                         page_size_bytes_, result, response);
@@ -581,6 +592,8 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
     return;
   }
 
+  AckAllRequests();
+
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
   if (final_result_ != FinalContentAnalysisResult::WARNING)
@@ -604,6 +617,27 @@ void ContentAnalysisDelegate::UpdateFinalResult(
   if (result < final_result_) {
     final_result_ = result;
     final_result_tag_ = tag;
+  }
+}
+
+void ContentAnalysisDelegate::AckAllRequests() {
+  BinaryUploadService* upload_service = GetBinaryUploadService();
+  if (!upload_service)
+    return;
+
+  // Calculate overall status for all requests.
+  // TODO(b/240629222): Calculate status based on final_result_.
+  // However, final_result_ does not take info account timeout and I think
+  // the enum values of ContentAnalysisAcknowledgement::Status are not
+  // right.
+  auto status = ContentAnalysisAcknowledgement::SUCCESS;
+
+  for (auto& token : request_tokens_) {
+    auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+        data_.settings.cloud_or_local_settings);
+    ack->set_request_token(token);
+    ack->set_status(status);
+    upload_service->MaybeAcknowledge(std::move(ack));
   }
 }
 

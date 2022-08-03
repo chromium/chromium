@@ -539,6 +539,7 @@ void DeepScanningRequest::OnScanComplete(
       /*response=*/response);
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (result == BinaryUploadService::Result::SUCCESS) {
+    request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
     base::UmaHistogramEnumeration(
         "SBClientDownload.MalwareDeepScanResult." + GetTriggerName(trigger_),
@@ -670,6 +671,8 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   for (auto& observer : observers_)
     observer.OnFinish(this);
 
+  AcknowledgeRequest();
+
   if (!callback_.is_null())
     callback_.Run(result);
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -711,6 +714,27 @@ bool DeepScanningRequest::ReportOnlyScan() {
   return base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
          analysis_settings_.block_until_verdict ==
              enterprise_connectors::BlockUntilVerdict::kNoBlock;
+}
+
+void DeepScanningRequest::AcknowledgeRequest() {
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item_));
+  BinaryUploadService* binary_upload_service =
+      download_service_->GetBinaryUploadService(profile, analysis_settings_);
+  if (!binary_upload_service)
+    return;
+
+  // Calculate overall status for all requests.
+  // TODO(b/240629222): Calculate status based on final result.
+  auto status = enterprise_connectors::ContentAnalysisAcknowledgement::SUCCESS;
+
+  for (auto& token : request_tokens_) {
+    auto ack = std::make_unique<BinaryUploadService::Ack>(
+        analysis_settings_.cloud_or_local_settings);
+    ack->set_request_token(token);
+    ack->set_status(status);
+    binary_upload_service->MaybeAcknowledge(std::move(ack));
+  }
 }
 
 }  // namespace safe_browsing
