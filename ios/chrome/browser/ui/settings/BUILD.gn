@@ -209,6 +209,7 @@ source_set("settings") {
     "//url",
   ]
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/authentication" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [
     "CoreLocation.framework",
     "UIKit.framework",

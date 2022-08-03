@@ -51,12 +51,6 @@
 // ContentSuggestions.
 @property(nonatomic, weak) UIButton* identityDiscButton;
 
-// View controller representing the NTP content suggestions. These suggestions
-// include the most visited site tiles, the shortcut tiles, the fake omnibox and
-// the Google doodle. `contentSuggestionsUIViewController` is used if
-// kContentSuggestionsUIViewControllerMigration is enabled.
-@property(nonatomic, strong)
-    UICollectionViewController* contentSuggestionsCollectionViewController;
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
 

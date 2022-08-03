@@ -54,10 +54,6 @@ class WebState;
 @property(nonatomic, weak, readonly) id<ThumbStripSupporting>
     thumbStripSupporting;
 
-// Exposes content inset of contentSuggestions collectionView to ensure all of
-// content is visible under the bottom toolbar.
-@property(nonatomic, readonly) UIEdgeInsets contentInset;
-
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
@@ -71,8 +67,8 @@ class WebState;
 // Stop any scrolling in the scroll view.
 - (void)stopScrolling;
 
-// The content offset of the scroll view.
-- (CGPoint)contentOffset;
+// Whether the NTP is scrolled to the top.
+- (BOOL)isScrolledToTop;
 
 // Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;

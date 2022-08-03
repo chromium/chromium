@@ -11,7 +11,6 @@
 
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_response_bridge.h"
@@ -32,7 +31,6 @@ class PrefRegistrySyncable;
 @protocol ApplicationCommands;
 class Browser;
 @protocol BrowserCoordinatorCommands;
-@protocol ContentSuggestionsCollectionConsumer;
 @protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
@@ -78,8 +76,6 @@ class WebStateList;
 @property(nonatomic, weak) id<FeedDelegate> feedDelegate;
 
 // The consumer that will be notified when the data change.
-@property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer>
-    collectionConsumer;
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // YES if the Start Surface is being shown.

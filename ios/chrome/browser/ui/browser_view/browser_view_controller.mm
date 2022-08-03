@@ -2589,11 +2589,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (BOOL)isTabScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
   DCHECK(bubblePresenter == _bubblePresenter);
 
-  // If NTP exists, use NTP coordinator's scroll offset.
+  // If NTP exists, check if it is scrolled to top.
   if (self.isNTPActiveForCurrentWebState) {
-    NewTabPageCoordinator* coordinator = self.ntpCoordinator;
-    CGFloat scrolledToTopOffset = [coordinator contentInset].top;
-    return [coordinator contentOffset].y == scrolledToTopOffset;
+    return [self.ntpCoordinator isScrolledToTop];
   }
 
   CRWWebViewScrollViewProxy* scrollProxy =
