@@ -8,6 +8,8 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_parent_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
@@ -69,6 +71,39 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
   _mostVisitedDataForLogging = mostVisitedData;
 }
 
+- (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item
+                        parentItem:(ContentSuggestionsParentItem*)parentItem {
+  DCHECK(IsSingleCellContentSuggestionsEnabled());
+  __weak ContentSuggestionsFaviconMediator* weakSelf = self;
+  __weak ContentSuggestionsMostVisitedItem* weakItem = item;
+  __weak ContentSuggestionsParentItem* weakParentItem = parentItem;
+
+  void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
+    ContentSuggestionsFaviconMediator* strongSelf = weakSelf;
+    ContentSuggestionsMostVisitedItem* strongItem = weakItem;
+    ContentSuggestionsParentItem* strongParentItem = weakParentItem;
+    if (!strongSelf || !strongItem) {
+      return;
+    }
+
+    strongItem.attributes = attributes;
+    if (!parentItem) {
+      return;
+    }
+    for (__strong ContentSuggestionsMostVisitedItem* mvtItem in strongParentItem
+             .mostVisitedItems) {
+      if (mvtItem.index == strongItem.index) {
+        mvtItem = strongItem;
+      }
+    }
+    [strongSelf logFaviconFetchedForItem:strongItem];
+    [strongSelf.collectionConsumer itemHasChanged:strongParentItem];
+  };
+
+  [self.mostVisitedAttributesProvider fetchFaviconAttributesForURL:item.URL
+                                                        completion:completion];
+}
+
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item {
   __weak ContentSuggestionsFaviconMediator* weakSelf = self;
   __weak ContentSuggestionsMostVisitedItem* weakItem = item;
@@ -81,7 +116,11 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 
     strongItem.attributes = attributes;
     [strongSelf logFaviconFetchedForItem:strongItem];
-    [strongSelf.consumer updateMostVisitedTileConfig:strongItem];
+    if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+      [strongSelf.consumer updateMostVisitedTileConfig:strongItem];
+    } else {
+      [strongSelf.collectionConsumer itemHasChanged:strongItem];
+    }
   };
 
   [self.mostVisitedAttributesProvider fetchFaviconAttributesForURL:item.URL

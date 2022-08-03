@@ -7,15 +7,16 @@
 
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
-
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 
 @protocol ContentSuggestionsGestureCommands;
 @class FaviconAttributes;
 class GURL;
 
 // Item containing a Most Visited suggestion.
-@interface ContentSuggestionsMostVisitedItem : NSObject
+@interface ContentSuggestionsMostVisitedItem
+    : CollectionViewItem<SuggestedContent>
 
 // Text for the title and the accessibility label of the cell.
 @property(nonatomic, copy, nonnull) NSString* title;

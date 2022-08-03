@@ -119,7 +119,6 @@ source_set("content_suggestions") {
     "//ui/strings",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
 source_set("metrics") {
@@ -145,17 +144,22 @@ source_set("constants") {
 
 source_set("public") {
   sources = [ "content_suggestions_menu_provider.h" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("content_suggestions_ui") {
   sources = [
+    "content_suggestions_collection_consumer.h",
     "content_suggestions_collection_controlling.h",
     "content_suggestions_collection_synchronizing.h",
+    "content_suggestions_collection_view_controller.h",
+    "content_suggestions_collection_view_controller.mm",
     "content_suggestions_commands.h",
     "content_suggestions_consumer.h",
     "content_suggestions_header_commands.h",
     "content_suggestions_header_controlling.h",
+    "content_suggestions_header_provider.h",
     "content_suggestions_header_synchronizer.h",
     "content_suggestions_header_synchronizer.mm",
     "content_suggestions_header_synchronizing.h",
@@ -164,6 +168,8 @@ source_set("content_suggestions_ui") {
     "content_suggestions_header_view_controller.h",
     "content_suggestions_header_view_controller.mm",
     "content_suggestions_header_view_controller_delegate.h",
+    "content_suggestions_layout.h",
+    "content_suggestions_layout.mm",
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
@@ -208,7 +214,10 @@ source_set("content_suggestions_ui") {
     "//ios/web/common",
     "//ui/base",
   ]
-  public_deps = [ ":content_suggestions_ui_util" ]
+  public_deps = [
+    ":content_suggestions_ui_util",
+    "//ios/third_party/material_components_ios",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -244,6 +253,7 @@ source_set("content_suggestions_ui_util") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
+    "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ui/base",
   ]

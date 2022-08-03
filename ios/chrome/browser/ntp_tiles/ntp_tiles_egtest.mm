@@ -41,6 +41,10 @@ using web::test::HttpServer;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kSingleCellContentSuggestions);
+  config.features_enabled.push_back(kContentSuggestionsHeaderMigration);
+  config.features_enabled.push_back(
+      kContentSuggestionsUIViewControllerMigration);
   return config;
 }
 

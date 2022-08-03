@@ -5,16 +5,24 @@
 source_set("cells") {
   sources = [
     "content_suggestions_gesture_commands.h",
+    "content_suggestions_header_item.h",
+    "content_suggestions_header_item.mm",
     "content_suggestions_module_container.h",
     "content_suggestions_module_container.mm",
+    "content_suggestions_most_visited_action_cell.h",
+    "content_suggestions_most_visited_action_cell.mm",
     "content_suggestions_most_visited_action_item.h",
     "content_suggestions_most_visited_action_item.mm",
+    "content_suggestions_most_visited_cell.h",
+    "content_suggestions_most_visited_cell.mm",
     "content_suggestions_most_visited_constants.h",
     "content_suggestions_most_visited_constants.mm",
     "content_suggestions_most_visited_item.h",
     "content_suggestions_most_visited_item.mm",
     "content_suggestions_most_visited_tile_view.h",
     "content_suggestions_most_visited_tile_view.mm",
+    "content_suggestions_parent_item.h",
+    "content_suggestions_parent_item.mm",
     "content_suggestions_return_to_recent_tab_item.h",
     "content_suggestions_return_to_recent_tab_item.mm",
     "content_suggestions_return_to_recent_tab_view.h",
@@ -64,9 +72,11 @@ source_set("cells") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/third_party/material_components_ios",
     "//ui/base",
     "//url",
   ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -82,13 +92,18 @@ source_set("constants") {
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/third_party/material_components_ios",
     "//ui/base:base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_suggestions_tile_layout_util_unittest.mm" ]
+  sources = [
+    "content_suggestions_header_item_unittest.mm",
+    "content_suggestions_tile_layout_util_unittest.mm",
+    "content_suggestions_whats_new_item_unittest.mm",
+  ]
   deps = [
     ":cells",
     "//base",

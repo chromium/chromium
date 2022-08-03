@@ -25,9 +25,9 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
@@ -203,7 +203,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // Return to Recent tab tile is only shown one time, so subtract it's
     // vertical space to preserve relative scroll position from top.
     CGFloat tileSectionHeight =
-        kReturnToRecentTabSize.height +
+        [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
         content_suggestions::kReturnToRecentTabSectionBottomMargin;
     if (scrollPosition >
         tileSectionHeight +

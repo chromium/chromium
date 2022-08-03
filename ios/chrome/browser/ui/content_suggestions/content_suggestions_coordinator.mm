@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
@@ -77,6 +78,7 @@
 #endif
 
 @interface ContentSuggestionsCoordinator () <
+    AppStateObserver,
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
@@ -85,6 +87,9 @@
   // StartSurfaceRecentTabObserverBridge.
   std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
 }
+
+@property(nonatomic, strong)
+    ContentSuggestionsCollectionViewController* collectionViewController;
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
 @property(nonatomic, strong)
@@ -93,6 +98,9 @@
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
+// Redefined as readwrite.
+@property(nonatomic, strong, readwrite)
+    ContentSuggestionsHeaderViewController* headerController;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -130,6 +138,37 @@
       prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
 
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerController =
+        [[ContentSuggestionsHeaderViewController alloc] init];
+    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+    // clean up.
+    self.headerController.dispatcher =
+        static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
+                       FakeboxFocuser>>(self.browser->GetCommandDispatcher());
+    self.headerController.commandHandler = self;
+    self.headerController.delegate = self.ntpMediator;
+
+    self.headerController.readingListModel =
+        ReadingListModelFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.headerController.toolbarDelegate = self.toolbarDelegate;
+
+    // Only handle app state for the new First Run UI.
+    if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+      SceneState* sceneState =
+          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+      AppState* appState = sceneState.appState;
+      [appState addObserver:self];
+
+      // Do not focus on omnibox for voice over if there are other screens to
+      // show.
+      if (appState.initStage < InitStageFinal) {
+        self.headerController.focusOmniboxWhenViewAppears = NO;
+      }
+    }
+  }
+
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -165,24 +204,83 @@
   self.contentSuggestionsMediator.webState = self.webState;
   [self configureStartSurfaceIfNeeded];
 
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerController.promoCanShow =
+        [self.contentSuggestionsMediator notificationPromo]->CanShow();
+  }
+
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
     self.contentSuggestionsViewController =
         [[ContentSuggestionsViewController alloc] init];
     self.contentSuggestionsViewController.suggestionCommandHandler =
         self.contentSuggestionsMediator;
     self.contentSuggestionsViewController.audience = self;
     self.contentSuggestionsViewController.menuProvider = self;
+  } else {
+    self.collectionViewController =
+        [[ContentSuggestionsCollectionViewController alloc]
+            initWithStyle:CollectionViewControllerStyleDefault];
+    self.collectionViewController.suggestionCommandHandler =
+        self.contentSuggestionsMediator;
+    self.collectionViewController.audience = self;
+    self.collectionViewController.contentSuggestionsEnabled =
+        self.contentSuggestionsEnabled;
+    self.collectionViewController.menuProvider = self;
+  }
 
-    self.contentSuggestionsMediator.consumer =
-        self.contentSuggestionsViewController;
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+      self.contentSuggestionsMediator.consumer =
+          self.contentSuggestionsViewController;
+    } else {
+      self.contentSuggestionsMediator.collectionConsumer =
+          self.collectionViewController;
+    }
+  }
 
-    self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
-    [self.ntpMediator setUp];
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.ntpMediator.consumer = self.headerController;
+  }
+  // IsContentSuggestionsUIViewControllerMigrationEnabled() doesn't need to set
+  // the suggestionsViewController since it won't be retrieving an item's index
+  // from the CollectionView model.
+  if (!IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.ntpMediator.suggestionsViewController = self.collectionViewController;
+  }
+  self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
+  [self.ntpMediator setUp];
 
-    self.dragDropHandler = [[URLDragDropHandler alloc] init];
-    self.dragDropHandler.dropDelegate = self;
+  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
+    [self.collectionViewController
+        addChildViewController:self.headerController];
+    [self.headerController
+        didMoveToParentViewController:self.collectionViewController];
+
+    // TODO(crbug.com/1114792): Remove header provider and use refactored
+    // header synchronizer instead.
+    self.collectionViewController.headerProvider = self.headerController;
+
+    // Set consumer after configuring the header to ensure that view
+    // controller has access to it when configuring its elements.
+    DCHECK(self.collectionViewController.headerProvider);
+    self.contentSuggestionsMediator.collectionConsumer =
+        self.collectionViewController;
+
+    self.collectionViewController.collectionView.accessibilityIdentifier =
+        kContentSuggestionsCollectionIdentifier;
+  }
+
+  self.dragDropHandler = [[URLDragDropHandler alloc] init];
+  self.dragDropHandler.dropDelegate = self;
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
     [self.contentSuggestionsViewController.view
         addInteraction:[[UIDropInteraction alloc]
                            initWithDelegate:self.dragDropHandler]];
+  } else {
+    [self.collectionViewController.collectionView
+        addInteraction:[[UIDropInteraction alloc]
+                           initWithDelegate:self.dragDropHandler]];
+  }
 }
 
 - (void)stop {
@@ -197,14 +295,25 @@
   }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
-  self.contentSuggestionsViewController = nil;
+  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.contentSuggestionsViewController = nil;
+  } else {
+    self.collectionViewController = nil;
+  }
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+  self.headerController = nil;
   _started = NO;
 }
 
 - (UIViewController*)viewController {
+  DCHECK(IsContentSuggestionsUIViewControllerMigrationEnabled());
   return self.contentSuggestionsViewController;
+}
+
+- (UICollectionViewController*)contentSuggestionsCollectionViewController {
+  DCHECK(!IsContentSuggestionsUIViewControllerMigrationEnabled());
+  return self.collectionViewController;
 }
 
 #pragma mark - Setters
@@ -220,6 +329,7 @@
   NotificationPromoWhatsNew* notificationPromo =
       [self.contentSuggestionsMediator notificationPromo];
   notificationPromo->HandleViewed();
+  [self.headerController setPromoCanShow:notificationPromo->CanShow()];
 }
 
 - (void)viewDidDisappear {
@@ -268,7 +378,26 @@
 #pragma mark - Public methods
 
 - (UIView*)view {
-  return self.contentSuggestionsViewController.view;
+  return IsContentSuggestionsUIViewControllerMigrationEnabled()
+             ? self.contentSuggestionsViewController.view
+             : self.collectionViewController.view;
+}
+
+- (void)stopScrolling {
+  UIScrollView* scrollView = self.collectionViewController.collectionView;
+  [scrollView setContentOffset:scrollView.contentOffset animated:NO];
+}
+
+- (UIEdgeInsets)contentInset {
+  return self.collectionViewController.collectionView.contentInset;
+}
+
+- (CGPoint)contentOffset {
+  CGPoint collectionOffset =
+      self.collectionViewController.collectionView.contentOffset;
+  collectionOffset.y -=
+      self.headerCollectionInteractionHandler.collectionShiftingOffset;
+  return collectionOffset;
 }
 
 - (void)reload {
@@ -313,6 +442,12 @@
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
+        NSInteger index =
+            IsSingleCellContentSuggestionsEnabled()
+                ? item.index
+                : [self.collectionViewController.collectionViewModel
+                      indexPathForItem:item]
+                      .item;
         CGPoint centerPoint = [view.superview convertPoint:view.center
                                                     toView:nil];
 
@@ -320,7 +455,7 @@
                         [weakSelf.contentSuggestionsMediator
                             openNewTabWithMostVisitedItem:item
                                                 incognito:NO
-                                                  atIndex:item.index
+                                                  atIndex:index
                                                 fromPoint:centerPoint];
                       }]];
 
@@ -329,7 +464,7 @@
               [weakSelf.contentSuggestionsMediator
                   openNewTabWithMostVisitedItem:item
                                       incognito:YES
-                                        atIndex:item.index
+                                        atIndex:index
                                       fromPoint:centerPoint];
             }];
 
@@ -433,12 +568,30 @@
       [[ActivityParams alloc] initWithURL:URL
                                     title:title
                                  scenario:ActivityScenario::MostVisitedEntry];
+  UIViewController* contentSuggestionsVC =
+      IsContentSuggestionsUIViewControllerMigrationEnabled()
+          ? self.contentSuggestionsViewController
+          : self.collectionViewController;
   self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.contentSuggestionsViewController
+      initWithBaseViewController:contentSuggestionsVC
                          browser:self.browser
                           params:params
                       originView:view];
   [self.sharingCoordinator start];
+}
+
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    if (previousInitStage == InitStageFirstRun) {
+      self.headerController.focusOmniboxWhenViewAppears = YES;
+      [self.headerController focusAccessibilityOnOmnibox];
+
+      [appState removeObserver:self];
+    }
+  }
 }
 
 @end

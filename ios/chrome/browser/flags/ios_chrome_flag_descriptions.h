@@ -139,10 +139,20 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kEnableExpKitCalendarTextClassifierName[];
 extern const char kEnableExpKitCalendarTextClassifierDescription[];
 
+// Title and description for the flag that moves the Content Suggestions header
+// to the Discover feed ScrollView.
+extern const char kContentSuggestionsHeaderMigrationName[];
+extern const char kContentSuggestionsHeaderMigrationDescription[];
+
 // Title and description for the flag that updates the Content Suggestions to a
 // new module design.
 extern const char kContentSuggestionsUIModuleRefreshName[];
 extern const char kContentSuggestionsUIModuleRefreshDescription[];
+
+// Title and description for the flag that moves the Content Suggestions to a
+// UIViewController.
+extern const char kContentSuggestionsUIViewControllerMigrationName[];
+extern const char kContentSuggestionsUIViewControllerMigrationDescription[];
 
 // Title and description for the flag to control which crash generation tool
 // is used.
@@ -566,6 +576,11 @@ extern const char kSharedHighlightingIOSDescription[];
 // Autofill field type predictions as placeholder.
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
+
+// Title and description for the flag to use one cell for the Content
+// Suggestions
+extern const char kSingleCellContentSuggestionsName[];
+extern const char kSingleCellContentSuggestionsDescription[];
 
 // Title and description for the flag to enable smart sorting the new overflow
 // menu.

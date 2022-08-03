@@ -164,11 +164,23 @@ extern const char kEnableExpKitCalendarTextClassifierDescription[] =
     "When enabled, Experience Kit Calendar will use Text Classifier library in "
     "entity detection where possible.";
 
+const char kContentSuggestionsHeaderMigrationName[] =
+    "Content Suggestions header migration";
+const char kContentSuggestionsHeaderMigrationDescription[] =
+    "When enabled, the Content Suggestions header will be logically moved to "
+    "the Discover feed ScrollView";
+
 const char kContentSuggestionsUIModuleRefreshName[] =
     "Content Suggestions UI Module Refresh";
 const char kContentSuggestionsUIModuleRefreshDescription[] =
     "When enabled, the Content Suggestions will be redesigned to be contained "
     "into distinct modules.";
+
+const char kContentSuggestionsUIViewControllerMigrationName[] =
+    "Content Suggestions UIViewController migration";
+const char kContentSuggestionsUIViewControllerMigrationDescription[] =
+    "When enabled, the Content Suggestions will be logically moved to a "
+    "UIViewController subclass implementation";
 
 const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
 const char kCrashpadIOSDescription[] =
@@ -617,6 +629,11 @@ const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
+
+const char kSingleCellContentSuggestionsName[] =
+    "Use Single Cell for Content Suggestions";
+const char kSingleCellContentSuggestionsDescription[] =
+    "Uses a single cell for all items in the NTP's content suggestions.";
 
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -60,6 +61,8 @@ class NTPHomeMediatorTest : public PlatformTest {
     navigation_manager_ = navigation_manager.get();
     fake_web_state_ = std::make_unique<web::FakeWebState>();
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
+    suggestions_view_controller_ =
+        OCMClassMock([ContentSuggestionsCollectionViewController class]);
     voice_availability_.SetVoiceProviderEnabled(true);
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -86,6 +89,7 @@ class NTPHomeMediatorTest : public PlatformTest {
           accountManagerService:accountManagerService
                      logoVendor:logo_vendor_
         voiceSearchAvailability:&voice_availability_];
+    mediator_.suggestionsViewController = suggestions_view_controller_;
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
     mediator_.consumer = consumer_;
   }
@@ -100,6 +104,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   id consumer_;
   id logo_vendor_;
+  id suggestions_view_controller_;
   FakeVoiceSearchAvailability voice_availability_;
   NTPHomeMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;

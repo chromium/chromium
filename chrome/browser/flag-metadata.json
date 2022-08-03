@@ -984,9 +984,19 @@
     "expiry_milestone": 110
   },
   {
+    "name": "content-suggestions-header-migration",
+    "owners": [ "thegreenfrog@google.com", "adamta@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "content-suggestions-ui-module-refresh",
     "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 108
+  },
+  {
+    "name": "content-suggestions-uiviewcontroller-migration",
+    "owners": [ "thegreenfrog@google.com", "adamta@google.com" ],
+    "expiry_milestone": 106
   },
   {
     "name": "context-menu-popup-style",
@@ -5818,6 +5828,11 @@
   {
     "name": "sim-lock-policy",
     "owners": [ "hsuregan@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
+    "name": "single-cell-content-suggestions",
+    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
     "expiry_milestone": 106
   },
   {
