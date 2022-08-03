@@ -276,30 +276,28 @@ void EduCoexistenceLoginHandler::InitializeEduArgs(
 void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   DCHECK(oauth_access_token_.has_value());
   DCHECK(initialize_edu_args_callback_.has_value());
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  params.SetStringKey("hl", app_locale);
+  params.Set("hl", app_locale);
 
-  params.SetStringKey("url", GetEduCoexistenceURL());
+  params.Set("url", GetEduCoexistenceURL());
 
-  params.SetStringKey("clientId",
-                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetStringKey("sourceUi", GetSourceUI());
+  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.Set("sourceUi", GetSourceUI());
 
-  params.SetStringKey("clientVersion", chrome::kChromeVersion);
-  params.SetStringKey("eduCoexistenceAccessToken", oauth_access_token_->token);
-  params.SetStringKey("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
-  params.SetStringKey("platformVersion",
-                      base::SysInfo::OperatingSystemVersion());
+  params.Set("clientVersion", chrome::kChromeVersion);
+  params.Set("eduCoexistenceAccessToken", oauth_access_token_->token);
+  params.Set("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
+  params.Set("platformVersion", base::SysInfo::OperatingSystemVersion());
   // Extended stable channel is not supported on Chrome OS Ash.
-  params.SetStringKey("releaseChannel", chrome::GetChannelName(
-                                            chrome::WithExtendedStable(false)));
-  params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
+  params.Set("releaseChannel",
+             chrome::GetChannelName(chrome::WithExtendedStable(false)));
+  params.Set("deviceId", GetDeviceIdForActiveUserProfile());
 
-  params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
+  params.Set("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
   // TODO(crbug.com/1202135): Remove along with JS part.
-  params.SetBoolKey("newOobeLayoutEnabled", true);
+  params.Set("newOobeLayoutEnabled", true);
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example
@@ -309,18 +307,18 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
     const GURL& current_url = web_contents->GetURL();
     std::string default_email;
     if (net::GetValueForKeyInQuery(current_url, "email", &default_email)) {
-      params.SetStringKey("email", default_email);
+      params.Set("email", default_email);
 
       std::string read_only_email;
       if (net::GetValueForKeyInQuery(current_url, "readOnlyEmail",
                                      &read_only_email)) {
-        params.SetStringKey("readOnlyEmail", read_only_email);
+        params.Set("readOnlyEmail", read_only_email);
       }
     }
   }
 
   ResolveJavascriptCallback(base::Value(initialize_edu_args_callback_.value()),
-                            std::move(params));
+                            params);
   initialize_edu_args_callback_ = absl::nullopt;
 }
 

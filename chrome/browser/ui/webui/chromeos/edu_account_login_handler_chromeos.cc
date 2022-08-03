@@ -178,16 +178,13 @@ void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
   }
   parent_signin_callback_id_ = args[0].GetString();
 
-  const base::DictionaryValue* parent = nullptr;
-  args[1].GetAsDictionary(&parent);
-  CHECK(parent);
-  const base::Value* obfuscated_gaia_id_value =
-      parent->GetDict().Find(kObfuscatedGaiaIdKey);
-  DCHECK(obfuscated_gaia_id_value);
-  std::string obfuscated_gaia_id = obfuscated_gaia_id_value->GetString();
+  const base::Value::Dict& parent = args[1].GetDict();
+  const std::string* obfuscated_gaia_id =
+      parent.FindString(kObfuscatedGaiaIdKey);
+  DCHECK(obfuscated_gaia_id);
 
   const std::string* password = args[2].GetIfString();
-  FetchAccessToken(obfuscated_gaia_id, password ? *password : std::string());
+  FetchAccessToken(*obfuscated_gaia_id, password ? *password : std::string());
 }
 
 void EduAccountLoginHandler::FetchFamilyMembers() {
@@ -205,7 +202,7 @@ void EduAccountLoginHandler::FetchFamilyMembers() {
 }
 
 void EduAccountLoginHandler::FetchParentImages(
-    base::ListValue parents,
+    base::Value::List parents,
     std::map<std::string, GURL> profile_image_urls) {
   DCHECK(!profile_image_fetcher_);
   image_fetcher::ImageFetcher* fetcher =
@@ -259,7 +256,7 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
     const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
   family_fetcher_.reset();
-  base::ListValue parents;
+  base::Value::List parents;
   std::map<std::string, GURL> profile_image_urls;
 
   for (const auto& member : members) {
@@ -268,10 +265,10 @@ void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
       continue;
     }
 
-    base::DictionaryValue parent;
-    parent.GetDict().Set("email", member.email);
-    parent.GetDict().Set("displayName", member.display_name);
-    parent.GetDict().Set(kObfuscatedGaiaIdKey, member.obfuscated_gaia_id);
+    base::Value::Dict parent;
+    parent.Set("email", member.email);
+    parent.Set("displayName", member.display_name);
+    parent.Set(kObfuscatedGaiaIdKey, member.obfuscated_gaia_id);
 
     parents.Append(std::move(parent));
     profile_image_urls[member.obfuscated_gaia_id] =
@@ -284,16 +281,16 @@ void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
 void EduAccountLoginHandler::OnFailure(FamilyInfoFetcher::ErrorCode error) {
   family_fetcher_.reset();
   RejectJavascriptCallback(base::Value(get_parents_callback_id_),
-                           base::ListValue());
+                           base::Value::List());
   get_parents_callback_id_.clear();
 }
 
 void EduAccountLoginHandler::OnParentProfileImagesFetched(
-    base::ListValue parents,
+    base::Value::List parents,
     std::map<std::string, gfx::Image> profile_images) {
   profile_image_fetcher_.reset();
 
-  for (auto& parent : parents.GetListDeprecated()) {
+  for (auto& parent : parents) {
     const std::string* obfuscated_gaia_id =
         parent.GetDict().FindString(kObfuscatedGaiaIdKey);
     DCHECK(obfuscated_gaia_id);
@@ -328,8 +325,8 @@ void EduAccountLoginHandler::CreateReAuthProofTokenForParent(
     LOG(ERROR)
         << "Could not get access token to create ReAuthProofToken for parent"
         << error.ToString();
-    base::DictionaryValue result;
-    result.GetDict().Set("isWrongPassword", false);
+    base::Value::Dict result;
+    result.Set("isWrongPassword", false);
     RejectJavascriptCallback(base::Value(parent_signin_callback_id_), result);
     parent_signin_callback_id_.clear();
     return;
@@ -353,10 +350,9 @@ void EduAccountLoginHandler::OnReAuthProofTokenFailure(
              << static_cast<int>(error);
   gaia_auth_fetcher_.reset();
 
-  base::DictionaryValue result;
-  result.GetDict().Set(
-      "isWrongPassword",
-      error == GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
+  base::Value::Dict result;
+  result.Set("isWrongPassword",
+             error == GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
   RejectJavascriptCallback(base::Value(parent_signin_callback_id_), result);
   parent_signin_callback_id_.clear();
 }

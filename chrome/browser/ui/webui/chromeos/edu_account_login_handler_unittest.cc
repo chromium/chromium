@@ -85,29 +85,29 @@ std::map<std::string, gfx::Image> GetFakeProfileImageMap() {
   };
 }
 
-base::ListValue GetFakeParentsWithoutImage() {
-  base::ListValue parents;
+base::Value::List GetFakeParentsWithoutImage() {
+  base::Value::List parents;
 
-  base::DictionaryValue parent1;
-  parent1.GetDict().Set("email", "homer@simpson.com");
-  parent1.GetDict().Set("displayName", "Homer Simpson");
-  parent1.GetDict().Set("obfuscatedGaiaId", kFakeParentGaiaId);
+  base::Value::Dict parent1;
+  parent1.Set("email", "homer@simpson.com");
+  parent1.Set("displayName", "Homer Simpson");
+  parent1.Set("obfuscatedGaiaId", kFakeParentGaiaId);
   parents.Append(std::move(parent1));
 
-  base::DictionaryValue parent2;
-  parent2.GetDict().Set("email", std::string());
-  parent2.GetDict().Set("displayName", "Marge Simpson");
-  parent2.GetDict().Set("obfuscatedGaiaId", kFakeParentGaiaId2);
+  base::Value::Dict parent2;
+  parent2.Set("email", std::string());
+  parent2.Set("displayName", "Marge Simpson");
+  parent2.Set("obfuscatedGaiaId", kFakeParentGaiaId2);
   parents.Append(std::move(parent2));
 
   return parents;
 }
 
-base::ListValue GetFakeParentsWithImage() {
-  base::ListValue parents = GetFakeParentsWithoutImage();
+base::Value::List GetFakeParentsWithImage() {
+  base::Value::List parents = GetFakeParentsWithoutImage();
   std::map<std::string, gfx::Image> profile_images = GetFakeProfileImageMap();
 
-  for (auto& parent : parents.GetListDeprecated()) {
+  for (auto& parent : parents) {
     const std::string* obfuscated_gaia_id =
         parent.GetDict().FindString("obfuscatedGaiaId");
     DCHECK(obfuscated_gaia_id);
@@ -129,12 +129,12 @@ base::ListValue GetFakeParentsWithImage() {
   return parents;
 }
 
-base::DictionaryValue GetFakeParent() {
-  base::DictionaryValue parent;
-  parent.GetDict().Set("email", "homer@simpson.com");
-  parent.GetDict().Set("displayName", "Homer Simpson");
-  parent.GetDict().Set("profileImageUrl", "http://profile.url/homer/image");
-  parent.GetDict().Set("obfuscatedGaiaId", kFakeParentGaiaId);
+base::Value::Dict GetFakeParent() {
+  base::Value::Dict parent;
+  parent.Set("email", "homer@simpson.com");
+  parent.Set("displayName", "Homer Simpson");
+  parent.Set("profileImageUrl", "http://profile.url/homer/image");
+  parent.Set("obfuscatedGaiaId", kFakeParentGaiaId);
   return parent;
 }
 
@@ -159,7 +159,7 @@ class MockEduAccountLoginHandler : public EduAccountLoginHandler {
               (override));
   MOCK_METHOD(void,
               FetchParentImages,
-              (base::ListValue parents,
+              (base::Value::List parents,
                (std::map<std::string, GURL> profile_image_urls)),
               (override));
 };
@@ -276,7 +276,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false /*success*/);
 
-  ASSERT_EQ(base::ListValue(), *data.arg3());
+  ASSERT_EQ(base::Value::List(), *data.arg3());
 }
 
 TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
@@ -332,8 +332,8 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false /*success*/);
 
-  base::DictionaryValue result;
-  result.GetDict().Set("isWrongPassword", false);
+  base::Value::Dict result;
+  result.Set("isWrongPassword", false);
   ASSERT_EQ(result, *data.arg3());
 }
 
@@ -366,8 +366,8 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false);
 
-  base::DictionaryValue result;
-  result.GetDict().Set("isWrongPassword", true);
+  base::Value::Dict result;
+  result.Set("isWrongPassword", true);
   ASSERT_EQ(result, *data.arg3());
 }
 
