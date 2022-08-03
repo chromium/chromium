@@ -561,6 +561,36 @@ TEST(ValuesTest, DictFindByDottedPath) {
   EXPECT_TRUE(value->GetBool());
 }
 
+TEST(ValuesTest, DictSetByDottedPath) {
+  Value::Dict dict;
+
+  Value* c = dict.SetByDottedPath("a.b.c", Value());
+  ASSERT_TRUE(c);
+
+  Value::Dict* a = dict.FindDict("a");
+  ASSERT_TRUE(a);
+  EXPECT_EQ(1U, a->size());
+
+  Value::Dict* b = a->FindDict("b");
+  ASSERT_TRUE(b);
+  EXPECT_EQ(1U, b->size());
+
+  EXPECT_EQ(c, b->Find("c"));
+}
+
+TEST(ValuesTest, DictSetWithDottedKey) {
+  Value::Dict dict;
+
+  Value* abc = dict.Set("a.b.c", Value());
+  ASSERT_TRUE(abc);
+
+  EXPECT_FALSE(dict.FindByDottedPath("a"));
+  EXPECT_FALSE(dict.FindByDottedPath("a.b"));
+  EXPECT_FALSE(dict.FindByDottedPath("a.b.c"));
+
+  EXPECT_EQ(abc, dict.Find("a.b.c"));
+}
+
 TEST(ValuesTest, ListFront) {
   Value::List list;
   const Value::List& const_list = list;
@@ -1607,28 +1637,6 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
   }
 }
 
-TEST(ValuesTest, DictionaryWithoutPathExpansion) {
-  DictionaryValue dict;
-  dict.Set("this.is.expanded", std::make_unique<Value>());
-  dict.SetKey("this.isnt.expanded", Value());
-
-  EXPECT_FALSE(dict.FindKey("this.is.expanded"));
-  EXPECT_TRUE(dict.FindKey("this"));
-  Value* value1;
-  EXPECT_TRUE(dict.Get("this", &value1));
-  DictionaryValue* value2;
-  ASSERT_TRUE(dict.GetDictionaryWithoutPathExpansion("this", &value2));
-  EXPECT_EQ(value1, value2);
-  EXPECT_EQ(1U, value2->DictSize());
-
-  EXPECT_TRUE(dict.FindKey("this.isnt.expanded"));
-  Value* value3;
-  EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
-  Value* value4 = dict.FindKey("this.isnt.expanded");
-  ASSERT_TRUE(value4);
-  EXPECT_EQ(Value::Type::NONE, value4->type());
-}
-
 // Tests the deprecated version of SetWithoutPathExpansion.
 // TODO(estade): remove.
 TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
@@ -1640,8 +1648,10 @@ TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
   EXPECT_TRUE(dict.FindKey("this"));
   Value* value1;
   EXPECT_TRUE(dict.Get("this", &value1));
-  DictionaryValue* value2;
-  ASSERT_TRUE(dict.GetDictionaryWithoutPathExpansion("this", &value2));
+  ASSERT_TRUE(dict.GetDict().FindDict("this"));
+  DictionaryValue* value2 =
+      static_cast<DictionaryValue*>(dict.GetDict().Find("this"));
+  ASSERT_TRUE(value2);
   EXPECT_EQ(value1, value2);
   EXPECT_EQ(1U, value2->DictSize());
 
@@ -2370,18 +2380,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetList("dict", nullptr));
   EXPECT_TRUE(main_dict.GetList("list", nullptr));
   EXPECT_FALSE(main_dict.GetList("DNE", nullptr));
-
-  // There is no GetBinaryWithoutPathExpansion for some reason, but if there
-  // were it should be tested here...
-
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("int", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("double", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("string", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("binary", nullptr));
-  EXPECT_TRUE(main_dict.GetDictionaryWithoutPathExpansion("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("list", nullptr));
-  EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("DNE", nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {

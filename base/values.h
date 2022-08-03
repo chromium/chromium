@@ -1353,16 +1353,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   bool GetList(StringPiece path, const ListValue** out_value) const;
   bool GetList(StringPiece path, ListValue** out_value);
 
-  // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
-  // to be used as paths.
-  // DEPRECATED, use `Value::FindDictKey(key)` instead.
-  bool GetDictionaryWithoutPathExpansion(
-      StringPiece key,
-      const DictionaryValue** out_value) const;
-  // DEPRECATED, use `Value::FindDictKey(key)` instead.
-  bool GetDictionaryWithoutPathExpansion(StringPiece key,
-                                         DictionaryValue** out_value);
-
   // Makes a copy of `this` but doesn't include empty dictionaries and lists in
   // the copy.  This never returns NULL, even if `this` itself is empty.
   std::unique_ptr<DictionaryValue> DeepCopyWithoutEmptyChildren() const;
