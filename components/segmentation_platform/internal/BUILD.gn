@@ -19,8 +19,6 @@ static_library("internal") {
   ]
 
   sources = [
-    "config_parser.cc",
-    "config_parser.h",
     "constants.cc",
     "constants.h",
     "data_collection/dummy_training_data_collector.cc",
@@ -92,6 +90,8 @@ static_library("internal") {
     "metadata/metadata_utils.h",
     "metadata/metadata_writer.cc",
     "metadata/metadata_writer.h",
+    "metric_filter_utils.cc",
+    "metric_filter_utils.h",
     "platform_options.cc",
     "platform_options.h",
     "scheduler/execution_service.cc",
@@ -201,7 +201,6 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
-    "config_parser_unittest.cc",
     "data_collection/training_data_collector_impl_unittest.cc",
     "database/database_maintenance_impl_unittest.cc",
     "database/mock_signal_database.cc",

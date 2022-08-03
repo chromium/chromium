@@ -180,12 +180,12 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       }
     }
     result.emplace_back(config->segmentation_key, selected);
-    for (const auto& segment_id : config->segments) {
-      if (!segment_ids.contains(segment_id.first))
+    for (const auto& segment_id : config->segment_ids) {
+      if (!segment_ids.contains(segment_id))
         continue;
-      const auto& info = segment_ids[segment_id.first];
+      const auto& info = segment_ids[segment_id];
       result.back().segment_status.emplace_back(
-          segment_id.first, SegmentMetadataToString(info),
+          segment_id, SegmentMetadataToString(info),
           PredictionResultToString(info),
           signal_storage_config_
               ? signal_storage_config_->MeetsSignalCollectionRequirement(
