@@ -4,6 +4,7 @@
     "allowJs": true,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "preserveValueImports": true
   }
 }
