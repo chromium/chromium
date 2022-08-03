@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityPsk));
+      base::Value(shill::kSecurityClassPsk));
 
   shill_service_client_test_->AddService(
       kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi2, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityPsk));
+      base::Value(shill::kSecurityClassPsk));
 
   // Apply device ONC policy and wait until it takes effect (one of the networks
   // auto connects).
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityPsk));
+      base::Value(shill::kSecurityClassPsk));
 
   shill_service_client_test_->AddService(
       kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi2, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurityPsk));
+      base::Value(shill::kSecurityClassPsk));
 
   const char kDeviceONC1[] = R"(
     {
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
       kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurity8021x));
+      base::Value(shill::kSecurityClass8021x));
 
   ServicePropertyValueWatcher eap_cert_id_watcher(
       shill_service_client_test_, kServiceWifi1, shill::kEapCertIdProperty);
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurity8021x));
+      base::Value(shill::kSecurityClass8021x));
 
   const char kDeviceONC1[] = R"(
     {
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurity8021x));
+      base::Value(shill::kSecurityClass8021x));
 
   std::string kDeviceONC1 =
       base::StringPrintf(R"(
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       kServiceWifi1, shill::kSSIDProperty, base::Value("UserLevelWifiSsid"));
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSecurityClassProperty,
-      base::Value(shill::kSecurity8021x));
+      base::Value(shill::kSecurityClass8021x));
 
   std::string user_hash = ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
       test_account_id_.GetUserEmail());

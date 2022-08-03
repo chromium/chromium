@@ -726,7 +726,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   } else if (*type == shill::kTypeWifi) {
     const std::string* security_class =
         properties->FindStringKey(shill::kSecurityClassProperty);
-    if (security_class && *security_class == shill::kSecurity8021x)
+    if (security_class && *security_class == shill::kSecurityClass8021x)
       client_cert_type = client_cert::ConfigType::kEap;
   }
 

@@ -65,21 +65,21 @@ class NetworkEventLogTest : public testing::Test {
                              add_to_visible);
     service_test->SetServiceProperty("/service/2",
                                      shill::kSecurityClassProperty,
-                                     base::Value(shill::kSecurityNone));
+                                     base::Value(shill::kSecurityClassNone));
 
     service_test->AddService("/service/3", "wifi3_guid", "wifi3",
                              shill::kTypeWifi, shill::kStateIdle,
                              add_to_visible);
     service_test->SetServiceProperty("/service/3",
                                      shill::kSecurityClassProperty,
-                                     base::Value(shill::kSecurityWep));
+                                     base::Value(shill::kSecurityClassWep));
 
     service_test->AddService("/service/4", "wifi4_guid", "wifi4",
                              shill::kTypeWifi, shill::kStateIdle,
                              add_to_visible);
     service_test->SetServiceProperty("/service/4",
                                      shill::kSecurityClassProperty,
-                                     base::Value(shill::kSecurity8021x));
+                                     base::Value(shill::kSecurityClass8021x));
 
     // VPN
     service_test->AddService("/service/5", "vpn5_guid", "vpn5", shill::kTypeVPN,

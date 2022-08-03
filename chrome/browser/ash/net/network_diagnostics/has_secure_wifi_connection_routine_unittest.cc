@@ -17,8 +17,8 @@ namespace {
 // TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
-const char* kInsecureSecurity = shill::kSecurityWep;
-const char* kSecureSecurity = shill::kSecurityPsk;
+const char* kInsecureSecurity = shill::kSecurityClassWep;
+const char* kSecureSecurity = shill::kSecurityClassPsk;
 
 }  // namespace
 

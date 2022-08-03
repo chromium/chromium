@@ -56,26 +56,35 @@ std::string GetHexSSID(const base::Value& service_properties) {
 
 std::string GetSecurityClass(const base::Value& service_properties) {
   // Mimics shill's WiFiProvider::GetServiceParametersFromStorage with
-  // WiFiService::ComputeSecurityClass  .
+  // WiFiService::ComputeSecurityClass.
   const std::string* security_class =
       service_properties.FindStringKey(shill::kSecurityClassProperty);
-  const std::string* security =
-      service_properties.FindStringKey(shill::kSecurityProperty);
-  if (security_class && security && *security_class != *security) {
-    LOG(ERROR) << "Mismatch between SecurityClass " << *security_class
-               << " and Security " << *security;
-  }
 
   if (security_class)
     return *security_class;
 
-  if (security) {
-    if (*security == shill::kSecurityRsn || *security == shill::kSecurityWpa)
-      return shill::kSecurityPsk;
-    return *security;
-  }
+  const std::string* security =
+      service_properties.FindStringKey(shill::kSecurityProperty);
 
-  return shill::kSecurityNone;
+  if (!security)
+    return shill::kSecurityClassNone;
+
+  static const std::array<std::string, 6> psk_securities = {
+      shill::kSecurityWpa,  shill::kSecurityWpaWpa2,  shill::kSecurityWpaAll,
+      shill::kSecurityWpa2, shill::kSecurityWpa2Wpa3, shill::kSecurityWpa3};
+  if (base::Contains(psk_securities, *security))
+    return shill::kSecurityClassPsk;
+
+  static const std::array<std::string, 6> eap_securities = {
+      shill::kSecurityWpaEnterprise,      shill::kSecurityWpaWpa2Enterprise,
+      shill::kSecurityWpaAllEnterprise,   shill::kSecurityWpa2Enterprise,
+      shill::kSecurityWpa2Wpa3Enterprise, shill::kSecurityWpa3Enterprise};
+  if (base::Contains(eap_securities, *security))
+    return shill::kSecurityClass8021x;
+
+  // Neither PSK nor 8021x so it is either "wep" or "none" securities which
+  // are the same as their SecurityClass names.
+  return *security;
 }
 
 // Returns true if both |template_service_properties| and |service_properties|
@@ -475,7 +484,7 @@ base::Value* FakeShillServiceClient::SetServiceProperties(
   properties->SetKey(shill::kVisibleProperty, base::Value(visible));
   if (type == shill::kTypeWifi) {
     properties->SetKey(shill::kSecurityClassProperty,
-                       base::Value(shill::kSecurityNone));
+                       base::Value(shill::kSecurityClassNone));
     properties->SetKey(shill::kModeProperty, base::Value(shill::kModeManaged));
   }
 
@@ -537,7 +546,7 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
                           base::Value(false));
     base::Value* security = dict->FindKey(shill::kSecurityClassProperty);
     if (security && security->is_string() &&
-        security->GetString() == shill::kSecurityPsk) {
+        security->GetString() == shill::kSecurityClassPsk) {
       new_properties.SetKey(shill::kConnectableProperty, base::Value(true));
     }
   }

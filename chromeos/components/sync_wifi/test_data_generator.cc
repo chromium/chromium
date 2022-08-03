@@ -14,7 +14,7 @@ namespace sync_wifi {
 
 NetworkIdentifier GeneratePskNetworkId(const std::string& ssid) {
   return NetworkIdentifier(base::HexEncode(ssid.data(), ssid.size()),
-                           shill::kSecurityPsk);
+                           shill::kSecurityClassPsk);
 }
 
 sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
@@ -24,10 +24,10 @@ sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
   sync_pb::WifiConfigurationSpecifics specifics;
   specifics.set_hex_ssid(id.hex_ssid());
 
-  if (id.security_type() == shill::kSecurityPsk) {
+  if (id.security_type() == shill::kSecurityClassPsk) {
     specifics.set_security_type(
         sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_PSK);
-  } else if (id.security_type() == shill::kSecurityWep) {
+  } else if (id.security_type() == shill::kSecurityClassWep) {
     specifics.set_security_type(
         sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_WEP);
   } else {

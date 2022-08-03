@@ -148,28 +148,21 @@ std::string TranslateKeyManagement(arc::mojom::KeyManagement management) {
   return "";
 }
 
-arc::mojom::SecurityType TranslateWiFiSecurity(const std::string& type) {
-  if (type == shill::kSecurityNone)
+arc::mojom::SecurityType TranslateWiFiSecurity(
+    const std::string& security_class) {
+  if (security_class == shill::kSecurityClassNone)
     return arc::mojom::SecurityType::NONE;
 
-  if (type == shill::kSecurityWep)
+  if (security_class == shill::kSecurityClassWep)
     return arc::mojom::SecurityType::WEP_PSK;
 
-  if (type == shill::kSecurityPsk)
+  if (security_class == shill::kSecurityClassPsk)
     return arc::mojom::SecurityType::WPA_PSK;
 
-  if (type == shill::kSecurityWpa)
-    return arc::mojom::SecurityType::WPA_PSK;
-
-  if (type == shill::kSecurity8021x)
+  if (security_class == shill::kSecurityClass8021x)
     return arc::mojom::SecurityType::WPA_EAP;
 
-  // Robust Security Network does not appear to be defined in Android.
-  // Approximate it with WPA_EAP
-  if (type == shill::kSecurityRsn)
-    return arc::mojom::SecurityType::WPA_EAP;
-
-  NET_LOG(ERROR) << "Unknown WiFi security type " << type;
+  NET_LOG(ERROR) << "Unknown WiFi security class " << security_class;
   return arc::mojom::SecurityType::NONE;
 }
 

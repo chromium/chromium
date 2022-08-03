@@ -142,8 +142,9 @@ class NetworkCertMigratorTest : public testing::Test {
                                       base::Value(cert_id));
 
     if (wifi) {
-      service_test_->SetServiceProperty(name, shill::kSecurityClassProperty,
-                                        base::Value(shill::kSecurity8021x));
+      service_test_->SetServiceProperty(
+          name, shill::kSecurityClassProperty,
+          base::Value(shill::kSecurityClass8021x));
     }
   }
 

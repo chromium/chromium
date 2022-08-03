@@ -274,10 +274,10 @@ base::DictionaryValue WifiHotspotConnector::CreateWifiPropertyDictionary(
 
   if (password.empty()) {
     properties.SetKey(shill::kSecurityClassProperty,
-                      base::Value(shill::kSecurityNone));
+                      base::Value(shill::kSecurityClassNone));
   } else {
     properties.SetKey(shill::kSecurityClassProperty,
-                      base::Value(shill::kSecurityPsk));
+                      base::Value(shill::kSecurityClassPsk));
     properties.SetKey(shill::kPassphraseProperty, base::Value(password));
   }
 

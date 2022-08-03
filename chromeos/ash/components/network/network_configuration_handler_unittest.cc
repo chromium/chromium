@@ -761,7 +761,8 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Updated) {
       network_configuration_observer->HasUpdatedConfiguration(service_path));
 
   base::Value properties(base::Value::Type::DICTIONARY);
-  properties.SetKey(shill::kSecurityProperty, base::Value(shill::kSecurityPsk));
+  properties.SetKey(shill::kSecurityClassProperty,
+                    base::Value(shill::kSecurityClassPsk));
   properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));
 
   network_configuration_handler_->SetShillProperties(

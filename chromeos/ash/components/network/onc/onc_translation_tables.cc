@@ -371,11 +371,11 @@ const StringTranslationEntry kVPNTypeTable[] = {
     {nullptr}};
 
 const StringTranslationEntry kWiFiSecurityTable[] = {
-    {::onc::wifi::kSecurityNone, shill::kSecurityNone},
-    {::onc::wifi::kWEP_PSK, shill::kSecurityWep},
-    {::onc::wifi::kWPA_PSK, shill::kSecurityPsk},
-    {::onc::wifi::kWPA_EAP, shill::kSecurity8021x},
-    {::onc::wifi::kWEP_8021X, shill::kSecurityWep},
+    {::onc::wifi::kSecurityNone, shill::kSecurityClassNone},
+    {::onc::wifi::kWEP_PSK, shill::kSecurityClassWep},
+    {::onc::wifi::kWPA_PSK, shill::kSecurityClassPsk},
+    {::onc::wifi::kWPA_EAP, shill::kSecurityClass8021x},
+    {::onc::wifi::kWEP_8021X, shill::kSecurityClassWep},
     {nullptr}};
 
 const StringTranslationEntry kEAPOuterTable[] = {

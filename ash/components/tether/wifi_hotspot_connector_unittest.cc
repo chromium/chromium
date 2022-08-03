@@ -116,13 +116,13 @@ bool VerifyPskConfiguration(const base::Value& shill_properties,
   bool ok = VerifyBaseConfiguration(shill_properties, expected_ssid, out_guid);
 
   std::string actual_security_class = GetSecurityClass(shill_properties);
-  if (actual_security_class != shill::kSecurityPsk) {
-    ADD_FAILURE() << "Expected security class '" << shill::kSecurityPsk
+  if (actual_security_class != shill::kSecurityClassPsk) {
+    ADD_FAILURE() << "Expected security class '" << shill::kSecurityClassPsk
                   << "' but had '" << actual_security_class;
     ok = false;
   }
   std::string actual_passphrase = GetPassphrase(shill_properties);
-  if (actual_security_class != shill::kSecurityPsk) {
+  if (actual_security_class != shill::kSecurityClassPsk) {
     ADD_FAILURE() << "Expected passphrase '" << expected_passphrase
                   << "' but had '" << actual_passphrase;
     ok = false;

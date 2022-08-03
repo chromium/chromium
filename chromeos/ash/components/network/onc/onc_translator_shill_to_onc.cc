@@ -458,7 +458,7 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
       shill_dictionary_->FindStringKey(shill::kSecurityClassProperty);
   const std::string* shill_key_mgmt =
       shill_dictionary_->FindStringKey(shill::kEapKeyMgmtProperty);
-  if (shill_security && *shill_security == shill::kSecurityWep &&
+  if (shill_security && *shill_security == shill::kSecurityClassWep &&
       shill_key_mgmt && *shill_key_mgmt == shill::kKeyManagementIEEE8021X) {
     onc_object_.SetKey(::onc::wifi::kSecurity,
                        base::Value(::onc::wifi::kWEP_8021X));

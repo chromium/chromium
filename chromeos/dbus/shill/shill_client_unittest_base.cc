@@ -305,7 +305,7 @@ base::Value ShillClientUnittestBase::CreateExampleServiceProperties() {
   properties.SetKey(shill::kWifiHexSsid,
                     base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
   properties.SetKey(shill::kSecurityClassProperty,
-                    base::Value(shill::kSecurityPsk));
+                    base::Value(shill::kSecurityClassPsk));
   return properties;
 }
 

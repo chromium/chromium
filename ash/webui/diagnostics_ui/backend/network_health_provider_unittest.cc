@@ -876,7 +876,7 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
 
   // Enable security as WEP_8021x.
   mojom::SecurityType security_2 = mojom::SecurityType::kWep8021x;
-  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  SetWifiSecurity(shill::kSecurityClassWep, shill::kKeyManagementIEEE8021X);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             security_2);
 
@@ -1256,31 +1256,31 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithSecurity) {
             mojom::SecurityType::kNone);
 
   // Enable security as WEP_8021x.
-  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  SetWifiSecurity(shill::kSecurityClassWep, shill::kKeyManagementIEEE8021X);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWep8021x);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WEP_PSK.
-  SetWifiSecurity(shill::kSecurityWep, std::string());
+  SetWifiSecurity(shill::kSecurityClassWep, std::string());
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWepPsk);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WPA_EAP.
-  SetWifiSecurity(shill::kSecurity8021x);
+  SetWifiSecurity(shill::kSecurityClass8021x);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWpaEap);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WPA_PSK.
-  SetWifiSecurity(shill::kSecurityPsk);
+  SetWifiSecurity(shill::kSecurityClassPsk);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWpaPsk);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as NONE.
-  SetWifiSecurity(shill::kSecurityNone);
+  SetWifiSecurity(shill::kSecurityClassNone);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kNone);
   ExpectStateObserverFired(observer, &state_call_count);

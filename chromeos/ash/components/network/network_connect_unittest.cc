@@ -152,7 +152,7 @@ class NetworkConnectTest : public testing::Test {
                               add_to_visible);
     service_test_->SetServiceProperty(kWiFi1ServicePath,
                                       shill::kSecurityClassProperty,
-                                      base::Value(shill::kSecurityWep));
+                                      base::Value(shill::kSecurityClassWep));
     service_test_->SetServiceProperty(
         kWiFi1ServicePath, shill::kConnectableProperty, base::Value(true));
     service_test_->SetServiceProperty(
@@ -165,7 +165,7 @@ class NetworkConnectTest : public testing::Test {
                               add_to_visible);
     service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
                                       shill::kSecurityClassProperty,
-                                      base::Value(shill::kSecurityWep));
+                                      base::Value(shill::kSecurityClassWep));
     service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
                                       shill::kConnectableProperty,
                                       base::Value(false));

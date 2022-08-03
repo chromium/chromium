@@ -47,7 +47,7 @@ class NetworkCertMigrator::MigrationTask
     // Request properties for each network that could be configured with a
     // client certificate.
     for (const NetworkState* network : networks) {
-      if (network->security_class() != shill::kSecurity8021x &&
+      if (network->security_class() != shill::kSecurityClass8021x &&
           network->type() != shill::kTypeVPN &&
           network->type() != shill::kTypeEthernetEap) {
         continue;

@@ -309,7 +309,8 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
   ASSERT_EQ(0, metadata_observer()->GetNumberOfUpdates(kGuid));
 
   base::Value properties(base::Value::Type::DICTIONARY);
-  properties.SetKey(shill::kSecurityProperty, base::Value(shill::kSecurityPsk));
+  properties.SetKey(shill::kSecurityClassProperty,
+                    base::Value(shill::kSecurityClassPsk));
   properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));
 
   network_configuration_handler()->SetShillProperties(

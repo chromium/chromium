@@ -105,7 +105,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                                        base::Value(kWifiDevicePath));
     service_test()->SetServiceProperty(kSharedWifiServicePath,
                                        shill::kSecurityClassProperty,
-                                       base::Value("psk"));
+                                       base::Value(shill::kSecurityClassPsk));
     service_test()->SetServiceProperty(
         kSharedWifiServicePath, shill::kPriorityProperty, base::Value(2));
     service_test()->SetServiceProperty(
@@ -123,7 +123,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                                        base::Value(kWifiDevicePath));
     service_test()->SetServiceProperty(kPrivateWifiServicePath,
                                        shill::kSecurityClassProperty,
-                                       base::Value("psk"));
+                                       base::Value(shill::kSecurityClassPsk));
     service_test()->SetServiceProperty(
         kPrivateWifiServicePath, shill::kPriorityProperty, base::Value(2));
 

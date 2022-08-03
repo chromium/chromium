@@ -83,7 +83,7 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
     // Set up properties for the WiFi service.
     SetUpWiFi(shill::kStateOnline);
     SetServiceProperty(wifi_path(), shill::kSecurityClassProperty,
-                       base::Value(shill::kSecurityPsk));
+                       base::Value(shill::kSecurityClassPsk));
 
     base::RunLoop().RunUntilIdle();
   }

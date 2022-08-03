@@ -165,7 +165,7 @@ class NetworkingPrivateChromeOSApiTestBase
     AddService(kWifi1ServicePath, "wifi1", shill::kTypeWifi,
                shill::kStateOnline);
     SetServiceProperty(kWifi1ServicePath, shill::kSecurityClassProperty,
-                       base::Value(shill::kSecurityWep));
+                       base::Value(shill::kSecurityClassWep));
     SetServiceProperty(kWifi1ServicePath, shill::kWifiBSsid,
                        base::Value("00:01:02:03:04:05"));
     SetServiceProperty(kWifi1ServicePath, shill::kSignalStrengthProperty,
@@ -193,7 +193,7 @@ class NetworkingPrivateChromeOSApiTestBase
     AddService(kWifi2ServicePath, "wifi2_PSK", shill::kTypeWifi,
                shill::kStateIdle);
     SetServiceProperty(kWifi2ServicePath, shill::kSecurityClassProperty,
-                       base::Value(shill::kSecurityPsk));
+                       base::Value(shill::kSecurityClassPsk));
     SetServiceProperty(kWifi2ServicePath, shill::kSignalStrengthProperty,
                        base::Value(80));
     SetServiceProperty(kWifi2ServicePath, shill::kConnectableProperty,

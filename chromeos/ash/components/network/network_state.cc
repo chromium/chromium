@@ -365,8 +365,8 @@ bool NetworkState::RequiresActivation() const {
 
 bool NetworkState::SecurityRequiresPassphraseOnly() const {
   return type() == shill::kTypeWifi &&
-         (security_class_ == shill::kSecurityPsk ||
-          security_class_ == shill::kSecurityWep);
+         (security_class_ == shill::kSecurityClassPsk ||
+          security_class_ == shill::kSecurityClassWep);
 }
 
 const std::string& NetworkState::GetError() const {
@@ -572,11 +572,11 @@ network_config::mojom::SecurityType NetworkState::GetMojoSecurity() const {
   if (IsDynamicWep())
     return SecurityType::kWep8021x;
 
-  if (security_class_ == shill::kSecurityWep)
+  if (security_class_ == shill::kSecurityClassWep)
     return SecurityType::kWepPsk;
-  if (security_class_ == shill::kSecurityPsk)
+  if (security_class_ == shill::kSecurityClassPsk)
     return SecurityType::kWpaPsk;
-  if (security_class_ == shill::kSecurity8021x)
+  if (security_class_ == shill::kSecurityClass8021x)
     return SecurityType::kWpaEap;
   NET_LOG(ERROR) << "Unsupported shill security class: " << security_class_;
   return SecurityType::kNone;
