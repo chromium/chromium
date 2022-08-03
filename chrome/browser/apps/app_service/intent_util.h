@@ -49,7 +49,7 @@ class Extension;
 namespace apps_util {
 
 // Creates a file filter.
-apps::mojom::IntentFilterPtr CreateFileFilter(
+apps::IntentFilterPtr CreateFileFilter(
     const std::vector<std::string>& intent_actions,
     const std::vector<std::string>& mime_types,
     const std::vector<std::string>& file_extensions,

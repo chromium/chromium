@@ -172,8 +172,7 @@ apps::IntentFilters CreateShareIntentFiltersFromShareTarget(
   if (!content_types.empty()) {
     const std::vector<std::string> intent_actions(
         {kIntentActionSend, kIntentActionSendMultiple});
-    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
-        CreateFileFilter(intent_actions, content_types, {})));
+    filters.push_back(CreateFileFilter(intent_actions, content_types, {}));
   }
 
   return filters;
@@ -205,7 +204,8 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
   if (!content_types.empty()) {
     const std::vector<std::string> intent_actions(
         {kIntentActionSend, kIntentActionSendMultiple});
-    filters.push_back(CreateFileFilter(intent_actions, content_types, {}));
+    filters.push_back(apps::ConvertIntentFilterToMojomIntentFilter(
+        CreateFileFilter(intent_actions, content_types, {})));
   }
 
   return filters;
@@ -226,9 +226,8 @@ apps::IntentFilters CreateIntentFiltersFromFileHandlers(
         file_extensions.push_back(extension);
       }
     }
-    filters.push_back(
-        apps::ConvertMojomIntentFilterToIntentFilter(CreateFileFilter(
-            {kIntentActionView}, mime_types, file_extensions, action_url)));
+    filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
+                                       file_extensions, action_url));
   }
 
   return filters;
@@ -250,8 +249,9 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppFileHandlerIntentFilters(
         file_extensions.push_back(extension);
       }
     }
-    filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
-                                       file_extensions, action_url));
+    filters.push_back(
+        apps::ConvertIntentFilterToMojomIntentFilter(CreateFileFilter(
+            {kIntentActionView}, mime_types, file_extensions, action_url)));
   }
 
   return filters;
@@ -364,48 +364,47 @@ apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToMojomConditionValue(
 
 }  // namespace
 
-apps::mojom::IntentFilterPtr CreateFileFilter(
+apps::IntentFilterPtr CreateFileFilter(
     const std::vector<std::string>& intent_actions,
     const std::vector<std::string>& mime_types,
     const std::vector<std::string>& file_extensions,
     const std::string& activity_name,
     bool include_directories) {
   DCHECK(!mime_types.empty() || !file_extensions.empty());
-  auto intent_filter = apps::mojom::IntentFilter::New();
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   // kAction == View, Share etc.
-  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  apps::ConditionValues action_condition_values;
   for (auto& action : intent_actions) {
-    action_condition_values.push_back(
-        MakeConditionValue(action, apps::mojom::PatternMatchType::kLiteral));
+    action_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        action, apps::PatternMatchType::kLiteral));
   }
   if (!action_condition_values.empty()) {
-    auto action_condition = MakeCondition(apps::mojom::ConditionType::kAction,
-                                          std::move(action_condition_values));
-    intent_filter->conditions.push_back(std::move(action_condition));
+    intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
+        apps::ConditionType::kAction, std::move(action_condition_values)));
   }
 
-  std::vector<apps::mojom::ConditionValuePtr> condition_values;
+  apps::ConditionValues file_condition_values;
+
   // Mime types.
   for (auto& mime_type : mime_types) {
-    condition_values.push_back(MakeConditionValue(
-        mime_type, apps::mojom::PatternMatchType::kMimeType));
+    file_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        mime_type, apps::PatternMatchType::kMimeType));
   }
   // And file extensions.
   for (const std::string& extension : file_extensions) {
-    condition_values.push_back(MakeConditionValue(
-        extension, apps::mojom::PatternMatchType::kFileExtension));
+    file_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        extension, apps::PatternMatchType::kFileExtension));
   }
   if (include_directories) {
-    condition_values.push_back(
-        MakeConditionValue("", apps::mojom::PatternMatchType::kIsDirectory));
+    file_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        "", apps::PatternMatchType::kIsDirectory));
   }
 
-  DCHECK(!condition_values.empty());
-  if (!condition_values.empty()) {
-    auto file_condition = MakeCondition(apps::mojom::ConditionType::kFile,
-                                        std::move(condition_values));
-    intent_filter->conditions.push_back(std::move(file_condition));
+  DCHECK(!file_condition_values.empty());
+  if (!file_condition_values.empty()) {
+    intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
+        apps::ConditionType::kFile, std::move(file_condition_values)));
   }
 
   if (!activity_name.empty()) {
@@ -528,9 +527,9 @@ apps::IntentFilters CreateIntentFiltersForChromeApp(
                                         handler.types.end());
     std::vector<std::string> file_extensions(handler.extensions.begin(),
                                              handler.extensions.end());
-    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
-        CreateFileFilter({kIntentActionView}, mime_types, file_extensions,
-                         handler.id, handler.include_directories)));
+    filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
+                                       file_extensions, handler.id,
+                                       handler.include_directories));
     filters.back()->activity_label = extension->name();
   }
 
@@ -567,9 +566,9 @@ std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
                                         handler.types.end());
     std::vector<std::string> file_extensions(handler.extensions.begin(),
                                              handler.extensions.end());
-    filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
-                                       file_extensions, handler.id,
-                                       handler.include_directories));
+    filters.push_back(apps::ConvertIntentFilterToMojomIntentFilter(
+        CreateFileFilter({kIntentActionView}, mime_types, file_extensions,
+                         handler.id, handler.include_directories)));
     filters.back()->activity_label = extension->name();
   }
 

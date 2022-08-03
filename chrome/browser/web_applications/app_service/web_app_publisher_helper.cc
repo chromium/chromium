@@ -600,12 +600,11 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   if (all_file_handlers && !all_file_handlers->empty()) {
     std::set<std::string> extensions_set =
         apps::GetFileExtensionsFromFileHandlers(*all_file_handlers);
-    app->intent_filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
-        apps_util::CreateFileFilter(
-            {apps_util::kIntentActionPotentialFileHandler},
-            /*mime_types=*/{},
-            /*file_extensions=*/
-            {extensions_set.begin(), extensions_set.end()})));
+    app->intent_filters.push_back(apps_util::CreateFileFilter(
+        {apps_util::kIntentActionPotentialFileHandler},
+        /*mime_types=*/{},
+        /*file_extensions=*/
+        {extensions_set.begin(), extensions_set.end()}));
   }
 
   if (IsNoteTakingWebApp(*web_app))
@@ -616,12 +615,11 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == guest_os::kTerminalSystemAppId) {
-    app->intent_filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
-        apps_util::CreateFileFilter(
-            {apps_util::kIntentActionView},
-            /*mime_types=*/
-            {extensions::app_file_handler_util::kMimeTypeInodeDirectory},
-            /*file_extensions=*/{})));
+    app->intent_filters.push_back(apps_util::CreateFileFilter(
+        {apps_util::kIntentActionView},
+        /*mime_types=*/
+        {extensions::app_file_handler_util::kMimeTypeInodeDirectory},
+        /*file_extensions=*/{}));
   }
 #endif
 
