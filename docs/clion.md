@@ -51,6 +51,8 @@ Prerequisite:
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/out/Default/gen)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/protobuf/src)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googletest/include)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googlemock/include)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/abseil-cpp)
        ```
     1. (Optional) Replace the `add_executable` files to include a single file;
        the file used is irrelevant. Doing this might improve CLion performance.
@@ -64,8 +66,11 @@ Prerequisite:
 
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/out/Default/gen)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/protobuf/src)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googletest/include)
-
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googlemock/include)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/abseil-cpp)
+   
        add_executable(chromium src/components/omnibox/browser/document_provider.cc)
        ```
 
