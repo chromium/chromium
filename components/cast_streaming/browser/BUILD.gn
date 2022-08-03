@@ -87,7 +87,6 @@ if (!is_win) {
       "//mojo/public/cpp/system",
       "//third_party/openscreen/src/cast/common:public",
       "//third_party/openscreen/src/cast/streaming:receiver",
-      "//third_party/openscreen/src/util",
     ]
     public_deps = [ "//components/cast/message_port" ]
     visibility = [ ":*" ]
@@ -113,7 +112,6 @@ if (!is_win) {
       "//media/mojo/mojom",
       "//mojo/public/cpp/system",
       "//third_party/openscreen/src/platform:api",
-      "//third_party/openscreen/src/util",
     ]
     public_deps = [
       "//base",
@@ -145,7 +143,6 @@ if (!is_win) {
       "//third_party/openscreen/src/cast/common:public",
       "//third_party/openscreen/src/cast/streaming:receiver",
       "//third_party/openscreen/src/platform:api",
-      "//third_party/openscreen/src/util",
     ]
     visibility = [ ":*" ]
     sources = [

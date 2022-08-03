@@ -183,7 +183,6 @@ static_library("router") {
       deps += [
         "//third_party/openscreen/src/osp/public",
         "//third_party/openscreen/src/platform",
-        "//third_party/openscreen/src/util",
       ]
     }
   }
