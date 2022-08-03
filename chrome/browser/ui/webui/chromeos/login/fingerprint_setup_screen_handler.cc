@@ -14,13 +14,8 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId FingerprintSetupScreenView::kScreenId;
-
 FingerprintSetupScreenHandler::FingerprintSetupScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.FingerprintSetupScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
 FingerprintSetupScreenHandler::~FingerprintSetupScreenHandler() = default;
 
@@ -127,15 +122,6 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
   }
 }
 
-void FingerprintSetupScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-}
-
-void FingerprintSetupScreenHandler::Bind(FingerprintSetupScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
 void FingerprintSetupScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
   base::Value::Dict data;
@@ -143,21 +129,16 @@ void FingerprintSetupScreenHandler::Show() {
   ShowInWebUI(std::move(data));
 }
 
-void FingerprintSetupScreenHandler::Hide() {}
-
-void FingerprintSetupScreenHandler::InitializeDeprecated() {}
-
 void FingerprintSetupScreenHandler::OnEnrollScanDone(
     device::mojom::ScanResult scan_result,
     bool enroll_session_complete,
     int percent_complete) {
-  CallJS("login.FingerprintSetupScreen.onEnrollScanDone",
-         static_cast<int>(scan_result), enroll_session_complete,
-         percent_complete);
+  CallExternalAPI("onEnrollScanDone", static_cast<int>(scan_result),
+                  enroll_session_complete, percent_complete);
 }
 
 void FingerprintSetupScreenHandler::EnableAddAnotherFinger(bool enable) {
-  CallJS("login.FingerprintSetupScreen.enableAddAnotherFinger", enable);
+  CallExternalAPI("enableAddAnotherFinger", enable);
 }
 
 }  // namespace chromeos

@@ -105,23 +105,19 @@ std::string FingerprintSetupScreen::GetResultString(Result result) {
 }
 
 FingerprintSetupScreen::FingerprintSetupScreen(
-    FingerprintSetupScreenView* view,
+    base::WeakPtr<FingerprintSetupScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(FingerprintSetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   content::GetDeviceService().BindFingerprint(
       fp_service_.BindNewPipeAndPassReceiver());
   fp_service_->AddFingerprintObserver(receiver_.BindNewPipeAndPassRemote());
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-FingerprintSetupScreen::~FingerprintSetupScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+FingerprintSetupScreen::~FingerprintSetupScreen() = default;
 
 bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {
   if (context->skip_post_login_screens_for_tests ||
@@ -137,7 +133,8 @@ bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {
 
 void FingerprintSetupScreen::ShowImpl() {
   StartAddingFinger();
-  view_->Show();
+  if (view_)
+    view_->Show();
 }
 
 void FingerprintSetupScreen::HideImpl() {
@@ -147,13 +144,12 @@ void FingerprintSetupScreen::HideImpl() {
         base::BindOnce(&FingerprintSetupScreen::OnCancelCurrentEnrollSession,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  view_->Hide();
 }
 
-void FingerprintSetupScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void FingerprintSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (!IsFingerprintUserAction(action_id)) {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
     return;
   }
   RecordUserAction(action_id);
@@ -179,16 +175,19 @@ void FingerprintSetupScreen::OnEnrollScanDone(
           << scan_result
           << ", enroll_session_complete=" << enroll_session_complete
           << ", percent_complete=" << percent_complete;
-  view_->OnEnrollScanDone(scan_result, enroll_session_complete,
-                          percent_complete);
-
+  if (view_) {
+    view_->OnEnrollScanDone(scan_result, enroll_session_complete,
+                            percent_complete);
+  }
   if (!enroll_session_complete)
     return;
 
   enroll_session_started_ = false;
   ++enrolled_finger_count_;
-  view_->EnableAddAnotherFinger(
-      /* enable = */ enrolled_finger_count_ < kMaxAllowedFingerprints);
+  if (view_) {
+    view_->EnableAddAnotherFinger(
+        /* enable = */ enrolled_finger_count_ < kMaxAllowedFingerprints);
+  }
 
   // Update the number of registered fingers, it's fine to override because
   // this is the first time user log in and have no finger registered.

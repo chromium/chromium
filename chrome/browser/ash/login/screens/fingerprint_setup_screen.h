@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
@@ -45,7 +46,7 @@ class FingerprintSetupScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  FingerprintSetupScreen(FingerprintSetupScreenView* view,
+  FingerprintSetupScreen(base::WeakPtr<FingerprintSetupScreenView> view,
                          const ScreenExitCallback& exit_callback);
 
   FingerprintSetupScreen(const FingerprintSetupScreen&) = delete;
@@ -79,7 +80,7 @@ class FingerprintSetupScreen : public BaseScreen,
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
   void StartAddingFinger();
@@ -90,7 +91,7 @@ class FingerprintSetupScreen : public BaseScreen,
   int enrolled_finger_count_ = 0;
   bool enroll_session_started_ = false;
 
-  FingerprintSetupScreenView* const view_;
+  base::WeakPtr<FingerprintSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<FingerprintSetupScreen> weak_ptr_factory_{this};

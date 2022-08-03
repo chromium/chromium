@@ -5,31 +5,24 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_FINGERPRINT_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_FINGERPRINT_SETUP_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
-
-namespace ash {
-class FingerprintSetupScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between FingerprintSetupScreen and its
 // WebUI representation.
-class FingerprintSetupScreenView {
+class FingerprintSetupScreenView
+    : public base::SupportsWeakPtr<FingerprintSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"fingerprint-setup"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "fingerprint-setup", "FingerprintSetupScreen"};
 
   virtual ~FingerprintSetupScreenView() = default;
 
-  // Sets screen this view belongs to.
-  virtual void Bind(ash::FingerprintSetupScreen* screen) = 0;
-
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
 
   // Enables adding new finger.
   virtual void EnableAddAnotherFinger(bool enable) = 0;
@@ -57,22 +50,13 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void RegisterMessages() override;
 
   // FingerprintSetupScreenView:
-  void Bind(ash::FingerprintSetupScreen* screen) override;
   void Show() override;
-  void Hide() override;
   void EnableAddAnotherFinger(bool enable) override;
   void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                         bool enroll_session_complete,
                         int percent_complete) override;
-
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
-
- private:
-  ash::FingerprintSetupScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
