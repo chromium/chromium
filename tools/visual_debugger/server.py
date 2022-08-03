@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Creates a partial object that will behave like a function called with args
     # and kwargs, while overriding directory with the given path.
     Handler = partial(CORSRequestHandler,
-                      directory=os.path.relpath(os.path.dirname(__file__)))
+                      directory=os.path.dirname(os.path.abspath(__file__)))
     socketserver.TCPServer.allow_reuse_address = True
     tpc_server = socketserver.TCPServer(("", debugger_port), Handler)
     # If socket is not specified it was assigned so we must grab it.
