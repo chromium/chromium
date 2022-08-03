@@ -134,10 +134,11 @@ struct Top500DomainsParams {
 };
 
 struct ComboSquattingParams {
-  // List of brand names such as "google", "youtube".
-  // Should be usable in domain names (i.e. lower case, no punctuation except
-  // for - etc.)
-  const char* const* brand_names;
+  // An array of brand names (such as "google", "youtube") and their skeletons
+  // (in pairs). The first item in each pair is the brand name and the second
+  // item is its skeleton. Brand names should be usable in domain names (i.e.
+  // lower case, no punctuation except for - etc.)
+  const std::pair<const char*, const char*>* brand_names;
   // Number of brand names in combo_squatting_brand_names.
   size_t num_brand_names;
 
@@ -164,12 +165,16 @@ struct DomainInfo {
   const url_formatter::IDNConversionResult idn_result;
   // Skeletons of domain_and_registry field.
   const url_formatter::Skeletons skeletons;
+  // Skeletons of domain_without_registry field.
+  const url_formatter::Skeletons domain_without_registry_skeletons;
 
-  DomainInfo(const std::string& arg_hostname,
-             const std::string& arg_domain_and_registry,
-             const std::string& arg_domain_without_registry,
-             const url_formatter::IDNConversionResult& arg_idn_result,
-             const url_formatter::Skeletons& arg_skeletons);
+  DomainInfo(
+      const std::string& arg_hostname,
+      const std::string& arg_domain_and_registry,
+      const std::string& arg_domain_without_registry,
+      const url_formatter::IDNConversionResult& arg_idn_result,
+      const url_formatter::Skeletons& arg_skeletons,
+      const url_formatter::Skeletons& arg_domain_without_registry_skeletons);
   ~DomainInfo();
   DomainInfo(const DomainInfo& other);
 };

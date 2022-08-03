@@ -109,25 +109,78 @@ const size_t kMinimumE2LDLengthToShowPunycodeInterstitial = 2;
 const int kDefaultLaunchPercentageOnCanaryDev = 90;
 const int kDefaultLaunchPercentageOnBeta = 50;
 
-// Define brand names and popular keywords for using in Combo Squatting
-// heuristic. These lists are manually curated using Chrome metrics.
+// Define skeletons of brand names and popular keywords for using in Combo
+// Squatting heuristic. These lists are manually curated using Chrome metrics.
 // We will check combinations of brand names and popular keywords.
 // e. g. google-login.com or youtubesecure.com.
-const char* kBrandNamesforCSQ[] = {
-    "adobe",     "airbnb",    "alibaba",     "aliexpress",    "amazon",
-    "baidu",     "bestbuy",   "blogspot",    "costco",        "craigslist",
-    "dropbox",   "expedia",   "facebook",    "fedex",         "flickr",
-    "github",    "glassdoor", "gofundme",    "google",        "homedepot",
-    "icloud",    "indeed",    "instagram",   "intuit",        "microsoft",
-    "nbcnews",   "netflix",   "norton",      "nytimes",       "office365",
-    "paypal",    "pinterest", "playstation", "quora",         "reddit",
-    "reuters",   "samsung",   "spotify",     "stackexchange", "stackoverflow",
-    "trello",    "twitch",    "twitter",     "udemy",         "wikipedia",
-    "wordpress", "xfinity",   "yahoo",       "youtube",       "zillow"};
+// In each element of kBrandNamesforCSQ, first string is an original brand name
+// and second string is its skeleton.
+// If you are adding a brand name here, you can generate its skeleton using the
+// format_url binary (components/url_formatter/tools/format_url.cc)
+// TODO(crbug.com/1349490): Generate skeletons of hard coded brand names in
+// Chrome initialization and remove manual adding of skeletons to this list.
+constexpr std::pair<const char*, const char*> kBrandNamesforCSQ[] = {
+    {"adobe", "adobe"},
+    {"airbnb", "airbnb"},
+    {"alibaba", "alibaba"},
+    {"aliexpress", "aliexpress"},
+    {"amazon", "arnazon"},
+    {"baidu", "baidu"},
+    {"bestbuy", "bestbuy"},
+    {"blogspot", "blogspot"},
+    {"costco", "costco"},
+    {"craigslist", "craigslist"},
+    {"dropbox", "dropbox"},
+    {"expedia", "expedia"},
+    {"facebook", "facebook"},
+    {"fedex", "fedex"},
+    {"flickr", "flickr"},
+    {"github", "github"},
+    {"glassdoor", "glassdoor"},
+    {"gofundme", "gofundrne"},
+    {"google", "google"},
+    {"homedepot", "hornedepot"},
+    {"icloud", "icloud"},
+    {"indeed", "indeed"},
+    {"instagram", "instagrarn"},
+    {"intuit", "intuit"},
+    {"microsoft", "rnicrosoft"},
+    {"nbcnews", "nbcnews"},
+    {"netflix", "netflix"},
+    {"norton", "norton"},
+    {"nytimes", "nytirnes"},
+    {"office365", "office365"},
+    {"paypal", "paypal"},
+    {"pinterest", "pinterest"},
+    {"playstation", "playstation"},
+    {"quora", "quora"},
+    {"reddit", "reddit"},
+    {"reuters", "reuters"},
+    {"samsung", "sarnsung"},
+    {"spotify", "spotify"},
+    {"stackexchange", "stackexchange"},
+    {"stackoverflow", "stackoverflow"},
+    {"trello", "trello"},
+    {"twitch", "twitch"},
+    {"twitter", "twitter"},
+    {"uderny", "udemy"},
+    {"wikipedia", "wikipedia"},
+    {"wordpress", "wordpress"},
+    {"xfinity", "xfinity"},
+    {"yahoo", "yahoo"},
+    {"youtube", "youtube"},
+    {"zillow", "zillow"}};
 
-const char* kPopularKeywordsforCSQ[] = {
+// Each element in kSkeletonsOfPopularKeywordsForCSQ is a skeleton of a popular
+// keyword. In contrast to kBrandNamesforCSQ, the original keywords are not
+// included. Because in kBrandNamesforCSQ, original brand names are used to
+// generate the matched domain, and original keywords are not needed for that
+// process.
+// If you are adding a keyword here, you can generate its skeleton
+// using the format_url binary (components/url_formatter/tools/format_url.cc)
+const char* kSkeletonsOfPopularKeywordsForCSQ[] = {
     // Security
-    "account", "activate", "active", "admin",    "login",  "logout",
+    "account", "activate", "active", "adrnin",   "login",  "logout",
     "online",  "password", "secure", "security", "signin", "signout"};
 
 // Minimum length of brand to be checked for Combo Squatting.
@@ -135,8 +188,9 @@ const size_t kMinBrandNameLengthForComboSquatting = 4;
 
 ComboSquattingParams* GetComboSquattingParams() {
   static ComboSquattingParams params{
-      kBrandNamesforCSQ, std::size(kBrandNamesforCSQ), kPopularKeywordsforCSQ,
-      std::size(kPopularKeywordsforCSQ)};
+      kBrandNamesforCSQ, std::size(kBrandNamesforCSQ),
+      kSkeletonsOfPopularKeywordsForCSQ,
+      std::size(kSkeletonsOfPopularKeywordsForCSQ)};
   return &params;
 }
 
@@ -551,15 +605,19 @@ bool IsComboSquattingCandidate(const std::string& brand) {
 
 // Extract brand names from engaged sites to be checked for Combo Squatting, if
 // the brand is not one of the hard coded brand names.
-std::vector<std::string> GetBrandNamesFromEngagedSites(
+std::vector<std::pair<std::string, std::string>> GetBrandNamesFromEngagedSites(
     const std::vector<DomainInfo>& engaged_sites) {
-  std::vector<std::string> output;
+  std::vector<std::pair<std::string, std::string>> output;
 
   for (const DomainInfo& engaged_site : engaged_sites) {
-    std::string domain_without_registry = engaged_site.domain_without_registry;
-    if (IsComboSquattingCandidate(domain_without_registry)) {
-      output.emplace_back(domain_without_registry);
-    }
+    url_formatter::Skeletons domain_without_registry_skeletons =
+        engaged_site.domain_without_registry_skeletons;
+    for (const std::string& skeleton : domain_without_registry_skeletons)
+      if (IsComboSquattingCandidate(engaged_site.domain_without_registry)) {
+        std::pair<std::string, std::string> brand_name = {
+            engaged_site.domain_without_registry, skeleton};
+        output.emplace_back(brand_name);
+      }
   }
   return output;
 }
@@ -567,29 +625,31 @@ std::vector<std::string> GetBrandNamesFromEngagedSites(
 // Returns true if the navigated_domain is flagged as Combo Squatting.
 // matched_domain is the suggested domain that will be shown to the user
 // instead of the navigated_domain in the warning UI.
-bool IsComboSquatting(const std::vector<std::string>& brand_names,
-                      const ComboSquattingParams& combo_squatting_params,
-                      const DomainInfo& navigated_domain,
-                      std::string* matched_domain) {
+bool IsComboSquatting(
+    const std::vector<std::pair<std::string, std::string>>& brand_names,
+    const ComboSquattingParams& combo_squatting_params,
+    const DomainInfo& navigated_domain,
+    std::string* matched_domain) {
   // Check if the domain has any brand name and any popular keyword.
   for (auto& brand : brand_names) {
-    DCHECK(IsComboSquattingCandidate(brand));
+    auto brand_name = brand.first;
+    auto brand_skeleton = brand.second;
+    DCHECK(IsComboSquattingCandidate(brand_name));
+    for (auto& skeleton : navigated_domain.domain_without_registry_skeletons) {
+      if (skeleton.size() == brand_skeleton.size() ||
+          skeleton.find(brand_skeleton) == std::string::npos) {
+        continue;
+      }
 
-    if (navigated_domain.domain_without_registry.size() == brand.size() ||
-        navigated_domain.domain_without_registry.find(brand) ==
-            std::string::npos) {
-      continue;
-    }
-
-    for (size_t j = 0; j < combo_squatting_params.num_popular_keywords; j++) {
-      auto* const keyword = combo_squatting_params.popular_keywords[j];
-      if (navigated_domain.domain_without_registry.find(keyword) !=
-              std::string::npos &&
-          std::string(brand).find(keyword) == std::string::npos &&
-          std::string(keyword).find(brand) == std::string::npos) {
-        // TODO(crbug.com/1341320): Compute a better matched_domain.
-        *matched_domain = std::string(brand) + ".com";
-        return true;
+      for (size_t j = 0; j < combo_squatting_params.num_popular_keywords; j++) {
+        auto* const keyword = combo_squatting_params.popular_keywords[j];
+        if (skeleton.find(keyword) != std::string::npos &&
+            std::string(brand_skeleton).find(keyword) == std::string::npos &&
+            std::string(keyword).find(brand_skeleton) == std::string::npos) {
+          // TODO(crbug.com/1341320): Compute a better matched_domain.
+          *matched_domain = brand_name + ".com";
+          return true;
+        }
       }
     }
   }
@@ -598,16 +658,20 @@ bool IsComboSquatting(const std::vector<std::string>& brand_names,
 
 }  // namespace
 
-DomainInfo::DomainInfo(const std::string& arg_hostname,
-                       const std::string& arg_domain_and_registry,
-                       const std::string& arg_domain_without_registry,
-                       const url_formatter::IDNConversionResult& arg_idn_result,
-                       const url_formatter::Skeletons& arg_skeletons)
+DomainInfo::DomainInfo(
+    const std::string& arg_hostname,
+    const std::string& arg_domain_and_registry,
+    const std::string& arg_domain_without_registry,
+    const url_formatter::IDNConversionResult& arg_idn_result,
+    const url_formatter::Skeletons& arg_skeletons,
+    const url_formatter::Skeletons& arg_domain_without_registry_skeletons)
     : hostname(arg_hostname),
       domain_and_registry(arg_domain_and_registry),
       domain_without_registry(arg_domain_without_registry),
       idn_result(arg_idn_result),
-      skeletons(arg_skeletons) {}
+      skeletons(arg_skeletons),
+      domain_without_registry_skeletons(arg_domain_without_registry_skeletons) {
+}
 
 DomainInfo::~DomainInfo() = default;
 
@@ -619,7 +683,7 @@ DomainInfo GetDomainInfo(const std::string& hostname) {
       net::IsHostnameNonUnique(hostname)) {
     return DomainInfo(std::string(), std::string(), std::string(),
                       url_formatter::IDNConversionResult(),
-                      url_formatter::Skeletons());
+                      url_formatter::Skeletons(), url_formatter::Skeletons());
   }
   const std::string domain_and_registry = GetETLDPlusOne(hostname);
   const std::string domain_without_registry =
@@ -632,7 +696,7 @@ DomainInfo GetDomainInfo(const std::string& hostname) {
   if (domain_and_registry.empty()) {
     return DomainInfo(hostname, domain_and_registry, domain_without_registry,
                       url_formatter::IDNConversionResult(),
-                      url_formatter::Skeletons());
+                      url_formatter::Skeletons(), url_formatter::Skeletons());
   }
   // Compute skeletons using eTLD+1, skipping all spoofing checks. Spoofing
   // checks in url_formatter can cause the converted result to be punycode.
@@ -642,8 +706,13 @@ DomainInfo GetDomainInfo(const std::string& hostname) {
       url_formatter::UnsafeIDNToUnicodeWithDetails(domain_and_registry);
   const url_formatter::Skeletons skeletons =
       url_formatter::GetSkeletons(idn_result.result);
+
+  const url_formatter::IDNConversionResult domain_without_registry_idn_result =
+      url_formatter::UnsafeIDNToUnicodeWithDetails(domain_without_registry);
+  const url_formatter::Skeletons domain_without_registry_skeletons =
+      url_formatter::GetSkeletons(domain_without_registry_idn_result.result);
   return DomainInfo(hostname, domain_and_registry, domain_without_registry,
-                    idn_result, skeletons);
+                    idn_result, skeletons, domain_without_registry_skeletons);
 }
 
 DomainInfo GetDomainInfo(const GURL& url) {
@@ -1284,7 +1353,8 @@ void SetComboSquattingParamsForTesting(const ComboSquattingParams& params) {
 void ResetComboSquattingParamsForTesting() {
   ComboSquattingParams* params = GetComboSquattingParams();
   *params = {kBrandNamesforCSQ, std::size(kBrandNamesforCSQ),
-             kPopularKeywordsforCSQ, std::size(kPopularKeywordsforCSQ)};
+             kSkeletonsOfPopularKeywordsForCSQ,
+             std::size(kSkeletonsOfPopularKeywordsForCSQ)};
 }
 
 ComboSquattingType GetComboSquattingType(
@@ -1295,7 +1365,7 @@ ComboSquattingType GetComboSquattingType(
       GetComboSquattingParams();
 
   // First check Combo Squatting with hard coded brand names.
-  std::vector<std::string> brand_names;
+  std::vector<std::pair<std::string, std::string>> brand_names;
   for (size_t i = 0; i < combo_squatting_params->num_brand_names; i++) {
     brand_names.emplace_back(combo_squatting_params->brand_names[i]);
   }

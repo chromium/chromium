@@ -17,10 +17,14 @@ using version_info::Channel;
 namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
-const char* const kBrandNames[] = {"google", "youtube", "sample", "example",
-                                   "vices"};
+constexpr std::pair<const char*, const char*> kBrandNames[] = {
+    {"google", "google"},
+    {"youtube", "youtube"},
+    {"sample", "sarnple"},
+    {"example", "exarnple"},
+    {"vices", "vices"}};
 const char* const kPopularKeywords[] = {"online", "login",    "account",
-                                        "ample",  "services", "test"};
+                                        "arnple", "services", "test"};
 const ComboSquattingParams kComboSquattingParams{
     kBrandNames, std::size(kBrandNames), kPopularKeywords,
     std::size(kPopularKeywords)};
@@ -682,6 +686,40 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
 
       // Not CSQ, brand name (len) is from engaged sites list but it is short.
       {"len-online.com", "", ComboSquattingType::kNone},
+
+      // CSQ, brand name (googlé) is one of the hard coded brand names and has
+      // IDN spoofing as well.
+      {"googlé-login.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ, brand name (engagedsité) is one of the brand names from engaged
+      // sites and has IDN spoofing as well.
+      {"engagedsité-online.com", "engagedsite.com",
+       ComboSquattingType::kSiteEngagement},
+
+      // CSQ, keyword (lógin) has IDN spoofing.
+      {"google-lógin.com", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ, CSQ with more than one brand (googlé, youtubé) with "-" and IDN
+      // spoofing.
+      {"googlé-youtubé-account.com", "google.com",
+       ComboSquattingType::kHardCoded},
+
+      // Not CSQ.
+      {"ónline.googlé", "", ComboSquattingType::kNone},
+
+      // Not CSQ, it has IDN spoofing but brand name (vicé) is part of keyword
+      // (servicé).
+      {"keyservicés.com", "", ComboSquattingType::kNone},
+
+      // CSQ without separator and with IDN spoofing in the keyword.
+      {"lóginsample.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // CSQ without separator and with IDN spoofing in the brand name.
+      {"loginsamplé.com", "sample.com", ComboSquattingType::kHardCoded},
+
+      // Not CSQ, skeleton of brand name (lén) is from engaged sites list but it
+      // is short.
+      {"lén-online.com", "", ComboSquattingType::kNone},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =
