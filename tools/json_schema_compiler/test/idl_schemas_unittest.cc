@@ -48,14 +48,14 @@ TEST(IdlCompiler, Basics) {
 
   // Test Function3, which takes a MyType1 parameter.
   list.clear();
-  base::DictionaryValue tmp;
-  tmp.SetInteger("x", 17);
-  tmp.SetString("y", "hello");
-  tmp.SetString("z", "zstring");
-  tmp.SetString("a", "astring");
-  tmp.SetString("b", "bstring");
-  tmp.SetString("c", "cstring");
-  list.Append(std::move(tmp));
+  base::Value::Dict tmp;
+  tmp.Set("x", 17);
+  tmp.Set("y", "hello");
+  tmp.Set("z", "zstring");
+  tmp.Set("a", "astring");
+  tmp.Set("b", "bstring");
+  tmp.Set("c", "cstring");
+  list.Append(base::Value(std::move(tmp)));
   std::unique_ptr<Function3::Params> f3_params =
       Function3::Params::Create(list);
   EXPECT_EQ(17, f3_params->arg.x);
@@ -109,14 +109,14 @@ TEST(IdlCompiler, OptionalArguments) {
       Function9::Params::Create(list);
   EXPECT_EQ(nullptr, f9_params->arg.get());
   list.clear();
-  base::DictionaryValue tmp;
-  tmp.SetInteger("x", 17);
-  tmp.SetString("y", "hello");
-  tmp.SetString("z", "zstring");
-  tmp.SetString("a", "astring");
-  tmp.SetString("b", "bstring");
-  tmp.SetString("c", "cstring");
-  list.Append(std::move(tmp));
+  base::Value::Dict tmp;
+  tmp.Set("x", 17);
+  tmp.Set("y", "hello");
+  tmp.Set("z", "zstring");
+  tmp.Set("a", "astring");
+  tmp.Set("b", "bstring");
+  tmp.Set("c", "cstring");
+  list.Append(base::Value(std::move(tmp)));
   f9_params = Function9::Params::Create(list);
   ASSERT_TRUE(f9_params->arg.get() != nullptr);
   MyType1* t1 = f9_params->arg.get();
@@ -191,8 +191,9 @@ TEST(IdlCompiler, ObjectTypes) {
   EXPECT_EQ(7, b2.x->GetInt());
 
   // Test the params to the ObjectFunction1 function.
-  base::DictionaryValue icon_props;
-  icon_props.SetString("hello", "world");
+  base::Value::Dict icon_props_dict;
+  icon_props_dict.Set("hello", "world");
+  base::Value icon_props(std::move(icon_props_dict));
   ObjectFunction1::Params::Icon icon;
   EXPECT_TRUE(ObjectFunction1::Params::Icon::Populate(icon_props, &icon));
   base::Value::List list;

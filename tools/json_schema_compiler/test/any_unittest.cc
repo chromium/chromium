@@ -12,19 +12,21 @@
 TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
   {
     test::api::any::AnyType any_type;
-    auto any_type_value = std::make_unique<base::DictionaryValue>();
-    any_type_value->SetString("any", "value");
-    EXPECT_TRUE(test::api::any::AnyType::Populate(*any_type_value, &any_type));
+    base::Value::Dict any_type_dict;
+    any_type_dict.Set("any", "value");
+    base::Value any_type_value(std::move(any_type_dict));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_value, &any_type));
     std::unique_ptr<base::Value> any_type_to_value(any_type.ToValue());
-    EXPECT_EQ(*any_type_value, *any_type_to_value.get());
+    EXPECT_EQ(any_type_value, *any_type_to_value.get());
   }
   {
     test::api::any::AnyType any_type;
-    auto any_type_value = std::make_unique<base::DictionaryValue>();
-    any_type_value->SetInteger("any", 5);
-    EXPECT_TRUE(test::api::any::AnyType::Populate(*any_type_value, &any_type));
+    base::Value::Dict any_type_dict;
+    any_type_dict.Set("any", 5);
+    base::Value any_type_value(std::move(any_type_dict));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_value, &any_type));
     std::unique_ptr<base::Value> any_type_to_value(any_type.ToValue());
-    EXPECT_EQ(*any_type_value, *any_type_to_value.get());
+    EXPECT_EQ(any_type_value, *any_type_to_value.get());
   }
 }
 
