@@ -141,35 +141,37 @@ class TranslateControllerTest : public PlatformTest,
 
 // Tests that OnJavascriptCommandReceived() returns false to malformed commands.
 TEST_F(TranslateControllerTest, OnJavascriptCommandReceived) {
-  base::DictionaryValue malformed_command;
+  base::Value::Dict malformed_command;
   EXPECT_FALSE(translate_controller_->OnJavascriptCommandReceived(
-      malformed_command, GURL("http://google.com"), /*interacting*/ false,
-      fake_main_frame_.get()));
+      base::Value(std::move(malformed_command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_main_frame_.get()));
 }
 
 // Tests that OnJavascriptCommandReceived() returns false to iframe commands.
 TEST_F(TranslateControllerTest, OnIFrameJavascriptCommandReceived) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.ready");
-  command.SetDouble("errorCode", TranslateErrors::TRANSLATION_TIMEOUT);
-  command.SetDouble("loadTime", .0);
-  command.SetDouble("readyTime", .0);
+  base::Value::Dict command;
+  command.Set("command", "translate.ready");
+  command.Set("errorCode",
+              static_cast<double>(TranslateErrors::TRANSLATION_TIMEOUT));
+  command.Set("loadTime", .0);
+  command.Set("readyTime", .0);
   EXPECT_FALSE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting*/ false,
-      fake_iframe_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_iframe_.get()));
 }
 
 // Tests that OnTranslateScriptReady() is called when a timeout message is
 // received from the JS side.
 TEST_F(TranslateControllerTest, OnTranslateScriptReadyTimeoutCalled) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.ready");
-  command.SetDouble("errorCode", TranslateErrors::TRANSLATION_TIMEOUT);
-  command.SetDouble("loadTime", .0);
-  command.SetDouble("readyTime", .0);
+  base::Value::Dict command;
+  command.Set("command", "translate.ready");
+  command.Set("errorCode",
+              static_cast<double>(TranslateErrors::TRANSLATION_TIMEOUT));
+  command.Set("loadTime", .0);
+  command.Set("readyTime", .0);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting*/ false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_main_frame_.get()));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);
@@ -182,14 +184,14 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyCalled) {
   double some_load_time = 23.1;
   double some_ready_time = 12.2;
 
-  base::DictionaryValue command;
-  command.SetString("command", "translate.ready");
-  command.SetDouble("errorCode", TranslateErrors::NONE);
-  command.SetDouble("loadTime", some_load_time);
-  command.SetDouble("readyTime", some_ready_time);
+  base::Value::Dict command;
+  command.Set("command", "translate.ready");
+  command.Set("errorCode", static_cast<double>(TranslateErrors::NONE));
+  command.Set("loadTime", some_load_time);
+  command.Set("readyTime", some_ready_time);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting*/ false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_main_frame_.get()));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -204,14 +206,14 @@ TEST_F(TranslateControllerTest, TranslationSuccess) {
   std::string some_source_language("en");
   double some_translation_time = 12.9;
 
-  base::DictionaryValue command;
-  command.SetString("command", "translate.status");
-  command.SetDouble("errorCode", TranslateErrors::NONE);
-  command.SetString("pageSourceLanguage", some_source_language);
-  command.SetDouble("translationTime", some_translation_time);
+  base::Value::Dict command;
+  command.Set("command", "translate.status");
+  command.Set("errorCode", static_cast<double>(TranslateErrors::NONE));
+  command.Set("pageSourceLanguage", some_source_language);
+  command.Set("translationTime", some_translation_time);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting*/ false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_main_frame_.get()));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -222,12 +224,13 @@ TEST_F(TranslateControllerTest, TranslationSuccess) {
 // Tests that OnTranslateComplete() is called with the right parameters when a
 // |translate.status| message is received from the JS side.
 TEST_F(TranslateControllerTest, TranslationFailure) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.status");
-  command.SetDouble("errorCode", TranslateErrors::INITIALIZATION_ERROR);
+  base::Value::Dict command;
+  command.Set("command", "translate.status");
+  command.Set("errorCode",
+              static_cast<double>(TranslateErrors::INITIALIZATION_ERROR));
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting*/ false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting*/ false, fake_main_frame_.get()));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);
@@ -236,59 +239,57 @@ TEST_F(TranslateControllerTest, TranslationFailure) {
 // Tests that OnTranslateLoadJavaScript() is called with the right parameters
 // when a |translate.loadjavascript| message is received from the JS side.
 TEST_F(TranslateControllerTest, OnTranslateLoadJavascript) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.loadjavascript");
-  command.SetString("url", "https://translate.googleapis.com/javascript.js");
+  base::Value::Dict command;
+  command.Set("command", "translate.loadjavascript");
+  command.Set("url", "https://translate.googleapis.com/javascript.js");
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting=*/false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting=*/false, fake_main_frame_.get()));
 }
 
 // Tests that OnTranslateSendRequest() is called with the right parameters
 // when a |translate.sendrequest| message is received from the JS side.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithValidCommand) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.sendrequest");
-  command.SetString("method", "POST");
-  command.SetString("url",
-                    "https://translate.googleapis.com/translate?key=abcd");
-  command.SetString("body", "helloworld");
-  command.SetDouble("requestID", 0);
+  base::Value::Dict command;
+  command.Set("command", "translate.sendrequest");
+  command.Set("method", "POST");
+  command.Set("url", "https://translate.googleapis.com/translate?key=abcd");
+  command.Set("body", "helloworld");
+  command.Set("requestID", .0);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting=*/false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting=*/false, fake_main_frame_.get()));
 }
 
 // Tests that OnTranslateSendRequest() rejects a bad url contained in the
 // |translate.sendrequest| message received from Javascript.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadURL) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.sendrequest");
-  command.SetString("method", "POST");
-  command.SetString("url", "https://badurl.example.com");
-  command.SetString("body", "helloworld");
-  command.SetDouble("requestID", 0);
+  base::Value::Dict command;
+  command.Set("command", "translate.sendrequest");
+  command.Set("method", "POST");
+  command.Set("url", "https://badurl.example.com");
+  command.Set("body", "helloworld");
+  command.Set("requestID", .0);
   EXPECT_FALSE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting=*/false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting=*/false, fake_main_frame_.get()));
 }
 
 // Tests that OnTranslateSendRequest() called with a bad method will eventually
 // cause the request to fail.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
-  base::DictionaryValue command;
-  command.SetString("command", "translate.sendrequest");
-  command.SetString("method", "POST\r\nHost: other.example.com");
-  command.SetString("url",
-                    "https://translate.googleapis.com/translate?key=abcd");
-  command.SetString("body", "helloworld");
-  command.SetDouble("requestID", 0);
+  base::Value::Dict command;
+  command.Set("command", "translate.sendrequest");
+  command.Set("method", "POST\r\nHost: other.example.com");
+  command.Set("url", "https://translate.googleapis.com/translate?key=abcd");
+  command.Set("body", "helloworld");
+  command.Set("requestID", .0);
 
   // The command will be accepted, but a bad method should cause the request to
   // fail shortly thereafter.
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
-      command, GURL("http://google.com"), /*interacting=*/false,
-      fake_main_frame_.get()));
+      base::Value(std::move(command)), GURL("http://google.com"),
+      /*interacting=*/false, fake_main_frame_.get()));
   task_environment_.RunUntilIdle();
 
   HandleTranslateResponseParams* last_params =
