@@ -149,6 +149,22 @@ std::vector<SingleSet> NormalizeAdditionSets(
   return normalized_additions;
 }
 
+// TODO(https://crbug.com/1349487): Since this is basically the same as
+// FirstPartySetsManager::FindOwnerInternal(), move the common algorithm into
+// //net to be reused in both here and FirstPartySetsManager.
+absl::optional<net::SchemefulSite> FindOwner(
+    const net::SchemefulSite& site,
+    const FirstPartySetsHandlerImpl::FlattenedSets& sets,
+    const FirstPartySetsHandlerImpl::PolicyCustomization& policy_sets) {
+  absl::optional<net::SchemefulSite> owner;
+  if (const auto it = policy_sets.find(site); it != policy_sets.end()) {
+    owner = it->second;
+  } else if (const auto it = sets.find(site); it != sets.end()) {
+    owner = it->second;
+  }
+  return owner;
+}
+
 }  // namespace
 
 bool FirstPartySetsHandler::PolicyParsingError::operator==(
@@ -464,28 +480,40 @@ FlattenedSets FirstPartySetsHandlerImpl::GetSetsSync() const {
 
 // static
 base::flat_set<net::SchemefulSite> FirstPartySetsHandlerImpl::ComputeSetsDiff(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-        current_sets) {
-  if (old_sets.empty())
+    const FirstPartySetsHandlerImpl::FlattenedSets& old_sets,
+    const FirstPartySetsHandlerImpl::PolicyCustomization& old_policy,
+    const FirstPartySetsHandlerImpl::FlattenedSets& current_sets,
+    const FirstPartySetsHandlerImpl::PolicyCustomization& current_policy) {
+  // TODO(https://crbug.com/1219656): For now we don't clear site data if FPSs
+  // is disabled. This may change with future feature ruquest.
+  if ((old_sets.empty() && old_policy.empty()) ||
+      (current_sets.empty() && current_policy.empty()))
     return {};
 
   std::vector<net::SchemefulSite> result;
-  if (current_sets.empty()) {
-    result.reserve(old_sets.size());
-    for (const auto& pair : old_sets) {
-      result.push_back(pair.first);
-    }
-    return result;
-  }
   for (const auto& old_pair : old_sets) {
     const net::SchemefulSite& old_member = old_pair.first;
     const net::SchemefulSite& old_owner = old_pair.second;
 
-    const auto current_pair = current_sets.find(old_member);
+    if (base::Contains(old_policy, old_member))
+      continue;
+
+    absl::optional<net::SchemefulSite> current_owner =
+        FindOwner(old_member, current_sets, current_policy);
     // Look for the removed sites and the ones have owner changed.
-    if (current_pair == current_sets.end() ||
-        current_pair->second != old_owner) {
+    if (!current_owner.has_value() || current_owner.value() != old_owner) {
+      result.push_back(old_member);
+    }
+  }
+
+  for (const auto& old_pair : old_policy) {
+    const net::SchemefulSite& old_member = old_pair.first;
+    const absl::optional<net::SchemefulSite>& old_owner = old_pair.second;
+
+    absl::optional<net::SchemefulSite> current_owner =
+        FindOwner(old_member, current_sets, current_policy);
+    // Look for the ones have owner changed.
+    if (old_owner.has_value() && current_owner != old_owner) {
       result.push_back(old_member);
     }
   }
@@ -496,11 +524,6 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
   DCHECK(raw_persisted_sets_.has_value());
-
-  base::flat_set<net::SchemefulSite> diff =
-      ComputeSetsDiff(FirstPartySetParser::DeserializeFirstPartySets(
-                          raw_persisted_sets_.value()),
-                      sets_.value());
 
   // TODO(shuuran@chromium.org): Implement site state clearing.
 

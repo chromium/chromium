@@ -88,16 +88,19 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
     embedder_will_provide_public_sets_ = enabled_ && will_provide;
   }
 
-  // Compares the map `old_sets` to `current_sets` and returns the set of
-  // sites that: 1) were in `old_sets` but are no longer in `current_sets`,
-  // i.e. leave the FPSs; or, 2) mapped to a different owner site.
+  // Gets the difference between the previously used FPSs info with the current
+  // FPSs info by comparing the combined `old_sets` and `old_policy` with the
+  // combined `current_sets` and `current_policy`. Returns the set of sites
+  // that: 1) were in old FPSs but are no longer in current FPSs i.e. leave the
+  // FPSs; or, 2) mapped to a different owner site.
   //
   // This method assumes that the sites were normalized properly when the maps
   // were created. Made public only for testing,
   static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-          current_sets);
+      const FlattenedSets& old_sets,
+      const PolicyCustomization& old_policy,
+      const FlattenedSets& current_sets,
+      const PolicyCustomization& current_policy);
 
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's

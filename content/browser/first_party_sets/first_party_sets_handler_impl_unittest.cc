@@ -132,7 +132,8 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
   // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
   // site data upon joining, so the computed diff should be empty set.
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          old_sets, /*old_policy=*/{}, current_sets, /*current_policy=*/{}),
       IsEmpty());
 }
 
@@ -168,7 +169,8 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          old_sets, /*old_policy=*/{}, current_sets, /*current_policy=*/{}),
       UnorderedElementsAre(SerializesTo("https://foo.test"),
                            SerializesTo("https://member2.test"),
                            SerializesTo("https://member3.test")));
@@ -214,7 +216,8 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
 
   // Expected diff: "https://member3.test" changed owner.
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          old_sets, /*old_policy=*/{}, current_sets, /*current_policy=*/{}),
       UnorderedElementsAre(SerializesTo("https://member3.test")));
 }
 
@@ -248,7 +251,8 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
   // isn't sophisticated enough yet to know that foo.test and bar.test don't
   // need to be included in the result.
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          old_sets, /*old_policy=*/{}, current_sets, /*current_policy=*/{}),
       UnorderedElementsAre(SerializesTo("https://example.test"),
                            SerializesTo("https://foo.test"),
                            SerializesTo("https://bar.test")));
@@ -281,7 +285,8 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
   // It would be valid to not include example.test and foo.test in the result,
   // but our logic isn't sophisticated enough yet to know that.ß
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          old_sets, /*old_policy=*/{}, current_sets, /*current_policy=*/{}),
       UnorderedElementsAre(SerializesTo("https://example.test"),
                            SerializesTo("https://foo.test")));
 }
@@ -298,7 +303,9 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyOldSets) {
                                   R"("members": ["https://member1.test"]})"),
               current_sets);
 
-  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff({}, current_sets),
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
+                  /*old_sets=*/{}, /*old_policy=*/{}, current_sets,
+                  /*current_policy=*/{}),
               IsEmpty());
 }
 
@@ -314,9 +321,149 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyCurrentSets) {
                                   R"("members": ["https://member1.test"]})"),
               old_sets);
 
-  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, {}),
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
+                  old_sets, /*old_policy=*/{}, /*current_sets=*/{},
+                  /*current_policy=*/{}),
+              IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicySitesJoined) {
+  FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+  };
+
+  // "https://example.test" and "https://member2.test" joined FPSs via
+  // enterprise policy. We don't clear site data upon joining, so the computed
+  // diff should be empty.
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
+                  /*old_sets=*/{}, /*old_sets=*/{}, /*current_sets=*/{},
+                  current_policy),
+              IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyRemovedSitesJoined) {
+  FirstPartySetsHandlerImpl::FlattenedSets sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test",)"
+                                  R"("members": ["https://member1.test"]})"),
+              sets);
+
+  // "https://example.test" was removed from FPSs by policy modifications.
+  FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://example.test")), absl::nullopt},
+  };
+
+  // "https://example.test" added back to FPSs.
+  FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://example.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+  };
+
+  // We don't clear site data upon joining, so the computed diff should be
+  // empty.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          /*old_sets=*/sets, old_policy, /*current_sets=*/sets, current_policy),
+      IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyMemberLeft) {
+  FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+  };
+
+  // "https://member2.test" left FPSs via enterprise policy.
+  FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+  };
+
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          /*old_sets=*/{}, old_policy, /*current_sets=*/{}, current_policy),
+      UnorderedElementsAre(SerializesTo("https://member2.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyOwnerLeft) {
+  FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       {net::SchemefulSite(GURL("https://example.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://example.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://example.test"))}},
+  };
+
+  FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://member1.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://member1.test"))}},
+  };
+
+  // Expected diff: "https://example.test" left FPSs, "https://member1.test" and
+  // "https://member2.test" changed owner.
+  // It would be valid to only have example.test in the diff, but our logic
+  // isn't sophisticated enough yet to know that member1.test and member2.test
+  // don't need to be included in the result.
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
+                  /*old_sets=*/{}, /*old_policy=*/old_policy,
+                  /*current_sets=*/{}, current_policy),
               UnorderedElementsAre(SerializesTo("https://example.test"),
-                                   SerializesTo("https://member1.test")));
+                                   SerializesTo("https://member1.test"),
+                                   SerializesTo("https://member2.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyMembersChangeSet) {
+  FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       {net::SchemefulSite(GURL("https://bar.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://bar.test"))}},
+  };
+
+  FirstPartySetsHandlerImpl::PolicyCustomization current_policy = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       {net::SchemefulSite(GURL("https://foo.test"))}},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       {net::SchemefulSite(GURL("https://bar.test"))}},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       {net::SchemefulSite(GURL("https://bar.test"))}},
+  };
+
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(
+          /*old_sets=*/{}, old_policy, /*current_sets=*/{}, current_policy),
+      UnorderedElementsAre(SerializesTo("https://member1.test"),
+                           SerializesTo("https://member2.test")));
 }
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
