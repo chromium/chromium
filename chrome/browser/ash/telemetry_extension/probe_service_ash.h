@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_ASH_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_ASH_H_
 
 #include <memory>
 #include <vector>
@@ -21,7 +21,7 @@ namespace cros_healthd {
 namespace mojom = ::chromeos::cros_healthd::mojom;
 }  // namespace cros_healthd
 
-class ProbeService : public crosapi::mojom::ProbeService {
+class ProbeServiceAsh : public crosapi::mojom::ProbeService {
  public:
   class Factory {
    public:
@@ -39,12 +39,12 @@ class ProbeService : public crosapi::mojom::ProbeService {
     static Factory* test_factory_;
   };
 
-  ProbeService(const ProbeService&) = delete;
-  ProbeService& operator=(const ProbeService&) = delete;
-  ~ProbeService() override;
+  ProbeServiceAsh(const ProbeServiceAsh&) = delete;
+  ProbeServiceAsh& operator=(const ProbeServiceAsh&) = delete;
+  ~ProbeServiceAsh() override;
 
  private:
-  explicit ProbeService(
+  explicit ProbeServiceAsh(
       mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
 
   // crosapi::mojom::ProbeService override
@@ -73,7 +73,7 @@ class ProbeService : public crosapi::mojom::ProbeService {
 
 // TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
 namespace chromeos {
-using ::ash::ProbeService;
+using ::ash::ProbeServiceAsh;
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_ASH_H_

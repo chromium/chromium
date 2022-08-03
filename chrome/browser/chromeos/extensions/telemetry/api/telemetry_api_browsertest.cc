@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/ash/telemetry_extension/fake_probe_service.h"
-#include "chrome/browser/ash/telemetry_extension/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +18,7 @@ class TelemetryExtensionTelemetryApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionTelemetryApiBrowserTest() {
-    ash::ProbeService::Factory::SetForTesting(&fake_probe_factory_);
+    ash::ProbeServiceAsh::Factory::SetForTesting(&fake_probe_factory_);
   }
   ~TelemetryExtensionTelemetryApiBrowserTest() override = default;
 

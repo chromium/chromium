@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,7 +17,7 @@ namespace {
 class RemoteProbeServiceStrategyAsh : public RemoteProbeServiceStrategy {
  public:
   RemoteProbeServiceStrategyAsh()
-      : probe_service_(ash::ProbeService::Factory::Create(
+      : probe_service_(ash::ProbeServiceAsh::Factory::Create(
             remote_probe_service_.BindNewPipeAndPassReceiver())) {}
 
   ~RemoteProbeServiceStrategyAsh() override = default;

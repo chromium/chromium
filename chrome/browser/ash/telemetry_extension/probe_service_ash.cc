@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 
 #include <utility>
 
@@ -22,32 +22,34 @@ constexpr char kOemDataLogName[] = "oemdata";
 }  // namespace
 
 // static
-ProbeService::Factory* ProbeService::Factory::test_factory_ = nullptr;
+ProbeServiceAsh::Factory* ProbeServiceAsh::Factory::test_factory_ = nullptr;
 
 // static
-std::unique_ptr<crosapi::mojom::ProbeService> ProbeService::Factory::Create(
+std::unique_ptr<crosapi::mojom::ProbeService> ProbeServiceAsh::Factory::Create(
     mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
   if (test_factory_) {
     return test_factory_->CreateInstance(std::move(receiver));
   }
 
-  return base::WrapUnique<ProbeService>(new ProbeService(std::move(receiver)));
+  return base::WrapUnique<ProbeService>(
+      new ProbeServiceAsh(std::move(receiver)));
 }
 
 // static
-void ProbeService::Factory::SetForTesting(ProbeService::Factory* test_factory) {
+void ProbeServiceAsh::Factory::SetForTesting(
+    ProbeServiceAsh::Factory* test_factory) {
   test_factory_ = test_factory;
 }
 
-ProbeService::Factory::~Factory() = default;
+ProbeServiceAsh::Factory::~Factory() = default;
 
-ProbeService::ProbeService(
+ProbeServiceAsh::ProbeServiceAsh(
     mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-ProbeService::~ProbeService() = default;
+ProbeServiceAsh::~ProbeServiceAsh() = default;
 
-void ProbeService::ProbeTelemetryInfo(
+void ProbeServiceAsh::ProbeTelemetryInfo(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   GetService()->ProbeTelemetryInfo(
@@ -61,8 +63,10 @@ void ProbeService::ProbeTelemetryInfo(
           std::move(callback)));
 }
 
-void ProbeService::GetOemData(GetOemDataCallback callback) {
-  DebugDaemonClient::Get()->GetLog(
+void ProbeServiceAsh::GetOemData(GetOemDataCallback callback) {
+  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
+
+  debugd_client->GetLog(
       kOemDataLogName,
       base::BindOnce(
           [](GetOemDataCallback callback,
@@ -73,17 +77,17 @@ void ProbeService::GetOemData(GetOemDataCallback callback) {
           std::move(callback)));
 }
 
-cros_healthd::mojom::CrosHealthdProbeService* ProbeService::GetService() {
+cros_healthd::mojom::CrosHealthdProbeService* ProbeServiceAsh::GetService() {
   if (!service_ || !service_.is_connected()) {
     cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
         service_.BindNewPipeAndPassReceiver());
     service_.set_disconnect_handler(
-        base::BindOnce(&ProbeService::OnDisconnect, base::Unretained(this)));
+        base::BindOnce(&ProbeServiceAsh::OnDisconnect, base::Unretained(this)));
   }
   return service_.get();
 }
 
-void ProbeService::OnDisconnect() {
+void ProbeServiceAsh::OnDisconnect() {
   service_.reset();
 }
 

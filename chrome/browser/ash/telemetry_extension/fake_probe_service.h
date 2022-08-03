@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ash/telemetry_extension/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,7 +17,7 @@ namespace ash {
 
 class FakeProbeService : public crosapi::mojom::ProbeService {
  public:
-  class Factory : public ash::ProbeService::Factory {
+  class Factory : public ash::ProbeServiceAsh::Factory {
    public:
     Factory();
     ~Factory() override;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/probe_service.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 
 #include <cstdint>
 #include <utility>
@@ -21,7 +21,7 @@ namespace {
 namespace cros_healthd = ::ash::cros_healthd;
 }  // namespace
 
-class ProbeServiceTest : public testing::Test {
+class ProbeServieAshTest : public testing::Test {
  public:
   void SetUp() override {
     DebugDaemonClient::InitializeFake();
@@ -42,13 +42,13 @@ class ProbeServiceTest : public testing::Test {
 
   mojo::Remote<crosapi::mojom::ProbeService> remote_probe_service_;
   std::unique_ptr<crosapi::mojom::ProbeService> probe_service_{
-      ProbeService::Factory::Create(
+      ProbeServiceAsh::Factory::Create(
           remote_probe_service_.BindNewPipeAndPassReceiver())};
 };
 
 // Tests that ProbeTelemetryInfo requests telemetry info in cros_healthd and
 // forwards response via callback.
-TEST_F(ProbeServiceTest, ProbeTelemetryInfoSuccess) {
+TEST_F(ProbeServieAshTest, ProbeTelemetryInfoSuccess) {
   constexpr int64_t kCycleCount = 512;
 
   {
@@ -84,7 +84,7 @@ TEST_F(ProbeServiceTest, ProbeTelemetryInfoSuccess) {
 
 // Tests that GetOemData requests OEM data in debugd and
 // forwards response via callback.
-TEST_F(ProbeServiceTest, GetOemDataSuccess) {
+TEST_F(ProbeServieAshTest, GetOemDataSuccess) {
   base::RunLoop run_loop;
   probe_service()->GetOemData(
       base::BindLambdaForTesting([&](crosapi::mojom::ProbeOemDataPtr ptr) {
