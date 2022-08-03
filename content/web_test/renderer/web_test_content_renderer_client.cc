@@ -107,7 +107,7 @@ void WebTestContentRendererClient::RenderThreadStarted() {
   // On these platforms, fonts are set up in the renderer process. Other
   // platforms set up fonts as part of WebTestBrowserMainRunner in the
   // browser process, via WebTestBrowserPlatformInitialize().
-  skia::ConfigureTestFont();
+  skia::InitializeSkFontMgrForTest();
 #elif BUILDFLAG(IS_WIN)
   // DirectWrite only has access to %WINDIR%\Fonts by default. For developer
   // side-loading, support kRegisterFontFiles to allow access to additional

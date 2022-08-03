@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
   // Some unittests depend on specific fonts provided by the system (e.g. some
   // tests load Arial). On Fuchsia the default font set contains only Roboto.
   // Load //third_party/test_fonts to make these tests pass on Fuchsia.
-  skia::ConfigureTestFont();
+  skia::InitializeSkFontMgrForTest();
 #endif
 
   {

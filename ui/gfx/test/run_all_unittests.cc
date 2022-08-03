@@ -57,7 +57,7 @@ class GfxTestSuite : public base::TestSuite {
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-    skia::ConfigureTestFont();
+    skia::InitializeSkFontMgrForTest();
 #endif
 
     gfx::InitializeFonts();

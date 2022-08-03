@@ -9,7 +9,7 @@ namespace skia {
 
 // Configures the process to use //third_party/test_fonts. Should be called
 // early, before default instance of SkFontMgr is created.
-void ConfigureTestFont();
+void InitializeSkFontMgrForTest();
 
 }  // namespace skia
 

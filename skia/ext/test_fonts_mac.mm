@@ -14,7 +14,7 @@
 
 namespace skia {
 
-void ConfigureTestFont() {
+void InitializeSkFontMgrForTest() {
   // Load font files in the resource folder.
   static const char* const kFontFileNames[] = {"Ahem.ttf",
                                                "ChromiumAATTest.ttf"};
