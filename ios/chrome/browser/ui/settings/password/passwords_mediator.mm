@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -257,6 +258,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
     return OnDeviceEncryptionStateOptedIn;
   }
   return OnDeviceEncryptionStateNotShown;
+}
+
+- (BOOL)isSyncingPasswords {
+  return password_manager_util::GetPasswordSyncState(_syncService) !=
+         password_manager::SyncState::kNotSyncing;
 }
 
 #pragma mark - PasswordCheckObserver

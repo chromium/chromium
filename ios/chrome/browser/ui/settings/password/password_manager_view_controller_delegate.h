@@ -54,6 +54,9 @@ struct CredentialUIEntry;
 // Returns the on-device encryption state according to the sync service.
 - (OnDeviceEncryptionState)onDeviceEncryptionState;
 
+// Returns whether or not passwords are currently syncing.
+- (BOOL)isSyncingPasswords;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_

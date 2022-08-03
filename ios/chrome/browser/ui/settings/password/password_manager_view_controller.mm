@@ -508,10 +508,6 @@ bool ShouldShowSettingsUI() {
         [model addItem:_savePasswordsItem
             toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
       }
-
-      _manageAccountLinkItem = [self manageAccountLinkItem];
-      [model setHeader:_manageAccountLinkItem
-          forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
     }
 
     // Passwords in other apps.
@@ -577,6 +573,12 @@ bool ShouldShowSettingsUI() {
   _exportPasswordsItem = [self exportPasswordsItem];
   [model addItem:_exportPasswordsItem
       toSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
+
+  // Add the descriptive text at the top of the screen. Do this at the end to
+  // ensure the section to which it's being attached already exists.
+  _manageAccountLinkItem = [self manageAccountLinkItem];
+  [model setHeader:_manageAccountLinkItem
+      forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
 
   [self filterItems:self.searchTerm];
 }
@@ -733,34 +735,46 @@ bool ShouldShowSettingsUI() {
 }
 
 #pragma mark - Items
+- (PasswordSectionIdentifier)sectionForManageAccountLinkHeader {
+  // When settings are shown on this page, the Save Passwords Switch is the
+  // first section, so it should host the page's header text. When settings are
+  // absent, this needs to move down to the Password Check section instead.
+  return ShouldShowSettingsUI() ? SectionIdentifierSavePasswordsSwitch
+                                : SectionIdentifierPasswordCheck;
+}
 
 - (TableViewLinkHeaderFooterItem*)manageAccountLinkItem {
-  TableViewLinkHeaderFooterItem* footerItem =
+  TableViewLinkHeaderFooterItem* header =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kIOSEnablePasswordManagerBrandingUpdate)) {
-    footerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+    if ([self.delegate isSyncingPasswords]) {
+      header.text =
+          l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
 
-    footerItem.urls = @[ [[CrURL alloc]
-        initWithGURL:
-            google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                GetApplicationContext()->GetApplicationLocale())] ];
+      header.urls = @[ [[CrURL alloc]
+          initWithGURL:
+              google_util::AppendGoogleLocaleParam(
+                  GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+                  GetApplicationContext()->GetApplicationLocale())] ];
+    } else {
+      header.text =
+          l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
+      header.urls = @[];
+    }
   } else {
-    footerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
+    header.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
 
-    footerItem.urls = @[ [[CrURL alloc]
+    header.urls = @[ [[CrURL alloc]
         initWithGURL:
             google_util::AppendGoogleLocaleParam(
                 GURL(password_manager::kPasswordManagerAccountDashboardURL),
                 GetApplicationContext()->GetApplicationLocale())] ];
   }
 
-  return footerItem;
+  return header;
 }
 
 - (TableViewSwitchItem*)savePasswordsItem {
@@ -1210,8 +1224,6 @@ bool ShouldShowSettingsUI() {
           [model
               insertSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
                                   atIndex:sectionIndex];
-          [model setHeader:_manageAccountLinkItem
-              forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
           [self.tableView
                 insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
               withRowAnimation:UITableViewRowAnimationTop];
@@ -1268,6 +1280,9 @@ bool ShouldShowSettingsUI() {
                                                      inSection:checkSection]];
         [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
                                                      inSection:checkSection]];
+
+        [model setHeader:_manageAccountLinkItem
+            forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
 
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];
@@ -1954,16 +1969,16 @@ bool ShouldShowSettingsUI() {
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForHeaderInSection:section];
-  switch ([self.tableViewModel sectionIdentifierForSectionIndex:section]) {
-    case SectionIdentifierSavePasswordsSwitch: {
-      TableViewLinkHeaderFooterView* linkView =
-          base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
-      linkView.delegate = self;
-      break;
-    }
-    default:
-      break;
+
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
+      [self sectionForManageAccountLinkHeader]) {
+    // This is the text at the top of the page with a link. Attach as a delegate
+    // to ensure clicks on the link are handled.
+    TableViewLinkHeaderFooterView* linkView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
   }
+
   return view;
 }
 
