@@ -40,24 +40,21 @@ void AssistantQrCodeNativeDelegate::OnScanResult(
 void AssistantQrCodeNativeDelegate::OnScanCancelled(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  // TODO(b/238079150): Add custom ClientStatus
-  ui_controller_->OnQrCodeScanFinished(ClientStatus(OTHER_ACTION_STATUS),
+  ui_controller_->OnQrCodeScanFinished(ClientStatus(QR_CODE_SCAN_CANCELLED),
                                        absl::nullopt);
 }
 
 void AssistantQrCodeNativeDelegate::OnScanFailure(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  // TODO(b/238079150): Add custom ClientStatus
-  ui_controller_->OnQrCodeScanFinished(ClientStatus(OTHER_ACTION_STATUS),
+  ui_controller_->OnQrCodeScanFinished(ClientStatus(QR_CODE_SCAN_FAILURE),
                                        absl::nullopt);
 }
 
 void AssistantQrCodeNativeDelegate::OnCameraError(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  // TODO(b/238079150): Add custom ClientStatus
-  ui_controller_->OnQrCodeScanFinished(ClientStatus(OTHER_ACTION_STATUS),
+  ui_controller_->OnQrCodeScanFinished(ClientStatus(QR_CODE_SCAN_CAMERA_ERROR),
                                        absl::nullopt);
 }
 

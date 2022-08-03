@@ -135,7 +135,7 @@ public class AutofillAssistantQrCodeIntegrationTest {
         List<ProcessedActionProto> processedActions = testService.getProcessedActions();
         assertThat(processedActions, iterableWithSize(1));
         assertThat(processedActions.get(0).getStatus(),
-                is(ProcessedActionStatusProto.OTHER_ACTION_STATUS));
+                is(ProcessedActionStatusProto.QR_CODE_SCAN_CANCELLED));
     }
 
     @Test

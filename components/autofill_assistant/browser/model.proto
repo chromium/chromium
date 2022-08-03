@@ -87,7 +87,7 @@ message LoginOptionList {
 // a boolean field would have.
 message Empty {}
 
-// Next Id: 40
+// Next Id: 43
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -240,6 +240,19 @@ enum ProcessedActionStatusProto {
 
   // The js flow action forced an additional roundtrip.
   JS_FORCED_ROUNDTRIP = 39;
+
+  // The QR code scan returned without populating data in client memory.
+  // Possible causes:
+  // - The user did not give an image with a valid QR code.
+  QR_CODE_SCAN_FAILURE = 40;
+
+  // The QR code scan was cancelled by the user.
+  // Possible causes:
+  // - The user pressed back button or clicked on cancel icon.
+  QR_CODE_SCAN_CANCELLED = 41;
+
+  // The QR code scan failed because of some camera issues.
+  QR_CODE_SCAN_CAMERA_ERROR = 42;
 
   reserved 15, 23, 25, 32, 36;
 }
