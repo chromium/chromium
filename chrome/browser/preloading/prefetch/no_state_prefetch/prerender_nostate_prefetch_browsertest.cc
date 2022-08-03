@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -1592,6 +1593,21 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
     prerender->WaitForStart();
     return prerender;
   }
+
+ protected:
+  void SetUp() override {
+    // kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
+    // enabled in the experiment. Explicitly disable
+    // kOmniboxTriggerForPrerender2 as fieldtrial tests run with a config to
+    // enable it by default.
+    feature_list_.InitWithFeatures({},
+                                   {features::kOmniboxTriggerForPrerender2});
+
+    NoStatePrefetchBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that closing the omnibox popup cancels an omnibox prerender.

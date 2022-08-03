@@ -7219,6 +7219,30 @@
             ]
         }
     ],
+    "Prerender2Desktop": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPrerenderSpecRulesAndDUI_20220804",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2",
+                        "Prerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrewarmDefaultFontFamilies": [
         {
             "platforms": [
