@@ -93,11 +93,11 @@ export class OmniboxInput extends OmniboxElement {
       thinRows: this.$<HTMLInputElement>('#thin-rows')!,
       zeroSuggest: this.$<HTMLInputElement>('#zero-suggest')!,
     };
-    this.restoreInputs_();
-    this.setupElementListeners_();
+    this.restoreInputs();
+    this.setupElementListeners();
   }
 
-  private storeInputs_() {
+  private storeInputs() {
     const inputs = {
       connectWindowOmnibox: this.connectWindowOmnibox,
       displayInputs: this.displayInputs,
@@ -105,7 +105,7 @@ export class OmniboxInput extends OmniboxElement {
     window.localStorage.setItem('preserved-inputs', JSON.stringify(inputs));
   }
 
-  private restoreInputs_() {
+  private restoreInputs() {
     const inputsString = window.localStorage.getItem('preserved-inputs');
     const inputs = inputsString && JSON.parse(inputsString) || {};
     this.elements.connectWindowOmnibox.checked = inputs.connectWindowOmnibox;
@@ -113,7 +113,7 @@ export class OmniboxInput extends OmniboxElement {
         inputs.displayInputs || OmniboxInput.defaultDisplayInputs;
   }
 
-  private setupElementListeners_() {
+  private setupElementListeners() {
     [this.elements.inputText,
      this.elements.resetAutocompleteController,
      this.elements.lockCursorPosition,
@@ -123,21 +123,21 @@ export class OmniboxInput extends OmniboxElement {
      this.elements.currentUrl,
      this.elements.pageClassification,
     ].forEach(element => {
-      element.addEventListener('input', this.onQueryInputsChanged_.bind(this));
+      element.addEventListener('input', this.onQueryInputsChanged.bind(this));
     });
 
     // Set text of #arrow-padding to substring of #input-text text, from
     // beginning until cursor position, in order to correctly align .arrow-up.
     this.elements.inputText.addEventListener(
-        'input', this.positionCursorPositionIndicators_.bind(this));
+        'input', this.positionCursorPositionIndicators.bind(this));
 
     this.elements.connectWindowOmnibox.addEventListener(
-        'input', this.storeInputs_.bind(this));
+        'input', this.storeInputs.bind(this));
 
     this.elements.responseSelection.addEventListener(
-        'input', this.onResponseSelectionChanged_.bind(this));
+        'input', this.onResponseSelectionChanged.bind(this));
     this.elements.responseSelection.addEventListener(
-        'blur', this.onResponseSelectionBlur_.bind(this));
+        'blur', this.onResponseSelectionBlur.bind(this));
 
     [this.elements.showIncompleteResults,
      this.elements.showDetails,
@@ -145,31 +145,30 @@ export class OmniboxInput extends OmniboxElement {
      this.elements.elideCells,
      this.elements.thinRows,
     ].forEach(element => {
-      element.addEventListener(
-          'input', this.onDisplayInputsChanged_.bind(this));
+      element.addEventListener('input', this.onDisplayInputsChanged.bind(this));
     });
 
     this.elements.filterText.addEventListener(
-        'input', this.onFilterInputsChanged_.bind(this));
+        'input', this.onFilterInputsChanged.bind(this));
 
     this.elements.exportClipboard.addEventListener(
-        'click', this.onExportClipboard_.bind(this));
+        'click', this.onExportClipboard.bind(this));
     this.elements.exportFile.addEventListener(
-        'click', this.onExportFile_.bind(this));
+        'click', this.onExportFile.bind(this));
     this.elements.importClipboard.addEventListener(
-        'click', this.onImportClipboard_.bind(this));
+        'click', this.onImportClipboard.bind(this));
     this.elements.importFileInput.addEventListener(
-        'input', this.onImportFile_.bind(this));
+        'input', this.onImportFile.bind(this));
     this.elements.processBatchInput.addEventListener(
-        'input', this.onProcessBatchFile_.bind(this));
+        'input', this.onProcessBatchFile.bind(this));
     [this.elements.importClipboard, this.elements.importFile].forEach(
         element => {
-          this.setupDragListeners_(element);
-          element.addEventListener('drop', this.onImportDropped_.bind(this));
+          this.setupDragListeners(element);
+          element.addEventListener('drop', this.onImportDropped.bind(this));
         });
-    this.setupDragListeners_(this.elements.processBatch);
+    this.setupDragListeners(this.elements.processBatch);
     this.elements.processBatch.addEventListener(
-        'drop', this.onProcessBatchDropped_.bind(this));
+        'drop', this.onProcessBatchDropped.bind(this));
 
     this.$all<HTMLElement>('.button').forEach(
         el => el.addEventListener('keypress', (e: KeyboardEvent) => {
@@ -183,7 +182,7 @@ export class OmniboxInput extends OmniboxElement {
    * Sets up boilerplate event listeners for an element that is able to receive
    * drag events.
    */
-  private setupDragListeners_(element: Element) {
+  private setupDragListeners(element: Element) {
     element.addEventListener(
         'dragenter', () => element.classList.add('drag-hover'));
     element.addEventListener(
@@ -195,7 +194,7 @@ export class OmniboxInput extends OmniboxElement {
     });
   }
 
-  private onQueryInputsChanged_() {
+  private onQueryInputsChanged() {
     this.elements.importedWarning.hidden = true;
     this.elements.currentUrl.disabled = this.elements.zeroSuggest.checked;
     if (this.elements.zeroSuggest.checked) {
@@ -211,7 +210,7 @@ export class OmniboxInput extends OmniboxElement {
       resetAutocompleteController:
           this.elements.resetAutocompleteController.checked,
       cursorLock: this.elements.lockCursorPosition.checked,
-      cursorPosition: this.cursorPosition_,
+      cursorPosition: this.cursorPosition,
       zeroSuggest: this.elements.zeroSuggest.checked,
       preventInlineAutocomplete:
           this.elements.preventInlineAutocomplete.checked,
@@ -226,7 +225,7 @@ export class OmniboxInput extends OmniboxElement {
     this.elements.resetAutocompleteController.checked =
         queryInputs.resetAutocompleteController;
     this.elements.lockCursorPosition.checked = queryInputs.cursorLock;
-    this.cursorPosition_ = queryInputs.cursorPosition;
+    this.cursorPosition = queryInputs.cursorPosition;
     this.elements.zeroSuggest.checked = queryInputs.zeroSuggest;
     this.elements.preventInlineAutocomplete.checked =
         queryInputs.preventInlineAutocomplete;
@@ -236,38 +235,38 @@ export class OmniboxInput extends OmniboxElement {
         String(queryInputs.pageClassification);
   }
 
-  private get cursorPosition_(): number {
+  private get cursorPosition(): number {
     return this.elements.lockCursorPosition.checked ?
         this.elements.inputText.value.length :
         Number(this.elements.inputText.selectionEnd);
   }
 
-  private set cursorPosition_(value: number) {
+  private set cursorPosition(value: number) {
     this.elements.inputText.setSelectionRange(value, value);
-    this.positionCursorPositionIndicators_();
+    this.positionCursorPositionIndicators();
   }
 
-  private positionCursorPositionIndicators_() {
+  private positionCursorPositionIndicators() {
     this.elements.arrowPadding.textContent =
-        this.elements.inputText.value.substring(0, this.cursorPosition_);
+        this.elements.inputText.value.substring(0, this.cursorPosition);
   }
 
   get connectWindowOmnibox(): boolean {
     return this.elements.connectWindowOmnibox.checked;
   }
 
-  private onResponseSelectionChanged_() {
+  private onResponseSelectionChanged() {
     const {value, max} = this.elements.responseSelection;
     this.elements.historyWarning.hidden = value === '0' || value === max;
     this.dispatchEvent(
         new CustomEvent('response-select', {detail: Number(value) - 1}));
   }
 
-  private onResponseSelectionBlur_() {
+  private onResponseSelectionBlur() {
     const {value, min, max} = this.elements.responseSelection;
     this.elements.responseSelection.value =
         String(Math.max(Math.min(Number(value), Number(max)), Number(min)));
-    this.onResponseSelectionChanged_();
+    this.onResponseSelectionChanged();
   }
 
   set responsesCount(value: number) {
@@ -278,11 +277,11 @@ export class OmniboxInput extends OmniboxElement {
     this.elements.responseSelection.max = String(value);
     this.elements.responseSelection.min = String(value ? 1 : 0);
     this.elements.responsesCount.textContent = String(value);
-    this.onResponseSelectionBlur_();
+    this.onResponseSelectionBlur();
   }
 
-  private onDisplayInputsChanged_() {
-    this.storeInputs_();
+  private onDisplayInputsChanged() {
+    this.storeInputs();
     this.dispatchEvent(new CustomEvent(
         'display-inputs-changed', {detail: this.displayInputs}));
   }
@@ -306,66 +305,66 @@ export class OmniboxInput extends OmniboxElement {
     this.elements.thinRows.checked = displayInputs.thinRows;
   }
 
-  private onFilterInputsChanged_() {
+  private onFilterInputsChanged() {
     this.dispatchEvent(new CustomEvent(
         'filter-input-changed', {detail: this.elements.filterText.value}));
   }
 
-  private onExportClipboard_() {
+  private onExportClipboard() {
     this.dispatchEvent(new CustomEvent('export-clipboard'));
   }
 
-  private onExportFile_() {
+  private onExportFile() {
     this.dispatchEvent(new CustomEvent('export-file'));
   }
 
-  private async onImportClipboard_() {
-    this.import_(await navigator.clipboard.readText());
+  private async onImportClipboard() {
+    this.import(await navigator.clipboard.readText());
   }
 
-  private onImportFile_(event: Event) {
+  private onImportFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      this.importFile_(file);
+      this.importFile(file);
     }
   }
 
-  private onProcessBatchFile_(event: Event) {
+  private onProcessBatchFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      this.processBatchFile_(file);
+      this.processBatchFile(file);
     }
   }
 
-  private onImportDropped_(event: DragEvent) {
+  private onImportDropped(event: DragEvent) {
     const data = event.dataTransfer!;
     const dragText = data.getData('Text');
     if (dragText) {
-      this.import_(dragText);
+      this.import(dragText);
     } else if (data.files[0]) {
-      this.importFile_(data.files[0]);
+      this.importFile(data.files[0]);
     }
   }
 
-  private onProcessBatchDropped_(event: DragEvent) {
+  private onProcessBatchDropped(event: DragEvent) {
     const data = event.dataTransfer!;
     const dragText = data.getData('Text');
     if (dragText) {
-      this.processBatch_(dragText);
+      this.processBatch(dragText);
     } else if (data.files[0]) {
-      this.processBatchFile_(data.files[0]);
+      this.processBatchFile(data.files[0]);
     }
   }
 
-  private importFile_(file: File) {
-    OmniboxInput.readFile_(file).then(this.import_.bind(this));
+  private importFile(file: File) {
+    OmniboxInput.readFile(file).then(this.import.bind(this));
   }
 
-  private processBatchFile_(file: File) {
-    OmniboxInput.readFile_(file).then(this.processBatch_.bind(this));
+  private processBatchFile(file: File) {
+    OmniboxInput.readFile(file).then(this.processBatch.bind(this));
   }
 
-  private import_(importString: string) {
+  private import(importString: string) {
     try {
       const importData = JSON.parse(importString);
       // TODO(manukh): If import fails, this UI state change shouldn't happen.
@@ -376,7 +375,7 @@ export class OmniboxInput extends OmniboxElement {
     }
   }
 
-  private processBatch_(processBatchString: string) {
+  private processBatch(processBatchString: string) {
     try {
       const processBatchData = JSON.parse(processBatchString);
       this.dispatchEvent(
@@ -386,7 +385,7 @@ export class OmniboxInput extends OmniboxElement {
     }
   }
 
-  private static readFile_(file: File): Promise<string> {
+  private static readFile(file: File): Promise<string> {
     return new Promise(resolve => {
       const reader = new FileReader();
       reader.onloadend = () => {
