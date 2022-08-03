@@ -23,7 +23,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::IsEmpty;
+using ::testing::Optional;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 using Type = net::SamePartyContext::Type;
 using OverrideSets =
     base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
@@ -239,94 +243,31 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_FindOwners) {
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
-  base::test::TestFuture<net::FirstPartySetMetadata> future;
-  {
-    // Force deallocation to provoke a UAF if the impl just copies the pointer.
-    net::SchemefulSite local_member1(kSet1Member1);
-    EXPECT_FALSE(delegate().ComputeMetadata(
-        kSet1Owner, &local_member1, {kSet1Member1}, future.GetCallback()));
-  }
-
-  // The member of an override set is also an member of an existing set as an
-  // addition.
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
       {kSet1Member1, {kSet3Owner}},
-      {kSet1Member2, {kSet3Owner}},
-      {kSet1Owner, {kSet3Owner}},
       {kSet3Owner, {kSet3Owner}},
   }));
 
-  EXPECT_EQ(future.Get(),
+  EXPECT_EQ(ComputeMetadataAndWait(kSet3Owner, &kSet1Member1, {kSet1Member1}),
             net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
                                        &kSet3Owner, &kSet3Owner));
 }
 
-TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_MemberIsOwner) {
-  base::test::TestFuture<FirstPartySetsAccessDelegate::OwnersResult> future;
-  EXPECT_FALSE(delegate().FindOwners(
-      {
-          kSet1Member1,
-          kSet1Member2,
-          kSet1Owner,
-          kSet2Member1,
-          kSet2Owner,
-          kSet3Member1,
-          kSet3Owner,
-      },
-      future.GetCallback()));
-  // The member of an override set is also an owner of an existing set as an
-  // addition.
+TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindOwner) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-      {kSet3Member1, {kSet3Owner}},
-      {kSet1Owner, {kSet3Owner}},
-      {kSet1Member1, {kSet3Owner}},
-      {kSet1Member2, {kSet3Owner}},
       {kSet3Owner, {kSet3Owner}},
   }));
 
-  EXPECT_EQ(future.Get(), FirstPartySetsAccessDelegate::OwnersResult({
-                              {kSet2Owner, kSet2Owner},
-                              {kSet2Member1, kSet2Owner},
-                              {kSet3Owner, kSet3Owner},
-                              {kSet2Member1, kSet3Owner},
-                              {kSet1Owner, kSet3Owner},
-                              {kSet1Member1, kSet3Owner},
-                              {kSet1Member2, kSet3Owner},
-                              {kSet3Member1, kSet3Owner},
-                          }));
-}
-
-TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindOwner) {
-  base::test::TestFuture<FirstPartySetsAccessDelegate::OwnerResult> future;
-  EXPECT_FALSE(delegate().FindOwner(kSet1Member1, future.GetCallback()));
-
-  // The owner of an override set is also an member of an existing set as an
-  // addition.
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-      {kSet1Owner, {kSet1Member1}},
-      {kSet1Member1, {kSet1Member1}},
-      {kSet1Member2, {kSet1Member1}},
-  }));
-
-  EXPECT_THAT(future.Get(), absl::make_optional(kSet1Member1));
+  EXPECT_THAT(FindOwnerAndWait(kSet3Owner), Optional(_));
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindOwners) {
-  base::test::TestFuture<FirstPartySetsAccessDelegate::OwnersResult> future;
-  EXPECT_FALSE(
-      delegate().FindOwners({kSet1Member1, kSet1Owner}, future.GetCallback()));
-
-  // The owner of a override set is also a member of an existing set as a
-  // replacement.
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-      {kSet1Member2, {kSet1Member1}},
-      {kSet1Member1, {kSet1Member1}},
-      {kSet1Owner, absl::nullopt},
+      {kSet3Owner, {kSet3Owner}},
   }));
 
-  EXPECT_THAT(future.Get(), FirstPartySetsAccessDelegate::OwnersResult({
-                                {kSet1Member1, kSet1Member1},
-                            }));
+  EXPECT_THAT(FindOwnersAndWait({kSet3Owner}),
+              UnorderedElementsAre(Pair(kSet3Owner, _)));
 }
 
 class SyncFirstPartySetsAccessDelegateTest
