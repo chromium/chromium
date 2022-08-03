@@ -29,6 +29,8 @@ source_set("test_support") {
   sources = [
     "fake_probe_service.cc",
     "fake_probe_service.h",
+    "fake_probe_service_factory.cc",
+    "fake_probe_service_factory.h",
   ]
 
   deps = [

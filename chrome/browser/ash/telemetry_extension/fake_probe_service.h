@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,36 +16,13 @@ namespace ash {
 
 class FakeProbeService : public crosapi::mojom::ProbeService {
  public:
-  class Factory : public ash::ProbeServiceAsh::Factory {
-   public:
-    Factory();
-    ~Factory() override;
-
-    void SetCreateInstanceResponse(
-        std::unique_ptr<FakeProbeService> fake_service);
-
-   protected:
-    // ProbeService::Factory:
-    std::unique_ptr<crosapi::mojom::ProbeService> CreateInstance(
-        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) override;
-
-   private:
-    crosapi::mojom::ProbeTelemetryInfoPtr telem_info_{
-        crosapi::mojom::ProbeTelemetryInfo::New()};
-
-    crosapi::mojom::ProbeOemDataPtr oem_data_{
-        crosapi::mojom::ProbeOemData::New()};
-
-    std::vector<crosapi::mojom::ProbeCategoryEnum> requested_categories_;
-
-   private:
-    std::unique_ptr<FakeProbeService> fake_service_;
-  };
-
   FakeProbeService();
   FakeProbeService(const FakeProbeService&) = delete;
   FakeProbeService& operator=(const FakeProbeService&) = delete;
   ~FakeProbeService() override;
+
+  void BindPendingReceiver(
+      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
 
   // crosapi::mojom::ProbeService overrides.
   void ProbeTelemetryInfo(
@@ -68,9 +44,6 @@ class FakeProbeService : public crosapi::mojom::ProbeService {
           expected_requested_categories);
 
  private:
-  void BindPendingReceiver(
-      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
-
   mojo::Receiver<crosapi::mojom::ProbeService> receiver_;
 
   // Response for a call to |ProbeTelemetryInfo|.

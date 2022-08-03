@@ -17,25 +17,15 @@
 
 namespace ash {
 
-void FakeProbeService::Factory::SetCreateInstanceResponse(
-    std::unique_ptr<FakeProbeService> fake_service) {
-  fake_service_ = std::move(fake_service);
-}
-
-std::unique_ptr<crosapi::mojom::ProbeService>
-FakeProbeService::Factory::CreateInstance(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
-  fake_service_->BindPendingReceiver(std::move(receiver));
-  return std::move(fake_service_);
-}
-
-FakeProbeService::Factory::Factory() = default;
-FakeProbeService::Factory::~Factory() = default;
-
 FakeProbeService::FakeProbeService() : receiver_(this) {}
 FakeProbeService::~FakeProbeService() {
   // Assert on the expectations.
   EXPECT_EQ(actual_requested_categories_, expected_requested_categories_);
+}
+
+void FakeProbeService::BindPendingReceiver(
+    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void FakeProbeService::ProbeTelemetryInfo(
@@ -68,11 +58,6 @@ void FakeProbeService::SetProbeTelemetryInfoResponse(
 void FakeProbeService::SetOemDataResponse(
     crosapi::mojom::ProbeOemDataPtr oem_data) {
   oem_data_ = std::move(oem_data);
-}
-
-void FakeProbeService::BindPendingReceiver(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
-  receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace ash
