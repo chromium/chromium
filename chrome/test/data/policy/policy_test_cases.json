@@ -11834,7 +11834,7 @@
         "policies": {},
         "prefs": {
           "power.adaptive_charging_enabled": {
-            "default_value": true
+            "value": false
           }
         }
       },
