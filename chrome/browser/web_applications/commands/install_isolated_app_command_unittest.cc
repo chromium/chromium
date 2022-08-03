@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
 
+#include <map>
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -12,26 +13,101 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace web_app {
 namespace {
 
+using ::testing::_;
 using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsFalse;
 using ::testing::Not;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
+
+blink::mojom::ManifestPtr CreateDefaultManifest() {
+  auto manifest = blink::mojom::Manifest::New();
+  manifest->start_url = GURL{"http://test.com/"},
+  manifest->scope = GURL{"http://test.com/scope"},
+  manifest->display = DisplayMode::kStandalone;
+  manifest->short_name = u"Manifest Name";
+  return manifest;
+}
+
+GURL CreateDefaultManifestURL() {
+  return GURL{"http://defaul-non-empty-url.com/manifest.json"};
+}
+
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo(
+    GURL start_url,
+    base::StringPiece manifest_id) {
+  WebAppInstallInfo install_info;
+  install_info.start_url = start_url;
+  install_info.manifest_id = std::string{manifest_id};
+
+  return std::make_unique<WebAppInstallInfo>(std::move(install_info));
+}
+
+SkBitmap CreateIcon() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(20, 20);
+  bitmap.eraseColor(SK_ColorMAGENTA);
+  return bitmap;
+}
+
+std::unique_ptr<WebAppInstallInfo> CreateDefaultWebAppInstallInfo() {
+  return CreateWebAppInstallInfo(
+      /*start_url=*/GURL{"http://test-start-url.com"},
+      /*manifest_id=*/"test manifest id");
+}
+
+std::unique_ptr<FakeDataRetriever> CreateDefaultDataRetriever() {
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      std::make_unique<FakeDataRetriever>();
+
+  fake_data_retriever->SetRendererWebAppInstallInfo(
+      CreateDefaultWebAppInstallInfo());
+
+  fake_data_retriever->SetManifest(
+      /*manifest=*/CreateDefaultManifest(), /*is_installable=*/true,
+      /*manifest_url=*/CreateDefaultManifestURL());
+
+  fake_data_retriever->SetIconsDownloadedResult(
+      IconsDownloadedResult::kCompleted);
+  fake_data_retriever->SetIcons(std::map<GURL, std::vector<SkBitmap>>{
+      {GURL{"http://test-icon-url.com/icon.png"}, std::vector{CreateIcon()}},
+  });
+  constexpr int kSuccessHttpStatusCode = 200;
+  fake_data_retriever->SetDownloadedIconsHttpResults(std::map<GURL, int>{
+      {GURL{"http://test-icon-url.com/icon.png"}, kSuccessHttpStatusCode},
+  });
+
+  return fake_data_retriever;
+}
 
 class InstallIsolatedAppCommandTest : public ::testing::Test {
  public:
@@ -43,6 +119,9 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     auto url_loader = std::make_unique<TestWebAppUrlLoader>();
     url_loader_ = url_loader.get();
     provider->GetCommandManager().SetUrlLoaderForTesting(std::move(url_loader));
+    auto install_finalizer = std::make_unique<FakeInstallFinalizer>();
+    install_finalizer_ = install_finalizer.get();
+    provider->SetInstallFinalizer(std::move(install_finalizer));
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -54,8 +133,8 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
   std::unique_ptr<InstallIsolatedAppCommand> CreateCommand(
       base::StringPiece url,
       base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback) {
-    return std::make_unique<InstallIsolatedAppCommand>(url, *url_loader_,
-                                                       std::move(callback));
+    return std::make_unique<InstallIsolatedAppCommand>(
+        url, *url_loader_, *install_finalizer_, std::move(callback));
   }
 
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
@@ -94,30 +173,12 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     return test_future.Get();
   }
 
-  static std::unique_ptr<FakeDataRetriever> CreateDefaultDataRetriever() {
-    std::unique_ptr<FakeDataRetriever> fake_data_retriever =
-        std::make_unique<FakeDataRetriever>();
-
-    fake_data_retriever->SetManifest(
-        /*manifest=*/CreateDefaultManifest(), /*is_installable=*/true,
-        /*manifest_url=*/CreateDefaultManifestURL());
-    return fake_data_retriever;
-  }
-
-  static blink::mojom::ManifestPtr CreateDefaultManifest() {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = GURL{"http://test.com/"},
-    manifest->scope = GURL{"http://test.com/scope"},
-    manifest->display = DisplayMode::kStandalone;
-    manifest->short_name = u"Manifest Name";
-    return manifest;
-  }
-
-  static GURL CreateDefaultManifestURL() {
-    return GURL{"http://defaul-non-empty-url.com/manifest.json"};
-  }
-
   TestingProfile* profile() const { return profile_.get(); }
+
+  FakeInstallFinalizer& install_finalizer() {
+    DCHECK(install_finalizer_ != nullptr);
+    return *install_finalizer_;
+  }
 
  private:
   // Task environment allow to |base::OnceCallback| work in unit test.
@@ -125,7 +186,8 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
   // See details in //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment browser_task_environment_;
 
-  base::raw_ptr<TestWebAppUrlLoader> url_loader_ = nullptr;
+  raw_ptr<TestWebAppUrlLoader> url_loader_ = nullptr;
+  raw_ptr<FakeInstallFinalizer> install_finalizer_ = nullptr;
 
   std::unique_ptr<TestingProfile> profile_ = []() {
     TestingProfile::Builder builder;
@@ -143,7 +205,7 @@ MATCHER(IsInstallationOk, "") {
                             result_listener);
 }
 
-TEST_F(InstallIsolatedAppCommandTest, StartCanBeStartedSuccesfully) {
+TEST_F(InstallIsolatedAppCommandTest, CommandCanBeExecutedSuccesfully) {
   SetPrepareForLoadResultLoaded();
 
   ExpectLoadedForURL("http://test-url-example.com");
@@ -196,14 +258,64 @@ TEST_F(InstallIsolatedAppCommandTest, SuccessWhenAppIsInstallable) {
   ExpectLoadedForURL("http://test-url-example.com");
 
   std::unique_ptr<FakeDataRetriever> fake_data_retriever =
-      std::make_unique<FakeDataRetriever>();
-  fake_data_retriever->SetManifest(
-      /*manifest=*/CreateDefaultManifest(), /*is_installable=*/true,
-      /*manifest_url=*/CreateDefaultManifestURL());
+      CreateDefaultDataRetriever();
+
+  fake_data_retriever->SetRendererWebAppInstallInfo(CreateWebAppInstallInfo(
+      /*start_url=*/GURL{"http://test-start-url.com"},
+      /*manifest_id=*/"test manifest id"));
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               IsInstallationOk());
+
+  WebAppInstallInfo install_info = *install_finalizer().web_app_info();
+  EXPECT_THAT(install_info.manifest_id, Eq("test manifest id"));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       PassesWebAppInstallInfoFromDataRetrieverToInstallFinalizer) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever();
+
+  fake_data_retriever->SetRendererWebAppInstallInfo(CreateWebAppInstallInfo(
+      /*start_url=*/GURL{"http://test-start-url.com"},
+      /*manifest_id=*/"different test manifest id"));
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              IsInstallationOk());
+
+  EXPECT_THAT(install_finalizer().web_app_info(),
+              Pointee(Field(&WebAppInstallInfo::manifest_id,
+                            Eq("different test manifest id"))));
+
+  EXPECT_THAT(install_finalizer().finalize_options_list(),
+              ElementsAre(Field(
+                  &WebAppInstallFinalizer::FinalizeOptions::install_surface,
+                  Eq(webapps::WebappInstallSource::MANAGEMENT_API))));
+}
+
+TEST_F(InstallIsolatedAppCommandTest, FailsWhenGetWebAppInstallInfoFails) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever();
+
+  // |nullptr| indicates an error during |GetWebAppInstallInfo|.
+  //
+  // See |web_app::WebAppDataRetriever::GetWebAppInstallInfoCallback|
+  // documentation.
+  fake_data_retriever->SetRendererWebAppInstallInfo(nullptr);
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -246,6 +358,37 @@ TEST_F(InstallIsolatedAppCommandTest,
               Not(IsInstallationOk()));
 }
 
+// TODO(kuragin): Add icon downloading functionality and fix the test.
+TEST_F(InstallIsolatedAppCommandTest,
+       DISABLED_DownloadedIconsArePassedToInstallFinalizer) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://some-test-url.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever();
+
+  fake_data_retriever->SetIconsDownloadedResult(
+      IconsDownloadedResult::kCompleted);
+  fake_data_retriever->SetIcons(std::map<GURL, std::vector<SkBitmap>>{
+      {GURL{"http://different-test-icon-url.com/icon.png"},
+       std::vector{CreateIcon()}},
+  });
+  constexpr int kSuccessHttpStatusCode = 200;
+  fake_data_retriever->SetDownloadedIconsHttpResults(std::map<GURL, int>{
+      {GURL{"http://different-test-icon-url.com/icon.png"},
+       kSuccessHttpStatusCode},
+  });
+
+  EXPECT_THAT(ExecuteCommand("http://some-test-url.com",
+                             std::move(fake_data_retriever)),
+              IsInstallationOk());
+
+  WebAppInstallInfo install_info = *install_finalizer().web_app_info();
+  EXPECT_THAT(install_info.icon_bitmaps.GetBitmapsForPurpose(IconPurpose::ANY),
+              UnorderedElementsAre(Pair(_, _)));
+}
+
 using InstallIsolatedAppCommandMetricsTest = InstallIsolatedAppCommandTest;
 
 TEST_F(InstallIsolatedAppCommandMetricsTest,
@@ -254,24 +397,24 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
 
   ExpectLoadedForURL("http://test-url-example.com");
 
-  base::HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
               IsInstallationOk());
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               base::BucketsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenURLIsInvalid) {
   SetPrepareForLoadResultLoaded();
 
-  base::HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
               Not(IsInstallationOk()));
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               base::BucketsAre(base::Bucket(false, 1)));
 }
 
@@ -280,12 +423,12 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
 
   ExpectFailureForURL("http://test-url-example.com");
 
-  base::HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
               Not(IsInstallationOk()));
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               base::BucketsAre(base::Bucket(false, 1)));
 }
 
@@ -305,13 +448,13 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
       /*manifest_url=*/
       GURL{"http://test-url-example.com/manifest.json"});
 
-  base::HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               Not(IsInstallationOk()));
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               base::BucketsAre(base::Bucket(false, 1)));
 }
 
@@ -328,13 +471,38 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
       /*is_installable=*/true,
       /*manifest_url=*/CreateDefaultManifestURL());
 
-  base::HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester;
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               Not(IsInstallationOk()));
 
-  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(false, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest,
+       ReportsAnErrorWhenGetWebAppInstallInfoFails) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever();
+
+  // |nullptr| indicates an error during |GetWebAppInstallInfo|.
+  //
+  // See |web_app::WebAppDataRetriever::GetWebAppInstallInfoCallback|
+  // documentation.
+  fake_data_retriever->SetRendererWebAppInstallInfo(nullptr);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               base::BucketsAre(base::Bucket(false, 1)));
 }
 

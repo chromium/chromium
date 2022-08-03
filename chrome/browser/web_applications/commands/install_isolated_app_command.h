@@ -16,10 +16,12 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
+struct WebAppInstallInfo;
 
 namespace web_app {
-class WebAppUrlLoader;
 class WebAppDataRetriever;
+class WebAppInstallFinalizer;
+class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
@@ -30,9 +32,13 @@ enum class InstallIsolatedAppCommandResult {
 
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
+  // TODO(kuragin): Consider to create an instance of |GURL| instead of passing
+  // a string and probably introduce factory function in order to handle invalid
+  // urls.
   explicit InstallIsolatedAppCommand(
       base::StringPiece application_url,
       WebAppUrlLoader& url_loader,
+      WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback);
   ~InstallIsolatedAppCommand() override;
 
@@ -47,7 +53,10 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
  private:
   void ReportFailure();
+  void ReportSuccess();
   void Report(bool success);
+
+  void DownloadIcons();
 
   void OnLoadUrl(WebAppUrlLoaderResult result);
   void OnCheckInstallabilityAndRetrieveManifest(
@@ -55,18 +64,19 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
+  void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::string url_;
 
   WebAppUrlLoader& url_loader_;
+  WebAppInstallFinalizer& install_finalizer_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   base::OnceCallback<void(InstallIsolatedAppCommandResult)> callback_;
 
-  base::WeakPtr<InstallIsolatedAppCommand> weak_this_;
   base::WeakPtrFactory<InstallIsolatedAppCommand> weak_factory_{this};
 };
 
