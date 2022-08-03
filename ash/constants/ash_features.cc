@@ -218,6 +218,11 @@ const base::Feature kAutocompleteExtendedSuggestions{
 const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the autozoom nudge shown prefs will be reset at the start of
+// each new user session.
+const base::Feature kAutozoomNudgeSessionReset{
+    "AutozoomNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the persistent desks bar at the top of the screen in clamshell mode
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};

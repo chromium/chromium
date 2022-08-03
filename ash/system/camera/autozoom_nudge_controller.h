@@ -1,0 +1,71 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_CAMERA_AUTOZOOM_NUDGE_CONTROLLER_H_
+#define ASH_SYSTEM_CAMERA_AUTOZOOM_NUDGE_CONTROLLER_H_
+
+#include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/camera/autozoom_observer.h"
+#include "ash/system/tray/system_nudge_controller.h"
+#include "base/time/time.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+
+class PrefService;
+class PrefRegistrySimple;
+
+namespace ash {
+
+class AutozoomControllerImpl;
+
+class ASH_EXPORT AutozoomNudgeController
+    : public SystemNudgeController,
+      public AutozoomObserver,
+      public SessionObserver,
+      public media::CameraActiveClientObserver {
+ public:
+  explicit AutozoomNudgeController(AutozoomControllerImpl* controller);
+  AutozoomNudgeController(const AutozoomNudgeController&) = delete;
+  AutozoomNudgeController& operator=(const AutozoomNudgeController&) = delete;
+  ~AutozoomNudgeController() override;
+
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
+
+  // Registers profile prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+ protected:
+  // SystemNudgeController:
+  std::unique_ptr<SystemNudge> CreateSystemNudge() override;
+
+ private:
+  // Gets whether the user had enabled autozoom before.
+  bool GetHadEnabled(PrefService* prefs);
+  // Gets the number of times the nudge has been shown.
+  int GetShownCount(PrefService* prefs);
+  // Gets the last time the nudge was shown.
+  base::Time GetLastShownTime(PrefService* prefs);
+  // Checks whether another nudge can be shown.
+  bool ShouldShowNudge(PrefService* prefs);
+  // Gets the current time.
+  base::Time GetTime();
+  // Resets nudge state and show nudge timer.
+  void HandleNudgeShown();
+
+  // AutozoomObserver:
+  void OnAutozoomStateChanged(
+      cros::mojom::CameraAutoFramingState state) override;
+
+  // CameraActiveClientObserver:
+  void OnActiveClientChange(cros::mojom::CameraClientType type,
+                            bool is_active) override;
+
+  // Owned by ash/Shell.
+  AutozoomControllerImpl* const autozoom_controller_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_CAMERA_AUTOZOOM_NUDGE_CONTROLLER_H_

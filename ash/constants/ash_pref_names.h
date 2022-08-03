@@ -485,6 +485,8 @@ extern const char kPersonalizationKeyboardBacklightColor[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];
+
 }  // namespace prefs
 }  // namespace ash
 

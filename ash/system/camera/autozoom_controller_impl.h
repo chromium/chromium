@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -66,6 +67,8 @@ class ASH_EXPORT AutozoomControllerImpl : public SessionObserver {
   cros::mojom::CameraAutoFramingState state_;
 
   base::ObserverList<AutozoomObserver> observers_;
+
+  std::unique_ptr<AutozoomNudgeController> nudge_controller_;
 };
 
 }  // namespace ash

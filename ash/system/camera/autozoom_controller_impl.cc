@@ -12,7 +12,8 @@
 
 namespace ash {
 
-AutozoomControllerImpl::AutozoomControllerImpl() {
+AutozoomControllerImpl::AutozoomControllerImpl()
+    : nudge_controller_(std::make_unique<AutozoomNudgeController>(this)) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 

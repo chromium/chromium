@@ -1058,6 +1058,10 @@ const char kPersonalizationKeyboardBacklightColor[] =
 // cros::mojom::CameraAutoFramingState.
 const char kAutozoomState[] = "ash.camera.autozoom_state";
 
+// A dictionary storing the number of times and most recent time the autozoom
+// nudge was shown.
+const char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
