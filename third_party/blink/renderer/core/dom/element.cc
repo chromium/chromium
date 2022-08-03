@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
@@ -2988,14 +2989,23 @@ const Element* Element::NearestOpenAncestralPopup(const Node* node,
   }
   if (inclusive) {
     // For inclusive mode, we need to walk up the tree until we find an open
-    // pop-up, and then modify the upper bound to include that pop-up, if found.
+    // pop-up, or an invoker for an open pop-up, and then modify the upper bound
+    // to include the highest such pop-up found, if any.
     for (const Node* current_node = node; current_node;
          current_node = FlatTreeTraversal::Parent(*current_node)) {
       if (auto* current_element = DynamicTo<Element>(current_node);
           current_element && current_element->HasValidPopupAttribute() &&
           current_element->popupOpen()) {
-        upper_bound = popup_positions.at(current_element) + 1;  // Include it.
-        break;
+        upper_bound =
+            std::max(upper_bound, popup_positions.at(current_element) + 1);
+      }
+      if (auto* form_control =
+              DynamicTo<HTMLFormControlElement>(current_node)) {
+        if (auto target_pop_up = form_control->popupTargetElement().element;
+            target_pop_up && target_pop_up->popupOpen()) {
+          upper_bound =
+              std::max(upper_bound, popup_positions.at(target_pop_up) + 1);
+        }
       }
     }
   }
