@@ -40,10 +40,6 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 // currently ignored by Autofill.
 bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
 
-// Maps HTML_MODE_BILLING and HTML_MODE_SHIPPING to their string constants, as
-// specified in the autocomplete standard.
-base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode);
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOCOMPLETE_ATTRIBUTE_PROCESSING_UTIL_H_

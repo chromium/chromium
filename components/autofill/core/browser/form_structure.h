@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_counter.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -247,7 +248,7 @@ class FormStructure {
 
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
-  void RationalizePhoneNumbersInSection(const std::string& section);
+  void RationalizePhoneNumbersInSection(const Section& section);
 
   // Overrides server predictions with specific heuristic predictions:
   // * NAME_LAST_SECOND heuristic predictions are unconditionally used.
@@ -668,7 +669,7 @@ class FormStructure {
   base::TimeTicks form_parsed_timestamp_;
 
   // If phone number rationalization has been performed for a given section.
-  std::map<std::string, bool> phone_rationalized_;
+  std::map<Section, bool> phone_rationalized_;
 
   // True iff the form is a password form and the user has seen the password
   // value before accepting the prompt to save. Used for crowdsourcing.

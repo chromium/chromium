@@ -295,13 +295,4 @@ bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete) {
          autocomplete == "false";
 }
 
-base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode) {
-  if (mode == HTML_MODE_BILLING)
-    return "billing";
-  if (mode == HTML_MODE_SHIPPING)
-    return "shipping";
-  NOTREACHED();
-  return "";
-}
-
 }  // namespace autofill

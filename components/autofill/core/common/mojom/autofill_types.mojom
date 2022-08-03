@@ -137,6 +137,13 @@ struct SelectOption {
   mojo_base.mojom.String16 content;
 };
 
+// autofill::Section (components/autofill/core/common/form_field_data.h)
+struct Section {
+  // autofill::Section::FieldTypeGroupSuffix
+  uint8 field_type_group;
+  string prefix;
+};
+
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
 struct FormFieldData {
   enum CheckStatus {
@@ -186,7 +193,7 @@ struct FormFieldData {
 
   uint64 max_length;
   bool is_autofilled;
-  string section;
+  Section section;
   CheckStatus check_status;
   bool is_focusable;
   bool is_visible;

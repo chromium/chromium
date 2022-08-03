@@ -69,6 +69,20 @@ bool StructTraits<
 }
 
 // static
+bool StructTraits<autofill::mojom::SectionDataView, autofill::Section>::Read(
+    autofill::mojom::SectionDataView data,
+    autofill::Section* out) {
+  static_assert(sizeof(data.field_type_group()) <=
+                sizeof(autofill::Section::FieldTypeGroupSuffix));
+  out->field_type_group_ = static_cast<autofill::Section::FieldTypeGroupSuffix>(
+      data.field_type_group());
+
+  if (!data.ReadPrefix(&out->prefix_))
+    return false;
+  return true;
+}
+
+// static
 bool StructTraits<
     autofill::mojom::FormFieldDataDataView,
     autofill::FormFieldData>::Read(autofill::mojom::FormFieldDataDataView data,

@@ -1052,7 +1052,8 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
 
     WebFormControlElement& element = *it;
 
-    element.SetAutofillSection(WebString::FromUTF8(data.fields[i].section));
+    element.SetAutofillSection(
+        WebString::FromUTF8(data.fields[i].section.ToString()));
 
     // Only autofill empty fields (or those with the field's default value
     // attribute) and the field that initiated the filling, i.e. the field the

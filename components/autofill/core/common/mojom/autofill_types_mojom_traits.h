@@ -92,6 +92,21 @@ struct StructTraits<autofill::mojom::SelectOptionDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::SectionDataView, autofill::Section> {
+  static uint8_t field_type_group(const autofill::Section& r) {
+    static_assert(sizeof(r.field_type_group_) <= sizeof(uint8_t));
+    return static_cast<uint8_t>(r.field_type_group_);
+  }
+
+  static const std::string& prefix(const autofill::Section& r) {
+    return r.prefix_;
+  }
+
+  static bool Read(autofill::mojom::SectionDataView data,
+                   autofill::Section* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::FormFieldDataDataView,
                     autofill::FormFieldData> {
   static const std::u16string& label(const autofill::FormFieldData& r) {
@@ -168,7 +183,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_autofilled;
   }
 
-  static const std::string& section(const autofill::FormFieldData& r) {
+  static const autofill::Section& section(const autofill::FormFieldData& r) {
     return r.section;
   }
 

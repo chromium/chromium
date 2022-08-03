@@ -66,7 +66,7 @@ class FormStructureTestApi {
     form_structure_->IdentifySections(has_author_specified_sections);
   }
 
-  bool phone_rationalized(const std::string& section) const {
+  bool phone_rationalized(const Section& section) const {
     auto it = form_structure_->phone_rationalized_.find(section);
     return it != form_structure_->phone_rationalized_.end() && it->second;
   }

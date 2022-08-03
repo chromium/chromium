@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <tuple>
 
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -244,6 +245,62 @@ auto IdentityTuple(const FormFieldData& f) {
 }
 
 }  // namespace
+
+bool operator==(const Section& a, const Section& b) {
+  return std::tie(a.field_type_group_, a.prefix_) ==
+         std::tie(b.field_type_group_, b.prefix_);
+}
+
+bool operator!=(const Section& a, const Section& b) {
+  return !(a == b);
+}
+
+bool operator<(const Section& a, const Section& b) {
+  return std::tie(a.field_type_group_, a.prefix_) <
+         std::tie(b.field_type_group_, b.prefix_);
+}
+
+void Section::set_field_type_group(FieldTypeGroupSuffix field_type_group) {
+  field_type_group_ = field_type_group;
+}
+
+void Section::set_prefix(std::string prefix) {
+  prefix_ = std::move(prefix);
+}
+
+bool Section::SetPrefixFromAutocomplete(const std::string& autocomplete_section,
+                                        HtmlFieldMode autocomplete_mode) {
+  if (autocomplete_section.empty() && autocomplete_mode == HTML_MODE_NONE)
+    return false;
+
+  prefix_ =
+      autocomplete_section +
+      (autocomplete_mode != HTML_MODE_NONE
+           ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete_mode))
+           : kDefaultSection);
+  return true;
+}
+
+std::string Section::ToString() const {
+  std::string section_name = prefix_.empty() ? kDefaultSection : prefix_;
+  switch (field_type_group_) {
+    case FieldTypeGroupSuffix::kNoGroup:
+      return section_name;
+    case FieldTypeGroupSuffix::kDefault:
+      return section_name + kDefaultSection;
+    case FieldTypeGroupSuffix::kCreditCard:
+      return section_name + "-cc";
+  }
+  NOTREACHED();
+}
+
+LogBuffer& operator<<(LogBuffer& buffer, const Section& section) {
+  return buffer << section.ToString();
+}
+
+std::ostream& operator<<(std::ostream& os, const Section& section) {
+  return os << section.ToString();
+}
 
 FormFieldData::FormFieldData() = default;
 

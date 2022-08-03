@@ -179,10 +179,10 @@ TEST_F(AutofillAgentTests,
       fillFormData:form
            inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"\","
-            "\"value\":\"number_value\"},"
-            "\"3\":{\"section\":\"\",\"value\":\"name_value\"}},"
-            "\"formName\":\"CC form\",\"formRendererID\":1}, 0);",
+  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"-"
+            u"default\",\"value\":\"number_value\"},\"3\":{\"section\":\"-"
+            u"default\",\"value\":\"name_value\"}},\"formName\":\"CC "
+            u"form\",\"formRendererID\":1}, 0);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 

@@ -501,7 +501,7 @@ void GetFormField(autofill::FormFieldData* field,
 
     base::Value fieldData(base::Value::Type::DICTIONARY);
     fieldData.SetKey("value", base::Value(field.value));
-    fieldData.SetKey("section", base::Value(field.section));
+    fieldData.SetKey("section", base::Value(field.section.ToString()));
     fieldsData.SetKey(NumberToString(field.unique_renderer_id.value()),
                       std::move(fieldData));
   }

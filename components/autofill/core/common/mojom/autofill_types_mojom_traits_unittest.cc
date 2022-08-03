@@ -264,6 +264,10 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.properties_mask = FieldPropertiesFlags::kHadFocus;
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
+  input.section = Section();
+  input.section.set_prefix("random");
+  input.section.set_field_type_group(
+      Section::FieldTypeGroupSuffix::kCreditCard);
 
   EXPECT_FALSE(input.host_frame.is_empty());
   base::RunLoop loop;

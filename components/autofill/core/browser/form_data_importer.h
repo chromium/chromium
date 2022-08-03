@@ -162,11 +162,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
       std::vector<AddressProfileImportCandidate>& import_candidates);
 
   // Helper method for ImportAddressProfiles which only considers the fields for
-  // a specified |section|. If |section| is the empty string, the import is
-  // performed on the union of all sections.
+  // a specified |section|. If no section is passed, the import is performed on
+  // the union of all sections.
   bool ImportAddressProfileForSection(
       const FormStructure& form,
-      const std::string& section,
+      const absl::optional<Section>& section,
       std::vector<AddressProfileImportCandidate>& import_candidates,
       LogBuffer* import_log_buffer);
 

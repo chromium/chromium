@@ -160,7 +160,7 @@ void FormStructureTest::CheckFormStructureTestData(
                 static_cast<int>(form_structure->autofill_count()));
     }
     if (test_case.form_flags.section_count) {
-      std::set<std::string> section_names;
+      std::set<Section> section_names;
       for (const auto& field : *form_structure)
         section_names.insert(field->section);
       EXPECT_EQ(*test_case.form_flags.section_count,

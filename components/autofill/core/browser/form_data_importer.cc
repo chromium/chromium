@@ -416,13 +416,13 @@ bool FormDataImporter::ImportAddressProfiles(
                               << "Form is empty." << CTag{};
   } else {
     // Relevant sections for address fields.
-    std::set<std::string> sections;
+    std::set<Section> sections;
     for (const auto& field : form) {
       if (field->Type().group() != FieldTypeGroup::kCreditCard)
         sections.insert(field->section);
     }
 
-    for (const std::string& section : sections) {
+    for (const Section& section : sections) {
       if (num_complete_profiles == kMaxNumAddressProfilesSaved)
         break;
       // Log the output from a section in a separate div for readability.
@@ -446,7 +446,7 @@ bool FormDataImporter::ImportAddressProfiles(
           AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
       // Try to import by combining all sections.
-      if (ImportAddressProfileForSection(form, "", import_candidates,
+      if (ImportAddressProfileForSection(form, absl::nullopt, import_candidates,
                                          &import_log_buffer)) {
         num_complete_profiles++;
         AutofillMetrics::LogAddressFormImportStatusMetric(
@@ -471,7 +471,7 @@ bool FormDataImporter::ImportAddressProfiles(
 
 bool FormDataImporter::ImportAddressProfileForSection(
     const FormStructure& form,
-    const std::string& section,
+    const absl::optional<Section>& section,
     std::vector<AddressProfileImportCandidate>& import_candidates,
     LogBuffer* import_log_buffer) {
   // The candidate for profile import. There are many ways for the candidate to
@@ -511,8 +511,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const auto& field : form) {
     // Reject fields that are not within the specified |section|.
-    // If section is empty, use all fields.
-    if (field->section != section && !section.empty())
+    // If no section is passed, use all fields.
+    if (section && field->section != *section)
       continue;
 
     std::u16string value;

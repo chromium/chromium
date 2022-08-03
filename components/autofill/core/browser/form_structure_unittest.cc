@@ -1322,7 +1322,7 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
 
   // All of the fields in this form should be parsed as belonging to different
   // sections.
-  std::set<std::string> section_names;
+  std::set<Section> section_names;
   for (size_t i = 0; i < 9; ++i) {
     section_names.insert(form_structure.field(i)->section);
   }
@@ -1376,7 +1376,7 @@ TEST_F(FormStructureTestImpl,
 
   // All of the fields in this form should be parsed as belonging to the same
   // section.
-  std::set<std::string> section_names;
+  std::set<Section> section_names;
   for (size_t i = 0; i < 6; ++i) {
     section_names.insert(form_structure.field(i)->section);
   }
@@ -1410,7 +1410,7 @@ TEST_F(FormStructureTestImpl,
 
   // All of the fields in this form should be parsed as belonging to the same
   // section.
-  std::set<std::string> section_names;
+  std::set<Section> section_names;
   for (size_t i = 0; i < 2; ++i) {
     section_names.insert(form_structure.field(i)->section);
   }
@@ -6260,12 +6260,12 @@ TEST_F(FormStructureTestImpl, RationalizePhoneNumber_RunsOncePerSection) {
   FormStructure::ParseApiQueryResponse(response_string, forms,
                                        test::GetEncodedSignatures(forms),
                                        nullptr, nullptr);
-
-  EXPECT_FALSE(
-      test_api(&form_structure).phone_rationalized("fullName_0_11-default"));
-  form_structure.RationalizePhoneNumbersInSection("fullName_0_11-default");
-  EXPECT_TRUE(
-      test_api(&form_structure).phone_rationalized("fullName_0_11-default"));
+  Section s;
+  s.set_prefix("fullName_0_11");
+  s.set_field_type_group(Section::FieldTypeGroupSuffix::kDefault);
+  EXPECT_FALSE(test_api(&form_structure).phone_rationalized(s));
+  form_structure.RationalizePhoneNumbersInSection(s);
+  EXPECT_TRUE(test_api(&form_structure).phone_rationalized(s));
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
@@ -6591,37 +6591,37 @@ TEST_F(FormStructureTestImpl,
 
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -6678,93 +6678,93 @@ TEST_F(
   // Shipping
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section = "Shipping";
+  field.section.set_prefix("Shipping");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Billing
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section = "Billing";
+  field.section.set_prefix("Billing");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   // Work address (not realistic)
   field.label = u"Full Name";
   field.name = u"fullName";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"address";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"City";
   field.name = u"city";
-  field.section = "Work";
+  field.section.set_prefix("Work");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -7137,7 +7137,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section = "shipping";
+  field.section.set_prefix("shipping");
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -7159,7 +7159,7 @@ TEST_F(FormStructureTestImpl,
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.section = "billing";
+  field.section.set_prefix("billing");
 
   field.label = u"Country";
   field.name = u"country2";
@@ -7208,7 +7208,7 @@ TEST_F(FormStructureTestImpl,
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.section = "billing-2";
+  field.section.set_prefix("billing-2");
 
   field.label = u"Country";
   field.name = u"country";
@@ -7445,7 +7445,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section = "billing";
+  field.section.set_prefix("billing");
 
   field.label = u"Country";
   field.name = u"country";
@@ -7514,7 +7514,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section = "billing";
+  field.section.set_prefix("billing");
 
   field.label = u"Country";
   field.name = u"country";
@@ -8175,13 +8175,18 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
-
-  EXPECT_EQ("fullName_0_11-default", form_structure.field(0)->section);
-  EXPECT_EQ("fullName_0_11-default", form_structure.field(1)->section);
-  EXPECT_EQ("fullName_0_11-default", form_structure.field(2)->section);
-  EXPECT_EQ("fullName_0_14-default", form_structure.field(3)->section);
-  EXPECT_EQ("fullName_0_14-default", form_structure.field(4)->section);
-  EXPECT_EQ("fullName_0_14-default", form_structure.field(5)->section);
+  EXPECT_EQ("fullName_0_11-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("fullName_0_11-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("fullName_0_11-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("fullName_0_14-default",
+            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("fullName_0_14-default",
+            form_structure.field(4)->section.ToString());
+  EXPECT_EQ("fullName_0_14-default",
+            form_structure.field(5)->section.ToString());
 }
 
 // Tests that the immediate recurrence of the |PHONE_HOME_NUMBER| type does not
@@ -8251,13 +8256,20 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(7U, form_structure.field_count());
 
-  EXPECT_EQ("blue-billing-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(1)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(3)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(4)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(5)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(6)->section);
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(4)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(5)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(6)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8310,10 +8322,14 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(2)->section);
-  EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("country_0_14-default",
+            form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8369,10 +8385,14 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(1)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
-  EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("country_0_14-default",
+            form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8426,10 +8446,14 @@ TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(3)->section);
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8484,10 +8508,14 @@ TEST_F(
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
-  EXPECT_EQ("blue-billing-default", form_structure.field(3)->section);
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing-default",
+            form_structure.field(3)->section.ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when the
@@ -8526,8 +8554,10 @@ TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   // Assert the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping-default",
+            form_structure.field(1)->section.ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when one of
@@ -8575,9 +8605,9 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(3U, form_structure.field_count());
 
-  EXPECT_EQ("-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("-shipping-default", form_structure.field(1)->section);
-  EXPECT_EQ("-shipping-default", form_structure.field(2)->section);
+  EXPECT_EQ("-shipping-default", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("-shipping-default", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("-shipping-default", form_structure.field(2)->section.ToString());
 }
 
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
