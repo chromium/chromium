@@ -307,12 +307,12 @@ void MDnsClientImpl::Core::NotifyNsecRecord(const RecordParsed* record) {
 
   cache_.FindDnsRecords(0, record->name(), &records_to_remove, clock_->Now());
 
-  for (const auto* record : records_to_remove) {
-    if (record->type() == dns_protocol::kTypeNSEC)
+  for (const auto* record_to_remove : records_to_remove) {
+    if (record_to_remove->type() == dns_protocol::kTypeNSEC)
       continue;
-    if (!rdata->GetBit(record->type())) {
+    if (!rdata->GetBit(record_to_remove->type())) {
       std::unique_ptr<const RecordParsed> record_removed =
-          cache_.RemoveRecord(record);
+          cache_.RemoveRecord(record_to_remove);
       DCHECK(record_removed);
       OnRecordRemoved(record_removed.get());
     }

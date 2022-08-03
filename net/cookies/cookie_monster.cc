@@ -995,12 +995,11 @@ void CookieMonster::EnsureCookiesMapIsValid() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Iterate through all the of the cookies, grouped by host.
-  auto prev_range_end = cookies_.begin();
-  while (prev_range_end != cookies_.end()) {
-    auto cur_range_begin = prev_range_end;
+  for (auto next = cookies_.begin(); next != cookies_.end();) {
+    auto cur_range_begin = next;
     const std::string key = cur_range_begin->first;  // Keep a copy.
     auto cur_range_end = cookies_.upper_bound(key);
-    prev_range_end = cur_range_end;
+    next = cur_range_end;
 
     // Ensure no equivalent cookies for this host.
     TrimDuplicateCookiesForKey(key, cur_range_begin, cur_range_end,

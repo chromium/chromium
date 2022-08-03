@@ -1120,14 +1120,14 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     // replace the entry.
     auto found = entries_.find(key);
     if (found == entries_.end()) {
-      Entry entry(error, std::move(ip_endpoints), std::move(endpoint_metadatas),
-                  std::move(aliases), legacy_address_value,
-                  std::move(text_records), std::move(hostname_records),
-                  std::move(experimental_results), Entry::SOURCE_UNKNOWN,
-                  expiration_time, network_changes_ - 1);
-      entry.set_pinning(maybe_pinned.value_or(false));
-      entry.set_canonical_names(std::move(canonical_names));
-      AddEntry(key, std::move(entry));
+      Entry new_entry(
+          error, std::move(ip_endpoints), std::move(endpoint_metadatas),
+          std::move(aliases), legacy_address_value, std::move(text_records),
+          std::move(hostname_records), std::move(experimental_results),
+          Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1);
+      new_entry.set_pinning(maybe_pinned.value_or(false));
+      new_entry.set_canonical_names(std::move(canonical_names));
+      AddEntry(key, std::move(new_entry));
       restore_size_++;
     }
   }

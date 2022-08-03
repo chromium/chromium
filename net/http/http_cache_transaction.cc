@@ -3994,20 +3994,22 @@ void HttpCache::Transaction::ChecksumHeaders() {
       "upgrade",
       "vary",
   });
-  // Iterate the response headers looking for matches.
-  size_t iter = 0;
-  std::string name;
-  std::string value;
   // Pairs of (lower_case_header_name, header_value).
   std::vector<std::pair<std::string, std::string>> filtered_headers;
   // It's good to set the initial allocation size of the vector to the
   // expected size to avoid a lot of reallocations. This value was chosen as
   // it is a nice round number.
   filtered_headers.reserve(16);
-  while (response_.headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    std::string lowered_name = base::ToLowerASCII(name);
-    if (kHeadersToInclude.contains(lowered_name)) {
-      filtered_headers.emplace_back(lowered_name, value);
+  {
+    // Iterate the response headers looking for matches.
+    size_t iter = 0;
+    std::string name;
+    std::string value;
+    while (response_.headers->EnumerateHeaderLines(&iter, &name, &value)) {
+      std::string lowered_name = base::ToLowerASCII(name);
+      if (kHeadersToInclude.contains(lowered_name)) {
+        filtered_headers.emplace_back(lowered_name, value);
+      }
     }
   }
   std::sort(filtered_headers.begin(), filtered_headers.end());
