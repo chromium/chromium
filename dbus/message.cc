@@ -513,10 +513,10 @@ void MessageWriter::AppendDouble(double value) {
   AppendBasic(DBUS_TYPE_DOUBLE, &value);
 }
 
-void MessageWriter::AppendString(const std::string& value) {
+void MessageWriter::AppendString(base::StringPiece value) {
   // D-Bus Specification (0.19) says a string "must be valid UTF-8".
   CHECK(base::IsStringUTF8(value));
-  const char* pointer = value.c_str();
+  const char* pointer = value.data() ? value.data() : "";
   AppendBasic(DBUS_TYPE_STRING, &pointer);
   // TODO(satorux): It may make sense to return an error here, as the
   // input string can be large. If needed, we could add something like
