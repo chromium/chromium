@@ -410,12 +410,11 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           base::OptionalOrNullptr(local_matrix_));
     }
     case Type::kRadialGradient:
-      // TODO(crbug/1308932): Remove this helper vector colors and make all
-      // SkColor4f.
       return SkGradientShader::MakeRadial(
-          center_, start_radius_, colors.data(),
+          center_, start_radius_, colors_.data(),
+          nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors.size()), tx_, flags_,
+          static_cast<int>(colors_.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kTwoPointConicalGradient:
       return SkGradientShader::MakeTwoPointConical(
