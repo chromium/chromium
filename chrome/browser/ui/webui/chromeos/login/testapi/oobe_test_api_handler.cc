@@ -96,6 +96,9 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_isOobeInTabletMode",
             ash::TabletMode::Get()->InTabletMode() ||
                 ash::switches::ShouldOobeUseTabletModeFirstRun());
+  dict->Set("testapi_shouldSkipConsolidatedConsent",
+            !features::IsOobeConsolidatedConsentEnabled() ||
+                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,

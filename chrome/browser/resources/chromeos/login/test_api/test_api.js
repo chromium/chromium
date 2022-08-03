@@ -576,6 +576,76 @@ class ArcTosScreenTester extends ScreenElementApi {
   }
 }
 
+
+class GuestTosScreenTester extends ScreenElementApi {
+  constructor() {
+    super('guest-tos');
+    this.loadedStep = new PolymerElementApi(this, '#loaded');
+    this.nextButton = new PolymerElementApi(this, '#acceptButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipGuestTos');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.loadedStep.isVisible();
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('guestTosAccept');
+  }
+}
+
+
+class GestureNavigationScreenTester extends ScreenElementApi {
+  constructor() {
+    super('gesture-navigation');
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('gestureNavigationIntroNextButton');
+  }
+}
+
+class ConsolidatedConsentScreenTester extends ScreenElementApi {
+  constructor() {
+    super('consolidated-consent');
+    this.loadedStep = new PolymerElementApi(this, '#loadedDialog');
+    this.nextButton = new PolymerElementApi(this, '#acceptButton');
+    this.readMoreButton =
+        new PolymerElementApi(this.loadedStep, '#readMoreButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipConsolidatedConsent');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.loadedStep.isVisible();
+  }
+
+  /** @return {boolean} */
+  isReadMoreButtonShown() {
+    // The read more button is inside a <dom-if> element, if it's hidden, the
+    // element would be removed entirely from dom, so we need to check if the
+    // element exists before checking if it's visible.
+    return this.readMoreButton.element() != null &&
+        this.readMoreButton.isVisible();
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('consolidatedConsentAcceptAndContinue');
+  }
+}
+
 class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -601,6 +671,7 @@ class OobeApiProvider {
       ArcTosScreen: new ArcTosScreenTester(),
       ThemeSelectionScreen: new ThemeSelectionScreenTester(),
       GestureNavigation: new GestureNavigationScreenTester(),
+      ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -626,45 +697,6 @@ class OobeApiProvider {
     this.showGaiaDialog = function() {
       chrome.send('OobeTestApi.showGaiaDialog');
     };
-  }
-}
-
-class GuestTosScreenTester extends ScreenElementApi {
-  constructor() {
-    super('guest-tos');
-    this.loadedStep = new PolymerElementApi(this, '#loaded');
-    this.nextButton = new PolymerElementApi(this, '#acceptButton');
-  }
-
-  /** @override */
-  shouldSkip() {
-    return loadTimeData.getBoolean('testapi_shouldSkipGuestTos');
-  }
-
-  /** @return {boolean} */
-  isReadyForTesting() {
-    return this.isVisible() && this.loadedStep.isVisible();
-  }
-
-  /** @return {string} */
-  getNextButtonName() {
-    return loadTimeData.getString('guestTosAccept');
-  }
-}
-
-class GestureNavigationScreenTester extends ScreenElementApi {
-  constructor() {
-    super('gesture-navigation');
-  }
-
-  /** @return {string} */
-  getNextButtonName() {
-    return loadTimeData.getString('gestureNavigationIntroNextButton');
-  }
-
-  /** @return {string} */
-  getGetStartedButtonName() {
-    return loadTimeData.getString('welcomeScreenGetStarted');
   }
 }
 
