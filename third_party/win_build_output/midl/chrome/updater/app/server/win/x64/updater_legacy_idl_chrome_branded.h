@@ -777,7 +777,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("DD42475D-6D46-496a-924E-BD5630B4CBBA")
+    MIDL_INTERFACE("DD42475D-6D46-496A-924E-BD5630B4CBBA")
     IAppBundleWeb : public IDispatch
     {
     public:
@@ -1085,7 +1085,7 @@ EXTERN_C const IID IID_IAppWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("18D0F672-18B4-48e6-AD36-6E6BF01DBBC4")
+    MIDL_INTERFACE("18D0F672-18B4-48E6-AD36-6E6BF01DBBC4")
     IAppWeb : public IDispatch
     {
     public:
@@ -2514,7 +2514,7 @@ EXTERN_C const IID IID_IProcessLauncher;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("128C2DA6-2BC0-44c0-B3F6-4EC22E647964")
+    MIDL_INTERFACE("128C2DA6-2BC0-44C0-B3F6-4EC22E647964")
     IProcessLauncher : public IUnknown
     {
     public:
@@ -2761,7 +2761,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("22181302-A8A6-4f84-A541-E5CBFC70CC43")
+class DECLSPEC_UUID("22181302-A8A6-4F84-A541-E5CBFC70CC43")
 GoogleUpdate3WebUserClass;
 #endif
 
@@ -2793,7 +2793,7 @@ EXTERN_C const CLSID CLSID_ProcessLauncherClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("ABC01078-F197-4b0b-ADBC-CFE684B39C82")
+class DECLSPEC_UUID("ABC01078-F197-4B0B-ADBC-CFE684B39C82")
 ProcessLauncherClass;
 #endif
 #endif /* __UpdaterLegacyLib_LIBRARY_DEFINED__ */
