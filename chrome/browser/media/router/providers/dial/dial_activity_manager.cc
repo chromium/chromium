@@ -226,7 +226,7 @@ DialActivityManager::CanStopApp(const MediaRoute::Id& route_id) const {
 
   if (record_it->second->pending_stop_request) {
     return {"A pending request already exists",
-            mojom::RouteRequestResultCode::UNKNOWN_ERROR};
+            mojom::RouteRequestResultCode::REDUNDANT_REQUEST};
   }
   return {absl::nullopt, mojom::RouteRequestResultCode::OK};
 }

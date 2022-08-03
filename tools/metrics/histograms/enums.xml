@@ -64578,6 +64578,7 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="RouteAlreadyExists"/>
   <int value="10" label="DesktopPickerFailed"/>
   <int value="11" label="RouteAlreadyTerminated"/>
+  <int value="12" label="RedundantRequest"/>
 </enum>
 
 <enum name="MediaRouteProviderVersion">
@@ -64734,14 +64735,6 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Missing app URL"/>
   <int value="9" label="Invalid app URL"/>
   <int value="10" label="Utility process error"/>
-</enum>
-
-<enum name="MediaRouterDialTerminateRouteResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Route not found"/>
-  <int value="2" label="Sink not found"/>
-  <int value="3" label="Stop app failed"/>
-  <int value="4" label="App already terminated"/>
 </enum>
 
 <enum name="MediaRouterIconState">

@@ -16,13 +16,6 @@ void DialMediaRouteProviderMetrics::RecordCreateRouteResult(
 }
 
 // static
-void DialMediaRouteProviderMetrics::RecordTerminateRouteResult(
-    DialTerminateRouteResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kHistogramDialTerminateRouteResult, result,
-                            DialTerminateRouteResult::kCount);
-}
-
-// static
 void DialMediaRouteProviderMetrics::RecordParseMessageResult(
     DialParseMessageResult result) {
   UMA_HISTOGRAM_ENUMERATION(kHistogramDialParseMessageResult, result,
