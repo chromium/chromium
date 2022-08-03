@@ -102,7 +102,7 @@ Next, we will install some useful extensions. Jump to the extensions window
 You will most likely use the following extensions every day:
 
 ```bash
-$ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.python bbenoist.togglehs peterj.proto Google.vscode-mojom msedge-dev.gnls stkb.rewrap ms-vscode-remote.remote-ssh eamodio.gitlens" | xargs -n 1 code --install-extension --force
+$ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.python bbenoist.togglehs peterj.proto Google.vscode-mojom msedge-dev.gnls stkb.rewrap ms-vscode-remote.remote-ssh eamodio.gitlens" | xargs -n 1 code --force --install-extension
 ```
 
 *   [**C/C++**](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) -
@@ -144,7 +144,7 @@ $ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.pytho
 The following extensions might be useful for you as well:
 
 ```bash
-$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker tht13.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --install-extension --force
+$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker tht13.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
 ```
 
 *   **chromium-codesearch** -
