@@ -7314,13 +7314,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"launcher-pulsing-blocks-refresh",
-     flag_descriptions::kLauncherPulsingBlocksRefreshName,
-     flag_descriptions::kLauncherPulsingBlocksRefreshDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLauncherPulsingBlocksRefresh)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"mac-address-randomization",
      flag_descriptions::kMacAddressRandomizationName,
      flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,

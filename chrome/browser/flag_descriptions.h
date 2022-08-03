@@ -3354,9 +3354,6 @@ extern const char kLauncherGameSearchDescription[];
 extern const char kLauncherHideContinueSectionName[];
 extern const char kLauncherHideContinueSectionDescription[];
 
-extern const char kLauncherPulsingBlocksRefreshName[];
-extern const char kLauncherPulsingBlocksRefreshDescription[];
-
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

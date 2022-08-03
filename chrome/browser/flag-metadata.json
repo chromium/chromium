@@ -4118,11 +4118,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "launcher-pulsing-blocks-refresh",
-    "owners": [ "anasalazar", "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "lazily-create-web-state-on-restoration",
     "owners": ["olivierrobin", "sdefresne"],
     "expiry_milestone": 105

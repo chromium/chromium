@@ -408,8 +408,6 @@ extern const base::Feature kLauncherNudgeShortInterval;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherNudgeSessionReset;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kLauncherPulsingBlocksRefresh;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLicensePackagedOobeFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLockScreenHideSensitiveNotificationsSupport;
@@ -765,7 +763,6 @@ bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherHideContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherPulsingBlocksRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLicensePackagedOobeFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLockScreenHideSensitiveNotificationsSupported();

@@ -1144,7 +1144,7 @@ AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
   const bool is_syncing =
       model_ && model_->status() == AppListModelStatus::kStatusSyncing;
   const bool should_animate_placeholder_swap =
-      ash::features::IsLauncherPulsingBlocksRefreshEnabled() &&
+      ash::features::IsProductivityLauncherEnabled() &&
       pulsing_blocks_model_.view_size() > 0 && is_syncing &&
       placeholder_in_view_index;
 

@@ -5842,11 +5842,6 @@ const char kLauncherHideContinueSectionDescription[] =
     "Adds a 'Hide all suggestions' option to the continue section item "
     "right-click menus.";
 
-const char kLauncherPulsingBlocksRefreshName[] =
-    "Launcher pulsing blocks' new UI";
-const char kLauncherPulsingBlocksRefreshDescription[] =
-    "Show the new pulsing blocks' UI in launcher during initial apps sync.";
-
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
