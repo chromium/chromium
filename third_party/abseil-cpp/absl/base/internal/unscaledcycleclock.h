@@ -119,7 +119,7 @@ class UnscaledCycleClock {
 inline int64_t UnscaledCycleClock::Now() {
   uint64_t low, high;
   __asm__ volatile("rdtsc" : "=a"(low), "=d"(high));
-  return (high << 32) | low;
+  return static_cast<int64_t>((high << 32) | low);
 }
 
 #endif

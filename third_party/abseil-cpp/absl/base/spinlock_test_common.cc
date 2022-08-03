@@ -48,7 +48,7 @@ struct SpinLockTest {
                                    int64_t wait_end_time) {
     return SpinLock::EncodeWaitCycles(wait_start_time, wait_end_time);
   }
-  static uint64_t DecodeWaitCycles(uint32_t lock_value) {
+  static int64_t DecodeWaitCycles(uint32_t lock_value) {
     return SpinLock::DecodeWaitCycles(lock_value);
   }
 };
@@ -133,20 +133,20 @@ TEST(SpinLock, WaitCyclesEncoding) {
   // but the lower kProfileTimestampShift will be dropped.
   const int kMaxCyclesShift =
     32 - kLockwordReservedShift + kProfileTimestampShift;
-  const uint64_t kMaxCycles = (int64_t{1} << kMaxCyclesShift) - 1;
+  const int64_t kMaxCycles = (int64_t{1} << kMaxCyclesShift) - 1;
 
   // These bits should be zero after encoding.
   const uint32_t kLockwordReservedMask = (1 << kLockwordReservedShift) - 1;
 
   // These bits are dropped when wait cycles are encoded.
-  const uint64_t kProfileTimestampMask = (1 << kProfileTimestampShift) - 1;
+  const int64_t kProfileTimestampMask = (1 << kProfileTimestampShift) - 1;
 
   // Test a bunch of random values
   std::default_random_engine generator;
   // Shift to avoid overflow below.
-  std::uniform_int_distribution<uint64_t> time_distribution(
-      0, std::numeric_limits<uint64_t>::max() >> 4);
-  std::uniform_int_distribution<uint64_t> cycle_distribution(0, kMaxCycles);
+  std::uniform_int_distribution<int64_t> time_distribution(
+      0, std::numeric_limits<int64_t>::max() >> 3);
+  std::uniform_int_distribution<int64_t> cycle_distribution(0, kMaxCycles);
 
   for (int i = 0; i < 100; i++) {
     int64_t start_time = time_distribution(generator);
@@ -154,7 +154,7 @@ TEST(SpinLock, WaitCyclesEncoding) {
     int64_t end_time = start_time + cycles;
     uint32_t lock_value = SpinLockTest::EncodeWaitCycles(start_time, end_time);
     EXPECT_EQ(0, lock_value & kLockwordReservedMask);
-    uint64_t decoded = SpinLockTest::DecodeWaitCycles(lock_value);
+    int64_t decoded = SpinLockTest::DecodeWaitCycles(lock_value);
     EXPECT_EQ(0, decoded & kProfileTimestampMask);
     EXPECT_EQ(cycles & ~kProfileTimestampMask, decoded);
   }
@@ -178,21 +178,21 @@ TEST(SpinLock, WaitCyclesEncoding) {
   // Test clamping
   uint32_t max_value =
     SpinLockTest::EncodeWaitCycles(start_time, start_time + kMaxCycles);
-  uint64_t max_value_decoded = SpinLockTest::DecodeWaitCycles(max_value);
-  uint64_t expected_max_value_decoded = kMaxCycles & ~kProfileTimestampMask;
+  int64_t max_value_decoded = SpinLockTest::DecodeWaitCycles(max_value);
+  int64_t expected_max_value_decoded = kMaxCycles & ~kProfileTimestampMask;
   EXPECT_EQ(expected_max_value_decoded, max_value_decoded);
 
   const int64_t step = (1 << kProfileTimestampShift);
   uint32_t after_max_value =
     SpinLockTest::EncodeWaitCycles(start_time, start_time + kMaxCycles + step);
-  uint64_t after_max_value_decoded =
+  int64_t after_max_value_decoded =
       SpinLockTest::DecodeWaitCycles(after_max_value);
   EXPECT_EQ(expected_max_value_decoded, after_max_value_decoded);
 
   uint32_t before_max_value = SpinLockTest::EncodeWaitCycles(
       start_time, start_time + kMaxCycles - step);
-  uint64_t before_max_value_decoded =
-    SpinLockTest::DecodeWaitCycles(before_max_value);
+  int64_t before_max_value_decoded =
+      SpinLockTest::DecodeWaitCycles(before_max_value);
   EXPECT_GT(expected_max_value_decoded, before_max_value_decoded);
 }
 

@@ -15,6 +15,7 @@
 #include "absl/base/optimization.h"
 
 #include "gtest/gtest.h"
+#include "absl/base/attributes.h"
 #include "absl/types/optional.h"
 
 namespace {
@@ -124,6 +125,24 @@ TEST(PredictTest, ExplicitBoolConversion) {
   if (ABSL_PREDICT_TRUE(is_false)) ADD_FAILURE();
   if (!ABSL_PREDICT_FALSE(is_true)) ADD_FAILURE();
   if (ABSL_PREDICT_FALSE(is_false)) ADD_FAILURE();
+}
+
+TEST(TrivallyRelocatable, Sanity) {
+#if !defined(ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI) || \
+    !ABSL_HAVE_BUILTIN(__is_trivially_relocatable)
+  GTEST_SKIP() << "No trivial ABI support.";
+#endif
+
+  struct Trivial {};
+  struct NonTrivial {
+    NonTrivial(const NonTrivial&) {}
+  };
+  struct ABSL_ATTRIBUTE_TRIVIAL_ABI TrivialAbi {
+    TrivialAbi(const TrivialAbi&) {}
+  };
+  EXPECT_TRUE(ABSL_IS_TRIVIALLY_RELOCATABLE(Trivial));
+  EXPECT_FALSE(ABSL_IS_TRIVIALLY_RELOCATABLE(NonTrivial));
+  EXPECT_TRUE(ABSL_IS_TRIVIALLY_RELOCATABLE(TrivialAbi));
 }
 
 }  // namespace

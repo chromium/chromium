@@ -281,9 +281,9 @@ void SetHashtablezSampleParameter(int32_t rate);
 void SetHashtablezSampleParameterInternal(int32_t rate);
 
 // Sets a soft max for the number of samples that will be kept.
-int32_t GetHashtablezMaxSamples();
-void SetHashtablezMaxSamples(int32_t max);
-void SetHashtablezMaxSamplesInternal(int32_t max);
+size_t GetHashtablezMaxSamples();
+void SetHashtablezMaxSamples(size_t max);
+void SetHashtablezMaxSamplesInternal(size_t max);
 
 // Configuration override.
 // This allows process-wide sampling without depending on order of

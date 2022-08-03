@@ -137,7 +137,7 @@ class ABSL_LOCKABLE SpinLock {
                                    int64_t wait_end_time);
 
   // Extract number of wait cycles in a lock value.
-  static uint64_t DecodeWaitCycles(uint32_t lock_value);
+  static int64_t DecodeWaitCycles(uint32_t lock_value);
 
   // Provide access to protected method above.  Use for testing only.
   friend struct SpinLockTest;

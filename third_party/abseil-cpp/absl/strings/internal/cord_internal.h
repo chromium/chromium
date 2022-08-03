@@ -570,7 +570,7 @@ class InlineData {
   // Requires the current instance to hold inline data.
   size_t inline_size() const {
     assert(!is_tree());
-    return tag() >> 1;
+    return static_cast<size_t>(tag()) >> 1;
   }
 
   // Sets the size of the inlined character data inside this instance.

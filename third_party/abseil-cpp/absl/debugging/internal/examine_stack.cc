@@ -278,13 +278,14 @@ void DumpStackTrace(int min_dropped_frames, int max_num_frames,
   void* stack_buf[kDefaultDumpStackFramesLimit];
   void** stack = stack_buf;
   int num_stack = kDefaultDumpStackFramesLimit;
-  int allocated_bytes = 0;
+  size_t allocated_bytes = 0;
 
   if (num_stack >= max_num_frames) {
     // User requested fewer frames than we already have space for.
     num_stack = max_num_frames;
   } else {
-    const size_t needed_bytes = max_num_frames * sizeof(stack[0]);
+    const size_t needed_bytes =
+        static_cast<size_t>(max_num_frames) * sizeof(stack[0]);
     void* p = Allocate(needed_bytes);
     if (p != nullptr) {  // We got the space.
       num_stack = max_num_frames;
@@ -293,12 +294,13 @@ void DumpStackTrace(int min_dropped_frames, int max_num_frames,
     }
   }
 
-  size_t depth = absl::GetStackTrace(stack, num_stack, min_dropped_frames + 1);
-  for (size_t i = 0; i < depth; i++) {
+  int depth = absl::GetStackTrace(stack, num_stack, min_dropped_frames + 1);
+  for (int i = 0; i < depth; i++) {
     if (symbolize_stacktrace) {
-      DumpPCAndSymbol(writer, writer_arg, stack[i], "    ");
+      DumpPCAndSymbol(writer, writer_arg, stack[static_cast<size_t>(i)],
+                      "    ");
     } else {
-      DumpPC(writer, writer_arg, stack[i], "    ");
+      DumpPC(writer, writer_arg, stack[static_cast<size_t>(i)], "    ");
     }
   }
 

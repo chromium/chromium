@@ -545,7 +545,7 @@ struct GroupSse2Impl {
 
   // Returns a bitmask representing the positions of slots that match hash.
   BitMask<uint32_t, kWidth> Match(h2_t hash) const {
-    auto match = _mm_set1_epi8(hash);
+    auto match = _mm_set1_epi8(static_cast<char>(hash));
     return BitMask<uint32_t, kWidth>(
         static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
   }
@@ -557,7 +557,7 @@ struct GroupSse2Impl {
     return NonIterableBitMask<uint32_t, kWidth>(
         static_cast<uint32_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
 #else
-    auto match = _mm_set1_epi8(static_cast<h2_t>(ctrl_t::kEmpty));
+    auto match = _mm_set1_epi8(static_cast<char>(ctrl_t::kEmpty));
     return NonIterableBitMask<uint32_t, kWidth>(
         static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
 #endif
@@ -565,14 +565,14 @@ struct GroupSse2Impl {
 
   // Returns a bitmask representing the positions of empty or deleted slots.
   NonIterableBitMask<uint32_t, kWidth> MaskEmptyOrDeleted() const {
-    auto special = _mm_set1_epi8(static_cast<uint8_t>(ctrl_t::kSentinel));
+    auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
     return NonIterableBitMask<uint32_t, kWidth>(static_cast<uint32_t>(
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl))));
   }
 
   // Returns the number of trailing empty or deleted elements in the group.
   uint32_t CountLeadingEmptyOrDeleted() const {
-    auto special = _mm_set1_epi8(static_cast<uint8_t>(ctrl_t::kSentinel));
+    auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
     return TrailingZeros(static_cast<uint32_t>(
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl)) + 1));
   }
@@ -635,7 +635,8 @@ struct GroupAArch64Impl {
     // Clang and GCC optimize countr_zero to rbit+clz without any check for 0,
     // so we should be fine.
     constexpr uint64_t bits = 0x0101010101010101ULL;
-    return countr_zero((mask | ~(mask >> 7)) & bits) >> 3;
+    return static_cast<uint32_t>(countr_zero((mask | ~(mask >> 7)) & bits) >>
+                                 3);
   }
 
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {

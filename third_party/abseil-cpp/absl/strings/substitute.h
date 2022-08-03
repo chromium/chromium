@@ -125,28 +125,44 @@ class Arg {
   }
   Arg(short value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(unsigned short value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(int value)  // NOLINT(runtime/explicit)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(unsigned int value)  // NOLINT(runtime/explicit)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(long value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(unsigned long value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(long long value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(unsigned long long value)  // NOLINT(*)
       : piece_(scratch_,
-               numbers_internal::FastIntToBuffer(value, scratch_) - scratch_) {}
+               static_cast<size_t>(
+                   numbers_internal::FastIntToBuffer(value, scratch_) -
+                   scratch_)) {}
   Arg(float value)  // NOLINT(runtime/explicit)
       : piece_(scratch_, numbers_internal::SixDigitsToBuffer(value, scratch_)) {
   }

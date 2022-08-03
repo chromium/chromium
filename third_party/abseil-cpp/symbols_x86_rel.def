@@ -325,7 +325,7 @@ EXPORTS
     ?DataLength@Header@TimeZoneInfo@cctz@time_internal@absl@@QBEII@Z
     ?DataLossError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?DeadlineExceededError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
-    ?DecodeWaitCycles@SpinLock@base_internal@absl@@KA_KI@Z
+    ?DecodeWaitCycles@SpinLock@base_internal@absl@@KA_JI@Z
     ?DecrementCount@BlockingCounter@absl@@QAE_NXZ
     ?DecrementSynchSem@Mutex@absl@@CA_NPAV12@PAUPerThreadSynch@base_internal@2@VKernelTimeout@synchronization_internal@2@@Z
     ?DefaultArena@LowLevelAlloc@base_internal@absl@@SAPAUArena@123@XZ
@@ -475,7 +475,7 @@ EXPORTS
     ?GetEstimatedFairShareMemoryUsage@cord_internal@absl@@YAIPBUCordRep@12@@Z
     ?GetEstimatedMemoryUsage@cord_internal@absl@@YAIPBUCordRep@12@@Z
     ?GetFlatAux@Cord@absl@@CA_NPAUCordRep@cord_internal@2@PAVstring_view@2@@Z
-    ?GetHashtablezMaxSamples@container_internal@absl@@YAHXZ
+    ?GetHashtablezMaxSamples@container_internal@absl@@YAIXZ
     ?GetHashtablezSampleParameter@container_internal@absl@@YAHXZ
     ?GetId@GraphCycles@synchronization_internal@absl@@QAE?AUGraphId@23@PAX@Z
     ?GetKeys@RandenHwAes@random_internal@absl@@SAPBXXZ
@@ -594,7 +594,7 @@ EXPORTS
     ?MutexDelay@synchronization_internal@absl@@YAHHH@Z
     ?New@CordRepCrc@cord_internal@absl@@SAPAU123@PAUCordRep@23@I@Z
     ?New@CordRepRing@cord_internal@absl@@CAPAV123@II@Z
-    ?NewArena@LowLevelAlloc@base_internal@absl@@SAPAUArena@123@H@Z
+    ?NewArena@LowLevelAlloc@base_internal@absl@@SAPAUArena@123@I@Z
     ?Next@CordzInfo@cord_internal@absl@@QBEPAV123@ABVCordzSnapshot@23@@Z
     ?NextTransition@TimeZone@absl@@QBE_NVTime@2@PAUCivilTransition@12@@Z
     ?NextTransition@TimeZoneInfo@cctz@time_internal@absl@@UBE_NABV?$time_point@Vsystem_clock@chrono@Cr@std@@V?$duration@_JV?$ratio@$00$00@Cr@std@@@234@@chrono@Cr@std@@PAUcivil_transition@time_zone@234@@Z
@@ -702,8 +702,8 @@ EXPORTS
     ?SetHashtablezConfigListener@container_internal@absl@@YAXP6AXXZ@Z
     ?SetHashtablezEnabled@container_internal@absl@@YAX_N@Z
     ?SetHashtablezEnabledInternal@container_internal@absl@@YAX_N@Z
-    ?SetHashtablezMaxSamples@container_internal@absl@@YAXH@Z
-    ?SetHashtablezMaxSamplesInternal@container_internal@absl@@YAXH@Z
+    ?SetHashtablezMaxSamples@container_internal@absl@@YAXI@Z
+    ?SetHashtablezMaxSamplesInternal@container_internal@absl@@YAXI@Z
     ?SetHashtablezSampleParameter@container_internal@absl@@YAXH@Z
     ?SetHashtablezSampleParameterInternal@container_internal@absl@@YAXH@Z
     ?SetMutexDeadlockDetectionMode@absl@@YAXW4OnDeadlockCycle@1@@Z

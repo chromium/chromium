@@ -784,9 +784,9 @@ auto Storage<T, N, A>::Erase(ConstIterator<A> from, ConstIterator<A> to)
     -> Iterator<A> {
   StorageView<A> storage_view = MakeStorageView();
 
-  SizeType<A> erase_size = std::distance(from, to);
-  SizeType<A> erase_index =
-      std::distance(ConstIterator<A>(storage_view.data), from);
+  auto erase_size = static_cast<SizeType<A>>(std::distance(from, to));
+  auto erase_index = static_cast<SizeType<A>>(
+      std::distance(ConstIterator<A>(storage_view.data), from));
   SizeType<A> erase_end_index = erase_index + erase_size;
 
   IteratorValueAdapter<A, MoveIterator<A>> move_values(

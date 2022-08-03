@@ -115,7 +115,13 @@ static void ** NextStackFrame(void **old_frame_pointer, const void *uc,
   // $sp ->|      ...       |
   //       +----------------+
   void **new_frame_pointer = reinterpret_cast<void **>(old_frame_pointer[-2]);
-  bool check_frame_size = true;
+
+  // The RISCV ELF psABI mandates that the stack pointer is always 16-byte
+  // aligned.
+  // TODO(#1236) this doesn't hold for ILP32E which only mandates a 4-byte
+  // alignment.
+  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 15) != 0)
+    return nullptr;
 
 #if defined(__linux__)
   if (WITH_CONTEXT && uc != nullptr) {
@@ -139,34 +145,28 @@ static void ** NextStackFrame(void **old_frame_pointer, const void *uc,
 
       // Alleged frame pointer is readable, use it for further unwinding.
       new_frame_pointer = pre_signal_frame_pointer;
-
-      // Skip frame size check if we return from a signal.  We may be using an
-      // alterate stack for signals.
-      check_frame_size = false;
     }
+    return new_frame_pointer;
   }
 #endif
 
-  // The RISCV ELF psABI mandates that the stack pointer is always 16-byte
-  // aligned.
-  // FIXME(abdulras) this doesn't hold for ILP32E which only mandates a 4-byte
-  // alignment.
-  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 15) != 0)
-    return nullptr;
-
   // Check frame size.  In strict mode, we assume frames to be under 100,000
   // bytes.  In non-strict mode, we relax the limit to 1MB.
-  if (check_frame_size) {
-    const uintptr_t max_size = STRICT_UNWINDING ? 100000 : 1000000;
-    const uintptr_t frame_size =
-        ComputeStackFrameSize(old_frame_pointer, new_frame_pointer);
-    if (frame_size == kUnknownFrameSize &&
-        (reinterpret_cast<uintptr_t>(new_frame_pointer) < range.first ||
-         reinterpret_cast<uintptr_t>(new_frame_pointer) > range.second))
+  const uintptr_t max_size = STRICT_UNWINDING ? 100000 : 1000000;
+  const uintptr_t frame_size =
+      ComputeStackFrameSize(old_frame_pointer, new_frame_pointer);
+  if (frame_size == kUnknownFrameSize) {
+    if (STRICT_UNWINDING)
       return nullptr;
-    if (frame_size > max_size)
+
+    // In non-strict mode permit non-contiguous stacks (e.g. alternate signal
+    // frame handling).
+    if (reinterpret_cast<uintptr_t>(new_frame_pointer) < range.first ||
+        reinterpret_cast<uintptr_t>(new_frame_pointer) > range.second)
       return nullptr;
   }
+  if (frame_size > max_size)
+    return nullptr;
 
   return new_frame_pointer;
 }

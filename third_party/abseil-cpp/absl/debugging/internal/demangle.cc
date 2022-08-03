@@ -151,12 +151,12 @@ static const AbbrevPair kSubstitutionList[] = {
 // State needed for demangling.  This struct is copied in almost every stack
 // frame, so every byte counts.
 typedef struct {
-  int mangled_idx;                   // Cursor of mangled name.
-  int out_cur_idx;                   // Cursor of output string.
-  int prev_name_idx;                 // For constructors/destructors.
-  signed int prev_name_length : 16;  // For constructors/destructors.
-  signed int nest_level : 15;        // For nested names.
-  unsigned int append : 1;           // Append flag.
+  int mangled_idx;                     // Cursor of mangled name.
+  int out_cur_idx;                     // Cursor of output string.
+  int prev_name_idx;                   // For constructors/destructors.
+  unsigned int prev_name_length : 16;  // For constructors/destructors.
+  signed int nest_level : 15;          // For nested names.
+  unsigned int append : 1;             // Append flag.
   // Note: for some reason MSVC can't pack "bool append : 1" into the same int
   // with the above two fields, so we use an int instead.  Amusingly it can pack
   // "signed bool" as expected, but relying on that to continue to be a legal
@@ -235,8 +235,8 @@ static size_t StrLen(const char *str) {
 }
 
 // Returns true if "str" has at least "n" characters remaining.
-static bool AtLeastNumCharsRemaining(const char *str, int n) {
-  for (int i = 0; i < n; ++i) {
+static bool AtLeastNumCharsRemaining(const char *str, size_t n) {
+  for (size_t i = 0; i < n; ++i) {
     if (str[i] == '\0') {
       return false;
     }
@@ -264,7 +264,7 @@ static void InitState(State *state, const char *mangled, char *out,
   state->parse_state.mangled_idx = 0;
   state->parse_state.out_cur_idx = 0;
   state->parse_state.prev_name_idx = 0;
-  state->parse_state.prev_name_length = -1;
+  state->parse_state.prev_name_length = 0;
   state->parse_state.nest_level = -1;
   state->parse_state.append = true;
 }
@@ -356,8 +356,8 @@ static bool ZeroOrMore(ParseFunc parse_func, State *state) {
 // Append "str" at "out_cur_idx".  If there is an overflow, out_cur_idx is
 // set to out_end_idx+1.  The output string is ensured to
 // always terminate with '\0' as long as there is no overflow.
-static void Append(State *state, const char *const str, const int length) {
-  for (int i = 0; i < length; ++i) {
+static void Append(State *state, const char *const str, const size_t length) {
+  for (size_t i = 0; i < length; ++i) {
     if (state->parse_state.out_cur_idx + 1 <
         state->out_end_idx) {  // +1 for '\0'
       state->out[state->parse_state.out_cur_idx++] = str[i];
@@ -420,7 +420,7 @@ static bool EndsWith(State *state, const char chr) {
 
 // Append "str" with some tweaks, iff "append" state is true.
 static void MaybeAppendWithLength(State *state, const char *const str,
-                                  const int length) {
+                                  const size_t length) {
   if (state->parse_state.append && length > 0) {
     // Append a space if the output buffer ends with '<' and "str"
     // starts with '<' to avoid <<<.
@@ -432,14 +432,14 @@ static void MaybeAppendWithLength(State *state, const char *const str,
     if (state->parse_state.out_cur_idx < state->out_end_idx &&
         (IsAlpha(str[0]) || str[0] == '_')) {
       state->parse_state.prev_name_idx = state->parse_state.out_cur_idx;
-      state->parse_state.prev_name_length = length;
+      state->parse_state.prev_name_length = static_cast<unsigned int>(length);
     }
     Append(state, str, length);
   }
 }
 
 // Appends a positive decimal number to the output if appending is enabled.
-static bool MaybeAppendDecimal(State *state, unsigned int val) {
+static bool MaybeAppendDecimal(State *state, int val) {
   // Max {32-64}-bit unsigned int is 20 digits.
   constexpr size_t kMaxLength = 20;
   char buf[kMaxLength];
@@ -456,7 +456,7 @@ static bool MaybeAppendDecimal(State *state, unsigned int val) {
     } while (p > buf && val != 0);
 
     // 'p' landed on the last character we set.  How convenient.
-    Append(state, p, kMaxLength - (p - buf));
+    Append(state, p, kMaxLength - static_cast<size_t>(p - buf));
   }
 
   return true;
@@ -466,7 +466,7 @@ static bool MaybeAppendDecimal(State *state, unsigned int val) {
 // Returns true so that it can be placed in "if" conditions.
 static bool MaybeAppend(State *state, const char *const str) {
   if (state->parse_state.append) {
-    int length = StrLen(str);
+    size_t length = StrLen(str);
     MaybeAppendWithLength(state, str, length);
   }
   return true;
@@ -521,10 +521,10 @@ static void MaybeCancelLastSeparator(State *state) {
 
 // Returns true if the identifier of the given length pointed to by
 // "mangled_cur" is anonymous namespace.
-static bool IdentifierIsAnonymousNamespace(State *state, int length) {
+static bool IdentifierIsAnonymousNamespace(State *state, size_t length) {
   // Returns true if "anon_prefix" is a proper prefix of "mangled_cur".
   static const char anon_prefix[] = "_GLOBAL__N_";
-  return (length > static_cast<int>(sizeof(anon_prefix) - 1) &&
+  return (length > (sizeof(anon_prefix) - 1) &&
           StrPrefix(RemainingInput(state), anon_prefix));
 }
 
@@ -542,7 +542,7 @@ static bool ParseUnnamedTypeName(State *state);
 static bool ParseNumber(State *state, int *number_out);
 static bool ParseFloatNumber(State *state);
 static bool ParseSeqId(State *state);
-static bool ParseIdentifier(State *state, int length);
+static bool ParseIdentifier(State *state, size_t length);
 static bool ParseOperatorName(State *state, int *arity);
 static bool ParseSpecialName(State *state);
 static bool ParseCallOffset(State *state);
@@ -786,7 +786,8 @@ static bool ParseSourceName(State *state) {
   if (guard.IsTooComplex()) return false;
   ParseState copy = state->parse_state;
   int length = -1;
-  if (ParseNumber(state, &length) && ParseIdentifier(state, length)) {
+  if (ParseNumber(state, &length) &&
+      ParseIdentifier(state, static_cast<size_t>(length))) {
     return true;
   }
   state->parse_state = copy;
@@ -864,7 +865,7 @@ static bool ParseNumber(State *state, int *number_out) {
   uint64_t number = 0;
   for (; *p != '\0'; ++p) {
     if (IsDigit(*p)) {
-      number = number * 10 + (*p - '0');
+      number = number * 10 + static_cast<uint64_t>(*p - '0');
     } else {
       break;
     }
@@ -879,7 +880,7 @@ static bool ParseNumber(State *state, int *number_out) {
     state->parse_state.mangled_idx += p - RemainingInput(state);
     if (number_out != nullptr) {
       // Note: possibly truncate "number".
-      *number_out = number;
+      *number_out = static_cast<int>(number);
     }
     return true;
   }
@@ -923,10 +924,10 @@ static bool ParseSeqId(State *state) {
 }
 
 // <identifier> ::= <unqualified source code identifier> (of given length)
-static bool ParseIdentifier(State *state, int length) {
+static bool ParseIdentifier(State *state, size_t length) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
-  if (length < 0 || !AtLeastNumCharsRemaining(RemainingInput(state), length)) {
+  if (!AtLeastNumCharsRemaining(RemainingInput(state), length)) {
     return false;
   }
   if (IdentifierIsAnonymousNamespace(state, length)) {

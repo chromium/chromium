@@ -759,4 +759,41 @@
 #define ABSL_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
+// ABSL_ATTRIBUTE_TRIVIAL_ABI
+// Indicates that a type is "trivially relocatable" -- meaning it can be
+// relocated without invoking the constructor/destructor, using a form of move
+// elision.
+//
+// From a memory safety point of view, putting aside destructor ordering, it's
+// safe to apply ABSL_ATTRIBUTE_TRIVIAL_ABI if an object's location
+// can change over the course of its lifetime: if a constructor can be run one
+// place, and then the object magically teleports to another place where some
+// methods are run, and then the object teleports to yet another place where it
+// is destroyed. This is notably not true for self-referential types, where the
+// move-constructor must keep the self-reference up to date. If the type changed
+// location without invoking the move constructor, it would have a dangling
+// self-reference.
+//
+// The use of this teleporting machinery means that the number of paired
+// move/destroy operations can change, and so it is a bad idea to apply this to
+// a type meant to count the number of moves.
+//
+// Warning: applying this can, rarely, break callers. Objects passed by value
+// will be destroyed at the end of the call, instead of the end of the
+// full-expression containing the call. In addition, it changes the ABI
+// of functions accepting this type by value (e.g. to pass in registers).
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
+//
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::trivial_abi)
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI [[clang::trivial_abi]]
+#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
+#elif ABSL_HAVE_ATTRIBUTE(trivial_abi)
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI __attribute__((trivial_abi))
+#define ABSL_HAVE_ATTRIBUTE_TRIVIAL_ABI 1
+#else
+#define ABSL_ATTRIBUTE_TRIVIAL_ABI
+#endif
+
 #endif  // ABSL_BASE_ATTRIBUTES_H_

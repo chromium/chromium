@@ -215,21 +215,20 @@ void SetHashtablezSampleParameterInternal(int32_t rate) {
   }
 }
 
-int32_t GetHashtablezMaxSamples() {
+size_t GetHashtablezMaxSamples() {
   return GlobalHashtablezSampler().GetMaxSamples();
 }
 
-void SetHashtablezMaxSamples(int32_t max) {
+void SetHashtablezMaxSamples(size_t max) {
   SetHashtablezMaxSamplesInternal(max);
   TriggerHashtablezConfigListener();
 }
 
-void SetHashtablezMaxSamplesInternal(int32_t max) {
+void SetHashtablezMaxSamplesInternal(size_t max) {
   if (max > 0) {
     GlobalHashtablezSampler().SetMaxSamples(max);
   } else {
-    ABSL_RAW_LOG(ERROR, "Invalid hashtablez max samples: %lld",
-                 static_cast<long long>(max));  // NOLINT(runtime/int)
+    ABSL_RAW_LOG(ERROR, "Invalid hashtablez max samples: 0");
   }
 }
 

@@ -330,8 +330,7 @@ class CordBuffer {
 
     // Returns the available area of the internal SSO data
     absl::Span<char> short_available() {
-      assert(is_short());
-      const size_t length = (short_rep.raw_size >> 1);
+      const size_t length = short_length();
       return absl::Span<char>(short_rep.data + length,
                               kInlineCapacity - length);
     }
@@ -347,7 +346,7 @@ class CordBuffer {
     // Returns the length of the internal SSO data.
     size_t short_length() const {
       assert(is_short());
-      return short_rep.raw_size >> 1;
+      return static_cast<size_t>(short_rep.raw_size >> 1);
     }
 
     // Sets the length of the internal SSO data.

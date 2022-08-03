@@ -291,7 +291,7 @@ static void WriteFailureInfo(int signo, void* ucontext, int cpu,
 // some platforms.
 static void PortableSleepForSeconds(int seconds) {
 #ifdef _WIN32
-  Sleep(seconds * 1000);
+  Sleep(static_cast<DWORD>(seconds * 1000));
 #else
   struct timespec sleep_time;
   sleep_time.tv_sec = seconds;
@@ -325,9 +325,9 @@ static void AbslFailureSignalHandler(int signo, siginfo_t*, void* ucontext) {
 
   const GetTidType this_tid = absl::base_internal::GetTID();
   GetTidType previous_failed_tid = 0;
-  if (!failed_tid.compare_exchange_strong(
-          previous_failed_tid, static_cast<intptr_t>(this_tid),
-          std::memory_order_acq_rel, std::memory_order_relaxed)) {
+  if (!failed_tid.compare_exchange_strong(previous_failed_tid, this_tid,
+                                          std::memory_order_acq_rel,
+                                          std::memory_order_relaxed)) {
     ABSL_RAW_LOG(
         ERROR,
         "Signal %d raised at PC=%p while already in AbslFailureSignalHandler()",
