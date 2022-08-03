@@ -161,7 +161,7 @@ class GuestTos extends GuestTosScreenElementBase {
   }
 
   onAcceptClick_() {
-    chrome.send('GuestToSAccept', [this.usageChecked]);
+    this.userActed(['guest-tos-accept', this.usageChecked]);
   }
 
   onBackClick_() {

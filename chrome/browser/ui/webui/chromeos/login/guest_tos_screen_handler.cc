@@ -11,16 +11,9 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId GuestTosScreenView::kScreenId;
+GuestTosScreenHandler::GuestTosScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-GuestTosScreenHandler::GuestTosScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.GuestTosScreen.userActed");
-}
-
-GuestTosScreenHandler::~GuestTosScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+GuestTosScreenHandler::~GuestTosScreenHandler() = default;
 
 void GuestTosScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -39,45 +32,12 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
   builder->Add("guestTosLoading", IDS_GUEST_TOS_LOADING);
 }
 
-void GuestTosScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show(google_eula_url_, cros_eula_url_);
-    show_on_init_ = false;
-  }
-}
-
 void GuestTosScreenHandler::Show(const std::string& google_eula_url,
                                  const std::string& cros_eula_url) {
-  google_eula_url_ = google_eula_url;
-  cros_eula_url_ = cros_eula_url;
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   base::Value::Dict data;
   data.Set("googleEulaUrl", google_eula_url);
   data.Set("crosEulaUrl", cros_eula_url);
   ShowInWebUI(std::move(data));
 }
 
-void GuestTosScreenHandler::Bind(GuestTosScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void GuestTosScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
-void GuestTosScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("GuestToSAccept", &GuestTosScreenHandler::HandleAccept);
-}
-
-void GuestTosScreenHandler::HandleAccept(bool enable_usage_stats) {
-  if (screen_)
-    screen_->OnAccept(enable_usage_stats);
-}
 }  // namespace chromeos

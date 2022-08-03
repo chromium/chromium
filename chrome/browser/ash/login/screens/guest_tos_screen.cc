@@ -18,6 +18,7 @@ namespace {
 
 constexpr const char kUserActionBackClicked[] = "back-button";
 constexpr const char kUserActionCancelClicked[] = "cancel";
+constexpr const char kUserActionGuestToSAccept[] = "guest-tos-accept";
 
 std::string GetGoogleEulaOnlineUrl() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -55,25 +56,15 @@ std::string GuestTosScreen::GetResultString(Result result) {
   }
 }
 
-GuestTosScreen::GuestTosScreen(GuestTosScreenView* view,
+GuestTosScreen::GuestTosScreen(base::WeakPtr<GuestTosScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(GuestTosScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-GuestTosScreen::~GuestTosScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void GuestTosScreen::OnViewDestroyed(GuestTosScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+GuestTosScreen::~GuestTosScreen() = default;
 
 void GuestTosScreen::ShowImpl() {
   if (!view_)
@@ -83,13 +74,18 @@ void GuestTosScreen::ShowImpl() {
 
 void GuestTosScreen::HideImpl() {}
 
-void GuestTosScreen::OnUserActionDeprecated(const std::string& action_id) {
+void GuestTosScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBackClicked) {
     exit_callback_.Run(Result::BACK);
   } else if (action_id == kUserActionCancelClicked) {
     exit_callback_.Run(Result::CANCEL);
+  } else if (action_id == kUserActionGuestToSAccept) {
+    CHECK_EQ(args.size(), 2);
+    const bool enable_usage_stats = args[1].GetBool();
+    OnAccept(enable_usage_stats);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
