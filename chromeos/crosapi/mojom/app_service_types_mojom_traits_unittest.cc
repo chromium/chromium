@@ -48,7 +48,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
   intent_filter->activity_name = "activity_name";
   intent_filter->activity_label = "activity_label";
   input->intent_filters.push_back(std::move(intent_filter));
@@ -107,7 +107,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   ASSERT_EQ(condition->condition_values.size(), 1U);
   EXPECT_EQ(condition->condition_values[0]->value, "https");
   EXPECT_EQ(condition->condition_values[0]->match_type,
-            apps::PatternMatchType::kNone);
+            apps::PatternMatchType::kLiteral);
   EXPECT_EQ(filter->activity_name, "activity_name");
   EXPECT_EQ(filter->activity_label, "activity_label");
 
@@ -151,7 +151,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
   input->intent_filters.push_back(std::move(intent_filter));
   input->window_mode = apps::WindowMode::kBrowser;
   input->allow_uninstall = true;
@@ -186,7 +186,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   ASSERT_EQ(condition->condition_values.size(), 1U);
   EXPECT_EQ(condition->condition_values[0]->value, "https");
   EXPECT_EQ(condition->condition_values[0]->match_type,
-            apps::PatternMatchType::kNone);
+            apps::PatternMatchType::kLiteral);
 
   EXPECT_EQ(output->window_mode, apps::WindowMode::kBrowser);
   EXPECT_TRUE(output->allow_uninstall);
@@ -575,7 +575,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "2",
                                          apps::PatternMatchType::kLiteral);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "3",
@@ -604,7 +604,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
     EXPECT_EQ(condition->condition_type, apps::ConditionType::kScheme);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
-              apps::PatternMatchType::kNone);
+              apps::PatternMatchType::kLiteral);
     EXPECT_EQ(condition->condition_values[0]->value, "1");
   }
   {
@@ -1118,7 +1118,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
 TEST(AppServiceTypesMojomTraitsTest, PreferredApp) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
   auto input =
       std::make_unique<apps::PreferredApp>(std::move(intent_filter), "abcdefg");
 
@@ -1134,7 +1134,7 @@ TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
   apps::IntentFilters added_filters;
   auto intent_filter1 = std::make_unique<apps::IntentFilter>();
   intent_filter1->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
-                                          apps::PatternMatchType::kNone);
+                                          apps::PatternMatchType::kLiteral);
   auto intent_filter2 = std::make_unique<apps::IntentFilter>();
   intent_filter2->AddSingleValueCondition(apps::ConditionType::kHost, "2",
                                           apps::PatternMatchType::kLiteral);

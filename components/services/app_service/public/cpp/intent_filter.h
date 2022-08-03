@@ -35,35 +35,38 @@ enum class IntentFilterMatchLevel {
 // field will be matched against.
 // Values are persisted to disk by preferred_apps_converter.h, so should not be
 // changed or removed without migrating existing data.
-ENUM(ConditionType,
-     // Matches the URL scheme (e.g. https, tel).
-     kScheme,
-     // Matches the URL host (e.g. www.google.com).
-     kHost,
-     // Matches the URL path (e.g. /abc/*). Does not include the URL query or
-     // hash.
-     kPath,
-     // Matches the action type (e.g. view, send).
-     kAction,
-     // Matches the top-level mime type (e.g. text/plain).
-     kMimeType,
-     // Matches against files. All files in the Intent must separately match a
-     // ConditionValue for this Condition to match. kFile conditions may only
-     // use the following PatternMatchTypes: kMimeType, kFileExtension,
-     // kIsDirectory, and kGlob.
-     kFile)
+enum class ConditionType {
+  // Matches the URL scheme (e.g. https, tel).
+  kScheme = 0,
+  // Matches the URL host (e.g. www.google.com).
+  kHost = 1,
+  // Matches the URL path (e.g. /abc/*). Does not include the URL query or
+  // hash.
+  kPath = 2,
+  // Matches the action type (e.g. view, send).
+  kAction = 3,
+  // Matches the top-level mime type (e.g. text/plain).
+  kMimeType = 4,
+  // Matches against files. All files in the Intent must separately match a
+  // ConditionValue for this Condition to match. kFile conditions may only
+  // use the following PatternMatchTypes: kMimeType, kFileExtension,
+  // kIsDirectory, and kGlob.
+  kFile = 5
+};
 
 // Describes what pattern matching rules are applied to a ConditionValue.
 // Values are persisted to disk by preferred_apps_converter.h, so should not be
-// changed or removed without migrating existing data.
+// changed or removed without migrating existing data and the integer values
+// should be preserved
 enum class PatternMatchType {
-  kNone = 0,
+  // kNone    Deprecated. Use kLiteral which has the same function
+
   // The ConditionValue is a literal string which must match the value in the
   // Intent exactly.
-  kLiteral,
+  kLiteral = 1,
   // The ConditionValue matches if it is a prefix of the value in the Intent.
   // For example, a ConditionValue of "/users/" matches a value of "/users/me".
-  kPrefix,
+  kPrefix = 2,
   // The ConditionValue is a simple glob pattern which matches against the value
   // in the Intent. The syntax allows the following special characters:
   //  *  - match 0 or more occurrences of the previous character
@@ -71,22 +74,22 @@ enum class PatternMatchType {
   //  \  - escape character
   // All wildcard matching is non-greedy. This syntax is the same as Android:
   // https://developer.android.com/reference/android/os/PatternMatcher#PATTERN_SIMPLE_GLOB
-  kGlob,
+  kGlob = 3,
   // The ConditionValue is a mime type with optional wildcards (e.g.
   // "image/png", or "image/*", or "*/*"), which matches against a mime type
   // from the Intent.
-  kMimeType,
+  kMimeType = 4,
   // The ConditionValue is a file extension (e.g. "png") or a wildcard ("*")
   // which is matched against file names in the Intent. Common double extension
   // file types are supported: for example, a file named "file.tar.gz" matches
   // both "gz" and "tar.gz" ConditionValues.
-  kFileExtension,
+  kFileExtension = 5,
   // The ConditionValue matches any files which are directories.
-  kIsDirectory,
+  kIsDirectory = 6,
   // The ConditionValue matches if it is a suffix of the value in the Intent.
   // For example, a ConditionValue of ".google.com" matches a value of
   // "maps.google.com".
-  kSuffix
+  kSuffix = 7
 };
 
 // A ConditionValue is a possible value that is accepted by a Condition. The

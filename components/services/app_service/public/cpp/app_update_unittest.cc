@@ -918,14 +918,14 @@ class AppUpdateTest : public testing::Test {
       IntentFilterPtr intent_filter = std::make_unique<IntentFilter>();
 
       ConditionValues scheme_condition_values;
-      scheme_condition_values.push_back(
-          std::make_unique<ConditionValue>("https", PatternMatchType::kNone));
+      scheme_condition_values.push_back(std::make_unique<ConditionValue>(
+          "https", PatternMatchType::kLiteral));
       ConditionPtr scheme_condition = std::make_unique<Condition>(
           ConditionType::kScheme, std::move(scheme_condition_values));
 
       ConditionValues host_condition_values;
       host_condition_values.push_back(std::make_unique<ConditionValue>(
-          "www.google.com", PatternMatchType::kNone));
+          "www.google.com", PatternMatchType::kLiteral));
       auto host_condition = std::make_unique<Condition>(
           ConditionType::kHost, std::move(host_condition_values));
 
@@ -944,15 +944,15 @@ class AppUpdateTest : public testing::Test {
       IntentFilterPtr intent_filter = std::make_unique<IntentFilter>();
 
       ConditionValues scheme_condition_values;
-      scheme_condition_values.push_back(
-          std::make_unique<ConditionValue>("https", PatternMatchType::kNone));
+      scheme_condition_values.push_back(std::make_unique<ConditionValue>(
+          "https", PatternMatchType::kLiteral));
       ConditionPtr scheme_condition = std::make_unique<Condition>(
           ConditionType::kScheme, std::move(scheme_condition_values));
       intent_filter->conditions.push_back(scheme_condition->Clone());
 
       ConditionValues host_condition_values;
       host_condition_values.push_back(std::make_unique<ConditionValue>(
-          "www.abc.com", PatternMatchType::kNone));
+          "www.abc.com", PatternMatchType::kLiteral));
       auto host_condition = std::make_unique<Condition>(
           ConditionType::kHost, std::move(host_condition_values));
       intent_filter->conditions.push_back(host_condition->Clone());

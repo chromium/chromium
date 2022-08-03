@@ -301,7 +301,7 @@ class AppServiceFileTasksTest : public testing::Test {
                                                   std::string mime_type) {
     auto intent_filter = std::make_unique<apps::IntentFilter>();
     intent_filter->AddSingleValueCondition(apps::ConditionType::kAction, action,
-                                           apps::PatternMatchType::kNone);
+                                           apps::PatternMatchType::kLiteral);
     intent_filter->AddSingleValueCondition(apps::ConditionType::kFile,
                                            mime_type,
                                            apps::PatternMatchType::kMimeType);

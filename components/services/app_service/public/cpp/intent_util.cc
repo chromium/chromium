@@ -291,8 +291,6 @@ apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
 bool ConditionValueMatches(const std::string& value,
                            const apps::ConditionValuePtr& condition_value) {
   switch (condition_value->match_type) {
-    // Fallthrough as kNone and kLiteral has same matching type.
-    case apps::PatternMatchType::kNone:
     case apps::PatternMatchType::kLiteral:
       return value == condition_value->value;
     case apps::PatternMatchType::kPrefix:
@@ -319,8 +317,6 @@ bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value) {
   switch (condition_value->match_type) {
-    // Fallthrough as kNone and kLiteral has same matching type.
-    case apps::mojom::PatternMatchType::kNone:
     case apps::mojom::PatternMatchType::kLiteral:
       return value == condition_value->value;
     case apps::mojom::PatternMatchType::kPrefix:
@@ -347,7 +343,6 @@ bool FileMatchesConditionValue(
     const apps::mojom::IntentFilePtr& file,
     const apps::mojom::ConditionValuePtr& condition_value) {
   switch (condition_value->match_type) {
-    case apps::mojom::PatternMatchType::kNone:
     case apps::mojom::PatternMatchType::kLiteral:
     case apps::mojom::PatternMatchType::kPrefix:
     case apps::mojom::PatternMatchType::kSuffix:

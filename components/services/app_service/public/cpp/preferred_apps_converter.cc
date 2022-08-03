@@ -52,16 +52,22 @@ apps::ConditionValuePtr ParseValueToConditionValue(const base::Value& value) {
              << apps::kValueKey << "\" key with string value.";
     return nullptr;
   }
-
   auto match_type = value.FindIntKey(apps::kMatchTypeKey);
   if (!match_type.has_value()) {
     DVLOG(0) << "Fail to parse condition value. Cannot find \""
              << apps::kMatchTypeKey << "\" key with int value.";
     return nullptr;
   }
-
-  return std::make_unique<apps::ConditionValue>(
-      *value_string, static_cast<apps::PatternMatchType>(match_type.value()));
+  // We used to have a kNone=0 defined in the enum which we have merged with
+  // kLiteral. Some legacy storage may still have zero stored in seralized form
+  // as an integer which we can safely treat as kLiteral=1.
+  apps::PatternMatchType pattern_match_type = apps::PatternMatchType::kLiteral;
+  if (match_type > 0) {
+    pattern_match_type =
+        static_cast<apps::PatternMatchType>(match_type.value());
+  }
+  return std::make_unique<apps::ConditionValue>(*value_string,
+                                                pattern_match_type);
 }
 
 apps::ConditionPtr ParseValueToCondition(const base::Value& value) {

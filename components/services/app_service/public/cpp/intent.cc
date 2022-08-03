@@ -39,7 +39,6 @@ std::unique_ptr<IntentFile> IntentFile::Clone() const {
 
 bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
   switch (condition_value->match_type) {
-    case PatternMatchType::kNone:
     case PatternMatchType::kLiteral:
     case PatternMatchType::kPrefix:
     case PatternMatchType::kSuffix: {

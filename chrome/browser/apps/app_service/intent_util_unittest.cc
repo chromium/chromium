@@ -244,7 +244,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, ConditionType::kAction);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value,
               apps_util::kIntentActionView);
   }
@@ -254,7 +254,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, ConditionType::kScheme);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, scope.scheme());
   }
 
@@ -263,7 +263,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, ConditionType::kHost);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, scope.host());
   }
 
@@ -300,7 +300,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              apps::mojom::PatternMatchType::kNone);
+              apps::mojom::PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value,
               apps_util::kIntentActionView);
   }
@@ -310,7 +310,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kScheme);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              apps::mojom::PatternMatchType::kNone);
+              apps::mojom::PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, scope.scheme());
   }
 
@@ -319,7 +319,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
     EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kHost);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              apps::mojom::PatternMatchType::kNone);
+              apps::mojom::PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, scope.host());
   }
 
@@ -1157,7 +1157,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
                 apps::PatternMatchType::kSuffix);
       // Check non-wildcard host
       EXPECT_EQ(condition->condition_values[1]->match_type,
-                apps::PatternMatchType::kNone);
+                apps::PatternMatchType::kLiteral);
     }
   }
 }
@@ -1296,7 +1296,7 @@ TEST_F(IntentUtilsTest,
       // Check non-wildcard host
       EXPECT_EQ(condition->condition_values[1]->match_type,
                 ConvertPatternMatchTypeToMojomPatternMatchType(
-                    apps::PatternMatchType::kNone));
+                    apps::PatternMatchType::kLiteral));
     }
   }
 }

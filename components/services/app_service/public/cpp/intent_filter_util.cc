@@ -21,8 +21,7 @@ bool ConditionValuesHaveOverlap(const apps::ConditionValuePtr& value1,
   }
 
   if (value1->match_type == apps::PatternMatchType::kSuffix &&
-      (value2->match_type == apps::PatternMatchType::kNone ||
-       value2->match_type == apps::PatternMatchType::kLiteral ||
+      (value2->match_type == apps::PatternMatchType::kLiteral ||
        value2->match_type == apps::PatternMatchType::kSuffix)) {
     return base::EndsWith(/*str=*/value2->value,
                           /*search_for=*/value1->value);
@@ -59,8 +58,7 @@ bool ConditionValuesHaveOverlap(const apps::mojom::ConditionValuePtr& value1,
   }
 
   if (value1->match_type == apps::mojom::PatternMatchType::kSuffix &&
-      (value2->match_type == apps::mojom::PatternMatchType::kNone ||
-       value2->match_type == apps::mojom::PatternMatchType::kLiteral ||
+      (value2->match_type == apps::mojom::PatternMatchType::kLiteral ||
        value2->match_type == apps::mojom::PatternMatchType::kSuffix)) {
     return base::EndsWith(/*str=*/value2->value,
                           /*search_for=*/value1->value);
@@ -165,14 +163,14 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
                                          apps_util::kIntentActionView,
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
                                          url.scheme(),
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
                                          apps::PatternMatchType::kPrefix);
@@ -183,15 +181,17 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
 apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 
-  AddSingleValueCondition(apps::mojom::ConditionType::kAction,
-                          apps_util::kIntentActionView,
-                          apps::mojom::PatternMatchType::kNone, intent_filter);
+  AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+      apps::mojom::PatternMatchType::kLiteral, intent_filter);
 
   AddSingleValueCondition(apps::mojom::ConditionType::kScheme, url.scheme(),
-                          apps::mojom::PatternMatchType::kNone, intent_filter);
+                          apps::mojom::PatternMatchType::kLiteral,
+                          intent_filter);
 
   AddSingleValueCondition(apps::mojom::ConditionType::kHost, url.host(),
-                          apps::mojom::PatternMatchType::kNone, intent_filter);
+                          apps::mojom::PatternMatchType::kLiteral,
+                          intent_filter);
 
   AddSingleValueCondition(apps::mojom::ConditionType::kPath, url.path(),
                           apps::mojom::PatternMatchType::kPrefix,
@@ -275,7 +275,7 @@ bool FilterNeedsUpgrade(const apps::mojom::IntentFilterPtr& filter) {
 void UpgradeFilter(apps::IntentFilterPtr& filter) {
   std::vector<apps::ConditionValuePtr> condition_values;
   condition_values.push_back(std::make_unique<apps::ConditionValue>(
-      apps_util::kIntentActionView, apps::PatternMatchType::kNone));
+      apps_util::kIntentActionView, apps::PatternMatchType::kLiteral));
   auto condition = std::make_unique<apps::Condition>(
       apps::ConditionType::kAction, std::move(condition_values));
   filter->conditions.insert(filter->conditions.begin(), std::move(condition));
@@ -284,7 +284,7 @@ void UpgradeFilter(apps::IntentFilterPtr& filter) {
 void UpgradeFilter(apps::mojom::IntentFilterPtr& filter) {
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   condition_values.push_back(apps_util::MakeConditionValue(
-      apps_util::kIntentActionView, apps::mojom::PatternMatchType::kNone));
+      apps_util::kIntentActionView, apps::mojom::PatternMatchType::kLiteral));
   auto condition = apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
                                             std::move(condition_values));
   filter->conditions.insert(filter->conditions.begin(), std::move(condition));

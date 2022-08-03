@@ -612,18 +612,18 @@ TEST_F(AppServiceMojomImplTest, PreferredAppsOverlap) {
   auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_1);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kHost, filter_url_2.host(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_1);
 
   auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_2);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kHost, filter_url_2.host(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_2);
 
   auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
 
@@ -681,18 +681,18 @@ TEST_F(AppServiceMojomImplTest, PreferredAppsOverlapSupportedLink) {
   auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_1);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kHost, filter_url_2.host(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_1);
 
   auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_2);
   apps_util::AddConditionValue(
       apps::mojom::ConditionType::kHost, filter_url_2.host(),
-      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter_2);
 
   auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
 

@@ -393,8 +393,6 @@ apps::mojom::ConditionType ConvertConditionTypeToMojomConditionType(
 PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
     const apps::mojom::PatternMatchType& mojom_pattern_match_type) {
   switch (mojom_pattern_match_type) {
-    case apps::mojom::PatternMatchType::kNone:
-      return PatternMatchType::kNone;
     case apps::mojom::PatternMatchType::kLiteral:
       return PatternMatchType::kLiteral;
     case apps::mojom::PatternMatchType::kPrefix:
@@ -415,8 +413,6 @@ PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
 apps::mojom::PatternMatchType ConvertPatternMatchTypeToMojomPatternMatchType(
     const PatternMatchType& pattern_match_type) {
   switch (pattern_match_type) {
-    case PatternMatchType::kNone:
-      return apps::mojom::PatternMatchType::kNone;
     case PatternMatchType::kLiteral:
       return apps::mojom::PatternMatchType::kLiteral;
     case PatternMatchType::kPrefix:

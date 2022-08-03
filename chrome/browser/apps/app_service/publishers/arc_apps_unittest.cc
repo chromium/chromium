@@ -68,20 +68,20 @@ apps::IntentFilters CreateIntentFilters(
 
   apps::ConditionValues values1;
   values1.push_back(std::make_unique<apps::ConditionValue>(
-      apps_util::kIntentActionView, apps::PatternMatchType::kNone));
+      apps_util::kIntentActionView, apps::PatternMatchType::kLiteral));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kAction, std::move(values1)));
 
   apps::ConditionValues values2;
   values2.push_back(std::make_unique<apps::ConditionValue>(
-      "https", apps::PatternMatchType::kNone));
+      "https", apps::PatternMatchType::kLiteral));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kScheme, std::move(values2)));
 
   apps::ConditionValues values;
   for (const std::string& authority : authorities) {
     values.push_back(std::make_unique<apps::ConditionValue>(
-        authority, apps::PatternMatchType::kNone));
+        authority, apps::PatternMatchType::kLiteral));
   }
   filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kHost, std::move(values)));

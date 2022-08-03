@@ -609,8 +609,6 @@ crosapi::mojom::PatternMatchType
 EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::ToMojom(
     apps::PatternMatchType input) {
   switch (input) {
-    case apps::PatternMatchType::kNone:
-      return crosapi::mojom::PatternMatchType::kNone;
     case apps::PatternMatchType::kLiteral:
       return crosapi::mojom::PatternMatchType::kLiteral;
     case apps::PatternMatchType::kPrefix:
@@ -635,8 +633,6 @@ bool EnumTraits<crosapi::mojom::PatternMatchType, apps::PatternMatchType>::
               apps::PatternMatchType* output) {
   switch (input) {
     case crosapi::mojom::PatternMatchType::kNone:
-      *output = apps::PatternMatchType::kNone;
-      return true;
     case crosapi::mojom::PatternMatchType::kLiteral:
       *output = apps::PatternMatchType::kLiteral;
       return true;

@@ -378,8 +378,8 @@ enum ConditionType {
 
 // The pattern match type for intent filter pattern condition.
 enum PatternMatchType {
-  kNone = 0,
-  kLiteral,
+  // kNone = 0   Deprecated. Use kLiteral which has the same function
+  kLiteral = 1,
   kPrefix,
   kGlob,
   kMimeType,

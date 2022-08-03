@@ -39,7 +39,7 @@ void CheckShareTextFilter(const IntentFilterPtr& intent_filter) {
     ASSERT_EQ(condition.condition_values.size(), 1U);
 
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, "send");
   }
 
@@ -76,11 +76,11 @@ void CheckShareFileFilter(const IntentFilterPtr& intent_filter,
     ASSERT_EQ(condition.condition_values.size(), 2U);
 
     EXPECT_EQ(condition.condition_values[0]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[0]->value, "send");
 
     EXPECT_EQ(condition.condition_values[1]->match_type,
-              PatternMatchType::kNone);
+              PatternMatchType::kLiteral);
     EXPECT_EQ(condition.condition_values[1]->value, "send_multiple");
   }
 

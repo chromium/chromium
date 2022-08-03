@@ -21,7 +21,7 @@ apps::IntentFilterPtr MakeIntentFilter(const std::string& action,
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAction, action,
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
 
   apps::ConditionValues condition_values;
   if (!mime_type.empty()) {
@@ -54,7 +54,7 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForFiles(
 
   apps_util::AddSingleValueCondition(
       apps::mojom::ConditionType::kAction, action,
-      apps::mojom::PatternMatchType::kNone, intent_filter);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter);
 
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   if (!mime_type.empty()) {
@@ -86,7 +86,7 @@ apps::IntentFilterPtr MakeIntentFilterForMimeType(
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
                                          kIntentActionSend,
-                                         apps::PatternMatchType::kNone);
+                                         apps::PatternMatchType::kLiteral);
 
   std::vector<apps::ConditionValuePtr> condition_values;
   condition_values.push_back(std::make_unique<apps::ConditionValue>(
@@ -126,7 +126,7 @@ apps::IntentFilterPtr MakeURLFilterForView(const std::string& url_pattern,
 apps::IntentFilterPtr MakeSchemeOnlyFilter(const std::string& scheme) {
   apps::ConditionValues condition_values;
   condition_values.push_back(std::make_unique<apps::ConditionValue>(
-      scheme, apps::PatternMatchType::kNone));
+      scheme, apps::PatternMatchType::kLiteral));
   auto condition = std::make_unique<apps::Condition>(
       apps::ConditionType::kScheme, std::move(condition_values));
 
@@ -140,13 +140,13 @@ apps::IntentFilterPtr MakeSchemeAndHostOnlyFilter(const std::string& scheme,
                                                   const std::string& host) {
   apps::ConditionValues scheme_condition_values;
   scheme_condition_values.push_back(std::make_unique<apps::ConditionValue>(
-      scheme, apps::PatternMatchType::kNone));
+      scheme, apps::PatternMatchType::kLiteral));
   auto scheme_condition = std::make_unique<apps::Condition>(
       apps::ConditionType::kScheme, std::move(scheme_condition_values));
 
   apps::ConditionValues host_condition_values;
   host_condition_values.push_back(std::make_unique<apps::ConditionValue>(
-      host, apps::PatternMatchType::kNone));
+      host, apps::PatternMatchType::kLiteral));
   auto host_condition = std::make_unique<apps::Condition>(
       apps::ConditionType::kHost, std::move(host_condition_values));
 
@@ -175,7 +175,7 @@ void AddConditionValue(apps::ConditionType condition_type,
 apps::mojom::IntentFilterPtr CreateSchemeOnlyFilter(const std::string& scheme) {
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   condition_values.push_back(apps_util::MakeConditionValue(
-      scheme, apps::mojom::PatternMatchType::kNone));
+      scheme, apps::mojom::PatternMatchType::kLiteral));
   auto condition = apps_util::MakeCondition(apps::mojom::ConditionType::kScheme,
                                             std::move(condition_values));
 
@@ -190,13 +190,13 @@ apps::mojom::IntentFilterPtr CreateSchemeAndHostOnlyFilter(
     const std::string& host) {
   std::vector<apps::mojom::ConditionValuePtr> scheme_condition_values;
   scheme_condition_values.push_back(apps_util::MakeConditionValue(
-      scheme, apps::mojom::PatternMatchType::kNone));
+      scheme, apps::mojom::PatternMatchType::kLiteral));
   auto scheme_condition = apps_util::MakeCondition(
       apps::mojom::ConditionType::kScheme, std::move(scheme_condition_values));
 
   std::vector<apps::mojom::ConditionValuePtr> host_condition_values;
   host_condition_values.push_back(apps_util::MakeConditionValue(
-      host, apps::mojom::PatternMatchType::kNone));
+      host, apps::mojom::PatternMatchType::kLiteral));
   auto host_condition = apps_util::MakeCondition(
       apps::mojom::ConditionType::kHost, std::move(host_condition_values));
 
@@ -220,7 +220,7 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForMimeType(
 
   apps_util::AddSingleValueCondition(
       apps::mojom::ConditionType::kAction, kIntentActionSend,
-      apps::mojom::PatternMatchType::kNone, intent_filter);
+      apps::mojom::PatternMatchType::kLiteral, intent_filter);
 
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   condition_values.push_back(apps_util::MakeConditionValue(
