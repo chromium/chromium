@@ -242,28 +242,18 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
 
     SEL selector =
         NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
-    if (![ax_element.AsId() respondsToSelector:selector])
+    if (!ax_element.RespondsToSelector(selector))
       return AXOptionalNSObject::Error();
 
-    NSInvocation* invocation =
-        [NSInvocation invocationWithMethodSignature:
-                          [[ax_element.AsId() class]
-                              instanceMethodSignatureForSelector:selector]];
-    [invocation setSelector:selector];
-    [invocation setTarget:ax_element.AsId()];
-    if (optional_arg_selector) {
-      // The ax_element is at index 0 and the selector at index 1, so arguments
-      // start at index 2.
-      [invocation setArgument:&*optional_arg_selector atIndex:2];
-    }
-    [invocation invoke];
-    BOOL return_value;
-    [invocation getReturnValue:&return_value];
+    BOOL return_value =
+        optional_arg_selector
+            ? ax_element.Invoke<BOOL, SEL>(selector, *optional_arg_selector)
+            : ax_element.Invoke<BOOL>(selector);
     return AXOptionalNSObject([NSNumber numberWithBool:return_value]);
   }
 
   if (property_node.name_or_value == "setAccessibilityFocused")
-    return InvokeSetAccessibilityFocused(ax_element.AsId(), property_node);
+    return InvokeSetAccessibilityFocused(ax_element, property_node);
 
   // accessibilityAttributeValue
   if (property_node.name_or_value == "accessibilityAttributeValue") {
@@ -402,7 +392,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeSetAccessibilityFocused(
-    const id target,
+    const AXElementWrapper& ax_element,
     const AXPropertyNode& property_node) const {
   std::string selector_string = property_node.name_or_value + ":";
   if (property_node.arguments.size() != 1) {
@@ -413,24 +403,13 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeSetAccessibilityFocused(
   }
 
   SEL selector = NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
-  if (![target respondsToSelector:selector]) {
+  if (!ax_element.RespondsToSelector(selector)) {
     LOG(ERROR) << "Target doesn't answer to " << selector_string << " selector";
     return AXOptionalNSObject::Error();
   }
 
-  NSInvocation* invocation = [NSInvocation
-      invocationWithMethodSignature:
-          [[target class] instanceMethodSignatureForSelector:selector]];
-
-  [invocation setSelector:selector];
-  [invocation setTarget:target];
-
-  // The target is at index 0 and the selector at index 1, so arguments
-  // start at index 2.
   BOOL val = property_node.arguments[0].name_or_value == "FALSE" ? FALSE : TRUE;
-  [invocation setArgument:&val atIndex:2];
-  [invocation invoke];
-
+  ax_element.Invoke<void, BOOL>(selector, val);
   return AXOptionalNSObject(nil);
 }
 

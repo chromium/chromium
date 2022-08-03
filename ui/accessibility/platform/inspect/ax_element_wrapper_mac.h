@@ -89,7 +89,53 @@ class AX_EXPORT AXElementWrapper final {
   // Performs the given action on the object.
   void PerformAction(NSString* action) const;
 
+  // Returns true if the object responds to the given selector.
+  bool RespondsToSelector(SEL selector) const {
+    return [node_ respondsToSelector:selector];
+  }
+
+  // Invokes a method of the given signature.
+  template <typename ReturnType, typename... Args>
+  typename std::enable_if<!std::is_same<ReturnType, void>::value,
+                          ReturnType>::type
+  Invoke(SEL selector, Args... args) const {
+    NSInvocation* invocation = InvokeInternal(selector, args...);
+    ReturnType return_value;
+    [invocation getReturnValue:&return_value];
+    return return_value;
+  }
+
+  template <typename ReturnType, typename... Args>
+  typename std::enable_if<std::is_same<ReturnType, void>::value, void>::type
+  Invoke(SEL selector, Args... args) const {
+    InvokeInternal(selector, args...);
+  }
+
  private:
+  template <typename... Args>
+  NSInvocation* InvokeInternal(SEL selector, Args... args) const {
+    NSInvocation* invocation = [NSInvocation
+        invocationWithMethodSignature:
+            [[node_ class] instanceMethodSignatureForSelector:selector]];
+    [invocation setSelector:selector];
+    [invocation setTarget:node_];
+    SetInvocationArguments<Args...>(invocation, 2, args...);
+    [invocation invoke];
+    return invocation;
+  }
+
+  template <typename Arg, typename... Args>
+  void SetInvocationArguments(NSInvocation* invocation,
+                              int argument_index,
+                              Arg& arg,
+                              Args&... args) const {
+    [invocation setArgument:&arg atIndex:argument_index];
+    SetInvocationArguments<Args...>(invocation, argument_index + 1, args...);
+  }
+
+  template <typename... Args>
+  void SetInvocationArguments(NSInvocation*, int) const {}
+
   // Returns true on success, otherwise returns false and logs error.
   bool AXSuccess(AXError, const std::string& message) const;
 
