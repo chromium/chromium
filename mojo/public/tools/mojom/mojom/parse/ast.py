@@ -11,7 +11,11 @@
 import os.path
 
 
-class NodeBase(object):
+# Instance of 'NodeListBase' has no '_list_item_type' member (no-member)
+# pylint: disable=no-member
+
+
+class NodeBase:
   """Base class for nodes in the AST."""
 
   def __init__(self, filename=None, lineno=None):
@@ -36,7 +40,7 @@ class NodeListBase(NodeBase):
   classes, in a tuple) of the members of the list.)"""
 
   def __init__(self, item_or_items=None, **kwargs):
-    super(NodeListBase, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.items = []
     if item_or_items is None:
       pass
@@ -55,7 +59,7 @@ class NodeListBase(NodeBase):
     return self.items.__iter__()
 
   def __eq__(self, other):
-    return super(NodeListBase, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.items == other.items
 
   # Implement this so that on failure, we get slightly more sensible output.
@@ -102,12 +106,12 @@ class Attribute(NodeBase):
 
   def __init__(self, key, value, **kwargs):
     assert isinstance(key, str)
-    super(Attribute, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.key = key
     self.value = value
 
   def __eq__(self, other):
-    return super(Attribute, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.key == other.key and \
            self.value == other.value
 
@@ -128,13 +132,13 @@ class Const(Definition):
     # The value is either a literal (currently passed through as a string) or a
     # "wrapped identifier".
     assert isinstance(value, (tuple, str))
-    super(Const, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.typename = typename
     self.value = value
 
   def __eq__(self, other):
-    return super(Const, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.typename == other.typename and \
            self.value == other.value
@@ -146,12 +150,12 @@ class Enum(Definition):
   def __init__(self, mojom_name, attribute_list, enum_value_list, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert enum_value_list is None or isinstance(enum_value_list, EnumValueList)
-    super(Enum, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.enum_value_list = enum_value_list
 
   def __eq__(self, other):
-    return super(Enum, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.enum_value_list == other.enum_value_list
 
@@ -164,12 +168,12 @@ class EnumValue(Definition):
     # "wrapped identifier".
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert value is None or isinstance(value, (tuple, str))
-    super(EnumValue, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.value = value
 
   def __eq__(self, other):
-    return super(EnumValue, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.value == other.value
 
@@ -187,13 +191,13 @@ class Import(NodeBase):
   def __init__(self, attribute_list, import_filename, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert isinstance(import_filename, str)
-    super(Import, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.attribute_list = attribute_list
     # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
     self.import_filename = os.path.normpath(import_filename).replace('\\', '/')
 
   def __eq__(self, other):
-    return super(Import, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.import_filename == other.import_filename
 
@@ -210,12 +214,12 @@ class Interface(Definition):
   def __init__(self, mojom_name, attribute_list, body, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert isinstance(body, InterfaceBody)
-    super(Interface, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.body = body
 
   def __eq__(self, other):
-    return super(Interface, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.body == other.body
 
@@ -230,14 +234,14 @@ class Method(Definition):
     assert isinstance(parameter_list, ParameterList)
     assert response_parameter_list is None or \
            isinstance(response_parameter_list, ParameterList)
-    super(Method, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
     self.parameter_list = parameter_list
     self.response_parameter_list = response_parameter_list
 
   def __eq__(self, other):
-    return super(Method, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.ordinal == other.ordinal and \
            self.parameter_list == other.parameter_list and \
@@ -258,12 +262,12 @@ class Module(NodeBase):
     # |mojom_namespace| is either none or a "wrapped identifier".
     assert mojom_namespace is None or isinstance(mojom_namespace, tuple)
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
-    super(Module, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.mojom_namespace = mojom_namespace
     self.attribute_list = attribute_list
 
   def __eq__(self, other):
-    return super(Module, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.mojom_namespace == other.mojom_namespace and \
            self.attribute_list == other.attribute_list
 
@@ -275,13 +279,13 @@ class Mojom(NodeBase):
     assert module is None or isinstance(module, Module)
     assert isinstance(import_list, ImportList)
     assert isinstance(definition_list, list)
-    super(Mojom, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.module = module
     self.import_list = import_list
     self.definition_list = definition_list
 
   def __eq__(self, other):
-    return super(Mojom, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.module == other.module and \
            self.import_list == other.import_list and \
            self.definition_list == other.definition_list
@@ -296,11 +300,11 @@ class Ordinal(NodeBase):
 
   def __init__(self, value, **kwargs):
     assert isinstance(value, int)
-    super(Ordinal, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.value = value
 
   def __eq__(self, other):
-    return super(Ordinal, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.value == other.value
 
 
@@ -312,14 +316,14 @@ class Parameter(NodeBase):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
     assert isinstance(typename, str)
-    super(Parameter, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.mojom_name = mojom_name
     self.attribute_list = attribute_list
     self.ordinal = ordinal
     self.typename = typename
 
   def __eq__(self, other):
-    return super(Parameter, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.mojom_name == other.mojom_name and \
            self.attribute_list == other.attribute_list and \
            self.ordinal == other.ordinal and \
@@ -338,12 +342,12 @@ class Struct(Definition):
   def __init__(self, mojom_name, attribute_list, body, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert isinstance(body, StructBody) or body is None
-    super(Struct, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.body = body
 
   def __eq__(self, other):
-    return super(Struct, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.body == other.body
 
@@ -363,16 +367,15 @@ class StructField(Definition):
     assert isinstance(typename, str)
     # The optional default value is currently either a value as a string or a
     # "wrapped identifier".
-    assert default_value is None or isinstance(default_value, str) or \
-        isinstance(default_value, tuple)
-    super(StructField, self).__init__(mojom_name, **kwargs)
+    assert default_value is None or isinstance(default_value, (str, tuple))
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
     self.typename = typename
     self.default_value = default_value
 
   def __eq__(self, other):
-    return super(StructField, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.ordinal == other.ordinal and \
            self.typename == other.typename and \
@@ -398,12 +401,12 @@ class Union(Definition):
   def __init__(self, mojom_name, attribute_list, body, **kwargs):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert isinstance(body, UnionBody)
-    super(Union, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.body = body
 
   def __eq__(self, other):
-    return super(Union, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.body == other.body
 
@@ -414,13 +417,13 @@ class UnionField(Definition):
     assert attribute_list is None or isinstance(attribute_list, AttributeList)
     assert ordinal is None or isinstance(ordinal, Ordinal)
     assert isinstance(typename, str)
-    super(UnionField, self).__init__(mojom_name, **kwargs)
+    super().__init__(mojom_name, **kwargs)
     self.attribute_list = attribute_list
     self.ordinal = ordinal
     self.typename = typename
 
   def __eq__(self, other):
-    return super(UnionField, self).__eq__(other) and \
+    return super().__eq__(other) and \
            self.attribute_list == other.attribute_list and \
            self.ordinal == other.ordinal and \
            self.typename == other.typename

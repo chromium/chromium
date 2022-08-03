@@ -20,7 +20,7 @@ class MojomParserTestCase(unittest.TestCase):
   resolution, and module serialization and deserialization."""
 
   def __init__(self, method_name):
-    super(MojomParserTestCase, self).__init__(method_name)
+    super().__init__(method_name)
     self._temp_dir = None
 
   def setUp(self):

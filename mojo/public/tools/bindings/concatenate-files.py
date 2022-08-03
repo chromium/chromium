@@ -15,6 +15,7 @@
 from __future__ import print_function
 
 import optparse
+import sys
 
 
 def Concatenate(filenames):
@@ -47,7 +48,7 @@ def main():
   parser.set_usage("""Concatenate several files into one.
       Equivalent to: cat file1 ... > target.""")
   (_options, args) = parser.parse_args()
-  exit(0 if Concatenate(args) else 1)
+  sys.exit(0 if Concatenate(args) else 1)
 
 
 if __name__ == "__main__":

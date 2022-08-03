@@ -33,7 +33,7 @@ class ParseError(Error):
 
 # We have methods which look like they could be functions:
 # pylint: disable=R0201
-class Parser(object):
+class Parser:
   def __init__(self, lexer, source, filename):
     self.tokens = lexer.tokens
     self.source = source

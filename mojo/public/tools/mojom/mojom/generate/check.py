@@ -8,14 +8,14 @@ class CheckException(Exception):
   def __init__(self, module, message):
     self.module = module
     self.message = message
-    super(CheckException, self).__init__(self.message)
+    super().__init__(self.message)
 
   def __str__(self):
     return "Failed mojo pre-generation check for {}:\n{}".format(
         self.module.path, self.message)
 
 
-class Check(object):
+class Check:
   def __init__(self, module):
     self.module = module
 

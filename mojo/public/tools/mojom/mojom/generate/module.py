@@ -15,8 +15,10 @@
 import pickle
 from uuid import UUID
 
+# pylint: disable=raise-missing-from
 
-class BackwardCompatibilityChecker(object):
+
+class BackwardCompatibilityChecker:
   """Used for memoization while recursively checking two type definitions for
   backward-compatibility."""
 
@@ -60,23 +62,20 @@ def Repr(obj, as_ref=True):
     return obj.Repr(as_ref=as_ref)
   # Since we cannot implement Repr for existing container types, we
   # handle them here.
-  elif isinstance(obj, list):
+  if isinstance(obj, list):
     if not obj:
       return '[]'
-    else:
-      return ('[\n%s\n]' % (',\n'.join(
-          '    %s' % Repr(elem, as_ref).replace('\n', '\n    ')
-          for elem in obj)))
-  elif isinstance(obj, dict):
+    return ('[\n%s\n]' %
+            (',\n'.join('    %s' % Repr(elem, as_ref).replace('\n', '\n    ')
+                        for elem in obj)))
+  if isinstance(obj, dict):
     if not obj:
       return '{}'
-    else:
-      return ('{\n%s\n}' % (',\n'.join(
-          '    %s: %s' % (Repr(key, as_ref).replace('\n', '\n    '),
-                          Repr(val, as_ref).replace('\n', '\n    '))
-          for key, val in obj.items())))
-  else:
-    return repr(obj)
+    return ('{\n%s\n}' % (',\n'.join('    %s: %s' %
+                                     (Repr(key, as_ref).replace('\n', '\n    '),
+                                      Repr(val, as_ref).replace('\n', '\n    '))
+                                     for key, val in obj.items())))
+  return repr(obj)
 
 
 def GenericRepr(obj, names):
@@ -100,7 +99,7 @@ def GenericRepr(obj, names):
       ReprIndent(name, as_ref) for (name, as_ref) in names.items()))
 
 
-class Kind(object):
+class Kind:
   """Kind represents a type (e.g. int8, string).
 
   Attributes:
@@ -214,15 +213,14 @@ class ReferenceKind(Kind):
     setattr(cls, name, property(Get, Set))
 
   def __eq__(self, rhs):
-    return (isinstance(rhs, ReferenceKind)
-            and super(ReferenceKind, self).__eq__(rhs)
+    return (isinstance(rhs, ReferenceKind) and super().__eq__(rhs)
             and self.is_nullable == rhs.is_nullable)
 
   def __hash__(self):
-    return hash((super(ReferenceKind, self).__hash__(), self.is_nullable))
+    return hash((super().__hash__(), self.is_nullable))
 
   def IsBackwardCompatible(self, rhs, checker):
-    return (super(ReferenceKind, self).IsBackwardCompatible(rhs, checker)
+    return (super().IsBackwardCompatible(rhs, checker)
             and self.is_nullable == rhs.is_nullable)
 
 
@@ -295,7 +293,7 @@ ATTRIBUTE_REQUIRE_CONTEXT = 'RequireContext'
 ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
 
 
-class NamedValue(object):
+class NamedValue:
   def __init__(self, module, parent_kind, mojom_name):
     self.module = module
     self.parent_kind = parent_kind
@@ -315,7 +313,7 @@ class NamedValue(object):
     return hash((self.parent_kind, self.mojom_name))
 
 
-class BuiltinValue(object):
+class BuiltinValue:
   def __init__(self, value):
     self.value = value
 
@@ -349,7 +347,7 @@ class EnumValue(NamedValue):
     return self.field.name
 
 
-class Constant(object):
+class Constant:
   def __init__(self, mojom_name=None, kind=None, value=None, parent_kind=None):
     self.mojom_name = mojom_name
     self.name = None
@@ -367,7 +365,7 @@ class Constant(object):
                                        rhs.parent_kind))
 
 
-class Field(object):
+class Field:
   def __init__(self,
                mojom_name=None,
                kind=None,
@@ -480,12 +478,11 @@ class Struct(ReferenceKind):
       return '<%s mojom_name=%r module=%s>' % (self.__class__.__name__,
                                                self.mojom_name,
                                                Repr(self.module, as_ref=True))
-    else:
-      return GenericRepr(self, {
-          'mojom_name': False,
-          'fields': False,
-          'module': True
-      })
+    return GenericRepr(self, {
+        'mojom_name': False,
+        'fields': False,
+        'module': True
+    })
 
   def AddField(self,
                mojom_name,
@@ -506,13 +503,13 @@ class Struct(ReferenceKind):
     for constant in self.constants:
       constant.Stylize(stylizer)
 
-  def IsBackwardCompatible(self, older_struct, checker):
-    """This struct is backward-compatible with older_struct if and only if all
-    of the following conditions hold:
+  def IsBackwardCompatible(self, rhs, checker):
+    """This struct is backward-compatible with rhs (older_struct) if and only if
+    all of the following conditions hold:
       - Any newly added field is tagged with a [MinVersion] attribute specifying
         a version number greater than all previously used [MinVersion]
         attributes within the struct.
-      - All fields present in older_struct remain present in the new struct,
+      - All fields present in rhs remain present in the new struct,
         with the same ordinal position, same optional or non-optional status,
         same (or backward-compatible) type and where applicable, the same
         [MinVersion] attribute value.
@@ -531,7 +528,7 @@ class Struct(ReferenceKind):
       return fields_by_ordinal
 
     new_fields = buildOrdinalFieldMap(self)
-    old_fields = buildOrdinalFieldMap(older_struct)
+    old_fields = buildOrdinalFieldMap(rhs)
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
       return False
@@ -635,8 +632,7 @@ class Union(ReferenceKind):
       return '<%s spec=%r is_nullable=%r fields=%s>' % (
           self.__class__.__name__, self.spec, self.is_nullable, Repr(
               self.fields))
-    else:
-      return GenericRepr(self, {'fields': True, 'is_nullable': False})
+    return GenericRepr(self, {'fields': True, 'is_nullable': False})
 
   def AddField(self, mojom_name, kind, ordinal=None, attributes=None):
     field = UnionField(mojom_name, kind, ordinal, None, attributes)
@@ -648,13 +644,13 @@ class Union(ReferenceKind):
     for field in self.fields:
       field.Stylize(stylizer)
 
-  def IsBackwardCompatible(self, older_union, checker):
-    """This union is backward-compatible with older_union if and only if all
-    of the following conditions hold:
+  def IsBackwardCompatible(self, rhs, checker):
+    """This union is backward-compatible with rhs (older_union) if and only if
+    all of the following conditions hold:
       - Any newly added field is tagged with a [MinVersion] attribute specifying
         a version number greater than all previously used [MinVersion]
         attributes within the union.
-      - All fields present in older_union remain present in the new union,
+      - All fields present in rhs remain present in the new union,
         with the same ordinal value, same optional or non-optional status,
         same (or backward-compatible) type, and where applicable, the same
         [MinVersion] attribute value.
@@ -670,7 +666,7 @@ class Union(ReferenceKind):
       return fields_by_ordinal
 
     new_fields = buildOrdinalFieldMap(self)
-    old_fields = buildOrdinalFieldMap(older_union)
+    old_fields = buildOrdinalFieldMap(rhs)
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
       return False
@@ -759,12 +755,11 @@ class Array(ReferenceKind):
       return '<%s spec=%r is_nullable=%r kind=%s length=%r>' % (
           self.__class__.__name__, self.spec, self.is_nullable, Repr(
               self.kind), self.length)
-    else:
-      return GenericRepr(self, {
-          'kind': True,
-          'length': False,
-          'is_nullable': False
-      })
+    return GenericRepr(self, {
+        'kind': True,
+        'length': False,
+        'is_nullable': False
+    })
 
   def __eq__(self, rhs):
     return (isinstance(rhs, Array)
@@ -811,8 +806,7 @@ class Map(ReferenceKind):
       return '<%s spec=%r is_nullable=%r key_kind=%s value_kind=%s>' % (
           self.__class__.__name__, self.spec, self.is_nullable,
           Repr(self.key_kind), Repr(self.value_kind))
-    else:
-      return GenericRepr(self, {'key_kind': True, 'value_kind': True})
+    return GenericRepr(self, {'key_kind': True, 'value_kind': True})
 
   def __eq__(self, rhs):
     return (isinstance(rhs, Map) and
@@ -980,7 +974,7 @@ class AssociatedInterfaceRequest(ReferenceKind):
             self.kind, rhs.kind)
 
 
-class Parameter(object):
+class Parameter:
   def __init__(self,
                mojom_name=None,
                kind=None,
@@ -1014,7 +1008,7 @@ class Parameter(object):
                                       rhs.default, rhs.attributes))
 
 
-class Method(object):
+class Method:
   def __init__(self, interface, mojom_name, ordinal=None, attributes=None):
     self.interface = interface
     self.mojom_name = mojom_name
@@ -1030,12 +1024,11 @@ class Method(object):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s mojom_name=%r>' % (self.__class__.__name__, self.mojom_name)
-    else:
-      return GenericRepr(self, {
-          'mojom_name': False,
-          'parameters': True,
-          'response_parameters': True
-      })
+    return GenericRepr(self, {
+        'mojom_name': False,
+        'parameters': True,
+        'response_parameters': True
+    })
 
   def AddParameter(self,
                    mojom_name,
@@ -1135,12 +1128,11 @@ class Interface(ReferenceKind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s mojom_name=%r>' % (self.__class__.__name__, self.mojom_name)
-    else:
-      return GenericRepr(self, {
-          'mojom_name': False,
-          'attributes': False,
-          'methods': False
-      })
+    return GenericRepr(self, {
+        'mojom_name': False,
+        'attributes': False,
+        'methods': False
+    })
 
   def AddMethod(self, mojom_name, ordinal=None, attributes=None):
     method = Method(self, mojom_name, ordinal, attributes)
@@ -1156,10 +1148,10 @@ class Interface(ReferenceKind):
     for constant in self.constants:
       constant.Stylize(stylizer)
 
-  def IsBackwardCompatible(self, older_interface, checker):
-    """This interface is backward-compatible with older_interface if and only
-    if all of the following conditions hold:
-      - All defined methods in older_interface (when identified by ordinal) have
+  def IsBackwardCompatible(self, rhs, checker):
+    """This interface is backward-compatible with rhs (older_interface) if and
+    only if all of the following conditions hold:
+      - All defined methods in rhs (when identified by ordinal) have
         backward-compatible definitions in this interface. For each method this
         means:
           - The parameter list is backward-compatible, according to backward-
@@ -1173,7 +1165,7 @@ class Interface(ReferenceKind):
             rules for structs.
       - All newly introduced methods in this interface have a [MinVersion]
         attribute specifying a version greater than any method in
-        older_interface.
+        rhs.
     """
 
     def buildOrdinalMethodMap(interface):
@@ -1186,7 +1178,7 @@ class Interface(ReferenceKind):
       return methods_by_ordinal
 
     new_methods = buildOrdinalMethodMap(self)
-    old_methods = buildOrdinalMethodMap(older_interface)
+    old_methods = buildOrdinalMethodMap(rhs)
     max_old_min_version = 0
     for ordinal, old_method in old_methods.items():
       new_method = new_methods.get(ordinal)
@@ -1319,7 +1311,7 @@ class AssociatedInterface(ReferenceKind):
                           self.kind, rhs.kind)
 
 
-class EnumField(object):
+class EnumField:
   def __init__(self,
                mojom_name=None,
                value=None,
@@ -1370,8 +1362,7 @@ class Enum(Kind):
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s mojom_name=%r>' % (self.__class__.__name__, self.mojom_name)
-    else:
-      return GenericRepr(self, {'mojom_name': False, 'fields': False})
+    return GenericRepr(self, {'mojom_name': False, 'fields': False})
 
   def Stylize(self, stylizer):
     self.name = stylizer.StylizeEnum(self.mojom_name)
@@ -1397,14 +1388,14 @@ class Enum(Kind):
     return '%s%s' % (prefix, self.mojom_name)
 
   # pylint: disable=unused-argument
-  def IsBackwardCompatible(self, older_enum, checker):
-    """This enum is backward-compatible with older_enum if and only if one of
-    the following conditions holds:
+  def IsBackwardCompatible(self, rhs, checker):
+    """This enum is backward-compatible with rhs (older_enum) if and only if one
+    of the following conditions holds:
         - Neither enum is [Extensible] and both have the exact same set of valid
           numeric values. Field names and aliases for the same numeric value do
           not affect compatibility.
-        - older_enum is [Extensible], and for every version defined by
-          older_enum, this enum has the exact same set of valid numeric values.
+        - rhs is [Extensible], and for every version defined by
+          rhs, this enum has the exact same set of valid numeric values.
     """
 
     def buildVersionFieldMap(enum):
@@ -1415,10 +1406,10 @@ class Enum(Kind):
         fields_by_min_version[field.min_version].add(field.numeric_value)
       return fields_by_min_version
 
-    old_fields = buildVersionFieldMap(older_enum)
+    old_fields = buildVersionFieldMap(rhs)
     new_fields = buildVersionFieldMap(self)
 
-    if new_fields.keys() != old_fields.keys() and not older_enum.extensible:
+    if new_fields.keys() != old_fields.keys() and not rhs.extensible:
       return False
 
     for min_version, valid_values in old_fields.items():
@@ -1445,7 +1436,7 @@ class Enum(Kind):
     return id(self)
 
 
-class Module(object):
+class Module:
   def __init__(self, path=None, mojom_namespace=None, attributes=None):
     self.path = path
     self.mojom_namespace = mojom_namespace
@@ -1480,16 +1471,15 @@ class Module(object):
     if as_ref:
       return '<%s path=%r mojom_namespace=%r>' % (
           self.__class__.__name__, self.path, self.mojom_namespace)
-    else:
-      return GenericRepr(
-          self, {
-              'path': False,
-              'mojom_namespace': False,
-              'attributes': False,
-              'structs': False,
-              'interfaces': False,
-              'unions': False
-          })
+    return GenericRepr(
+        self, {
+            'path': False,
+            'mojom_namespace': False,
+            'attributes': False,
+            'structs': False,
+            'interfaces': False,
+            'unions': False
+        })
 
   def GetNamespacePrefix(self):
     return '%s.' % self.mojom_namespace if self.mojom_namespace else ''
@@ -1775,18 +1765,17 @@ def ContainsHandlesOrInterfaces(kind):
     checked.add(kind.spec)
     if IsStructKind(kind):
       return any(Check(field.kind) for field in kind.fields)
-    elif IsUnionKind(kind):
+    if IsUnionKind(kind):
       return any(Check(field.kind) for field in kind.fields)
-    elif IsAnyHandleKind(kind):
+    if IsAnyHandleKind(kind):
       return True
-    elif IsAnyInterfaceKind(kind):
+    if IsAnyInterfaceKind(kind):
       return True
-    elif IsArrayKind(kind):
+    if IsArrayKind(kind):
       return Check(kind.kind)
-    elif IsMapKind(kind):
+    if IsMapKind(kind):
       return Check(kind.key_kind) or Check(kind.value_kind)
-    else:
-      return False
+    return False
 
   return Check(kind)
 
@@ -1813,21 +1802,20 @@ def ContainsNativeTypes(kind):
     checked.add(kind.spec)
     if IsEnumKind(kind):
       return kind.native_only
-    elif IsStructKind(kind):
+    if IsStructKind(kind):
       if kind.native_only:
         return True
       if any(enum.native_only for enum in kind.enums):
         return True
       return any(Check(field.kind) for field in kind.fields)
-    elif IsUnionKind(kind):
+    if IsUnionKind(kind):
       return any(Check(field.kind) for field in kind.fields)
-    elif IsInterfaceKind(kind):
+    if IsInterfaceKind(kind):
       return any(enum.native_only for enum in kind.enums)
-    elif IsArrayKind(kind):
+    if IsArrayKind(kind):
       return Check(kind.kind)
-    elif IsMapKind(kind):
+    if IsMapKind(kind):
       return Check(kind.key_kind) or Check(kind.value_kind)
-    else:
-      return False
+    return False
 
   return Check(kind)

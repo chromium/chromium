@@ -12,18 +12,17 @@ This can be used e.g. by a presubmit check to prevent developers from making
 breaking changes to stable mojoms."""
 
 import argparse
-import errno
 import io
 import json
 import os
 import os.path
-import shutil
 import sys
-import tempfile
 
 from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
+
+# pylint: disable=raise-missing-from
 
 
 class ParseError(Exception):
@@ -99,10 +98,10 @@ def _ValidateDelta(root, delta):
     modules[mojom] = translate.OrderedModule(ast, mojom, all_modules)
 
   old_modules = {}
-  for mojom in old_files.keys():
+  for mojom in old_files:
     parseMojom(mojom, old_files, old_modules)
   new_modules = {}
-  for mojom in new_files.keys():
+  for mojom in new_files:
     parseMojom(mojom, new_files, new_modules)
 
   # At this point we have a complete set of translated Modules from both the

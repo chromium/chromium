@@ -15,7 +15,7 @@ import check_stable_mojom_compatibility
 from mojom.generate import module
 
 
-class Change(object):
+class Change:
   """Helper to clearly define a mojom file delta to be analyzed."""
 
   def __init__(self, filename, old=None, new=None):
@@ -28,7 +28,7 @@ class Change(object):
 
 class UnchangedFile(Change):
   def __init__(self, filename, contents):
-    super(UnchangedFile, self).__init__(filename, old=contents, new=contents)
+    super().__init__(filename, old=contents, new=contents)
 
 
 class CheckStableMojomCompatibilityTest(unittest.TestCase):

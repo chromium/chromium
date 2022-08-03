@@ -22,7 +22,7 @@ class LexError(Error):
 
 # We have methods which look like they could be functions:
 # pylint: disable=R0201
-class Lexer(object):
+class Lexer:
   def __init__(self, filename):
     self.filename = filename
 

@@ -6,6 +6,9 @@ import os
 import sys
 import argparse
 
+# Module 'node' has no 'RunNode' member (no-member)
+# pylint: disable=no-member
+
 _HERE_PATH = os.path.dirname(__file__)
 _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..', '..'))
 

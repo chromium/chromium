@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import optparse
 import re
+import sys
 
 
 _MOJO_INTERNAL_MODULE_NAME = "mojo.internal"
@@ -34,7 +35,7 @@ def FilterLine(filename, line, output):
     match = re.match("goog.provide\('([^']+)'\);", line)
     if not match:
       print("Invalid goog.provide line in %s:\n%s" % (filename, line))
-      exit(1)
+      sys.exit(1)
 
     module_name = match.group(1)
     if module_name == _MOJO_INTERNAL_MODULE_NAME:
@@ -67,7 +68,8 @@ def main():
     Concatenate several files into one, stripping Closure provide and
     require directives along the way.""")
   (_, args) = parser.parse_args()
-  exit(0 if ConcatenateAndReplaceExports(args) else 1)
+  sys.exit(0 if ConcatenateAndReplaceExports(args) else 1)
+
 
 if __name__ == "__main__":
   main()

@@ -459,8 +459,7 @@ def _AttributeListToDict(module, attribute_list):
   for attribute in attribute_list:
     if attribute.key in attributes:
       raise Exception("Duplicate key (%s) in attribute list" % attribute.key)
-    else:
-      attributes[attribute.key] = _MapValueToEnum(module, attribute.value)
+    attributes[attribute.key] = _MapValueToEnum(module, attribute.value)
   return attributes
 
 

@@ -97,7 +97,7 @@ def ToLowerSnakeCase(identifier):
   return _ToSnakeCase(identifier, upper=False)
 
 
-class Stylizer(object):
+class Stylizer:
   """Stylizers specify naming rules to map mojom names to names in generated
   code. For example, if you would like method_name in mojom to be mapped to
   MethodName in the generated code, you need to define a subclass of Stylizer
@@ -233,7 +233,7 @@ def AddComputedData(module):
     _AddInterfaceComputedData(interface)
 
 
-class Generator(object):
+class Generator:
   # Pass |output_dir| to emit files to disk. Omit |output_dir| to echo all
   # files to stdout.
   def __init__(self,

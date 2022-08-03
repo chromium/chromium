@@ -23,7 +23,7 @@ class VersionCompatibilityTest(MojomParserTestCase):
 
     checker = module.BackwardCompatibilityChecker()
     compatibility_map = {}
-    for name in old.keys():
+    for name in old:
       compatibility_map[name] = checker.IsBackwardCompatible(
           new[name], old[name])
     return compatibility_map

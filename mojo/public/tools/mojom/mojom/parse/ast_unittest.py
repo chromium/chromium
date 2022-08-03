@@ -14,11 +14,11 @@ class _TestNode(ast.NodeBase):
   """Node type for tests."""
 
   def __init__(self, value, **kwargs):
-    super(_TestNode, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self.value = value
 
   def __eq__(self, other):
-    return super(_TestNode, self).__eq__(other) and self.value == other.value
+    return super().__eq__(other) and self.value == other.value
 
 
 class _TestNodeList(ast.NodeListBase):
