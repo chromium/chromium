@@ -460,6 +460,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public void beforeHideTabSwitcherView() {
+        mStartSurfaceMediator.beforeHideTabSwitcherView();
+    }
+
+    @Override
     public void showOverview(boolean animate) {
         mStartSurfaceMediator.showOverview(animate);
     }

@@ -182,6 +182,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
+    public void prepareHideTabSwitcherView() {}
+
+    @Override
     public void hideTabSwitcherView(boolean animate) {
         mShouldIgnoreNextSelect = false;
         mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(

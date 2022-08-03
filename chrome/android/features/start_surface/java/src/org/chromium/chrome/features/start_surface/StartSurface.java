@@ -41,6 +41,11 @@ public interface StartSurface {
     void onHide();
 
     /**
+     * Called before start surface starts hiding.
+     */
+    void beforeHideTabSwitcherView();
+
+    /**
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link TabSwitcherViewObserver}, is changed.
      */

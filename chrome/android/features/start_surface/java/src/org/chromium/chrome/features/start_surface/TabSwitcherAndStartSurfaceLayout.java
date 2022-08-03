@@ -71,8 +71,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     // Duration of the transition animation
     public static final long ZOOMING_DURATION = 300;
-    private static final int TRANSLATE_DURATION_MS = 450;
+    private static final int TRANSLATE_DURATION_MS = 400;
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
+    private static final int SCRIM_FADE_DURATION_MS = 450;
 
     private static final String TRACE_SHOW_TAB_SWITCHER = "StartSurfaceLayout.Show.TabSwitcher";
     private static final String TRACE_HIDE_TAB_SWITCHER = "StartSurfaceLayout.Hide.TabSwitcher";
@@ -81,7 +82,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     // The transition animation from a tab to the tab switcher.
     private AnimatorSet mTabToSwitcherAnimation;
-    private boolean mIsAnimating;
+    private boolean mIsAnimatingHide;
 
     private TabListSceneLayer mSceneLayer;
     private final StartSurface mStartSurface;
@@ -297,7 +298,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private void hideBrowserScrim() {
         if (mScrimCoordinator == null || !mScrimCoordinator.isShowingScrim()) return;
-        mScrimCoordinator.hideScrim(true);
+        mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
     }
 
     @Override
@@ -361,7 +362,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
         updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
 
-        mIsAnimating = true;
+        mIsAnimatingHide = true;
         if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
             translateDown();
         } else {
@@ -659,6 +660,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
+                mStartSurface.beforeHideTabSwitcherView();
                 mStartSurface.setSnackbarParentView(null);
             }
 
@@ -727,7 +729,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         } else {
             getGridTabListDelegate().postHiding();
         }
-        mIsAnimating = false;
+        mIsAnimatingHide = false;
         doneHiding();
     }
 
@@ -814,7 +816,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     @Override
     public boolean onUpdateAnimation(long time, boolean jumpToEnd) {
-        return mTabToSwitcherAnimation == null && !mIsAnimating;
+        return mTabToSwitcherAnimation == null && !mIsAnimatingHide;
     }
 
     @Override

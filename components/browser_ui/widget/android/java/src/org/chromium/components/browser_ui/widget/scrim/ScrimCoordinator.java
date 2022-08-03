@@ -29,6 +29,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * {@link #hideScrim(boolean)} should be called.
  */
 public class ScrimCoordinator {
+    /** The duration for the scrim animation. */
+    private static final int ANIM_DURATION_MS = 300;
     /**
      * A delegate to expose functionality that changes the scrim over the system UI.
      */
@@ -107,13 +109,13 @@ public class ScrimCoordinator {
         // Ensure the previous scrim is hidden before showing the new one. This logic should be in
         // the mediator, but it depends on the old view and binder being available which are
         // replaced prior to mediator#showScrim being called.
-        if (mMediator.isActive()) mMediator.hideScrim(false);
+        if (mMediator.isActive()) mMediator.hideScrim(false, ANIM_DURATION_MS);
 
         if (mChangeProcessor != null) mChangeProcessor.destroy();
 
         mView = mScrimViewBuilder.get();
         mChangeProcessor = PropertyModelChangeProcessor.create(model, mView, ScrimViewBinder::bind);
-        mMediator.showScrim(model);
+        mMediator.showScrim(model, ANIM_DURATION_MS);
     }
 
     /**
@@ -121,7 +123,16 @@ public class ScrimCoordinator {
      * @param animate Whether the scrim should animate and fade out.
      */
     public void hideScrim(boolean animate) {
-        mMediator.hideScrim(animate);
+        hideScrim(animate, ANIM_DURATION_MS);
+    }
+
+    /**
+     * Hide the scrim.
+     * @param animate Whether the scrim should animate and fade out.
+     * @param duration Duration for animation.
+     */
+    public void hideScrim(boolean animate, int duration) {
+        mMediator.hideScrim(animate, duration);
     }
 
     /** @return Whether the scrim is being shown. */

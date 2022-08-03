@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -343,6 +344,19 @@ public class TabSwitcherMediatorUnitTest {
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(false));
         assertThat(mMediator.overviewVisible(), equalTo(false));
+        verify(mTabGridDialogController).hideDialog(eq(false));
+    }
+
+    @Test
+    public void beforeHideTabSwitcherView_NullController() {
+        mMediator.prepareHideTabSwitcherView();
+        verifyZeroInteractions(mTabGridDialogController);
+    }
+
+    @Test
+    public void beforeHideTabSwitcherView_WithController() {
+        mMediator.setTabGridDialogController(mTabGridDialogController);
+        mMediator.prepareHideTabSwitcherView();
         verify(mTabGridDialogController).hideDialog(eq(false));
     }
 

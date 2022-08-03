@@ -102,6 +102,11 @@ public interface TabSwitcher {
         void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
         /**
+         * Before tab switcher starts hiding.
+         */
+        void prepareHideTabSwitcherView();
+
+        /**
          * Hide the tab switcher view.
          * @param animate Whether we should animate while hiding.
          */

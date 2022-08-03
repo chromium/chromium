@@ -39,6 +39,8 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -55,6 +57,9 @@ public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION = 200;
     private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
+    private static final int Y_TRANSLATE_DURATION_MS = 400;
+    private static final int SCRIM_FADE_DURATION_MS = 450;
+
     private static Callback<RectF> sSourceRectCallbackForTesting;
 
     @IntDef({UngroupBarStatus.SHOW, UngroupBarStatus.HIDE, UngroupBarStatus.HOVERED})
@@ -96,6 +101,7 @@ public class TabGridDialogView extends FrameLayout {
     private Animator mCurrentUngroupBarAnimator;
     private AnimatorSet mBasicFadeInAnimation;
     private AnimatorSet mBasicFadeOutAnimation;
+    private ObjectAnimator mYTranslateAnimation;
     private ObjectAnimator mUngroupBarShow;
     private ObjectAnimator mUngroupBarHide;
     private AnimatorSet mShowDialogAnimation;
@@ -205,9 +211,20 @@ public class TabGridDialogView extends FrameLayout {
         mBasicFadeOutAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                // Restore the original card.
-                if (mItemView == null) return;
-                mItemView.setAlpha(1f);
+                updateItemViewAlpha();
+            }
+        });
+
+        final int screenHeightPx = ViewUtils.dpToPx(
+                getContext(), getContext().getResources().getConfiguration().screenHeightDp);
+        mYTranslateAnimation = ObjectAnimator.ofFloat(mDialogContainerView, View.TRANSLATION_Y,
+                mDialogContainerView.getY(), screenHeightPx);
+        mYTranslateAnimation.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
+        mYTranslateAnimation.setDuration(Y_TRANSLATE_DURATION_MS);
+        mYTranslateAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                updateItemViewAlpha();
             }
         });
 
@@ -275,6 +292,12 @@ public class TabGridDialogView extends FrameLayout {
         });
     }
 
+    private void updateItemViewAlpha() {
+        // Restore the original card.
+        if (mItemView == null) return;
+        mItemView.setAlpha(1f);
+    }
+
     private void clearBackgroundViewAccessibilityImportance() {
         assert mAccessibilityImportanceMap.size() == 0;
 
@@ -319,7 +342,10 @@ public class TabGridDialogView extends FrameLayout {
             mShowDialogAnimation.addListener(mShowDialogAnimationListener);
 
             mHideDialogAnimation = new AnimatorSet();
-            mHideDialogAnimation.play(mBasicFadeOutAnimation);
+            Animator hideAnimator = TabUiFeatureUtilities.isTabletTabGroupsEnabled(getContext())
+                    ? mYTranslateAnimation
+                    : mBasicFadeOutAnimation;
+            mHideDialogAnimation.play(hideAnimator);
             mHideDialogAnimation.removeAllListeners();
             mHideDialogAnimation.addListener(mHideDialogAnimationListener);
             return;
@@ -747,7 +773,11 @@ public class TabGridDialogView extends FrameLayout {
         }
         mCurrentDialogAnimator = mHideDialogAnimation;
         if (mScrimCoordinator.isShowingScrim()) {
-            mScrimCoordinator.hideScrim(true);
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+                mScrimCoordinator.hideScrim(true, SCRIM_FADE_DURATION_MS);
+            } else {
+                mScrimCoordinator.hideScrim(true);
+            }
         }
         mHideDialogAnimation.start();
     }

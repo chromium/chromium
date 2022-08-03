@@ -18,9 +18,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class holds the animation and related business logic for the scrim. */
 class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
-    /** The duration for the fading animation. */
-    private static final int FADE_DURATION_MS = 300;
-
     /** A callback that is run when the scrim has completely hidden. */
     private final Runnable mScrimHiddenRunnable;
 
@@ -36,9 +33,6 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     /** The active animator (if any). */
     private Animator mOverlayAnimator;
 
-    /** The duration for the fading animation. This can be overridden for testing. */
-    private int mFadeDurationMs;
-
     /** The model for the scrim component. */
     private PropertyModel mModel;
 
@@ -50,6 +44,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /** Whether the scrim is in the process of hiding or is currently hidden. */
     private boolean mIsHidingOrHidden;
+    private boolean mDisableAnimationForTesting;
 
     /**
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
@@ -59,11 +54,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mSystemUiScrimDelegate = systemUiScrimDelegate;
-        mFadeDurationMs = FADE_DURATION_MS;
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
-    void showScrim(@NonNull PropertyModel model) {
+    void showScrim(@NonNull PropertyModel model, int animDurationMs) {
         // ALPHA is a protected property for this component that will only get added to the model
         // if ScrimProperties is used to build it.
         assert model.getAllProperties().contains(ScrimProperties.ALPHA)
@@ -76,13 +70,14 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
         mModel = model;
         mIsHidingOrHidden = false;
+        int fadeDurationMs = getAnimationDuration(animDurationMs);
 
         // Make sure alpha is reset to 0 since the model may be reused.
         setAlphaInternal(0);
 
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
-            mOverlayFadeInAnimator.setDuration(mFadeDurationMs);
+            mOverlayFadeInAnimator.setDuration(fadeDurationMs);
             mOverlayFadeInAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
             mOverlayFadeInAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
@@ -101,20 +96,27 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         runFadeAnimation(mOverlayFadeInAnimator);
     }
 
+    private int getAnimationDuration(int animDurationMs) {
+        return mDisableAnimationForTesting ? 0 : animDurationMs;
+    }
+
     /**
      * Triggers a fade out of the scrim creating a new animation if necessary.
      * @param animate Whether the scrim should fade out.
+     * @param animDurationMs Duration for animation run.
      */
-    void hideScrim(boolean animate) {
+    void hideScrim(boolean animate, int animDurationMs) {
         assert mModel != null : "#hideScrim(...) was called on an inactive scrim!";
         if (mIsHidingOrHidden) {
             if (mOverlayAnimator != null && !animate) mOverlayAnimator.end();
             return;
         }
 
+        int fadeDurationMs = getAnimationDuration(animDurationMs);
+
         if (mOverlayFadeOutAnimator == null) {
             mOverlayFadeOutAnimator = ValueAnimator.ofFloat(1, 0);
-            mOverlayFadeOutAnimator.setDuration(mFadeDurationMs);
+            mOverlayFadeOutAnimator.setDuration(fadeDurationMs);
             mOverlayFadeOutAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
             mOverlayFadeOutAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
@@ -204,7 +206,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     @VisibleForTesting
     void disableAnimationForTesting(boolean disable) {
-        mFadeDurationMs = disable ? 0 : FADE_DURATION_MS;
+        mDisableAnimationForTesting = disable;
     }
 
     @VisibleForTesting

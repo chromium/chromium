@@ -640,6 +640,15 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
+    public void prepareHideTabSwitcherView() {
+        if (mTabGridDialogController != null) {
+            // Don't wait until switcher container view hides.
+            // Hide dialog before GTS hides.
+            mTabGridDialogController.hideDialog(false);
+        }
+    }
+
+    @Override
     public void hideTabSwitcherView(boolean animate) {
         if (!animate) mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
         setVisibility(false);

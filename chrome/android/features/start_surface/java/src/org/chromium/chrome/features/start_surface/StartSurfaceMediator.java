@@ -596,6 +596,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mController.hideTabSwitcherView(animate);
     }
 
+    public void beforeHideTabSwitcherView() {
+        mController.prepareHideTabSwitcherView();
+    }
+
     void showOverview(boolean animate) {
         // TODO(crbug.com/982018): Animate the bottom bar together with the Tab Grid view.
         if (mPropertyModel != null) {
