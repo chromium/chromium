@@ -350,9 +350,6 @@ class MODULES_EXPORT RTCPeerConnection final
   static void GenerateCertificateCompleted(
       ScriptPromiseResolver* resolver,
       rtc::scoped_refptr<rtc::RTCCertificate> certificate);
-  // Checks if the document that the peer connection lives in has ever executed
-  // getUserMedia().
-  bool HasDocumentMedia() const;
 
   // Called by RTCIceTransport::OnStateChange to update the ice connection
   // state.

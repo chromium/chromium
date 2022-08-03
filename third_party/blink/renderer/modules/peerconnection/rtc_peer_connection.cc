@@ -1034,15 +1034,6 @@ void RTCPeerConnection::GenerateCertificateCompleted(
       MakeGarbageCollected<RTCCertificate>(std::move(certificate)));
 }
 
-bool RTCPeerConnection::HasDocumentMedia() const {
-  if (!GetExecutionContext())
-    return false;
-  UserMediaController* user_media_controller =
-      UserMediaController::From(To<LocalDOMWindow>(GetExecutionContext()));
-  return user_media_controller &&
-         user_media_controller->HasRequestedUserMedia();
-}
-
 void RTCPeerConnection::UpdateIceConnectionState() {
   DCHECK_EQ(webrtc::SdpSemantics::kUnifiedPlan, sdp_semantics_);
   auto new_state = ComputeIceConnectionState();

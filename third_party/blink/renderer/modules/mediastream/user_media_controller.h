@@ -59,12 +59,10 @@ class UserMediaController final : public GarbageCollected<UserMediaController>,
 
  private:
   Member<UserMediaClient> client_;
-  bool has_requested_user_media_ = false;
 };
 
 inline void UserMediaController::RequestUserMedia(UserMediaRequest* request) {
   Client()->RequestUserMedia(request);
-  has_requested_user_media_ = true;
 }
 
 inline void UserMediaController::CancelUserMediaRequest(
@@ -79,10 +77,6 @@ inline void UserMediaController::ApplyConstraints(
 
 inline void UserMediaController::StopTrack(MediaStreamComponent* track) {
   Client()->StopTrack(track);
-}
-
-inline bool UserMediaController::HasRequestedUserMedia() {
-  return has_requested_user_media_;
 }
 
 }  // namespace blink
