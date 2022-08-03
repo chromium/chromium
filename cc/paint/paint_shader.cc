@@ -424,12 +424,11 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           static_cast<int>(colors_.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kSweepGradient:
-      // TODO(crbug/1308932): Remove this helper vector colors and make all
-      // SkColor4f.
       return SkGradientShader::MakeSweep(
-          center_.x(), center_.y(), colors.data(),
+          center_.x(), center_.y(), colors_.data(),
+          nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors.size()), tx_, start_degrees_, end_degrees_,
+          static_cast<int>(colors_.size()), tx_, start_degrees_, end_degrees_,
           flags_, base::OptionalOrNullptr(local_matrix_));
     case Type::kImage:
       if (sk_cached_image_) {
