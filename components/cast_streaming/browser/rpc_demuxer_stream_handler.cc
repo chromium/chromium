@@ -4,6 +4,8 @@
 
 #include "components/cast_streaming/browser/rpc_demuxer_stream_handler.h"
 
+#include <sstream>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/cast_streaming/public/remoting_message_factories.h"
@@ -55,6 +57,33 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
             video_message_processor_->local_handle());
     process_message_cb_.Run(video_message_processor_->remote_handle(),
                             std::move(message));
+  }
+}
+
+void RpcDemuxerStreamHandler::OnRpcEnableBitstreamConverterCallback(
+    openscreen::cast::RpcMessenger::Handle handle,
+    bool succeeded) {
+  if (audio_message_processor_ &&
+      handle == audio_message_processor_->local_handle()) {
+    audio_message_processor_->OnBitstreamConverterEnabled(succeeded);
+  } else if (video_message_processor_ &&
+             handle == video_message_processor_->local_handle()) {
+    video_message_processor_->OnBitstreamConverterEnabled(succeeded);
+  } else {
+    std::stringstream logstream;
+    logstream
+        << "OnRpcEnableBitstreamConverterCallback received for invalid handle "
+        << handle << ". Valid handles are";
+    if (audio_message_processor_) {
+      logstream << " '" << audio_message_processor_->local_handle()
+                << "'' for audio";
+    }
+    if (video_message_processor_) {
+      logstream << " '" << video_message_processor_->local_handle()
+                << "'' for video";
+    }
+
+    LOG(WARNING) << logstream.str();
   }
 }
 

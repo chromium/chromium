@@ -131,6 +131,13 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
 
   MOCK_METHOD1(OnBitstreamConverterEnabled, void(bool));
 
+  void OnRpcBitstreamConverterEnabled(
+      openscreen::cast::RpcMessenger::Handle handle,
+      bool success) {
+    static_cast<RpcDemuxerStreamCBMessageHandler*>(&stream_handler_)
+        ->OnRpcEnableBitstreamConverterCallback(handle, success);
+  }
+
   void OnRpcInitializeCallback(
       openscreen::cast::RpcMessenger::Handle handle,
       absl::optional<media::AudioDecoderConfig> audio_config,
@@ -259,6 +266,18 @@ TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownVideoHandleWithAudioConfig) {
 TEST_F(RpcDemuxerStreamHandlerTest, ReadKnownVideoHandleWithVideoConfig) {
   OnRpcReadUntilCallback(video_local_handle_, test_audio_config_, absl::nullopt,
                          uint32_t{1});
+}
+
+TEST_F(RpcDemuxerStreamHandlerTest, EnableBitstreamConverterKnownHandle) {
+  EXPECT_CALL(*this, SendMessage(_, _))
+      .WillOnce(CheckEnableBistreamConverterCall(video_remote_handle_));
+  EXPECT_CALL(*this, OnBitstreamConverterEnabled(true));
+  EnableVideoBitstreamConverter();
+  OnRpcBitstreamConverterEnabled(video_local_handle_, true);
+}
+
+TEST_F(RpcDemuxerStreamHandlerTest, EnableBitstreamConverterUnknownHandle) {
+  OnRpcBitstreamConverterEnabled(42, true);
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {

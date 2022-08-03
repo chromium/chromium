@@ -185,6 +185,15 @@ bool DispatchDemuxerStreamCBRpcCall(openscreen::cast::RpcMessage* message,
                                      total_frames_received);
       return true;
     }
+    case openscreen::cast::RpcMessage::
+        RPC_DS_ENABLEBITSTREAMCONVERTER_CALLBACK: {
+      if (!message->has_boolean_value()) {
+        return false;
+      }
+      client->OnRpcEnableBitstreamConverterCallback(message->handle(),
+                                                    message->boolean_value());
+      return true;
+    }
     default:
       return false;
   }

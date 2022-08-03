@@ -58,6 +58,9 @@ class RpcDemuxerStreamCBMessageHandler {
       absl::optional<media::AudioDecoderConfig> audio_config,
       absl::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) = 0;
+  virtual void OnRpcEnableBitstreamConverterCallback(
+      openscreen::cast::RpcMessenger::Handle handle,
+      bool succeeded) = 0;
 };
 
 // Processes the incoming |message| and forwards it to the appropriate |client|

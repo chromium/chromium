@@ -145,6 +145,9 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
       absl::optional<media::AudioDecoderConfig> audio_config,
       absl::optional<media::VideoDecoderConfig> video_config,
       uint32_t total_frames_received) override;
+  void OnRpcEnableBitstreamConverterCallback(
+      openscreen::cast::RpcMessenger::Handle handle,
+      bool succeeded) override;
 
   const raw_ptr<Client> client_;
   HandleFactory handle_factory_;

@@ -58,6 +58,7 @@ class RpcCallMessageHandlerTest : public testing::Test {
                       absl::optional<media::AudioDecoderConfig>,
                       absl::optional<media::VideoDecoderConfig>,
                       uint32_t));
+    MOCK_METHOD2(OnRpcEnableBitstreamConverterCallback, void(int, bool));
   };
 
   RpcCallMessageHandlerTest() = default;
@@ -308,6 +309,19 @@ TEST_F(RpcCallMessageHandlerTest, OnInvalidDemuxerStreamMessage) {
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
   rpc->set_integer_value(42);
   EXPECT_FALSE(
+      DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
+}
+
+TEST_F(RpcCallMessageHandlerTest, OnRpcEnableBitstreamConverterCallback) {
+  constexpr int kHandle = 123;
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(
+      openscreen::cast::RpcMessage::RPC_DS_ENABLEBITSTREAMCONVERTER_CALLBACK);
+  rpc->set_handle(kHandle);
+  rpc->set_boolean_value(true);
+  EXPECT_CALL(demuxer_stream_client_,
+              OnRpcEnableBitstreamConverterCallback(kHandle, true));
+  EXPECT_TRUE(
       DispatchDemuxerStreamCBRpcCall(rpc.get(), &demuxer_stream_client_));
 }
 
