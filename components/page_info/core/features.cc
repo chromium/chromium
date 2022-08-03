@@ -52,6 +52,10 @@ const base::Feature kPageInfoHideSiteSettings{
 
 const base::Feature kPageInfoCookiesSubpage{"PageInfoCookiesSubpage",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPageSpecificSiteDataDialog{
+    "PageSpecificSiteDataDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif
 
 }  // namespace page_info

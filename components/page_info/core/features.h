@@ -43,16 +43,15 @@ extern const base::Feature kAboutThisSiteBanner;
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the history section for Page Info on desktop.
 extern const base::Feature kPageInfoHistoryDesktop;
-#endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Hides site settings row.
 extern const base::Feature kPageInfoHideSiteSettings;
-#endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Enables Cookies Subpage. For implementation phase.
 extern const base::Feature kPageInfoCookiesSubpage;
+
+// Enables the new page specific site data dialog.
+extern const base::Feature kPageSpecificSiteDataDialog;
 #endif
 
 }  // namespace page_info
