@@ -1276,7 +1276,7 @@ EventDispatchDetails EventRewriterChromeOS::RewriteMouseButtonEvent(
     return SendEvent(continuation, &mouse_event);
   }
 
-  std::unique_ptr<Event> rewritten_event = Event::Clone(mouse_event);
+  std::unique_ptr<Event> rewritten_event = mouse_event.Clone();
   rewritten_event->set_flags(flags);
   if (changed_button != EF_NONE) {
     static_cast<MouseEvent*>(rewritten_event.get())

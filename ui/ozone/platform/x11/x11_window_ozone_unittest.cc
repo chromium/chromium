@@ -36,7 +36,7 @@ ACTION_P(StoreWidget, widget_ptr) {
 }
 
 ACTION_P(CloneEvent, event_ptr) {
-  *event_ptr = Event::Clone(*arg0);
+  *event_ptr = arg0->Clone();
 }
 
 // TestScreen implementation. We need to set a screen instance, because

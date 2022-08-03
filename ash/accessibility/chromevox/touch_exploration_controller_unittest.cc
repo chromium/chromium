@@ -50,7 +50,7 @@ class EventCapturer : public ui::EventHandler {
   void OnEvent(ui::Event* event) override {
     if (event->IsMouseEvent() || event->IsTouchEvent() ||
         event->IsGestureEvent() || event->IsKeyEvent()) {
-      events_.push_back(ui::Event::Clone(*event));
+      events_.push_back(event->Clone());
     } else {
       return;
     }

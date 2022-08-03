@@ -1278,7 +1278,7 @@ TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForCustomCursors) {
 }
 
 ACTION_P(CloneEvent, ptr) {
-  *ptr = Event::Clone(*arg0);
+  *ptr = arg0->Clone();
 }
 
 TEST_P(WaylandWindowTest, DispatchEvent) {

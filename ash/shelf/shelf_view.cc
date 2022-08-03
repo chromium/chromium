@@ -795,17 +795,17 @@ void ShelfView::ButtonPressed(views::Button* sender,
   // Run AfterItemSelected directly if the item has no delegate (ie. in tests).
   const ShelfItem& item = model_->items()[last_pressed_index_.value()];
   if (!model_->GetShelfItemDelegate(item.id)) {
-    AfterItemSelected(item, sender, ui::Event::Clone(event), ink_drop,
-                      SHELF_ACTION_NONE, {});
+    AfterItemSelected(item, sender, event.Clone(), ink_drop, SHELF_ACTION_NONE,
+                      {});
     return;
   }
 
   // Notify the item of its selection; handle the result in AfterItemSelected.
   item_awaiting_response_ = item.id;
   model_->GetShelfItemDelegate(item.id)->ItemSelected(
-      ui::Event::Clone(event), GetDisplayIdForView(this), LAUNCH_FROM_SHELF,
+      event.Clone(), GetDisplayIdForView(this), LAUNCH_FROM_SHELF,
       base::BindOnce(&ShelfView::AfterItemSelected, weak_factory_.GetWeakPtr(),
-                     item, sender, ui::Event::Clone(event), ink_drop),
+                     item, sender, event.Clone(), ink_drop),
       base::BindRepeating(&ShouldIncludeMenuItem));
 }
 

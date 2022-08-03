@@ -132,7 +132,7 @@ class EventLogger : public ui::EventRewriter {
       const ui::Event& event,
       const Continuation continuation) override {
     DCHECK(!last_event_);
-    last_event_ = ui::Event::Clone(event);
+    last_event_ = event.Clone();
     return SendEvent(continuation, &event);
   }
 

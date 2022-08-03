@@ -223,7 +223,7 @@ Surface* GetTargetSurfaceForLocatedEvent(
 
   // Create a clone of the event as targeter may update it during the
   // search.
-  auto cloned = ui::Event::Clone(*original_event);
+  auto cloned = original_event->Clone();
   ui::LocatedEvent* event = cloned->AsLocatedEvent();
 
   while (true) {

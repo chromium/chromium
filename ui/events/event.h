@@ -51,11 +51,6 @@ class EVENTS_EXPORT Event {
  public:
   using Properties = base::flat_map<std::string, std::vector<uint8_t>>;
 
-  // Copies an arbitrary event. If you have a typed event (e.g. a MouseEvent)
-  // just use its copy constructor.
-  // TODO(yzshen): Remove this static method and switch callers to Clone().
-  static std::unique_ptr<Event> Clone(const Event& event);
-
   virtual ~Event();
 
   class DispatcherApi {
@@ -296,6 +291,9 @@ class EVENTS_EXPORT Event {
   // For debugging. Not a stable serialization format.
   virtual std::string ToString() const;
 
+  // Copies an arbitrary event. If you have a typed event (e.g. a MouseEvent)
+  // just use its copy constructor.
+  //
   // Every concrete class transitively inheriting Event must implement this
   // method, even if any ancestors have provided an implementation.
   virtual std::unique_ptr<Event> Clone() const = 0;

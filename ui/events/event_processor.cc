@@ -23,7 +23,7 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
   Event* event_to_dispatch = event;
   std::unique_ptr<Event> event_copy;
   if (!dispatch_original_event) {
-    event_copy = Event::Clone(*event);
+    event_copy = event->Clone();
     event_to_dispatch = event_copy.get();
   }
 

@@ -16,7 +16,7 @@ std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
 
   // Convert the point of |event| from the coordinate system of its target to
   // that of the passed in |target| and create a new LocatedEvent.
-  std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(event);
+  std::unique_ptr<ui::Event> cloned_event = event.Clone();
   ui::LocatedEvent* located_event = cloned_event->AsLocatedEvent();
   event.target()->ConvertEventToTarget(target, located_event);
 

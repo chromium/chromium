@@ -264,7 +264,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
   }
 
   void DispatchEventForTest(ui::Event* event) {
-    std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(*event);
+    std::unique_ptr<ui::Event> cloned_event = event->Clone();
     dispatched_events_.push_back(std::move(cloned_event));
   }
 

@@ -48,7 +48,7 @@ void InkDropEventHandler::AnimateToState(InkDropState state,
   }
 #endif
   last_ripple_triggering_event_.reset(
-      event ? ui::Event::Clone(*event).release()->AsLocatedEvent() : nullptr);
+      event ? event->Clone().release()->AsLocatedEvent() : nullptr);
 
   // If no ink drop exists and we are not transitioning to a visible ink drop
   // state the transition have no visual effect. The call to GetInkDrop() will

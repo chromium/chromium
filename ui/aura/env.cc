@@ -69,7 +69,7 @@ class EventObserverAdapter : public ui::EventHandler,
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
     if (types_.count(event->type()) > 0) {
-      std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(*event);
+      std::unique_ptr<ui::Event> cloned_event = event->Clone();
       ui::Event::DispatcherApi(cloned_event.get()).set_target(event->target());
       // The root location of located events should be in screen coordinates.
       if (cloned_event->IsLocatedEvent() && cloned_event->target()) {

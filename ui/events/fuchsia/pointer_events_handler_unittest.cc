@@ -72,7 +72,7 @@ class PointerEventsHandlerTest : public ::testing::Test {
 TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
   std::vector<std::unique_ptr<Event>> events;
   pointer_handler_->StartWatching(base::BindLambdaForTesting(
-      [&events](Event* event) { events.push_back(Event::Clone(*event)); }));
+      [&events](Event* event) { events.push_back(event->Clone()); }));
   RunLoopUntilIdle();  // Server gets watch call.
 
   std::vector<fup::TouchEvent> touch_events =
@@ -505,10 +505,10 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
       base::BindLambdaForTesting([&mouse_events](Event* event) {
         ASSERT_TRUE(event->IsMouseEvent());
         if (event->IsMouseWheelEvent()) {
-          auto e = Event::Clone(*event->AsMouseWheelEvent());
+          auto e = event->AsMouseWheelEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else if (event->IsMouseEvent()) {
-          auto e = Event::Clone(*event->AsMouseEvent());
+          auto e = event->AsMouseEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else {
           NOTREACHED();
@@ -555,10 +555,10 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
       base::BindLambdaForTesting([&mouse_events](Event* event) {
         ASSERT_TRUE(event->IsMouseEvent());
         if (event->IsMouseWheelEvent()) {
-          auto e = Event::Clone(*event->AsMouseWheelEvent());
+          auto e = event->AsMouseWheelEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else if (event->IsMouseEvent()) {
-          auto e = Event::Clone(*event->AsMouseEvent());
+          auto e = event->AsMouseEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else {
           NOTREACHED();

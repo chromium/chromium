@@ -336,7 +336,7 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
   gfx::Point root_loc(screen_loc);
   spc->ConvertPointFromScreen(root, &root_loc);
 
-  std::unique_ptr<ui::Event> clone = ui::Event::Clone(*event);
+  std::unique_ptr<ui::Event> clone = event->Clone();
   std::unique_ptr<ui::LocatedEvent> located_event(
       static_cast<ui::LocatedEvent*>(clone.release()));
   located_event->set_location(root_loc);

@@ -659,7 +659,7 @@ void RenderWidgetHostViewEventHandler::ForwardMouseEventToParent(
 
   // Take a copy of |event|, to avoid ConvertLocationToTarget mutating the
   // event.
-  std::unique_ptr<ui::Event> event_copy = ui::Event::Clone(*event);
+  std::unique_ptr<ui::Event> event_copy = event->Clone();
   ui::MouseEvent* mouse_event = static_cast<ui::MouseEvent*>(event_copy.get());
   mouse_event->ConvertLocationToTarget(window_.get(), window_->parent());
   window_->parent()->delegate()->OnMouseEvent(mouse_event);

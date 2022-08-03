@@ -16,7 +16,7 @@ namespace {
 // RenderViewHostDelegate::HandledKeybardEvent after the original aura
 // event is destroyed.
 ui::Event* CopyEvent(const ui::Event* event) {
-  return event ? ui::Event::Clone(*event).release() : nullptr;
+  return event ? event->Clone().release() : nullptr;
 }
 
 int WebEventModifiersToEventFlags(int modifiers) {

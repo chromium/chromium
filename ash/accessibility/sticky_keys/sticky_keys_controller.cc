@@ -40,7 +40,7 @@ ui::EventRewriteStatus RewriteUpdate(
   if (!released && !flags_rewritten)
     return ui::EVENT_REWRITE_CONTINUE;
 
-  *rewritten_event = ui::Event::Clone(event);
+  *rewritten_event = event.Clone();
   if (mod_down_flags & ~event.flags()) {
     (*rewritten_event)->set_flags(event.flags() | mod_down_flags);
   }

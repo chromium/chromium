@@ -28,7 +28,7 @@ class CopyingSink : public ui::EventSink {
 
   // EventSink override:
   ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
-    last_event_ = ui::Event::Clone(*event);
+    last_event_ = event->Clone();
     return ui::EventDispatchDetails();
   }
 

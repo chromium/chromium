@@ -48,7 +48,7 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
   views::Widget* this_widget = this_view->GetWidget();
   views::Widget* parent_widget = this_widget->parent();
   std::unique_ptr<ui::MouseEvent> event(
-      static_cast<ui::MouseEvent*>(ui::Event::Clone(*this_event).release()));
+      static_cast<ui::MouseEvent*>(this_event->Clone().release()));
   if (!parent_widget)
     return {nullptr, std::move(event)};
 

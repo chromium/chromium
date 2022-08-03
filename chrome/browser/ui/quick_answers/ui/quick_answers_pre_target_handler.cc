@@ -59,7 +59,7 @@ void QuickAnswersPreTargetHandler::OnEvent(ui::Event* event) {
     return;
 
   // Clone event to forward down the view-hierarchy.
-  auto clone = ui::Event::Clone(*event);
+  auto clone = event->Clone();
   ui::Event::DispatcherApi(clone.get()).set_target(event->target());
   auto* to_dispatch = clone->AsLocatedEvent();
   auto location = to_dispatch->target()->GetScreenLocation(*to_dispatch);

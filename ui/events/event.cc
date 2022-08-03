@@ -163,11 +163,6 @@ bool IsNearZero(const float num) {
 ////////////////////////////////////////////////////////////////////////////////
 // Event
 
-// static
-std::unique_ptr<Event> Event::Clone(const Event& event) {
-  return event.Clone();
-}
-
 Event::~Event() {
   if (delete_native_event_)
     ReleaseCopiedNativeEvent(native_event_);

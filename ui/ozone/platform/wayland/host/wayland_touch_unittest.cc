@@ -32,7 +32,7 @@ namespace ui {
 namespace {
 
 ACTION_P(CloneEvent, ptr) {
-  *ptr = Event::Clone(*arg0);
+  *ptr = arg0->Clone();
 }
 
 bool CompareFloat(float a, float b) {

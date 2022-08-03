@@ -30,7 +30,7 @@ class InputEventDispatcherTest : public testing::Test, public InputEventSink {
 
   void DispatchEvent(Event* event) override {
     DCHECK(!captured_event_);
-    captured_event_ = Event::Clone(*event);
+    captured_event_ = event->Clone();
   }
 
  protected:

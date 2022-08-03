@@ -164,8 +164,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB)
       capture = false;
 
-    delegate_->DispatchKeyEventToChromeVox(
-        ui::Event::Clone(*rewritten_key_event), capture);
+    delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(),
+                                           capture);
     return capture;
   }
 
@@ -310,7 +310,7 @@ void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
            .enabled() ||
        Shell::Get()->accessibility_controller()->docked_magnifier().enabled() ||
        Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
-    delegate_->DispatchMouseEvent(ui::Event::Clone(event));
+    delegate_->DispatchMouseEvent(event.Clone());
   }
 }
 

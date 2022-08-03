@@ -469,7 +469,7 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
             static_cast<aura::Window*>(capture_delegate_->capture_window()),
             static_cast<aura::Window*>(drag_source_window_));
       } else {
-        pending_long_tap_ = ui::Event::Clone(*event);
+        pending_long_tap_ = event->Clone();
       }
       DoDragCancel(kTouchCancelAnimationDuration);
       break;
