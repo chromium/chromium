@@ -744,7 +744,8 @@ bool TemplateURLService::CanMakeDefault(const TemplateURL* url) const {
               DefaultSearchManager::FROM_FALLBACK) &&
          (url != GetDefaultSearchProvider()) &&
          url->url_ref().SupportsReplacement(search_terms_data()) &&
-         (url->type() == TemplateURL::NORMAL);
+         (url->type() == TemplateURL::NORMAL) &&
+         (url->starter_pack_id() != TemplateURLStarterPackData::kTabs);
 }
 
 void TemplateURLService::SetUserSelectedDefaultSearchProvider(
