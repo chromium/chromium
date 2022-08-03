@@ -971,8 +971,10 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     SuggestionGroupId suggestion_group_id) const {
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
   DCHECK(it != suggestion_groups_map_.end());
+  if (!it->second.original_group_id.has_value()) {
+    return false;
+  }
 
-  DCHECK(it->second.original_group_id.has_value());
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
           prefs, it->second.original_group_id.value());
@@ -992,8 +994,8 @@ void AutocompleteResult::SetSuggestionGroupHidden(
     bool hidden) const {
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
   DCHECK(it != suggestion_groups_map_.end());
-
   DCHECK(it->second.original_group_id.has_value());
+
   omnibox::SetUserPreferenceForSuggestionGroupVisibility(
       prefs, it->second.original_group_id.value(),
       hidden ? omnibox::SuggestionGroupVisibility::HIDDEN
