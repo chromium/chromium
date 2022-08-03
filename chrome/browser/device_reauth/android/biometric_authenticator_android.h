@@ -83,7 +83,7 @@ class BiometricAuthenticatorAndroid
       std::unique_ptr<BiometricAuthenticatorBridge> bridge);
 
  private:
-  friend class BiometricAuthenticatorAndroidFactory;
+  friend class ChromeBiometricAuthenticatorFactory;
 
   explicit BiometricAuthenticatorAndroid(
       std::unique_ptr<BiometricAuthenticatorBridge> bridge);
