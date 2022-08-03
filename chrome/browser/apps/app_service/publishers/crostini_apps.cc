@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -27,6 +28,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/display/display.h"
@@ -55,6 +58,23 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
   }
 
   return d.device_scale_factor() != 1.0;
+}
+
+// Create a file intent filter with mime type conditions for App Service.
+apps::IntentFilters CreateIntentFilterForCrostini(
+    const std::set<std::string>& mime_types) {
+  apps::IntentFilters intent_filters;
+
+  if (mime_types.empty()) {
+    return intent_filters;
+  }
+
+  std::vector<std::string> mime_types_vector(mime_types.begin(),
+                                             mime_types.end());
+  apps::IntentFilterPtr intent_filter = apps_util::CreateFileFilter(
+      {apps_util::kIntentActionView}, mime_types_vector, {});
+  intent_filters.push_back(std::move(intent_filter));
+  return intent_filters;
 }
 
 }  // namespace
@@ -334,6 +354,9 @@ AppPtr CrostiniApps::CreateApp(
   app->allow_uninstall =
       crostini::IsUninstallable(profile_, registration.app_id());
 
+  app->handles_intents = show;
+  app->intent_filters = CreateIntentFilterForCrostini(registration.MimeTypes());
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
@@ -378,6 +401,10 @@ apps::mojom::AppPtr CrostiniApps::Convert(
       crostini::IsUninstallable(profile_, registration.app_id())
           ? apps::mojom::OptionalBool::kTrue
           : apps::mojom::OptionalBool::kFalse;
+
+  app->handles_intents = show;
+  app->intent_filters = ConvertIntentFiltersToMojomIntentFilters(
+      CreateIntentFilterForCrostini(registration.MimeTypes()));
 
   return app;
 }
