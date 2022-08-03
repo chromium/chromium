@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/values.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -375,14 +374,14 @@ std::vector<DefaultUserImage> GetCurrentImageSet() {
   return result;
 }
 
-std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue() {
-  auto image_urls = std::make_unique<base::ListValue>();
+base::Value::List GetCurrentImageSetAsListValue() {
+  base::Value::List image_urls;
   for (auto& user_image : GetCurrentImageSet()) {
     base::Value::Dict image_data;
     image_data.Set("index", user_image.index);
     image_data.Set("title", std::move(user_image.title));
     image_data.Set("url", user_image.url.spec());
-    image_urls->GetList().Append(std::move(image_data));
+    image_urls.Append(std::move(image_data));
   }
   return image_urls;
 }

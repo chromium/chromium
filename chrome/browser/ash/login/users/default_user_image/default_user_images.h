@@ -12,12 +12,9 @@
 #include <vector>
 
 #include "ash/public/cpp/default_user_image.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace gfx {
 class ImageSkia;
@@ -90,7 +87,7 @@ DefaultUserImage GetDefaultUserImage(int index);
 // Returns a vector of current |DefaultUserImage|.
 std::vector<DefaultUserImage> GetCurrentImageSet();
 
-std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue();
+base::Value::List GetCurrentImageSetAsListValue();
 
 // Returns the source info of the default user image with specified index.
 // Returns nullopt if there is no source info.

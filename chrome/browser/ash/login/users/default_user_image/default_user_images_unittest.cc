@@ -11,10 +11,10 @@ namespace ash {
 namespace default_user_image {
 
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
-  std::unique_ptr<base::ListValue> current_default_images =
+  base::Value::List current_default_images =
       default_user_image::GetCurrentImageSetAsListValue();
 
-  for (auto& image_data : current_default_images.get()->GetListDeprecated()) {
+  for (auto& image_data : current_default_images) {
     const auto index = image_data.FindIntPath("index");
     EXPECT_TRUE(index.has_value());
     EXPECT_TRUE(IsValidIndex(index.value()));
