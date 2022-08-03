@@ -136,7 +136,7 @@ input:focus + .arrow-container {
   visibility: hidden;
 }
 
-.arrow-padding {
+#arrow-padding {
   display: inline-block;
   height: 0;
   overflow: hidden;

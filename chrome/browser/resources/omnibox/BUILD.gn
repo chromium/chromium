@@ -9,7 +9,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 # TODO(crbug.com/1323980): Migrate files listed below to TypeScript.
 ts_files = [
   "omnibox_element.ts",
-  "omnibox_input.js",
+  "omnibox_input.ts",
   "omnibox.js",
   "omnibox_output.js",
 ]

@@ -18,8 +18,7 @@ export abstract class OmniboxElement extends HTMLElement {
   }
 
   /**
-   * Finds the 1st element matching the query within the local shadow root. At
-   * least 1 matching element should exist.
+   * Finds the 1st element matching the query within the local shadow root.
    */
   protected $<E extends Element = Element>(query: string): E|null {
     return this.shadowRoot!.querySelector<E>(query);
@@ -28,7 +27,7 @@ export abstract class OmniboxElement extends HTMLElement {
   /**
    * Finds all elements matching the query within the local shadow root.
    */
-  protected $$<E extends Element = Element>(query: string): NodeListOf<E> {
+  protected $all<E extends Element = Element>(query: string): NodeListOf<E> {
     return this.shadowRoot!.querySelectorAll<E>(query);
   }
 
