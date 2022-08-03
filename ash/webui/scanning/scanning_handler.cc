@@ -108,12 +108,12 @@ void ScanningHandler::FileSelectionCanceled(void* params) {
                             CreateSelectedPathValue(base::FilePath()));
 }
 
-base::Value ScanningHandler::CreateSelectedPathValue(
+base::Value::Dict ScanningHandler::CreateSelectedPathValue(
     const base::FilePath& path) {
-  base::Value selected_path(base::Value::Type::DICTIONARY);
-  selected_path.SetStringKey(kFilePath, path.value());
-  selected_path.SetStringKey(kBaseName,
-                             scanning_app_delegate_->GetBaseNameFromPath(path));
+  base::Value::Dict selected_path;
+  selected_path.Set(kFilePath, path.value());
+  selected_path.Set(kBaseName,
+                    scanning_app_delegate_->GetBaseNameFromPath(path));
   return selected_path;
 }
 

@@ -80,8 +80,7 @@ class ConnectivityDiagnosticsMessageHandler
     response.Append(base::Value(show_feedback_button_));
 
     AllowJavascript();
-    ResolveJavascriptCallback(base::Value(callback_id),
-                              base::Value(std::move(response)));
+    ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
   ConnectivityDiagnosticsUI::SendFeedbackReportCallback

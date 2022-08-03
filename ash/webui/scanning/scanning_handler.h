@@ -51,7 +51,7 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Uses the full filepath and the base directory (lowest level directory in
   // the filepath, used to display in the UI) to create a Value object to return
   // to the Scanning UI.
-  base::Value CreateSelectedPathValue(const base::FilePath& path);
+  base::Value::Dict CreateSelectedPathValue(const base::FilePath& path);
 
   // Adds to map of string IDs for pluralization.
   void AddStringToPluralMap(const std::string& name, int id);

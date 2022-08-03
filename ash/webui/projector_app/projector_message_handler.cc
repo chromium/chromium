@@ -58,10 +58,10 @@ struct SetUserPrefArgs {
   base::Value value;
 };
 
-base::Value AccessTokenInfoToValue(const signin::AccessTokenInfo& info) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kToken, base::Value(info.token));
-  value.SetKey(kExpirationTime, base::TimeToValue(info.expiration_time));
+base::Value::Dict AccessTokenInfoToValue(const signin::AccessTokenInfo& info) {
+  base::Value::Dict value;
+  value.Set(kToken, info.token);
+  value.Set(kExpirationTime, base::TimeToValue(info.expiration_time));
   return value;
 }
 
@@ -76,13 +76,14 @@ std::string ProjectorErrorToString(ProjectorError mode) {
   }
 }
 
-base::Value ScreencastListToValue(const PendingScreencastSet& screencasts) {
+base::Value::List ScreencastListToValue(
+    const PendingScreencastSet& screencasts) {
   base::Value::List value;
   value.reserve(screencasts.size());
   for (const auto& item : screencasts)
     value.Append(item.ToValue());
 
-  return base::Value(std::move(value));
+  return value;
 }
 
 bool IsUserPrefSupported(const std::string& pref) {
@@ -146,11 +147,10 @@ bool GetSetUserPrefArgs(const base::Value& args, SetUserPrefArgs* out) {
   return IsValidPrefValueArg(*out);
 }
 
-base::Value CreateRejectMessageForArgs(const base::Value& value) {
-  base::Value rejected_response(base::Value::Type::DICTIONARY);
-  rejected_response.SetKey(kRejectedRequestMessageKey,
-                           base::Value(kRejectedRequestMessage));
-  rejected_response.SetKey(kRejectedRequestArgsKey, value.Clone());
+base::Value::Dict CreateRejectMessageForArgs(const base::Value& value) {
+  base::Value::Dict rejected_response;
+  rejected_response.Set(kRejectedRequestMessageKey, kRejectedRequestMessage);
+  rejected_response.Set(kRejectedRequestArgsKey, value.Clone());
   return rejected_response;
 }
 
@@ -275,7 +275,7 @@ void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
     response.Append(std::move(account_info));
   }
 
-  ResolveJavascriptCallback(args[0], base::Value(std::move(response)));
+  ResolveJavascriptCallback(args[0], response);
 }
 
 void ProjectorMessageHandler::GetNewScreencastPrecondition(
@@ -285,10 +285,9 @@ void ProjectorMessageHandler::GetNewScreencastPrecondition(
   // Check that there is only one argument which is the callback id.
   DCHECK_EQ(args.size(), 1u);
 
-  ResolveJavascriptCallback(args[0],
-                            base::Value(ProjectorController::Get()
-                                            ->GetNewScreencastPrecondition()
-                                            .ToValue()));
+  ResolveJavascriptCallback(
+      args[0],
+      ProjectorController::Get()->GetNewScreencastPrecondition().ToValue());
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
@@ -435,19 +434,19 @@ void ProjectorMessageHandler::OnAccessTokenRequestCompleted(
     const signin::AccessTokenInfo& info) {
   AllowJavascript();
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(kUserEmail, base::Value(email));
+  base::Value::Dict response;
+  response.Set(kUserEmail, base::Value(email));
   if (error.state() != GoogleServiceAuthError::State::NONE) {
-    response.SetKey(kOAuthTokenInfo, base::Value());
-    response.SetKey(kError, base::Value(ProjectorErrorToString(
-                                ProjectorError::kTokenFetchFailure)));
+    response.Set(kOAuthTokenInfo, base::Value());
+    response.Set(kError, base::Value(ProjectorErrorToString(
+                             ProjectorError::kTokenFetchFailure)));
   } else {
-    response.SetKey(kError,
-                    base::Value(ProjectorErrorToString(ProjectorError::kNone)));
-    response.SetKey(kOAuthTokenInfo, AccessTokenInfoToValue(info));
+    response.Set(kError,
+                 base::Value(ProjectorErrorToString(ProjectorError::kNone)));
+    response.Set(kOAuthTokenInfo, AccessTokenInfoToValue(info));
   }
 
-  ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
+  ResolveJavascriptCallback(base::Value(js_callback_id), response);
 }
 
 void ProjectorMessageHandler::OnXhrRequestCompleted(
@@ -457,12 +456,12 @@ void ProjectorMessageHandler::OnXhrRequestCompleted(
     const std::string& error) {
   AllowJavascript();
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetBoolKey(kXhrSuccess, success);
-  response.SetStringKey(kXhrResponseBody, response_body);
-  response.SetStringKey(kXhrError, error);
+  base::Value::Dict response;
+  response.Set(kXhrSuccess, success);
+  response.Set(kXhrResponseBody, response_body);
+  response.Set(kXhrError, error);
 
-  ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
+  ResolveJavascriptCallback(base::Value(js_callback_id), response);
 }
 
 void ProjectorMessageHandler::GetPendingScreencasts(
