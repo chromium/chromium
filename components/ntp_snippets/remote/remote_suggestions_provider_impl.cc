@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -1559,25 +1560,25 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
   const base::Value::List& list =
       pref_service_->GetValueList(prefs::kRemoteSuggestionCategories);
   for (const base::Value& entry : list) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!entry.GetAsDictionary(&dict)) {
+    if (!entry.is_dict()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;
     }
-    absl::optional<int> id = dict->FindIntKey(kCategoryContentId);
+    const base::Value::Dict& dict = entry.GetDict();
+    absl::optional<int> id = dict.FindInt(kCategoryContentId);
     if (!id) {
       DLOG(WARNING) << "Invalid category pref value, missing '"
                     << kCategoryContentId << "': " << entry;
       continue;
     }
-    std::u16string title;
-    if (!dict->GetString(kCategoryContentTitle, &title)) {
+    const std::string* title = dict.FindString(kCategoryContentTitle);
+    if (!title) {
       DLOG(WARNING) << "Invalid category pref value, missing '"
                     << kCategoryContentTitle << "': " << entry;
       continue;
     }
     absl::optional<bool> included_in_last_server_response =
-        dict->FindBoolKey(kCategoryContentProvidedByServer);
+        dict.FindBool(kCategoryContentProvidedByServer);
     if (!included_in_last_server_response) {
       DLOG(WARNING) << "Invalid category pref value, missing '"
                     << kCategoryContentProvidedByServer << "': " << entry;
@@ -1585,7 +1586,7 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
     }
     // This wasn't always around, so it's okay if it's missing.
     bool allow_fetching_more_results =
-        dict->FindBoolKey(kCategoryContentAllowFetchingMore).value_or(false);
+        dict.FindBool(kCategoryContentAllowFetchingMore).value_or(false);
 
     Category category = Category::FromIDValue(*id);
     // The ranker may not persist the order of remote categories.
@@ -1599,7 +1600,8 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
     CategoryInfo info =
         category == articles_category_
             ? BuildArticleCategoryInfo(absl::nullopt)
-            : BuildRemoteCategoryInfo(title, allow_fetching_more_results);
+            : BuildRemoteCategoryInfo(base::UTF8ToUTF16(*title),
+                                      allow_fetching_more_results);
     CategoryContent* content = UpdateCategoryInfo(category, info);
     content->included_in_last_server_response =
         included_in_last_server_response.value();
