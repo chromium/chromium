@@ -41,7 +41,7 @@ const char kContactMessageNumUnreachableContactsKey[] =
 // TODO(nohle): We should probably break up this dictionary into smaller
 // dictionaries corresponding to each contact-manager observer functions. This
 // will require changes at the javascript layer as well.
-base::Value ContactMessageToDictionary(
+base::Value::Dict ContactMessageToDictionary(
     absl::optional<bool> did_contacts_change_since_last_upload,
     const absl::optional<std::set<std::string>>& allowed_contact_ids,
     const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
@@ -76,7 +76,7 @@ base::Value ContactMessageToDictionary(
     dictionary.Set(kContactMessageNumUnreachableContactsKey,
                    int(*num_unreachable_contacts_filtered_out));
   }
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
 }  // namespace

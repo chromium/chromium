@@ -56,15 +56,15 @@ const char kHttpMessageDirectionKey[] = "direction";
 
 // Converts a RPC request/response to a raw dictionary value used as a
 // JSON argument to JavaScript functions.
-base::Value HttpMessageToDictionary(const base::Value& message,
-                                    Direction dir,
-                                    Rpc rpc) {
+base::Value::Dict HttpMessageToDictionary(const base::Value& message,
+                                          Direction dir,
+                                          Rpc rpc) {
   base::Value::Dict dictionary;
   dictionary.Set(kHttpMessageBodyKey, FormatAsJSON(message));
   dictionary.Set(kHttpMessageTimeKey, GetJavascriptTimestamp());
   dictionary.Set(kHttpMessageRpcKey, static_cast<int>(rpc));
   dictionary.Set(kHttpMessageDirectionKey, static_cast<int>(dir));
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
 }  // namespace

@@ -20,7 +20,8 @@ const char kLogMessageSeverityKey[] = "severity";
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-base::Value LogMessageToDictionary(const LogBuffer::LogMessage& log_message) {
+base::Value::Dict LogMessageToDictionary(
+    const LogBuffer::LogMessage& log_message) {
   base::Value::Dict dictionary;
   dictionary.Set(kLogMessageTextKey, log_message.text);
   dictionary.Set(kLogMessageTimeKey,
@@ -28,7 +29,7 @@ base::Value LogMessageToDictionary(const LogBuffer::LogMessage& log_message) {
   dictionary.Set(kLogMessageFileKey, log_message.file);
   dictionary.Set(kLogMessageLineKey, log_message.line);
   dictionary.Set(kLogMessageSeverityKey, log_message.severity);
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 }  // namespace
 
@@ -59,7 +60,7 @@ void NearbyInternalsLogsHandler::HandleGetLogMessages(
   for (const auto& log : *LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(list)));
+  ResolveJavascriptCallback(callback_id, list);
 }
 
 void NearbyInternalsLogsHandler::OnLogBufferCleared() {

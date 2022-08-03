@@ -167,30 +167,30 @@ std::string TransferUpdateMetaDataToString(
 
 // Converts |status_code| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
-base::Value StatusCodeToDictionary(
+base::Value::Dict StatusCodeToDictionary(
     const NearbySharingService::StatusCodes status_code,
     TriggerEvent trigger_event) {
   base::Value::Dict dictionary;
   dictionary.Set(kStatusCodeKey, StatusCodeToString(status_code));
   dictionary.Set(kTriggerEventKey, TriggerEventToString(trigger_event));
   dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
 // Converts |share_target| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
-base::Value ShareTargetToDictionary(const ShareTarget share_target) {
+base::Value::Dict ShareTargetToDictionary(const ShareTarget share_target) {
   base::Value::Dict share_target_dictionary;
   share_target_dictionary.Set(kShareTargetDeviceNamesKey,
                               share_target.device_name);
   share_target_dictionary.Set(kShareTargetIdKey, share_target.id.ToString());
   share_target_dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
-  return base::Value(std::move(share_target_dictionary));
+  return share_target_dictionary;
 }
 
 // Converts |id_to_share_target_map| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value ShareTargetMapToList(
+base::Value::List ShareTargetMapToList(
     const base::flat_map<std::string, ShareTarget>& id_to_share_target_map) {
   base::Value::List share_target_list;
   share_target_list.reserve(id_to_share_target_map.size());
@@ -199,12 +199,12 @@ base::Value ShareTargetMapToList(
     share_target_list.Append(ShareTargetToDictionary(it.second));
   }
 
-  return base::Value(std::move(share_target_list));
+  return share_target_list;
 }
 
 // Converts |transfer_metadata| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value TransferUpdateToDictionary(
+base::Value::Dict TransferUpdateToDictionary(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   base::Value::Dict dictionary;
@@ -213,15 +213,15 @@ base::Value TransferUpdateToDictionary(
   dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
   dictionary.Set(kShareTargetDeviceNamesKey, share_target.device_name);
   dictionary.Set(kShareTargetIdKey, share_target.id.ToString());
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
-base::Value StatusBooleansToDictionary(const bool is_scanning,
-                                       const bool is_transferring,
-                                       const bool is_receiving_files,
-                                       const bool is_sending_files,
-                                       const bool is_conecting,
-                                       const bool is_in_high_visibility) {
+base::Value::Dict StatusBooleansToDictionary(const bool is_scanning,
+                                             const bool is_transferring,
+                                             const bool is_receiving_files,
+                                             const bool is_sending_files,
+                                             const bool is_conecting,
+                                             const bool is_in_high_visibility) {
   base::Value::Dict dictionary;
   dictionary.Set(kIsScanning, is_scanning);
   dictionary.Set(kIsTransferring, is_transferring);
@@ -230,7 +230,7 @@ base::Value StatusBooleansToDictionary(const bool is_scanning,
   dictionary.Set(kIsConnecting, is_conecting);
   dictionary.Set(kIsInHighVisibility, is_in_high_visibility);
   dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
 }  // namespace

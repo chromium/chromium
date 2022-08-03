@@ -35,7 +35,7 @@ const char kImageUrl[] =
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-base::Value LogMessageToDictionary(
+base::Value::Dict LogMessageToDictionary(
     const ash::quick_pair::LogBuffer::LogMessage& log_message) {
   base::Value::Dict dictionary;
   dictionary.Set(kLogMessageTextKey, log_message.text);
@@ -44,7 +44,7 @@ base::Value LogMessageToDictionary(
   dictionary.Set(kLogMessageFileKey, log_message.file);
   dictionary.Set(kLogMessageLineKey, log_message.line);
   dictionary.Set(kLogMessageSeverityKey, log_message.severity);
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 }  // namespace
 
@@ -99,7 +99,7 @@ void QuickPairHandler::OnJavascriptDisallowed() {
 void QuickPairHandler::HandleGetLogMessages(const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& log : *ash::quick_pair::LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
