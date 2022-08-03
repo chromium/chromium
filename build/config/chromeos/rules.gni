@@ -480,6 +480,7 @@ template("generate_runner_script") {
       # Needed for various SDK components used below.
       "//build/cros_cache/chrome-sdk/misc/",
       "//build/cros_cache/chrome-sdk/symlinks/",
+      "//chrome/VERSION",
 
       # The LKGM file controls what version of the VM image to download. Add it
       # as data here so that changes to it will trigger analyze.
