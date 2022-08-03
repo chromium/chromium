@@ -53,13 +53,13 @@ chromium-metrics-reviews@google.com.
                synchronous. Logged exactly once per update; 0, 1, or multiple
                times per input. The count here will be the sum of the counts
                for the other 2 slices."/>
-  <variant name="Async"
+  <variant name=".Async"
       summary="This slice measures match changes between the last update for
                the current input, whether it be asynchronous or synchronous,
                and the current asynchronous, i.e. non-first, update of the
                current input. Logged exactly once per asynchronous update; 0,
                1, or multiple times per input."/>
-  <variant name="CrossInput"
+  <variant name=".CrossInput"
       summary="This slice measures match changes between the last update for
                the previous input, whether it be asynchronous or synchronous,
                and the synchronous, i.e. first, update of the current input.
@@ -988,7 +988,11 @@ chromium-metrics-reviews@google.com.
 
     This histogram can be considered a boolean analogue to the
     Omnibox.MatchStability.Index.* histogram which tracks which matches changed.
+
+    {OmniboxAutocompleteUpdateSlice}
   </summary>
+  <token key="OmniboxAutocompleteUpdateSlice"
+      variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
 <histogram
@@ -1038,7 +1042,11 @@ chromium-metrics-reviews@google.com.
 
     There's the related Omnibox.MatchStability.InAnyPosition histogram for
     tracking whether any match changed per autocomplete update.
+
+    {OmniboxAutocompleteUpdateSlice}
   </summary>
+  <token key="OmniboxAutocompleteUpdateSlice"
+      variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
 <histogram name="Omnibox.NumEvents" enum="UsedOmnibox"
