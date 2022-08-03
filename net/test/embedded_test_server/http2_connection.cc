@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "absl/strings/escaping.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/stack_trace.h"
@@ -20,6 +19,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "third_party/abseil-cpp/absl/strings/escaping.h"
 
 namespace net {
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "absl/types/optional.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -18,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net::test_server {
 

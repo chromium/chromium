@@ -4,11 +4,11 @@
 
 #include "components/account_manager_core/account_manager_util.h"
 
-#include "absl/types/optional.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
