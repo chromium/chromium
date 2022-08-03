@@ -122,10 +122,12 @@ void SignInInternalsHandler::HandleGetSignInInfo(
   }
 }
 
-void SignInInternalsHandler::OnSigninStateChanged(const base::Value* info) {
-  FireWebUIListener("signin-info-changed", *info);
+void SignInInternalsHandler::OnSigninStateChanged(
+    const base::Value::Dict& info) {
+  FireWebUIListener("signin-info-changed", info);
 }
 
-void SignInInternalsHandler::OnCookieAccountsFetched(const base::Value* info) {
-  FireWebUIListener("update-cookie-accounts", *info);
+void SignInInternalsHandler::OnCookieAccountsFetched(
+    const base::Value::Dict& info) {
+  FireWebUIListener("update-cookie-accounts", info);
 }

@@ -65,7 +65,7 @@ std::string GetGaiaCookiesStateAsString(const GaiaCookiesState state) {
 }
 
 void AddSection(base::Value::List& parent_list,
-                base::Value section_content,
+                base::Value::List section_content,
                 const std::string& title) {
   base::Value::Dict section;
   section.Set("title", title);
@@ -353,15 +353,15 @@ void AboutSigninInternals::NotifyObservers() {
   if (signin_observers_.empty())
     return;
 
-  base::Value signin_status_value = signin_status_.ToValue(
+  base::Value::Dict signin_status_value = signin_status_.ToValue(
       identity_manager_, signin_error_controller_, client_,
       account_consistency_, account_reconcilor_);
 
   for (auto& observer : signin_observers_)
-    observer.OnSigninStateChanged(&signin_status_value);
+    observer.OnSigninStateChanged(signin_status_value);
 }
 
-base::Value AboutSigninInternals::GetSigninStatus() {
+base::Value::Dict AboutSigninInternals::GetSigninStatus() {
   return signin_status_.ToValue(identity_manager_, signin_error_controller_,
                                 client_, account_consistency_,
                                 account_reconcilor_);
@@ -497,10 +497,9 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
 
   base::Value::Dict cookie_status_dict;
   cookie_status_dict.Set("cookie_info", std::move(cookie_info));
-  base::Value cookie_status(std::move(cookie_status_dict));
   // Update the observers that the cookie's accounts are updated.
   for (auto& observer : signin_observers_)
-    observer.OnCookieAccountsFetched(&cookie_status);
+    observer.OnCookieAccountsFetched(cookie_status_dict);
 }
 
 AboutSigninInternals::TokenInfo::TokenInfo(const std::string& consumer_id,
@@ -522,7 +521,7 @@ bool AboutSigninInternals::TokenInfo::LessThan(
 
 void AboutSigninInternals::TokenInfo::Invalidate() { removed_ = true; }
 
-base::Value AboutSigninInternals::TokenInfo::ToValue() const {
+base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
   base::Value::Dict token_info;
   token_info.Set("service", consumer_id);
 
@@ -563,7 +562,7 @@ base::Value AboutSigninInternals::TokenInfo::ToValue() const {
     token_info.Set("status", "Waiting for response");
   }
 
-  return base::Value(std::move(token_info));
+  return token_info;
 }
 
 AboutSigninInternals::RefreshTokenEvent::RefreshTokenEvent()
@@ -606,7 +605,7 @@ void AboutSigninInternals::SigninStatus::AddRefreshTokenEvent(
   refresh_token_events.push_back(event);
 }
 
-base::Value AboutSigninInternals::SigninStatus::ToValue(
+base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     signin::IdentityManager* identity_manager,
     SigninErrorController* signin_error_controller,
     SigninClient* signin_client,
@@ -664,8 +663,7 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
         basic_info, "Account Reconcilor blocked",
         account_reconcilor->IsReconcileBlocked() ? "True" : "False");
 
-    AddSection(signin_info, base::Value(std::move(basic_info)),
-               "Basic Information");
+    AddSection(signin_info, std::move(basic_info), "Basic Information");
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -707,8 +705,7 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
                       base::TimeToISO8601(next_retry_time), "");
     }
 
-    AddSection(signin_info, base::Value(std::move(detailed_info)),
-               "Last Signin Details");
+    AddSection(signin_info, std::move(detailed_info), "Last Signin Details");
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -723,8 +720,7 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
     for (const std::unique_ptr<TokenInfo>& token : it.second)
       token_details.Append(token->ToValue());
 
-    AddSection(token_info, base::Value(std::move(token_details)),
-               it.first.ToString());
+    AddSection(token_info, std::move(token_details), it.first.ToString());
   }
   signin_status.Set("token_info", std::move(token_info));
 
@@ -766,5 +762,5 @@ base::Value AboutSigninInternals::SigninStatus::ToValue(
   signin_status.Set("refreshTokenEvents",
                     std::move(refresh_token_events_value));
 
-  return base::Value(std::move(signin_status));
+  return signin_status;
 }

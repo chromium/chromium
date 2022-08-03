@@ -90,7 +90,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
   about_signin_internals->AddSigninObserver(this);
-  const base::Value status = about_signin_internals->GetSigninStatus();
+  const base::Value::Dict status = about_signin_internals->GetSigninStatus();
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
@@ -104,17 +104,16 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   }
 }
 
-void SignInInternalsHandlerIOS::OnSigninStateChanged(const base::Value* info) {
-  DCHECK(info);
+void SignInInternalsHandlerIOS::OnSigninStateChanged(
+    const base::Value::Dict& info) {
   base::Value event_name("signin-info-changed");
-  base::ValueView args[] = {event_name, *info};
+  base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void SignInInternalsHandlerIOS::OnCookieAccountsFetched(
-    const base::Value* info) {
-  DCHECK(info);
+    const base::Value::Dict& info) {
   base::Value event_name("update-cookie-accounts");
-  base::ValueView args[] = {event_name, *info};
+  base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
