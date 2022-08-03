@@ -1,0 +1,21 @@
+Tests that NavigateEventTransitionWhile deprecation issue is reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 32
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : NavigateEventTransitionWhile
+            }
+        }
+    }
+}
+
