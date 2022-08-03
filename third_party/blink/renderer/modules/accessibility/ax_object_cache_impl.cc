@@ -997,6 +997,13 @@ AXID AXObjectCacheImpl::GetAXID(Node* node) {
   return ax_object->AXObjectID();
 }
 
+AXID AXObjectCacheImpl::GetExistingAXID(Node* node) {
+  AXObject* ax_object = SafeGet(node);
+  if (!ax_object)
+    return 0;
+  return ax_object->AXObjectID();
+}
+
 AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
   if (!accessible_node)
     return nullptr;

@@ -227,6 +227,8 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   AXID GetAXID(Node*) override;
 
+  AXID GetExistingAXID(Node*) override;
+
   AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
 

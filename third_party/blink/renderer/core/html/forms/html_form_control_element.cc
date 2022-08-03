@@ -443,6 +443,15 @@ int32_t HTMLFormControlElement::GetAxId() const {
   if (!document.IsActive() || !document.View())
     return 0;
   if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
+    LocalFrameView* local_frame_view = document.View();
+    if (local_frame_view->IsUpdatingLifecycle()) {
+      // Autofill (the caller of this code) can end up making calls to get AXIDs
+      // of form elements during, e.g. resize observer callbacks, which are
+      // in the middle up updating the document lifecycle. In these cases, just
+      // return the existing AXID of the element.
+      return cache->GetExistingAXID(const_cast<HTMLFormControlElement*>(this));
+    }
+
     if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
         document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
       document.View()->UpdateAllLifecyclePhasesExceptPaint(

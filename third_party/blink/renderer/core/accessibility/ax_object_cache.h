@@ -172,7 +172,18 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void OnTouchAccessibilityHover(const gfx::Point&) = 0;
 
+  // Gets the AXID of the given Node. If there is not yet an associated
+  // AXObject, this method will create one (along with its parent chain) and
+  // return the id.
   virtual AXID GetAXID(Node*) = 0;
+
+  // Crash dumps have shown there are times where AXID's are queried
+  // 'out-of-band' where we may not be in a state where creating AXObjects and
+  // repairing parent chains is possible. This will look for the current
+  // AXObject associated with the given node and return its id without creating
+  // or recomputing any state.
+  virtual AXID GetExistingAXID(Node*) = 0;
+
   virtual AXObject* ObjectFromAXID(AXID) const = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
