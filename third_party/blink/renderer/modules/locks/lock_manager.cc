@@ -535,14 +535,19 @@ void LockManager::DidCheckStorageAccessAllowed(
     ScriptPromiseResolver* resolver,
     base::OnceCallback<void()> callback,
     bool allow_access) {
-  cached_allowed_ = allow_access;
+  if (cached_allowed_.has_value()) {
+    DCHECK_EQ(cached_allowed_.value(), allow_access);
+  } else {
+    cached_allowed_ = allow_access;
+  }
+
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!script_state->ContextIsValid()) {
     return;
   }
 
-  if (allow_access) {
+  if (cached_allowed_.value()) {
     std::move(callback).Run();
     return;
   }
