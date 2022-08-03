@@ -137,9 +137,6 @@ class LayoutFrameSet final : public LayoutBox {
 
   GridAxis rows_;
   GridAxis cols_;
-
-  // Temporal friend until we complete to move the resizing code.
-  friend HTMLFrameSetElement;
 };
 
 template <>

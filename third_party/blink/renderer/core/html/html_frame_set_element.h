@@ -122,10 +122,10 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   bool UserResize(const MouseEvent& event);
   void SetIsResizing(bool is_resizing);
-  void StartResizing(LayoutFrameSet::GridAxis& axis,
+  void StartResizing(const LayoutFrameSet::GridAxis& axis,
                      int position,
                      ResizeAxis& resize_axis);
-  void ContinueResizing(LayoutFrameSet::GridAxis& axis,
+  void ContinueResizing(const LayoutFrameSet::GridAxis& axis,
                         int position,
                         ResizeAxis& resize_axis);
   int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;

@@ -376,8 +376,8 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
     if (event.type() == event_type_names::kMousedown && event.IsLeftButton()) {
       gfx::PointF local_pos =
           layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      StartResizing(layout_frame_set.cols_, local_pos.x(), resize_cols_);
-      StartResizing(layout_frame_set.rows_, local_pos.y(), resize_rows_);
+      StartResizing(layout_frame_set.Columns(), local_pos.x(), resize_cols_);
+      StartResizing(layout_frame_set.Rows(), local_pos.y(), resize_rows_);
       if (resize_cols_.IsResizingSplit() || resize_rows_.IsResizingSplit()) {
         SetIsResizing(true);
         return true;
@@ -388,8 +388,8 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
         (event.type() == event_type_names::kMouseup && event.IsLeftButton())) {
       gfx::PointF local_pos =
           layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      ContinueResizing(layout_frame_set.cols_, local_pos.x(), resize_cols_);
-      ContinueResizing(layout_frame_set.rows_, local_pos.y(), resize_rows_);
+      ContinueResizing(layout_frame_set.Columns(), local_pos.x(), resize_cols_);
+      ContinueResizing(layout_frame_set.Rows(), local_pos.y(), resize_rows_);
       if (event.type() == event_type_names::kMouseup && event.IsLeftButton()) {
         SetIsResizing(false);
         return true;
@@ -406,7 +406,7 @@ void HTMLFrameSetElement::SetIsResizing(bool is_resizing) {
     frame->GetEventHandler().SetResizingFrameSet(is_resizing ? this : nullptr);
 }
 
-void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
+void HTMLFrameSetElement::StartResizing(const LayoutFrameSet::GridAxis& axis,
                                         int position,
                                         ResizeAxis& resize_axis) {
   int split = HitTestSplit(axis, position);
@@ -418,7 +418,7 @@ void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
   resize_axis.split_resize_offset_ = position - SplitPosition(axis, split);
 }
 
-void HTMLFrameSetElement::ContinueResizing(LayoutFrameSet::GridAxis& axis,
+void HTMLFrameSetElement::ContinueResizing(const LayoutFrameSet::GridAxis& axis,
                                            int position,
                                            ResizeAxis& resize_axis) {
   if (GetLayoutObject()->NeedsLayout())
