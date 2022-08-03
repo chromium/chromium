@@ -38,8 +38,8 @@ void CrosWindowManagementContext::BindFactory(
 
 CrosWindowManagementContext::CrosWindowManagementContext(Profile* profile)
     : profile_(*profile),
-      install_manager_(
-          SystemExtensionsProvider::Get(profile).install_manager()) {}
+      system_extensions_registry_(
+          SystemExtensionsProvider::Get(profile).registry()) {}
 
 CrosWindowManagementContext::~CrosWindowManagementContext() = default;
 
@@ -58,8 +58,7 @@ void CrosWindowManagementContext::Create(
   cros_window_management_instances_.Add(std::move(cros_window_management),
                                         std::move(pending_receiver));
 
-  auto* system_extension =
-      install_manager_->GetSystemExtensionByURL(info.scope);
+  auto* system_extension = system_extensions_registry_->GetByUrl(info.scope);
   if (!system_extension)
     return;
 

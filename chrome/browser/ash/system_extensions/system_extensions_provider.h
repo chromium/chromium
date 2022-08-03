@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-class SystemExtensionsInstallManager;
 
 namespace ash {
 
@@ -37,6 +37,12 @@ class SystemExtensionsProvider : public KeyedService {
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;
   ~SystemExtensionsProvider() override;
 
+  SystemExtensionsRegistry& registry() { return registry_manager_->registry(); }
+
+  SystemExtensionsRegistryManager& registry_manager() {
+    return *registry_manager_;
+  }
+
   SystemExtensionsInstallManager& install_manager() {
     return *install_manager_;
   }
@@ -50,6 +56,7 @@ class SystemExtensionsProvider : public KeyedService {
       std::vector<std::string>& out_forced_enabled_runtime_features);
 
  private:
+  std::unique_ptr<SystemExtensionsRegistryManager> registry_manager_;
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;
 };
 

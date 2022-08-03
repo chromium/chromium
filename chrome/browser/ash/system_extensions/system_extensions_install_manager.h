@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -21,6 +22,9 @@ class Profile;
 
 namespace ash {
 
+class SystemExtensionsRegistry;
+class SystemExtensionsRegistryManager;
+
 class SystemExtensionsInstallManager {
  public:
   class Observer : public base::CheckedObserver {
@@ -30,7 +34,10 @@ class SystemExtensionsInstallManager {
         blink::ServiceWorkerStatusCode status_code) {}
   };
 
-  explicit SystemExtensionsInstallManager(Profile* profile);
+  SystemExtensionsInstallManager(
+      Profile* profile,
+      SystemExtensionsRegistryManager& registry_manager,
+      SystemExtensionsRegistry& registry);
   SystemExtensionsInstallManager(const SystemExtensionsInstallManager&) =
       delete;
   SystemExtensionsInstallManager& operator=(
@@ -52,14 +59,6 @@ class SystemExtensionsInstallManager {
   void RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
   }
-
-  // TODO(ortuno): Move these to a Registrar or Database.
-  std::vector<SystemExtensionId> GetSystemExtensionIds();
-  const SystemExtension* GetSystemExtensionById(const SystemExtensionId& id);
-
-  // Return the system extension that runs on |url|. Returns nullptr if |url|
-  // doesn't belong to any system extension.
-  const SystemExtension* GetSystemExtensionByURL(const GURL& url);
 
  private:
   // Helper class to run blocking IO operations on a separate thread.
@@ -91,14 +90,21 @@ class SystemExtensionsInstallManager {
                                        int process_id,
                                        int thread_id);
 
-  Profile* profile_;
+  // Safe because this class is owned by SystemExtensionsProvider which is owned
+  // by the profile.
+  raw_ptr<Profile> profile_;
+
+  // Safe to hold references because the parent class,
+  // SystemExtensionsProvider, ensures this class is constructed after and
+  // destroyed before the classes below.
+  const raw_ref<SystemExtensionsRegistryManager> registry_manager_;
+  const raw_ref<SystemExtensionsRegistry> registry_;
+
+  std::map<SystemExtensionId, SystemExtension> system_extensions_;
 
   base::OneShotEvent on_command_line_install_finished_;
 
   SystemExtensionsSandboxedUnpacker sandboxed_unpacker_;
-
-  // TODO(ortuno): Move this to a Registrar or Database.
-  std::map<SystemExtensionId, SystemExtension> system_extensions_;
 
   base::ObserverList<Observer> observers_;
 

@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_webui_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,29 +35,17 @@
 
 namespace ash {
 
-SystemExtensionsInstallManager::SystemExtensionsInstallManager(Profile* profile)
-    : profile_(profile) {
+SystemExtensionsInstallManager::SystemExtensionsInstallManager(
+    Profile* profile,
+    SystemExtensionsRegistryManager& registry_manager,
+    SystemExtensionsRegistry& registry)
+    : profile_(profile),
+      registry_manager_(registry_manager),
+      registry_(registry) {
   InstallFromCommandLineIfNecessary();
 }
 
 SystemExtensionsInstallManager::~SystemExtensionsInstallManager() = default;
-
-std::vector<SystemExtensionId>
-SystemExtensionsInstallManager::GetSystemExtensionIds() {
-  std::vector<SystemExtensionId> extension_ids;
-  for (const auto& id_and_extension : system_extensions_) {
-    extension_ids.emplace_back(id_and_extension.first);
-  }
-  return extension_ids;
-}
-
-const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
-    const SystemExtensionId& id) {
-  const auto it = system_extensions_.find(id);
-  if (it == system_extensions_.end())
-    return nullptr;
-  return &it->second;
-}
 
 void SystemExtensionsInstallManager::InstallUnpackedExtensionFromDir(
     const base::FilePath& unpacked_system_extension_dir,
@@ -138,7 +127,7 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
   content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::move(config));
 
-  system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
+  registry_manager_->AddSystemExtension(std::move(system_extension));
   std::move(final_callback).Run(std::move(id));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -148,16 +137,14 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
 
 void SystemExtensionsInstallManager::RegisterServiceWorker(
     const SystemExtensionId& system_extension_id) {
-  auto it = system_extensions_.find(system_extension_id);
-  if (it == system_extensions_.end()) {
+  auto* system_extension = registry_->GetById(system_extension_id);
+  if (!system_extension) {
     LOG(ERROR) << "Tried to install service worker for non-existent extension";
     return;
   }
 
-  const SystemExtension& system_extension = it->second;
-
   blink::mojom::ServiceWorkerRegistrationOptions options(
-      system_extension.base_url, blink::mojom::ScriptType::kClassic,
+      system_extension->base_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
 
@@ -166,7 +153,7 @@ void SystemExtensionsInstallManager::RegisterServiceWorker(
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
   worker_context->RegisterServiceWorker(
-      system_extension.service_worker_url, key, options,
+      system_extension->service_worker_url, key, options,
       base::BindOnce(&SystemExtensionsInstallManager::OnRegisterServiceWorker,
                      weak_ptr_factory_.GetWeakPtr(), system_extension_id));
 }
@@ -216,15 +203,6 @@ bool SystemExtensionsInstallManager::IOHelper::CopyExtensionAssets(
   }
 
   return true;
-}
-
-const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionByURL(
-    const GURL& url) {
-  for (const auto& id_and_system_extension : system_extensions_) {
-    if (url::IsSameOriginWith(id_and_system_extension.second.base_url, url))
-      return &id_and_system_extension.second;
-  }
-  return nullptr;
 }
 
 }  // namespace ash

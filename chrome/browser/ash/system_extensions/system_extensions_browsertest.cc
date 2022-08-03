@@ -100,12 +100,12 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
 
   void TestInstalledTestExtensionWorks() {
     auto& provider = SystemExtensionsProvider::Get(browser()->profile());
-    auto& install_manager = provider.install_manager();
+    auto& registry = provider.registry();
 
-    auto extension_ids = install_manager.GetSystemExtensionIds();
+    auto extension_ids = registry.GetIds();
     EXPECT_EQ(std::vector<SystemExtensionId>({kTestSystemExtensionId}),
               extension_ids);
-    EXPECT_TRUE(install_manager.GetSystemExtensionById(kTestSystemExtensionId));
+    EXPECT_TRUE(registry.GetById(kTestSystemExtensionId));
 
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
     {

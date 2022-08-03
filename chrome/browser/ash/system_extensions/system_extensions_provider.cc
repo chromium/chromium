@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 
@@ -34,8 +35,12 @@ bool SystemExtensionsProvider::IsDebugMode() {
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
-  install_manager_ = std::make_unique<SystemExtensionsInstallManager>(profile);
+  registry_manager_ = std::make_unique<SystemExtensionsRegistryManager>();
+  install_manager_ = std::make_unique<SystemExtensionsInstallManager>(
+      profile, *registry_manager_, registry_manager_->registry());
 }
+
+SystemExtensionsProvider::~SystemExtensionsProvider() = default;
 
 void SystemExtensionsProvider::
     UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
@@ -44,8 +49,7 @@ void SystemExtensionsProvider::
   if (!script_url.SchemeIs(kSystemExtensionScheme))
     return;
 
-  auto* system_extension =
-      install_manager_->GetSystemExtensionByURL(script_url);
+  auto* system_extension = registry().GetByUrl(script_url);
   if (!system_extension)
     return;
 
@@ -57,7 +61,5 @@ void SystemExtensionsProvider::
         "BlinkExtensionChromeOSWindowManagement");
   }
 }
-
-SystemExtensionsProvider::~SystemExtensionsProvider() = default;
 
 }  // namespace ash

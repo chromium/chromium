@@ -65,8 +65,8 @@ class CrosWindowManagementContext
 
   // Safe because this KeyedService is marked as depending on the
   // SystemExtensionsProvider keyed service which owns
-  // SystemExtensionsInstallManager.
-  const raw_ref<SystemExtensionsInstallManager> install_manager_;
+  // SystemExtensionsRegistry.
+  const raw_ref<SystemExtensionsRegistry> system_extensions_registry_;
 
   mojo::ReceiverSet<blink::mojom::CrosWindowManagementFactory,
                     content::ServiceWorkerVersionBaseInfo>
