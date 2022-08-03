@@ -1,0 +1,4 @@
+Document
+++Document Name='graphics-document'
+++Group Name='graphics-object'
+++Image Name='graphics-symbol'
