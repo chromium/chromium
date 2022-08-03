@@ -425,6 +425,8 @@ const re2::RE2& GetSkipPattern() {
   if (pattern_from_component &&
       kSkipPattern.Get() == kSkipPattern.default_value) {
     DVLOG(1) << "SkipPattern = " << pattern_from_component->pattern();
+    CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
     return *pattern_from_component;
   }
   static base::NoDestructor<re2::RE2> instance([] {
@@ -432,6 +434,9 @@ const re2::RE2& GetSkipPattern() {
     DVLOG(1) << "SkipPattern = " << pattern;
     return pattern;
   }());
+  CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
   return *instance;
 }
 
