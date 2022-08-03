@@ -53629,12 +53629,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="14" label="Add language to 'Always Translate' list"/>
   <int value="15" label="Remove site from 'Never translate sites' list"/>
   <int value="16" label="Restart Chrome for split install"/>
-  <int value="17" label="Spell check enabled globally"/>
-  <int value="18" label="Spell check disabled globally"/>
-  <int value="19" label="Spell check enabled for a language"/>
-  <int value="20" label="Spell check disabled for a language"/>
-  <int value="21" label="Basic spell check selected"/>
-  <int value="22" label="Enhanced spell check selected"/>
 </enum>
 
 <enum name="LanguageSettingsAppLanguagePromptAction">
