@@ -1632,12 +1632,36 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   (*out)->key = key;
   (*out)->version_id = data.version_id();
   (*out)->is_active = data.is_active();
+  // The old protobuf may not have fetch_handler_type.
   (*out)->fetch_handler_type =
-      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
-  if (data.has_fetch_handler()) {
-    // TODO(crbug.com/1347319): implement other fetch_handler_type.
-    (*out)->fetch_handler_type =
-        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+      (data.has_fetch_handler())
+          ? blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable
+          : blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  if (data.has_fetch_handler_type()) {
+    if (!data.has_fetch_handler()) {
+      DLOG(ERROR) << "has_fetch_handler must be true if fetch_handler_type"
+                  << " is set.";
+      return Status::kErrorCorrupted;
+    }
+    if (!ServiceWorkerRegistrationData_FetchHandlerType_IsValid(
+            data.fetch_handler_type())) {
+      DLOG(ERROR) << "Fetch handler type '" << data.fetch_handler_type()
+                  << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    switch (data.fetch_handler_type()) {
+      case ServiceWorkerRegistrationData::NOT_SKIPPABLE:
+        (*out)->fetch_handler_type =
+            blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+        break;
+      // TODO(crbug.com/1347319): implement other fetch_handler_type.
+      default:
+        // UNKNOWN_FETCH_HANDLER, which must not be stored, should also be
+        // handled here.
+        DLOG(ERROR) << "Fetch handler type '" << data.fetch_handler_type()
+                    << "' is not known.";
+        return Status::kErrorCorrupted;
+    }
   }
   (*out)->last_update_check = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(data.last_update_check_time()));
@@ -1784,6 +1808,18 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   data.set_has_fetch_handler(
       registration.fetch_handler_type !=
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler);
+  if (data.has_fetch_handler()) {
+    switch (registration.fetch_handler_type) {
+      case blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable:
+        data.set_fetch_handler_type(
+            ServiceWorkerRegistrationData::NOT_SKIPPABLE);
+        break;
+      // TODO(crbug.com/1347319): implement other fetch_handler_type.
+      default:
+        DCHECK(false) << "Unknown fetch_handler_type is used."
+                      << registration.fetch_handler_type;
+    }
+  }
   data.set_last_update_check_time(
       registration.last_update_check.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());

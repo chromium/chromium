@@ -2464,6 +2464,7 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   data.set_version_id(1);
   data.set_is_active(true);
   data.set_has_fetch_handler(true);
+  data.set_fetch_handler_type(ServiceWorkerRegistrationData::NOT_SKIPPABLE);
   data.set_last_update_check_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -2584,6 +2585,7 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   data.set_version_id(1);
   data.set_is_active(true);
   data.set_has_fetch_handler(true);
+  data.set_fetch_handler_type(ServiceWorkerRegistrationData::NOT_SKIPPABLE);
   data.set_last_update_check_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
