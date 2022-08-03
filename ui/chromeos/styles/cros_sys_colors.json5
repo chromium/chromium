@@ -127,9 +127,29 @@
     },
 
     /* Surfaces */
+    surface: {
+      light: '$cros.ref.neutral99',
+      dark: '$cros.ref.neutral10',
+    },
     surface1: {
-      light: 'blend(rgba($cros.ref.primary10.rgb, 0.05), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.05), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
       dark: 'blend(rgba($cros.ref.primary80.rgb, 0.05), blend(rgba($cros.ref.neutral80.rgb, 0.02), $cros.ref.neutral10))',
+    },
+    surface2: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.08), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.08), blend(rgba($cros.ref.neutral80.rgb, 0.02), $cros.ref.neutral10))',
+    },
+    surface3: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.11), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.11), blend(rgba($cros.ref.neutral80.rgb, 0.02), $cros.ref.neutral10))',
+    },
+    surface4: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.12), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.12), blend(rgba($cros.ref.neutral80.rgb, 0.02), $cros.ref.neutral10))',
+    },
+    surface5: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.14), blend(rgba($cros.ref.neutral50.rgb, 0.02), $cros.ref.neutral99))',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.14), blend(rgba($cros.ref.neutral80.rgb, 0.02), $cros.ref.neutral10))',
     },
     scrim: {
       light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
