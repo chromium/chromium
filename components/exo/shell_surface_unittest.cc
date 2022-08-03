@@ -89,6 +89,15 @@ std::unique_ptr<ShellSurface> CreatePopupShellSurface(
   return popup_shell_surface;
 }
 
+std::unique_ptr<ShellSurface> CreateMenuShellSurface(Surface* popup_surface,
+                                                     ShellSurface* parent,
+                                                     const gfx::Point& origin) {
+  auto popup_shell_surface =
+      CreatePopupShellSurface(popup_surface, parent, origin);
+  popup_shell_surface->SetMenu();
+  return popup_shell_surface;
+}
+
 std::unique_ptr<ShellSurface> CreateX11TransientShellSurface(
     ShellSurface* parent,
     const gfx::Size& size,
@@ -1422,6 +1431,117 @@ TEST_F(ShellSurfaceTest, Popup) {
     ui::Event::DispatcherApi(&event).set_target(target);
     EXPECT_EQ(popup_surface.get(), GetTargetSurfaceForLocatedEvent(&event));
   }
+}
+
+TEST_F(ShellSurfaceTest, Menu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, MenuOnPopup) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(popup_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, PopupOnMenu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(menu_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, PopupOnPopup) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface_1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface_1->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface_1->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> popup_shell_surface_2 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsPopup()
+          .SetParent(popup_shell_surface_1.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(popup_shell_surface_2->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_POPUP,
+            popup_shell_surface_2->GetWidget()->GetNativeWindow()->GetType());
+}
+
+TEST_F(ShellSurfaceTest, MenuOnMenu) {
+  std::unique_ptr<ShellSurface> root_shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(root_shell_surface->GetWidget()->IsVisible());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface_1 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(root_shell_surface.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface_1->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface_1->GetWidget()->GetNativeWindow()->GetType());
+
+  std::unique_ptr<ShellSurface> menu_shell_surface_2 =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetAsMenu()
+          .SetParent(menu_shell_surface_1.get())
+          .BuildShellSurface();
+  EXPECT_TRUE(menu_shell_surface_2->GetWidget()->IsVisible());
+  EXPECT_EQ(aura::client::WINDOW_TYPE_MENU,
+            menu_shell_surface_2->GetWidget()->GetNativeWindow()->GetType());
 }
 
 TEST_F(ShellSurfaceTest, PopupWithInputRegion) {

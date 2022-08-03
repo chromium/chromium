@@ -1357,7 +1357,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // is done. Without the fix, window_state can be null when  it is tooltip and
   // the parent window is menu, so add null check of `window_state` here.
   if (!is_menu_ && window_state)
-    InitializeWindowState(ash::WindowState::Get(window));
+    InitializeWindowState(window_state);
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 

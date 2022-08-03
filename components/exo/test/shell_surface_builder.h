@@ -58,6 +58,7 @@ class ShellSurfaceBuilder {
   // Sets parameters defined in ShellSurface.
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
   ShellSurfaceBuilder& SetAsPopup();
+  ShellSurfaceBuilder& SetAsMenu();
 
   // Sets parameters defined in ClientControlledShellSurface.
   ShellSurfaceBuilder& SetWindowState(chromeos::WindowStateType window_state);
@@ -104,6 +105,7 @@ class ShellSurfaceBuilder {
   // ShellSurface-specific parameters.
   ShellSurface* parent_shell_surface_ = nullptr;
   bool popup_ = false;
+  bool menu_ = false;
 
   // ClientControlledShellSurface-specific parameters.
   absl::optional<chromeos::WindowStateType> window_state_;

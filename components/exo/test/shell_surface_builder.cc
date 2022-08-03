@@ -233,6 +233,12 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsPopup() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsMenu() {
+  DCHECK(!built_);
+  menu_ = true;
+  return SetAsPopup();
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetWindowState(
     chromeos::WindowStateType window_state) {
   DCHECK(!built_);
@@ -285,6 +291,8 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
     shell_surface->SetParent(parent_shell_surface_);
   if (popup_)
     shell_surface->SetPopup();
+  if (menu_)
+    shell_surface->SetMenu();
 
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
 
