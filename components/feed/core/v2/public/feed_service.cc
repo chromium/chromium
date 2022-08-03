@@ -149,6 +149,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   bool IsAutoplayEnabled() override {
     return service_delegate_->IsAutoplayEnabled();
   }
+  TabGroupEnabledState GetTabGroupEnabledState() override {
+    return service_delegate_->GetTabGroupEnabledState();
+  }
   void ClearAll() override { service_delegate_->ClearAll(); }
   void PrefetchImage(const GURL& url) override {
     service_delegate_->PrefetchImage(url);

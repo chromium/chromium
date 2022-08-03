@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
@@ -38,6 +37,25 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.TEST_HOOKS;
     }
 
+    private static FeedServiceDependencyProviderFactory getDependencyProviderFactory() {
+        Class<?> dependencyProviderFactoryClazz;
+        try {
+            dependencyProviderFactoryClazz = Class.forName(
+                    "org.chromium.chrome.browser.app.feed.FeedServiceDependencyProviderFactoryImpl");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+        try {
+            return (FeedServiceDependencyProviderFactory) dependencyProviderFactoryClazz
+                    .getDeclaredMethod("getInstance")
+                    .invoke(null);
+        } catch (NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+        }
+        return null;
+    }
+
     private static ProcessScope sXSurfaceProcessScope;
 
     public static ProcessScope xSurfaceProcessScope() {
@@ -48,33 +66,22 @@ public final class FeedServiceBridge {
         if (!feedHooks.isEnabled()) {
             return null;
         }
-        Class<?> dependencyProviderFactoryClazz;
-        try {
-            dependencyProviderFactoryClazz = Class.forName(
-                    "org.chromium.chrome.browser.app.feed.ProcessScopeDependencyProviderFactory");
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-
-        ProcessScopeDependencyProvider dependencyProvider = null;
-        try {
-            dependencyProvider = (ProcessScopeDependencyProvider) dependencyProviderFactoryClazz
-                                         .getDeclaredMethod("create")
-                                         .invoke(null);
-        } catch (NoSuchMethodException e) {
-        } catch (InvocationTargetException e) {
-        } catch (IllegalAccessException e) {
-        }
-        if (dependencyProvider == null) {
-            return null;
-        }
-
-        sXSurfaceProcessScope = feedHooks.createProcessScope(dependencyProvider);
+        sXSurfaceProcessScope = feedHooks.createProcessScope(
+                getDependencyProviderFactory().createProcessScopeDependencyProvider());
         return sXSurfaceProcessScope;
     }
 
     public static void setProcessScopeForTesting(ProcessScope processScope) {
         sXSurfaceProcessScope = processScope;
+    }
+
+    private static FeedServiceUtil sFeedServiceUtil;
+
+    public static FeedServiceUtil feedServiceUtil() {
+        if (sFeedServiceUtil == null) {
+            sFeedServiceUtil = getDependencyProviderFactory().createFeedServiceUtil();
+        }
+        return sFeedServiceUtil;
     }
 
     public static boolean isEnabled() {
@@ -117,6 +124,12 @@ public final class FeedServiceBridge {
             }
         }
     }
+
+    @CalledByNative
+    public static @TabGroupEnabledState int getTabGroupEnabledState() {
+        return feedServiceUtil().getTabGroupEnabledState();
+    }
+
     /** Called at startup to trigger creation of |FeedService|. */
     public static void startup() {
         FeedServiceBridgeJni.get().startup();

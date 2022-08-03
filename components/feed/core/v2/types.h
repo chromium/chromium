@@ -58,6 +58,7 @@ struct RequestMetadata {
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
+  TabGroupEnabledState tab_group_enabled_state = TabGroupEnabledState::kNone;
   int followed_from_web_page_menu_count = 0;
   std::vector<feedwire::InfoCardTrackingState> info_card_tracking_states;
 };

@@ -67,6 +67,8 @@ class FeedService : public KeyedService {
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     // Returns true if autoplay is enabled.
     virtual bool IsAutoplayEnabled() = 0;
+    // Returns how the tab group feature is enabled.
+    virtual TabGroupEnabledState GetTabGroupEnabledState() = 0;
     // Clear all stored data.
     virtual void ClearAll() = 0;
     // Fetch the image and store it in the disk cache.

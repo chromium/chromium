@@ -132,10 +132,10 @@ feedwire::Request CreateFeedQueryRequest(
   for (Capability capability :
        {Capability::CARD_MENU, Capability::LOTTIE_ANIMATIONS,
         Capability::LONG_PRESS_CARD_MENU, Capability::SHARE,
-        Capability::OPEN_IN_TAB, Capability::OPEN_IN_INCOGNITO,
-        Capability::DISMISS_COMMAND, Capability::INFINITE_FEED,
-        Capability::PREFETCH_METADATA, Capability::REQUEST_SCHEDULE,
-        Capability::UI_THEME_V2, Capability::UNDO_FOR_DISMISS_COMMAND}) {
+        Capability::OPEN_IN_INCOGNITO, Capability::DISMISS_COMMAND,
+        Capability::INFINITE_FEED, Capability::PREFETCH_METADATA,
+        Capability::REQUEST_SCHEDULE, Capability::UI_THEME_V2,
+        Capability::UNDO_FOR_DISMISS_COMMAND}) {
     feed_request.add_client_capability(capability);
   }
 
@@ -176,6 +176,19 @@ feedwire::Request CreateFeedQueryRequest(
   if (base::FeatureList::IsEnabled(kInfoCardAcknowledgementTracking)) {
     feed_request.add_client_capability(
         Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING);
+  }
+
+  switch (request_metadata.tab_group_enabled_state) {
+    case TabGroupEnabledState::kNone:
+      feed_request.add_client_capability(Capability::OPEN_IN_TAB);
+      break;
+    case TabGroupEnabledState::kReplaced:
+      feed_request.add_client_capability(Capability::OPEN_IN_NEW_TAB_IN_GROUP);
+      break;
+    case TabGroupEnabledState::kBoth:
+      feed_request.add_client_capability(Capability::OPEN_IN_TAB);
+      feed_request.add_client_capability(Capability::OPEN_IN_NEW_TAB_IN_GROUP);
+      break;
   }
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);

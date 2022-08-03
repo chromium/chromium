@@ -102,6 +102,13 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     return false;
 #endif
   }
+  TabGroupEnabledState GetTabGroupEnabledState() override {
+#if BUILDFLAG(IS_ANDROID)
+    return FeedServiceBridge::GetTabGroupEnabledState();
+#else
+    return TabGroupEnabledState::kNone;
+#endif
+  }
   void ClearAll() override {
     // TODO(jianli): Need to figure out what to do for desktop version.
 #if BUILDFLAG(IS_ANDROID)

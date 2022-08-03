@@ -465,6 +465,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   DisplayMetrics GetDisplayMetrics() override;
   std::string GetLanguageTag() override;
   bool IsAutoplayEnabled() override;
+  TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
   void PrefetchImage(const GURL& url) override;

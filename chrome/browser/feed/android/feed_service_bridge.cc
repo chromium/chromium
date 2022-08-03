@@ -164,6 +164,12 @@ bool FeedServiceBridge::IsAutoplayEnabled() {
   return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay);
 }
 
+TabGroupEnabledState FeedServiceBridge::GetTabGroupEnabledState() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return static_cast<TabGroupEnabledState>(
+      Java_FeedServiceBridge_getTabGroupEnabledState(env));
+}
+
 void FeedServiceBridge::ClearAll() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedServiceBridge_clearAll(env);

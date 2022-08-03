@@ -281,5 +281,37 @@ TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingEnabled) {
       Contains(feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING));
 }
 
+TEST(ProtoUtilTest, TabGroupsEnabledForReplaced) {
+  RequestMetadata request_metadata;
+  request_metadata.tab_group_enabled_state = TabGroupEnabledState::kReplaced;
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+          /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::OPEN_IN_NEW_TAB_IN_GROUP));
+  ASSERT_THAT(request.client_capability(),
+              Not(Contains(feedwire::Capability::OPEN_IN_TAB)));
+}
+
+TEST(ProtoUtilTest, TabGroupsEnabledForBoth) {
+  RequestMetadata request_metadata;
+  request_metadata.tab_group_enabled_state = TabGroupEnabledState::kBoth;
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+          /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::OPEN_IN_NEW_TAB_IN_GROUP));
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::OPEN_IN_TAB));
+}
+
 }  // namespace
 }  // namespace feed

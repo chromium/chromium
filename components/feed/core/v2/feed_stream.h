@@ -79,6 +79,7 @@ class FeedStream : public FeedApi,
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     virtual std::string GetLanguageTag() = 0;
     virtual bool IsAutoplayEnabled() = 0;
+    virtual TabGroupEnabledState GetTabGroupEnabledState() = 0;
     virtual void ClearAll() = 0;
     virtual AccountInfo GetAccountInfo() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;

@@ -266,6 +266,17 @@ enum class OpenActionType : int {
   kNewTabInGroup = 2,
 };
 
+// Describes how tab group feature is enabled.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed
+enum class TabGroupEnabledState : int {
+  // No tab group is enabled.
+  kNone = 0,
+  // "Open in new tab in group" replaces "Open in new tab".
+  kReplaced = 1,
+  // Both "Open in new tab in group" and "Open in new tab" are shown.
+  kBoth = 2,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_

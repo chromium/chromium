@@ -906,6 +906,9 @@ std::string FeedApiTest::GetLanguageTag() {
 bool FeedApiTest::IsAutoplayEnabled() {
   return false;
 }
+TabGroupEnabledState FeedApiTest::GetTabGroupEnabledState() {
+  return TabGroupEnabledState::kNone;
+}
 void FeedApiTest::ClearAll() {
   if (on_clear_all_)
     on_clear_all_.Run();
