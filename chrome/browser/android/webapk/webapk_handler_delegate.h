@@ -39,6 +39,7 @@ class WebApkHandlerDelegate {
       const base::android::JavaParamRef<jstring>& jscope,
       const base::android::JavaParamRef<jstring>& jmanifest_url,
       const base::android::JavaParamRef<jstring>& jmanifest_start_url,
+      const base::android::JavaParamRef<jstring>& jmanifest_id,
       const jint jdisplay_mode,
       const jint jorientation,
       const jlong jtheme_color,

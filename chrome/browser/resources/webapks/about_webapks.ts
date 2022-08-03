@@ -16,6 +16,7 @@ interface WebApkInfo {
   scope: string;
   manifestUrl: string;
   manifestStartUrl: string;
+  manifestId: string;
   displayMode: string;
   orientation: string;
   themeColor: string;
@@ -98,6 +99,7 @@ function addWebApk(webApkInfo: WebApkInfo) {
   addWebApkField(webApkList, 'Manifest URL: ', webApkInfo.manifestUrl);
   addWebApkField(
       webApkList, 'Manifest Start URL: ', webApkInfo.manifestStartUrl);
+  addWebApkField(webApkList, 'Manifest Id: ', webApkInfo.manifestId);
   addWebApkField(webApkList, 'Display Mode: ', webApkInfo.displayMode);
   addWebApkField(webApkList, 'Orientation: ', webApkInfo.orientation);
   addWebApkField(webApkList, 'Theme color: ', webApkInfo.themeColor);

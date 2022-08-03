@@ -58,6 +58,7 @@ void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
   result.SetStringKey("scope", webapk_info.scope);
   result.SetStringKey("manifestUrl", webapk_info.manifest_url);
   result.SetStringKey("manifestStartUrl", webapk_info.manifest_start_url);
+  result.SetStringKey("manifestId", webapk_info.manifest_id);
   result.SetStringKey("displayMode",
                       blink::DisplayModeToString(webapk_info.display));
   result.SetStringKey(

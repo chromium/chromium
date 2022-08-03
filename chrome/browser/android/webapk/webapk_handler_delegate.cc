@@ -44,6 +44,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const JavaParamRef<jstring>& jscope,
     const JavaParamRef<jstring>& jmanifest_url,
     const JavaParamRef<jstring>& jmanifest_start_url,
+    const JavaParamRef<jstring>& jmanifest_id,
     const jint jdisplay_mode,
     const jint jorientation,
     const jlong jtheme_color,
@@ -60,6 +61,11 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
         env, jbacking_browser_package_name);
   }
 
+  std::string manifest_id;
+  if (jmanifest_id) {
+    manifest_id = base::android::ConvertJavaStringToUTF8(env, jmanifest_id);
+  }
+
   callback_.Run(WebApkInfo(
       base::android::ConvertJavaStringToUTF8(env, jname),
       base::android::ConvertJavaStringToUTF8(env, jshort_name),
@@ -70,7 +76,7 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       base::android::ConvertJavaStringToUTF8(env, jscope),
       base::android::ConvertJavaStringToUTF8(env, jmanifest_url),
       base::android::ConvertJavaStringToUTF8(env, jmanifest_start_url),
-      static_cast<blink::mojom::DisplayMode>(jdisplay_mode),
+      manifest_id, static_cast<blink::mojom::DisplayMode>(jdisplay_mode),
       static_cast<device::mojom::ScreenOrientationLockType>(jorientation),
       ui::JavaColorToOptionalSkColor(jtheme_color),
       ui::JavaColorToOptionalSkColor(jbackground_color),

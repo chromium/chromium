@@ -26,9 +26,9 @@ public class WebApkHandlerDelegate {
     interface Natives {
         void onWebApkInfoRetrieved(long nativeWebApkHandlerDelegate, String name, String shortName,
                 String packageName, String id, int shellApkVersion, int versionCode, String uri,
-                String scope, String manifestUrl, String manifestStartUrl, int displayMode,
-                int orientation, long themeColor, long backgroundColor, long lastUpdateCheckTimeMs,
-                long lastUpdateCompletionTimeMs, boolean relaxUpdates,
+                String scope, String manifestUrl, String manifestStartUrl, String manifestId,
+                int displayMode, int orientation, long themeColor, long backgroundColor,
+                long lastUpdateCheckTimeMs, long lastUpdateCompletionTimeMs, boolean relaxUpdates,
                 String backingBrowserPackageName, boolean isBackingBrowser, String updateStatus);
     }
 
@@ -106,9 +106,9 @@ public class WebApkHandlerDelegate {
                 webApkInfo.shortName(), webApkInfo.webApkPackageName(), webApkInfo.id(),
                 webApkInfo.shellApkVersion(), packageInfo.versionCode, webApkInfo.url(),
                 webApkInfo.scopeUrl(), webApkInfo.manifestUrl(), webApkInfo.manifestStartUrl(),
-                webApkInfo.displayMode(), webApkInfo.orientation(), webApkInfo.toolbarColor(),
-                webApkInfo.backgroundColor(), lastUpdateCheckTimeMsForStorage,
-                lastUpdateCompletionTimeMsInStorage, relaxUpdatesForStorage,
-                backingBrowserPackageName, isBackingBrowser, updateStatus);
+                webApkInfo.manifestId(), webApkInfo.displayMode(), webApkInfo.orientation(),
+                webApkInfo.toolbarColor(), webApkInfo.backgroundColor(),
+                lastUpdateCheckTimeMsForStorage, lastUpdateCompletionTimeMsInStorage,
+                relaxUpdatesForStorage, backingBrowserPackageName, isBackingBrowser, updateStatus);
     }
 }

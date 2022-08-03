@@ -30,6 +30,7 @@ struct WebApkInfo {
              std::string scope,
              std::string manifest_url,
              std::string manifest_start_url,
+             std::string manifest_id,
              blink::mojom::DisplayMode display,
              device::mojom::ScreenOrientationLockType orientation,
              absl::optional<SkColor> theme_color,
@@ -71,6 +72,7 @@ struct WebApkInfo {
   std::string scope;
   std::string manifest_url;
   std::string manifest_start_url;
+  std::string manifest_id;
   blink::mojom::DisplayMode display;
   device::mojom::ScreenOrientationLockType orientation;
   absl::optional<SkColor> theme_color;
