@@ -250,6 +250,13 @@ constexpr int kMediaTrayPadding = 8;
 // dark mode. Sets the icon color to be constant.
 constexpr SkColor kIconColorInOobe = gfx::kGoogleGrey700;
 
+// Constants used for the autozoom toast.
+constexpr int kAutozoomToastMinWidth = 160;
+constexpr int kAutozoomToastMaxWidth = 320;
+constexpr int kAutozoomToastMainLabelFontSize = 14;
+constexpr auto kAutozoomToastInsets = gfx::Insets::VH(10, 16);
+constexpr int kAutozoomToastSpacing = 16;
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TRAY_TRAY_CONSTANTS_H_

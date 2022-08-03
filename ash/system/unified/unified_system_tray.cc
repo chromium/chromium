@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/camera/autozoom_toast_controller.h"
 #include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
@@ -51,6 +52,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
@@ -189,6 +191,11 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
       time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)) {
+  if (media::ShouldEnableAutoFraming()) {
+    autozoom_toast_controller_ = std::make_unique<AutozoomToastController>(
+        this, std::make_unique<AutozoomToastController::Delegate>());
+  }
+
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -336,6 +343,8 @@ void UnifiedSystemTray::ActivateBubble() {
 void UnifiedSystemTray::CloseSecondaryBubbles() {
   slider_bubble_controller_->CloseBubble();
   privacy_screen_toast_controller_->HideToast();
+  if (autozoom_toast_controller_)
+    autozoom_toast_controller_->HideToast();
 }
 
 void UnifiedSystemTray::CollapseMessageCenter() {

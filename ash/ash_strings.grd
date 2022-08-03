@@ -336,6 +336,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_ON_STATE" desc="Button label for the Autozoom feature." meaning="Autozoom feature is on. [CHAR_LIMIT=14]">
         On
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE" desc="The text for the toast after autozoom centers the camera.">
+        Autozoom centered the camera
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED" desc="The message shown on a notification when a braille display is connected">
         Braille display connected.
       </message>

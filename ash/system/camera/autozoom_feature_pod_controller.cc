@@ -20,9 +20,13 @@ AutozoomFeaturePodController::AutozoomFeaturePodController() {
   if (camera_hal_dispatcher) {
     camera_hal_dispatcher->AddActiveClientObserver(this);
   }
+
+  Shell::Get()->autozoom_controller()->AddObserver(this);
 }
 
 AutozoomFeaturePodController::~AutozoomFeaturePodController() {
+  Shell::Get()->autozoom_controller()->RemoveObserver(this);
+
   auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
   if (camera_hal_dispatcher) {
     camera_hal_dispatcher->RemoveActiveClientObserver(this);
@@ -42,7 +46,7 @@ FeaturePodButton* AutozoomFeaturePodController::CreateButton() {
       description);
   button_->label_button()->GetViewAccessibility().OverrideDescription(
       description);
-  UpdateButton();
+  UpdateButton(Shell::Get()->autozoom_controller()->GetState());
   return button_;
 }
 
@@ -50,19 +54,12 @@ SystemTrayItemUmaType AutozoomFeaturePodController::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_AUTOZOOM;
 }
 
-void AutozoomFeaturePodController::OnToggled() {
-  Shell::Get()->autozoom_controller()->Toggle();
-  UpdateButton();
-}
-
 void AutozoomFeaturePodController::OnLabelPressed() {
-  if (!button_->GetEnabled())
-    return;
-  OnToggled();
+  Shell::Get()->autozoom_controller()->Toggle();
 }
 
 void AutozoomFeaturePodController::OnIconPressed() {
-  OnToggled();
+  Shell::Get()->autozoom_controller()->Toggle();
 }
 
 void AutozoomFeaturePodController::UpdateButtonVisibility() {
@@ -74,8 +71,15 @@ void AutozoomFeaturePodController::UpdateButtonVisibility() {
       active_camera_client_count_ > 0);
 }
 
-void AutozoomFeaturePodController::UpdateButton() {
-  auto state = Shell::Get()->autozoom_controller()->GetState();
+void AutozoomFeaturePodController::OnAutozoomStateChanged(
+    cros::mojom::CameraAutoFramingState state) {
+  UpdateButton(state);
+}
+
+void AutozoomFeaturePodController::UpdateButton(
+    cros::mojom::CameraAutoFramingState state) {
+  if (!button_)
+    return;
 
   button_->SetToggled(state != cros::mojom::CameraAutoFramingState::OFF);
   UpdateButtonVisibility();

@@ -29,6 +29,7 @@ class MessagePopupView;
 
 namespace ash {
 
+class AutozoomToastController;
 class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class ChannelIndicatorView;
@@ -279,6 +280,8 @@ class ASH_EXPORT UnifiedSystemTray
 
   const std::unique_ptr<PrivacyScreenToastController>
       privacy_screen_toast_controller_;
+
+  std::unique_ptr<AutozoomToastController> autozoom_toast_controller_;
 
   // Manages showing notification icons in the tray.
   const std::unique_ptr<NotificationIconsController>

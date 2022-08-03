@@ -38,6 +38,14 @@ void AutozoomControllerImpl::Toggle() {
                : cros::mojom::CameraAutoFramingState::OFF);
 }
 
+void AutozoomControllerImpl::AddObserver(AutozoomObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AutozoomControllerImpl::RemoveObserver(AutozoomObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AutozoomControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (pref_service == active_user_pref_service_)
@@ -62,8 +70,11 @@ void AutozoomControllerImpl::Refresh() {
 
   auto* camera_hal_dispatcher = media::CameraHalDispatcherImpl::GetInstance();
   if (camera_hal_dispatcher) {
-    camera_hal_dispatcher->SetAutoFramingState(GetState());
+    camera_hal_dispatcher->SetAutoFramingState(state_);
   }
+
+  for (auto& observer : observers_)
+    observer.OnAutozoomStateChanged(state_);
 }
 
 void AutozoomControllerImpl::StartWatchingPrefsChanges() {
