@@ -52,6 +52,7 @@
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
+#include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
@@ -350,6 +351,9 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::ImageWriter,
                   &crosapi::mojom::Crosapi::BindImageWriter,
                   Crosapi::MethodMinVersions::kBindImageWriterMinVersion>();
+  ConstructRemote<crosapi::mojom::InSessionAuth,
+                  &crosapi::mojom::Crosapi::BindInSessionAuth,
+                  Crosapi::MethodMinVersions::kBindInSessionAuthMinVersion>();
   ConstructRemote<crosapi::mojom::KeystoreService,
                   &crosapi::mojom::Crosapi::BindKeystoreService,
                   Crosapi::MethodMinVersions::kBindKeystoreServiceMinVersion>();

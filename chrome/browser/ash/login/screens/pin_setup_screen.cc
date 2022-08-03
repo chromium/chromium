@@ -138,11 +138,10 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
 }
 
 void PinSetupScreen::ShowImpl() {
-  token_lifetime_timeout_.Start(
-      FROM_HERE,
-      base::Seconds(quick_unlock::AuthToken::kTokenExpirationSeconds),
-      base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
-                     weak_ptr_factory_.GetWeakPtr()));
+  token_lifetime_timeout_.Start(FROM_HERE,
+                                quick_unlock::AuthToken::kTokenExpiration,
+                                base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
+                                               weak_ptr_factory_.GetWeakPtr()));
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());

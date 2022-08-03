@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
+#include "chrome/browser/ash/crosapi/in_session_auth_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -202,6 +203,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
+      in_session_auth_ash_(std::make_unique<InSessionAuthAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       chrome_app_kiosk_service_ash_(
@@ -418,6 +420,11 @@ void CrosapiAsh::BindIdleService(
 void CrosapiAsh::BindImageWriter(
     mojo::PendingReceiver<mojom::ImageWriter> receiver) {
   image_writer_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindInSessionAuth(
+    mojo::PendingReceiver<mojom::InSessionAuth> receiver) {
+  in_session_auth_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindKeystoreService(

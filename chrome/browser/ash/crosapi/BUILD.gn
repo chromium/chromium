@@ -127,6 +127,8 @@ source_set("crosapi") {
     "idle_service_ash.h",
     "image_writer_ash.cc",
     "image_writer_ash.h",
+    "in_session_auth_ash.cc",
+    "in_session_auth_ash.h",
     "keystore_service_ash.cc",
     "keystore_service_ash.h",
     "keystore_service_factory_ash.cc",

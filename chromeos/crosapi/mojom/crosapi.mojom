@@ -44,6 +44,7 @@ import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
+import "chromeos/crosapi/mojom/in_session_auth.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
@@ -122,8 +123,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 92
-// Next method id: 96
+// Next version: 93
+// Next method id: 97
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -350,6 +351,12 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=37]
   BindImageWriter@42(pending_receiver<ImageWriter> receiver);
+
+  // Binds the InSessionAuth interface for authenticating users in session
+  // on ChromeOS
+  // Added in M106.
+  [MinVersion=92]
+  BindInSessionAuth@96(pending_receiver<InSessionAuth> receiver);
 
   // Binds the NetworkSettingsService interface for reading and observing
   // network changes.

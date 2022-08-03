@@ -40,9 +40,6 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // Summons a native UI dialog that authenticates the user, providing a
   // token, timeout and status in return.
   // `reason`: Indicates security context.
-  // `prompt`: UI customization, the string shown to the user (e.g, in
-  // the context of password manager: "please authenticate to see
-  // saved passwords").
   virtual void ShowAuthDialog(Reason reason,
                               OnAuthComplete on_auth_complete) = 0;
 

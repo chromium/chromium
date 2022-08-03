@@ -682,7 +682,7 @@ TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
   EXPECT_EQ(token_info->token,
             quick_unlock_storage->GetAuthToken()->Identifier());
   EXPECT_EQ(token_info->lifetime_seconds,
-            ash::quick_unlock::AuthToken::kTokenExpirationSeconds);
+            ash::quick_unlock::AuthToken::kTokenExpiration.InSeconds());
 }
 
 // Verifies that GetAuthTokenValid fails when an invalid password is provided.

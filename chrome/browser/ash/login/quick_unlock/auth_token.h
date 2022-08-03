@@ -25,7 +25,7 @@ namespace quick_unlock {
 class AuthToken {
  public:
   // How long the token lives.
-  static const int kTokenExpirationSeconds;
+  static const base::TimeDelta kTokenExpiration;
 
   explicit AuthToken(const UserContext& user_context);
 

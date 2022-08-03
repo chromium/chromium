@@ -30,9 +30,8 @@ void InSessionAuthTokenProviderImpl::ExchangeForToken(
   quick_unlock_storage->CreateAuthToken(*user_context);
   auto token = quick_unlock_storage->GetAuthToken()->GetUnguessableToken();
   DCHECK(token.has_value());
-  std::move(callback).Run(
-      token.value(),
-      base::Seconds(quick_unlock::AuthToken::kTokenExpirationSeconds));
+  std::move(callback).Run(token.value(),
+                          quick_unlock::AuthToken::kTokenExpiration);
 }
 
 }  // namespace ash

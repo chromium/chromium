@@ -48,6 +48,7 @@ mojom("mojom") {
     "identity_manager.mojom",
     "idle_service.mojom",
     "image_writer.mojom",
+    "in_session_auth.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
     "kiosk_session_service.mojom",
