@@ -375,7 +375,8 @@ class TabGridViewBinder {
                 : null;
         Callback<Bitmap> callback = result -> {
             if (result != null) {
-                if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())) {
+                if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
+                        && model.get(TabProperties.GRID_CARD_SIZE) != null) {
                     // Adjust bitmap to thumbnail.
                     Size destSize = TabUtils.deriveThumbnailSize(
                             model.get(TabProperties.GRID_CARD_SIZE), view.getContext());
