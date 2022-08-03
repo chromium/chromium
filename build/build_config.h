@@ -41,10 +41,15 @@
 // 一组用于平台检测的宏
 #if defined(__native_client__)
   // __native_client__ must be first, so that other OS_ defines are not set.
+  // __native_client__ 必须是第一个，以便不设置其他 OS_ 定义。
   #define OS_NACL 1
   // OS_NACL comes in two sandboxing technology flavors, SFI or Non-SFI.
+  // OS_NACL 有两种沙盒技术风格，SFI 或非 SFI。
   // PNaCl toolchain defines __native_client_nonsfi__ macro in Non-SFI build
   // mode, while it does not in SFI build mode.
+  // PNaCl 工具链在非 SFI 构建中定义了 __native_client_nonsfi__ 宏
+  // 关于 NACL 基础知识：https://blog.csdn.net/tuhuolong/article/details/6771518
+  // NACL -> Native Client
   #if defined(__native_client_nonsfi__)
     #define OS_NACL_NONSFI
   #else
@@ -56,6 +61,8 @@
   // Only include TargetConditionals after testing ANDROID as some Android builds
   // on the Mac have this header available and it's not needed unless the target
   // is really an Apple platform.
+  // 仅在测试 ANDROID 后包含 TargetConditionals，因为 Mac 上的某些 Android 版本有此标头
+  // 可用，除非目标确实是 Apple 平台，否则不需要它。
   #include <TargetConditionals.h>
   #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
     #define OS_IOS 1
@@ -66,12 +73,15 @@
   #if !defined(OS_CHROMEOS)
     // Do not define OS_LINUX on Chrome OS build.
     // The OS_CHROMEOS macro is defined in GN.
+    // 不要在 Chrome OS 构建上定义 OS_LINUX。 OS_CHROMEOS 宏在 GN 中定义。
     #define OS_LINUX 1
   #endif // !defined(OS_CHROMEOS)
   // Include a system header to pull in features.h for glibc/uclibc macros.
+  // 包括一个系统头文件来为 glibc/uclibc 宏引入 features.h。
   #include <unistd.h>
   #if defined(__GLIBC__) && !defined(__UCLIBC__)
     // We really are using glibc, not uClibc pretending to be glibc.
+    // 我们真的在使用 glibc，而不是伪装成 glibc 的 uClibc。
     #define LIBC_GLIBC 1
   #endif
 #elif defined(_WIN32)
@@ -95,6 +105,11 @@
 #elif defined(__MVS__)
 #define OS_ZOS 1
 #else
+  // 请在 build/build_config.h 中添加对您平台的支持
+  // 基础：#error宏，#error 是一种预编译器指示字，用于生成一个编译错误消息。
+  // 用法：#error [message] //message为用户自定义的错误提示信息，可缺省。
+  // #error 编译指示字用于自定义程序员特有的编译错误消息。类似的，#warning 用于生成编译警告消息。
+  // #error 可用于提示编译条件是否满足。编译过程中的任何错误意味着无法生成最终的可执行程序。
   #error Please add support for your platform in build/build_config.h
 #endif
 // NOTE: Adding a new port? Please follow
@@ -104,14 +119,15 @@
   #define OS_APPLE 1
 #endif
 
-// For access to standard BSD features, use OS_BSD instead of a
-// more specific macro.
+// For access to standard BSD features, use OS_BSD instead of a more specific macro.
+// 要访问标准 BSD 功能，请使用 OS_BSD 而不是更具体的宏。
 #if defined(OS_FREEBSD) || defined(OS_NETBSD) || defined(OS_OPENBSD)
   #define OS_BSD 1
 #endif
 
 // For access to standard POSIXish features, use OS_POSIX instead of a
 // more specific macro.
+// 要访问标准 POSIXish 功能，请使用 OS_POSIX 而不是更具体的宏。
 #if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||  \
     defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX) ||  \
     defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_NACL) ||  \
@@ -122,6 +138,7 @@
 
 // Compiler detection. Note: clang masquerades as GCC on POSIX and as MSVC on
 // Windows.
+// 编译器检测。 注意：clang 在 POSIX 上伪装成 GCC，在 Windows 上伪装成 MSVC。
 #if defined(__GNUC__)
   #define COMPILER_GCC 1
 #elif defined(_MSC_VER)
@@ -130,6 +147,7 @@
   #error Please add support for your compiler in build/build_config.h
 #endif
 
+// 处理器架构检测
 // Processor architecture detection.  For more info on what's defined, see:
 //   http://msdn.microsoft.com/en-us/library/b0084kay.aspx
 //   http://www.agner.org/optimize/calling_conventions.pdf
@@ -227,9 +245,11 @@
 #if defined(OS_ANDROID)
   // The compiler thinks std::string::const_iterator and "const char*" are
   // equivalent types.
+  // 编译器认为 std::string::const_iterator 和 "const char*" 是等价的类型。
   #define STD_STRING_ITERATOR_IS_CHAR_POINTER
   // The compiler thinks std::u16string::const_iterator and "char16*" are
   // equivalent types.
+  // 编译器认为 std::u16string::const_iterator 和 "char16*" 是等价的类型。
   #define BASE_STRING16_ITERATOR_IS_CHAR16_POINTER
 #endif
 

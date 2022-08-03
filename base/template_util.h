@@ -25,6 +25,10 @@
 // the only reliable option available, so theoretically this could fail should
 // you attempt to mix an earlier version of libstdc++ with >= GCC5. But
 // that's unlikely to work out, especially as GCC5 changed ABI.
+// 某些版本的 libstdc++ 部分支持 type_traits，但在删除一些较旧的非标准内容时遗漏了一个较小
+// 的子集。 假设所有低于 5.0 的版本都属于此类别，还有一个 5.0 实验版本。 通过咨询编译器主版
+// 本（唯一可用的可靠选项）对此进行测试，因此理论上如果您尝试将早期版本的 libstdc++ 与 >= GCC5
+// 混合使用，这可能会失败。 但这不太可能奏效，尤其是在 GCC5 改变了 ABI 时。
 #define CR_GLIBCXX_5_0_0 20150123
 #if (defined(__GNUC__) && __GNUC__ < 5) || \
     (defined(__GLIBCXX__) && __GLIBCXX__ == CR_GLIBCXX_5_0_0)
@@ -32,6 +36,7 @@
 #endif
 
 // This hacks around using gcc with libc++ which has some incompatibilies.
+// 这绕过了将 gcc 与具有一些不兼容性的 libc++ 一起使用。
 // - is_trivially_* doesn't work: https://llvm.org/bugs/show_bug.cgi?id=27538
 // TODO(danakj): Remove this when android builders are all using a newer version
 // of gcc, or the android ndk is updated to a newer libc++ that works with older
@@ -42,9 +47,13 @@
 
 namespace base {
 
-template <class T> struct is_non_const_reference : std::false_type {};
-template <class T> struct is_non_const_reference<T&> : std::true_type {};
-template <class T> struct is_non_const_reference<const T&> : std::false_type {};
+// 这里其实运用了模板片特化
+template <class T>
+struct is_non_const_reference : std::false_type {};
+template <class T>
+struct is_non_const_reference<T&> : std::true_type {};
+template <class T>
+struct is_non_const_reference<const T&> : std::false_type {};
 
 namespace internal {
 
@@ -85,6 +94,8 @@ struct SupportsToString<T, decltype(void(std::declval<T>().ToString()))>
 // Used to detech whether the given type is an iterator.  This is normally used
 // with std::enable_if to provide disambiguation for functions that take
 // templatzed iterators as input.
+// 用于检测给定类型是否为迭代器。 这通常与 std::enable_if 一起使用，以消除将模板化迭代器作
+// 为输入的函数的歧义。
 template <typename T, typename = void>
 struct is_iterator : std::false_type {};
 

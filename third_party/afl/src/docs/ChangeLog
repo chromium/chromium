@@ -639,7 +639,7 @@ Version 1.95b:
   - Switched from exit() to _exit() in injected code to avoid snafus with
     destructors in C++ code. Spotted by sunblate.
 
-  - Made a change to avoid spuriously setting __AFL_SHM_ID when 
+  - Made a change to avoid spuriously setting __AFL_SHM_ID when
     AFL_DUMB_FORKSRV is set in conjunction with -n. Spotted by Jakub Wilk.
 
 --------------
@@ -756,7 +756,7 @@ Version 1.83b:
   - Fixed a problem with xargs -d on non-Linux systems in afl-cmin. Spotted by
     teor2345 and Ben Nagy.
 
-  - Fixed an implicit declaration in LLVM mode on MacOS X. Reported by 
+  - Fixed an implicit declaration in LLVM mode on MacOS X. Reported by
     Kai Zhao.
 
 --------------
@@ -787,7 +787,7 @@ Version 1.81b:
 Version 1.80b:
 --------------
 
-  - Made afl-cmin tolerant of whitespaces in filenames. Suggested by 
+  - Made afl-cmin tolerant of whitespaces in filenames. Suggested by
     Jonathan Neuschafer and Ketil Froyn.
 
   - Added support for AFL_EXIT_WHEN_DONE, as suggested by Michael Rash.
@@ -980,6 +980,7 @@ Version 1.64b:
   - Further simplified afl-clang-fast runtime by reverting .init_array to
     __attribute__((constructor(0)). This should improve compatibility with
     non-ELF platforms.
+    通过将 .init_array 恢复为 __attribute__((constructor(0)) 进一步简化了 afl-clang-fast 运行时。这应该会提高与非 ELF 平台的兼容性。
 
   - Fixed a problem with afl-clang-fast and -shared libraries. Simplified
     the code by getting rid of .preinit_array and replacing it with a .comm
@@ -1050,7 +1051,7 @@ Version 1.59b:
 --------------
 
   - Imported Laszlo Szekeres' experimental LLVM instrumentation into
-    experimental/llvm_instrumentation. I'll work on including it in the 
+    experimental/llvm_instrumentation. I'll work on including it in the
     "mainstream" version soon.
 
   - Fixed another typo, thanks to Jakub Wilk.
@@ -1492,7 +1493,7 @@ Version 1.21b:
 --------------
 
   - Graduated minimize_corpus.sh to afl-cmin. It is now a first-class
-    utility bundled with the fuzzer. 
+    utility bundled with the fuzzer.
 
   - Made significant improvements to afl-cmin to make it faster, more
     robust, and more versatile.
@@ -1875,7 +1876,7 @@ Version 0.88b:
   - Refactored the code slightly to make more frequent updates to fuzzer_stats
     and to provide more detail about synchronization.
 
-  - Added an fflush(stdout) call for non-tty operation, as requested by 
+  - Added an fflush(stdout) call for non-tty operation, as requested by
     Joonas Kuorilehto.
 
   - Added some detail to fuzzer_stats for parity with plot_file.
@@ -1920,7 +1921,7 @@ Version 0.84b:
 Version 0.83b:
 --------------
 
-  - Added experimental/clang_asm_normalize/ and related notes in 
+  - Added experimental/clang_asm_normalize/ and related notes in
     env_variables.txt and afl-as.c. Thanks to Ryan Govostes for the idea.
 
   - Added advice on hardware utilization in README.
@@ -2043,7 +2044,7 @@ Version 0.72b:
     interesting effects on the instrumentation. Frankly, I'm just going to
     ship it and see what happens next. I have a good feeling about this.
 
-  - Made a fix for stack alignment crash on MacOS X 10.10; looks like the 
+  - Made a fix for stack alignment crash on MacOS X 10.10; looks like the
     rhetorical question in the comments in afl-as.h has been answered.
     Tracked down by Mudge Zatko.
 
@@ -2261,7 +2262,7 @@ Version 0.53b:
     without paying any attention to ordering or hit counts. This can still
     cause some crash inflation early on, but the problem will quickly taper
     off. So, you may get 20 dupes instead of 5,000.
-    
+
   - Added a fix for harmless but absurd trim ratios shown if the first exec in
     the trimmer timed out. Spotted by @EspenGx.
 
@@ -2274,7 +2275,7 @@ Version 0.52b:
   - Made a fix to the process of writing fuzzer_stats.
 
   - Slightly reorganized the .state/ directory, now recording redundant paths,
-    too. Note that this breaks the ability to properly resume older sessions 
+    too. Note that this breaks the ability to properly resume older sessions
     - sorry about that.
 
     (To fix this, simply move <out_dir>/.state/* from an older run
@@ -2304,7 +2305,7 @@ Version 0.50b:
     based on the feedback from Alexander Cherepanov.
 
   - Added AFL_INST_RATIO to afl-as. The only case where this comes handy is
-    ffmpeg, at least as far as I can tell. (Trivia: the current version of 
+    ffmpeg, at least as far as I can tell. (Trivia: the current version of
     ffmpeg ./configure also ignores CC and --cc, probably unintentionally).
 
   - Added documentation for all environmental variables (env_variables.txt).
@@ -2366,7 +2367,7 @@ Version 0.47b:
 Version 0.46b:
 --------------
 
-  - Cleaned up Makefile dependencies for parallel builds. Requested by 
+  - Cleaned up Makefile dependencies for parallel builds. Requested by
     Richard W. M. Jones.
 
   - Added support for DESTDIR in Makefile. Once again suggested by

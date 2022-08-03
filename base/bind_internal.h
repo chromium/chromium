@@ -36,25 +36,37 @@
 //  Functor -- A movable type representing something that should be called.
 //             All function pointers and Callback<> are functors even if the
 //             invocation syntax differs.
+// 一种可移动类型，表示应该调用的东西。 即使调用语法不同，所有函数指针和 Callback<> 都是函子。
+//
 //  RunType -- A function type (as opposed to function _pointer_ type) for
 //             a Callback<>::Run().  Usually just a convenience typedef.
+//  Callback<>::Run() 的函数类型（与函数 _pointer_ 类型相反）。 通常只是一个方便的 typedef。
 //  (Bound)Args -- A set of types that stores the arguments.
 //
 // Types:
 //  ForceVoidReturn<> -- Helper class for translating function signatures to
 //                       equivalent forms with a "void" return type.
+//  用于将函数签名转换为具有“void”返回类型的等效形式的帮助类。
+//
 //  FunctorTraits<> -- Type traits used to determine the correct RunType and
 //                     invocation manner for a Functor.  This is where function
 //                     signature adapters are applied.
+//  用于确定 Functor 的正确 RunType 和调用方式的类型特征。 这是应用函数签名适配器的地方。
+//
 //  StorageTraits<> -- Type traits that determine how a bound argument is
 //                     stored in BindState.
+//  确定绑定参数如何存储在 BindState 中的类型特征。
+//
 //  InvokeHelper<> -- Take a Functor + arguments and actully invokes it.
 //                    Handle the differing syntaxes needed for WeakPtr<>
 //                    support.  This is separate from Invoker to avoid creating
 //                    multiple version of Invoker<>.
 //  Invoker<> -- Unwraps the curried parameters and executes the Functor.
+//  解包 curried 参数并执行 Functor。
+//
 //  BindState<> -- Stores the curried parameters, and is the main entry point
 //                 into the Bind() system.
+//  存储柯里化参数，是 Bind() 系统的主要入口点。
 
 #if defined(OS_WIN)
 namespace Microsoft {

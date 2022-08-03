@@ -136,7 +136,7 @@ static void __afl_start_forkserver(void) {
         close(FORKSRV_FD);
         close(FORKSRV_FD + 1);
         return;
-  
+
       }
 
     } else {
@@ -245,7 +245,6 @@ void __afl_manual_init(void) {
 
 
 /* Proper initialization routine. */
-
 __attribute__((constructor(CONST_PRIO))) void __afl_auto_init(void) {
 
   is_persistent = !!getenv(PERSIST_ENV_VAR);

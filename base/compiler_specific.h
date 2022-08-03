@@ -14,6 +14,7 @@
 // This is a wrapper around `__has_cpp_attribute`, which can be used to test for
 // the presence of an attribute. In case the compiler does not support this
 // macro it will simply evaluate to 0.
+// 这是 `__has_cpp_attribute` 的包装器，可用于测试属性是否存在。如果编译器不支持这个宏，它只会计算为0.
 //
 // References:
 // https://wg21.link/sd6#testing-for-the-presence-of-an-attribute-__has_cpp_attribute
@@ -32,14 +33,17 @@
 #endif
 
 // Annotate a variable indicating it's ok if the variable is not used.
+// 注释一个变量，表明如果不使用该变量是可以的。
 // (Typically used to silence a compiler warning when the assignment
 // is important for some other reason.)
+// （通常用于在由于某些其他原因分配很重要时使编译器警告静音。）
 // Use like:
 //   int x = ...;
 //   ALLOW_UNUSED_LOCAL(x);
 #define ALLOW_UNUSED_LOCAL(x) (void)x
 
 // Annotate a typedef or function indicating it's ok if it's not used.
+// 注释 typedef 或函数，表明如果不使用它是可以的。
 // Use like:
 //   typedef Foo Bar ALLOW_UNUSED_TYPE;
 #if defined(COMPILER_GCC) || defined(__clang__)
@@ -49,6 +53,7 @@
 #endif
 
 // Annotate a function indicating it should not be inlined.
+// 注释一个函数，表明它不应该被内联。
 // Use like:
 //   NOINLINE void DoStuff() { ... }
 #if defined(COMPILER_GCC) || defined(__clang__)
@@ -59,6 +64,7 @@
 #define NOINLINE
 #endif
 
+// 表示应该被内联
 #if defined(COMPILER_GCC) && defined(NDEBUG)
 #define ALWAYS_INLINE inline __attribute__((__always_inline__))
 #elif defined(COMPILER_MSVC) && defined(NDEBUG)
@@ -69,12 +75,33 @@
 
 // Annotate a function indicating it should never be tail called. Useful to make
 // sure callers of the annotated function are never omitted from call-stacks.
+// 注释一个函数，表明它不应该被尾调用。 有助于确保注释函数的调用者永远不会从调用堆栈中省略。
 // To provide the complementary behavior (prevent the annotated function from
 // being omitted) look at NOINLINE. Also note that this doesn't prevent code
 // folding of multiple identical caller functions into a single signature. To
 // prevent code folding, see NO_CODE_FOLDING() in base/debug/alias.h.
+// 要提供补充行为（防止注释函数被省略），请查看 NOINLINE。 另请注意，这不会阻止将多个相同调用函
+// 数的代码折叠成一个签名。 要防止代码折叠，请参阅 base/debug/alias.h 中的 NO_CODE_FOLDING()。
 // Use like:
 //   void NOT_TAIL_CALLED FooBar();
+// 尾调用(Tail call)概念解释：函数式编程的一个重要概念. 尾调用的概念非常简单，一句话就能说清楚，
+// 就是指某个函数的最后一步是调用另一个函数。例如：
+// void f(x) {
+//   return g(x);
+// }
+// 上面代码中，函数f的最后一步是调用函数g，这就叫尾调用。
+// 尾调用之所以与其他调用不同，就在于它的特殊的调用位置，会导致尾调用优化。
+// 我们知道，函数调用会在内存形成一个"调用记录"，又称"调用帧"（call frame），保存调用位置和内部
+// 变量等信息。如果在函数A的内部调用函数B，那么在A的调用记录上方，还会形成一个B的调用记录。等到B运
+// 行结束，将结果返回到A，B的调用记录才会消失。如果函数B内部还调用函数C，那就还有一个C的调用记录栈，
+// 以此类推。所有的调用记录，就形成一个"调用栈"（call stack）。
+// 尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用记录，因为调用位置、内部变量等信息都
+// 不会再用到了，只要直接用内层函数的调用记录，取代外层函数的调用记录就可以了，这就叫做"尾调用优化
+// "（Tail call optimization）
+// 即只保留内层函数的调用记录。如果所有函数都是尾调用，那么完全可以做到每次执行时，调用记录只有一项，
+// 这将大大节省内存。这就是"尾调用优化"的意义。
+// 参见：https://www.ruanyifeng.com/blog/2015/04/tail-call.html
+
 #if defined(__clang__) && __has_attribute(not_tail_called)
 #define NOT_TAIL_CALLED __attribute__((not_tail_called))
 #else
@@ -82,14 +109,17 @@
 #endif
 
 // Specify memory alignment for structs, classes, etc.
+// 指定结构、类等的内存对齐方式。
 // Use like:
 //   class ALIGNAS(16) MyClass { ... }
 //   ALIGNAS(16) int array[4];
 //
 // In most places you can use the C++11 keyword "alignas", which is preferred.
+// 在大多数地方，您可以使用 C++11 关键字“alignas”，这是首选。
 //
 // But compilers have trouble mixing __attribute__((...)) syntax with
 // alignas(...) syntax.
+// 但是编译器在混合 __attribute__((...)) 语法和 alignas(...) 语法时遇到了麻烦。
 //
 // Doesn't work in clang or gcc:
 //   struct alignas(16) __attribute__((packed)) S { char c; };
@@ -97,11 +127,14 @@
 //   struct __attribute__((packed)) alignas(16) S2 { char c; };
 // Works in clang and gcc:
 //   struct alignas(16) S3 { char c; } __attribute__((packed));
+// 也就是说，这里告诫我们不要混用C++11中的 alignas关键字 与 __attribute__编译期属性。
 //
 // There are also some attributes that must be specified *before* a class
 // definition: visibility (used for exporting functions/classes) is one of
-// these attributes. This means that it is not possible to use alignas() with a
-// class that is marked as exported.
+// these attributes. This means that it is not possible to use alignas() with
+// a class that is marked as exported.
+// 还有一些属性必须在类定义之前*指定：可见性（用于导出函数/类）是这些属性之一。 这意味着
+// 不能将 alignas() 与标记为导出的类一起使用。
 #if defined(COMPILER_MSVC)
 #define ALIGNAS(byte_alignment) __declspec(align(byte_alignment))
 #elif defined(COMPILER_GCC)
@@ -109,6 +142,7 @@
 #endif
 
 // Annotate a function indicating the caller must examine the return value.
+// 注释一个函数，指示调用者必须检查返回值。
 // Use like:
 //   int foo() WARN_UNUSED_RESULT;
 // To explicitly ignore a result, see |ignore_result()| in base/macros.h.
@@ -123,10 +157,14 @@
 // attribute [[no_unique_address]]. This allows annotating data members so that
 // they need not have an address distinct from all other non-static data members
 // of its class.
+// 如果编译器支持它，则 NO_UNIQUE_ADDRESS 计算为 C++20 属性 [[no_unique_address]]。
+// 这允许注释数据成员，以便它们不需要具有不同于其类的所有其他非静态数据成员的地址。
 //
 // References:
 // * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
 // * https://wg21.link/dcl.attr.nouniqueaddr
+// 允许 此数据成员 与 其他非静态数据成员 或 其类的基类子对象 重合。C++20才支持。
+//
 #if HAS_CPP_ATTRIBUTE(no_unique_address)
 #define NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
@@ -134,11 +172,16 @@
 #endif
 
 // Tell the compiler a function is using a printf-style format string.
+// 告诉编译器一个函数正在使用 printf 样式的格式字符串。
 // |format_param| is the one-based index of the format string parameter;
 // |dots_param| is the one-based index of the "..." parameter.
+// |格式参数| 是格式字符串参数的从一开始的索引；|点参数| 是“...”参数的从 1 开始的索引。
 // For v*printf functions (which take a va_list), pass 0 for dots_param.
+// 对于 v*printf 函数（采用 va_list），为 dots_param 传递 0。
 // (This is undocumented but matches what the system C headers do.)
+// （这是未记录的，但与系统 C 标头的功能相匹配。）
 // For member functions, the implicit this parameter counts as index 1.
+// 对于成员函数，隐含的 this 参数计为索引 1。
 #if defined(COMPILER_GCC) || defined(__clang__)
 #define PRINTF_FORMAT(format_param, dots_param) \
   __attribute__((format(printf, format_param, dots_param)))
@@ -147,13 +190,20 @@
 #endif
 
 // WPRINTF_FORMAT is the same, but for wide format strings.
+// WPRINTF_FORMAT 是相同的，但用于宽格式字符串。
 // This doesn't appear to yet be implemented in any compiler.
+// 这似乎还没有在任何编译器中实现。
 // See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38308 .
 #define WPRINTF_FORMAT(format_param, dots_param)
 // If available, it would look like:
 //   __attribute__((format(wprintf, format_param, dots_param)))
 
 // Sanitizers annotations.
+// 消毒剂注释。
+// 在函数声明中使用 no_sanitize 属性来指定特定的检测或检测集合不应该应用于该函数.
+// 该属性采用字符串字面值列表，其与-fno-sanitize=标志接受的值具有相同的含义.例如:
+// attribute((no_sanitize("address"，"thread"))) 指定 AddressSanitizer 和
+// ThreadSanitizer 不应用于该函数.
 #if defined(__has_attribute)
 #if __has_attribute(no_sanitize)
 #define NO_SANITIZE(what) __attribute__((no_sanitize(what)))
@@ -168,14 +218,19 @@
 #include <sanitizer/msan_interface.h>
 
 // Mark a memory region fully initialized.
+// 将内存区域标记为完全初始化。
 // Use this to annotate code that deliberately reads uninitialized data, for
 // example a GC scavenging root set pointers from the stack.
+// 使用它来注释故意读取未初始化数据的代码，例如 GC 从堆栈中清除根集指针。
 #define MSAN_UNPOISON(p, size) __msan_unpoison(p, size)
 
 // Check a memory region for initializedness, as if it was being used here.
+// 检查内存区域的初始化，就好像它在这里被使用一样。
 // If any bits are uninitialized, crash with an MSan report.
+// 如果任何位未初始化，则使用 MSan 报告崩溃。
 // Use this to sanitize data which MSan won't be able to track, e.g. before
 // passing data to another process via shared memory.
+// 使用它来清理 MSan 无法跟踪的数据，例如 在通过共享内存将数据传递给另一个进程之前。
 #define MSAN_CHECK_MEM_IS_INITIALIZED(p, size) \
   __msan_check_mem_is_initialized(p, size)
 #else  // MEMORY_SANITIZER
@@ -184,6 +239,7 @@
 #endif  // MEMORY_SANITIZER
 
 // DISABLE_CFI_PERF -- Disable Control Flow Integrity for perf reasons.
+// 出于性能原因禁用控制流完整性。
 #if !defined(DISABLE_CFI_PERF)
 #if defined(__clang__) && defined(OFFICIAL_BUILD)
 #define DISABLE_CFI_PERF __attribute__((no_sanitize("cfi")))

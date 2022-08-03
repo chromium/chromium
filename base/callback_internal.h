@@ -107,9 +107,11 @@ class BASE_EXPORT BindStateBase
 };
 
 // Holds the Callback methods that don't require specialization to reduce
-// template bloat.
+// template bloat. 持有不需要专门化以减少模板膨胀的回调方法。
 // CallbackBase<MoveOnly> is a direct base class of MoveOnly callbacks, and
 // CallbackBase<Copyable> uses CallbackBase<MoveOnly> for its implementation.
+// CallbackBase<MoveOnly> 是 MoveOnly 回调的直接基类，
+// CallbackBase<Copyable> 使用 CallbackBase<MoveOnly> 来实现。
 class BASE_EXPORT CallbackBase {
  public:
   inline CallbackBase(CallbackBase&& c) noexcept;
@@ -122,7 +124,7 @@ class BASE_EXPORT CallbackBase {
   CallbackBase& operator=(CallbackBaseCopyable&& c) noexcept;
 
   // Returns true if Callback is null (doesn't refer to anything).
-  bool is_null() const { 
+  bool is_null() const {
     return !bind_state_;
   }
   explicit operator bool() const {
@@ -131,17 +133,20 @@ class BASE_EXPORT CallbackBase {
 
   // Returns true if the callback invocation will be nop due to an cancellation.
   // It's invalid to call this on uninitialized callback.
-  //
+  // 如果由于取消而回调调用将是 nop，则返回 true。在未初始化的回调上调用它是无效的。
   // Must be called on the Callback's destination sequence.
+  // 必须在回调的目标序列上调用。
   bool IsCancelled() const;
 
   // If this returns false, the callback invocation will be a nop due to a
   // cancellation. This may(!) still return true, even on a cancelled callback.
+  // 如果这返回false，则回调调用将是由于取消而导致的nop。即使在取消回调时，这可能（！）仍然返回 true。
   //
   // This function is thread-safe.
   bool MaybeValid() const;
 
   // Returns the Callback into an uninitialized state.
+  // 将回调返回到未初始化状态。
   void Reset();
 
  protected:
@@ -154,6 +159,7 @@ class BASE_EXPORT CallbackBase {
   using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
 
   // Returns true if this callback equals |other|. |other| may be null.
+  // 如果此回调等于 |other|，则返回 true。 |其他| 可能为空。
   bool EqualsInternal(const CallbackBase& other) const;
 
   constexpr inline CallbackBase();
@@ -162,6 +168,7 @@ class BASE_EXPORT CallbackBase {
   // initialization of the scoped_refptr.
   explicit inline CallbackBase(BindStateBase* bind_state);
 
+  // 多态调用
   InvokeFuncStorage polymorphic_invoke() const {
     return bind_state_->polymorphic_invoke_;
   }
@@ -169,6 +176,7 @@ class BASE_EXPORT CallbackBase {
   // Force the destructor to be instantiated inside this translation unit so
   // that our subclasses will not get inlined versions.  Avoids more template
   // bloat.
+  // 强制析构函数在这个翻译单元中实例化，这样我们的子类就不会得到内联版本。 避免更多的模板膨胀。
   ~CallbackBase();
 
   scoped_refptr<BindStateBase> bind_state_;

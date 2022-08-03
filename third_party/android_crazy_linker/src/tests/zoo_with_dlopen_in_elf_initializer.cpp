@@ -31,6 +31,7 @@ static void* sLib = NULL;
 static char sError[512] = {};
 
 // Declare initializer and finalize functions.
+// 声明初始化程序和完成函数。
 static void RunOnLoad() __attribute__((constructor));
 static void RunOnUnload() __attribute__((destructor));
 

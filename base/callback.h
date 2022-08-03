@@ -45,7 +45,7 @@
 //   base::OnceCallback<int(int)> cb = base::BindOnce([] (int x, int y) {
 //     return x + y;
 //   }, 1);
-//   // Run() only needs the remaining unbound argument |y|.
+//   // Run() only needs the remaining unbound（未绑定） argument |y|.
 //   printf("1 + 2 = %d\n", std::move(cb).Run(2));  // Prints 3
 //   printf("cb is null? %s\n",
 //          cb.is_null() ? "true" : "false");  // Prints true
@@ -55,7 +55,7 @@
 // object as a WeakPtr<T>. If that weak pointer is invalidated, calling Run()
 // will be a no-op. Note that |IsCancelled()| and |is_null()| are distinct:
 // simply cancelling a callback will not also make it null.
-// 回调也支持取消。 一个常见的用途是将接收器对象绑定为 WeakPtr<T>。 如果该弱指针无效，则
+// 回调也支持取消。一个常见的用途是将接收器对象绑定为 WeakPtr<T>。 如果该弱指针无效，则
 // 调用 Run() 将是空操作。 注意 |IsCancelled()| 和 |is_null()| 是不同的：
 // 简单地取消回调也不会使其为空。
 //
@@ -63,6 +63,7 @@
 
 namespace base {
 
+// 这个编程技巧也可以学习：一个文件中内部使用的数据结构，namespace命名为 internal
 namespace internal {
 
 struct NullCallbackTag {
@@ -82,6 +83,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
  public:
   using ResultType = R;
   using RunType = R(Args...);
+  // 多态调用
   using PolymorphicInvoke = R (*)(internal::BindStateBase*,
                                   internal::PassingType<Args>...);
 
@@ -96,8 +98,8 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 
   constexpr OnceCallback(internal::NullCallbackTag::WithSignature<RunType>)
       : OnceCallback(internal::NullCallbackTag()) {}
-  constexpr OnceCallback& operator=(
-      internal::NullCallbackTag::WithSignature<RunType>) {
+
+  constexpr OnceCallback& operator=(internal::NullCallbackTag::WithSignature<RunType>) {
     *this = internal::NullCallbackTag();
     return *this;
   }
@@ -203,8 +205,10 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
 
   constexpr RepeatingCallback(internal::NullCallbackTag::WithSignature<RunType>)
       : RepeatingCallback(internal::NullCallbackTag()) {}
+
   constexpr RepeatingCallback& operator=(
       internal::NullCallbackTag::WithSignature<RunType>) {
+
     *this = internal::NullCallbackTag();
     return *this;
   }
