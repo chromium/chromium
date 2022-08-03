@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -227,6 +228,7 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
 Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
+    const NGTextFragmentPaintInfo& originating,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
@@ -235,6 +237,16 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
 
   Vector<HighlightEdge> result{};
+
+  if (selection) {
+    DCHECK_LT(selection->start, selection->end);
+    result.emplace_back(selection->start,
+                        HighlightLayer{HighlightLayerType::kSelection},
+                        HighlightEdgeType::kStart);
+    result.emplace_back(selection->end,
+                        HighlightLayer{HighlightLayerType::kSelection},
+                        HighlightEdgeType::kEnd);
+  }
 
   // |node| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
   // ::first-letter). In both cases, we should still try to paint kOriginating
@@ -246,75 +258,90 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     DCHECK(custom.IsEmpty() && grammar.IsEmpty() && spelling.IsEmpty() &&
            target.IsEmpty())
         << "markers can not be painted without a valid Text node";
-  }
+  } else {
+    // We can save time by skipping marker-based highlights that are outside the
+    // originating fragment (e.g. on a different line), but we can only compare
+    // offsets that are in the same offset space (DOM or canonical text), and
+    // converting each marker to canonical text offsets is the most expensive
+    // step of this function. We can avoid that by converting the originating
+    // fragment back to DOM offsets for comparison.
+    const NGOffsetMapping* mapping =
+        NGOffsetMapping::GetFor(text_node->GetLayoutObject());
+    unsigned last_from =
+        mapping->GetLastPosition(originating.from).OffsetInContainerNode();
+    unsigned first_to =
+        mapping->GetFirstPosition(originating.to).OffsetInContainerNode();
 
-  for (const auto& marker : custom) {
-    auto* custom = To<CustomHighlightMarker>(marker.Get());
-    unsigned content_start =
-        GetTextContentOffset(*text_node, marker->StartOffset());
-    unsigned content_end =
-        GetTextContentOffset(*text_node, marker->EndOffset());
-    if (content_start >= content_end)
-      continue;
-    result.emplace_back(
-        content_start,
-        HighlightLayer{HighlightLayerType::kCustom, custom->GetHighlightName()},
-        HighlightEdgeType::kStart);
-    result.emplace_back(
-        content_end,
-        HighlightLayer{HighlightLayerType::kCustom, custom->GetHighlightName()},
-        HighlightEdgeType::kEnd);
-  }
-  for (const auto& marker : grammar) {
-    unsigned content_start =
-        GetTextContentOffset(*text_node, marker->StartOffset());
-    unsigned content_end =
-        GetTextContentOffset(*text_node, marker->EndOffset());
-    if (content_start >= content_end)
-      continue;
-    result.emplace_back(content_start,
-                        HighlightLayer{HighlightLayerType::kGrammar},
-                        HighlightEdgeType::kStart);
-    result.emplace_back(content_end,
-                        HighlightLayer{HighlightLayerType::kGrammar},
-                        HighlightEdgeType::kEnd);
-  }
-  for (const auto& marker : spelling) {
-    unsigned content_start =
-        GetTextContentOffset(*text_node, marker->StartOffset());
-    unsigned content_end =
-        GetTextContentOffset(*text_node, marker->EndOffset());
-    if (content_start >= content_end)
-      continue;
-    result.emplace_back(content_start,
-                        HighlightLayer{HighlightLayerType::kSpelling},
-                        HighlightEdgeType::kStart);
-    result.emplace_back(content_end,
-                        HighlightLayer{HighlightLayerType::kSpelling},
-                        HighlightEdgeType::kEnd);
-  }
-  for (const auto& marker : target) {
-    unsigned content_start =
-        GetTextContentOffset(*text_node, marker->StartOffset());
-    unsigned content_end =
-        GetTextContentOffset(*text_node, marker->EndOffset());
-    if (content_start >= content_end)
-      continue;
-    result.emplace_back(content_start,
-                        HighlightLayer{HighlightLayerType::kTargetText},
-                        HighlightEdgeType::kStart);
-    result.emplace_back(content_end,
-                        HighlightLayer{HighlightLayerType::kTargetText},
-                        HighlightEdgeType::kEnd);
-  }
-  if (selection) {
-    DCHECK_LT(selection->start, selection->end);
-    result.emplace_back(selection->start,
-                        HighlightLayer{HighlightLayerType::kSelection},
-                        HighlightEdgeType::kStart);
-    result.emplace_back(selection->end,
-                        HighlightLayer{HighlightLayerType::kSelection},
-                        HighlightEdgeType::kEnd);
+    for (const auto& marker : custom) {
+      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+        continue;
+      auto* custom = To<CustomHighlightMarker>(marker.Get());
+      unsigned content_start =
+          GetTextContentOffset(*text_node, marker->StartOffset());
+      unsigned content_end =
+          GetTextContentOffset(*text_node, marker->EndOffset());
+      if (content_start >= content_end)
+        continue;
+      result.emplace_back(content_start,
+                          HighlightLayer{HighlightLayerType::kCustom,
+                                         custom->GetHighlightName()},
+                          HighlightEdgeType::kStart);
+      result.emplace_back(content_end,
+                          HighlightLayer{HighlightLayerType::kCustom,
+                                         custom->GetHighlightName()},
+                          HighlightEdgeType::kEnd);
+    }
+
+    for (const auto& marker : grammar) {
+      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+        continue;
+      unsigned content_start =
+          GetTextContentOffset(*text_node, marker->StartOffset());
+      unsigned content_end =
+          GetTextContentOffset(*text_node, marker->EndOffset());
+      if (content_start >= content_end)
+        continue;
+      result.emplace_back(content_start,
+                          HighlightLayer{HighlightLayerType::kGrammar},
+                          HighlightEdgeType::kStart);
+      result.emplace_back(content_end,
+                          HighlightLayer{HighlightLayerType::kGrammar},
+                          HighlightEdgeType::kEnd);
+    }
+
+    for (const auto& marker : spelling) {
+      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+        continue;
+      unsigned content_start =
+          GetTextContentOffset(*text_node, marker->StartOffset());
+      unsigned content_end =
+          GetTextContentOffset(*text_node, marker->EndOffset());
+      if (content_start >= content_end)
+        continue;
+      result.emplace_back(content_start,
+                          HighlightLayer{HighlightLayerType::kSpelling},
+                          HighlightEdgeType::kStart);
+      result.emplace_back(content_end,
+                          HighlightLayer{HighlightLayerType::kSpelling},
+                          HighlightEdgeType::kEnd);
+    }
+
+    for (const auto& marker : target) {
+      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+        continue;
+      unsigned content_start =
+          GetTextContentOffset(*text_node, marker->StartOffset());
+      unsigned content_end =
+          GetTextContentOffset(*text_node, marker->EndOffset());
+      if (content_start >= content_end)
+        continue;
+      result.emplace_back(content_start,
+                          HighlightLayer{HighlightLayerType::kTargetText},
+                          HighlightEdgeType::kStart);
+      result.emplace_back(content_end,
+                          HighlightLayer{HighlightLayerType::kTargetText},
+                          HighlightEdgeType::kEnd);
+    }
   }
 
   std::sort(result.begin(), result.end(),

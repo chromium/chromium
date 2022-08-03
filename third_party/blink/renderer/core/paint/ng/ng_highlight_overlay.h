@@ -107,6 +107,7 @@ class CORE_EXPORT NGHighlightOverlay {
   static Vector<HighlightEdge> ComputeEdges(
       const Node*,
       const HighlightRegistry*,
+      const NGTextFragmentPaintInfo& originating,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,

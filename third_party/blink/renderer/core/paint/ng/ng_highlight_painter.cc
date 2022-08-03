@@ -384,8 +384,8 @@ NGHighlightPainter::NGHighlightPainter(
         GetHighlightRegistry(node_), GetSelectionStatus(selection_), custom_,
         grammar_, spelling_, target_);
     Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
-        node_, GetHighlightRegistry(node_), GetSelectionStatus(selection_),
-        custom_, grammar_, spelling_, target_);
+        node_, GetHighlightRegistry(node_), fragment_paint_info_,
+        GetSelectionStatus(selection_), custom_, grammar_, spelling_, target_);
     parts_ =
         NGHighlightOverlay::ComputeParts(fragment_paint_info_, layers, edges);
 
@@ -773,9 +773,11 @@ void NGHighlightPainter::PaintHighlightOverlays(
                 fragment_item_.LocalRect(text, clamped_start, clamped_end),
                 background_color, background_auto_dark_mode_);
 
-      text_painter_.Paint(clamped_start, clamped_end, length, layer.text_style,
-                          node_id, foreground_auto_dark_mode_,
-                          TextPainterBase::kShadowsOnly);
+      if (layer.text_style.shadow) {
+        text_painter_.Paint(
+            clamped_start, clamped_end, length, layer.text_style, node_id,
+            foreground_auto_dark_mode_, TextPainterBase::kShadowsOnly);
+      }
     }
   }
 

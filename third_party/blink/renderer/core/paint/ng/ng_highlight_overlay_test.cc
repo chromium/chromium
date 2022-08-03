@@ -108,14 +108,18 @@ TEST_F(NGHighlightOverlayTest, ComputeLayers) {
 }
 
 TEST_F(NGHighlightOverlayTest, ComputeEdges) {
-  SetBodyInnerHTML(R"HTML(   foo<br>)HTML");
-  const Node* node = GetDocument().body()->childNodes()->item(0);
-  const Node* br = GetDocument().body()->childNodes()->item(1);
+  // #text "   foo" has two offset mapping units:
+  // • DOM [0,3), text content [1,1)
+  // • DOM [3,6), text content [1,4)
+  SetBodyInnerHTML(R"HTML(<br>   foo<br>)HTML");
+  const Node* br = GetDocument().body()->childNodes()->item(0);
+  const Node* text = GetDocument().body()->childNodes()->item(1);
   UpdateAllLifecyclePhasesForTest();
 
   auto* registry =
       MakeGarbageCollected<HighlightRegistry>(*GetFrame().DomWindow());
-  LayoutSelectionStatus selection{0, 2, SelectSoftLineBreak::kNotSelected};
+  NGTextFragmentPaintInfo originating{"", 1, 4};
+  LayoutSelectionStatus selection{1, 3, SelectSoftLineBreak::kNotSelected};
   auto* none = MakeGarbageCollected<DocumentMarkerVector>();
   HighlightLayer originating_layer{HighlightLayerType::kOriginating};
   HighlightLayer selection_layer{HighlightLayerType::kSelection};
@@ -123,25 +127,28 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
   HighlightLayer spelling_layer{HighlightLayerType::kSpelling};
   HighlightLayer target_layer{HighlightLayerType::kTargetText};
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(node, registry, nullptr, *none,
-                                             *none, *none, *none),
-            (Vector<HighlightEdge>{}))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(text, registry, originating, nullptr,
+                                       *none, *none, *none, *none),
+      (Vector<HighlightEdge>{}))
       << "should return no edges when nothing is highlighted";
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(nullptr, registry, &selection,
-                                             *none, *none, *none, *none),
-            (Vector<HighlightEdge>{
-                HighlightEdge{0, selection_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, selection_layer, HighlightEdgeType::kEnd},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(nullptr, registry, originating,
+                                       &selection, *none, *none, *none, *none),
+      (Vector<HighlightEdge>{
+          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+      }))
       << "should still return non-marker edges when node is nullptr";
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(br, registry, &selection, *none,
-                                             *none, *none, *none),
-            (Vector<HighlightEdge>{
-                HighlightEdge{0, selection_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, selection_layer, HighlightEdgeType::kEnd},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(br, registry, originating, &selection,
+                                       *none, *none, *none, *none),
+      (Vector<HighlightEdge>{
+          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+      }))
       << "should still return non-marker edges when node is <br>";
 
   auto* grammar = MakeGarbageCollected<DocumentMarkerVector>();
@@ -153,27 +160,45 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(4, 5, ""));
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(5, 6, ""));
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(node, registry, &selection, *none,
-                                             *grammar, *spelling, *target),
-            (Vector<HighlightEdge>{
-                HighlightEdge{0, grammar_layer, HighlightEdgeType::kStart},
-                HighlightEdge{0, selection_layer, HighlightEdgeType::kStart},
-                HighlightEdge{1, grammar_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{1, grammar_layer, HighlightEdgeType::kStart},
-                HighlightEdge{1, spelling_layer, HighlightEdgeType::kStart},
-                HighlightEdge{1, target_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, grammar_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{2, spelling_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{2, target_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{2, selection_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{2, spelling_layer, HighlightEdgeType::kStart},
-                HighlightEdge{3, spelling_layer, HighlightEdgeType::kEnd},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(text, registry, originating, &selection,
+                                       *none, *grammar, *spelling, *target),
+      (Vector<HighlightEdge>{
+          HighlightEdge{1, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{2, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, target_layer, HighlightEdgeType::kStart},
+          HighlightEdge{3, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, spelling_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, target_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{4, spelling_layer, HighlightEdgeType::kEnd},
+      }))
       << "should return edges in correct order";
+
+  NGTextFragmentPaintInfo originating2{"", 2, 3};
+
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(text, registry, originating2, &selection,
+                                       *none, *grammar, *spelling, *target),
+      (Vector<HighlightEdge>{
+          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{2, target_layer, HighlightEdgeType::kStart},
+          HighlightEdge{3, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, spelling_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, target_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+      }))
+      << "should skip edge pairs that are completely outside fragment";
 }
 
 TEST_F(NGHighlightOverlayTest, ComputeParts) {
-  SetBodyInnerHTML(R"HTML(brown fxo oevr lazy dgo)HTML");
+  SetBodyInnerHTML(R"HTML(brown fxo oevr lazy dgo today)HTML");
   const Node* node = GetDocument().body()->childNodes()->item(0);
   UpdateAllLifecyclePhasesForTest();
 
@@ -211,17 +236,17 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   Vector<HighlightLayer> layers = NGHighlightOverlay::ComputeLayers(
       registry, &selection, *custom, *grammar, *spelling, *target);
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  // [                       ]  originating
-  //                            ::highlight(foo), not active
-  //                            ::highlight(bar), not active
-  //                            ::spelling-error, not active
-  //                            ::target-text, not active
-  //                            ::selection, not active
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  // [                       ]        originating
+  //                                  ::highlight(foo), not active
+  //                                  ::highlight(bar), not active
+  //                                  ::spelling-error, not active
+  //                                  ::target-text, not active
+  //                                  ::selection, not active
 
   Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
-      node, registry, nullptr, *none, *none, *none, *none);
+      node, registry, originating, nullptr, *none, *none, *none, *none);
 
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges),
             (Vector<HighlightPart>{
@@ -229,17 +254,18 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
             }))
       << "should return correct kOriginating part when nothing is highlighted";
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  // [                       ]  originating, as above
-  // [            ]             ::highlight(foo), changed!
-  //           [       ]        ::highlight(bar), changed!
-  //       [ ] [  ]      [ ]    ::spelling-error, changed!
-  //                [      ]    ::target-text, changed!
-  //              [    ]        ::selection, changed!
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  // [                       ]        originating, as above
+  // [            ]                   ::highlight(foo), changed!
+  //           [       ]              ::highlight(bar), changed!
+  //       [ ] [  ]      [ ]          ::spelling-error, changed!
+  //                [      ]          ::target-text, changed!
+  //              [    ]              ::selection, changed!
 
-  Vector<HighlightEdge> edges2 = NGHighlightOverlay::ComputeEdges(
-      node, registry, &selection, *custom, *grammar, *spelling, *target);
+  Vector<HighlightEdge> edges2 =
+      NGHighlightOverlay::ComputeEdges(node, registry, originating, &selection,
+                                       *custom, *grammar, *spelling, *target);
 
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges2),
             (Vector<HighlightPart>{
@@ -256,18 +282,19 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
             }))
       << "should return correct parts given several active highlights";
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  // [                       ]  originating, as above
-  //       [      ]             ::highlight(foo), changed!
-  //           [       ]        ::highlight(bar), as above
-  //       [ ] [  ]      [ ]    ::spelling-error, as above
-  //                [      ]    ::target-text, as above
-  //              [    ]        ::selection, as above
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  // [                       ]        originating, as above
+  //       [      ]                   ::highlight(foo), changed!
+  //           [       ]              ::highlight(bar), as above
+  //       [ ] [  ]      [ ]          ::spelling-error, as above
+  //                [      ]          ::target-text, as above
+  //              [    ]              ::selection, as above
 
   custom->at(0)->SetStartOffset(6);
-  Vector<HighlightEdge> edges3 = NGHighlightOverlay::ComputeEdges(
-      node, registry, &selection, *custom, *grammar, *spelling, *target);
+  Vector<HighlightEdge> edges3 =
+      NGHighlightOverlay::ComputeEdges(node, registry, originating, &selection,
+                                       *custom, *grammar, *spelling, *target);
 
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges3),
             (Vector<HighlightPart>{
@@ -284,18 +311,21 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
             }))
       << "correct when first edge starts after start of originating fragment";
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  //         [        ]         originating, changed!
-  //       [      ]             ::highlight(foo), as above
-  //           [       ]        ::highlight(bar), as above
-  //       [ ] [  ]      [ ]    ::spelling-error, as above
-  //                [      ]    ::target-text, as above
-  //              [    ]        ::selection, as above
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  //         [        ]               originating, changed!
+  //       [      ]                   ::highlight(foo), as above
+  //           [       ]              ::highlight(bar), as above
+  //       [ ] [  ]      [ ]          ::spelling-error, as above
+  //                [      ]          ::target-text, as above
+  //              [    ]              ::selection, as above
 
   NGTextFragmentPaintInfo originating2{"", 8, 18};
+  Vector<HighlightEdge> edges4 =
+      NGHighlightOverlay::ComputeEdges(node, registry, originating, &selection,
+                                       *custom, *grammar, *spelling, *target);
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges3),
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges4),
             (Vector<HighlightPart>{
                 HighlightPart{spel, 8, 9, {orig, foo, spel}},
                 HighlightPart{foo, 9, 10, {orig, foo}},
@@ -306,19 +336,19 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
             }))
       << "should clamp result to originating fragment offsets";
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  //         [        ]         originating, as above
-  //                            ::highlight(foo), changed!
-  //                            ::highlight(bar), changed!
-  //       [ ] [  ]      [ ]    ::spelling-error, as above
-  //                            ::target-text, changed!
-  //                            ::selection, changed!
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  //         [        ]               originating, as above
+  //                                  ::highlight(foo), changed!
+  //                                  ::highlight(bar), changed!
+  //       [ ] [  ]      [ ]          ::spelling-error, as above
+  //                                  ::target-text, changed!
+  //                                  ::selection, changed!
 
-  Vector<HighlightEdge> edges4 = NGHighlightOverlay::ComputeEdges(
-      node, registry, nullptr, *none, *none, *spelling, *none);
+  Vector<HighlightEdge> edges5 = NGHighlightOverlay::ComputeEdges(
+      node, registry, originating, nullptr, *none, *none, *spelling, *none);
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges4),
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges5),
             (Vector<HighlightPart>{
                 HighlightPart{spel, 8, 9, {orig, spel}},
                 HighlightPart{orig, 9, 10, {orig}},
@@ -327,24 +357,27 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
             }))
       << "should not crash if there is a gap in active layers";
 
-  // 0     6   10   15   20
-  // brown fxo oevr lazy dgo
-  //  [ ]                       originating, changed!
-  //                            ::highlight(foo), as above
-  //                            ::highlight(bar), as above
-  //       [ ] [  ]      [ ]    ::spelling-error, as above
-  //                            ::target-text, as above
-  //                            ::selection, as above
+  // 0     6   10   15   20  24
+  // brown fxo oevr lazy dgo today
+  //  [ ]                             originating, changed!
+  //                                  ::highlight(foo), as above
+  //                                  ::highlight(bar), as above
+  //       [ ] [  ]      [ ]          ::spelling-error, as above
+  //                                  ::target-text, as above
+  //                                  ::selection, as above
 
   NGTextFragmentPaintInfo originating3{"", 1, 4};
+  Vector<HighlightEdge> edges6 =
+      NGHighlightOverlay::ComputeEdges(node, registry, originating, &selection,
+                                       *custom, *grammar, *spelling, *target);
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating3, layers, edges4),
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating3, layers, edges6),
             (Vector<HighlightPart>{
                 HighlightPart{orig, 1, 4, {orig}},
             }))
       << "correct when first edge starts after end of originating fragment";
 
-  // 0     6   10   15   20
+  // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
   //                          [ ]     originating, changed!
   //                                  ::highlight(foo), as above
@@ -354,8 +387,11 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //                                  ::selection, as above
 
   NGTextFragmentPaintInfo originating4{"", 25, 28};
+  Vector<HighlightEdge> edges7 =
+      NGHighlightOverlay::ComputeEdges(node, registry, originating, &selection,
+                                       *custom, *grammar, *spelling, *target);
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating4, layers, edges4),
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating4, layers, edges7),
             (Vector<HighlightPart>{
                 HighlightPart{orig, 25, 28, {orig}},
             }))
