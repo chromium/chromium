@@ -1085,8 +1085,6 @@ void LocalFrameView::RunIntersectionObserverSteps() {
     owner->SetNeedsOcclusionTracking(needs_occlusion_tracking);
 #if DCHECK_IS_ON()
   DCHECK(was_dirty || !NeedsLayout());
-  // This is to prevent invalidations during IntersectionObserver delivery.
-  DisallowLayoutInvalidationScope disallow_invalidations(this);
 #endif
   DeliverSynchronousIntersectionObservations();
 }
