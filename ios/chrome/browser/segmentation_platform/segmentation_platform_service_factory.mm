@@ -75,7 +75,9 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     return nullptr;
   }
 
-  DCHECK(!context->IsOffTheRecord());
+  if (!context || context->IsOffTheRecord()) {
+    return nullptr;
+  }
 
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
@@ -83,6 +85,11 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   const base::FilePath profile_path = chrome_browser_state->GetStatePath();
   auto* optimization_guide =
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+
+  auto* protodb_provider = chrome_browser_state->GetProtoDatabaseProvider();
+  if (!protodb_provider) {
+    return nullptr;
+  }
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
 
@@ -92,7 +99,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
-  params->db_provider = chrome_browser_state->GetProtoDatabaseProvider();
+  params->db_provider = protodb_provider;
   params->clock = base::DefaultClock::GetInstance();
 
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
