@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './cr_fingerprint_icon.js';
+import '../cr_lottie/cr_lottie.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * The dark-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
  * @type {string}
  */
-/* #export */ const FINGERPRINT_SCANNED_ICON_DARK =
+export const FINGERPRINT_SCANNED_ICON_DARK =
     'cr-fingerprint-icon:fingerprint-scanned-dark';
 
 /**
@@ -15,46 +22,41 @@
  * their fingerprint and persistently once the enrollment process is complete.
  * @type {string}
  */
-/* #export */ const FINGERPRINT_SCANNED_ICON_LIGHT =
+export const FINGERPRINT_SCANNED_ICON_LIGHT =
     'cr-fingerprint-icon:fingerprint-scanned-light';
 
 /** @type {string} */
-/* #export */ const FINGERPRINT_CHECK_DARK_URL =
+export const FINGERPRINT_CHECK_DARK_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_DARK';
 
 /** @type {string} */
-/* #export */ const FINGERPRINT_CHECK_LIGHT_URL =
+export const FINGERPRINT_CHECK_LIGHT_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT';
 
 /**
  * The dark-mode color of the progress circle background: Google Grey 700.
  * @type {string}
  */
-/* #export */ const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK =
-    'rgba(95, 99, 104, 1.0)';
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK = 'rgba(95, 99, 104, 1.0)';
 
 /**
  * The light-mode color of the progress circle background: Google Grey 200.
  * @type {string}
  */
-/* #export */ const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT =
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT =
     'rgba(232, 234, 237, 1.0)';
 
 /**
  * The dark-mode color of the setup progress arc: Google Blue 400.
  * @type {string}
  */
-/* #export */ const PROGRESS_CIRCLE_FILL_COLOR_DARK =
-    'rgba(102, 157, 246, 1.0)';
+export const PROGRESS_CIRCLE_FILL_COLOR_DARK = 'rgba(102, 157, 246, 1.0)';
 
 /**
  * The light-mode color of the setup progress arc: Google Blue 500.
  * @type {string}
  */
-/* #export */ const PROGRESS_CIRCLE_FILL_COLOR_LIGHT =
-    'rgba(66, 133, 244, 1.0)';
-
-(function() {
+export const PROGRESS_CIRCLE_FILL_COLOR_LIGHT = 'rgba(66, 133, 244, 1.0)';
 
 /**
  * The time in milliseconds of the animation updates.
@@ -110,6 +112,8 @@ const PROGRESS_CIRCLE_STROKE_WIDTH = 4;
 
 Polymer({
   is: 'cr-fingerprint-progress-arc',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**
@@ -478,5 +482,3 @@ Polymer({
     target.style.top = top + 'px';
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
-})();
