@@ -67,16 +67,14 @@ def find(platform, minimum, maximum):
 
 def lastDatum(platform):
     """
-    Returns a version from GCS that is at least k versions old, and only
-    updates every n versions.
-  """
+    Returns a version from GCS that only updates every n versions.
+    """
     latest = int(
         urllib.request.urlopen(
             'https://storage.googleapis.com/storage/v1/b/'
             'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' % platform).read())
-    min_datum = latest - 3000
-    min_datum -= min_datum % 10000
-    return max(MIN_VERSION, find(platform, min_datum, latest))
+    return max(MIN_VERSION,
+               find(platform, latest - latest % 1000, latest))
 
 
 def print_latest():
