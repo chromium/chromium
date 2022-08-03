@@ -6175,6 +6175,10 @@
 <translation id="6943939122536910181">Прекинута је веза са уређајем <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="694592694773692225">Преусмеравање је блокирано на овој страници.</translation>
+<translation id="6947015141909171112">Приказују вам се рецепти на основу недавне активности претраге за рецепте.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="6949434160682548041">Лозинка (опционално)</translation>
 <translation id="6950627417367801484">Врати апликације</translation>
 <translation id="6952242901357037157">Овде можете и да прикажете лозинке са <ph name="BEGIN_LINK" />Google налога<ph name="END_LINK" /></translation>

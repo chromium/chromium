@@ -3131,6 +3131,16 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
       Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì người dùng có thể chuyển tệp sang Drive khi dùng kết nối di động.</translation>
 <translation id="4248277954659222481">Cho phép tự động phát nội dung nghe nhìn thuộc danh sách các mẫu URL được phép</translation>
 <translation id="4250680216510889253">Không</translation>
+<translation id="4259636715493757956">Cho phép bạn chỉ định cấu hình cho các URL xác thực trong <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Các URL xác thực này sẽ được <ph name="WEBVIEW_PRODUCT_NAME" /> xử lý theo cách đặc biệt, tức là trong quá trình xác thực khi trang web trong <ph name="WEBVIEW_PRODUCT_NAME" /> được điều hướng đến URL xác thực, ứng dụng xác thực của Nhà cung cấp danh tính tương ứng có thể xử lý URL xác thực này sẽ khởi chạy.
+
+      Quy trình khởi chạy ứng dụng xác thực của Nhà cung cấp danh tính sẽ được Nhà cung cấp danh tính sử dụng để hỗ trợ những trường hợp sử dụng như cung cấp dịch vụ Đăng nhập một lần (SSO) giữa nhiều ứng dụng hoặc tăng mức độ bảo mật bằng cách thu thập tín hiệu thiết bị không tin cậy để nắm được tình trạng của thiết bị trong quá trình xác thực.
+
+      Nếu thiết bị chưa cài đặt ứng dụng nào hợp lệ để xử lý URL xác thực, quá trình điều hướng sẽ tiếp tục trên <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Mẫu URL xác thực phải được định dạng theo https://www.chromium.org/administrators/url-blocklist-filter-format.
+      </translation>
 <translation id="4260027436474745627">Nếu bạn đặt chính sách này, thì mỗi nguồn gốc có tên trong một danh sách phân tách bằng dấu phẩy sẽ chạy theo một quy trình riêng. Mỗi quy trình của nguồn gốc có tên sẽ chỉ được phép chứa các tài liệu và miền con của nguồn gốc đó. Ví dụ: việc chỉ định https://a1.example.com/ cho phép https://a2.a1.example.com/ nằm trong cùng một quy trình, nhưng không cho phép https://example.com hoặc https://b.example.com.
 
        Kể từ <ph name="PRODUCT_NAME" /> 77, bạn cũng có thể chỉ định một loạt nguồn gốc để tách biệt bằng cách dùng ký tự đại diện. Ví dụ: việc chỉ định https://[*.]corp.example.com sẽ cung cấp quy trình riêng cho mọi nguồn gốc bên dưới https://corp.example.com, bao gồm chính https://corp.example.com, https://a1.corp.example.com và https://a2.a1.corp.example.com.

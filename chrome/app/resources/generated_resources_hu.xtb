@@ -2331,7 +2331,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3151539355209957474">Kezdés ideje</translation>
 <translation id="3151562827395986343">Előzmények, cookie-k, gyorsítótár és egyebek törlése</translation>
 <translation id="3151786313568798007">Tájolás</translation>
-<translation id="3152356229013609796">Telefonja értesítéseinek megtekintése, elvetése, illetve válasz rájuk</translation>
+<translation id="3152356229013609796">Megtekintheti, elvetheti és megválaszolhatja telefonja értesítéseit</translation>
 <translation id="3157387275655328056">Hozzáadás olvasási listához</translation>
 <translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="3158033540161634471">Az ujjlenyomat beállítása</translation>
@@ -6187,6 +6187,10 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6943939122536910181">Leválasztva a következőről: <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="694592694773692225">Átirányítás letiltva ezen az oldalon.</translation>
+<translation id="6947015141909171112">Legutóbbi receptkereső tevékenységei alapján láthat recepteket.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="6949434160682548041">Jelszó (nem kötelező)</translation>
 <translation id="6950627417367801484">Alkalmazások visszaállítása</translation>
 <translation id="6952242901357037157">A <ph name="BEGIN_LINK" />Google-fiókjából<ph name="END_LINK" /> is megjeleníthet itt jelszavakat</translation>

@@ -6170,6 +6170,10 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6943939122536910181">S'ha desconnectat del dispositiu <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="694592694773692225">S'ha bloquejat la redirecció en aquesta pàgina.</translation>
+<translation id="6947015141909171112">Veus receptes en funció de la teva activitat de cerca recent sobre receptes.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pots gestionar la configuració des del menú de la targeta o veure més opcions a Personalitza Chrome.</translation>
 <translation id="6949434160682548041">Contrasenya (opcional)</translation>
 <translation id="6950627417367801484">Restaura les aplicacions</translation>
 <translation id="6952242901357037157">També pots fer que es mostrin aquí les contrasenyes del teu <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>

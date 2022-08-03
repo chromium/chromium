@@ -5003,7 +5003,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Trwa drukowanie...</translation>
 <translation id="5828797982387013521">Wybierz playbook</translation>
-<translation id="5830205393314753525">Nie można otworzyć: <ph name="APP_NAME" /></translation>
+<translation id="5830205393314753525">Nie można otworzyć aplikacji <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Zapisz stronę &amp;jako...</translation>
 <translation id="5832813618714645810">Profile</translation>
 <translation id="583281660410589416">Nieznany</translation>

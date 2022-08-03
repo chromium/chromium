@@ -6199,6 +6199,10 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6943939122536910181">Povezava z napravo <ph name="DEVICE" /> je prekinjena.</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="694592694773692225">Preusmeritev je na tej strani blokirana.</translation>
+<translation id="6947015141909171112">Prikazani so recepti na podlagi vašega nedavnega iskanja receptov v Iskanju Google.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Upravljate lahko nastavitve v meniju kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
 <translation id="6949434160682548041">Geslo (izbirno)</translation>
 <translation id="6950627417367801484">Obnovi aplikacije</translation>
 <translation id="6952242901357037157">Tukaj lahko prikažete tudi gesla iz <ph name="BEGIN_LINK" />računa Google<ph name="END_LINK" /></translation>

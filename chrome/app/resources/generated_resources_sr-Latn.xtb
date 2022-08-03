@@ -6175,6 +6175,10 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6943939122536910181">Prekinuta je veza sa uređajem <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="694592694773692225">Preusmeravanje je blokirano na ovoj stranici.</translation>
+<translation id="6947015141909171112">Prikazuju vam se recepti na osnovu nedavne aktivnosti pretrage za recepte.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Možete da upravljate podešavanjima iz menija kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
 <translation id="6949434160682548041">Lozinka (opcionalno)</translation>
 <translation id="6950627417367801484">Vrati aplikacije</translation>
 <translation id="6952242901357037157">Ovde možete i da prikažete lozinke sa <ph name="BEGIN_LINK" />Google naloga<ph name="END_LINK" /></translation>

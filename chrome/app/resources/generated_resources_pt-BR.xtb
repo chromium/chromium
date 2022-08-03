@@ -6193,6 +6193,10 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">Redirecionamento bloqueado nesta página.</translation>
+<translation id="6947015141909171112">Você está recebendo receitas com base nas suas atividades de pesquisa recentes.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        É possível gerenciar as configurações no menu do card ou ver mais opções em "Personalizar o Chrome".</translation>
 <translation id="6949434160682548041">Senha (opcional)</translation>
 <translation id="6950627417367801484">Restaurar apps</translation>
 <translation id="6952242901357037157">Você também pode mostrar as senhas da sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /> aqui</translation>

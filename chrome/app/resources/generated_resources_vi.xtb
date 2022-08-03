@@ -3775,7 +3775,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4562155214028662640">Thêm vân tay</translation>
 <translation id="4563210852471260509">Ngôn ngữ nhập vào ban đầu là tiếng Trung</translation>
 <translation id="4563880231729913339">Ngón tay số 3</translation>
-<translation id="4564245002465020751">Hoàn tất cài đặt trên điện thoại của bạn.</translation>
+<translation id="4564245002465020751">Hoàn tất quá trình thiết lập điện thoại của bạn.</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4565917129334815774">Lưu trữ nhật ký hệ thống</translation>
 <translation id="4566170377336116390">Nếu muốn chuyển đổi sau khi đăng ký, bạn sẽ phải đặt lại thiết bị về trạng thái ban đầu (powerwash).</translation>
@@ -6188,6 +6188,10 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6943939122536910181">Đã ngắt kết nối khỏi <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="694592694773692225">Đã chặn chuyển hướng trên trang này.</translation>
+<translation id="6947015141909171112">Bạn đang xem các công thức nấu ăn dựa trên Hoạt động tìm kiếm công thức nấu ăn gần đây của bạn.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="6949434160682548041">Mật khẩu (không bắt buộc)</translation>
 <translation id="6950627417367801484">Khôi phục ứng dụng</translation>
 <translation id="6952242901357037157">Bạn cũng có thể hiển thị các mật khẩu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> tại đây</translation>

@@ -6187,6 +6187,10 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" />에서 연결 해제됨</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="694592694773692225">이 페이지에서 리디렉션이 차단되었습니다.</translation>
+<translation id="6947015141909171112">최근 레시피 검색 활동을 기반으로 표시되는 레시피입니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="6949434160682548041">비밀번호(선택사항)</translation>
 <translation id="6950627417367801484">앱 복원</translation>
 <translation id="6952242901357037157">여기에서 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장된 비밀번호를 표시할 수도 있습니다.</translation>

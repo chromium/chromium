@@ -6178,6 +6178,10 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6943939122536910181">Ühendus seadmega <ph name="DEVICE" /> on katkestatud</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="694592694773692225">Ümbersuunamine on sellel lehel blokeeritud.</translation>
+<translation id="6947015141909171112">Näete retsepte, mis põhinevad teie hiljutistel retseptide otsingutel.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Saate seadeid kohandada kaardimenüüs või näha rohkem valikuid jaotises Chrome'i kohandamine.</translation>
 <translation id="6949434160682548041">Parool (valikuline)</translation>
 <translation id="6950627417367801484">Rakenduste taastamine</translation>
 <translation id="6952242901357037157">Saate siin kuvada ka oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /> olevad paroolid</translation>

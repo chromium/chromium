@@ -6153,6 +6153,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> との接続を解除しました</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="694592694773692225">このページでリダイレクトがブロックされました。</translation>
+<translation id="6947015141909171112">最近の検索アクティビティに基づくレシピが表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="6949434160682548041">パスワード（任意）</translation>
 <translation id="6950627417367801484">アプリを復元</translation>
 <translation id="6952242901357037157"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードもここに表示できます</translation>

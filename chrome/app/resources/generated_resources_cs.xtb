@@ -6173,6 +6173,10 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6943939122536910181">Odpojeno od zařízení <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="694592694773692225">Na této stránce bylo zablokováno přesměrování.</translation>
+<translation id="6947015141909171112">Zobrazují se vám recepty na základě nedávné aktivity ve vyhledávání receptů.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Nastavení můžete spravovat v nabídce karty. Další možnosti zobrazíte v sekci Přizpůsobit Chrome.</translation>
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950627417367801484">Obnovit aplikace</translation>
 <translation id="6952242901357037157">Můžete zde zobrazit také hesla z <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
