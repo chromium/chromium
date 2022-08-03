@@ -80,6 +80,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #endif
 
@@ -448,6 +452,33 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
         profile_, base::DoNothing(), base::DoNothing(), true);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+bool ChromeAutocompleteProviderClient::OpenJourneys() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel) ||
+      !base::FeatureList::IsEnabled(features::kSidePanelJourneys) ||
+      !features::kSidePanelJourneysOpensFromOmnibox.Get()) {
+    return false;
+  }
+
+  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  if (!browser)
+    return false;
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return false;
+
+  if (browser_view->side_panel_coordinator()) {
+    browser_view->side_panel_coordinator()->Show(
+        SidePanelEntry::Id::kHistoryClusters);
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return false;
 }
 
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {

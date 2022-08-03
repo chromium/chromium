@@ -136,6 +136,10 @@ const base::Feature kSidePanelImprovedClobbering{
 
 const base::Feature kSidePanelJourneys{"SidePanelJourneys",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, and the main flag is also enabled, the Journeys omnibox
+// entrypoints open Journeys in Side Panel rather than the History WebUI.
+const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
+    &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", false};
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",

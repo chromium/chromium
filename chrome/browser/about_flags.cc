@@ -1111,6 +1111,15 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips Enabled with Pedals", kJourneysOmniboxActionWithPedalsParams,
      std::size(kJourneysOmniboxActionWithPedalsParams), nullptr},
 };
+const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
+    {"SidePanelJourneysOpensFromOmnibox", "true"},
+};
+const FeatureEntry::FeatureVariation
+    kSidePanelJourneysOpensFromOmniboxVariations[] = {
+        {"Omnibox opens Side Panel Journeys",
+         kSidePanelJourneysOpensFromOmniboxParams,
+         std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
+};
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},
 };
@@ -5533,7 +5542,10 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kSidePanelJourneysFlagId,
      flag_descriptions::kSidePanelJourneysName,
      flag_descriptions::kSidePanelJourneysDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelJourneys)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kSidePanelJourneys,
+         kSidePanelJourneysOpensFromOmniboxVariations,
+         "SidePanelJourneys")},
 
     {flag_descriptions::kUnifiedSidePanelFlagId,
      flag_descriptions::kUnifiedSidePanelName,

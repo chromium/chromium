@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # TODO(crbug.com/1341399): Use side panel abstract API once it's available.
+  "chrome_autocomplete_provider_client\.cc": [
+    "+chrome/browser/ui/views",
+  ]
+}

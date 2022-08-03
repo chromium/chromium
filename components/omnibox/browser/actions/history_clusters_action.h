@@ -28,6 +28,7 @@ class HistoryClustersAction : public OmniboxAction {
       const history::ClusterKeywordData& matched_keyword_data);
 
   void RecordActionShown(size_t position, bool executed) const override;
+  void Execute(ExecutionContext& context) const override;
   int32_t GetID() const override;
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;

@@ -31,8 +31,6 @@ OmniboxAction::LabelStrings::LabelStrings(const LabelStrings&) = default;
 
 OmniboxAction::LabelStrings::~LabelStrings() = default;
 
-// =============================================================================
-
 namespace base {
 namespace trace_event {
 size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
@@ -45,6 +43,12 @@ size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
 }
 }  // namespace trace_event
 }  // namespace base
+
+// =============================================================================
+
+bool OmniboxAction::Client::OpenJourneys() {
+  return false;
+}
 
 // =============================================================================
 

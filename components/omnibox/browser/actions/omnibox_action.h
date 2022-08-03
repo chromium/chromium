@@ -77,6 +77,11 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
     // Presents translation prompt for current tab web contents.
     virtual void PromptPageTranslation() = 0;
+
+    // Opens Journeys in an embedder-specific way. If this returns true, that
+    // means that the embedder successfully opened Journeys, and the caller can
+    // early exit. If this returns false, the caller should open the WebUI.
+    virtual bool OpenJourneys();
   };
 
   // ExecutionContext provides the necessary structure for Action

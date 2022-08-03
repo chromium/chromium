@@ -60,6 +60,7 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 extern const base::Feature kSidePanelImprovedClobbering;
 
 extern const base::Feature kSidePanelJourneys;
+extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 
 extern const base::Feature kSideSearch;
 extern const base::Feature kSideSearchFeedback;

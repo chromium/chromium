@@ -141,6 +141,15 @@ void HistoryClustersAction::RecordActionShown(size_t position,
       "PageEntityCollection", collection, collection_label, executed);
 }
 
+void HistoryClustersAction::Execute(ExecutionContext& context) const {
+  if (context.client_.OpenJourneys()) {
+    // If the client opens Journeys in the Side Panel, we are done.
+    return;
+  }
+  // Otherwise call the superclass, which will open the WebUI URL.
+  OmniboxAction::Execute(context);
+}
+
 int32_t HistoryClustersAction::GetID() const {
   return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
 }
