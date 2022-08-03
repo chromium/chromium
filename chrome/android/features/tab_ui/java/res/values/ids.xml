@@ -12,4 +12,9 @@
     <item type="id" name="move_tab_right" />
     <item type="id" name="move_tab_up" />
     <item type="id" name="move_tab_down" />
+
+    <!-- Tab selection editor menu items-->
+    <item type="id" name="tab_selection_editor_close_menu_item" />
+    <item type="id" name="tab_selection_editor_group_menu_item" />
+    <item type="id" name="tab_selection_editor_ungroup_menu_item" />
 </resources>

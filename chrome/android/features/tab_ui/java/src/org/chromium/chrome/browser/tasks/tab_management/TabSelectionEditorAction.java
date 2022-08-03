@@ -20,7 +20,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -91,7 +90,7 @@ public abstract class TabSelectionEditorAction {
 
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private PropertyModel mModel;
-    private TabModelSelector mTabModelSelector;
+    protected TabModelSelector mTabModelSelector;
     private SelectionDelegate<Integer> mSelectionDelegate;
 
     public TabSelectionEditorAction(int menuItemId, @ShowMode int showMode,
@@ -157,10 +156,7 @@ public abstract class TabSelectionEditorAction {
      * @return whether an action was taken.
      */
     public boolean performAction() {
-        assert mTabModelSelector != null;
-        assert mSelectionDelegate != null;
-        List<Tab> tabs =
-                getTabsFromSelection(mSelectionDelegate.getSelectedItems(), mTabModelSelector);
+        List<Tab> tabs = getTabsFromSelection();
 
         for (ActionObserver obs : mObsevers) {
             obs.preProcessSelectedTabs(tabs);
@@ -182,11 +178,21 @@ public abstract class TabSelectionEditorAction {
         return mModel;
     }
 
-    private static List<Tab> getTabsFromSelection(
-            Collection<Integer> tabIds, TabModelSelector tabModelSelector) {
+    protected void setEnabledAndItemCount(boolean enabled, int itemCount) {
+        mModel.set(TabSelectionEditorActionProperties.ENABLED, enabled);
+        mModel.set(TabSelectionEditorActionProperties.ITEM_COUNT, itemCount);
+    }
+
+    protected List<Tab> getTabsFromSelection() {
+        assert mTabModelSelector != null;
+        assert mSelectionDelegate != null;
+
         List<Tab> selectedTabs = new ArrayList<>();
-        for (int tabId : tabIds) {
-            selectedTabs.add(TabModelUtils.getTabById(tabModelSelector.getCurrentModel(), tabId));
+        for (int tabId : mSelectionDelegate.getSelectedItems()) {
+            Tab tab = TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
+            if (tab == null) continue;
+
+            selectedTabs.add(tab);
         }
         return selectedTabs;
     }
