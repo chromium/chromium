@@ -2793,11 +2793,6 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(GetExpectedFinalStatus());
 }
 
-// TODO(https://crbug.com/1132746): Test canceling prerendering when its
-// initiator is no longer interested in prerending this page.
-
-// TODO(https://crbug.com/1132746): Test prerendering for auth error, etc.
-
 // Tests for feature restrictions in prerendered pages =========================
 
 // Tests that window.open() in a prerendering page fails.
