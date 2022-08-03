@@ -382,35 +382,32 @@ HprofParser::ParseResult HprofParser::ParseHeapDumpTag(
       case 0x01: {  // ROOT_JNI_GLOBAL = 1;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->SkipId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_JNI_GLOBAL].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_JNI_GLOBAL].push_back(root_object_id);
         break;
       }
       case 0x02: {  // ROOT_JNI_LOCAL = 2;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(8);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_JNI_LOCAL].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_JNI_LOCAL].push_back(root_object_id);
         break;
       }
       case 0x03: {  // ROOT_JAVA_FRAME = 3;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(8);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_JAVA_FRAME].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_JAVA_FRAME].push_back(root_object_id);
         break;
       }
       case 0x04: {  // ROOT_NATIVE_STACK = 4;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(4);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_NATIVE_STACK].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_NATIVE_STACK].push_back(
             root_object_id);
         break;
       }
       case 0x05: {  // ROOT_STICKY_CLASS = 5;
 
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_STICKY_CLASS].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_STICKY_CLASS].push_back(
             root_object_id);
         break;
       }
@@ -418,52 +415,48 @@ HprofParser::ParseResult HprofParser::ParseHeapDumpTag(
 
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(4);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_THREAD_BLOCK].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_THREAD_BLOCK].push_back(
             root_object_id);
         break;
       }
       case 0x07: {  // ROOT_MONITOR_USED = 7;
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_MONITOR_USED].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_MONITOR_USED].push_back(
             root_object_id);
         break;
       }
       case 0x08: {  // ROOT_THREAD_OBJECT = 8;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(8);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_THREAD_OBJECT].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_THREAD_OBJECT].push_back(
             root_object_id);
         break;
       }
       case 0x89: {  // ROOT_INTERNED_STRING = 9
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_INTERNED_STRING].push_back(
+        roots_[HeapGraphRoot::Type::ROOT_INTERNED_STRING].push_back(
             root_object_id);
         break;
       }
       case 0x8a: {  // ROOT_FINALIZING = 10;
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_FINALIZING].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_FINALIZING].push_back(root_object_id);
         break;
       }
       case 0x8b: {  // ROOT_DEBUGGER = 11;
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_DEBUGGER].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_DEBUGGER].push_back(root_object_id);
         break;
       }
       case 0x8d: {  // ROOT_VM_INTERNAL = 13;
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_VM_INTERNAL].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_VM_INTERNAL].push_back(root_object_id);
         break;
       }
       case 0x8e: {  // ROOT_JNI_MONITOR = 14;
         ObjectId root_object_id = hprof_buffer_->GetId();
         hprof_buffer_->Skip(8);
-        roots_[RootType::HeapGraphRoot_Type_ROOT_JNI_MONITOR].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_JNI_MONITOR].push_back(root_object_id);
         break;
       }
       case 0xfe:  // HEAP DUMP INFO (ANDROID)
@@ -471,8 +464,7 @@ HprofParser::ParseResult HprofParser::ParseHeapDumpTag(
         break;
       case 0xff: {  // ROOT_UNKNOWN = 0;
         ObjectId root_object_id = hprof_buffer_->GetId();
-        roots_[RootType::HeapGraphRoot_Type_ROOT_UNKNOWN].push_back(
-            root_object_id);
+        roots_[HeapGraphRoot::Type::ROOT_UNKNOWN].push_back(root_object_id);
         break;
       }
 
