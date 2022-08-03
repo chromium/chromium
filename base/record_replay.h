@@ -18,6 +18,7 @@ namespace recordreplay {
 bool IsRecordingOrReplaying();
 bool IsRecording();
 bool IsReplaying();
+char* GetRecordingId();
 
 void Print(const char* format, ...);
 void Diagnostic(const char* format, ...);

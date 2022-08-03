@@ -20,6 +20,7 @@ namespace recordreplay {
 extern "C" bool V8IsRecordingOrReplaying();
 extern "C" bool V8IsRecording();
 extern "C" bool V8IsReplaying();
+extern "C" char* V8GetRecordingId();
 extern "C" void V8RecordReplayAssertVA(const char* format, va_list args);
 extern "C" void V8RecordReplayAssertBytes(const char* why, const void* buf, size_t size);
 extern "C" void V8RecordReplayPrintVA(const char* format, va_list args);
@@ -49,6 +50,10 @@ bool IsRecording() {
 
 bool IsReplaying() {
   return OP2(V8IsReplaying(), false);
+}
+
+char* GetRecordingId() {
+  return OP2(V8GetRecordingId(), nullptr);
 }
 
 void Assert(const char* format, ...) {
