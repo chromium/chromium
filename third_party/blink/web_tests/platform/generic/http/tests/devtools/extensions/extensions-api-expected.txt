@@ -18,6 +18,10 @@ RUNNING TEST: extension_testAPI
         reload : <function>
     }
     languageServices : {
+        getWasmGlobal : <function>
+        getWasmLinearMemory : <function>
+        getWasmLocal : <function>
+        getWasmOp : <function>
         registerLanguageExtensionPlugin : <function>
         unregisterLanguageExtensionPlugin : <function>
     }

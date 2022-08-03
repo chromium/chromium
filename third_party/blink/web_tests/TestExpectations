@@ -6965,9 +6965,6 @@ crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ F
 crbug.com/1341090 external/wpt/webmessaging/with-ports/021.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/without-ports/021.html [ Failure Pass ]
 
-# Disable test to land a DevTools change
-crbug.com/1299832 http/tests/devtools/extensions/extensions-api.js [ Skip ]
-
 # Sheriff 2022-07-07
 crbug.com/1339538 [ Mac ] fast/frames/002.html [ Failure Pass ]
 crbug.com/1339538 [ Linux ] fast/frames/002.html [ Failure Pass ]
