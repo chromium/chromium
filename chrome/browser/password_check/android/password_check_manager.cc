@@ -37,8 +37,6 @@ std::u16string GetDisplayUsername(const std::u16string& username) {
 
 }  // namespace
 
-using CredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
 using PasswordCheckUIStatus = password_manager::PasswordCheckUIStatus;
 using State = password_manager::BulkLeakCheckService::State;
 using SyncState = password_manager::SyncState;
@@ -73,7 +71,6 @@ PasswordCheckManager::PasswordCheckManager(Profile* profile, Observer* observer)
   // GetCompromisedCredentials() that might happen until then will return an
   // empty list.
   saved_passwords_presenter_.Init();
-  insecure_credentials_manager_.Init();
 
   if (!ShouldFetchPasswordScripts()) {
     // Ensure that scripts are treated as initialized if they are unnecessary.
@@ -130,26 +127,27 @@ PasswordCheckManager::GetCompromisedCredentials() const {
 }
 
 void PasswordCheckManager::UpdateCredential(
-    const password_manager::CredentialView& credential,
+    const password_manager::CredentialUIEntry& credential,
     base::StringPiece new_password) {
-  insecure_credentials_manager_.UpdateCredential(credential, new_password);
+  CredentialUIEntry updated_credential = credential;
+  updated_credential.password = base::UTF8ToUTF16(new_password);
+  saved_passwords_presenter_.EditSavedCredentials(credential,
+                                                  updated_credential);
 }
 
 void PasswordCheckManager::OnEditCredential(
-    const password_manager::CredentialView& credential,
+    const password_manager::CredentialUIEntry& credential,
     const base::android::JavaParamRef<jobject>& context,
     const base::android::JavaParamRef<jobject>& settings_launcher) {
-  password_manager::SavedPasswordsPresenter::SavedPasswordsView forms =
-      insecure_credentials_manager_.GetSavedPasswordsFor(credential);
+  std::vector<password_manager::PasswordForm> forms =
+      saved_passwords_presenter_.GetCorrespondingPasswordForms(credential);
   if (forms.empty() || credential_edit_bridge_)
     return;
 
-  const PasswordForm form =
-      insecure_credentials_manager_.GetSavedPasswordsFor(credential)[0];
-  bool is_using_account_store = form.IsUsingAccountStore();
+  bool is_using_account_store = forms[0].IsUsingAccountStore();
 
   credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-      password_manager::CredentialUIEntry(form),
+      password_manager::CredentialUIEntry(forms[0]),
       CredentialEditBridge::IsInsecureCredential(true),
       GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
                            credential.signon_realm, is_using_account_store),
@@ -160,8 +158,8 @@ void PasswordCheckManager::OnEditCredential(
 }
 
 void PasswordCheckManager::RemoveCredential(
-    const password_manager::CredentialView& credential) {
-  insecure_credentials_manager_.RemoveCredential(credential);
+    const password_manager::CredentialUIEntry& credential) {
+  saved_passwords_presenter_.RemoveCredential(credential);
 }
 
 PasswordCheckManager::PasswordCheckProgress::PasswordCheckProgress() = default;

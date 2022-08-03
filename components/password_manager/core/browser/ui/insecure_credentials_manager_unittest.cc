@@ -33,16 +33,12 @@ constexpr char16_t kUsername1[] = u"alice";
 constexpr char16_t kUsername2[] = u"bob";
 
 constexpr char16_t kPassword1[] = u"f00b4r";
-constexpr char kPassword2[] = "s3cr3t";
 constexpr char16_t kPassword216[] = u"s3cr3t";
-constexpr char16_t kPassword3[] = u"484her";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr char16_t kWeakPassword1[] = u"123456";
-constexpr char kWeakPassword2[] = "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
 constexpr char16_t kWeakPassword216[] =
     u"abcdabcdabcdabcdabcdabcdabcdabcdabcdabcda";
-constexpr char kStrongPassword1[] = "fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char16_t kStrongPassword116[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr char16_t kStrongPassword2[] =
     u"pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
@@ -84,34 +80,6 @@ LeakCheckCredential MakeLeakCredential(base::StringPiece16 username,
                              std::u16string(password));
 }
 
-CredentialWithPassword MakeCompromisedCredential(
-    const PasswordForm& form,
-    const InsecureCredentialTypeFlags type =
-        InsecureCredentialTypeFlags::kCredentialLeaked,
-    const bool is_muted = false) {
-  CredentialWithPassword credential_with_password((CredentialView(form)));
-  credential_with_password.insecure_type = type;
-  credential_with_password.is_muted = IsMuted(is_muted);
-  return credential_with_password;
-}
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-CredentialWithPassword MakeWeakCredential(const PasswordForm& form) {
-  CredentialWithPassword weak_credential{CredentialView(form)};
-  weak_credential.insecure_type = InsecureCredentialTypeFlags::kWeakCredential;
-  return weak_credential;
-}
-
-CredentialWithPassword MakeWeakAndCompromisedCredential(
-    const PasswordForm& form) {
-  CredentialWithPassword credential_with_password =
-      MakeCompromisedCredential(form);
-  credential_with_password.insecure_type |=
-      InsecureCredentialTypeFlags::kWeakCredential;
-  return credential_with_password;
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 class InsecureCredentialsManagerTest : public ::testing::Test {
  protected:
   InsecureCredentialsManagerTest() {
@@ -124,6 +92,7 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
   }
 
   TestPasswordStore& store() { return *store_; }
+  SavedPasswordsPresenter& presenter() { return presenter_; }
   InsecureCredentialsManager& provider() { return provider_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -160,23 +129,6 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
 
 }  // namespace
 
-bool operator==(const CredentialWithPassword& lhs,
-                const CredentialWithPassword& rhs) {
-  return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
-         lhs.create_time == rhs.create_time && lhs.is_muted == rhs.is_muted &&
-         lhs.insecure_type == rhs.insecure_type && lhs.password == rhs.password;
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const CredentialWithPassword& credential) {
-  return out << "{ signon_realm: " << credential.signon_realm
-             << ", username: " << credential.username
-             << ", create_time: " << credential.create_time
-             << ", is_muted: " << credential.is_muted << ", insecure_type: "
-             << static_cast<int>(credential.insecure_type)
-             << ", password: " << credential.password << " }";
-}
-
 // Tests whether adding and removing an observer works as expected.
 TEST_F(InsecureCredentialsManagerTest,
        NotifyObserversAboutCompromisedCredentialChanges) {
@@ -204,7 +156,7 @@ TEST_F(InsecureCredentialsManagerTest,
   store().UpdateLogin(password_form);
 
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(), IsEmpty());
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 
   // After an observer is removed it should no longer receive notifications.
   provider().RemoveObserver(&observer);
@@ -213,8 +165,8 @@ TEST_F(InsecureCredentialsManagerTest,
       {InsecureType::kLeaked, InsecurityMetadata()});
   store().UpdateLogin(password_form);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password_form)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_form)));
 }
 
 // Tests whether adding and removing an observer works as expected.
@@ -264,8 +216,8 @@ TEST_F(InsecureCredentialsManagerTest, JoinSingleCredentials) {
   store().AddLogin(password);
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password)));
 }
 
 // Tests that the provider is able to join a password with a credential that was
@@ -282,11 +234,8 @@ TEST_F(InsecureCredentialsManagerTest, JoinPhishedAndLeaked) {
   store().AddLogin(password);
   RunUntilIdle();
 
-  CredentialWithPassword expected = MakeCompromisedCredential(password);
-  expected.insecure_type = (InsecureCredentialTypeFlags::kCredentialLeaked |
-                            InsecureCredentialTypeFlags::kCredentialPhished);
-
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password)));
 }
 
 // Tests that the provider reacts whenever the saved passwords or the
@@ -299,37 +248,36 @@ TEST_F(InsecureCredentialsManagerTest, ReactToChangesInBothTables) {
 
   store().AddLogin(password1);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(), IsEmpty());
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 
   password1.password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
   store().UpdateLogin(password1);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password1)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password1)));
 
   store().AddLogin(password2);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password1)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password1)));
 
   password2.password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
   store().UpdateLogin(password2);
   RunUntilIdle();
-  EXPECT_THAT(
-      provider().GetInsecureCredentials(),
-      testing::UnorderedElementsAre(MakeCompromisedCredential(password1),
-                                    MakeCompromisedCredential(password2)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              testing::UnorderedElementsAre(CredentialUIEntry(password1),
+                                            CredentialUIEntry(password2)));
 
   store().RemoveLogin(password1);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password2)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password2)));
 
   store().RemoveLogin(password2);
   RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(), IsEmpty());
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 }
 
 // Tests that the provider is able to join multiple passwords with compromised
@@ -349,10 +297,9 @@ TEST_F(InsecureCredentialsManagerTest, JoinMultipleCredentials) {
   store().AddLogin(password2);
   RunUntilIdle();
 
-  EXPECT_THAT(
-      provider().GetInsecureCredentials(),
-      testing::UnorderedElementsAre(MakeCompromisedCredential(password1),
-                                    MakeCompromisedCredential(password2)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              testing::UnorderedElementsAre(CredentialUIEntry(password1),
+                                            CredentialUIEntry(password2)));
 }
 
 // Tests that joining a compromised credential with multiple saved passwords for
@@ -371,42 +318,8 @@ TEST_F(InsecureCredentialsManagerTest, JoinWithMultipleRepeatedPasswords) {
   store().AddLogin(password2);
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetInsecureCredentials(),
-              ElementsAre(MakeCompromisedCredential(password1)));
-}
-
-// Tests that verifies mapping compromised credentials to passwords works
-// correctly.
-TEST_F(InsecureCredentialsManagerTest, MapCompromisedPasswordsToPasswords) {
-  std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"element_1"),
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1, u"element_2"),
-      MakeSavedPassword(kExampleOrg, kUsername2, kPassword216)};
-
-  passwords.at(0).password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-  passwords.at(1).password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-  passwords.at(2).password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-
-  std::vector<CredentialWithPassword> credentials_with_password = {
-      MakeCompromisedCredential(passwords[0]),
-      MakeCompromisedCredential(passwords[1]),
-      MakeCompromisedCredential(passwords[2])};
-
-  for (const auto& form : passwords)
-    store().AddLogin(form);
-
-  RunUntilIdle();
-  EXPECT_THAT(provider().GetSavedPasswordsFor(credentials_with_password[0]),
-              ElementsAreArray(store().stored_passwords().at(kExampleCom)));
-
-  EXPECT_THAT(provider().GetSavedPasswordsFor(credentials_with_password[1]),
-              ElementsAreArray(store().stored_passwords().at(kExampleCom)));
-
-  EXPECT_THAT(provider().GetSavedPasswordsFor(credentials_with_password[2]),
-              ElementsAreArray(store().stored_passwords().at(kExampleOrg)));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password1)));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -427,7 +340,7 @@ TEST_F(InsecureCredentialsManagerTest, StartWeakCheckOnEmptyPasswordsList) {
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
+  EXPECT_THAT(provider().GetWeakCredentialEntries(), IsEmpty());
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 0, 1);
@@ -453,7 +366,7 @@ TEST_F(InsecureCredentialsManagerTest, WeakCredentialsNotFound) {
   AdvanceClock(base::Milliseconds(2 * kDelay));
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
+  EXPECT_THAT(provider().GetWeakCredentialEntries(), IsEmpty());
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
@@ -481,12 +394,8 @@ TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  std::vector<CredentialWithPassword> weak_credentials =
-      provider().GetWeakCredentials();
-
-  ASSERT_EQ(weak_credentials.size(), 1u);
-  EXPECT_EQ(weak_credentials[0].password, kWeakPassword1);
-  EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0])));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
@@ -499,7 +408,7 @@ TEST_F(InsecureCredentialsManagerTest, DetectedWeakCredential) {
 }
 
 // Tests that credentials with the same signon_realm and username, but different
-// passwords will be both returned by GetWeakCredentials().
+// passwords will be both returned by GetWeakCredentialEntries().
 TEST_F(InsecureCredentialsManagerTest,
        FindBothWeakCredentialsWithDifferentPasswords) {
   std::vector<PasswordForm> passwords = {
@@ -515,12 +424,9 @@ TEST_F(InsecureCredentialsManagerTest,
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  std::vector<CredentialWithPassword> weak_credentials =
-      provider().GetWeakCredentials();
-
-  ASSERT_EQ(weak_credentials.size(), 2u);
-  EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
-  EXPECT_TRUE(IsWeak(weak_credentials[1].insecure_type));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0]),
+                          CredentialUIEntry(passwords[1])));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
@@ -533,7 +439,7 @@ TEST_F(InsecureCredentialsManagerTest,
 }
 
 // Tests that credentials with the same signon_realm, username and passwords
-// will be joind and GetWeakCredentials() will return one credential.
+// will be joind and GetWeakCredentialEntries() will return one credential.
 TEST_F(InsecureCredentialsManagerTest,
        JoinWeakCredentialsWithTheSamePasswords) {
   std::vector<PasswordForm> passwords = {
@@ -548,12 +454,8 @@ TEST_F(InsecureCredentialsManagerTest,
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  std::vector<CredentialWithPassword> weak_credentials =
-      provider().GetWeakCredentials();
-
-  ASSERT_EQ(weak_credentials.size(), 1u);
-  EXPECT_EQ(weak_credentials[0].password, kWeakPassword1);
-  EXPECT_TRUE(IsWeak(weak_credentials[0].insecure_type));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0])));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 1, 1);
@@ -582,18 +484,11 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  std::vector<CredentialWithPassword> returned_weak_credentials =
-      provider().GetWeakCredentials();
-  std::vector<CredentialWithPassword> returned_compromised_credentials =
-      provider().GetInsecureCredentials();
-
-  ASSERT_EQ(returned_weak_credentials.size(), 1u);
-  EXPECT_EQ(returned_weak_credentials[0].password, kWeakPassword1);
-  EXPECT_TRUE(IsWeak(returned_weak_credentials[0].insecure_type));
-
-  ASSERT_EQ(returned_compromised_credentials.size(), 2u);
-  EXPECT_TRUE(IsInsecure(returned_compromised_credentials[0].insecure_type));
-  EXPECT_TRUE(IsInsecure(returned_compromised_credentials[1].insecure_type));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0])));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0]),
+                          CredentialUIEntry(passwords[1])));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 2, 1);
@@ -606,8 +501,8 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
 }
 
 // Checks that for a credential that is both weak and compromised,
-// getWeakCredentials and GetInsecureCredentials will return this credential
-// in one instance.
+// GetWeakCredentialEntries and GetInsecureCredentials will return this
+// credential in one instance.
 TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
   std::vector<PasswordForm> passwords = {
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1)};
@@ -622,23 +517,10 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
   AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
-  std::vector<CredentialWithPassword> returned_weak_credentials =
-      provider().GetWeakCredentials();
-  std::vector<CredentialWithPassword> returned_compromised_credentials =
-      provider().GetInsecureCredentials();
-
-  // Since the credential is weak and compromised, the |insecure_type| should be
-  // weak and compromised for elements from |returned_weak_credentials| and
-  // |returned_compromised_credentials|.
-  ASSERT_EQ(returned_weak_credentials.size(), 1u);
-  EXPECT_EQ(returned_weak_credentials[0].password, kWeakPassword1);
-  EXPECT_TRUE(IsWeak(returned_weak_credentials[0].insecure_type));
-  EXPECT_TRUE(IsInsecure(returned_weak_credentials[0].insecure_type));
-
-  ASSERT_EQ(returned_compromised_credentials.size(), 1u);
-  EXPECT_EQ(returned_compromised_credentials[0].password, kWeakPassword1);
-  EXPECT_TRUE(IsWeak(returned_compromised_credentials[0].insecure_type));
-  EXPECT_TRUE(IsInsecure(returned_compromised_credentials[0].insecure_type));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0])));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(passwords[0])));
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.WeakCheck.CheckedPasswords", 1, 1);
@@ -661,13 +543,15 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPassword) {
   store().AddLogin(password_form);
   RunUntilIdle();
 
-  CredentialWithPassword expected = MakeCompromisedCredential(password_form);
-  expected.create_time = base::Time::Now();
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 
+  password_form.password_issues[InsecureType::kLeaked].create_time =
+      base::Time::Now();
   provider().SaveInsecureCredential(credential);
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_form)));
 }
 
 // Test verifies that saving LeakCheckCredential doesn't occur for already
@@ -1111,51 +995,48 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialEntriesWithFlag) {
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1u));
 }
 
-// Test verifies that editing Compromised Credential via provider change the
-// original password form.
+// Test verifies that editing Compromised Credential makes it secure.
 TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password_form.password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
-
   store().AddLogin(password_form);
-
   RunUntilIdle();
-  CredentialWithPassword expected =
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      MakeWeakAndCompromisedCredential(password_form);
-#else
-      MakeCompromisedCredential(password_form);
-#endif
 
-  EXPECT_TRUE(provider().UpdateCredential(expected, kPassword2));
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1u));
+
+  CredentialUIEntry original_credential(password_form),
+      updated_credential = original_credential;
+  updated_credential.password = kPassword216;
+  presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
-  expected.password = kPassword216;
 
-  EXPECT_TRUE(provider().GetInsecureCredentials().empty());
+  EXPECT_TRUE(provider().GetInsecureCredentialEntries().empty());
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Test verifies that editing weak credential via provider has affect on weak
-// credentials and updates password in the store.
-TEST_F(InsecureCredentialsManagerTest, UpdateWeakPassword) {
+// Test verifies that editing a weak credential to another weak credential
+// continues to be treated weak.
+TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
 
   store().AddLogin(password_form);
   RunUntilIdle();
+
   provider().StartWeakCheck();
   RunUntilIdle();
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_form)));
 
-  EXPECT_EQ(provider().GetWeakCredentials().size(), 1u);
-  EXPECT_TRUE(provider().UpdateCredential(CredentialView(password_form),
-                                          kStrongPassword1));
+  CredentialUIEntry original_credential(password_form),
+      updated_credential = original_credential;
+  updated_credential.password = kStrongPassword116;
+  presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
-  EXPECT_EQ(GetSavedPasswordForUsername(kExampleCom, kUsername1),
-            kStrongPassword116);
+  EXPECT_THAT(provider().GetWeakCredentialEntries(), IsEmpty());
 }
 
 // Test verifies that editing a weak credential to another weak credential
@@ -1169,101 +1050,21 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
 
   provider().StartWeakCheck();
   RunUntilIdle();
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_form)));
 
-  CredentialWithPassword expected = MakeWeakCredential(password_form);
-  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
-
-  EXPECT_TRUE(provider().UpdateCredential(expected, kWeakPassword2));
+  CredentialUIEntry original_credential(password_form),
+      updated_credential = original_credential;
+  updated_credential.password = kWeakPassword216;
+  presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 
-  expected.password = kWeakPassword216;
-  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(updated_credential));
 }
 
-// Test verifies that editing credential that is weak and compromised via
-// provider change the saved password.
-TEST_F(InsecureCredentialsManagerTest, UpdateInsecurePassword) {
-  PasswordForm password_form =
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
-  password_form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-
-  store().AddLogin(password_form);
-  RunUntilIdle();
-  provider().StartWeakCheck();
-  RunUntilIdle();
-
-  CredentialWithPassword expected =
-      MakeWeakAndCompromisedCredential(password_form);
-  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
-
-  EXPECT_TRUE(provider().UpdateCredential(expected, kStrongPassword1));
-  RunUntilIdle();
-
-  EXPECT_EQ(GetSavedPasswordForUsername(kExampleCom, kUsername1),
-            kStrongPassword116);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
-  PasswordForm password =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  password.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-
-  store().AddLogin(password);
-  RunUntilIdle();
-
-  CredentialWithPassword expected = MakeCompromisedCredential(password);
-  expected.password = password.password_value;
-
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
-
-  EXPECT_TRUE(provider().RemoveCredential(expected));
-  RunUntilIdle();
-  EXPECT_THAT(provider().GetInsecureCredentials(), IsEmpty());
-}
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(InsecureCredentialsManagerTest, RemoveWeakCredential) {
-  PasswordForm password =
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
-
-  store().AddLogin(password);
-  RunUntilIdle();
-  provider().StartWeakCheck();
-  RunUntilIdle();
-
-  EXPECT_EQ(provider().GetWeakCredentials().size(), 1u);
-  EXPECT_TRUE(provider().RemoveCredential(CredentialView(password)));
-  RunUntilIdle();
-  EXPECT_THAT(GetSavedPasswordForUsername(kExampleCom, kUsername1), IsEmpty());
-}
-
-TEST_F(InsecureCredentialsManagerTest, RemoveInsecureCredential) {
-  PasswordForm password_form =
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
-  password_form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-
-  store().AddLogin(password_form);
-  RunUntilIdle();
-  provider().StartWeakCheck();
-  RunUntilIdle();
-
-  CredentialWithPassword expected =
-      MakeWeakAndCompromisedCredential(password_form);
-  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
-  EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
-
-  EXPECT_TRUE(provider().RemoveCredential(expected));
-  RunUntilIdle();
-  EXPECT_THAT(GetSavedPasswordForUsername(kExampleCom, kUsername1), IsEmpty());
-}
-
-// Verifues that GetWeakCredentials() returns sorted weak credentials by using
-// CreateSortKey.
+// Verifues that GetWeakCredentialEntries() returns sorted weak credentials by
+// using CreateSortKey.
 TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
   const std::vector<PasswordForm> password_forms = {
       MakeSavedPassword("http://example-a.com", u"user_a1", u"pwd"),
@@ -1279,15 +1080,15 @@ TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
   provider().StartWeakCheck();
   RunUntilIdle();
 
-  EXPECT_THAT(provider().GetWeakCredentials(),
-              ElementsAre(MakeWeakCredential(password_forms[0]),
-                          MakeWeakCredential(password_forms[1]),
-                          MakeWeakCredential(password_forms[2]),
-                          MakeWeakCredential(password_forms[3])));
+  EXPECT_THAT(provider().GetWeakCredentialEntries(),
+              ElementsAre(CredentialUIEntry(password_forms[0]),
+                          CredentialUIEntry(password_forms[1]),
+                          CredentialUIEntry(password_forms[2]),
+                          CredentialUIEntry(password_forms[3])));
 }
 
-// Verifues that GetWeakCredentials() returns sorted weak credentials by using
-// CreateSortKey.
+// Verifues that GetWeakCredentialEntries() returns sorted weak credentials by
+// using CreateSortKey.
 TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialEntries) {
   const std::vector<PasswordForm> password_forms = {
       MakeSavedPassword("http://example-a.com", u"user_a1", u"pwd"),
@@ -1379,58 +1180,6 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
 };
 }  // namespace
 
-// Tests that verifies mapping compromised credentials to passwords works
-// correctly.
-TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
-       MapCompromisedPasswordsToPasswords) {
-  // Add credentials for both `kExampleCom` and `kExampleOrg` in both stores
-  // with the same username and difference passwords. For `kUsername1`, the
-  // `kPassword1` are `kPassword2` are compromised while
-  // `kPassword3` is safe.
-  std::vector<PasswordForm> profile_store_passwords = {
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1),
-      MakeSavedPassword(kExampleOrg, kUsername1, kPassword3)};
-  for (const PasswordForm& profile_password : profile_store_passwords)
-    profile_store().AddLogin(profile_password);
-
-  std::vector<PasswordForm> account_store_passwords = {
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword3),
-      MakeSavedPassword(kExampleOrg, kUsername1, kPassword216)};
-  for (const PasswordForm& account_password : account_store_passwords)
-    account_store().AddLogin(account_password);
-
-  RunUntilIdle();
-
-  LeakCheckCredential credential = MakeLeakCredential(kUsername1, kPassword3);
-
-  // Mark `kUsername1` and `kPassword3` to be compromised.
-  provider().SaveInsecureCredential(credential);
-
-  RunUntilIdle();
-
-  // Each password should be joined only with compromised credential from
-  // their store.
-  EXPECT_THAT(provider().GetSavedPasswordsFor(CredentialView(
-                  kExampleCom, GURL(), kUsername1, kPassword1, base::Time())),
-              IsEmpty());
-
-  EXPECT_EQ(provider()
-                .GetSavedPasswordsFor(CredentialView(
-                    kExampleOrg, GURL(), kUsername1, kPassword3, base::Time()))
-                .size(),
-            1u);
-
-  EXPECT_EQ(provider()
-                .GetSavedPasswordsFor(CredentialView(
-                    kExampleCom, GURL(), kUsername1, kPassword3, base::Time()))
-                .size(),
-            1u);
-
-  EXPECT_THAT(provider().GetSavedPasswordsFor(CredentialView(
-                  kExampleOrg, GURL(), kUsername1, kPassword216, base::Time())),
-              IsEmpty());
-}
-
 // Test verifies that saving LeakCheckCredential via provider adds expected
 // compromised credential to the correct store.
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
@@ -1453,7 +1202,7 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
   provider().SaveInsecureCredential(MakeLeakCredential(kUsername1, kPassword1));
   RunUntilIdle();
 
-  EXPECT_EQ(2U, provider().GetInsecureCredentials().size());
+  EXPECT_EQ(2U, provider().GetInsecureCredentialEntries().size());
   EXPECT_EQ(1U, profile_store()
                     .stored_passwords()
                     .at(kExampleCom)
@@ -1476,7 +1225,7 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
       MakeLeakCredential(kUsername1, kPassword216));
   RunUntilIdle();
 
-  EXPECT_EQ(3U, provider().GetInsecureCredentials().size());
+  EXPECT_EQ(3U, provider().GetInsecureCredentialEntries().size());
   EXPECT_EQ(1U, profile_store()
                     .stored_passwords()
                     .at(kExampleCom)
@@ -1494,52 +1243,7 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
                     .password_issues.size());
 }
 
-TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
-       RemoveCompromisedCredential) {
-  // Add `kUsername1`,`kPassword1` to both stores.
-  PasswordForm profile_form =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  profile_form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-  PasswordForm account_form =
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
-  account_form.password_issues.insert(
-      {InsecureType::kLeaked, InsecurityMetadata()});
-  profile_store().AddLogin(profile_form);
-  account_store().AddLogin(account_form);
-  RunUntilIdle();
-
-  // Now remove the compromised credentials
-  EXPECT_TRUE(provider().RemoveCredential(CredentialView(
-      kExampleCom, GURL(), kUsername1, kPassword1, base::Time())));
-  RunUntilIdle();
-
-  // It should have been removed from both stores.
-  EXPECT_TRUE(profile_store().stored_passwords().at(kExampleCom).empty());
-  EXPECT_TRUE(account_store().stored_passwords().at(kExampleCom).empty());
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
-  // Add `kUsername1`,`kPassword1` to both stores.
-  profile_store().AddLogin(
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
-  account_store().AddLogin(
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
-  RunUntilIdle();
-  provider().StartWeakCheck();
-  RunUntilIdle();
-
-  // Now remove the weak credential
-  EXPECT_TRUE(provider().RemoveCredential(CredentialView(
-      kExampleCom, GURL(), kUsername1, kWeakPassword1, base::Time())));
-  RunUntilIdle();
-
-  // It should have been removed from both stores.
-  EXPECT_THAT(profile_store().stored_passwords().at(kExampleCom), IsEmpty());
-  EXPECT_THAT(account_store().stored_passwords().at(kExampleCom), IsEmpty());
-}
-
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
        GetInsecureCredentialsWeak) {
   profile_store().AddLogin(

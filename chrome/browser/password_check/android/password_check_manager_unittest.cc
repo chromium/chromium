@@ -43,8 +43,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::BulkLeakCheckService;
-using password_manager::InsecureCredential;
-using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
 using password_manager::MockPasswordScriptsFetcher;
 using password_manager::PasswordCheckUIStatus;
@@ -80,26 +78,10 @@ constexpr char16_t kPassword1[] = u"s3cre3t";
 
 constexpr char kTestEmail[] = "user@gmail.com";
 
-InsecureCredentialTypeFlags InsecureTypeFlagFromInsecureType(
-    InsecureType type) {
-  switch (type) {
-    case InsecureType::kLeaked:
-      return InsecureCredentialTypeFlags::kCredentialLeaked;
-    case InsecureType::kPhished:
-      return InsecureCredentialTypeFlags::kCredentialPhished;
-    case InsecureType::kWeak:
-      return InsecureCredentialTypeFlags::kWeakCredential;
-    case InsecureType::kReused:
-      return InsecureCredentialTypeFlags::kReusedCredential;
-  }
-  NOTREACHED() << "Unexpected InsecureType value";
-}
-
-MATCHER_P(MatchInsecureTypeFlag,
-          insecure_type_flag,
+MATCHER_P(MatchInsecureType,
+          insecure_type,
           base::StrCat({negation ? "does not " : "", "match the type flag"})) {
-  return ((insecure_type_flag & InsecureTypeFlagFromInsecureType(arg)) !=
-          InsecureCredentialTypeFlags::kSecure);
+  return arg.contains(insecure_type);
 }
 
 class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
@@ -189,7 +171,7 @@ auto ExpectCompromisedCredentialForUI(
     const GURL& url,
     const absl::optional<std::string>& package_name,
     const absl::optional<std::string>& change_password_url,
-    InsecureCredentialTypeFlags insecure_type,
+    InsecureType insecure_type,
     bool has_startable_script,
     bool has_auto_change_button) {
   auto package_name_field_matcher =
@@ -208,12 +190,11 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::url, url), package_name_field_matcher,
       change_password_url_field_matcher,
       Field(&CompromisedCredentialForUI::password_issues,
-            Each(Key(MatchInsecureTypeFlag(insecure_type)))),
+            MatchInsecureType(insecure_type)),
       Property(&CompromisedCredentialForUI::IsLeaked,
-               insecure_type == InsecureCredentialTypeFlags::kCredentialLeaked),
-      Property(
-          &CompromisedCredentialForUI::IsPhished,
-          insecure_type == InsecureCredentialTypeFlags::kCredentialPhished),
+               insecure_type == InsecureType::kLeaked),
+      Property(&CompromisedCredentialForUI::IsPhished,
+               insecure_type == InsecureType::kPhished),
       Field(&CompromisedCredentialForUI::has_startable_script,
             has_startable_script),
       Field(&CompromisedCredentialForUI::has_auto_change_button,
@@ -365,7 +346,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  InsecureType::kLeaked,
                   /*has_startable_script=*/false,
                   /*has_auto_change_button=*/false)));
 }
@@ -396,20 +377,18 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   store().AddLogin(MakeSavedAndroidPassword(kExampleOrg, kUsername2));
 
   EXPECT_THAT(manager().GetCompromisedCredentialsCount(), 2);
-  EXPECT_THAT(
-      manager().GetCompromisedCredentials(),
-      UnorderedElementsAre(
-          ExpectCompromisedCredentialForUI(
-              kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
-              "com.example.app", absl::nullopt,
-              InsecureCredentialTypeFlags::kCredentialLeaked,
-              /*has_startable_script=*/false,
-              /*has_auto_change_button=*/false),
-          ExpectCompromisedCredentialForUI(
-              kUsername2, u"Example App", GURL(kExampleCom), "com.example.app",
-              absl::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
-              /*has_startable_script=*/false,
-              /*has_auto_change_button=*/false)));
+  EXPECT_THAT(manager().GetCompromisedCredentials(),
+              UnorderedElementsAre(
+                  ExpectCompromisedCredentialForUI(
+                      kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
+                      "com.example.app", absl::nullopt, InsecureType::kLeaked,
+                      /*has_startable_script=*/false,
+                      /*has_auto_change_button=*/false),
+                  ExpectCompromisedCredentialForUI(
+                      kUsername2, u"Example App", GURL(kExampleCom),
+                      "com.example.app", absl::nullopt, InsecureType::kLeaked,
+                      /*has_startable_script=*/false,
+                      /*has_auto_change_button=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
@@ -466,7 +445,7 @@ TEST_F(PasswordCheckManagerTest,
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  InsecureType::kLeaked,
                   /*has_startable_script=*/false,
                   /*has_auto_change_button=*/false)));
 }
@@ -497,7 +476,7 @@ TEST_F(PasswordCheckManagerTest,
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  InsecureType::kLeaked,
                   /*has_startable_script=*/true,
                   /*has_auto_change_button=*/true)));
 }
@@ -532,7 +511,7 @@ TEST_F(PasswordCheckManagerTest,
       ElementsAre(ExpectCompromisedCredentialForUI(
           u"No username", u"example.com", GURL(kExampleCom), absl::nullopt,
           "https://example.com/.well-known/change-password",
-          InsecureCredentialTypeFlags::kCredentialLeaked,
+          InsecureType::kLeaked,
           /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
 }
@@ -567,7 +546,7 @@ TEST_F(PasswordCheckManagerTest,
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  InsecureType::kLeaked,
                   /*has_startable_script=*/true,
                   /*has_auto_change_button=*/false)));
 }
@@ -600,7 +579,7 @@ TEST_F(PasswordCheckManagerTest,
               ElementsAre(ExpectCompromisedCredentialForUI(
                   kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
-                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  InsecureType::kLeaked,
                   /*has_startable_script=*/false,
                   /*has_auto_change_button=*/false)));
 }

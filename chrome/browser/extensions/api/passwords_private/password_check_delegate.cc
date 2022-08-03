@@ -75,8 +75,6 @@ using password_manager::PasswordScriptsFetcher;
 using password_manager::metrics_util::PasswordCheckScriptsCacheState;
 using ui::TimeFormat;
 
-using InsecureCredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckService::State;
@@ -282,12 +280,6 @@ PasswordCheckDelegate::PasswordCheckDelegate(
       &insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Observe(
       BulkLeakCheckServiceFactory::GetForProfile(profile_));
-
-  // Instructs the provider to initialize and build its cache.
-  // This will soon after invoke OnCompromisedCredentialsChanged(). Calls to
-  // GetCompromisedCredentials() that might happen until then will return an
-  // empty list.
-  insecure_credentials_manager_.Init();
 }
 
 PasswordCheckDelegate::~PasswordCheckDelegate() = default;

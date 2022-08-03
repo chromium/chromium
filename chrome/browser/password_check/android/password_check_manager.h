@@ -86,18 +86,18 @@ class PasswordCheckManager
 
   // Called by java to update the given compromised `credential` and set its
   // password to `new_password`.
-  void UpdateCredential(const password_manager::CredentialView& credential,
+  void UpdateCredential(const password_manager::CredentialUIEntry& credential,
                         base::StringPiece new_password);
 
   // Called by java to launch the edit credential UI for `credential`.
   void OnEditCredential(
-      const password_manager::CredentialView& credential,
+      const password_manager::CredentialUIEntry& credential,
       const base::android::JavaParamRef<jobject>& context,
       const base::android::JavaParamRef<jobject>& settings_launcher);
 
   // Called by java to remove the given compromised `credential` and trigger a
   // UI update on completion.
-  void RemoveCredential(const password_manager::CredentialView& credential);
+  void RemoveCredential(const password_manager::CredentialUIEntry& credential);
 
   // Invokes `PasswordScriptsFetcher`'s scripts refreshment.
   void RefreshScripts();

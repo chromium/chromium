@@ -90,7 +90,6 @@ using api::passwords_private::PasswordUiEntry;
 using api::passwords_private::UrlCollection;
 using password_manager::BulkLeakCheckDelegateInterface;
 using password_manager::BulkLeakCheckService;
-using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::IsLeaked;
@@ -360,27 +359,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
 };
 
 }  // namespace
-
-TEST_F(PasswordCheckDelegateTest, VerifyCastingOfCompromisedCredentialTypes) {
-  static_assert(
-      static_cast<int>(api::passwords_private::COMPROMISE_TYPE_NONE) ==
-          static_cast<int>(InsecureCredentialTypeFlags::kSecure),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::COMPROMISE_TYPE_LEAKED) ==
-          static_cast<int>(InsecureCredentialTypeFlags::kCredentialLeaked),
-      "");
-  static_assert(
-      static_cast<int>(api::passwords_private::COMPROMISE_TYPE_PHISHED) ==
-          static_cast<int>(InsecureCredentialTypeFlags::kCredentialPhished),
-      "");
-  static_assert(
-      static_cast<int>(
-          api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED) ==
-          static_cast<int>(InsecureCredentialTypeFlags::kCredentialLeaked |
-                           InsecureCredentialTypeFlags::kCredentialPhished),
-      "");
-}
 
 // Verify that GetWeakCredentials() correctly represents weak credentials.
 TEST_F(PasswordCheckDelegateTest, GetWeakCredentialsFillsFieldsCorrectly) {

@@ -95,7 +95,6 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
 
   // Instructs the presenter and manager to initialize and build their caches.
   saved_passwords_presenter_.Init();
-  insecure_credentials_manager_.Init();
 }
 
 IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() {
