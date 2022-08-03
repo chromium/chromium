@@ -53,7 +53,7 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
   functions_on_types::StorageArea::Get::Results::Items items;
-  items.additional_properties.SetDouble("asdf", 0.1);
+  items.additional_properties.GetDict().Set("asdf", 0.1);
   items.additional_properties.SetString("sdfg", "zxcv");
   base::Value results(
       functions_on_types::StorageArea::Get::Results::Create(items));

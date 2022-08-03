@@ -19,7 +19,7 @@ namespace {
 
 base::DictionaryValue CreateTestTypeValue() {
   base::DictionaryValue value;
-  value.SetDouble("number", 1.1);
+  value.GetDict().Set("number", 1.1);
   value.SetInteger("integer", 4);
   value.SetString("string", "bling");
   value.SetBoolean("boolean", true);
