@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -473,7 +473,7 @@ class UnfavoredWidgetsTest(unittest.TestCase):
 
 class StringResourcesTest(unittest.TestCase):
   def testInfavoredQuotations(self):
-    xmlChanges = (u'''<grit><release><messages>
+    xmlChanges = ('''<grit><release><messages>
       <message name="IDS_TEST_0">
           <ph><ex>Hi</ex></ph>, it\u0027s a good idea
       </message>
@@ -493,7 +493,7 @@ class StringResourcesTest(unittest.TestCase):
         \u201CMenus\u201D
       </message>
         <part file="site_settings.grdp" />
-          </messages></release></grit>'''.encode('utf-8')).splitlines()
+          </messages></release></grit>''').splitlines()
 
     mock_input_api = MockInputApi()
     mock_input_api.files = [
@@ -515,7 +515,7 @@ class StringResourcesTest(unittest.TestCase):
 
 
   def testInfavoredEllipsis(self):
-    xmlChanges = (u'''<grit><release><messages>
+    xmlChanges = ('''<grit><release><messages>
       <message name="IDS_TEST_0">
           <ph><ex>Hi</ex></ph>, file is downloading\u002E\u002E\u002E
       </message>
@@ -526,7 +526,7 @@ class StringResourcesTest(unittest.TestCase):
           <ph><ex>Oh</ex></ph>, file is downloaded\u002E
       </message>
         <part file="site_settings.grdp" />
-          </messages></release></grit>'''.encode('utf-8')).splitlines()
+          </messages></release></grit>''').splitlines()
 
     mock_input_api = MockInputApi()
     mock_input_api.files = [
