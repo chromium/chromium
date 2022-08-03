@@ -107,6 +107,9 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-x64-cast",
     ],
+    experiments = {
+        "enable_weetbix_queries": 100,
+    },
 )
 
 try_.builder(
@@ -118,6 +121,9 @@ try_.builder(
     mirrors = [
         "ci/Fuchsia ARM64",
     ],
+    experiments = {
+        "enable_weetbix_queries": 100,
+    },
 )
 
 try_.builder(
@@ -129,4 +135,7 @@ try_.builder(
     mirrors = [
         "ci/Fuchsia x64",
     ],
+    experiments = {
+        "enable_weetbix_queries": 100,
+    },
 )
