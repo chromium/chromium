@@ -262,8 +262,6 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
-  virtual absl::optional<std::vector<gfx::Rect>> GetWindowShape() const;
-
   // Tells if the surface has already been configured.
   virtual bool IsSurfaceConfigured() = 0;
 

@@ -570,10 +570,6 @@ void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
 
-absl::optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
-  return absl::nullopt;
-}
-
 void WaylandWindow::OnDragEnter(const gfx::PointF& point,
                                 std::unique_ptr<OSExchangeData> data,
                                 int operation) {

@@ -79,7 +79,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetOrigin(const gfx::Point& origin);
 
   // WaylandWindow overrides:
-  absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
   bool IsScreenCoordinatesEnabled() const override;
 
   // Client-side decorations on Wayland take some portion of the window surface,
@@ -250,8 +249,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // When use_native_frame is true, server-side decoration is set,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
-
-  absl::optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 
   absl::optional<std::vector<gfx::Rect>> opaque_region_px_;
   absl::optional<gfx::Rect> input_region_px_;

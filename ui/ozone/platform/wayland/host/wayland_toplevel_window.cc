@@ -328,11 +328,6 @@ void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   }
 }
 
-absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
-    const {
-  return window_shape_in_dips_;
-}
-
 bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
   return screen_coordinates_enabled_;
 }

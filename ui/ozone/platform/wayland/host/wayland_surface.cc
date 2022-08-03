@@ -278,37 +278,16 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
-  auto window_shape_in_dips = root_window_->GetWindowShape();
-
-  bool surface_submission_in_pixel_coordinates =
+  const bool surface_submission_in_pixel_coordinates =
       SurfaceSubmissionInPixelCoordinates();
-  // Only root_surface and primary_subsurface should use |window_shape_in_dips|.
-  // Do not use non empty |window_shape_in_dips| if |region_px| is empty, i.e.
-  // this surface is transluscent.
-  bool is_primary_or_root =
-      root_window_->root_surface() == this ||
-      (root_window()->primary_subsurface() &&
-       root_window()->primary_subsurface()->wayland_surface() == this);
-  bool is_empty =
-      std::all_of(region_px.begin(), region_px.end(),
-                  [](const gfx::Rect& rect) { return rect.IsEmpty(); });
-  if (window_shape_in_dips.has_value() && !is_empty && is_primary_or_root) {
-    for (auto& rect : window_shape_in_dips.value()) {
-      if (surface_submission_in_pixel_coordinates)
-        rect = gfx::ScaleToEnclosingRect(rect, root_window_->window_scale());
+  for (const auto& rect_px : region_px) {
+    if (surface_submission_in_pixel_coordinates) {
+      wl_region_add(region.get(), rect_px.x(), rect_px.y(), rect_px.width(),
+                    rect_px.height());
+    } else {
+      gfx::Rect rect = gfx::ScaleToEnclosingRect(rect_px, 1.f / buffer_scale);
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
-    }
-  } else {
-    for (const auto& rect_px : region_px) {
-      if (surface_submission_in_pixel_coordinates) {
-        wl_region_add(region.get(), rect_px.x(), rect_px.y(), rect_px.width(),
-                      rect_px.height());
-      } else {
-        gfx::Rect rect = gfx::ScaleToEnclosingRect(rect_px, 1.f / buffer_scale);
-        wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
-                      rect.height());
-      }
     }
   }
   return region;
