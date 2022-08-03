@@ -418,12 +418,11 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           static_cast<int>(colors.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kTwoPointConicalGradient:
-      // TODO(crbug/1308932): Remove this helper vector colors and make all
-      // SkColor4f.
       return SkGradientShader::MakeTwoPointConical(
-          start_point_, start_radius_, end_point_, end_radius_, colors.data(),
+          start_point_, start_radius_, end_point_, end_radius_, colors_.data(),
+          nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors.size()), tx_, flags_,
+          static_cast<int>(colors_.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kSweepGradient:
       // TODO(crbug/1308932): Remove this helper vector colors and make all
