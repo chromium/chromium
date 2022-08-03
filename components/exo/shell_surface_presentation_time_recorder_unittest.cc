@@ -134,7 +134,9 @@ TEST_F(ShellSurfacePresentationTimeRecorderTest, Request) {
   EXPECT_TRUE(recorder_->RequestNext());
 }
 
-TEST_F(ShellSurfacePresentationTimeRecorderTest, AckSkippedOrOutOfOrder) {
+// TODO(crbug.com/1349591): Revive this test.
+TEST_F(ShellSurfacePresentationTimeRecorderTest,
+       DISABLED_AckSkippedOrOutOfOrder) {
   // Issue 4 requests with configure serial 1-5.
   for (size_t i = 1u; i <= 5u; ++i) {
     recorder_->PrepareToRecord();
