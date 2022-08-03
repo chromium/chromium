@@ -109,154 +109,78 @@
       </div>
     </template>
   </div>
-  <settings-toggle-button id="offerTranslateOtherLanguages"
-      pref="{{prefs.translate.enabled}}"
-      label="$i18n{offerToEnableTranslate}"
-      on-settings-boolean-control-change="onTranslateToggleChange_">
-  </settings-toggle-button>
-  <template is="dom-if" if="[[enableDesktopDetailedLanguageSettings_]]">
-    <div class="cr-row continuation">
-      <h2 class="flex">
-        $i18n{automaticallyTranslateLanguages}
-      </h2>
-      <cr-button id="addAlwaysTranslate" class="header-aligned-button"
-          on-click="onAddAlwaysTranslateLanguagesClick_">
-        $i18n{add}
-      </cr-button>
-    </div>
-    <div class="list-frame">
-      <div id="alwaysTranslateList" class="vertical-list">
-        <template is="dom-repeat" items="[[languages.alwaysTranslate]]">
-          <div class="list-item">
-            <div class="start cr-padded-text">
-              [[item.displayName]]
-            </div>
-            <cr-icon-button class="icon-clear"
-                on-click="onRemoveAlwaysTranslateLanguageClick_">
-            </cr-icon-button>
-          </div>
-        </template>
-      </div>
-      <div id="noAlwaysTranslateLabel" class="list-item"
-          hidden$="[[hasSome_(languages.alwaysTranslate)]]">
-        $i18n{noLanguagesAdded}
-      </div>
-    </div>
-    <div class="cr-row continuation">
-      <h2 class="flex">
-        $i18n{neverTranslateLanguages}
-      </h2>
-      <cr-button id="addNeverTranslate" class="header-aligned-button"
-          on-click="onAddNeverTranslateLanguagesClick_">
-        $i18n{add}
-      </cr-button>
-    </div>
-    <div class="list-frame">
-      <div id="neverTranslateList" class="vertical-list">
-        <template is="dom-repeat" items="[[languages.neverTranslate]]">
-          <div class="list-item">
-            <div class="start cr-padded-text">
-              [[item.displayName]]
-            </div>
-            <cr-icon-button class="icon-clear"
-                value="[[item.code]]"
-                on-click="onRemoveNeverTranslateLanguageClick_">
-            </cr-icon-button>
-          </div>
-        </template>
-      </div>
-      <div id="noNeverTranslateLabel" class="list-item"
-          hidden$="[[hasSome_(languages.neverTranslate)]]">
-        $i18n{noLanguagesAdded}
-      </div>
-    </div>
+  <template is="dom-if" if="[[!enableDesktopDetailedLanguageSettings_]]">
+    <settings-toggle-button id="offerTranslateOtherLanguages"
+        pref="{{prefs.translate.enabled}}" label="$i18n{offerToEnableTranslate}"
+        on-settings-boolean-control-change="onTranslateToggleChange_">
+    </settings-toggle-button>
   </template>
   <cr-lazy-render id="menu">
-      <template>
-        <cr-action-menu role-description="$i18n{menu}"
+    <template>
+      <cr-action-menu role-description="$i18n{menu}"
 <if expr="is_win">
-            on-close="onCloseMenu_"
+          on-close="onCloseMenu_"
 </if>
-            class$="[[getMenuClass_(prefs.translate.enabled.value)]]">
+          class$="[[getMenuClass_(prefs.translate.enabled.value)]]">
 <if expr="is_win">
-          <cr-checkbox id="uiLanguageItem"
-              class="dropdown-item"
-              checked="[[isProspectiveUILanguage_(
-                  detailLanguage_.language.code,
-                  languages.prospectiveUILanguage)]]"
-              on-change="onUILanguageChange_"
-              disabled="[[disableUILanguageCheckbox_(
-                  detailLanguage_, languages.prospectiveUILanguage)]]">
-            <span>
-              $i18n{displayInThisLanguage}
-            </span>
-            <iron-icon class="policy" icon="cr20:domain"
-                hidden$="[[!detailLanguage_.language.isProhibitedLanguage]]">
-            </iron-icon>
-          </cr-checkbox>
+        <cr-checkbox id="uiLanguageItem"
+            class="dropdown-item"
+            checked="[[isProspectiveUILanguage_(
+                detailLanguage_.language.code,
+                languages.prospectiveUILanguage)]]"
+            on-change="onUILanguageChange_"
+            disabled="[[disableUILanguageCheckbox_(
+                detailLanguage_, languages.prospectiveUILanguage)]]">
+          <span>
+            $i18n{displayInThisLanguage}
+          </span>
+          <iron-icon class="policy" icon="cr20:domain"
+              hidden$="[[!detailLanguage_.language.isProhibitedLanguage]]">
+          </iron-icon>
+        </cr-checkbox>
 </if> <!-- is_win -->
-          <template is="dom-if"
-              if="[[!enableDesktopDetailedLanguageSettings_]]">
-            <cr-checkbox id="offerTranslations"
-                class="dropdown-item"
-                checked="[[detailLanguage_.translateEnabled]]"
-                on-change="onTranslateCheckboxChange_"
-                hidden="[[!prefs.translate.enabled.value]]"
-                disabled="[[disableTranslateCheckbox_(
-                    detailLanguage_, languages.translateTarget)]]">
-              $i18n{offerToTranslateInThisLanguage}
-            </cr-checkbox>
-            <hr hidden="[[!shouldShowDialogSeparator_(
-                languages.enabled.*)]]">
-          </template>
-          <button class="dropdown-item" role="menuitem"
-              on-click="onMoveToTopTap_"
-              hidden="[[isNthLanguage_(
-                  0, detailLanguage_, languages.enabled.*)]]">
-            $i18n{moveToTop}
-          </button>
-          <button class="dropdown-item" role="menuitem"
-              on-click="onMoveUpTap_"
-              hidden="[[!showMoveUp_(detailLanguage_,
-                  languages.enabled.*)]]">
-            $i18n{moveUp}
-          </button>
-          <button class="dropdown-item" role="menuitem"
-              on-click="onMoveDownTap_"
-              hidden="[[!showMoveDown_(
-                  detailLanguage_, languages.enabled.*)]]">
-            $i18n{moveDown}
-          </button>
-          <button class="dropdown-item" role="menuitem"
-              on-click="onRemoveLanguageTap_"
-              hidden="[[!detailLanguage_.removable]]">
-            $i18n{removeLanguage}
-          </button>
-        </cr-action-menu>
-      </template>
-    </cr-lazy-render>
-  </div>
+        <template is="dom-if" if="[[!enableDesktopDetailedLanguageSettings_]]">
+          <cr-checkbox id="offerTranslations"
+              class="dropdown-item"
+              checked="[[detailLanguage_.translateEnabled]]"
+              on-change="onTranslateCheckboxChange_"
+              hidden="[[!prefs.translate.enabled.value]]"
+              disabled="[[disableTranslateCheckbox_(
+                  detailLanguage_, languages.translateTarget)]]">
+            $i18n{offerToTranslateInThisLanguage} </cr-checkbox>
+          <hr hidden="[[!shouldShowDialogSeparator_(languages.enabled.*)]]">
+        </template>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveToTopTap_"
+            hidden="[[isNthLanguage_(
+                0, detailLanguage_, languages.enabled.*)]]">
+          $i18n{moveToTop}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveUpTap_"
+            hidden="[[!showMoveUp_(detailLanguage_, languages.enabled.*)]]">
+          $i18n{moveUp}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveDownTap_"
+            hidden="[[!showMoveDown_(
+                detailLanguage_, languages.enabled.*)]]">
+          $i18n{moveDown}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onRemoveLanguageTap_"
+            hidden="[[!detailLanguage_.removable]]">
+          $i18n{removeLanguage}
+        </button>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
+</div>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
   <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
       on-languages-added="onLanguagesAdded_"
       on-close="onAddLanguagesDialogClose_">
   </settings-add-languages-dialog>
-</template>
-<template is="dom-if" if="[[enableDesktopDetailedLanguageSettings_]]">
-  <template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
-    <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-        id="alwaysTranslateDialog"
-        on-close="onAlwaysTranslateDialogClose_"
-        on-languages-added="onAlwaysTranslateLanguagesAdded_">
-    </settings-add-languages-dialog>
-  </template>
-  <template is="dom-if" if="[[showAddNeverTranslateDialog_]]" restamp>
-    <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-        id="neverTranslateDialog"
-        on-close="onNeverTranslateDialogClose_"
-        on-languages-added="onNeverTranslateLanguagesAdded_">
-    </settings-add-languages-dialog>
-  </template>
 </template>
 <template is="dom-if" if="[[showManagedLanguageDialog_]]" restamp>
   <managed-dialog on-close="onManagedLanguageDialogClosed_"

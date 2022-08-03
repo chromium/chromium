@@ -252,6 +252,7 @@ build_webui("build") {
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/spell_check_page.ts",
+      "languages_page/translate_page.ts",
       "system_page/system_page.ts",
     ]
   }

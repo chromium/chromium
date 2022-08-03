@@ -749,8 +749,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
     {"searchLanguages", IDS_SETTINGS_LANGUAGE_SEARCH},
     {"languagesExpandA11yLabel",
      IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL},
-    {"preferredLanguagesDesc",
-     IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC},
+    {"preferredLanguagesDesc", IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC},
     {"moveToTop", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP},
     {"moveUp", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP},
     {"moveDown", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_DOWN},
@@ -767,6 +766,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
     {"offerToEnableTranslate",
      IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE},
     {"noLanguagesAdded", IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED},
+    {"translatePageTitle", IDS_SETTINGS_TRANSLATE_PAGE_TITLE},
     {"automaticallyTranslateLanguages",
      IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE},
     {"neverTranslateLanguages", IDS_SETTINGS_LANGUAGES_NEVER_LANGUAGES},
@@ -809,7 +809,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"openChromeOSLanguagesSettingsLabel",
-    IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL},
+     IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

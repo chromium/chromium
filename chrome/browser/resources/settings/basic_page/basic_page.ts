@@ -142,6 +142,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
+      // <if expr="not chromeos_ash">
+      enableDesktopDetailedLanguageSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableDesktopDetailedLanguageSettings');
+        },
+      },
+      // </if>
+
       /**
        * True if the basic page should currently display the privacy guide
        * promo.
@@ -183,6 +193,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   // <if expr="not chromeos_ash">
   languages?: LanguagesModel;
   languageHelper: LanguageHelper;
+  private enableDesktopDetailedLanguageSettings_: boolean;
   // </if>
   pageVisibility: PageVisibility;
   inSearchMode: boolean;

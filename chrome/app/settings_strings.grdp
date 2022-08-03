@@ -1333,6 +1333,9 @@
     <message name="IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED" desc="Placeholder for language list settings when no languages have been added, on the Manage Languages page.">
       No languages added
     </message>
+    <message name="IDS_SETTINGS_TRANSLATE_PAGE_TITLE" desc="Name of the settings page which displays translate preferences.">
+      Google Translate
+    </message>
     <message name="IDS_SETTINGS_LANGUAGES_AUTOMATIC_TRANSLATE" desc="Title of Translation settings that lists languages that should be automatically translated.">
       Automatically translate these languages
     </message>

@@ -4,33 +4,15 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
-
-/**
- * A test version of LanguageSettingsMetricsProxy.
- */
-class TestLanguageSettingsMetricsProxy extends TestBrowserProxy implements
-    LanguageSettingsMetricsProxy {
-  constructor() {
-    super(['recordSettingsMetric', 'recordPageImpressionMetric']);
-  }
-
-  recordSettingsMetric(interaction: LanguageSettingsActionType) {
-    this.methodCalled('recordSettingsMetric', interaction);
-  }
-
-  recordPageImpressionMetric(interaction: LanguageSettingsPageImpressionType) {
-    this.methodCalled('recordPageImpressionMetric', interaction);
-  }
-}
+import {TestLanguageSettingsMetricsProxy} from './test_languages_settings_metrics_proxy.js';
 
 suite('LanguagesPageMetricsBrowser', function() {
   let languageHelper: LanguageHelper;
@@ -39,6 +21,9 @@ suite('LanguagesPageMetricsBrowser', function() {
   let languageSettingsMetricsProxy: TestLanguageSettingsMetricsProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableDesktopDetailedLanguageSettings: false,
+    });
     CrSettingsPrefs.deferInitialization = true;
   });
 

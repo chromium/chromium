@@ -127,28 +127,24 @@ TEST_F('CrSettingsLanguagesPageTest', 'LanguageMenu', function() {
   mocha.grep(languages_page_tests.TestNames.LanguageMenu).run();
 });
 
-var CrSettingsLanguagesPageDetailedTest =
-    class extends CrSettingsBrowserTest {
+var CrSettingsTranslatePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_page_details_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/translate_page_tests.js';
   }
 };
 
-TEST_F(
-    'CrSettingsLanguagesPageDetailedTest', 'AlwaysTranslateDialog',
-    function() {
-      mocha
-          .grep(languages_page_details_tests.TestNames.AlwaysTranslateDialog)
-          .run();
-    });
+TEST_F('CrSettingsTranslatePageTest', 'AlwaysTranslateDialog', function() {
+  mocha.grep(translate_page_tests.TestNames.AlwaysTranslateDialog).run();
+});
 
-TEST_F(
-    'CrSettingsLanguagesPageDetailedTest', 'NeverTranslateDialog',
-    function() {
-      mocha.grep(languages_page_details_tests.TestNames.NeverTranslateDialog)
-          .run();
-    });
+TEST_F('CrSettingsTranslatePageTest', 'NeverTranslateDialog', function() {
+  mocha.grep(translate_page_tests.TestNames.NeverTranslateDialog).run();
+});
+
+TEST_F('CrSettingsTranslatePageTest', 'TranslateToggle', function() {
+  mocha.grep(translate_page_tests.TestNames.TranslateToggle).run();
+});
 
 var CrSettingsLanguagesPageMetricsTest = class extends CrSettingsBrowserTest {
   /** @override */
@@ -161,6 +157,19 @@ TEST_F(
     'CrSettingsLanguagesPageMetricsTest', 'LanguagesPageMetricsBrowser',
     function() {
       runMochaSuite('LanguagesPageMetricsBrowser');
+    });
+
+var CrSettingsTranslatePageMetricsTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/translate_page_metrics_test_browser.js';
+  }
+};
+
+TEST_F(
+    'CrSettingsTranslatePageMetricsTest', 'TranslatePageMetricsBrowser',
+    function() {
+      runMochaSuite('TranslatePageMetricsBrowser');
     });
 
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');

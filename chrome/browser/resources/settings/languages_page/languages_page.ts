@@ -6,42 +6,41 @@
  * @fileoverview 'settings-languages-page' is the settings page
  * for language and input method settings.
  */
- import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
- import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
- import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
- import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
- import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
- import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
- import 'chrome://resources/cr_elements/icons.m.js';
- import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
- import 'chrome://resources/cr_elements/shared_style_css.m.js';
- import 'chrome://resources/cr_elements/shared_vars_css.m.js';
- import 'chrome://resources/js/action_link.js';
- import 'chrome://resources/cr_elements/action_link_css.m.js';
- import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
- import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
- import './add_languages_dialog.js';
- import './languages.js';
- import '../controls/settings_toggle_button.js';
- import '../icons.html.js';
- import '../relaunch_confirmation_dialog.js';
- import '../settings_shared.css.js';
- import '../settings_vars.css.js';
+// clang-format off
 
- import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
- import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
- import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
- import {assert} from 'chrome://resources/js/assert_ts.js';
- import {isWindows} from 'chrome://resources/js/cr.m.js';
- import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
- import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
- import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
- // <if expr="is_win">
- import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
- // </if>
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './add_languages_dialog.js';
+import '../controls/settings_toggle_button.js';
+import '../icons.html.js';
+import '../relaunch_confirmation_dialog.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// <if expr="is_win">
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// </if>
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RelaunchMixinInterface, RestartType} from '../relaunch_mixin.js';
@@ -51,6 +50,8 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.
 import {getTemplate} from './languages_page.html.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
+
+// clang-format on
 
 /**
  * Millisecond delay that can be used when closing an action menu to keep it
@@ -103,46 +104,34 @@ export class SettingsLanguagesPageElement extends
       /**
        * The language to display the details for.
        */
-       detailLanguage_: Object,
+      detailLanguage_: Object,
 
-       showAddLanguagesDialog_: Boolean,
-       showAddAlwaysTranslateDialog_: Boolean,
-       showAddNeverTranslateDialog_: Boolean,
-       addLanguagesDialogLanguages_: Array,
+      showAddLanguagesDialog_: Boolean,
+      addLanguagesDialogLanguages_: Array,
 
-       focusConfig_: {
-         type: Object,
-         value: function() {
-           return new Map();
-         },
-       },
+      showManagedLanguageDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-       showManagedLanguageDialog_: {
-         type: Boolean,
-         value: false,
-       },
-
-       enableDesktopDetailedLanguageSettings_: {
-         type: Boolean,
-         value: function() {
-           return loadTimeData.getBoolean(
+      enableDesktopDetailedLanguageSettings_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean(
               'enableDesktopDetailedLanguageSettings');
-         },
-       },
+        },
+      },
     };
   }
 
   languages?: LanguagesModel;
   languageHelper: LanguageHelper;
+  private enableDesktopDetailedLanguageSettings_: boolean;
   private detailLanguage_?: LanguageState;
   private showAddLanguagesDialog_: boolean;
-  private showAddAlwaysTranslateDialog_: boolean;
-  private showAddNeverTranslateDialog_: boolean;
   private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
-  private focusConfig_: FocusConfig;
   private showManagedLanguageDialog_: boolean;
-  private enableDesktopDetailedLanguageSettings_: boolean;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
@@ -183,48 +172,6 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
-   * Stamps and opens the Add Languages dialog, registering a listener to
-   * disable the dialog's dom-if again on close.
-   */
-   private onAddAlwaysTranslateLanguagesClick_(e: Event) {
-    e.preventDefault();
-
-    const translatableLanguages = this.getTranslatableLanguages_();
-    this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
-        language => !this.languages!.alwaysTranslate.includes(language));
-    this.showAddAlwaysTranslateDialog_ = true;
-  }
-
-  private onAlwaysTranslateDialogClose_() {
-    this.showAddAlwaysTranslateDialog_ = false;
-    this.addLanguagesDialogLanguages_ = null;
-    const toFocus = this.shadowRoot!.querySelector('#addAlwaysTranslate');
-    assert(toFocus);
-    focusWithoutInk(toFocus);
-  }
-
-
-  /**
-   * Helper function fired by the add dialog's on-languages-added event. Adds
-   * selected languages to the always-translate languages list.
-   */
-   private onAlwaysTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
-    const languagesToAdd = e.detail;
-    languagesToAdd.forEach(languageCode => {
-      this.languageHelper.setLanguageAlwaysTranslateState(languageCode, true);
-    });
-  }
-
-  /**
-   * Removes a language from the always translate languages list.
-   */
-  private onRemoveAlwaysTranslateLanguageClick_(
-      e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
-    const languageCode = e.model.item.code;
-    this.languageHelper.setLanguageAlwaysTranslateState(languageCode, false);
-  }
-
-  /**
    * Checks if there are supported languages that are not enabled but can be
    * enabled.
    * @return True if there is at least one available language.
@@ -233,42 +180,6 @@ export class SettingsLanguagesPageElement extends
     return languages === undefined || languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
-  }
-
-  /**
-   * Stamps and opens the Add Languages dialog, registering a listener to
-   * disable the dialog's dom-if again on close.
-   */
-  private onAddNeverTranslateLanguagesClick_(e: Event) {
-    e.preventDefault();
-
-    this.addLanguagesDialogLanguages_ = this.languages!.supported.filter(
-        language => !this.languages!.neverTranslate.includes(language));
-    this.showAddNeverTranslateDialog_ = true;
-  }
-
-  private onNeverTranslateDialogClose_() {
-    this.showAddNeverTranslateDialog_ = false;
-    this.addLanguagesDialogLanguages_ = null;
-    const toFocus = this.shadowRoot!.querySelector('#addNeverTranslate');
-    assert(toFocus);
-    focusWithoutInk(toFocus);
-  }
-
-  private onNeverTranslateLanguagesAdded_(e: CustomEvent<string[]>) {
-    const languagesToAdd = e.detail;
-    languagesToAdd.forEach(languageCode => {
-      this.languageHelper.disableTranslateLanguage(languageCode);
-    });
-  }
-
-  /**
-   * Removes a language from the never translate languages list.
-   */
-  private onRemoveNeverTranslateLanguageClick_(
-      e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
-    const languageCode = e.model.item.code;
-    this.languageHelper.enableTranslateLanguage(languageCode);
   }
 
   /**
@@ -484,7 +395,8 @@ export class SettingsLanguagesPageElement extends
    * the spacing of items and show a separator in the menu.
    */
   private getMenuClass_(translateEnabled: boolean): string {
-    if (translateEnabled || isWindows) {
+    if (isWindows ||
+        (translateEnabled && !this.enableDesktopDetailedLanguageSettings_)) {
       return 'complex';
     }
     return '';
@@ -597,23 +509,6 @@ export class SettingsLanguagesPageElement extends
    */
   private onManagedLanguageDialogClosed_() {
     this.showManagedLanguageDialog_ = false;
-  }
-
-  /**
-   * @return Whether the list is non-null and has items.
-   */
-  private hasSome_(list: any[]): boolean {
-    return !!(list && list.length);
-  }
-
-  /**
-   * Gets the list of languages that chrome can translate
-   */
-  private getTranslatableLanguages_():
-      chrome.languageSettingsPrivate.Language[] {
-    return this.languages!.supported.filter(language => {
-      return this.languageHelper.isLanguageTranslatable(language);
-    });
   }
 
   override currentRouteChanged(currentRoute: Route) {
