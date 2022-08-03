@@ -1829,22 +1829,27 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       dict.FindDoubleKey("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
-      !visible_quad_layer_rect || !mask_filter_info || !are_contents_opaque ||
-      !opacity || !blend_mode || !sorting_context_id ||
-      !is_fast_rounded_corner || !de_jelly_delta_y) {
+      !visible_quad_layer_rect || !are_contents_opaque || !opacity ||
+      !blend_mode || !sorting_context_id || !is_fast_rounded_corner ||
+      !de_jelly_delta_y) {
     return false;
   }
   gfx::Transform t_quad_to_target_transform;
   gfx::Rect t_quad_layer_rect, t_visible_quad_layer_rect, t_clip_rect;
-  gfx::MaskFilterInfo t_mask_filter_info;
   if (!TransformFromList(*quad_to_target_transform,
                          &t_quad_to_target_transform) ||
       !RectFromDict(*quad_layer_rect, &t_quad_layer_rect) ||
       !RectFromDict(*visible_quad_layer_rect, &t_visible_quad_layer_rect) ||
-      !MaskFilterInfoFromDict(*mask_filter_info, &t_mask_filter_info) ||
       (clip_rect && !RectFromDict(*clip_rect, &t_clip_rect))) {
     return false;
   }
+
+  gfx::MaskFilterInfo t_mask_filter_info;
+  if (mask_filter_info &&
+      !MaskFilterInfoFromDict(*mask_filter_info, &t_mask_filter_info)) {
+    return false;
+  }
+
   absl::optional<gfx::Rect> clip_rect_opt;
   // Some older files still use the is_clipped field.  If it's present, we'll
   // respect it, and ignore clip_rect if it's false.
