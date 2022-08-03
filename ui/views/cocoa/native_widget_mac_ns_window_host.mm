@@ -232,12 +232,6 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
     gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
 
-  // TODO(bur): Get tab dragging working.
-  // For tab dragging we need to map browser_view_->overlay_view_'s window to
-  // browser_view_'s window. However we can't do this all the time since
-  // browser_view_->overlay_view_ is a valid wigdet for some things. window =
-  // window.parentWindow ?: window;
-
   if (NativeWidgetMacNSWindow* widget_window =
           base::mac::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);

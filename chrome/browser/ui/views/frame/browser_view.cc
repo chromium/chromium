@@ -3352,6 +3352,7 @@ views::View* BrowserView::CreateMacOverlayView() {
   params.parent = GetWidget()->GetNativeView();
   overlay_widget_ = std::make_unique<ThemeCopyingWidget>(GetWidget());
   overlay_widget_->Init(std::move(params));
+  overlay_widget_->SetNativeWindowProperty(kBrowserViewKey, this);
 
   std::unique_ptr<TopContainerOverlayView> overlay_view =
       std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
