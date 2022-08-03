@@ -53,6 +53,7 @@ class FakePersonalizationAppAmbientProvider
                         ash::AmbientModeTopicSource topic_source,
                         bool selected) override {}
   void SetPageViewed() override {}
+  void FetchSettingsAndAlbums() override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

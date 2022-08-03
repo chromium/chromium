@@ -77,6 +77,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
 
+  // Refetch albums if the user is currently viewing ambient subpage, focuses
+  // another window, and then re-focuses personalization app.
+  private onFocus_ = () => getAmbientProvider().fetchSettingsAndAlbums();
+
   override ready() {
     // Pre-scroll to prevent visual jank when focusing the toggle row.
     window.scrollTo(0, 0);
@@ -111,6 +115,13 @@ export class AmbientSubpage extends WithPersonalizationStore {
     this.updateFromStore();
 
     getAmbientProvider().setPageViewed();
+
+    window.addEventListener('focus', this.onFocus_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('focus', this.onFocus_);
   }
 
   private onClickAmbientModeButton_(event: Event) {

@@ -50,6 +50,7 @@ ts_library("build_ts") {
     "wallpaper_grid_item_element_test.ts",
     "wallpaper_images_element_test.ts",
     "wallpaper_observer_test.ts",
+    "ambient_observer_test.ts",
     "wallpaper_preview_element_test.ts",
     "wallpaper_selected_element_test.ts",
   ]

@@ -78,6 +78,7 @@ export class AlbumsSubpage extends WithPersonalizationStore {
     this.watch<AlbumsSubpage['ambientModeEnabled_']>(
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
     this.updateFromStore();
+    getAmbientProvider().fetchSettingsAndAlbums();
   }
 
   private shouldShowContent_(): boolean {

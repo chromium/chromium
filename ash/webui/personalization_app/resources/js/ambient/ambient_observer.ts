@@ -9,8 +9,9 @@ import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumsAction, setAmbientModeEnabledAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {isRecentHighlightsAlbum} from './utils.js';
 
-/** @fileoverview listens for updates on color mode changes. */
+/** @fileoverview listens for updates on ambient mode changes. */
 
 let instance: AmbientObserver|null = null;
 
@@ -31,8 +32,13 @@ export class AmbientObserver implements AmbientObserverInterface {
     }
   }
 
-  private receiver_: AmbientObserverReceiver =
-      this.initReceiver_(getAmbientProvider());
+  private receiver_: AmbientObserverReceiver;
+
+  constructor() {
+    const provider = getAmbientProvider();
+    this.receiver_ = this.initReceiver_(provider);
+    provider.fetchSettingsAndAlbums();
+  }
 
   private initReceiver_(ambientProvider: AmbientProviderInterface):
       AmbientObserverReceiver {
@@ -63,6 +69,21 @@ export class AmbientObserver implements AmbientObserverInterface {
 
   onAlbumsChanged(albums: AmbientModeAlbum[]) {
     const store = PersonalizationStore.getInstance();
+
+    // Prevent recent highlights album from constantly changing preview image
+    // when albums are refreshed during a single session.
+    const oldRecentHighlightsAlbum =
+        (store.data.ambient.albums ||
+         []).find(album => isRecentHighlightsAlbum(album));
+    if (oldRecentHighlightsAlbum) {
+      const newRecentHighlightsAlbum =
+          albums.find(album => isRecentHighlightsAlbum(album));
+      if (newRecentHighlightsAlbum) {
+        // Edit by reference.
+        newRecentHighlightsAlbum.url = oldRecentHighlightsAlbum.url;
+      }
+    }
+
     store.dispatch(setAlbumsAction(albums));
   }
 

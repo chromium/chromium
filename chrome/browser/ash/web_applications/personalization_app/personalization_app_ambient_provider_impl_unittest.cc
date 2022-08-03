@@ -227,7 +227,10 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     ambient_provider_->SetAnimationTheme(animation_theme);
   }
 
-  void FetchSettings() { ambient_provider_->FetchSettingsAndAlbums(); }
+  void FetchSettings() {
+    ambient_provider_remote()->FetchSettingsAndAlbums();
+    ambient_provider_remote().FlushForTesting();
+  }
 
   void UpdateSettings() {
     if (!ambient_provider_->settings_)
@@ -381,7 +384,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_TRUE(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
   SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
+  FetchSettings();
   EXPECT_FALSE(ObservedAmbientModeEnabled());
 
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, true);
@@ -393,7 +396,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnAnimationThemeChanged) {
   SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
+  FetchSettings();
   SetAnimationTheme(ash::AmbientAnimationTheme::kSlideshow);
   EXPECT_EQ(ash::AmbientAnimationTheme::kSlideshow, ObservedAnimationTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
@@ -410,9 +413,8 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnTopicSourceChanged) {
-  // Will fetch settings when observer is set.
   SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
+  FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
   EXPECT_FALSE(ObservedGooglePhotosAlbumsPreviews().empty());
@@ -422,9 +424,8 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
-  // Will fetch settings when observer is set.
   SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
+  FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   auto albums = ObservedAlbums();
   // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
@@ -435,9 +436,8 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnTemperatureUnitChanged) {
-  // Will fetch settings when observer is set.
   SetAmbientObserver();
-  ambient_provider_remote().FlushForTesting();
+  FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
             ObservedTemperatureUnit());

@@ -38,7 +38,8 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   }
 };
 
-[['AmbientPreviewTest', 'ambient_preview_element_test.js'],
+[['AmbientObserverTest', 'ambient_observer_test.js'],
+ ['AmbientPreviewTest', 'ambient_preview_element_test.js'],
  ['AmbientSubpageTest', 'ambient_subpage_element_test.js'],
  ['AvatarCameraTest', 'avatar_list_element_test.js'],
  ['AvatarListTest', 'avatar_list_element_test.js'],

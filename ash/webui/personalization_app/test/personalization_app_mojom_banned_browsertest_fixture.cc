@@ -55,6 +55,7 @@ class MockPersonalizationAppAmbientProvider
                bool selected),
               (override));
   MOCK_METHOD(void, SetPageViewed, (), (override));
+  MOCK_METHOD(void, FetchSettingsAndAlbums, (), (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider

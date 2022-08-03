@@ -723,7 +723,7 @@ void AmbientBackendControllerImpl::OnGetGooglePhotosAlbumsPreview(
   std::vector<GURL> preview_urls;
   for (const std::string& preview_url :
        get_google_photos_albums_preview_response.preview_url()) {
-    preview_urls.push_back(GURL(preview_url));
+    preview_urls.emplace_back(preview_url);
   }
   std::move(callback).Run(preview_urls);
 }

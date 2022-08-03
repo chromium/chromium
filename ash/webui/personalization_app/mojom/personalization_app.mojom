@@ -529,6 +529,9 @@ interface AmbientProvider {
 
   // Record that the user viewed the Ambient mode page.
   SetPageViewed();
+
+  // Request updated Ambient mode settings and albums.
+  FetchSettingsAndAlbums();
 };
 
 // The supported preset colors for keyboard backlight.

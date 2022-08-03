@@ -65,7 +65,7 @@ export {KeyboardBacklight} from './keyboard_backlight/keyboard_backlight_element
 export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keyboard_backlight_interface_provider.js';
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
-export {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, AnimationTheme, BacklightColor, CurrentWallpaper, DefaultUserImage, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, KeyboardBacklightObserverInterface, KeyboardBacklightObserverRemote, KeyboardBacklightProviderInterface, OnlineImageType, TemperatureUnit, ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface, TopicSource, UserImage, UserImageObserverInterface, UserImageObserverRemote, UserInfo, UserProviderInterface, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from './personalization_app.mojom-webui.js';
+export * from './personalization_app.mojom-webui.js';
 export {PersonalizationBreadcrumb} from './personalization_breadcrumb_element.js';
 export {PersonalizationMain} from './personalization_main_element.js';
 export {reduce} from './personalization_reducers.js';
