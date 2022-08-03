@@ -100,7 +100,7 @@
     "includes": [1220],
     "structures": [1240],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/feedback_webui/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/feedback/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [1260],
   },

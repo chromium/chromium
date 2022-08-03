@@ -9,7 +9,7 @@ import("//chrome/common/features.gni")
 assert(!is_android)
 
 build_webui("build") {
-  grd_prefix = "feedback_webui"
+  grd_prefix = "feedback"
 
   static_files = [
     "css/common.css",

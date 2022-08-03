@@ -31,7 +31,7 @@ group("resources") {
       "commander:resources",
       "downloads:resources",
       "feed:resources",
-      "feedback_webui:resources",
+      "feedback:resources",
       "gaia_auth_host:resources",
       "history:resources",
       "image_editor:trusted_resources",
