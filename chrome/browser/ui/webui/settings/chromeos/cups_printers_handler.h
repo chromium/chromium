@@ -108,7 +108,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,
-                     base::Value info,
+                     base::Value::Dict info,
                      PpdProvider::CallbackResultCode res,
                      const Printer::PpdReference& ppd_ref,
                      const std::string& usb_manufacturer);
