@@ -14,7 +14,7 @@ namespace ash {
 // The video object for screencast.
 struct ProjectorScreencastVideo {
   base::Value::Dict ToValue() const;
-  // TODO(b/236857019): Add thumbnail link and video file id.
+  // TODO(b/236857019): Add thumbnail link and duration millis.
   std::string src_url;
   std::string file_id;
 };

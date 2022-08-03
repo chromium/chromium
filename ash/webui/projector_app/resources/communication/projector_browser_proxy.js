@@ -108,6 +108,14 @@ export class ProjectorBrowserProxy {
    * @return {!Promise}
    */
   openFeedbackDialog() {}
+
+  /**
+   * Gets information about the specified video from DriveFS.
+   * @param {string} videoFileId The Drive item id of the video file.
+   * @param {string|undefined} resourceKey The Drive item resource key.
+   * @return {!Promise<!projectorApp.Video>}
+   */
+  getVideo(videoFileId, resourceKey) {}
 }
 
 /**
@@ -173,6 +181,10 @@ export class ProjectorBrowserProxyImpl {
   /** @override */
   openFeedbackDialog() {
     return sendWithPromise('openFeedbackDialog');
+  }
+  /** @override */
+  getVideo(videoFileId, resourceKey) {
+    return sendWithPromise('getVideo', [videoFileId, resourceKey]);
   }
 }
 

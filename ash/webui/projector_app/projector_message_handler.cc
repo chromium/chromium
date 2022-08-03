@@ -11,6 +11,7 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -222,6 +223,9 @@ void ProjectorMessageHandler::RegisterMessages() {
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getVideo", base::BindRepeating(&ProjectorMessageHandler::GetVideo,
+                                      base::Unretained(this)));
 }
 
 void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
@@ -474,6 +478,21 @@ void ProjectorMessageHandler::GetPendingScreencasts(
       ProjectorAppClient::Get()->GetPendingScreencasts();
   ResolveJavascriptCallback(args[0],
                             ScreencastListToValue(pending_screencasts));
+}
+
+void ProjectorMessageHandler::GetVideo(const base::Value::List& args) {
+  AllowJavascript();
+  // Two arguments. The first is callback id, and the second is the list
+  // containing the item id and resource key.
+  DCHECK_EQ(args.size(), 2u);
+  const auto& func_args = args[1].GetList();
+  DCHECK_EQ(func_args.size(), 2u);
+
+  // TODO(b/237089852): Create a launch event with the file.
+  ProjectorScreencastVideo video;
+  video.file_id = func_args[0].GetString();
+
+  ResolveJavascriptCallback(args[0], video.ToValue());
 }
 
 }  // namespace ash

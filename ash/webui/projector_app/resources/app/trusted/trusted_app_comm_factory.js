@@ -131,6 +131,12 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('openFeedbackDialog', (args) => {
       return this.browserProxy_.openFeedbackDialog();
     });
+    this.registerMethod('getVideo', (args) => {
+      if (!args || args.length != 2) {
+        return Promise.reject('Incorrect args for getVideo');
+      }
+      return this.browserProxy_.getVideo(args[0], args[1]);
+    });
   }
 }
 

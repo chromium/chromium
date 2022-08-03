@@ -120,6 +120,10 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // upload or failed to upload.
   void GetPendingScreencasts(const base::Value::List& args);
 
+  // Requested by the Projector SWA to fetch a single video from DriveFS with
+  // the Drive item id specified by `args`.
+  void GetVideo(const base::Value::List& args);
+
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   std::unique_ptr<ProjectorXhrSender> xhr_sender_;
 

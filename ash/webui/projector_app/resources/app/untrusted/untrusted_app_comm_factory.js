@@ -179,6 +179,19 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'openFeedbackDialog', []);
   },
+
+  /**
+   * Gets information about the specified video from DriveFS.
+   * @param {string} videoFileId The Drive item id of the video file.
+   * @param {string|undefined} resourceKey The Drive item resource key.
+   * TODO(b/237089852): Wire up the resource key once DriveFS has support.
+   * @return {!Promise<!projectorApp.Video>}
+   */
+  getVideo(videoFileId, resourceKey) {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getVideo', [videoFileId, resourceKey]);
+    // TODO(b/237089852): Wait for the launch event and generate the object URL.
+  },
 };
 
 /**

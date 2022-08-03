@@ -236,6 +236,31 @@ projectorApp.NewScreencastPreconditionState.prototype.state;
 projectorApp.NewScreencastPreconditionState.prototype.reasons;
 
 /**
+ * Structure for Screencast video object.
+ * @record
+ * @struct
+ */
+projectorApp.Video = function() {};
+
+/**
+ * Duration of the video in milliseconds.
+ * @type {string|undefined}
+ */
+projectorApp.Video.prototype.durationMillis;
+
+/**
+ * The local source url of screencast video.
+ * @type {string|undefined}
+ */
+projectorApp.Video.prototype.srcUrl;
+
+/**
+ * Drive item id of the video file.
+ * @type {string|undefined}
+ */
+projectorApp.Video.prototype.fileId;
+
+/**
  * The delegate interface that the Projector app can use to make requests to
  * chrome.
  * @record
@@ -341,6 +366,15 @@ projectorApp.ClientDelegate.prototype.setUserPref = function(
  * @return {!Promise}
  */
 projectorApp.ClientDelegate.prototype.openFeedbackDialog = function() {};
+
+/**
+ * Gets information about the specified video from DriveFS.
+ * @param {string} videoFileId The Drive item id of the video file.
+ * @param {string|undefined} resourceKey The Drive item resource key.
+ * @return {!Promise<!projectorApp.Video>}
+ */
+projectorApp.ClientDelegate.prototype.getVideo = function(
+    videoFileId, resourceKey) {};
 
 /**
  * The client Api for interacting with the Projector app instance.

@@ -21,6 +21,8 @@
 namespace {
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
+const char kVideoFileId[] = "video_file_id";
+const char kResourceKey[] = "resource_key";
 
 const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
@@ -46,6 +48,7 @@ const char kOnNewScreencastPreconditionChanged[] =
 const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
 const char kOnSodaInstalled[] = "onSodaInstalled";
 const char kOnSodaInstallError[] = "onSodaInstallError";
+const char kGetVideoCallback[] = "getVideoCallback";
 
 const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
 const char kInstallSodaCallback[] = "installSodaCallback";
@@ -560,6 +563,31 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {
   EXPECT_EQ(*(rejected_args->FindStringPath(kRejectedRequestMessageKey)),
             kRejectedRequestMessage);
   EXPECT_EQ(*(rejected_args->FindPath(kRejectedRequestArgsKey)), func_args);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {
+  base::ListValue list_args;
+  list_args.Append(kGetVideoCallback);
+  base::ListValue args;
+  args.Append(kVideoFileId);
+  args.Append(kResourceKey);
+  list_args.Append(std::move(args));
+
+  web_ui().HandleReceivedMessage("getVideo", &list_args);
+
+  // We expect that there was only one callback to the WebUI.
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kGetVideoCallback);
+
+  // Expect the callback to be successful.
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& dict = call_data.arg3()->GetDict();
+
+  EXPECT_EQ(*dict.FindString("fileId"), kVideoFileId);
 }
 
 class ProjectorStorageDirNameValidationTest
