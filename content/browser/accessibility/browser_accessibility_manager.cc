@@ -439,20 +439,25 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
 void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
   BrowserAccessibility* parent = GetParentNodeFromParentTree();
   if (parent) {
-    if (!connected_to_parent_tree_node_) {
+    if (!connected_to_parent_tree_node_)
       ParentConnectionChanged(parent);
-    }
-  } else if (connected_to_parent_tree_node_) {
-    // This manager was previously connected to a parent manager but now became
-    // the new root manager.
-    SANITIZER_CHECK(IsRootTree())
-        << "Disconnected from parent manager, root url =: "
-        << delegate_->AccessibilityRenderFrameHost()
-               ->GetParentOrOuterDocumentOrEmbedder()
-               ->GetLastCommittedURL()
-        << "\ncurrent url = "
-        << delegate_->AccessibilityRenderFrameHost()->GetLastCommittedURL();
+    SANITIZER_CHECK(!IsRootTree());
+    return;
+  }
+
+  if (connected_to_parent_tree_node_) {
     connected_to_parent_tree_node_ = false;
+    // Two possible cases:
+    // 1. This manager was previously connected to a parent manager but now
+    // became the new root manager. One example where this can happen is portal
+    // activation.
+    // 2. The parent host node for this child tree was removed. Because the
+    // connection with the root has been severed, it will no longer be possible
+    // to fire events, as this BrowserAccessibilityManager is no longer tied to
+    // an existing document. Due to race conditions, in some cases, |this| is
+    // destroyed first, and this condition is not reached; while in other cases
+    // the parent node is destroyed first (this case).
+    DCHECK(IsRootTree() || !CanFireEvents());
   }
 }
 

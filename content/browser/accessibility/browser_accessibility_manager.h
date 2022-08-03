@@ -212,11 +212,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // If this tree has a parent tree, return the parent node in that tree.
   BrowserAccessibility* GetParentNodeFromParentTree() const;
 
-  // Refreshes a parent node in a parent tree when it needs to be informed that
-  // this tree is ready or being destroyed. For example, an iframe object
-  // in a parent tree may need to link or unlink to this manager.
-  void ParentConnectionChanged(BrowserAccessibility* parent);
-
   // In general, there is only a single node with the role of kRootWebArea,
   // but if a popup is opened, a second nested "root" is created in the same
   // tree as the "true" root. This will keep track of the nested root node.
@@ -701,6 +696,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // root's parent is in another accessibility tree but it wasn't previously
   // connected, post the proper notifications on the parent.
   void EnsureParentConnectionIfNotRootManager();
+
+  // Refreshes a parent node in a parent tree when it needs to be informed that
+  // this tree is ready or being destroyed. For example, an iframe object
+  // in a parent tree may need to link or unlink to this manager.
+  void ParentConnectionChanged(BrowserAccessibility* parent);
 
   // If this BrowserAccessibilityManager is a child frame or guest frame,
   // returns the BrowserAccessibilityManager from the parent document in the
