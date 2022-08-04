@@ -123,62 +123,62 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::AUTO_SELECT_CERTIFICATE,
            "auto-select-certificate", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-           ALL_PLATFORMS, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SSL_CERT_DECISIONS, "ssl-cert-decisions",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::APP_BANNER, "app-banner", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::SITE_ENGAGEMENT, "site-engagement", base::Value(),
       WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-      WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+      WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
       DESKTOP | PLATFORM_ANDROID, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::USB_CHOOSER_DATA, "usb-chooser-data", base::Value(),
       WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-      WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
+      WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
       WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::IMPORTANT_SITE_INFO, "important-site-info",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
            "permission-autoblocking-data", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::PASSWORD_PROTECTION, "password-protection",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-           ALL_PLATFORMS, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   // Set when an origin is activated for subresource filtering and the
   // associated UI is shown to the user. Cleared when a site is de-activated or
   // the first URL matching the origin is removed from history.
   Register(
       ContentSettingsType::ADS_DATA, "subresource-filter-data", base::Value(),
       WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-      WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-      DESKTOP | PLATFORM_ANDROID, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+      WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
+      WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::MEDIA_ENGAGEMENT, "media-engagement", base::Value(),
       WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-      WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+      WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
       DESKTOP | PLATFORM_ANDROID, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::CLIENT_HINTS, "client-hints", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   // Set to keep track of dismissals without user's interaction for intent
@@ -186,73 +186,75 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::INTENT_PICKER_DISPLAY,
            "intent-picker-auto-display", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-           DESKTOP, WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SERIAL_CHOOSER_DATA, "serial-chooser-data",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::HID_CHOOSER_DATA, "hid-chooser-data",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  // TODO(crbug.com/1341356) Move this to deprecated settings since it's no
+  // longer used.
   Register(ContentSettingsType::INSTALLED_WEB_APP_METADATA,
            "installed-web-app-metadata", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::BLUETOOTH_CHOOSER_DATA, "bluetooth-chooser-data",
       /*initial_default_value=*/base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
       WebsiteSettingsInfo::NOT_LOSSY,
-      WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
+      WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
       WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
            "safe-browsing-url-check-data", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
            "permission-autorevocation-data", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
            "file-system-access-chooser-data", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
            "file-system-last-picked-directory", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FEDERATED_IDENTITY_SHARING, "fedcm-share",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::HTTP_ALLOWED, "http-allowed", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-           ALL_PLATFORMS, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FORMFILL_METADATA, "formfill-metadata",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION,
            "fedcm-active-session", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::NOTIFICATION_INTERACTIONS,
            "notification-interactions", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }

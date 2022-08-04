@@ -65,9 +65,9 @@ uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
 }
 
 bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
-  return scoping_type_ == COOKIES_SCOPE ||
-         scoping_type_ == STORAGE_ACCESS_SCOPE ||
-         scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE;
+  return scoping_type_ == REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE ||
+         scoping_type_ == REQUESTING_AND_TOP_ORIGIN_SCOPE ||
+         scoping_type_ == TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE;
 }
 
 }  // namespace content_settings

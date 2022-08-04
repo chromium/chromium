@@ -51,7 +51,7 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
   registry()->Register(static_cast<ContentSettingsType>(10), "test",
                        base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
                        WebsiteSettingsInfo::LOSSY,
-                       WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+                       WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
                        WebsiteSettingsRegistry::ALL_PLATFORMS,
                        WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   info = registry()->GetByName("test");
@@ -91,7 +91,7 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
   registry()->Register(static_cast<ContentSettingsType>(10), "test",
                        base::Value(999), WebsiteSettingsInfo::SYNCABLE,
                        WebsiteSettingsInfo::LOSSY,
-                       WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+                       WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
                        WebsiteSettingsRegistry::ALL_PLATFORMS,
                        WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   info = registry()->Get(static_cast<ContentSettingsType>(10));
@@ -108,8 +108,7 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
                 user_prefs::PrefRegistrySyncable::SYNCABLE_PREF,
             info->GetPrefRegistrationFlags());
 #endif
-  EXPECT_EQ(WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-            info->scoping_type());
+  EXPECT_EQ(WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, info->scoping_type());
   EXPECT_EQ(WebsiteSettingsInfo::INHERIT_IN_INCOGNITO,
             info->incognito_behavior());
 }
@@ -118,7 +117,7 @@ TEST_F(WebsiteSettingsRegistryTest, Iteration) {
   registry()->Register(static_cast<ContentSettingsType>(10), "test",
                        base::Value(999), WebsiteSettingsInfo::SYNCABLE,
                        WebsiteSettingsInfo::LOSSY,
-                       WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+                       WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
                        WebsiteSettingsRegistry::ALL_PLATFORMS,
                        WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
 

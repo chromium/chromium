@@ -33,6 +33,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -1812,7 +1813,8 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  // Testing case: WebsiteSettingsInfo::REQUESTING_DOMAIN_ONLY_SCOPE.
+  // Testing case:
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE.
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::COOKIES,
       CONTENT_SETTING_ALLOW);
@@ -1826,35 +1828,11 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             ContentSettingsPattern::FromURL(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
 
-  // Testing case: WebsiteSettingsInfo::TOP_LEVEL_ORIGIN_ONLY_SCOPE.
-  host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::JAVASCRIPT,
-      CONTENT_SETTING_ALLOW);
-
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::JAVASCRIPT, &settings);
-
-  EXPECT_EQ(settings[0].primary_pattern,
-            ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
-
-  // Testing case: WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE.
-  host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS,
-      CONTENT_SETTING_ALLOW);
-
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATIONS, &settings);
-
-  EXPECT_EQ(settings[0].primary_pattern,
-            ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
-
-  // Testing case:
-  // WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE.
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::STORAGE_ACCESS,
-      CONTENT_SETTING_ASK);
+      CONTENT_SETTING_ALLOW);
 
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::STORAGE_ACCESS, &settings);
@@ -1863,6 +1841,27 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE.
+  for (const auto& kContentSetting :
+       {ContentSettingsType::JAVASCRIPT, ContentSettingsType::NOTIFICATIONS,
+        ContentSettingsType::GEOLOCATION,
+        ContentSettingsType::FEDERATED_IDENTITY_API}) {
+    host_content_settings_map->SetContentSettingDefaultScope(
+        primary_url, secondary_url, kContentSetting, CONTENT_SETTING_ALLOW);
+
+    host_content_settings_map->GetSettingsForOneType(kContentSetting,
+                                                     &settings);
+
+    EXPECT_EQ(settings[0].primary_pattern,
+              ContentSettingsPattern::FromURLNoWildcard(primary_url));
+    EXPECT_EQ(settings[0].secondary_pattern,
+              ContentSettingsPattern::Wildcard());
+  }
 }
 
 // Tests if changing a settings in incognito mode does not affects the regular
