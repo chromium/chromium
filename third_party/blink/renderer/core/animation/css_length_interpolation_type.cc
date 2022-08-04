@@ -161,7 +161,12 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const float kSlack = 0.0001;
     const float before_length = FloatValueForLength(before, 100);
     const float after_length = FloatValueForLength(after, 100);
-    if (std::isfinite(before_length) && std::isfinite(after_length)) {
+    // Length values may be constructed from integers, floating point values, or
+    // layout units (64ths of a pixel).  If converted from a layout unit, any
+    /// value greater than max_int64 / 64 cannot be precisely expressed
+    // (crbug.com/1349686).
+    if (std::isfinite(before_length) && std::isfinite(after_length) &&
+        std::abs(before_length) < kIntMaxForLayoutUnit) {
       // Test relative difference for large values to avoid floating point
       // inaccuracies tripping the check.
       const float delta = std::abs(before_length) < kSlack
