@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
+#include <limits>
 #include <memory>
 #include <set>
 #include <utility>
@@ -1874,8 +1875,12 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
   device_scale_factor_ = new_device_scale_factor;
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-  DCHECK_EQ(new_device_scale_factor, display.device_scale_factor());
-  current_cursor_.SetDisplayInfo(display);
+  // Sometimes GetDisplayNearestWindow returns the default monitor. We don't
+  // want to use that here.
+  if (display.is_valid()) {
+    DCHECK_EQ(new_device_scale_factor, display.device_scale_factor());
+    current_cursor_.SetDisplayInfo(display);
+  }
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
