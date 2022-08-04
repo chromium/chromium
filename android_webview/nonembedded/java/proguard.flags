@@ -34,6 +34,15 @@
   public *;
 }
 
+# This rule prevents class merging on R$* resource classes (for example, R$anim,
+# R$styleable, R$bool). This causes issues for WebView when unused resource
+# stripping, since in WebView we are forced to detect which resources are unused
+# by scanning the dex file for R$<res_type>.<res_name>. Having the R$* classes
+# being merged together means that R$anim.foo may now be found in R$bool.foo,
+# and this mistakenly will mark the foo resouce to be removed. More details in
+# crbug.com/1348329.
+-keep,allowaccessmodification,allowobfuscation,allowshrinking class **.R$*
+
 # Functor classes with native methods implemented in Android.
 -keep class com.android.webview.chromium.DrawFunctor
 -keep class com.android.webview.chromium.DrawGLFunctor
