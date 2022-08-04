@@ -970,9 +970,13 @@ struct Cluster {
   Cluster(int64_t cluster_id,
           const std::vector<ClusterVisit>& visits,
           const base::flat_map<std::u16string, ClusterKeywordData>&
-              keyword_to_data_map,
+              keyword_to_data_map = {},
           bool should_show_on_prominent_ui_surfaces = true,
-          absl::optional<std::u16string> label = absl::nullopt);
+          absl::optional<std::u16string> label = absl::nullopt,
+          absl::optional<std::u16string> raw_label = absl::nullopt,
+          query_parser::Snippet::MatchPositions label_match_positions = {},
+          std::vector<std::string> related_searches = {},
+          float search_match_score = 0);
   Cluster(const Cluster&);
   Cluster(Cluster&&);
   Cluster& operator=(const Cluster&);

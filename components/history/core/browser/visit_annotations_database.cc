@@ -28,6 +28,11 @@ namespace {
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
   " visit_id,context_annotation_flags,duration_since_last_visit," \
   "page_end_reason,total_foreground_duration "
+#define HISTORY_CLUSTER_ROW_FIELDS \
+  " cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label "
+#define HISTORY_CLUSTER_VISIT_ROW_FIELDS                              \
+  " visit_id,score,engagement_score,url_for_deduping,normalized_url," \
+  "url_for_display "
 
 // Converts the serialized categories into a vector of (`id`, `weight`)
 // pairs.
@@ -446,6 +451,38 @@ void VisitAnnotationsDatabase::AddClusters(
   }
 }
 
+Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT" HISTORY_CLUSTER_ROW_FIELDS "FROM clusters WHERE cluster_id=?"));
+  statement.BindInt64(0, cluster_id);
+
+  if (!statement.Step())
+    return {};
+
+  VisitID received_cluster_id = statement.ColumnInt64(0);
+  DCHECK_EQ(cluster_id, received_cluster_id);
+
+  // The `VisitID` in column 0 is intentionally ignored, as it's not part of
+  // `VisitContextAnnotations`.
+  Cluster cluster;
+  cluster.cluster_id = received_cluster_id;
+  cluster.should_show_on_prominent_ui_surfaces = statement.ColumnBool(1);
+  // The DB can't represent `nullopt` labels, so they're persisted as u"" but
+  // retrieved as `nullopt` for consistency with their original values and the
+  // consumer expectations.
+  // TODO(manukh): Look into returning u"" instead of `nullopt` in the
+  //  clustering code, and likewise expect u"" instead of `nullopt` in the
+  //  clustering UI code.
+  cluster.label = statement.ColumnString16(2);
+  if (cluster.label->empty())
+    cluster.label = absl::nullopt;
+  cluster.raw_label = statement.ColumnString16(3);
+  if (cluster.raw_label->empty())
+    cluster.raw_label = absl::nullopt;
+  return cluster;
+}
+
 std::vector<int64_t> VisitAnnotationsDatabase::GetRecentClusterIds(
     base::Time minimum_time) {
   // Using `EXISTS` instead of `IN` would result in a full scan of
@@ -504,6 +541,31 @@ std::vector<VisitID> VisitAnnotationsDatabase::GetVisitIdsInCluster(
   while (statement.Step())
     visit_ids.push_back(statement.ColumnInt64(0));
   return visit_ids;
+}
+
+ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_CLUSTER_VISIT_ROW_FIELDS
+                     "FROM clusters_and_visits WHERE visit_id=?"));
+  statement.BindInt64(0, visit_id);
+
+  if (!statement.Step())
+    return {};
+
+  VisitID received_visit_id = statement.ColumnInt64(0);
+  DCHECK_EQ(visit_id, received_visit_id);
+
+  // The `VisitID` in column 0 is intentionally ignored, as it's not part of
+  // `VisitContextAnnotations`.
+  ClusterVisit cluster_visit;
+  cluster_visit.annotated_visit.visit_row.visit_id = received_visit_id;
+  cluster_visit.score = static_cast<float>(statement.ColumnDouble(1));
+  cluster_visit.engagement_score =
+      static_cast<float>(statement.ColumnDouble(2));
+  cluster_visit.url_for_deduping = GURL(statement.ColumnString(3));
+  cluster_visit.normalized_url = GURL(statement.ColumnString(4));
+  cluster_visit.url_for_display = statement.ColumnString16(5);
+  return cluster_visit;
 }
 
 bool VisitAnnotationsDatabase::IsVisitClustered(VisitID visit_id) {

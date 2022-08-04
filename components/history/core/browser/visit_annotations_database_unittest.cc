@@ -19,6 +19,7 @@ namespace history {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 }  // namespace
 
@@ -215,6 +216,90 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_GetCluster_GetClusterVisit) {
+  // Test `AddClusters()`.
+
+  // Cluster without visits shouldn't be added.
+  std::vector<Cluster> clusters;
+  // Cluster ID shouldn't matter, it should be auto-incremented in the db.
+  clusters.push_back({10, {}});
+
+  // Clusters with visits should be added.
+  ClusterVisit visit_1;
+  // Visit ID should matter, they should not be auto-incremented in the db.
+  visit_1.annotated_visit.visit_row.visit_id = 20;
+  visit_1.score = .4;
+  visit_1.engagement_score = .3;
+  visit_1.url_for_deduping = GURL{"url_for_deduping"};
+  visit_1.normalized_url = GURL{"normalized_url"};
+  visit_1.url_for_display = u"url_for_display";
+  // `matches_search_query` and `hidden` shouldn't matter, they are not
+  // persisted.
+  visit_1.matches_search_query = true;
+  visit_1.hidden = true;
+
+  ClusterVisit visit_2;
+  visit_2.annotated_visit.visit_row.visit_id = 21;
+  visit_2.score = .2;
+  visit_2.engagement_score = .1;
+  visit_2.url_for_deduping = GURL{"url_for_deduping_2"};
+  visit_2.normalized_url = GURL{"normalized_url_2"};
+  visit_2.url_for_display = u"url_for_display_2";
+
+  // `search_match_score` shouldn't matter, it is not persisted.
+  clusters.push_back(
+      {11, {visit_1, visit_2}, {}, false, u"label", u"raw_label", {}, {}, .6});
+
+  // Empty or `nullopt` labels should both be retrieved as `nullopt`.
+  clusters.push_back(
+      {11, {visit_1, visit_2}, {}, false, u"", absl::nullopt, {}, {}, .6});
+  AddClusters(clusters);
+
+  // Test `GetCluster()`
+
+  // Should return the non-empty cluster2.
+  const auto cluster_1 = GetCluster(1);
+  EXPECT_EQ(cluster_1.cluster_id, 1);
+  EXPECT_EQ(cluster_1.should_show_on_prominent_ui_surfaces, false);
+  EXPECT_EQ(cluster_1.label, u"label");
+  EXPECT_EQ(cluster_1.raw_label, u"raw_label");
+  // Should not populate visits.
+  EXPECT_TRUE(cluster_1.visits.empty());
+  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(20, 21));
+  // Should not populate the non-persisted `search_match_score` field.
+  EXPECT_EQ(cluster_1.search_match_score, 0);
+
+  const auto cluster_2 = GetCluster(2);
+  EXPECT_EQ(cluster_2.cluster_id, 2);
+  EXPECT_EQ(cluster_2.label, absl::nullopt);
+  EXPECT_EQ(cluster_2.raw_label, absl::nullopt);
+
+  // There should be no other cluster.
+  EXPECT_EQ(GetCluster(3).cluster_id, 0);
+
+  // Test `GetClusterVisit()`.
+
+  const auto visit_1_retrieved = GetClusterVisit(20);
+  EXPECT_EQ(visit_1_retrieved.annotated_visit.visit_row.visit_id, 20);
+  EXPECT_EQ(visit_1_retrieved.score, .4f);
+  EXPECT_EQ(visit_1_retrieved.engagement_score, .3f);
+  EXPECT_EQ(visit_1_retrieved.url_for_deduping, GURL{"url_for_deduping"});
+  EXPECT_EQ(visit_1_retrieved.normalized_url, GURL{"normalized_url"});
+  EXPECT_EQ(visit_1_retrieved.url_for_display, u"url_for_display");
+  // Should not populate the non-persisted `matches_search_query` and `hidden`
+  // fields.
+  EXPECT_EQ(visit_1_retrieved.matches_search_query, false);
+  EXPECT_EQ(visit_1_retrieved.hidden, false);
+
+  const auto visit_2_retrieved = GetClusterVisit(21);
+  EXPECT_EQ(visit_2_retrieved.annotated_visit.visit_row.visit_id, 21);
+  EXPECT_EQ(visit_2_retrieved.score, .2f);
+  EXPECT_EQ(visit_2_retrieved.engagement_score, .1f);
+  EXPECT_EQ(visit_2_retrieved.url_for_deduping, GURL{"url_for_deduping_2"});
+  EXPECT_EQ(visit_2_retrieved.normalized_url, GURL{"normalized_url_2"});
+  EXPECT_EQ(visit_2_retrieved.url_for_display, u"url_for_display_2");
+}
+
 TEST_F(VisitAnnotationsDatabaseTest, GetRecentClusterIds) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
@@ -246,7 +331,7 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
             std::vector<int64_t>({3}));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster_IsVisitClustered) {
+TEST_F(VisitAnnotationsDatabaseTest, GetVisitIdsInCluster_IsVisitClustered) {
   // Add unclustered visits.
   AddVisitWithTime(IntToTime(0));
   AddVisitWithTime(IntToTime(2));
