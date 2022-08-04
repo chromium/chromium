@@ -484,7 +484,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
 // Test that a fenced-frame does not perform any of the Android main-frame
 // viewport behaviors like zoom-out-to-fit-content or parsing the viewport
 // <meta>.
-IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, ViewportSettings) {
+// Flaky on Mac https://crbug.com/1349900
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ViewportSettings DISABLED_ViewportSettings
+#else
+#define MAYBE_ViewportSettings ViewportSettings
+#endif
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, MAYBE_ViewportSettings) {
   ASSERT_TRUE(https_server()->Start());
   const GURL top_level_url =
       https_server()->GetURL("c.test", "/fenced_frames/viewport.html");
