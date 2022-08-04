@@ -51,7 +51,7 @@ void XMLParserScriptRunner::PendingScriptFinished(
 
   // <spec label="Parsing" step="4">Execute the script element given by the
   // pending parsing-blocking script.</spec>
-  pending_script->ExecuteScriptBlock(NullURL());
+  pending_script->ExecuteScriptBlock();
 
   // <spec label="Parsing" step="5">Set the pending parsing-blocking script to
   // null.</spec>
@@ -102,7 +102,7 @@ void XMLParserScriptRunner::ProcessScriptElement(
       // TODO(hiroshige): XMLParserScriptRunner doesn't check style sheet that
       // is blocking scripts and thus the script is executed immediately here,
       // and thus Steps 1-3 are skipped.
-      pending_script->ExecuteScriptBlock(document.Url());
+      pending_script->ExecuteScriptBlock();
       break;
 
     case ScriptSchedulingType::kDefer:

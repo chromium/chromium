@@ -91,7 +91,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   const char* NameInHeapSnapshot() const override { return "PendingScript"; }
 
   // Returns nullptr when "script's script is null", i.e. an error occurred.
-  virtual Script* GetSource(const KURL& document_url) const = 0;
+  virtual Script* GetSource() const = 0;
 
   // https://html.spec.whatwg.org/C/#the-script-is-ready
   virtual bool IsReady() const = 0;
@@ -130,7 +130,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   // PendingScript::Dispose() is called in ExecuteScriptBlock().
   //
   // This is virtual only for testing.
-  virtual void ExecuteScriptBlock(const KURL&);
+  virtual void ExecuteScriptBlock();
 
   virtual bool IsEligibleForDelay() const { return false; }
 

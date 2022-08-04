@@ -80,11 +80,11 @@ std::unique_ptr<TracedValue> GetTraceArgsForScriptElement(
       pending_script->StartingPosition(), pending_script->UrlForTracing());
 }
 
-void DoExecuteScript(PendingScript* pending_script, const KURL& document_url) {
+void DoExecuteScript(PendingScript* pending_script) {
   TRACE_EVENT_WITH_FLOW1("blink", "HTMLParserScriptRunner ExecuteScript",
                          pending_script->GetElement(), TRACE_EVENT_FLAG_FLOW_IN,
                          "data", GetTraceArgsForScriptElement(pending_script));
-  pending_script->ExecuteScriptBlock(document_url);
+  pending_script->ExecuteScriptBlock();
 }
 
 void TraceParserBlockingScript(const PendingScript* pending_script,
@@ -125,17 +125,6 @@ void TraceParserBlockingScript(const PendingScript* pending_script,
                            element, TRACE_EVENT_FLAG_FLOW_OUT, "data",
                            GetTraceArgsForScriptElement(pending_script));
   }
-}
-
-static KURL DocumentURLForScriptExecution(Document* document) {
-  if (!document)
-    return KURL();
-
-  if (!document->GetFrame())
-    return KURL();
-
-  // Use the URL of the currently active document for this frame.
-  return document->GetFrame()->GetDocument()->Url();
 }
 
 }  // namespace
@@ -232,7 +221,7 @@ void HTMLParserScriptRunner::
 
     // <spec step="B.11">Execute the script element the script.</spec>
     DCHECK(IsExecutingScript());
-    DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
+    DoExecuteScript(pending_script);
 
     // <spec step="B.12">Decrement the parser's script nesting level by one. If
     // the parser's script nesting level is zero (which it always should be at
@@ -264,7 +253,7 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
     Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
   }
 
-  DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
+  DoExecuteScript(pending_script);
 }
 
 void HTMLParserScriptRunner::PendingScriptFinished(

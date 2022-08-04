@@ -78,7 +78,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
 
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
-          element, TextPosition::MinimumPosition(), KURL(), String(),
+          element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
           true /* is_external */);
 
@@ -106,13 +106,14 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
 ClassicPendingScript* ClassicPendingScript::CreateInline(
     ScriptElementBase* element,
     const TextPosition& starting_position,
+    const KURL& source_url,
     const KURL& base_url,
     const String& source_text,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
-          element, starting_position, base_url, source_text,
+          element, starting_position, source_url, base_url, source_text,
           source_location_type, options, false /* is_external */);
   pending_script->CheckState();
   return pending_script;
@@ -121,6 +122,7 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
 ClassicPendingScript::ClassicPendingScript(
     ScriptElementBase* element,
     const TextPosition& starting_position,
+    const KURL& source_url_for_inline_script,
     const KURL& base_url_for_inline_script,
     const String& source_text_for_inline_script,
     ScriptSourceLocationType source_location_type,
@@ -128,6 +130,7 @@ ClassicPendingScript::ClassicPendingScript(
     bool is_external)
     : PendingScript(element, starting_position),
       options_(options),
+      source_url_for_inline_script_(source_url_for_inline_script),
       base_url_for_inline_script_(base_url_for_inline_script),
       source_text_for_inline_script_(source_text_for_inline_script),
       source_location_type_(source_location_type),
@@ -384,7 +387,7 @@ static SingleCachedMetadataHandler* GetInlineCacheHandler(const String& source,
   return document_cache_handler->HandlerForSource(source);
 }
 
-ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
+ClassicScript* ClassicPendingScript::GetSource() const {
   CheckState();
   DCHECK(IsReady());
 
@@ -417,7 +420,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
 
     return ClassicScript::Create(
         source_text_for_inline_script_,
-        ClassicScript::StripFragmentIdentifier(document_url),
+        ClassicScript::StripFragmentIdentifier(source_url_for_inline_script_),
         base_url_for_inline_script_, options_, source_location_type_,
         SanitizeScriptErrors::kDoNotSanitize, cache_handler, StartingPosition(),
         streamer ? ScriptStreamer::NotStreamingReason::kInvalid

@@ -64,7 +64,7 @@ void ModulePendingScript::NotifyModuleTreeLoadFinished() {
   PendingScriptFinished();
 }
 
-Script* ModulePendingScript::GetSource(const KURL& document_url) const {
+Script* ModulePendingScript::GetSource() const {
   CHECK(IsReady());
   return GetModuleScript();
 }

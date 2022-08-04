@@ -47,6 +47,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   // For an inline script.
   static ClassicPendingScript* CreateInline(ScriptElementBase*,
                                             const TextPosition&,
+                                            const KURL& source_url,
                                             const KURL& base_url,
                                             const String& source_text,
                                             ScriptSourceLocationType,
@@ -54,6 +55,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   ClassicPendingScript(ScriptElementBase*,
                        const TextPosition&,
+                       const KURL& source_url_for_inline_script,
                        const KURL& base_url_for_inline_script,
                        const String& source_text_for_inline_script,
                        ScriptSourceLocationType,
@@ -67,7 +69,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
     return mojom::blink::ScriptType::kClassic;
   }
 
-  ClassicScript* GetSource(const KURL& document_url) const override;
+  ClassicScript* GetSource() const override;
   bool IsReady() const override;
   bool IsExternal() const override { return is_external_; }
   bool WasCanceled() const override;
@@ -116,6 +118,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   void OnPurgeMemory() override;
 
   const ScriptFetchOptions options_;
+
+  const KURL source_url_for_inline_script_;
 
   // "base url" snapshot taken at #prepare-a-script timing.
   // https://html.spec.whatwg.org/C/#prepare-a-script

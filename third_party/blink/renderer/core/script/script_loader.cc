@@ -852,10 +852,13 @@ PendingScript* ScriptLoader::PrepareScript(
           script_location_type =
               ScriptSourceLocationType::kInlineInsideDocumentWrite;
         }
+        KURL source_url = (!is_in_document_write && parser_inserted_)
+                              ? element_document.Url()
+                              : KURL();
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
-            element_, position, base_url, source_text, script_location_type,
-            options);
+            element_, position, source_url, base_url, source_text,
+            script_location_type, options);
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1015,11 +1018,7 @@ PendingScript* ScriptLoader::PrepareScript(
     case ScriptSchedulingType::kImmediate: {
       // <spec step="32.3">Otherwise, immediately execute the script element el,
       // even if other scripts are already executing.</spec>
-      KURL script_url = (!is_in_document_write && parser_inserted_)
-                            ? element_document.Url()
-                            : KURL();
-      TakePendingScript(ScriptSchedulingType::kImmediate)
-          ->ExecuteScriptBlock(script_url);
+      TakePendingScript(ScriptSchedulingType::kImmediate)->ExecuteScriptBlock();
       return nullptr;
     }
 

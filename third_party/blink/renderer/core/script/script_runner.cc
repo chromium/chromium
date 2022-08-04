@@ -208,7 +208,7 @@ void ScriptRunner::ExecutePendingScript(PendingScript* pending_script) {
   DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
   DCHECK(pending_script);
 
-  pending_script->ExecuteScriptBlock(NullURL());
+  pending_script->ExecuteScriptBlock();
 
   document_->DecrementLoadEventDelayCount();
 }
