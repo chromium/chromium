@@ -1543,7 +1543,12 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
     case EnrollmentScreen::Result::BACK:
     case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
       PerformOOBECompletedActions();
-      ShowPackagedLicenseScreen();
+      if (prescribed_enrollment_config_.is_forced()) {
+        LOG(WARNING) << "User trying to skip enrollment screen";
+        ShowPackagedLicenseScreen();
+      } else {
+        ShowLoginScreen();
+      }
       break;
     case EnrollmentScreen::Result::TPM_ERROR:
       DCHECK(switches::IsTpmDynamic());
