@@ -46,13 +46,13 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           Profile::FromWebUI(web_ui()));
 
-  base::DictionaryValue response;
-  response.SetStringKey("email", user->GetDisplayEmail());
+  base::Value::Dict response;
+  response.Set("email", user->GetDisplayEmail());
 
   scoped_refptr<base::RefCountedMemory> image =
       chromeos::UserImageSource::GetUserImage(user->GetAccountId());
-  response.SetStringKey("profilePhotoUrl",
-                        webui::GetPngDataUrl(image->front(), image->size()));
+  response.Set("profilePhotoUrl",
+               webui::GetPngDataUrl(image->front(), image->size()));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

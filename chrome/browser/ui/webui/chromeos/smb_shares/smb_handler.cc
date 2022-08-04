@@ -24,10 +24,11 @@ smb_client::SmbService* GetSmbService(Profile* profile) {
   return service;
 }
 
-base::Value BuildShareList(const std::vector<smb_client::SmbUrl>& shares) {
-  base::Value shares_list(base::Value::Type::LIST);
+base::Value::List BuildShareList(
+    const std::vector<smb_client::SmbUrl>& shares) {
+  base::Value::List shares_list;
   for (const auto& share : shares) {
-    shares_list.Append(base::Value(share.GetWindowsUNCString()));
+    shares_list.Append(share.GetWindowsUNCString());
   }
   return shares_list;
 }

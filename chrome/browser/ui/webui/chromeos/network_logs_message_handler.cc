@@ -52,9 +52,9 @@ bool WriteTimestampedFile(const base::FilePath& file_path,
   return bytes_written > 0;
 }
 
-bool GetBoolOrFalse(const base::Value& dict, const char* keyname) {
-  const base::Value* key = dict.FindKey(keyname);
-  return key && key->GetBool();
+bool GetBoolOrFalse(const base::Value::Dict& dict, const char* keyname) {
+  const auto key = dict.FindBool(keyname);
+  return key && *key;
 }
 
 }  // namespace
@@ -77,7 +77,7 @@ void NetworkLogsMessageHandler::RegisterMessages() {
 void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
                                         const std::string& result,
                                         bool is_error) {
-  base::Value response(base::Value::Type::LIST);
+  base::Value::List response;
   response.Append(result);
   response.Append(is_error);
   ResolveJavascriptCallback(base::Value(callback_id), response);
@@ -86,7 +86,7 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
   CHECK_EQ(2u, list.size());
   std::string callback_id = list[0].GetString();
-  const base::Value& options = list[1];
+  const base::Value::Dict& options = list[1].GetDict();
   AllowJavascript();
 
   if (GetBoolOrFalse(options, "systemLogs")) {
@@ -103,7 +103,7 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
 
 void NetworkLogsMessageHandler::OnWriteSystemLogs(
     const std::string& callback_id,
-    base::Value&& options,
+    base::Value::Dict&& options,
     absl::optional<base::FilePath> syslogs_path) {
   if (!syslogs_path) {
     Respond(callback_id, "Error writing system logs file.", /*is_error=*/true);
@@ -114,7 +114,7 @@ void NetworkLogsMessageHandler::OnWriteSystemLogs(
 
 void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
     const std::string& callback_id,
-    base::Value&& options) {
+    base::Value::Dict&& options) {
   if (GetBoolOrFalse(options, "debugLogs")) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
       Respond(callback_id, "Debug logs unavailable on Linux build.",
@@ -134,7 +134,7 @@ void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
 
 void NetworkLogsMessageHandler::OnWriteDebugLogs(
     const std::string& callback_id,
-    base::Value&& options,
+    base::Value::Dict&& options,
     absl::optional<base::FilePath> logs_path) {
   if (!logs_path) {
     Respond(callback_id, "Error writing debug logs.", /*is_error=*/true);
@@ -145,7 +145,7 @@ void NetworkLogsMessageHandler::OnWriteDebugLogs(
 
 void NetworkLogsMessageHandler::MaybeWritePolicies(
     const std::string& callback_id,
-    base::Value&& options) {
+    base::Value::Dict&& options) {
   if (GetBoolOrFalse(options, "policies")) {
     std::string json_policies = GetJsonPolicies(web_ui());
     base::ThreadPool::PostTaskAndReplyWithResult(

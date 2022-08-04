@@ -259,7 +259,7 @@ void MultidevicePhoneHubHandler::RemoveObservers() {
 
 void MultidevicePhoneHubHandler::OnNotificationsRemoved(
     const base::flat_set<int64_t>& notification_ids) {
-  base::ListValue removed_notification_id_js_list;
+  base::Value::List removed_notification_id_js_list;
   for (const int64_t& id : notification_ids) {
     removed_notification_id_js_list.Append(static_cast<double>(id));
   }
@@ -297,10 +297,10 @@ void MultidevicePhoneHubHandler::OnShouldShowOnboardingUiChanged() {
 }
 
 void MultidevicePhoneHubHandler::OnCameraRollViewUiStateUpdated() {
-  base::Value camera_roll_dict(base::Value::Type::DICTIONARY);
-  camera_roll_dict.GetDict().Set(
-      "isCameraRollEnabled", fake_phone_hub_manager_->fake_camera_roll_manager()
-                                 ->is_camera_roll_enabled());
+  base::Value::Dict camera_roll_dict;
+  camera_roll_dict.Set("isCameraRollEnabled",
+                       fake_phone_hub_manager_->fake_camera_roll_manager()
+                           ->is_camera_roll_enabled());
   FireWebUIListener("camera-roll-ui-view-state-updated", camera_roll_dict);
 }
 

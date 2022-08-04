@@ -24,15 +24,15 @@ const char kLogMessageSeverityKey[] = "severity";
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-base::Value LogMessageToDictionary(const LogBuffer::LogMessage& log_message) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kLogMessageTextKey, log_message.text);
-  dictionary.SetStringKey(
-      kLogMessageTimeKey,
-      base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary.SetStringKey(kLogMessageFileKey, log_message.file);
-  dictionary.SetIntKey(kLogMessageLineKey, log_message.line);
-  dictionary.SetIntKey(kLogMessageSeverityKey, log_message.severity);
+base::Value::Dict LogMessageToDictionary(
+    const LogBuffer::LogMessage& log_message) {
+  base::Value::Dict dictionary;
+  dictionary.Set(kLogMessageTextKey, log_message.text);
+  dictionary.Set(kLogMessageTimeKey,
+                 base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
+  dictionary.Set(kLogMessageFileKey, log_message.file);
+  dictionary.Set(kLogMessageLineKey, log_message.line);
+  dictionary.Set(kLogMessageSeverityKey, log_message.severity);
   return dictionary;
 }
 
@@ -65,7 +65,7 @@ void MultideviceLogsHandler::HandleGetLogMessages(
   for (const auto& log : *LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(list)));
+  ResolveJavascriptCallback(callback_id, list);
 }
 
 void MultideviceLogsHandler::OnLogBufferCleared() {

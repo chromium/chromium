@@ -32,15 +32,15 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
                bool is_error);
   void OnStoreLogs(const base::Value::List& list);
   void OnWriteSystemLogs(const std::string& callback_id,
-                         base::Value&& options,
+                         base::Value::Dict&& options,
                          absl::optional<base::FilePath> syslogs_path);
   void MaybeWriteDebugLogs(const std::string& callback_id,
-                           base::Value&& options);
+                           base::Value::Dict&& options);
   void OnWriteDebugLogs(const std::string& callback_id,
-                        base::Value&& options,
+                        base::Value::Dict&& options,
                         absl::optional<base::FilePath> logs_path);
   void MaybeWritePolicies(const std::string& callback_id,
-                          base::Value&& options);
+                          base::Value::Dict&& options);
   void OnWritePolicies(const std::string& callback_id, bool result);
   void OnWriteSystemLogsCompleted(const std::string& callback_id);
   void OnSetShillDebugging(const base::Value::List& list);

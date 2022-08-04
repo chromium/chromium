@@ -94,26 +94,26 @@ void HumanPresenceInternalsUIMessageHandler::OnHpsNotifyChanged(
 
 void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
     absl::optional<hps::HpsResultProto> state) {
-  base::DictionaryValue value;
+  base::Value::Dict value;
   if (state.has_value()) {
-    value.SetInteger("state", state->value());
-    value.SetInteger("inference_result", state->inference_result());
-    value.SetInteger("inference_result_valid", state->inference_result_valid());
+    value.Set("state", state->value());
+    value.Set("inference_result", state->inference_result());
+    value.Set("inference_result_valid", state->inference_result_valid());
   } else {
-    value.SetBoolean("disabled", true);
+    value.Set("disabled", true);
   }
   FireWebUIListener(hps::kHumanPresenceInternalsLockOnLeaveChangedEvent, value);
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult(
     absl::optional<hps::HpsResultProto> state) {
-  base::DictionaryValue value;
+  base::Value::Dict value;
   if (state.has_value()) {
-    value.SetInteger("state", state->value());
-    value.SetInteger("inference_result", state->inference_result());
-    value.SetInteger("inference_result_valid", state->inference_result_valid());
+    value.Set("state", state->value());
+    value.Set("inference_result", state->inference_result());
+    value.Set("inference_result_valid", state->inference_result_valid());
   } else {
-    value.SetBoolean("disabled", true);
+    value.Set("disabled", true);
   }
   FireWebUIListener(hps::kHumanPresenceInternalsSnoopingProtectionChangedEvent,
                     value);
@@ -140,8 +140,8 @@ void HumanPresenceInternalsUIMessageHandler::Connect(
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnConnected(bool connected) {
-  base::DictionaryValue value;
-  value.SetBoolean("connected", connected);
+  base::Value::Dict value;
+  value.Set("connected", connected);
   FireWebUIListener(hps::kHumanPresenceInternalsConnectedEvent, value);
 
   if (connected) {

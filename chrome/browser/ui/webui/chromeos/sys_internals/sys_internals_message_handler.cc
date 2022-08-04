@@ -101,24 +101,25 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
   return true;
 }
 
-void SetConstValue(base::Value* result) {
+void SetConstValue(base::Value::Dict* result) {
   DCHECK(result);
   int counter_max = static_cast<int>(COUNTER_MAX);
-  result->SetPath({"const", "counterMax"}, base::Value(counter_max));
+  result->SetByDottedPath("const.counterMax", counter_max);
 }
 
-void SetCpusValue(const std::vector<CpuInfo>& infos, base::Value* result) {
+void SetCpusValue(const std::vector<CpuInfo>& infos,
+                  base::Value::Dict* result) {
   DCHECK(result);
-  base::Value cpu_results(base::Value::Type::LIST);
+  base::Value::List cpu_results;
   for (const CpuInfo& cpu : infos) {
-    base::Value cpu_result(base::Value::Type::DICTIONARY);
-    cpu_result.SetKey("user", base::Value(cpu.user));
-    cpu_result.SetKey("kernel", base::Value(cpu.kernel));
-    cpu_result.SetKey("idle", base::Value(cpu.idle));
-    cpu_result.SetKey("total", base::Value(cpu.total));
+    base::Value::Dict cpu_result;
+    cpu_result.Set("user", cpu.user);
+    cpu_result.Set("kernel", cpu.kernel);
+    cpu_result.Set("idle", cpu.idle);
+    cpu_result.Set("total", cpu.total);
     cpu_results.Append(std::move(cpu_result));
   }
-  result->SetKey("cpus", std::move(cpu_results));
+  result->Set("cpus", std::move(cpu_results));
 }
 
 const double kBytesInKB = 1024;
@@ -132,44 +133,41 @@ double GetAvailablePhysicalMemory(const base::SystemMemoryInfoKB& info) {
 
 void SetMemValue(const base::SystemMemoryInfoKB& info,
                  const base::VmStatInfo& vmstat,
-                 base::Value* result) {
+                 base::Value::Dict* result) {
   DCHECK(result);
-  base::Value mem_result(base::Value::Type::DICTIONARY);
+  base::Value::Dict mem_result;
 
   // For values that may exceed the range of 32-bit signed integer, use double.
   double total = static_cast<double>(info.total) * kBytesInKB;
-  mem_result.SetKey("total", base::Value(total));
-  mem_result.SetKey("available", base::Value(GetAvailablePhysicalMemory(info)));
+  mem_result.Set("total", total);
+  mem_result.Set("available", GetAvailablePhysicalMemory(info));
   double swap_total = static_cast<double>(info.swap_total) * kBytesInKB;
-  mem_result.SetKey("swapTotal", base::Value(swap_total));
+  mem_result.Set("swapTotal", swap_total);
   double swap_free = static_cast<double>(info.swap_free) * kBytesInKB;
-  mem_result.SetKey("swapFree", base::Value(swap_free));
+  mem_result.Set("swapFree", swap_free);
 
-  mem_result.SetKey("pswpin", base::Value(ToCounter(vmstat.pswpin)));
-  mem_result.SetKey("pswpout", base::Value(ToCounter(vmstat.pswpout)));
+  mem_result.Set("pswpin", ToCounter(vmstat.pswpin));
+  mem_result.Set("pswpout", ToCounter(vmstat.pswpout));
 
-  result->SetKey("memory", std::move(mem_result));
+  result->Set("memory", std::move(mem_result));
 }
 
-void SetZramValue(const base::SwapInfo& info, base::Value* result) {
+void SetZramValue(const base::SwapInfo& info, base::Value::Dict* result) {
   DCHECK(result);
-  base::Value zram_result(base::Value::Type::DICTIONARY);
+  base::Value::Dict zram_result;
 
-  zram_result.SetKey("numReads", base::Value(ToCounter(info.num_reads)));
-  zram_result.SetKey("numWrites", base::Value(ToCounter(info.num_writes)));
+  zram_result.Set("numReads", ToCounter(info.num_reads));
+  zram_result.Set("numWrites", ToCounter(info.num_writes));
 
   // For values that may exceed the range of 32-bit signed integer, use double.
-  zram_result.SetKey("comprDataSize",
-                     base::Value(static_cast<double>(info.compr_data_size)));
-  zram_result.SetKey("origDataSize",
-                     base::Value(static_cast<double>(info.orig_data_size)));
-  zram_result.SetKey("memUsedTotal",
-                     base::Value(static_cast<double>(info.mem_used_total)));
+  zram_result.Set("comprDataSize", static_cast<double>(info.compr_data_size));
+  zram_result.Set("origDataSize", static_cast<double>(info.orig_data_size));
+  zram_result.Set("memUsedTotal", static_cast<double>(info.mem_used_total));
 
-  result->SetKey("zram", std::move(zram_result));
+  result->Set("zram", std::move(zram_result));
 }
 
-base::Value GetSysInfo() {
+base::Value::Dict GetSysInfo() {
   std::vector<CpuInfo> cpu_infos(base::SysInfo::NumberOfProcessors());
   if (!GetCpuInfo(&cpu_infos)) {
     DLOG(WARNING) << "Failed to get system CPU info.";
@@ -188,7 +186,7 @@ base::Value GetSysInfo() {
     DLOG(WARNING) << ("Failed to get system zram info.");
   }
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   SetConstValue(&result);
   SetCpusValue(cpu_infos, &result);
   SetMemValue(mem_info, vmstat_info, &result);
@@ -228,7 +226,7 @@ void SysInternalsMessageHandler::HandleGetSysInfo(
 }
 
 void SysInternalsMessageHandler::ReplySysInfo(base::Value callback_id,
-                                              base::Value result) {
+                                              base::Value::Dict result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ResolveJavascriptCallback(callback_id, result);

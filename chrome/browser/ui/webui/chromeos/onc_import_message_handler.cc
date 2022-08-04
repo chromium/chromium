@@ -54,7 +54,7 @@ void OncImportMessageHandler::RegisterMessages() {
 void OncImportMessageHandler::Respond(const std::string& callback_id,
                                       const std::string& result,
                                       bool is_error) {
-  base::Value response(base::Value::Type::LIST);
+  base::Value::List response;
   response.Append(result);
   response.Append(is_error);
   ResolveJavascriptCallback(base::Value(callback_id), response);

@@ -137,26 +137,26 @@ void OSSyncHandler::PushSyncPrefs() {
   if (!service || !service->IsEngineInitialized())
     return;
 
-  base::DictionaryValue args;
+  base::Value::Dict args;
   SyncUserSettings* user_settings = service->GetUserSettings();
   // Tell the UI layer which data types are registered/enabled by the user.
-  args.SetBoolKey("syncAllOsTypes", user_settings->IsSyncAllOsTypesEnabled());
+  args.Set("syncAllOsTypes", user_settings->IsSyncAllOsTypesEnabled());
   UserSelectableOsTypeSet registered_types =
       user_settings->GetRegisteredSelectableOsTypes();
   UserSelectableOsTypeSet selected_types = user_settings->GetSelectedOsTypes();
 
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string type_name = syncer::GetUserSelectableOsTypeName(type);
-    args.SetBoolPath(type_name + "Registered", registered_types.Has(type));
-    args.SetBoolPath(type_name + "Synced", selected_types.Has(type));
+    args.SetByDottedPath(type_name + "Registered", registered_types.Has(type));
+    args.SetByDottedPath(type_name + "Synced", selected_types.Has(type));
   }
 
   // Wallpaper sync status is fetched from prefs and is considered enabled if
   // all OS types are enabled; this mimics behavior of GetSelectedOsTypes().
-  args.SetBoolKey(kWallpaperEnabledKey,
-                  user_settings->IsSyncAllOsTypesEnabled() ||
-                      profile_->GetPrefs()->GetBoolean(
-                          chromeos::settings::prefs::kSyncOsWallpaper));
+  args.Set(kWallpaperEnabledKey,
+           user_settings->IsSyncAllOsTypesEnabled() ||
+               profile_->GetPrefs()->GetBoolean(
+                   chromeos::settings::prefs::kSyncOsWallpaper));
 
   FireWebUIListener("os-sync-prefs-changed", args);
 }

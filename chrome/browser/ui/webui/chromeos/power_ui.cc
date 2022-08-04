@@ -98,7 +98,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(
     element.Set("externalPower", sample.external_power);
     element.Set("time", sample.time.ToJsTime());
 
-    js_power_supply_data.Append(base::Value(std::move(element)));
+    js_power_supply_data.Append(std::move(element));
   }
 
   base::Value::List js_system_resumed_data = GetJsSystemResumedData();
@@ -107,7 +107,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(
   data.Set("powerSupplyData", std::move(js_power_supply_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(data)));
+  ResolveJavascriptCallback(callback_id, data);
 }
 
 void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
@@ -129,7 +129,7 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
   data.Set("idleStateData", std::move(js_idle_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(data)));
+  ResolveJavascriptCallback(callback_id, data);
 }
 
 void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
@@ -151,7 +151,7 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
   data.Set("freqStateData", std::move(js_freq_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(data)));
+  ResolveJavascriptCallback(callback_id, data);
 }
 
 void PowerMessageHandler::OnGetProcessUsageData(const base::Value::List& args) {
@@ -171,11 +171,10 @@ void PowerMessageHandler::OnGetProcessUsageData(const base::Value::List& args) {
     element.Set("cmdline", process_info.process_data.cmdline);
     element.Set("type", static_cast<int>(process_info.process_data.type));
     element.Set("powerUsageFraction", process_info.power_usage_fraction);
-    js_process_usages.Append(base::Value(std::move(element)));
+    js_process_usages.Append(std::move(element));
   }
 
-  ResolveJavascriptCallback(callback_id,
-                            base::Value(std::move(js_process_usages)));
+  ResolveJavascriptCallback(callback_id, js_process_usages);
 }
 
 base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
@@ -189,7 +188,7 @@ base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
     element.Set("sleepDuration", sample.sleep_duration.InMillisecondsF());
     element.Set("time", sample.time.ToJsTime());
 
-    data.Append(base::Value(std::move(element)));
+    data.Append(std::move(element));
   }
   return data;
 }
@@ -216,7 +215,7 @@ base::Value::List PowerMessageHandler::GetJsStateOccupancyData(
 
       js_sample_list.Append(std::move(js_sample));
     }
-    js_data.Append(base::Value(std::move(js_sample_list)));
+    js_data.Append(std::move(js_sample_list));
   }
   return js_data;
 }
