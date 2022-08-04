@@ -1043,6 +1043,13 @@ public class ImeAdapterImpl
     @CalledByNative
     private boolean requestStartStylusWriting() {
         if (mWebContents.getStylusWritingHandler() == null) return false;
+
+        // It is possible that current view is not focused when stylus writing is started just after
+        // interaction with some other view like Url bar, or share view. We need to focus it so that
+        // current web page also gets focused, allowing us to commit text into web input elements.
+        View containerView = getContainerView();
+        if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
+
         updateInputStateForStylusWriting();
         return mWebContents.getStylusWritingHandler().requestStartStylusWriting(
                 new StylusWritingImeCallback() {
