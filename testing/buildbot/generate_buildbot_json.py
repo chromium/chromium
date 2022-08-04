@@ -80,9 +80,10 @@ def cmp_tests(a, b):
 
 
 class GPUTelemetryTestGenerator(BaseGenerator):
-  def __init__(self, bb_gen, is_android_webview=False):
+  def __init__(self, bb_gen, is_android_webview=False, is_cast_streaming=False):
     super(GPUTelemetryTestGenerator, self).__init__(bb_gen)
     self._is_android_webview = is_android_webview
+    self._is_cast_streaming = is_cast_streaming
 
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     isolated_scripts = []
@@ -96,7 +97,8 @@ class GPUTelemetryTestGenerator(BaseGenerator):
         test = self.bb_gen.generate_gpu_telemetry_test(waterfall, tester_name,
                                                        tester_config, test_name,
                                                        config,
-                                                       self._is_android_webview)
+                                                       self._is_android_webview,
+                                                       self._is_cast_streaming)
         if test:
           isolated_scripts.append(test)
 
@@ -944,7 +946,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return [string.Template(arg).safe_substitute(substitutions) for arg in args]
 
   def generate_gpu_telemetry_test(self, waterfall, tester_name, tester_config,
-                                  test_name, test_config, is_android_webview):
+                                  test_name, test_config, is_android_webview,
+                                  is_cast_streaming):
     # These are all just specializations of isolated script tests with
     # a bunch of boilerplate command line arguments added.
 
@@ -1003,8 +1006,13 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # queue.
     result['should_retry_with_patch'] = False
 
-    browser = ('android-webview-instrumentation'
-               if is_android_webview else tester_config['browser_config'])
+    browser = ''
+    if is_cast_streaming:
+      browser = 'cast-streaming-shell'
+    elif is_android_webview:
+      browser = 'android-webview-instrumentation'
+    else:
+      browser = tester_config['browser_config']
 
     # Most platforms require --enable-logging=stderr to get useful browser logs.
     # However, this actively messes with logging on CrOS (because Chrome's
@@ -1043,19 +1051,21 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
   def get_test_generator_map(self):
     return {
         'android_webview_gpu_telemetry_tests':
-            GPUTelemetryTestGenerator(self, is_android_webview=True),
+        GPUTelemetryTestGenerator(self, is_android_webview=True),
+        'cast_streaming_tests':
+        GPUTelemetryTestGenerator(self, is_cast_streaming=True),
         'gpu_telemetry_tests':
-            GPUTelemetryTestGenerator(self),
+        GPUTelemetryTestGenerator(self),
         'gtest_tests':
-            GTestGenerator(self),
+        GTestGenerator(self),
         'isolated_scripts':
-            IsolatedScriptTestGenerator(self),
+        IsolatedScriptTestGenerator(self),
         'junit_tests':
-            JUnitGenerator(self),
+        JUnitGenerator(self),
         'scripts':
-            ScriptGenerator(self),
+        ScriptGenerator(self),
         'skylab_tests':
-            SkylabGenerator(self),
+        SkylabGenerator(self),
     }
 
   def get_test_type_remapper(self):
