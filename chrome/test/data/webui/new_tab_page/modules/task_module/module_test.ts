@@ -8,7 +8,7 @@ import {DismissModuleEvent, recipeTasksDescriptor, TaskModuleElement, TaskModule
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
@@ -310,4 +310,91 @@ suite('NewTabPageModulesTaskModuleTest', () => {
           assertTrue(disableButton.innerText.includes(showText));
         });
   });
+
+  test('hide query chip container when relatedSearches is empty', async () => {
+    // Arrange.
+    const task = {
+      title: 'Hello world',
+      taskItems: [
+        {
+          name: 'foo',
+          imageUrl: {url: 'https://foo.com/img.png'},
+          siteName: 'Foo Site',
+          info: 'foo info',
+          targetUrl: {url: 'https://foo.com'},
+        },
+        {
+          name: 'bar',
+          imageUrl: {url: 'https://bar.com/img.png'},
+          siteName: 'Bar Site',
+          info: 'bar info',
+          targetUrl: {url: 'https://bar.com'},
+        },
+      ],
+      relatedSearches: [],
+    };
+    handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
+
+    // Act.
+    const moduleElement =
+        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+    document.body.append(moduleElement);
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
+
+    // Assert.
+    const relatedSearchesContainer =
+        moduleElement.shadowRoot!.querySelector<HTMLAnchorElement>(
+            '#relatedSearches');
+    assertTrue(relatedSearchesContainer!.hidden);
+  });
+
+  test(
+      'show query chip container when relatedSearches is not empty',
+      async () => {
+        // Arrange.
+        const task = {
+          title: 'Hello world',
+          taskItems: [
+            {
+              name: 'foo',
+              imageUrl: {url: 'https://foo.com/img.png'},
+              siteName: 'Foo Site',
+              info: 'foo info',
+              targetUrl: {url: 'https://foo.com'},
+            },
+            {
+              name: 'bar',
+              imageUrl: {url: 'https://bar.com/img.png'},
+              siteName: 'Bar Site',
+              info: 'bar info',
+              targetUrl: {url: 'https://bar.com'},
+            },
+          ],
+          relatedSearches: [
+            {
+              text: 'baz',
+              targetUrl: {url: 'https://baz.com'},
+            },
+            {
+              text: 'blub',
+              targetUrl: {url: 'https://blub.com'},
+            },
+          ],
+        };
+        handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
+
+        // Act.
+        const moduleElement =
+            await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        document.body.append(moduleElement);
+        moduleElement.$.taskItemsRepeat.render();
+        moduleElement.$.relatedSearchesRepeat.render();
+
+        // Assert.
+        const relatedSearchesContainer =
+            moduleElement.shadowRoot!.querySelector<HTMLAnchorElement>(
+                '#relatedSearches');
+        assertFalse(relatedSearchesContainer!.hidden);
+      });
 });
