@@ -45,10 +45,9 @@ bool NodeLayoutUpgrade::ShouldUpgrade() {
   StyleEngine& style_engine = node_.GetDocument().GetStyleEngine();
   if (style_engine.SkippedContainerRecalc())
     return true;
-  if (!style_engine.StyleAffectedByLayout())
-    return false;
 
-  Reasons mask = kDependsOnSizeContainerQueries;
+  Reasons mask =
+      style_engine.StyleAffectedByLayout() ? kDependsOnSizeContainerQueries : 0;
 
   if (GetReasons(node_) & mask)
     return true;
@@ -59,6 +58,10 @@ bool NodeLayoutUpgrade::ShouldUpgrade() {
   // inside any interleaving root.
   if (ComputedStyle::IsNullOrEnsured(node_.GetComputedStyle()))
     mask |= NodeLayoutUpgrade::kInterleavingRoot;
+
+  // Early out if nothing can possibly match.
+  if (!mask)
+    return false;
 
   for (ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node_);
        ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
