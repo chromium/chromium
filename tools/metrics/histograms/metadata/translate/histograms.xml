@@ -34,7 +34,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
     enum="LocaleCodeISO639" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -48,8 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage.Count"
-    units="languages" expires_after="2022-09-11">
-  <owner>curranmax@google.com</owner>
+    units="languages" expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -62,7 +60,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.ApplicationStart.NeverTranslateLanguage"
     enum="LocaleCodeISO639" expires_after="2022-12-25">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -77,7 +74,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.ApplicationStart.NeverTranslateLanguage.Count"
     units="languages" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -90,7 +86,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.ApplicationStart.NeverTranslateSite.Count"
     units="sites" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -198,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.Translate"
-    enum="LocaleCodeISO639" expires_after="2022-09-11">
+    enum="LocaleCodeISO639" expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -318,7 +313,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.LanguageDetection.LanguageVerification"
     enum="TranslateLanguageVerification" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -439,8 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.AutofillAssistantDeferredTriggerDecision"
-    enum="BooleanDeferred" expires_after="2022-09-11">
-  <owner>curranmax@google.com</owner>
+    enum="BooleanDeferred" expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -453,7 +446,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.FinalSourceLanguage"
     enum="LocaleCodeISO639" expires_after="2022-11-27">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -467,7 +459,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.FinalState" enum="TranslateState"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -481,7 +472,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.FinalTargetLanguage"
     enum="LocaleCodeISO639" expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -495,7 +485,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.HrefHint.TriggerDecision"
     enum="TranslateTriggerDecision" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -507,8 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2022-09-11">
-  <owner>curranmax@google.com</owner>
+    enum="LocaleCodeISO639" expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -522,7 +510,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.InitialState" enum="TranslateState"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -536,7 +523,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage"
     enum="LocaleCodeISO639" expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -550,7 +536,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage.Origin"
     enum="TranslateTargetLanguageOrigin" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -565,7 +550,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Translate.PageLoad.IsInitialSourceLanguageInUsersContentLanguages"
     enum="Boolean" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -580,7 +564,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.NumReversions" units="reversions"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -593,7 +576,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.NumTargetLanguageChanges"
     units="target language changes" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -606,7 +588,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.NumTranslations" units="translations"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -618,7 +599,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.Ranker.Decision"
     enum="TranslateRankerDecision" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -630,8 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.Ranker.Timer.ShouldOfferTranslation"
-    units="ms" expires_after="2022-09-11">
-  <owner>curranmax@google.com</owner>
+    units="ms" expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -645,7 +624,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.Ranker.Version" units="version"
     expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -657,7 +635,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageLoad.TriggerDecision"
     enum="TranslateTriggerDecision" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -675,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialBubbleUiEvent"
-    enum="PartialTranslateBubbleUiEvent" expires_after="2022-11-01">
+    enum="PartialTranslateBubbleUiEvent" expires_after="2023-08-31">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Tracks UI events related to the Partial Translate bubble.</summary>
@@ -683,7 +660,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
     expires_after="2023-01-22">
-  <owner>rogerm@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Tracks the outcome of attempts to download a Translate Ranker Model.
@@ -692,7 +669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Ranker.Model.Version" units="date stamp"
     expires_after="M85">
-  <owner>rogerm@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The date tamp (e.g., 20160916 -&gt; 15 Sept 2016) which denotes the
@@ -701,8 +678,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Ranker.QueryResult" enum="BooleanAccepted"
-    expires_after="2022-09-11">
-  <owner>rogerm@google.com</owner>
+    expires_after="2023-08-31">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Whether the TranslateRanker accepts or denies to show the translation
@@ -771,12 +748,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.SimilarLanguageMatch" enum="BooleanMatched"
-    expires_after="2022-09-11">
+    expires_after="2023-08-31">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     This metrics is logged whenever a page is loaded. The logged value is
-    &quot;Mathced&quot; when the CLD-detected language differs from the page
+    &quot;Matched&quot; when the CLD-detected language differs from the page
     language code, and the two languages are such similar languages. In that
     case, Chrome ignore the CLD-determined language and instead uses the page
     language code. The page language code is decided by Content-Language and
@@ -826,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translate.AMPCacheURL" enum="BooleanTranslate"
-    expires_after="2022-09-11">
+    expires_after="2023-08-31">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -907,7 +884,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.SourceLanguage" enum="LocaleCodeISO639"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -920,7 +896,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.Status" enum="TranslationStatus"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -940,7 +915,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.TargetLanguage" enum="LocaleCodeISO639"
     expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -953,7 +927,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.TargetLanguage.Origin"
     enum="TranslateTargetLanguageOrigin" expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -965,7 +938,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.TimeToBeReady" units="ms"
     expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -978,7 +950,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.TimeToLoad" units="ms"
     expires_after="2023-01-22">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -991,7 +962,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.TimeToTranslate" units="ms"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1004,7 +974,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.Translation.Type" enum="TranslationType"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1018,7 +987,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.UiInteraction.Event" enum="TranslateUIInteraction"
     expires_after="2023-01-15">
-  <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
