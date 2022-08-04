@@ -84,7 +84,7 @@ def handle_shard_failures_with(on_failure):
   return decorator
 
 
-def place_nomedia_on_device(dev, device_root):
+def place_nomedia_on_device(dev, device_root, run_as=None, as_root=False):
   """Places .nomedia file in test data root.
 
   This helps to prevent system from scanning media files inside test data.
@@ -94,8 +94,14 @@ def place_nomedia_on_device(dev, device_root):
     device_root: Base path on device to place .nomedia file.
   """
 
-  dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
-  dev.WriteFile('%s/.nomedia' % device_root, 'https://crbug.com/796640')
+  dev.RunShellCommand(['mkdir', '-p', device_root],
+                      run_as=run_as,
+                      as_root=as_root,
+                      check_return=True)
+  dev.WriteFile('%s/.nomedia' % device_root,
+                'https://crbug.com/796640',
+                run_as=run_as,
+                as_root=as_root)
 
 
 # TODO(1262303): After Telemetry is supported by python3 we can re-add

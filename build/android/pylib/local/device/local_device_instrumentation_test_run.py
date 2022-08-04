@@ -191,14 +191,22 @@ class LocalDeviceInstrumentationTestRun(
     self._shared_prefs_to_restore = []
     self._skia_gold_session_manager = None
     self._skia_gold_work_dir = None
+    self._target_package = _GetTargetPackageName(test_instance.test_apk)
 
   #override
   def TestPackage(self):
     return self._test_instance.suite
 
+  def _GetDataStorageRootDirectory(self, device):
+    if self._test_instance.store_data_in_app_directory:
+      # TODO(rmhasan): Add check to makes sure api level > 27. Selinux
+      # policy on Oreo does not allow app to read files from app data dir
+      # that were not put there by the app.
+      return device.GetApplicationDataDirectory(self._target_package)
+    return device.GetExternalStoragePath()
+
   #override
   def SetUp(self):
-    target_package = _GetTargetPackageName(self._test_instance.test_apk)
 
     @local_device_environment.handle_shard_failures_with(
         self._env.DenylistDevice)
@@ -383,7 +391,7 @@ class LocalDeviceInstrumentationTestRun(
         cmd = ['am', 'set-debug-app', '--persistent']
         if self._test_instance.wait_for_java_debugger:
           cmd.append('-w')
-        cmd.append(target_package)
+        cmd.append(self._target_package)
         dev.RunShellCommand(cmd, check_return=True)
 
       @trace_event.traced
@@ -418,20 +426,32 @@ class LocalDeviceInstrumentationTestRun(
 
       @instrumentation_tracing.no_tracing
       def push_test_data(dev):
-        device_root = posixpath.join(dev.GetExternalStoragePath(),
-                                     'chromium_tests_root')
+        test_data_root_dir = posixpath.join(
+            self._GetDataStorageRootDirectory(dev), 'chromium_tests_root')
         host_device_tuples_substituted = [
-            (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
-            for h, d in host_device_tuples]
+            (h,
+             local_device_test_run.SubstituteDeviceRoot(d, test_data_root_dir))
+            for h, d in host_device_tuples
+        ]
         logging.info('Pushing data dependencies.')
         for h, d in host_device_tuples_substituted:
           logging.debug('  %r -> %r', h, d)
-        local_device_environment.place_nomedia_on_device(dev, device_root)
+
+        as_root = self._test_instance.store_data_in_app_directory
+        local_device_environment.place_nomedia_on_device(dev,
+                                                         test_data_root_dir,
+                                                         as_root=as_root)
         dev.PushChangedFiles(host_device_tuples_substituted,
-                             delete_device_stale=True)
+                             delete_device_stale=True,
+                             as_root=as_root)
+
         if not host_device_tuples_substituted:
-          dev.RunShellCommand(['rm', '-rf', device_root], check_return=True)
-          dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
+          dev.RunShellCommand(['rm', '-rf', test_data_root_dir],
+                              check_return=True,
+                              as_root=as_root)
+          dev.RunShellCommand(['mkdir', '-p', test_data_root_dir],
+                              check_return=True,
+                              as_root=as_root)
 
       @trace_event.traced
       def create_flag_changer(dev):
@@ -493,7 +513,7 @@ class LocalDeviceInstrumentationTestRun(
     if self._test_instance.wait_for_java_debugger:
       logging.warning('*' * 80)
       logging.warning('Waiting for debugger to attach to process: %s',
-                      target_package)
+                      self._target_package)
       logging.warning('*' * 80)
 
   #override
@@ -798,6 +818,9 @@ class LocalDeviceInstrumentationTestRun(
       self._CreateFlagChangerIfNeeded(device)
       self._flag_changers[str(device)].PushFlags(add=flags_to_add)
 
+    if self._test_instance.store_data_in_app_directory:
+      extras.update({'fetchTestDataFromAppDataDir': 'true'})
+
     time_ms = lambda: int(time.time() * 1e3)
     start_ms = time_ms()
 
@@ -1084,11 +1107,15 @@ class LocalDeviceInstrumentationTestRun(
       logging.info('Could not get tests from pickle: %s', e)
     logging.info('Getting tests by having %s list them.',
                  self._test_instance.junit4_runner_class)
+    # We need to use GetAppWritablePath instead of GetExternalStoragePath
+    # here because we will not have applied legacy storage workarounds on R+
+    # yet.
+    # TODO(rmhasan): Figure out how to create the temp file inside the test
+    # app's data directory. Currently when the temp file is created read
+    # permissions are only given to the app's user id. Therefore we can't
+    # pull the file from the device.
     def list_tests(d):
       def _run(dev):
-        # We need to use GetAppWritablePath instead of GetExternalStoragePath
-        # here because we will not have applied legacy storage workarounds on R+
-        # yet.
         with device_temp_file.DeviceTempFile(
             dev.adb, suffix='.json',
             dir=dev.GetAppWritablePath()) as dev_test_list_json:
