@@ -876,7 +876,7 @@ export class FileTable extends Table {
     label.className = 'detail-name';
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
-    if (locationInfo.isDriveBased) {
+    if (locationInfo && locationInfo.isDriveBased) {
       label.appendChild(filelist.renderPinned(this.ownerDocument));
     }
     const isDlpRestricted = !!metadata.isDlpRestricted;
