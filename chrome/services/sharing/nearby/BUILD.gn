@@ -12,6 +12,8 @@ source_set("nearby") {
     "nearby_connections_conversions.h",
     "nearby_connections_stream_buffer_manager.cc",
     "nearby_connections_stream_buffer_manager.h",
+    "nearby_shared_remotes.cc",
+    "nearby_shared_remotes.h",
     "platform.cc",
   ]
 

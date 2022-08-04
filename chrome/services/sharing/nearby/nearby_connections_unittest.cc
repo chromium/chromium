@@ -202,50 +202,13 @@ class MockInputStream : public InputStream {
 class NearbyConnectionsTest : public testing::Test {
  public:
   NearbyConnectionsTest() {
-    // Set up CrosNetworkConfig mojo service.
-    cros_network_config_test_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
-    mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
-        cros_network_config_remote;
-    ash::GetNetworkConfigService(
-        cros_network_config_remote.InitWithNewPipeAndPassReceiver());
-
-    // Set up firewall hole factory mojo service.
-    mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
-        firewall_hole_factory_remote;
-    firewall_hole_factory_self_owned_receiver_ref_ =
-        mojo::MakeSelfOwnedReceiver(
-            std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
-            firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
-
-    // Set up TCP socket factory mojo service.
-    mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
-        tcp_socket_factory_remote;
-    tcp_socket_factory_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
-        std::make_unique<ash::nearby::FakeTcpSocketFactory>(
-            /*default_local_addr=*/net::IPEndPoint(
-                net::IPAddress(192, 168, 86, 75), 44444)),
-        tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
-
-    auto webrtc_dependencies = sharing::mojom::WebRtcDependencies::New(
-        webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
-    auto wifilan_dependencies = sharing::mojom::WifiLanDependencies::New(
-        std::move(cros_network_config_remote),
-        std::move(firewall_hole_factory_remote),
-        std::move(tcp_socket_factory_remote));
-    auto dependencies = sharing::mojom::NearbyDependencies::New(
-        bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
-        std::move(webrtc_dependencies), std::move(wifilan_dependencies),
-        location::nearby::api::LogMessage::Severity::kInfo);
     auto service_controller_router =
         std::make_unique<testing::NiceMock<MockServiceControllerRouter>>();
     service_controller_router_ptr_ = service_controller_router.get();
+
     nearby_connections_ = std::make_unique<NearbyConnections>(
-        remote_.BindNewPipeAndPassReceiver(), std::move(dependencies),
-        /*io_task_runner=*/nullptr,
+        remote_.BindNewPipeAndPassReceiver(),
+        location::nearby::api::LogMessage::Severity::kInfo,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
                        base::Unretained(this)));
     nearby_connections_->SetServiceControllerRouterForTesting(
@@ -475,46 +438,6 @@ class NearbyConnectionsTest : public testing::Test {
 
 TEST_F(NearbyConnectionsTest, RemoteDisconnect) {
   remote_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, BluetoothDisconnect) {
-  bluetooth_adapter_.adapter_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, P2PSocketManagerDisconnect) {
-  webrtc_dependencies_.socket_manager_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, MdnsResponderFactoryDisconnect) {
-  webrtc_dependencies_.mdns_responder_factory_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, IceConfigFetcherDisconnect) {
-  webrtc_dependencies_.ice_config_fetcher_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, WebRtcSignalingMessengerDisconnect) {
-  webrtc_dependencies_.messenger_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, CrosNetworkConfigDisconnect) {
-  cros_network_config_test_helper_.reset();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, FirewallHoleFactoryDisconnect) {
-  firewall_hole_factory_self_owned_receiver_ref_->Close();
-  disconnect_run_loop_.Run();
-}
-
-TEST_F(NearbyConnectionsTest, TcpSocketFactoryDisconnect) {
-  tcp_socket_factory_self_owned_receiver_ref_->Close();
   disconnect_run_loop_.Run();
 }
 
