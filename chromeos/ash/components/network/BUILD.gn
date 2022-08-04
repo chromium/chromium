@@ -251,6 +251,8 @@ source_set("unit_tests") {
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
     "//components/onc",
     "//components/prefs",
     "//components/prefs:test_support",

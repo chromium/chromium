@@ -120,6 +120,14 @@ const char CellularMetricsLogger::kSimLockNotificationLockType[] =
     "Network.Ash.Cellular.SimLock.Policy.Notification.LockType";
 
 // static
+const char CellularMetricsLogger::kUnrestrictedActiveNetworkSIMLockStatus[] =
+    "Network.Ash.Cellular.SimLock.Policy.Unrestricted.ActiveSIMLockStatus";
+
+// static
+const char CellularMetricsLogger::kRestrictedActiveNetworkSIMLockStatus[] =
+    "Network.Ash.Cellular.SimLock.Policy.Restricted.ActiveSIMLockStatus";
+
+// static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
     base::Seconds(15);
 
@@ -564,6 +572,44 @@ void CellularMetricsLogger::NetworkConnectionStateChanged(
   // chrome layers.
   CheckForShillConnectionFailureMetric(network);
   CheckForConnectionStateMetric(network);
+  CheckForSIMStatusMetric(network);
+}
+
+void CellularMetricsLogger::CheckForSIMStatusMetric(
+    const NetworkState* network) {
+  const DeviceState* cellular_device =
+      network_state_handler_->GetDeviceState(network->device_path());
+  if (!cellular_device || network->IsConnectingState()) {
+    return;
+  }
+
+  const std::string& sim_lock_type = cellular_device->sim_lock_type();
+
+  if (last_active_network_iccid_ == network->iccid() ||
+      (!network->IsConnectedState() && sim_lock_type.empty())) {
+    return;
+  }
+
+  last_active_network_iccid_ = network->iccid();
+  SimPinLockType lock_type;
+
+  if (sim_lock_type == shill::kSIMLockPin) {
+    lock_type = SimPinLockType::kPinLocked;
+  } else if (sim_lock_type == shill::kSIMLockPuk) {
+    lock_type = SimPinLockType::kPukLocked;
+  } else if (sim_lock_type.empty()) {
+    lock_type = SimPinLockType::kUnlocked;
+  } else {
+    NOTREACHED();
+  }
+
+  if (managed_network_configuration_handler_->AllowCellularSimLock()) {
+    base::UmaHistogramEnumeration(kUnrestrictedActiveNetworkSIMLockStatus,
+                                  lock_type);
+  } else {
+    base::UmaHistogramEnumeration(kRestrictedActiveNetworkSIMLockStatus,
+                                  lock_type);
+  }
 }
 
 void CellularMetricsLogger::CheckForTimeToConnectedMetric(

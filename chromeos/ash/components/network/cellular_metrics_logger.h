@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // after which cellular device is considered initialized.
   static const base::TimeDelta kInitializationTimeout;
 
+  // Histograms associated with SIM Lock status on the active network.
+  static const char kUnrestrictedActiveNetworkSIMLockStatus[];
+  static const char kRestrictedActiveNetworkSIMLockStatus[];
+
   // PIN operations that are tracked by metrics.
   enum class SimPinOperation {
     kRequireLock = 0,
@@ -101,7 +105,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   enum class SimPinLockType {
     kPinLocked = 0,
     kPukLocked = 1,
-    kMaxValue = kPukLocked
+    kUnlocked = 2,
+    kMaxValue = kUnlocked
   };
 
   // Records the result of pin operations performed.
@@ -350,6 +355,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks cellular network connection state and logs time to connected.
   void CheckForTimeToConnectedMetric(const NetworkState* network);
 
+  // Tracks current cellular connection status and logs the metric.
+  // Current connection can be in one of the three states:
+  // (Connected/PIN_Locked/PUK_Blocked). This will be logged when a
+  // switch happens from no connection to an active connection or
+  // from one connection to another.
+  void CheckForSIMStatusMetric(const NetworkState* network);
+
   // Tracks cellular network connected states and non user initiated
   // disconnections.
   void CheckForConnectionStateMetric(const NetworkState* network);
@@ -420,6 +432,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // to avoid tracking intermediate states when cellular network is
   // starting up.
   base::OneShotTimer initialization_timer_;
+
+  // Stores the iccid of the most recently active network.
+  std::string last_active_network_iccid_;
 
   // Tracks whether the PSim activation state is already logged for this
   // session.

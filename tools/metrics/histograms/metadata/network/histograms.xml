@@ -82,6 +82,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.Ash.Cellular.SimLock.Policy.{PinLockPolicy}.ActiveSIMLockStatus"
+    enum="SimPinLockType" expires_after="2022-12-31">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the status of the SIM (Unlocked/PIN Locked/PUK Blocked) upon a
+    change in cellular connection.
+
+    This metric will be recorded upon following transitions: 1. no connection to
+    new connection; 2. connection_1 to connection_2
+  </summary>
+  <token key="PinLockPolicy">
+    <variant name="Restricted"/>
+    <variant name="Unrestricted"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
     enum="VPNConfigurationSource" expires_after="2022-12-31">
   <owner>chadduffin@chromium.org</owner>
