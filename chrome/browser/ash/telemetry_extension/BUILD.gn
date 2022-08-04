@@ -34,6 +34,8 @@ source_set("test_support") {
   sources = [
     "fake_diagnostics_service.cc",
     "fake_diagnostics_service.h",
+    "fake_diagnostics_service_factory.cc",
+    "fake_diagnostics_service_factory.h",
   ]
 
   deps = [
@@ -41,6 +43,7 @@ source_set("test_support") {
     "//base",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//testing/gtest",
   ]
 }
 

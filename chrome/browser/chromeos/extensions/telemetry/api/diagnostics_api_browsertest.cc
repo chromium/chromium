@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service_factory.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,7 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
         std::move(fake_diagnostics_service_impl));
   }
 
-  ash::FakeDiagnosticsService::Factory fake_diagnostics_service_factory_;
+  ash::FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,

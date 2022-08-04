@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,28 +18,13 @@ namespace ash {
 
 class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
  public:
-  class Factory : public ash::DiagnosticsServiceAsh::Factory {
-   public:
-    Factory();
-    ~Factory() override;
-
-    void SetCreateInstanceResponse(
-        std::unique_ptr<FakeDiagnosticsService> fake_service);
-
-   protected:
-    // DiagnosticsService::Factory:
-    std::unique_ptr<crosapi::mojom::DiagnosticsService> CreateInstance(
-        mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver)
-        override;
-
-   private:
-    std::unique_ptr<FakeDiagnosticsService> fake_service_;
-  };
-
   FakeDiagnosticsService();
   FakeDiagnosticsService(const FakeDiagnosticsService&) = delete;
   FakeDiagnosticsService& operator=(const FakeDiagnosticsService&) = delete;
   ~FakeDiagnosticsService() override;
+
+  void BindPendingReceiver(
+      mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
 
   // crosapi::health::mojom::DiagnosticsService overrides.
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
@@ -112,9 +96,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine);
 
  private:
-  void BindPendingReceiver(
-      mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
-
   mojo::Receiver<crosapi::mojom::DiagnosticsService> receiver_;
 
   // Response for a call to |Run*Routine|.

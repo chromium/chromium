@@ -19,28 +19,17 @@
 
 namespace ash {
 
-FakeDiagnosticsService::Factory::Factory() = default;
-FakeDiagnosticsService::Factory::~Factory() = default;
-
-void FakeDiagnosticsService::Factory::SetCreateInstanceResponse(
-    std::unique_ptr<FakeDiagnosticsService> fake_service) {
-  fake_service_ = std::move(fake_service);
-}
-
-std::unique_ptr<crosapi::mojom::DiagnosticsService>
-FakeDiagnosticsService::Factory::CreateInstance(
-    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
-  DCHECK(fake_service_);
-  fake_service_->BindPendingReceiver(std::move(receiver));
-  return std::move(fake_service_);
-}
-
 FakeDiagnosticsService::FakeDiagnosticsService() : receiver_(this) {}
 
 FakeDiagnosticsService::~FakeDiagnosticsService() {
   // Test if the previously set expectations are met.
   EXPECT_EQ(actual_passed_parameters_, expected_passed_parameters_);
   EXPECT_EQ(actual_called_routine_, expected_called_routine_);
+}
+
+void FakeDiagnosticsService::BindPendingReceiver(
+    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void FakeDiagnosticsService::GetAvailableRoutines(
@@ -300,11 +289,6 @@ void FakeDiagnosticsService::SetExpectedLastPassedParameters(
 void FakeDiagnosticsService::SetExpectedLastCalledRoutine(
     crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine) {
   expected_called_routine_ = expected_called_routine;
-}
-
-void FakeDiagnosticsService::BindPendingReceiver(
-    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
-  receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace ash
