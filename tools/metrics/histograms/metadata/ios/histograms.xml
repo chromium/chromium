@@ -938,9 +938,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.ApplicationHangTime" units="ms"
-    expires_after="2023-01-15">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The durations of time in which the app is too busy to handle user input
     responsively. This covers all forms of user input, including all touch
@@ -962,6 +965,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
