@@ -110,6 +110,16 @@ TEST(LayoutUnitTest, LayoutUnitFloat) {
   EXPECT_NEAR(LayoutUnit(345634.12335f).ToFloat(), 345634.12335f, kTolerance);
   EXPECT_NEAR(LayoutUnit(-345634.12335f).ToFloat(), -345634.12335f, kTolerance);
   EXPECT_NEAR(LayoutUnit(-345634).ToFloat(), -345634.0f, kTolerance);
+
+  using Limits = std::numeric_limits<float>;
+  // Larger than Max()
+  EXPECT_EQ(LayoutUnit::Max(), LayoutUnit(Limits::max()));
+  EXPECT_EQ(LayoutUnit::Max(), LayoutUnit(Limits::infinity()));
+  // Smaller than Min()
+  EXPECT_EQ(LayoutUnit::Min(), LayoutUnit(Limits::lowest()));
+  EXPECT_EQ(LayoutUnit::Min(), LayoutUnit(-Limits::infinity()));
+
+  EXPECT_EQ(LayoutUnit(), LayoutUnit::Clamp(Limits::quiet_NaN()));
 }
 
 TEST(LayoutUnitTest, LayoutUnitRounding) {

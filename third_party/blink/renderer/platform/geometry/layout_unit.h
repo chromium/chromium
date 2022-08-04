@@ -107,6 +107,8 @@ class LayoutUnit {
   }
   constexpr explicit LayoutUnit(uint64_t value)
       : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+  // A |value| is clamped by Min() and Max().
+  // A NaN |value| produces LayoutUnit(0).
   constexpr explicit LayoutUnit(float value)
       : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
   constexpr explicit LayoutUnit(double value)
