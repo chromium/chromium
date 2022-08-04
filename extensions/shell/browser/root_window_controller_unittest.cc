@@ -74,10 +74,10 @@ class TestAppWindowClient : public ShellAppWindowClient {
   TestAppWindowClient() = default;
   ~TestAppWindowClient() override = default;
 
-  NativeAppWindow* CreateNativeAppWindow(
+  std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(
       AppWindow* window,
       AppWindow::CreateParams* params) override {
-    return new ShellNativeAppWindowAura(window, *params);
+    return std::make_unique<ShellNativeAppWindowAura>(window, *params);
   }
 };
 

@@ -12,7 +12,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -41,7 +41,7 @@ class AppWindowClient {
       api::app_runtime::ActionType action) = 0;
 
   // Creates a new extensions::NativeAppWindow for |window|.
-  virtual NativeAppWindow* CreateNativeAppWindow(
+  virtual std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(
       AppWindow* window,
       AppWindow::CreateParams* params) = 0;
 

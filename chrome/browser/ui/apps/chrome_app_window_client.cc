@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -14,6 +15,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 
@@ -68,13 +70,14 @@ ChromeAppWindowClient::CreateAppWindowForLockScreenAction(
 #endif
 }
 
-extensions::NativeAppWindow* ChromeAppWindowClient::CreateNativeAppWindow(
+std::unique_ptr<extensions::NativeAppWindow>
+ChromeAppWindowClient::CreateNativeAppWindow(
     extensions::AppWindow* window,
     extensions::AppWindow::CreateParams* params) {
 #if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
-  return CreateNativeAppWindowImpl(window, *params);
+  return base::WrapUnique(CreateNativeAppWindowImpl(window, *params));
 #endif
 }
 

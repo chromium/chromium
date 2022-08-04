@@ -291,8 +291,8 @@ void AppWindow::Init(const GURL& url,
   show_in_shelf_ = params.show_in_shelf;
 
   AppWindowClient* app_window_client = AppWindowClient::Get();
-  native_app_window_.reset(
-      app_window_client->CreateNativeAppWindow(this, &new_params));
+  native_app_window_ =
+      app_window_client->CreateNativeAppWindow(this, &new_params);
 
   helper_ = std::make_unique<AppWebContentsHelper>(
       browser_context_, extension_id_, web_contents(), app_delegate_.get());

@@ -29,7 +29,7 @@ class ShellAppWindowClient : public AppWindowClient {
       api::app_runtime::ActionType action) override;
   // Note that CreateNativeAppWindow is defined in separate (per-framework)
   // implementation files.
-  NativeAppWindow* CreateNativeAppWindow(
+  std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(
       AppWindow* window,
       AppWindow::CreateParams* params) override;
   void OpenDevToolsWindow(content::WebContents* web_contents,

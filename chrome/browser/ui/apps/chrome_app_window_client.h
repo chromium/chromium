@@ -37,7 +37,7 @@ class ChromeAppWindowClient : public extensions::AppWindowClient {
       content::BrowserContext* context,
       const extensions::Extension* extension,
       extensions::api::app_runtime::ActionType action) override;
-  extensions::NativeAppWindow* CreateNativeAppWindow(
+  std::unique_ptr<extensions::NativeAppWindow> CreateNativeAppWindow(
       extensions::AppWindow* window,
       extensions::AppWindow::CreateParams* params) override;
   void OpenDevToolsWindow(content::WebContents* web_contents,
