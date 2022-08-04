@@ -206,18 +206,16 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
                                        ui::kColorAshSystemUIMenuIcon));
   }
 
-  if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
-    if (ash::features::IsPersonalizationHubEnabled()) {
-      AddItemWithStringIdAndIcon(
-          MENU_PERSONALIZATION_HUB, IDS_AURA_OPEN_PERSONALIZATION_HUB,
-          ui::ImageModel::FromVectorIcon(kPaintBrushIcon,
-                                         ui::kColorAshSystemUIMenuIcon));
-    } else {
-      AddItemWithStringIdAndIcon(
-          MENU_CHANGE_WALLPAPER, IDS_AURA_SET_DESKTOP_WALLPAPER,
-          ui::ImageModel::FromVectorIcon(kWallpaperIcon,
-                                         ui::kColorAshSystemUIMenuIcon));
-    }
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    AddItemWithStringIdAndIcon(
+        MENU_PERSONALIZATION_HUB, IDS_AURA_OPEN_PERSONALIZATION_HUB,
+        ui::ImageModel::FromVectorIcon(kPaintBrushIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+  } else if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
+    AddItemWithStringIdAndIcon(
+        MENU_CHANGE_WALLPAPER, IDS_AURA_SET_DESKTOP_WALLPAPER,
+        ui::ImageModel::FromVectorIcon(kWallpaperIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 }
 
