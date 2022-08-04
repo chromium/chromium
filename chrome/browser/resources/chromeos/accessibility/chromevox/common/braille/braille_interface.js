@@ -9,6 +9,7 @@
  *
  */
 
+import {BrailleDisplayState} from './braille_key_types.js';
 import {NavBraille} from './nav_braille.js';
 
 /** @interface */

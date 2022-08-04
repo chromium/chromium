@@ -11,17 +11,11 @@
  * chrome.brailleDisplayPrivate.*.
  */
 
-goog.provide('BrailleDisplayState');
-goog.provide('BrailleKeyCommand');
-goog.provide('BrailleKeyEvent');
-
-goog.require('KeyCode');
-
 /**
  * The set of commands sent from a braille display.
  * @enum {string}
  */
-BrailleKeyCommand = {
+export const BrailleKeyCommand = {
   PAN_LEFT: 'pan_left',
   PAN_RIGHT: 'pan_right',
   LINE_UP: 'line_up',
@@ -61,35 +55,35 @@ BrailleKeyCommand = {
  * ctrlKey Whether the control key was pressed.
  * shiftKey Whether the shift key was pressed.
  */
-BrailleKeyEvent;
+export const BrailleKeyEvent = {
+  /**
+   * Returns the numeric key code for a DOM level 4 key code string.
+   * NOTE: Only the key codes produced by the brailleDisplayPrivate API are
+   * supported.
+   * @param {string} code DOM level 4 key code.
+   * @return {KeyCode|undefined} The numeric key code, or {@code undefined}
+   *     if unknown.
+   */
+  keyCodeToLegacyCode(code) {
+    return BrailleKeyEvent.legacyKeyCodeMap_[code];
+  },
 
-
-/**
- * Returns the numeric key code for a DOM level 4 key code string.
- * NOTE: Only the key codes produced by the brailleDisplayPrivate API are
- * supported.
- * @param {string} code DOM level 4 key code.
- * @return {KeyCode|undefined} The numeric key code, or {@code undefined}
- *     if unknown.
- */
-BrailleKeyEvent.keyCodeToLegacyCode = function(code) {
-  return BrailleKeyEvent.legacyKeyCodeMap_[code];
+  /**
+   * Returns a char value appropriate for a synthezised key event for a given
+   * key code.
+   * @param {string} keyCode The DOM level 4 key code.
+   * @return {number} Integral character code.
+   */
+  keyCodeToCharValue(keyCode) {
+    /** @const */
+    const SPECIAL_CODES = {'Backspace': 0x08, 'Tab': 0x09, 'Enter': 0x0A};
+    // Note, the Chrome virtual keyboard falls back on the first character of
+    // the key code if the key is not one of the above.  Do the same here.
+    return SPECIAL_CODES[keyCode] || keyCode.charCodeAt(0);
+  },
 };
 
 
-/**
- * Returns a char value appropriate for a synthezised key event for a given
- * key code.
- * @param {string} keyCode The DOM level 4 key code.
- * @return {number} Integral character code.
- */
-BrailleKeyEvent.keyCodeToCharValue = function(keyCode) {
-  /** @const */
-  const SPECIAL_CODES = {'Backspace': 0x08, 'Tab': 0x09, 'Enter': 0x0A};
-  // Note, the Chrome virtual keyboard falls back on the first character of the
-  // key code if the key is not one of the above.  Do the same here.
-  return SPECIAL_CODES[keyCode] || keyCode.charCodeAt(0);
-};
 
 /*
  * Note: Some of the below mappings contain raw braille dot
@@ -224,4 +218,4 @@ for (let i = 0; i < 12; ++i) {
  * @typedef {{available: boolean, textRowCount: number,
  *     textColumnCount: number}}
  */
-let BrailleDisplayState;
+export let BrailleDisplayState;

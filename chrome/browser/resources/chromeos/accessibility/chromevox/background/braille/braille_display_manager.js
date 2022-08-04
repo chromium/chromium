@@ -5,6 +5,7 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
+import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 
 import {BrailleCaptionsBackground} from './braille_captions_background.js';

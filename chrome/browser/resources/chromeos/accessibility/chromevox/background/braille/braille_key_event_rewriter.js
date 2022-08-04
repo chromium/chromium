@@ -5,6 +5,7 @@
 /**
  * @fileoverview Rewrites a braille key event.
  */
+import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {Output} from '../output/output.js';
 
 /**

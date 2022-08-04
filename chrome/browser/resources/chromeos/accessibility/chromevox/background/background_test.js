@@ -54,6 +54,9 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         'OutputAction', '/chromevox/background/output/output_types.js');
     await importModule(
         ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
+    await importModule(
+        ['BrailleKeyEvent', 'BrailleKeyCommand'],
+        '/chromevox/common/braille/braille_key_types.js');
 
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;

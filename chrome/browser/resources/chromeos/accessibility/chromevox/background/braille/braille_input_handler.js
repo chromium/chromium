@@ -10,6 +10,7 @@
 
 import {EventGenerator} from '../../../common/event_generator.js';
 import {StringUtil} from '../../../common/string_util.js';
+import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {Spannable} from '../../common/spannable.js';
 
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
