@@ -357,6 +357,7 @@ LogicalSize ComputeOutOfFlowAvailableSize(
 
 bool ComputeOutOfFlowInlineDimensions(
     const NGBlockNode& node,
+    const ComputedStyle& style,
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const NGBoxStrut& border_padding,
@@ -369,7 +370,6 @@ bool ComputeOutOfFlowInlineDimensions(
   DCHECK(dimensions);
   bool depends_on_min_max_sizes = false;
 
-  const auto& style = node.Style();
   const bool is_table = node.IsTable();
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node);
@@ -387,11 +387,11 @@ bool ComputeOutOfFlowInlineDimensions(
 
     // Compute our block-size if we haven't already.
     if (dimensions->size.block_size == kIndefiniteSize) {
-      ComputeOutOfFlowBlockDimensions(node, space, insets, border_padding,
-                                      static_position, computed_available_size,
-                                      /* replaced_size */ absl::nullopt,
-                                      container_writing_direction,
-                                      anchor_evaluator, dimensions);
+      ComputeOutOfFlowBlockDimensions(
+          node, style, space, insets, border_padding, static_position,
+          computed_available_size,
+          /* replaced_size */ absl::nullopt, container_writing_direction,
+          anchor_evaluator, dimensions);
     }
 
     // Create a new space, setting the fixed block-size.
@@ -480,6 +480,7 @@ bool ComputeOutOfFlowInlineDimensions(
 
 const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode& node,
+    const ComputedStyle& style,
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const NGBoxStrut& border_padding,
@@ -493,7 +494,6 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
   const NGLayoutResult* result = nullptr;
 
-  const auto& style = node.Style();
   const bool is_table = node.IsTable();
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
       space, style, border_padding, computed_available_size.block_size,

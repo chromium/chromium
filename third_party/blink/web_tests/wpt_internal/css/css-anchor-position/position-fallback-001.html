@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#fallback">
+<link rel="author" href="mailto:kojii@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<style>
+.cb {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  background: yellow;
+}
+.spacer {
+  width: 1px;
+  height: 25px;
+}
+.anchor1 {
+  anchor-name: --a1;
+  margin-left: 50px;
+  width: 100px;
+  height: 50px;
+  background: blue;
+}
+.target {
+  position: absolute;
+  position-fallback: --fallback1;
+  left: anchor(--a1 right);
+  top: anchor(--a1 top);
+  width: 100px;
+  height: 50px;
+  background: orange;
+}
+@position-fallback --fallback1 {
+  @try {
+    left: auto;
+    right: anchor(--a1 left);
+  }
+  @try {
+    top: anchor(--a1 bottom);
+  }
+  @try {
+    top: auto;
+    bottom: anchor(--a1 top);
+  }
+  @try {
+    left: anchor(--a1 right);
+    width: 50px;
+  }
+}
+</style>
+<body onload="checkLayout('.target')">
+  <div class="cb">
+    <div class="spacer"></div>
+    <div class="anchor1"></div>
+    <div class="target"
+         data-offset-x=150 data-offset-y=25
+         data-expected-width=50 data-expected-height=50></div>
+  </div>
+</body>

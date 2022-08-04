@@ -2513,6 +2513,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
     unsigned index) {
   const ComputedStyle& base_style = element.ComputedStyleRef();
   // TODO(crbug.com/1309178): Support tree-scoped fallback name lookup.
+  DCHECK(base_style.PositionFallback());
   StyleRulePositionFallback* position_fallback_rule =
       GetDocument().GetScopedStyleResolver()->PositionFallbackForName(
           base_style.PositionFallback());

@@ -321,6 +321,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   OffsetInfo CalculateOffset(const NodeInfo& node_info,
                              const LayoutBox* only_layout,
                              bool is_first_run = true);
+  bool TryCalculateOffset(const NodeInfo& node_info,
+                          const ComputedStyle& style,
+                          const LayoutBox* only_layout,
+                          bool try_fit_container_rect,
+                          bool is_first_run,
+                          OffsetInfo* const offset_info);
 
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,

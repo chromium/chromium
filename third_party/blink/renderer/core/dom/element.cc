@@ -9009,6 +9009,7 @@ const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
   const ComputedStyle* base_style = GetComputedStyle();
   if (!base_style)
     return nullptr;
+  DCHECK(base_style->PositionFallback());
   if (const ComputedStyle* cached_style =
           base_style->GetCachedPositionFallbackStyle(index))
     return cached_style;
