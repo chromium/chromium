@@ -19,6 +19,7 @@
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/issue.h"
+#include "content/public/browser/presentation_observer.h"
 #include "url/origin.h"
 
 namespace content {
@@ -33,7 +34,7 @@ class QueryResultManager;
 
 // Provides cast services (lists of sinks, routes, start & terminate route) to
 // UI controllers
-class MediaRouteStarter : public WebContentsPresentationManager::Observer {
+class MediaRouteStarter : public content::PresentationObserver {
  public:
   MediaRouteStarter(
       const CastModeSet& initial_modes,
@@ -126,7 +127,7 @@ class MediaRouteStarter : public WebContentsPresentationManager::Observer {
   // as supported for the service when initialized.
   static bool IsCastModeAvailable(const CastModeSet& modes, MediaCastMode mode);
 
-  // WebContentsPresentationManager::Observer
+  // content::PresentationObserver:
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) override;
 

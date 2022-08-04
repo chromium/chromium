@@ -14,6 +14,7 @@
 
 namespace content {
 struct PresentationRequest;
+class PresentationObserver;
 class WebContents;
 }  // namespace content
 
@@ -27,21 +28,6 @@ class RouteRequestResult;
 // WebContents.
 class WebContentsPresentationManager {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called whenever presentation MediaRoutes associated with the WebContents
-    // are added, removed, or have their attributes changed.
-    virtual void OnMediaRoutesChanged(const std::vector<MediaRoute>& routes) {}
-
-    // |presentation_request| is a nullptr if the default PresentationRequest
-    // has been removed.
-    virtual void OnDefaultPresentationChanged(
-        const content::PresentationRequest* presentation_request) {}
-
-   protected:
-    Observer() = default;
-  };
-
   static base::WeakPtr<WebContentsPresentationManager> Get(
       content::WebContents* web_contents);
 
@@ -51,8 +37,8 @@ class WebContentsPresentationManager {
 
   virtual ~WebContentsPresentationManager() = 0;
 
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void AddObserver(content::PresentationObserver* observer) = 0;
+  virtual void RemoveObserver(content::PresentationObserver* observer) = 0;
 
   // Returns true if there is a default presentation request for the
   // WebContents.

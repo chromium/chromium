@@ -292,6 +292,7 @@ source_set("browser_sources") {
     "preloading_data.h",
     "prerender_handle.h",
     "prerender_trigger_type.h",
+    "presentation_observer.h",
     "presentation_receiver_flags.h",
     "presentation_request.cc",
     "presentation_request.h",

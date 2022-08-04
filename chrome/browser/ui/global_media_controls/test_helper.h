@@ -27,9 +27,8 @@ class MockWebContentsPresentationManager
   bool HasDefaultPresentationRequest() const override;
   const content::PresentationRequest& GetDefaultPresentationRequest()
       const override;
-  void AddObserver(WebContentsPresentationManager::Observer* observer) override;
-  void RemoveObserver(
-      WebContentsPresentationManager::Observer* observer) override;
+  void AddObserver(content::PresentationObserver* observer) override;
+  void RemoveObserver(content::PresentationObserver* observer) override;
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
 
   MOCK_METHOD(void,
@@ -41,7 +40,7 @@ class MockWebContentsPresentationManager
 
  private:
   absl::optional<content::PresentationRequest> default_presentation_request_;
-  base::ObserverList<WebContentsPresentationManager::Observer> observers_;
+  base::ObserverList<content::PresentationObserver> observers_;
   base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
 };
 

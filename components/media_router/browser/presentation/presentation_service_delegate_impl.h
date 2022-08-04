@@ -115,9 +115,8 @@ class PresentationServiceDelegateImpl
           state_changed_cb) override;
 
   // WebContentsPresentationManager implementation.
-  void AddObserver(WebContentsPresentationManager::Observer* observer) override;
-  void RemoveObserver(
-      WebContentsPresentationManager::Observer* observer) override;
+  void AddObserver(content::PresentationObserver* observer) override;
+  void RemoveObserver(content::PresentationObserver* observer) override;
   bool HasDefaultPresentationRequest() const override;
   const content::PresentationRequest& GetDefaultPresentationRequest()
       const override;
@@ -237,8 +236,7 @@ class PresentationServiceDelegateImpl
   // References to the observers listening for changes to the default
   // presentation and presentation MediaRoutes associated with the
   // WebContents.
-  base::ObserverList<WebContentsPresentationManager::Observer>
-      presentation_observers_;
+  base::ObserverList<content::PresentationObserver> presentation_observers_;
 
   // Default presentation request for the owning WebContents.
   absl::optional<content::PresentationRequest> default_presentation_request_;

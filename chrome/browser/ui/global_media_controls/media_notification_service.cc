@@ -99,9 +99,9 @@ MediaNotificationService::PresentationManagerObservation::
 }
 
 void MediaNotificationService::PresentationManagerObservation::
-    OnMediaRoutesChanged(const std::vector<media_router::MediaRoute>& routes) {
-  // If there are no routes, then casting hasn't started.
-  if (routes.empty())
+    OnPresentationsChanged(bool has_presentation) {
+  // If there is no presentation, then casting hasn't started.
+  if (!has_presentation)
     return;
 
   // This will dismiss the backing item and therefore delete |this|. Do not use

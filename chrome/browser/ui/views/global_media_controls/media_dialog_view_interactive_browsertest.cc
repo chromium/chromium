@@ -33,6 +33,7 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/soda/constants.h"
+#include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -265,18 +266,17 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 class TestWebContentsPresentationManager
     : public media_router::WebContentsPresentationManager {
  public:
-  void NotifyMediaRoutesChanged(
-      const std::vector<media_router::MediaRoute>& routes) {
+  void NotifyPresentationsChanged(bool has_presentation) {
     for (auto& observer : observers_) {
-      observer.OnMediaRoutesChanged(routes);
+      observer.OnPresentationsChanged(has_presentation);
     }
   }
 
-  void AddObserver(Observer* observer) override {
+  void AddObserver(content::PresentationObserver* observer) override {
     observers_.AddObserver(observer);
   }
 
-  void RemoveObserver(Observer* observer) override {
+  void RemoveObserver(content::PresentationObserver* observer) override {
     observers_.RemoveObserver(observer);
   }
 
@@ -295,7 +295,7 @@ class TestWebContentsPresentationManager
   }
 
  private:
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<content::PresentationObserver> observers_;
   base::WeakPtrFactory<TestWebContentsPresentationManager> weak_factory_{this};
 };
 
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
   media_router_->NotifyMediaRoutesChanged({route});
   base::RunLoop().RunUntilIdle();
-  presentation_manager_->NotifyMediaRoutesChanged({route});
+  presentation_manager_->NotifyPresentationsChanged(true);
 
   EXPECT_TRUE(ui_.WaitForToolbarIconShown());
   ui_.ClickToolbarIcon();

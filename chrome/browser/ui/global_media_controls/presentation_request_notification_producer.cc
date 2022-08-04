@@ -209,9 +209,9 @@ void PresentationRequestNotificationProducer::AfterMediaDialogClosed() {
   presentation_manager_ = nullptr;
 }
 
-void PresentationRequestNotificationProducer::OnMediaRoutesChanged(
-    const std::vector<media_router::MediaRoute>& routes) {
-  if (!routes.empty()) {
+void PresentationRequestNotificationProducer::OnPresentationsChanged(
+    bool has_presentation) {
+  if (has_presentation) {
     item_manager_->HideDialog();
     if (item_) {
       item_->Dismiss();

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "content/public/browser/presentation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 MockWebContentsPresentationManager::MockWebContentsPresentationManager() =
@@ -31,17 +32,17 @@ void MockWebContentsPresentationManager::SetDefaultPresentationRequest(
 void MockWebContentsPresentationManager::NotifyMediaRoutesChanged(
     const std::vector<media_router::MediaRoute>& routes) {
   for (auto& observer : observers_) {
-    observer.OnMediaRoutesChanged(routes);
+    observer.OnPresentationsChanged(!routes.empty());
   }
 }
 
 void MockWebContentsPresentationManager::AddObserver(
-    media_router::WebContentsPresentationManager::Observer* observer) {
+    content::PresentationObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void MockWebContentsPresentationManager::RemoveObserver(
-    media_router::WebContentsPresentationManager::Observer* observer) {
+    content::PresentationObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 

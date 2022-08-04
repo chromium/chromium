@@ -16,6 +16,7 @@
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace global_media_controls {
@@ -49,7 +50,7 @@ class MediaNotificationService;
 // managing the notification for an active session.
 class PresentationRequestNotificationProducer final
     : public global_media_controls::MediaItemProducer,
-      public media_router::WebContentsPresentationManager::Observer,
+      public content::PresentationObserver,
       public global_media_controls::MediaItemManagerObserver,
       public global_media_controls::MediaItemUIObserver {
  public:
@@ -104,9 +105,8 @@ class PresentationRequestNotificationProducer final
           presentation_manager);
   void AfterMediaDialogClosed();
 
-  // WebContentsPresentationManager::Observer:
-  void OnMediaRoutesChanged(
-      const std::vector<media_router::MediaRoute>& routes) override;
+  // content::PresentationObserver:
+  void OnPresentationsChanged(bool has_presentation) override;
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) final;
 

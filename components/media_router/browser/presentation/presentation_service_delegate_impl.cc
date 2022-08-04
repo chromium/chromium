@@ -32,6 +32,7 @@
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/render_frame_host.h"
@@ -605,12 +606,12 @@ void PresentationServiceDelegateImpl::ListenForConnectionStateChange(
 }
 
 void PresentationServiceDelegateImpl::AddObserver(
-    WebContentsPresentationManager::Observer* observer) {
+    content::PresentationObserver* observer) {
   presentation_observers_.AddObserver(observer);
 }
 
 void PresentationServiceDelegateImpl::RemoveObserver(
-    WebContentsPresentationManager::Observer* observer) {
+    content::PresentationObserver* observer) {
   presentation_observers_.RemoveObserver(observer);
 }
 
@@ -751,7 +752,7 @@ void PresentationServiceDelegateImpl::NotifyDefaultPresentationChanged(
 void PresentationServiceDelegateImpl::NotifyMediaRoutesChanged() {
   auto routes = GetMediaRoutes();
   for (auto& presentation_observer : presentation_observers_)
-    presentation_observer.OnMediaRoutesChanged(routes);
+    presentation_observer.OnPresentationsChanged(!routes.empty());
 }
 
 void PresentationServiceDelegateImpl::OnConnectionStateChanged(

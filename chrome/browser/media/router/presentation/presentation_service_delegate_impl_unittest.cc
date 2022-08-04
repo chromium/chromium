@@ -25,6 +25,7 @@
 #include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/render_process_host.h"
@@ -85,7 +86,7 @@ class MockDelegateObserver
 };
 
 class MockWebContentsPresentationObserver
-    : public WebContentsPresentationManager::Observer {
+    : public content::PresentationObserver {
  public:
   explicit MockWebContentsPresentationObserver(
       content::WebContents* web_contents) {
@@ -98,8 +99,7 @@ class MockWebContentsPresentationObserver
       presentation_manager_->RemoveObserver(this);
   }
 
-  MOCK_METHOD1(OnMediaRoutesChanged,
-               void(const std::vector<MediaRoute>& routes));
+  MOCK_METHOD1(OnPresentationsChanged, void(bool has_presentation));
   MOCK_METHOD1(OnDefaultPresentationChanged,
                void(const content::PresentationRequest* presentation_request));
 
@@ -459,12 +459,11 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
       RouteRequestResult::FromSuccess(media_route, kPresentationId);
   StrictMock<MockWebContentsPresentationObserver> observer(GetWebContents());
 
-  EXPECT_CALL(observer,
-              OnMediaRoutesChanged(std::vector<MediaRoute>({media_route})));
+  EXPECT_CALL(observer, OnPresentationsChanged(true));
   delegate_impl_->OnPresentationResponse(request,
                                          /** connection */ nullptr, *result);
 
-  EXPECT_CALL(observer, OnMediaRoutesChanged(std::vector<MediaRoute>()));
+  EXPECT_CALL(observer, OnPresentationsChanged(false));
   delegate_impl_->Terminate(render_process_id, render_frame_id,
                             kPresentationId);
 }
@@ -492,9 +491,9 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnectionStateChange) {
   MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
-                         OnCreateConnectionSuccess,
-                     base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
@@ -789,9 +788,9 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
       .Times(0);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
-                         OnCreateConnectionSuccess,
-                     base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
@@ -808,9 +807,9 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
       .Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
-                         OnCreateConnectionSuccess,
-                     base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
@@ -846,9 +845,9 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
       .Times(0);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
-                         OnCreateConnectionSuccess,
-                     base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
@@ -866,9 +865,9 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
       .Times(1);
   delegate_impl_->ReconnectPresentation(
       *presentation_request_, kPresentationId,
-      base::BindOnce(&MockCreatePresentationConnectionCallbacks::
-                         OnCreateConnectionSuccess,
-                     base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
       base::BindOnce(
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));

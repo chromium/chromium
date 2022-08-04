@@ -18,7 +18,7 @@
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_item_producer_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -119,8 +119,7 @@ class MediaNotificationService
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            ShowSupplementalNotifications);
 
-  class PresentationManagerObservation
-      : public media_router::WebContentsPresentationManager::Observer {
+  class PresentationManagerObservation : public content::PresentationObserver {
    public:
     PresentationManagerObservation(base::RepeatingClosure cast_started_callback,
                                    content::WebContents* web_contents);
@@ -130,9 +129,8 @@ class MediaNotificationService
         const PresentationManagerObservation&) = delete;
     ~PresentationManagerObservation() override;
 
-    // media_router::WebContentsPresentationManager::Observer:
-    void OnMediaRoutesChanged(
-        const std::vector<media_router::MediaRoute>& routes) override;
+    // content::PresentationObserver:
+    void OnPresentationsChanged(bool has_presentation) override;
 
     void SetPresentationManagerForTesting(
         base::WeakPtr<media_router::WebContentsPresentationManager>
