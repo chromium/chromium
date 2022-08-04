@@ -561,14 +561,18 @@ TEST_F(OneTimeMessageHandlerTest, ResponseCallbackGarbageCollected) {
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, false));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
+  EXPECT_EQ(
+      1, message_handler()->GetPendingCallbackCountForTest(script_context()));
 
   // The listener didn't retain the reply callback, so it should be garbage
-  // collected.
+  // collected and the related pending callback should have been cleared.
   RunGarbageCollection();
   base::RunLoop().RunUntilIdle();
 
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+  EXPECT_EQ(
+      0, message_handler()->GetPendingCallbackCountForTest(script_context()));
 }
 
 // runtime.onMessage requires that a listener return `true` if they intend to

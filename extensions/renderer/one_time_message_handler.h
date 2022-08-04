@@ -100,6 +100,10 @@ class OneTimeMessageHandler {
                   const PortId& port_id,
                   const std::string& error_message);
 
+  // Gets the number of pending callbacks on the associated per context data for
+  // testing purposes.
+  int GetPendingCallbackCountForTest(ScriptContext* script_context);
+
  private:
   // Helper methods to deliver a message to an opener/receiver.
   bool DeliverMessageToReceiver(ScriptContext* script_context,
@@ -119,9 +123,14 @@ class OneTimeMessageHandler {
   void OnOneTimeMessageResponse(const PortId& port_id,
                                 gin::Arguments* arguments);
 
-  // Triggered when the callback to reply is garbage collected.
+  // Triggered when the callback for replying is garbage collected. Used to
+  // clean up data that was stored for the callback and for closing the
+  // associated message port. |raw_callback| is a raw pointer to the associated
+  // OneTimeMessageCallback, needed for finding and erasing it from the
+  // OneTimeMessageContextData.
   void OnResponseCallbackCollected(ScriptContext* script_context,
-                                   const PortId& port_id);
+                                   const PortId& port_id,
+                                   void* raw_callback);
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
