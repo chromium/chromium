@@ -238,10 +238,13 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
-  // Constructing `ui_stabilizer_` sets the locale. Therefore, building
-  // `ui_stabilizer_` before the code that establishes the Ash UI.
-  if (init_params.is_pixel_test)
-    ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>();
+  // Build `ui_stabilizer_` only for a pixel diff test.
+  if (init_params.pixel_test_init_params) {
+    // Constructing `ui_stabilizer_` sets the locale. Therefore, building
+    // `ui_stabilizer_` before the code that establishes the Ash UI.
+    ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>(
+        *init_params.pixel_test_init_params);
+  }
 
   // This block of objects are conditionally initialized here rather than in the
   // constructor to make it easier for test classes to override them.
@@ -372,7 +375,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
   AccelerometerReader::GetInstance()->SetECLidAngleDriverStatusForTesting(
       ECLidAngleDriverStatus::NOT_SUPPORTED);
 
-  if (init_params.is_pixel_test) {
+  if (ui_stabilizer_) {
+    DCHECK(init_params.pixel_test_init_params);
     const gfx::Size primary_display_size =
         display::Screen::GetScreen()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())

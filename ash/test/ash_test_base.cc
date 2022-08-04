@@ -133,7 +133,8 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.start_session = start_session_;
   params.delegate = std::move(delegate);
   params.local_state = local_state();
-  params.is_pixel_test = is_pixel_test_;
+  params.pixel_test_init_params =
+      (pixel_diff_init_params_ ? &*pixel_diff_init_params_ : nullptr);
   ash_test_helper_ = std::make_unique<AshTestHelper>();
   ash_test_helper_->SetUp(std::move(params));
 }
@@ -316,6 +317,13 @@ void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
 }
 
 void AshTestBase::PrepareForPixelDiffTest() {
+  // Expect this function to be called before setup. Because the code that
+  // stabilizes the system UI for pixel tests should be executed during setup.
+  CHECK(!setup_called_);
+
+  CHECK(!pixel_diff_init_params_);
+  pixel_diff_init_params_ = pixel_test::InitParams();
+
   // In pixel tests, we want to take screenshots then compare them with the
   // benchmark images. Therefore, enable pixel output in tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -325,12 +333,17 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // are stable.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
+}
 
-  // Expect this function to be called before setup. Because the code that
-  // stabilizes the system UI for pixel tests should be executed during setup.
+void AshTestBase::SetPixelTestInitParam(const pixel_test::InitParams& params) {
+  // The init params are required during setup. Therefore, the params should be
+  // set before setup is called.
   CHECK(!setup_called_);
 
-  is_pixel_test_ = true;
+  // `PrepareForPixelDiffTest()` should be called before.
+  CHECK(pixel_diff_init_params_);
+
+  pixel_diff_init_params_ = params;
 }
 
 void AshTestBase::SetUserPref(const std::string& user_email,

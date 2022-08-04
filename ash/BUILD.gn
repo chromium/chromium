@@ -3409,6 +3409,7 @@ static_library("test_support") {
     "system/status_area_widget_test_helper.cc",
     "system/status_area_widget_test_helper.h",
     "system/unified/system_tray_test_api.cc",
+    "test/ash_pixel_test_init_params.h",
     "test/ash_test_base.cc",
     "test/ash_test_base.h",
     "test/ash_test_helper.cc",

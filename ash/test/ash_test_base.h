@@ -14,6 +14,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/test/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
@@ -183,9 +184,17 @@ class AshTestBase : public testing::Test {
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
 
-  // Prepares for the pixel diff test. NOTE: this function should be called
-  // before `SetUp()`.
+  // Prepares for the pixel diff test. When getting called, this function sets
+  // the default pixel diff test init params. Users need to call
+  // `SetPixelTestInitParam()` if they want to customize the pixel test setup.
+  // NOTE: this function should be called before `setup_called_` becomes true.
   void PrepareForPixelDiffTest();
+
+  // Sets the pixel diff test init params. Only called if users want to
+  // customize the pixel test setup.
+  // NOTE: `PrepareForPixelDiffTest()` has to be called before. In addition,
+  // call this function before `setup_called_` becomes true.
+  void SetPixelTestInitParam(const pixel_test::InitParams& params);
 
   // Returns the EventGenerator that uses screen coordinates and works
   // across multiple displays. It creates a new generator if it
@@ -332,8 +341,9 @@ class AshTestBase : public testing::Test {
   // SetUp() doesn't activate session if this is set to false.
   bool start_session_ = true;
 
-  // True if the test is a pixel diff test. Set by `PrepareForPixelDiffTest()`.
-  bool is_pixel_test_ = false;
+  // The parameters to initialize the pixel diff test. Used only when the ash
+  // test is also a pixel diff test.
+  absl::optional<pixel_test::InitParams> pixel_diff_init_params_;
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

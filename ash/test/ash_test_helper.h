@@ -56,6 +56,10 @@ namespace input_method {
 class MockInputMethodManager;
 }  // namespace input_method
 
+namespace pixel_test {
+struct InitParams;
+}  // namespace pixel_test
+
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
 class AshTestHelper : public aura::test::AuraTestHelper {
@@ -72,8 +76,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     std::unique_ptr<ShellDelegate> delegate;
     PrefService* local_state = nullptr;
 
-    // True if the initialized test is a pixel diff test.
-    bool is_pixel_test = false;
+    // Used only when setting up a pixel diff test.
+    base::raw_ptr<pixel_test::InitParams> pixel_test_init_params = nullptr;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a

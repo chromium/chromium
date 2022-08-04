@@ -35,8 +35,9 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
 
 }  // namespace
 
-AshTestUiStabilizer::AshTestUiStabilizer()
-    : scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
+AshTestUiStabilizer::AshTestUiStabilizer(const pixel_test::InitParams& params)
+    : params_(params),
+      scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
       time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {}
 
 AshTestUiStabilizer::~AshTestUiStabilizer() = default;
@@ -62,14 +63,27 @@ void AshTestUiStabilizer::SetWallPaper(const gfx::Size& wallpaper_size) {
   auto* controller = Shell::Get()->wallpaper_controller();
   controller->set_wallpaper_reload_no_delay_for_test();
 
-  gfx::ImageSkia wallpaper_image = CreateImage(wallpaper_size, kWallPaperColor);
-  controller->ShowWallpaperImage(
-      wallpaper_image,
-      WallpaperInfo{/*in_location=*/std::string(),
-                    /*in_layout=*/WALLPAPER_LAYOUT_STRETCH,
-                    /*in_type=*/WallpaperType::kDefault,
-                    /*in_date=*/base::Time::Now().LocalMidnight()},
-      /*preview_mode=*/false, /*always_on_top=*/false);
+  switch (params_.wallpaper_init_type) {
+    case pixel_test::WallpaperInitType::kRegular: {
+      gfx::ImageSkia wallpaper_image =
+          CreateImage(wallpaper_size, kWallPaperColor);
+      controller->ShowWallpaperImage(
+          wallpaper_image,
+          WallpaperInfo{/*in_location=*/std::string(),
+                        /*in_layout=*/WALLPAPER_LAYOUT_STRETCH,
+                        /*in_type=*/WallpaperType::kDefault,
+                        /*in_date=*/base::Time::Now().LocalMidnight()},
+          /*preview_mode=*/false, /*always_on_top=*/false);
+      break;
+    }
+    case pixel_test::WallpaperInitType::kPolicy:
+      controller->set_bypass_decode_for_testing();
+
+      // A dummy file path is sufficient for setting a default policy wallpaper.
+      controller->SetDevicePolicyWallpaperPath(base::FilePath("tmp.png"));
+
+      break;
+  }
 }
 
 void AshTestUiStabilizer::SetBatteryState() {
