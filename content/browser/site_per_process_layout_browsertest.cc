@@ -1154,17 +1154,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       node->current_frame_host()->GetProcess()->GetIntersectsViewport());
 }
 
-// TODO(https://crbug.com/1348408): Flakes on Linux, Linux ASAN/LSAN, Linux
-// ChromeOS.
-//
 // Tests that when a non-root frame in an iframe, performs a RAF to emulate a
 // scroll, that metrics are reported.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ScrollByRAF DISABLED_ScrollByRAF
-#else
-#define MAYBE_ScrollByRAF ScrollByRAF
-#endif
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_ScrollByRAF) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollByRAF) {
   base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
