@@ -32,6 +32,7 @@ using api_errors::kTypeObject;
 using api_errors::kTypeString;
 using api_errors::kTypeUndefined;
 using api_errors::MissingRequiredProperty;
+using api_errors::NumberIsNaNOrInfinity;
 
 using V8Validator = base::OnceCallback<void(v8::Local<v8::Value>)>;
 
@@ -209,6 +210,8 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ExpectFailure(spec, "'1'", InvalidType(kTypeInteger, kTypeString));
     ExpectFailure(spec, "({})", InvalidType(kTypeInteger, kTypeObject));
     ExpectFailure(spec, "[1]", InvalidType(kTypeInteger, kTypeList));
+    ExpectFailure(spec, "NaN", InvalidType(kTypeInteger, kTypeDouble));
+    ExpectFailure(spec, "Infinity", InvalidType(kTypeInteger, kTypeDouble));
   }
 
   {
@@ -225,6 +228,8 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ExpectFailure(spec, "'1.1'", InvalidType(kTypeDouble, kTypeString));
     ExpectFailure(spec, "({})", InvalidType(kTypeDouble, kTypeObject));
     ExpectFailure(spec, "[1.1]", InvalidType(kTypeDouble, kTypeList));
+    ExpectFailure(spec, "NaN", NumberIsNaNOrInfinity());
+    ExpectFailure(spec, "Infinity", NumberIsNaNOrInfinity());
   }
 
   {

@@ -67,6 +67,10 @@ std::string NumberTooLarge(int maximum) {
   return base::StringPrintf("Value must be at most %d.", maximum);
 }
 
+std::string NumberIsNaNOrInfinity() {
+  return base::StringPrintf("Value must not be NaN or Infinity.");
+}
+
 std::string InvalidType(const char* expected_type, const char* actual_type) {
   return base::StringPrintf("Invalid type: expected %s, found %s.",
                             expected_type, actual_type);

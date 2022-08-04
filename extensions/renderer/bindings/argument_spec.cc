@@ -407,6 +407,10 @@ bool ArgumentSpec::ParseArgumentToFundamental(
     case ArgumentType::DOUBLE: {
       DCHECK(value->IsNumber());
       double double_val = value.As<v8::Number>()->Value();
+      if (std::isnan(double_val) || std::isinf(double_val)) {
+        *error = api_errors::NumberIsNaNOrInfinity();
+        return false;
+      }
       if (!CheckFundamentalBounds(double_val, minimum_, maximum_, error))
         return false;
       if (out_value)

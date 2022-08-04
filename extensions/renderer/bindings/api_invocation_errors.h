@@ -39,6 +39,7 @@ std::string TooFewStringChars(int minimum, int found);
 std::string TooManyStringChars(int maximum, int found);
 std::string NumberTooSmall(int minimum);
 std::string NumberTooLarge(int maximum);
+std::string NumberIsNaNOrInfinity();
 std::string InvalidType(const char* expected_type, const char* actual_type);
 std::string NotAnInstance(const char* instance_type);
 std::string InvalidChoice();
