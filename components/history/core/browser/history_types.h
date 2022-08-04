@@ -1020,36 +1020,6 @@ struct Cluster {
   float search_match_score = 0.0;
 };
 
-// A minimal representation of `Cluster` used when retrieving them from
-// `VisitAnnotationsDatabase`.
-// TODO(manukh): Also use this representation when inserting them into the DB,
-//  since the additional information in a `Cluster` isn't necessary.
-struct ClusterRow {
-  ClusterRow();
-  explicit ClusterRow(int64_t cluster_id);
-  ClusterRow(const ClusterRow&);
-  ClusterRow& operator=(const ClusterRow&);
-  ~ClusterRow();
-
-  int64_t cluster_id;
-  std::vector<VisitID> visit_ids;
-};
-
-// Sets of `Cluster` IDs and `AnnotatedVisit`s. This is convenient in that,
-// unlike a vector of `Cluster`s, it contains a flat vector of unique
-// `AnnotatedVisit`s.
-struct ClusterIdsAndAnnotatedVisitsResult {
-  ClusterIdsAndAnnotatedVisitsResult();
-  ClusterIdsAndAnnotatedVisitsResult(
-      std::vector<int64_t> cluster_ids,
-      std::vector<AnnotatedVisit> annotated_visits);
-  ClusterIdsAndAnnotatedVisitsResult(const ClusterIdsAndAnnotatedVisitsResult&);
-  ~ClusterIdsAndAnnotatedVisitsResult();
-
-  std::vector<int64_t> cluster_ids;
-  std::vector<AnnotatedVisit> annotated_visits;
-};
-
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_TYPES_H_

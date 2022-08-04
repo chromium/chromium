@@ -66,11 +66,4 @@ std::vector<Cluster> CreateClusters(
   return clusters;
 }
 
-ClusterRow CreateClusterRow(int64_t cluster_id,
-                            const std::vector<int64_t>& visit_ids) {
-  ClusterRow cluster{cluster_id};
-  cluster.visit_ids = visit_ids;
-  return cluster;
-}
-
 }  // namespace history

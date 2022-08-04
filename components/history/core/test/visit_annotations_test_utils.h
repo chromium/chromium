@@ -32,10 +32,6 @@ Cluster CreateCluster(const std::vector<VisitID>& visit_ids);
 std::vector<Cluster> CreateClusters(
     const std::vector<std::vector<int64_t>>& visit_ids_per_cluster);
 
-// Construct a `ClusterRow` with the specified ids.
-ClusterRow CreateClusterRow(int64_t cluster_id,
-                            const std::vector<int64_t>& visit_ids);
-
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_TEST_VISIT_ANNOTATIONS_TEST_UTILS_H_
