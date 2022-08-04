@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_uploader.h"
-#include "chrome/browser/ash/policy/reporting/extension_install_event_log_uploader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
@@ -275,8 +274,6 @@ void UserCloudPolicyManagerAsh::Connect(
 
   app_install_event_log_uploader_ =
       std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
-  extension_install_event_log_uploader_ =
-      ExtensionInstallEventLogUploader::Create(profile_);
 }
 
 void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
@@ -343,15 +340,9 @@ UserCloudPolicyManagerAsh::GetAppInstallEventLogUploader() {
   return app_install_event_log_uploader_.get();
 }
 
-ExtensionInstallEventLogUploader*
-UserCloudPolicyManagerAsh::GetExtensionInstallEventLogUploader() {
-  return extension_install_event_log_uploader_.get();
-}
-
 void UserCloudPolicyManagerAsh::Shutdown() {
   observed_profile_manager_.Reset();
   app_install_event_log_uploader_.reset();
-  extension_install_event_log_uploader_.reset();
   report_scheduler_.reset();
   if (client())
     client()->RemoveObserver(this);

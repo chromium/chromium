@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
-#include "chrome/browser/ash/policy/reporting/extension_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -225,7 +224,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
     // `ExtensionInstallEventLogManagerWrapper` manages their own lifetime and
     // self-destruct on logout.
     policy::AppInstallEventLogManagerWrapper::CreateForProfile(profile);
-    policy::ExtensionInstallEventLogManagerWrapper::CreateForProfile(profile);
   }
 
   arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);

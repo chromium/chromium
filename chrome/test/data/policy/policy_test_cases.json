@@ -13486,19 +13486,7 @@
     ]
   },
   "ExtensionInstallEventLoggingEnabled": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallEventLoggingEnabled": true
-        },
-        "prefs": {
-          "extensions.install.event_logging_enabled": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "UsageTimeLimit": {
     "os": [

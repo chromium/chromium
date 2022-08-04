@@ -22445,7 +22445,7 @@
       'owners': ['swapnilgupta@google.com', 'file://components/policy/resources/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:85-'],
+      'supported_on': ['chrome_os:85-106'],
       'supported_chrome_os_management': ['google_cloud'],
       'features': {
         'dynamic_refresh': True,
