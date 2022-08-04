@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -22,7 +23,7 @@ namespace content {
 class StorableSource;
 
 // TODO(apaseltiner):  Add a fuzzer.
-absl::optional<StorableSource> ParseSourceRegistration(
+CONTENT_EXPORT absl::optional<StorableSource> ParseSourceRegistration(
     base::Value::Dict registration,
     base::Time source_time,
     url::Origin reporting_origin,
