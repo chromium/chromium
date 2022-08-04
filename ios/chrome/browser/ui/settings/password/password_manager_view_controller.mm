@@ -352,6 +352,14 @@ bool ShouldShowSettingsUI() {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  // Configure this now, rather than at initialization, because the superclass
+  // viewDidLoad will wipe out our value if we set it too early.
+  if (!ShouldShowSettingsUI()) {
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeAlways;
+  }
+
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.accessibilityIdentifier = kPasswordsTableViewId;
 
