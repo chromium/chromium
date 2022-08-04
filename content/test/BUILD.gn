@@ -1555,6 +1555,7 @@ test("content_browsertests") {
     "//components/web_package",
     "//components/web_package/test_support",
     "//content/app:for_content_tests",
+    "//content/browser:buildflags",
     "//content/browser:for_content_tests",
     "//content/browser/attribution_reporting:attribution_reporting_proto",
     "//content/browser/background_sync:background_sync_proto",
