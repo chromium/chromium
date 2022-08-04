@@ -347,9 +347,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_
 # Failures in fuchsia-chrome browser
 crbug.com/1295076 [ fuchsia fuchsia-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
-# Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
-crbug.com/1274796 [ win skia-renderer-gl ] Pixel_WebGPUImportVideoFrame [ Failure ]
-
 # Crashes on gpu-fyi-win10-nvidia-rel-32
 crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
