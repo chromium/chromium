@@ -34,8 +34,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
-namespace chrome {
-
 namespace {
 
 void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
@@ -55,6 +53,8 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
 
 }  // namespace
 
+namespace extensions {
+
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> callback) {
@@ -72,7 +72,7 @@ void ShowExtensionInstallFrictionDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace extensions
 
 namespace {
 

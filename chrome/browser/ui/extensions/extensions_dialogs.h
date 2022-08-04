@@ -8,16 +8,40 @@
 #include "base/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#error "Extensions must be enabled"
+#endif
+
 class Browser;
+
+namespace content {
+class WebContents;
+}
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+class SettingsOverriddenDialogController;
+
 namespace extensions {
+
+// Shows a modal dialog to Enhanced Safe Browsing users before the extension
+// install dialog if the extension is not included in the Safe Browsing CRX
+// allowlist. `callback` will be invoked with `true` if the user accepts or
+// `false` if the user cancels the dialog.
+void ShowExtensionInstallFrictionDialog(
+    content::WebContents* contents,
+    base::OnceCallback<void(bool)> callback);
+
+// Shows a dialog indicating that an extension has overridden a setting.
+void ShowExtensionSettingsOverriddenDialog(
+    std::unique_ptr<SettingsOverriddenDialogController> controller,
+    Browser* browser);
 
 // Shows a dialog when extensions require a refresh for their action
 // to be run or blocked. The dialog content is based on whether caller

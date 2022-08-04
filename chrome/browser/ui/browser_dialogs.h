@@ -38,10 +38,6 @@ class LoginHandler;
 class Profile;
 struct WebAppInstallInfo;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-class SettingsOverriddenDialogController;
-#endif
-
 namespace base {
 class FilePath;
 }
@@ -296,6 +292,9 @@ void ShowChromeCleanerRebootPrompt(
 
 #endif  // BUILDFLAG(IS_WIN)
 
+// TODO(crbug.com/1324288): Move extensions dialogs to
+// c/b/ui/extensions/extensions_dialogs.h
+
 // Displays a dialog to notify the user that the extension installation is
 // blocked due to policy. It also show additional information from administrator
 // if it exists.
@@ -323,28 +322,6 @@ void ShowExtensionInstallBlockedByParentDialog(
     content::WebContents* web_contents,
     base::OnceClosure done_callback);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-
-// TODO(crbug.com/1324288): Move extensions dialogs to
-// c/b/ui/extensions/extensions_dialogs.h
-// TODO(devlin): Put more extension-y bits in this block - currently they're
-// unguarded.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Shows the dialog indicating that an extension has overridden a setting.
-void ShowExtensionSettingsOverriddenDialog(
-    std::unique_ptr<SettingsOverriddenDialogController> controller,
-    Browser* browser);
-
-// Modal dialog shown to Enhanced Safe Browsing users before the extension
-// install dialog if the extension is not included in the Safe Browsing CRX
-// allowlist.
-//
-// `callback` will be invoked with `true` if the user accepts or `false` if the
-// user cancels the dialog.
-void ShowExtensionInstallFrictionDialog(
-    content::WebContents* contents,
-    base::OnceCallback<void(bool)> callback);
-
-#endif
 
 // Returns a OnceClosure that client code can call to close the device chooser.
 // This OnceClosure references the actual dialog as a WeakPtr, so it's safe to

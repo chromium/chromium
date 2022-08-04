@@ -19,6 +19,18 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 
+namespace extensions {
+
+void ShowExtensionSettingsOverriddenDialog(
+    std::unique_ptr<SettingsOverriddenDialogController> controller,
+    Browser* browser) {
+  // Note: ownership is taken by the view hierarchy.
+  auto* dialog_view = new SettingsOverriddenDialogView(std::move(controller));
+  dialog_view->Show(browser->window()->GetNativeWindow());
+}
+
+}  // namespace extensions
+
 SettingsOverriddenDialogView::SettingsOverriddenDialogView(
     std::unique_ptr<SettingsOverriddenDialogController> controller)
     : controller_(std::move(controller)) {
@@ -104,15 +116,3 @@ void SettingsOverriddenDialogView::NotifyControllerOfResult(
 
 BEGIN_METADATA(SettingsOverriddenDialogView, views::DialogDelegateView)
 END_METADATA
-
-namespace chrome {
-
-void ShowExtensionSettingsOverriddenDialog(
-    std::unique_ptr<SettingsOverriddenDialogController> controller,
-    Browser* browser) {
-  // Note: ownership is taken by the view hierarchy.
-  auto* dialog_view = new SettingsOverriddenDialogView(std::move(controller));
-  dialog_view->Show(browser->window()->GetNativeWindow());
-}
-
-}  // namespace chrome

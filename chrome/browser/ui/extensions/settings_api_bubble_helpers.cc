@@ -12,12 +12,12 @@
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -153,7 +153,7 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!dialog->ShouldShow())
     return;
 
-  chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
+  ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
 #endif
 }
 
@@ -201,7 +201,7 @@ void MaybeShowExtensionControlledNewTabPage(
   if (!dialog->ShouldShow())
     return;
 
-  chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
+  ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
 }
 
 }  // namespace extensions

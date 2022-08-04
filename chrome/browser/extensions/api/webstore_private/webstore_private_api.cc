@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -871,7 +872,7 @@ bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
 void WebstorePrivateBeginInstallWithManifest3Function::
     ShowInstallFrictionDialog(content::WebContents* contents) {
   friction_dialog_shown_ = true;
-  chrome::ShowExtensionInstallFrictionDialog(
+  ShowExtensionInstallFrictionDialog(
       contents,
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
                          OnFrictionPromptDone,

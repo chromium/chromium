@@ -11,9 +11,9 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -38,7 +38,7 @@ class ExtensionInstallFrictionDialogTest : public DialogBrowserTest {
   ExtensionInstallFrictionDialogTest() = default;
 
   void ShowUi(const std::string& name) override {
-    chrome::ShowExtensionInstallFrictionDialog(
+    extensions::ShowExtensionInstallFrictionDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
         base::DoNothing());
   }
