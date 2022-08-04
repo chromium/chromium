@@ -60,7 +60,8 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
 }
 
 LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
-    LayoutUnit max_dimension) {
+    LayoutUnit max_dimension,
+    const gfx::Rect& controls_rect) {
   DCHECK(isfinite(snap_to_lines_position_));
 
   // 4. Let line be cue's computed line.
@@ -87,6 +88,8 @@ LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
   if (line < 0) {
     position += max_dimension;
     step_ = -step_;
+    if (cue_box.IsHorizontalWritingMode())
+      position -= controls_rect.height();
   } else {
     // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
     // 11.11. Otherwise, increase position by margin.
@@ -193,7 +196,9 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
     return;
 
   // Step 4-9
-  LayoutUnit position = ComputeInitialPositionAdjustment(max_dimension);
+  const gfx::Rect controls_rect = LayoutVTTCue::ComputeControlsRect(container);
+  LayoutUnit position =
+      ComputeInitialPositionAdjustment(max_dimension, controls_rect);
 
   // 10. Horizontal: Move all the boxes in boxes down by the distance given
   // by position.
@@ -228,7 +233,6 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // title area box, then jump to the step labeled done positioning below.
   //
   // We also check overlapping with media controls.
-  const gfx::Rect controls_rect = LayoutVTTCue::ComputeControlsRect(container);
   while (IsOutside(title_area) || IsOverlapping(controls_rect)) {
     // Step 14
     if (!ShouldSwitchDirection(adjusted_position, cue_box.LogicalHeight(),

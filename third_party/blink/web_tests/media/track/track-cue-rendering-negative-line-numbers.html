@@ -36,7 +36,16 @@ promise_test(async () => {
   let top0 = textTrackCueElementByIndex(v, 0).offsetTop;
   let top1 = textTrackCueElementByIndex(v, 1).offsetTop;
   let top2 = textTrackCueElementByIndex(v, 2).offsetTop;
-  assert_true(top0<top1, 'subtitle 1 is above subtitle 2');
-  assert_true(top1<top2, 'subtitle 2 is above subtitle 3');
+  assert_true(top0<top1, 'subtitle 1 is above subtitle 2 (media controls hidden)');
+  assert_true(top1<top2, 'subtitle 2 is above subtitle 3 (media controls hidden)');
+
+  v.controls = true;
+  await animationFrame();
+  await animationFrame();
+  let top0c = textTrackCueElementByIndex(v, 0).offsetTop;
+  let top1c = textTrackCueElementByIndex(v, 1).offsetTop;
+  let top2c = textTrackCueElementByIndex(v, 2).offsetTop;
+  assert_true(top0c<top1c, 'subtitle 1 is above subtitle 2 (media controls shown)');
+  assert_true(top1c<top2c, 'subtitle 2 is above subtitle 3 (media controls shown)');
 }, 'Cues with negative line numbers should be displayed in order');
 </script>

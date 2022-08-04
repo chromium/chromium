@@ -40,7 +40,8 @@ class VttCueLayoutAlgorithm {
   // Helpers for AdjustPositionWithSnapToLines():
 
   static PhysicalSize FirstInlineBoxSize(const LayoutBox& cue_box);
-  LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension);
+  LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension,
+                                              const gfx::Rect& controls_rect);
   static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
   bool IsOutside(const gfx::Rect& title_area) const;
   bool IsOverlapping(const gfx::Rect& controls_rect) const;
