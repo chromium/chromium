@@ -24,6 +24,7 @@
 
   cr-input {
     --cr-input-error-display: none;
+    --cr-form-field-label-color: var(--shimless-hint-text-color);
     margin-inline-end: 20px;
   }
 
@@ -72,12 +73,9 @@
   <div slot="right-pane">
     <div class="input-wrapper">
       <div class="input-row">
-        <label id="serialNumberLabel" class="cr-form-field-label">
-          [[i18n('confirmDeviceInfoSerialNumberLabel')]]
-        </label>
-        <div class="input-holder">
+        <div class="input-holder" aria-labelledby="serialNumberLabel">
           <cr-input id="serialNumber" value="{{serialNumber_}}" 
-              aria-labelledby="serialNumberLabel"
+              label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
               disabled="[[allButtonsDisabled]]">
           </cr-input>
           <cr-button id="resetSerialNumber"
@@ -88,14 +86,9 @@
         </div>
       </div>
       <div class="input-row">
-        <label id="dramPartNumberLabel" class="cr-form-field-label">
-          [[i18n('confirmDeviceInfoDramPartNumberLabel')]]
-        </label>
         <div class="input-holder">
-          <cr-input
-              id="dramPartNumber"
-              value="{{dramPartNumber_}}"
-              aria-labelledby="dramPartNumberLabel"
+          <cr-input id="dramPartNumber" value="{{dramPartNumber_}}"
+              label="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]"
               disabled="[[allButtonsDisabled]]">
           </cr-input>
           <cr-button id="resetDramPartNumber"
@@ -132,14 +125,16 @@
         <div class="input-holder">
           <select id="whiteLabelSelect" class="md-select"
               on-change="onSelectedWhiteLabelChange_"
-              aria-labelledby="whiteLabelLabel" disabled="[[allButtonsDisabled]]">
+              aria-labelledby="whiteLabelLabel"
+              disabled="[[allButtonsDisabled]]">
             <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
               <option value="[[whiteLabel]]">
                 [[whiteLabel]]
               </option>
             </template>
           </select>
-          <cr-button id="resetWhiteLabel" on-click="onResetWhiteLabelButtonClicked_"
+          <cr-button id="resetWhiteLabel"
+              on-click="onResetWhiteLabelButtonClicked_"
               disabled="[[disableResetWhiteLabel_]]">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
@@ -152,8 +147,8 @@
         <iron-icon icon="shimless-icon:info" id="infoIcon"
             class="cr-form-field-label">
         </iron-icon>
-        <paper-tooltip for="infoIcon">
-          <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div> 
+        <paper-tooltip for="infoIcon" aria-hidden="true">
+          <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div>
         </paper-tooltip>
       </div>
       <div class="input-holder">
