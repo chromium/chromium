@@ -61,12 +61,13 @@
 </style>
 
 <cr-button id="componentButton" on-click="onComponentButtonClicked_"
-    disabled="[[disabled]]">
-  <div id="labelDiv">
-    <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]" class="small-icon">
+    disabled="[[disabled]]" aria-labelledby="componentName componentId">
+  <div id="labelDiv" aria-hidden="true">
+    <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]"
+        class="small-icon">
     </iron-icon>
     <span id="componentName">[[componentName]]</span>
-    <div>[[componentId]]</div>
+    <div id="componentId">[[componentId]]</div>
   </div>
   <iron-icon id="checkIcon" icon="shimless-icon24:check-circle"
       hidden="[[!shouldShowCheckIcon_(checked, disabled)]]">

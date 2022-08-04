@@ -81,8 +81,9 @@
 
 <div id="componentButtonWrapper">
   <cr-button id="componentButton" disabled="[[disabled]]"
-      on-click="onComponentButtonClicked_">
-    <div id="labelDiv">
+      on-click="onComponentButtonClicked_"
+      aria-labelledby="componentName componentIdentifier">
+    <div id="labelDiv" aria-hidden="true">
       <span id="componentName">[[componentName]]</span>
       <div id="componentIdentifier">[[componentIdentifier]]</div>
     </div>
@@ -94,6 +95,7 @@
     </iron-icon>
   </cr-button>
 </div>
-<paper-tooltip for="componentButtonWrapper" hidden="[[!disabled]]">
+<paper-tooltip for="componentButtonWrapper" hidden="[[!disabled]]"
+    aria-hidden="true">
   [[i18n('undetectedComponentText')]]
 </paper-tooltip>
