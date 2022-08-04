@@ -2005,8 +2005,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.GoogleDocOffline.AvailabilityOnResourceRequest"
-    enum="GoogleDocsExtensionAvailablity" expires_after="2022-09-01">
-  <owner>rhalavati@chromium.org</owner>
+    enum="GoogleDocsExtensionAvailablity" expires_after="2022-12-01">
+  <owner>arabm@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     This histogram records requests to use resources from Google Docs Offline
