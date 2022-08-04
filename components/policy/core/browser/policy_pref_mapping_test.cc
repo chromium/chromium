@@ -206,9 +206,13 @@ class PolicyPrefMappingTest {
     if (policies_settings)
       policies_settings_ = policies_settings->Clone();
     if (prefs) {
-      for (auto pref_setting : prefs->DictItems())
-        prefs_.push_back(std::make_unique<PrefTestCase>(pref_setting.first,
-                                                        pref_setting.second));
+      for (auto [name, setting] : prefs->DictItems()) {
+        if (!setting.is_dict()) {
+          ADD_FAILURE() << "prefs item " << name << " is not dict";
+          continue;
+        }
+        prefs_.push_back(std::make_unique<PrefTestCase>(name, setting));
+      }
     }
     if (prefs_.empty()) {
       ADD_FAILURE() << "missing |prefs|";
