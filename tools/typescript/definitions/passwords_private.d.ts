@@ -48,16 +48,23 @@ declare global {
       }
 
       export enum ImportResultsStatus {
+        UNKNOWN_ERROR = 'UNKNOWN_ERROR',
         SUCCESS = 'SUCCESS',
         IO_ERROR = 'IO_ERROR',
         BAD_FORMAT = 'BAD_FORMAT',
         DISMISSED = 'DISMISSED',
+        MAX_FILE_SIZE = 'MAX_FILE_SIZE',
+        IMPORT_ALREADY_ACTIVE = 'IMPORT_ALREADY_ACTIVE',
+        NUM_PASSWORDS_EXCEEDED = 'NUM_PASSWORDS_EXCEEDED',
       }
 
       export enum ImportEntryStatus {
+        UNKNOWN_ERROR = 'UNKNOWN_ERROR',
         MISSING_PASSWORD = 'MISSING_PASSWORD',
         MISSING_URL = 'MISSING_URL',
         INVALID_URL = 'INVALID_URL',
+        NON_ASCII_URL = 'NON_ASCII_URL',
+        LONG_URL = 'LONG_URL',
         LONG_PASSWORD = 'LONG_PASSWORD',
         LONG_USERNAME = 'LONG_USERNAME',
         CONFLICT_PROFILE = 'CONFLICT_PROFILE',
