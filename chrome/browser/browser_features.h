@@ -25,6 +25,8 @@ extern const base::Feature kColorProviderRedirectionForThemeProvider;
 extern const base::Feature kDestroyProfileOnBrowserClose;
 extern const base::Feature kDestroySystemProfiles;
 
+extern const base::Feature kDevToolsTabTarget;
+
 extern const base::Feature kNukeProfileBeforeCreateMultiAsync;
 
 extern const base::Feature kPromoBrowserCommands;

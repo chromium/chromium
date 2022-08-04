@@ -30,6 +30,12 @@ bool ShouldCreateDevToolsAgentHost(WebContents* wc) {
 }
 }  // namespace
 
+// static
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetOrCreateForTab(
+    WebContents* wc) {
+  return WebContentsDevToolsAgentHost::GetOrCreateFor(wc);
+}
+
 class WebContentsDevToolsAgentHost::AutoAttacher
     : public protocol::TargetAutoAttacher {
  public:

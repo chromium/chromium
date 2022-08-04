@@ -42,6 +42,11 @@ const base::Feature kDestroyProfileOnBrowserClose {
 const base::Feature kDestroySystemProfiles{"DestroySystemProfiles",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Let DevTools front-end talk to the target of type "tab" rather than
+// "frame" when inspecting a WebContents.
+const base::Feature kDevToolsTabTarget{"DevToolsTabTarget",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
 const base::Feature kNukeProfileBeforeCreateMultiAsync{

@@ -70,6 +70,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
       WebContents* web_contents);
 
+  // Similar to the above, but returns a DevToolsAgentHost representing 'tab'
+  // target. Unlike the one for RenderFrame, this will remain the same through
+  // all possible transitions of underlying frame trees.
+  static scoped_refptr<DevToolsAgentHost> GetOrCreateForTab(
+      WebContents* web_contents);
+
   // Returns true iff an instance of DevToolsAgentHost for the |web_contents|
   // exists. This is equivalent to if a DevToolsAgentHost has ever been
   // created for the |web_contents|.

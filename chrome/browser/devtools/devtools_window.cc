@@ -19,6 +19,7 @@
 #include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -745,6 +746,17 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
   return profile->GetOriginalProfile();
 }
 
+namespace {
+
+scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
+    WebContents* wc) {
+  return base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
+             ? DevToolsAgentHost::GetOrCreateForTab(wc)
+             : DevToolsAgentHost::GetOrCreateFor(wc);
+}
+
+}  // namespace
+
 // static
 void DevToolsWindow::ToggleDevToolsWindow(
     content::WebContents* inspected_web_contents,
@@ -754,7 +766,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
     const std::string& settings,
     DevToolsOpenedByAction opened_by) {
   scoped_refptr<DevToolsAgentHost> agent(
-      DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
+      GetOrCreateDevToolsHostForWebContents(inspected_web_contents));
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   bool do_open = force_open;
   if (!window) {
@@ -809,7 +821,7 @@ void DevToolsWindow::InspectElement(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(inspected_frame_host);
   scoped_refptr<DevToolsAgentHost> agent(
-      DevToolsAgentHost::GetOrCreateFor(web_contents));
+      GetOrCreateDevToolsHostForWebContents(web_contents));
   agent->InspectElement(inspected_frame_host, x, y);
   bool should_measure_time = !FindDevToolsWindow(agent.get());
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -856,6 +868,8 @@ DevToolsWindow::MaybeCreateNavigationThrottle(
   return std::make_unique<Throttle>(handle, window);
 }
 
+// TODO(caseq): this method should be removed once we switch to
+// using tab target, so we don't currently use tab target here.
 void DevToolsWindow::UpdateInspectedWebContents(
     content::WebContents* new_web_contents,
     base::OnceCallback<void()> callback) {
@@ -1177,6 +1191,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
         url += "&can_dock=true";
       if (!panel.empty())
         url += "&panel=" + panel;
+      if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
+        url += "&targetType=tab";
+      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;
