@@ -6830,8 +6830,6 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
 
 TEST_P(PaintPropertyTreeBuilderTest,
        SimpleStickyTranslationChangeDoesNotCausePacUpdate) {
-  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>::webkit-scrollbar { width: 0; height: 0 }</style>
     <!-- position: relative and z-index: 1 are needed to make the scroller a
@@ -6866,7 +6864,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
   UpdateAllLifecyclePhasesExceptPaint();
 
   EXPECT_EQ(gfx::Vector2dF(), sticky_translation->Translation2D());
-  EXPECT_FALSE(pac->NeedsUpdate());
+  EXPECT_EQ(!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled(),
+            pac->NeedsUpdate());
   EXPECT_EQ(gfx::Vector2dF(), cc_transform_node->local.To2dTranslation());
   EXPECT_TRUE(property_trees->transform_tree().needs_update());
   EXPECT_TRUE(cc_transform_node->transform_changed);
