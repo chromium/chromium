@@ -78,7 +78,15 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     InitializeUserCloudPolicyManager(account_id, std::move(client));
   }
 
-  DCHECK(manager->IsClientRegistered());
+  DCHECK(manager->core()->client());
+
+  if (!manager->IsClientRegistered()) {
+    // The manager already has a client but it's still registering.
+    // `UserCloudPolicyManager` will initiate a policy fetch when the client
+    // registration completes. Invoke `callback` after the policy is fetched.
+    policy_fetch_callbacks_.AddUnsafe(std::move(callback));
+    return;
+  }
 
   // Now initiate a policy fetch.
   manager->core()->service()->RefreshPolicy(std::move(callback));
@@ -119,6 +127,7 @@ void UserPolicySigninServiceBase::Shutdown() {
 void UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown() {
   registration_helper_.reset();
   registration_helper_for_temporary_client_.reset();
+  policy_fetch_callbacks_.Notify(/*success=*/false);
   UserCloudPolicyManager* manager = policy_manager();
   if (manager && manager->core()->client())
     manager->core()->client()->RemoveObserver(this);
@@ -337,6 +346,10 @@ void UserPolicySigninServiceBase::
   }
 
   ProhibitSignoutIfNeeded();
+}
+
+void UserPolicySigninServiceBase::OnPolicyRefreshed(bool success) {
+  policy_fetch_callbacks_.Notify(success);
 }
 
 void UserPolicySigninServiceBase::ProhibitSignoutIfNeeded() {}

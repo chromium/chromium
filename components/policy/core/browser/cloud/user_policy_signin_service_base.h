@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -84,6 +85,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
 
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
+  void OnPolicyRefreshed(bool success) override;
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
@@ -205,6 +207,9 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
   signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
+
+  // Callbacks to invoke upon policy fetch.
+  base::OnceCallbackList<void(bool)> policy_fetch_callbacks_;
 
   // Helper for registering the client to DMServer to get a DM token using a
   // cloud policy client. When there is an instance of |registration_helper_|,

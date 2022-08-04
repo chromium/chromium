@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -33,6 +34,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
@@ -647,6 +649,72 @@ TEST_F(UserPolicySigninServiceTest,
   device_management_service_.SendJobOKNow(&job, registration_response);
   EXPECT_TRUE(register_completed_);
   EXPECT_EQ(dm_token_, expected_dm_token);
+}
+
+// Tests that `FetchPolicyForSignedInUser()` can be called in the middle of a
+// client registration.
+TEST_F(UserPolicySigninServiceTest,
+       FetchPolicyForSignedInUserWhileUnregisteredClient) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestUser, signin::ConsentLevel::kSignin);
+
+  // UserCloudPolicyManager should be initialized.
+  EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
+  ASSERT_TRUE(manager_->core()->service());
+  ASSERT_FALSE(manager_->IsClientRegistered());
+  // Client registration should not be in progress since the store is not
+  // yet initialized.
+  ASSERT_FALSE(IsRequestActive());
+
+  // `FetchPolicyForSignedInUser()` will notify the callback after the client
+  // registers and fetches policies.
+  UserPolicySigninService* signin_service =
+      UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+  network::TestURLLoaderFactory fetch_policy_url_loader_factory;
+  base::test::TestFuture<bool> future;
+  signin_service->FetchPolicyForSignedInUser(
+      test_account_id_, "dm_token", "client-id",
+      fetch_policy_url_loader_factory.GetSafeWeakWrapper(),
+      future.GetCallback());
+
+  // Complete the store initialization with the registration info.
+  auto data = std::make_unique<enterprise_management::PolicyData>();
+  data->set_request_token("fake token");
+  data->set_device_id("fake client id");
+  mock_store_->set_policy_data_for_testing(std::move(data));
+  mock_store_->NotifyStoreLoaded();
+  // The client should be registered.
+  ASSERT_TRUE(manager_->IsClientRegistered());
+  // Since there is a signed-in user expect a policy fetch to be started to
+  // refresh the policy for the user.
+  DeviceManagementService::JobConfiguration::JobType job_type =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
+  // A task to trigger policy fetch should have been posted to the task queue.
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(this);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+
+  EXPECT_CALL(*mock_store_, Store(_));
+  // Complete the policy fetch request.
+  em::DeviceManagementResponse policy_fetch_response;
+  UserPolicyBuilder policy_builder;
+  policy_builder.Build();
+  policy_fetch_response.mutable_policy_response()->add_responses()->CopyFrom(
+      policy_builder.policy());
+  device_management_service_.SendJobOKNow(&job, policy_fetch_response);
+  // The callback isn't called until `Store()` completes.
+  ASSERT_FALSE(future.IsReady());
+  Mock::VerifyAndClearExpectations(this);
+
+  mock_store_->NotifyStoreLoaded();
+  // `FetchPolicyForSignedInUser()` callback should be executed.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
