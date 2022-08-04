@@ -3643,6 +3643,84 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestFencedFrameBrowserTest,
                    ->IsViewSourceMode());
 }
 
+class NavigationRequestPrerenderBrowserTest
+    : public NavigationRequestBrowserTest {
+ public:
+  NavigationRequestPrerenderBrowserTest() {
+    prerender_helper_ =
+        std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
+            &NavigationRequestPrerenderBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+  ~NavigationRequestPrerenderBrowserTest() override = default;
+
+  NavigationRequestPrerenderBrowserTest(
+      const NavigationRequestPrerenderBrowserTest&) = delete;
+  NavigationRequestPrerenderBrowserTest& operator=(
+      const NavigationRequestPrerenderBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    NavigationRequestBrowserTest::SetUpOnMainThread();
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->AddDefaultHandlers(GetTestDataFilePath());
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+ protected:
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  test::PrerenderTestHelper& prerender_helper() { return *prerender_helper_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+ private:
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
+                       CoopCoepCheckWithPrerender) {
+  GURL url(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"
+                             "&cross-origin-embedder-policy: require-corp"));
+
+  // Navigate to a document that sets COOP and COEP.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  content::RenderFrameHostImpl* primary_main_frame =
+      static_cast<content::RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame());
+
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep,
+            primary_main_frame->cross_origin_opener_policy().value);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+            primary_main_frame->cross_origin_embedder_policy().value);
+
+  // Add a prerender.
+  int host_id = prerender_helper().AddPrerender(
+      https_server()->GetURL("a.test", "/title1.html?prerendering"));
+  content::RenderFrameHostImpl* prerender_main_frame =
+      static_cast<content::RenderFrameHostImpl*>(
+          prerender_helper().GetPrerenderedMainFrameHost(host_id));
+
+  // The prerender rfh's polices are none.
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            prerender_main_frame->cross_origin_embedder_policy().value);
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+            prerender_main_frame->cross_origin_opener_policy().value);
+
+  // Prerendering should not affect the primary rfh's polices.
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep,
+            primary_main_frame->cross_origin_opener_policy().value);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+            primary_main_frame->cross_origin_embedder_policy().value);
+}
+
 enum class TestMPArchType {
   kPrerender,
   kFencedFrame,
