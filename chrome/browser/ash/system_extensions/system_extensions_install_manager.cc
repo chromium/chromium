@@ -148,8 +148,6 @@ void SystemExtensionsInstallManager::RegisterServiceWorker(
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
 
-  // TODO(ortuno): Remove after fixing flakiness.
-  DLOG(ERROR) << "Registering service worker";
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
   worker_context->RegisterServiceWorker(
