@@ -21,7 +21,8 @@ template("create_js_source_maps") {
                            ])
     script =
         "//tools/code_coverage/create_js_source_maps/create_js_source_maps.py"
-    args = [ "--sources" ] + rebase_path(invoker.sources, root_out_dir) +
+    args = [ "--originals" ] + rebase_path(invoker.originals, root_out_dir) +
+           [ "--sources" ] + rebase_path(invoker.sources, root_out_dir) +
            [ "--outputs" ] + rebase_path(invoker.outputs, root_out_dir)
     inputs = [
       "//tools/code_coverage/create_js_source_maps/create_js_source_maps.js",

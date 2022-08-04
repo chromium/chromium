@@ -86,9 +86,11 @@ class CreateSourceMapsTest(unittest.TestCase):
                                                  suffix=".js")
     os.write(input_fd, file_after_preprocess)
     os.close(input_fd)
+    original_file_name = "input.js"
     output_file_name = input_file_name + ".out"
     node.RunNode([
         str(_SOURCE_MAP_PROCESSOR),
+        original_file_name,
         input_file_name,
         output_file_name,
     ] + (["--inline-sourcemaps"] if inline_sourcemap else []))
@@ -108,6 +110,8 @@ class CreateSourceMapsTest(unittest.TestCase):
     else:
       with open(output_file_name) as map_file:
         source_map = map_file.read()
+
+    self.assertEqual(original_file_name, json.loads(source_map)['sources'][0])
 
     # Check mappings:
     # Line 1 is before any removed lines, so it still maps to line 1

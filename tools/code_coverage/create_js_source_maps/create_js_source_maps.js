@@ -56,6 +56,7 @@ function addMapping(map, sourceFileName, originalLine, generatedLine, verbose) {
  * Processes one processed TypeScript or JavaScript file and produces one
  * source map file / appends a source map.
  *
+ * @param {string} originalFileName Original path of `inputFileName`.
  * @param {string} inputFileName The TypeScript or JavaScript file to read from.
  * @param {string} outputFileName If `inlineSourcemaps`, the output TypeScript
  *                                or JavaScript file with the append source map.
@@ -66,10 +67,10 @@ function addMapping(map, sourceFileName, originalLine, generatedLine, verbose) {
  *                                   creating standalone map file.
  */
 function processOneFile(
-    inputFileName, outputFileName, verbose, inlineSourcemaps) {
+    originalFileName, inputFileName, outputFileName, verbose,
+    inlineSourcemaps) {
   const inputFile = fs.readFileSync(inputFileName, 'utf8');
   const inputLines = inputFile.split('\n');
-  const inputFileBaseName = path.basename(inputFileName);
   const map = new SourceMapGenerator();
 
   let originalLine = 0;
@@ -81,7 +82,7 @@ function processOneFile(
 
     // Add to sourcemap before looking for removal comments. The beginning of
     // the generated line came from the parts before the removal comment.
-    addMapping(map, inputFileBaseName, originalLine, generatedLine, verbose);
+    addMapping(map, originalFileName, originalLine, generatedLine, verbose);
 
     for (const removal of line.matchAll(GRIT_REMOVED_LINES_REGEX)) {
       const removedLines = Number.parseInt(removal[1], 10);
@@ -117,12 +118,15 @@ function main() {
     help: 'Copies contents of input to output and appends inline source maps',
     action: 'storeTrue',
   });
+  parser.addArgument('original', {help: 'Original file name', action: 'store'});
   parser.addArgument('input', {help: 'Input file name', action: 'store'});
   parser.addArgument('output', {help: 'Output file name', action: 'store'});
 
   const argv = parser.parseArgs();
 
-  processOneFile(argv.input, argv.output, argv.verbose, argv.inline_sourcemaps);
+  processOneFile(
+      argv.original, argv.input, argv.output, argv.verbose,
+      argv.inline_sourcemaps);
 }
 
 main();

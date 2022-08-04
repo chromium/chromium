@@ -31,13 +31,20 @@ template("preprocess_if_expr_sourcemaps") {
   }
 
   if (enable_webui_inline_sourcemaps) {
+    _in_folder = "."
+    if (defined(invoker.in_folder)) {
+      _in_folder = invoker.in_folder
+    }
+
     create_js_source_maps(target_name) {
       inline_sourcemaps = true
+      originals = []
       sources = []
       outputs = []
       foreach(in_file, invoker.in_files) {
         assert(get_path_info(in_file, "extension") == "ts" ||
                get_path_info(in_file, "extension") == "js")
+        originals += [ "$_in_folder/$in_file" ]
         sources += [ "$_preprocess_if_expr_out_folder/" + in_file ]
         outputs += [ "$_out_folder/" + in_file ]
       }
