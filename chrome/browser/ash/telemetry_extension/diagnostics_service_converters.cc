@@ -26,89 +26,91 @@ std::string GetStringFromMojoHandle(mojo::ScopedHandle handle) {
 
 }  // namespace
 
-health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input) {
-  return health::mojom::RoutineUpdate::New(
+  return crosapi::mojom::DiagnosticsRoutineUpdate::New(
       input->progress_percent,
       GetStringFromMojoHandle(std::move(input->output)),
       ConvertDiagnosticsPtr(std::move(input->routine_update_union)));
 }
 
-health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRoutineUpdateUnionPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdateUnionPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
-      return health::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
-          ConvertDiagnosticsPtr(std::move(input->get_interactive_update())));
+      return crosapi::mojom::DiagnosticsRoutineUpdateUnion::
+          NewInteractiveUpdate(ConvertDiagnosticsPtr(
+              std::move(input->get_interactive_update())));
     case cros_healthd::mojom::RoutineUpdateUnion::Tag::kNoninteractiveUpdate:
-      return health::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
-          ConvertDiagnosticsPtr(std::move(input->get_noninteractive_update())));
+      return crosapi::mojom::DiagnosticsRoutineUpdateUnion::
+          NewNoninteractiveUpdate(ConvertDiagnosticsPtr(
+              std::move(input->get_noninteractive_update())));
   }
 }
 
-health::mojom::InteractiveRoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::InteractiveRoutineUpdatePtr input) {
-  return health::mojom::InteractiveRoutineUpdate::New(
+  return crosapi::mojom::DiagnosticsInteractiveRoutineUpdate::New(
       Convert(input->user_message));
 }
 
-health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsNonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::NonInteractiveRoutineUpdatePtr input) {
-  return health::mojom::NonInteractiveRoutineUpdate::New(
+  return crosapi::mojom::DiagnosticsNonInteractiveRoutineUpdate::New(
       Convert(input->status), std::move(input->status_message));
 }
 
-health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRunRoutineResponsePtr UncheckedConvertPtr(
     cros_healthd::mojom::RunRoutineResponsePtr input) {
-  return health::mojom::RunRoutineResponse::New(input->id,
-                                                Convert(input->status));
+  return crosapi::mojom::DiagnosticsRunRoutineResponse::New(
+      input->id, Convert(input->status));
 }
 
 }  // namespace unchecked
 
-absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
+absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
-      return health::mojom::DiagnosticRoutineEnum::kBatteryCapacity;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCapacity;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth:
-      return health::mojom::DiagnosticRoutineEnum::kBatteryHealth;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBatteryHealth;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck:
-      return health::mojom::DiagnosticRoutineEnum::kSmartctlCheck;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower:
-      return health::mojom::DiagnosticRoutineEnum::kAcPower;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kAcPower;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache:
-      return health::mojom::DiagnosticRoutineEnum::kCpuCache;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kCpuCache;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress:
-      return health::mojom::DiagnosticRoutineEnum::kCpuStress;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy:
-      return health::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kFloatingPointAccuracy;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel:
-      return health::mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest:
-      return health::mojom::DiagnosticRoutineEnum::kNvmeSelfTest;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead:
-      return health::mojom::DiagnosticRoutineEnum::kDiskRead;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kDiskRead;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch:
-      return health::mojom::DiagnosticRoutineEnum::kPrimeSearch;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kPrimeSearch;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge:
-      return health::mojom::DiagnosticRoutineEnum::kBatteryDischarge;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBatteryDischarge;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge:
-      return health::mojom::DiagnosticRoutineEnum::kBatteryCharge;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCharge;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kMemory:
-      return health::mojom::DiagnosticRoutineEnum::kMemory;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kMemory;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity:
-      return health::mojom::DiagnosticRoutineEnum::kLanConnectivity;
+      return crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity;
     default:
       return absl::nullopt;
   }
 }
 
-std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
+std::vector<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
-  std::vector<health::mojom::DiagnosticRoutineEnum> output;
+  std::vector<crosapi::mojom::DiagnosticsRoutineEnum> output;
   for (const auto element : input) {
-    absl::optional<health::mojom::DiagnosticRoutineEnum> converted =
+    absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> converted =
         Convert(element);
     if (converted.has_value()) {
       output.push_back(converted.value());
@@ -117,71 +119,72 @@ std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
   return output;
 }
 
-health::mojom::DiagnosticRoutineUserMessageEnum Convert(
+crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnknown:
-      return health::mojom::DiagnosticRoutineUserMessageEnum::kUnknown;
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower:
-      return health::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnplugACPower;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower:
-      return health::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower;
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kPlugInACPower;
   }
   NOTREACHED();
-  return static_cast<health::mojom::DiagnosticRoutineUserMessageEnum>(
+  return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(
       static_cast<int>(
-          health::mojom::DiagnosticRoutineUserMessageEnum::kMaxValue) +
+          crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kMaxValue) +
       1);
 }
 
-health::mojom::DiagnosticRoutineStatusEnum Convert(
+crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineStatusEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnknown:
-      return health::mojom::DiagnosticRoutineStatusEnum::kUnknown;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady:
-      return health::mojom::DiagnosticRoutineStatusEnum::kReady;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning:
-      return health::mojom::DiagnosticRoutineStatusEnum::kRunning;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kRunning;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kWaiting:
-      return health::mojom::DiagnosticRoutineStatusEnum::kWaiting;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kWaiting;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kPassed:
-      return health::mojom::DiagnosticRoutineStatusEnum::kPassed;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kPassed;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailed:
-      return health::mojom::DiagnosticRoutineStatusEnum::kFailed;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kFailed;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kError:
-      return health::mojom::DiagnosticRoutineStatusEnum::kError;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kError;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelled:
-      return health::mojom::DiagnosticRoutineStatusEnum::kCancelled;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kCancelled;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailedToStart:
-      return health::mojom::DiagnosticRoutineStatusEnum::kFailedToStart;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kFailedToStart;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRemoved:
-      return health::mojom::DiagnosticRoutineStatusEnum::kRemoved;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kRemoved;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling:
-      return health::mojom::DiagnosticRoutineStatusEnum::kCancelling;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kCancelling;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
-      return health::mojom::DiagnosticRoutineStatusEnum::kUnsupported;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kUnsupported;
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun:
-      return health::mojom::DiagnosticRoutineStatusEnum::kNotRun;
+      return crosapi::mojom::DiagnosticsRoutineStatusEnum::kNotRun;
   }
   NOTREACHED();
-  return static_cast<health::mojom::DiagnosticRoutineStatusEnum>(
-      static_cast<int>(health::mojom::DiagnosticRoutineStatusEnum::kMaxValue) +
+  return static_cast<crosapi::mojom::DiagnosticsRoutineStatusEnum>(
+      static_cast<int>(
+          crosapi::mojom::DiagnosticsRoutineStatusEnum::kMaxValue) +
       1);
 }
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
-    health::mojom::DiagnosticRoutineCommandEnum input) {
+    crosapi::mojom::DiagnosticsRoutineCommandEnum input) {
   switch (input) {
-    case health::mojom::DiagnosticRoutineCommandEnum::kUnknown:
+    case crosapi::mojom::DiagnosticsRoutineCommandEnum::kUnknown:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kUnknown;
-    case health::mojom::DiagnosticRoutineCommandEnum::kContinue:
+    case crosapi::mojom::DiagnosticsRoutineCommandEnum::kContinue:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kContinue;
-    case health::mojom::DiagnosticRoutineCommandEnum::kCancel:
+    case crosapi::mojom::DiagnosticsRoutineCommandEnum::kCancel:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel;
-    case health::mojom::DiagnosticRoutineCommandEnum::kGetStatus:
+    case crosapi::mojom::DiagnosticsRoutineCommandEnum::kGetStatus:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus;
-    case health::mojom::DiagnosticRoutineCommandEnum::kRemove:
+    case crosapi::mojom::DiagnosticsRoutineCommandEnum::kRemove:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove;
   }
   NOTREACHED();
@@ -192,13 +195,13 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
 }
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
-    health::mojom::AcPowerStatusEnum input) {
+    crosapi::mojom::DiagnosticsAcPowerStatusEnum input) {
   switch (input) {
-    case health::mojom::AcPowerStatusEnum::kUnknown:
+    case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kUnknown:
       return cros_healthd::mojom::AcPowerStatusEnum::kUnknown;
-    case health::mojom::AcPowerStatusEnum::kConnected:
+    case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kConnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kConnected;
-    case health::mojom::AcPowerStatusEnum::kDisconnected:
+    case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kDisconnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
   }
   NOTREACHED();
@@ -207,13 +210,13 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
 }
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
-    health::mojom::NvmeSelfTestTypeEnum input) {
+    crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum input) {
   switch (input) {
-    case health::mojom::NvmeSelfTestTypeEnum::kUnknown:
+    case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kUnknown:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kUnknown;
-    case health::mojom::NvmeSelfTestTypeEnum::kShortSelfTest:
+    case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kShortSelfTest;
-    case health::mojom::NvmeSelfTestTypeEnum::kLongSelfTest:
+    case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
   }
   NOTREACHED();
@@ -223,13 +226,13 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
 }
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
-    health::mojom::DiskReadRoutineTypeEnum input) {
+    crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum input) {
   switch (input) {
-    case health::mojom::DiskReadRoutineTypeEnum::kLinearRead:
+    case crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum::kLinearRead:
       return cros_healthd::mojom::DiskReadRoutineTypeEnum::kLinearRead;
-    case health::mojom::DiskReadRoutineTypeEnum::kRandomRead:
+    case crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum::kRandomRead:
       return cros_healthd::mojom::DiskReadRoutineTypeEnum::kRandomRead;
-    case health::mojom::DiskReadRoutineTypeEnum::kUnknown:
+    case crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum::kUnknown:
       // Fall-through to not-supported case.
       break;
   }

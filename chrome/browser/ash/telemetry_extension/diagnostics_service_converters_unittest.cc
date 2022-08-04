@@ -22,94 +22,94 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticsPtrTakesNullPtr) {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kReady),
-            health::DiagnosticRoutineStatusEnum::kReady);
+            crosapi::DiagnosticsRoutineStatusEnum::kReady);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kRunning),
-            health::DiagnosticRoutineStatusEnum::kRunning);
+            crosapi::DiagnosticsRoutineStatusEnum::kRunning);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kWaiting),
-            health::DiagnosticRoutineStatusEnum::kWaiting);
+            crosapi::DiagnosticsRoutineStatusEnum::kWaiting);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kPassed),
-            health::DiagnosticRoutineStatusEnum::kPassed);
+            crosapi::DiagnosticsRoutineStatusEnum::kPassed);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kFailed),
-            health::DiagnosticRoutineStatusEnum::kFailed);
+            crosapi::DiagnosticsRoutineStatusEnum::kFailed);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kError),
-            health::DiagnosticRoutineStatusEnum::kError);
+            crosapi::DiagnosticsRoutineStatusEnum::kError);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kCancelled),
-            health::DiagnosticRoutineStatusEnum::kCancelled);
+            crosapi::DiagnosticsRoutineStatusEnum::kCancelled);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kFailedToStart),
-            health::DiagnosticRoutineStatusEnum::kFailedToStart);
+            crosapi::DiagnosticsRoutineStatusEnum::kFailedToStart);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kRemoved),
-            health::DiagnosticRoutineStatusEnum::kRemoved);
+            crosapi::DiagnosticsRoutineStatusEnum::kRemoved);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kCancelling),
-            health::DiagnosticRoutineStatusEnum::kCancelling);
+            crosapi::DiagnosticsRoutineStatusEnum::kCancelling);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kUnsupported),
-            health::DiagnosticRoutineStatusEnum::kUnsupported);
+            crosapi::DiagnosticsRoutineStatusEnum::kUnsupported);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineStatusEnum::kNotRun),
-            health::DiagnosticRoutineStatusEnum::kNotRun);
+            crosapi::DiagnosticsRoutineStatusEnum::kNotRun);
 }
 
 TEST(DiagnosticsServiceConvertersTest,
      ConvertDiagnosticRoutineUserMessageEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
   EXPECT_EQ(
       Convert(cros_healthd::DiagnosticRoutineUserMessageEnum::kUnplugACPower),
-      health::DiagnosticRoutineUserMessageEnum::kUnplugACPower);
+      crosapi::DiagnosticsRoutineUserMessageEnum::kUnplugACPower);
   EXPECT_EQ(
       Convert(cros_healthd::DiagnosticRoutineUserMessageEnum::kPlugInACPower),
-      health::DiagnosticRoutineUserMessageEnum::kPlugInACPower);
+      crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
-  EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kUnknown),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kUnknown),
             cros_healthd::DiagnosticRoutineCommandEnum::kUnknown);
-  EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kContinue),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kContinue),
             cros_healthd::DiagnosticRoutineCommandEnum::kContinue);
-  EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kCancel),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kCancel),
             cros_healthd::DiagnosticRoutineCommandEnum::kCancel);
-  EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kGetStatus),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kGetStatus),
             cros_healthd::DiagnosticRoutineCommandEnum::kGetStatus);
-  EXPECT_EQ(Convert(health::DiagnosticRoutineCommandEnum::kRemove),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsRoutineCommandEnum::kRemove),
             cros_healthd::DiagnosticRoutineCommandEnum::kRemove);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
-  EXPECT_EQ(Convert(health::AcPowerStatusEnum::kUnknown),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsAcPowerStatusEnum::kUnknown),
             cros_healthd::AcPowerStatusEnum::kUnknown);
-  EXPECT_EQ(Convert(health::AcPowerStatusEnum::kConnected),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsAcPowerStatusEnum::kConnected),
             cros_healthd::AcPowerStatusEnum::kConnected);
-  EXPECT_EQ(Convert(health::AcPowerStatusEnum::kDisconnected),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsAcPowerStatusEnum::kDisconnected),
             cros_healthd::AcPowerStatusEnum::kDisconnected);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
-  EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kUnknown),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown),
             cros_healthd::NvmeSelfTestTypeEnum::kUnknown);
-  EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kShortSelfTest),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest),
             cros_healthd::NvmeSelfTestTypeEnum::kShortSelfTest);
-  EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kLongSelfTest),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest),
             cros_healthd::NvmeSelfTestTypeEnum::kLongSelfTest);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-  namespace health = ::ash::health::mojom;
+  namespace crosapi = ::crosapi::mojom;
 
-  EXPECT_EQ(Convert(health::DiskReadRoutineTypeEnum::kLinearRead),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsDiskReadRoutineTypeEnum::kLinearRead),
             cros_healthd::DiskReadRoutineTypeEnum::kLinearRead);
-  EXPECT_EQ(Convert(health::DiskReadRoutineTypeEnum::kRandomRead),
+  EXPECT_EQ(Convert(crosapi::DiagnosticsDiskReadRoutineTypeEnum::kRandomRead),
             cros_healthd::DiskReadRoutineTypeEnum::kRandomRead);
 }
 

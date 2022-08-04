@@ -28,46 +28,46 @@ namespace converters {
 
 namespace unchecked {
 
-health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input);
 
-health::mojom::RoutineUpdateUnionPtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRoutineUpdateUnionPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdateUnionPtr input);
 
-health::mojom::InteractiveRoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::InteractiveRoutineUpdatePtr input);
 
-health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsNonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::NonInteractiveRoutineUpdatePtr input);
 
-health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
+crosapi::mojom::DiagnosticsRunRoutineResponsePtr UncheckedConvertPtr(
     cros_healthd::mojom::RunRoutineResponsePtr input);
 
 }  // namespace unchecked
 
-absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
+absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input);
 
-std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
+std::vector<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input);
 
-health::mojom::DiagnosticRoutineUserMessageEnum Convert(
+crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input);
 
-health::mojom::DiagnosticRoutineStatusEnum Convert(
+crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
     cros_healthd::mojom::DiagnosticRoutineStatusEnum input);
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
-    health::mojom::DiagnosticRoutineCommandEnum input);
+    crosapi::mojom::DiagnosticsRoutineCommandEnum input);
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
-    health::mojom::AcPowerStatusEnum input);
+    crosapi::mojom::DiagnosticsAcPowerStatusEnum input);
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
-    health::mojom::NvmeSelfTestTypeEnum input);
+    crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum input);
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
-    health::mojom::DiskReadRoutineTypeEnum input);
+    crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum input);
 
 template <class InputT>
 auto ConvertDiagnosticsPtr(InputT input) {

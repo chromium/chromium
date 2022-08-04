@@ -24,16 +24,15 @@ class RemoteDiagnosticsServiceStrategyAsh
   ~RemoteDiagnosticsServiceStrategyAsh() override = default;
 
   // RemoteDiagnosticsServiceStrategy override:
-  mojo::Remote<ash::health::mojom::DiagnosticsService>& GetRemoteService()
+  mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService()
       override {
     return remote_diagnostics_service_;
   }
 
  private:
-  mojo::Remote<ash::health::mojom::DiagnosticsService>
-      remote_diagnostics_service_;
+  mojo::Remote<crosapi::mojom::DiagnosticsService> remote_diagnostics_service_;
 
-  std::unique_ptr<ash::health::mojom::DiagnosticsService> diagnostics_service_;
+  std::unique_ptr<crosapi::mojom::DiagnosticsService> diagnostics_service_;
 };
 
 }  // namespace

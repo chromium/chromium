@@ -17,7 +17,7 @@
 
 namespace ash {
 
-class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
+class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
  public:
   class Factory : public ash::DiagnosticsService::Factory {
    public:
@@ -29,8 +29,8 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
 
    protected:
     // DiagnosticsService::Factory:
-    std::unique_ptr<health::mojom::DiagnosticsService> CreateInstance(
-        mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver)
+    std::unique_ptr<crosapi::mojom::DiagnosticsService> CreateInstance(
+        mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver)
         override;
 
    private:
@@ -42,10 +42,10 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
   FakeDiagnosticsService& operator=(const FakeDiagnosticsService&) = delete;
   ~FakeDiagnosticsService() override;
 
-  // health::mojom::DiagnosticsService overrides.
+  // crosapi::health::mojom::DiagnosticsService overrides.
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
-                        health::mojom::DiagnosticRoutineCommandEnum command,
+                        crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
   void RunBatteryCapacityRoutine(
@@ -54,9 +54,10 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunAcPowerRoutine(health::mojom::AcPowerStatusEnum expected_status,
-                         const absl::optional<std::string>& expected_power_type,
-                         RunAcPowerRoutineCallback callback) override;
+  void RunAcPowerRoutine(
+      crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
+      const absl::optional<std::string>& expected_power_type,
+      RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
   void RunCpuStressRoutine(uint32_t length_seconds,
@@ -68,12 +69,13 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
       uint32_t wear_level_threshold,
       RunNvmeWearLevelRoutineCallback callback) override;
   void RunNvmeSelfTestRoutine(
-      health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+      crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void RunDiskReadRoutine(health::mojom::DiskReadRoutineTypeEnum type,
-                          uint32_t length_seconds,
-                          uint32_t file_size_mb,
-                          RunDiskReadRoutineCallback callback) override;
+  void RunDiskReadRoutine(
+      crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
+      uint32_t length_seconds,
+      uint32_t file_size_mb,
+      RunDiskReadRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunBatteryDischargeRoutine(
@@ -90,14 +92,15 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
 
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(
-      health::mojom::RunRoutineResponsePtr expected_response);
+      crosapi::mojom::DiagnosticsRunRoutineResponsePtr expected_response);
 
   // Sets the return value for |GetAvailableRoutines|.
   void SetAvailableRoutines(
-      std::vector<health::mojom::DiagnosticRoutineEnum> available_routines);
+      std::vector<crosapi::mojom::DiagnosticsRoutineEnum> available_routines);
 
   // Sets the return value for |GetRoutineUpdate|.
-  void SetRoutineUpdateResponse(health::mojom::RoutineUpdatePtr routine_update);
+  void SetRoutineUpdateResponse(
+      crosapi::mojom::DiagnosticsRoutineUpdatePtr routine_update);
 
   // Set expectation about the parameter that is passed to a call of
   // |Run*Routine| or |GetAvailableRoutines|.
@@ -106,23 +109,23 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
 
   // Set expectation about the type of routine that is called.
   void SetExpectedLastCalledRoutine(
-      health::mojom::DiagnosticRoutineEnum expected_called_routine);
+      crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine);
 
  private:
   void BindPendingReceiver(
-      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
 
-  mojo::Receiver<health::mojom::DiagnosticsService> receiver_;
+  mojo::Receiver<crosapi::mojom::DiagnosticsService> receiver_;
 
   // Response for a call to |Run*Routine|.
-  health::mojom::RunRoutineResponsePtr run_routine_response_;
+  crosapi::mojom::DiagnosticsRunRoutineResponsePtr run_routine_response_;
 
   // Response for a call to |GetAvailableRoutines|.
-  std::vector<health::mojom::DiagnosticRoutineEnum>
+  std::vector<crosapi::mojom::DiagnosticsRoutineEnum>
       available_routines_response_;
 
   // Response for a call to |GetRoutineUpdate|.
-  health::mojom::RoutineUpdatePtr routine_update_response_;
+  crosapi::mojom::DiagnosticsRoutineUpdatePtr routine_update_response_;
 
   // Expectation of the passed parameters to a |Run*Routine| call.
   base::Value::Dict expected_passed_parameters_;
@@ -130,11 +133,11 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
   base::Value::Dict actual_passed_parameters_;
 
   // Expectation of the called routine.
-  health::mojom::DiagnosticRoutineEnum expected_called_routine_{
-      health::mojom::DiagnosticRoutineEnum::kUnknown};
+  crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine_{
+      crosapi::mojom::DiagnosticsRoutineEnum::kUnknown};
   // Actually called routine.
-  health::mojom::DiagnosticRoutineEnum actual_called_routine_{
-      health::mojom::DiagnosticRoutineEnum::kUnknown};
+  crosapi::mojom::DiagnosticsRoutineEnum actual_called_routine_{
+      crosapi::mojom::DiagnosticsRoutineEnum::kUnknown};
 };
 }  // namespace ash
 

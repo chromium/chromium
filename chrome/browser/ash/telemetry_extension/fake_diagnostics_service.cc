@@ -27,9 +27,9 @@ void FakeDiagnosticsService::Factory::SetCreateInstanceResponse(
   fake_service_ = std::move(fake_service);
 }
 
-std::unique_ptr<health::mojom::DiagnosticsService>
+std::unique_ptr<crosapi::mojom::DiagnosticsService>
 FakeDiagnosticsService::Factory::CreateInstance(
-    mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
   DCHECK(fake_service_);
   fake_service_->BindPendingReceiver(std::move(receiver));
   return std::move(fake_service_);
@@ -52,7 +52,7 @@ void FakeDiagnosticsService::GetAvailableRoutines(
 
 void FakeDiagnosticsService::GetRoutineUpdate(
     int32_t id,
-    health::mojom::DiagnosticRoutineCommandEnum command,
+    crosapi::mojom::DiagnosticsRoutineCommandEnum command,
     bool include_output,
     GetRoutineUpdateCallback callback) {
   actual_passed_parameters_.clear();
@@ -69,7 +69,7 @@ void FakeDiagnosticsService::RunBatteryCapacityRoutine(
     RunBatteryCapacityRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_called_routine_ =
-      health::mojom::DiagnosticRoutineEnum::kBatteryCapacity;
+      crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCapacity;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
@@ -78,7 +78,8 @@ void FakeDiagnosticsService::RunBatteryCapacityRoutine(
 void FakeDiagnosticsService::RunBatteryHealthRoutine(
     RunBatteryHealthRoutineCallback callback) {
   actual_passed_parameters_.clear();
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kBatteryHealth;
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kBatteryHealth;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
@@ -87,14 +88,15 @@ void FakeDiagnosticsService::RunBatteryHealthRoutine(
 void FakeDiagnosticsService::RunSmartctlCheckRoutine(
     RunSmartctlCheckRoutineCallback callback) {
   actual_passed_parameters_.clear();
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kSmartctlCheck;
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
 void FakeDiagnosticsService::RunAcPowerRoutine(
-    health::mojom::AcPowerStatusEnum expected_status,
+    crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
     const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   actual_passed_parameters_.clear();
@@ -105,7 +107,7 @@ void FakeDiagnosticsService::RunAcPowerRoutine(
                                   expected_power_type.value());
   }
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kAcPower;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kAcPower;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -119,7 +121,7 @@ void FakeDiagnosticsService::RunCpuCacheRoutine(
   actual_passed_parameters_.Set("length_seconds",
                                 static_cast<int32_t>(length_seconds));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kCpuCache;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kCpuCache;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -133,7 +135,7 @@ void FakeDiagnosticsService::RunCpuStressRoutine(
   actual_passed_parameters_.Set("length_seconds",
                                 static_cast<int32_t>(length_seconds));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kCpuStress;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -148,7 +150,7 @@ void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
                                 static_cast<int32_t>(length_seconds));
 
   actual_called_routine_ =
-      health::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy;
+      crosapi::mojom::DiagnosticsRoutineEnum::kFloatingPointAccuracy;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -162,7 +164,8 @@ void FakeDiagnosticsService::RunNvmeWearLevelRoutine(
   actual_passed_parameters_.Set("wear_level_threshold",
                                 static_cast<int32_t>(wear_level_threshold));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -170,13 +173,14 @@ void FakeDiagnosticsService::RunNvmeWearLevelRoutine(
 }
 
 void FakeDiagnosticsService::RunNvmeSelfTestRoutine(
-    health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+    crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
     RunNvmeSelfTestRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_passed_parameters_.Set("nvme_self_test_type",
                                 static_cast<int32_t>(nvme_self_test_type));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kNvmeSelfTest;
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -184,7 +188,7 @@ void FakeDiagnosticsService::RunNvmeSelfTestRoutine(
 }
 
 void FakeDiagnosticsService::RunDiskReadRoutine(
-    health::mojom::DiskReadRoutineTypeEnum type,
+    crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
     uint32_t length_seconds,
     uint32_t file_size_mb,
     RunDiskReadRoutineCallback callback) {
@@ -195,7 +199,7 @@ void FakeDiagnosticsService::RunDiskReadRoutine(
   actual_passed_parameters_.Set("file_size_mb",
                                 static_cast<int32_t>(file_size_mb));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kDiskRead;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kDiskRead;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -209,7 +213,7 @@ void FakeDiagnosticsService::RunPrimeSearchRoutine(
   actual_passed_parameters_.Set("length_seconds",
                                 static_cast<int32_t>(length_seconds));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kPrimeSearch;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kPrimeSearch;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -228,7 +232,7 @@ void FakeDiagnosticsService::RunBatteryDischargeRoutine(
       static_cast<int32_t>(maximum_discharge_percent_allowed));
 
   actual_called_routine_ =
-      health::mojom::DiagnosticRoutineEnum::kBatteryDischarge;
+      crosapi::mojom::DiagnosticsRoutineEnum::kBatteryDischarge;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -246,7 +250,8 @@ void FakeDiagnosticsService::RunBatteryChargeRoutine(
       "minimum_charge_percent_required",
       static_cast<int32_t>(minimum_charge_percent_required));
 
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kBatteryCharge;
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCharge;
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -256,7 +261,7 @@ void FakeDiagnosticsService::RunBatteryChargeRoutine(
 void FakeDiagnosticsService::RunMemoryRoutine(
     RunMemoryRoutineCallback callback) {
   actual_passed_parameters_.clear();
-  actual_called_routine_ = health::mojom::DiagnosticRoutineEnum::kMemory;
+  actual_called_routine_ = crosapi::mojom::DiagnosticsRoutineEnum::kMemory;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
@@ -266,24 +271,24 @@ void FakeDiagnosticsService::RunLanConnectivityRoutine(
     RunLanConnectivityRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_called_routine_ =
-      health::mojom::DiagnosticRoutineEnum::kLanConnectivity;
+      crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
 void FakeDiagnosticsService::SetRunRoutineResponse(
-    health::mojom::RunRoutineResponsePtr response) {
+    crosapi::mojom::DiagnosticsRunRoutineResponsePtr response) {
   run_routine_response_ = std::move(response);
 }
 
 void FakeDiagnosticsService::SetAvailableRoutines(
-    std::vector<health::mojom::DiagnosticRoutineEnum> available_routines) {
+    std::vector<crosapi::mojom::DiagnosticsRoutineEnum> available_routines) {
   available_routines_response_ = available_routines;
 }
 
 void FakeDiagnosticsService::SetRoutineUpdateResponse(
-    health::mojom::RoutineUpdatePtr routine_update) {
+    crosapi::mojom::DiagnosticsRoutineUpdatePtr routine_update) {
   routine_update_response_ = std::move(routine_update);
 }
 
@@ -293,12 +298,12 @@ void FakeDiagnosticsService::SetExpectedLastPassedParameters(
 }
 
 void FakeDiagnosticsService::SetExpectedLastCalledRoutine(
-    health::mojom::DiagnosticRoutineEnum expected_called_routine) {
+    crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine) {
   expected_called_routine_ = expected_called_routine;
 }
 
 void FakeDiagnosticsService::BindPendingReceiver(
-    mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 

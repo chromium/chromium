@@ -25,7 +25,7 @@ DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
           RemoteDiagnosticsServiceStrategy::Create()) {}
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
-mojo::Remote<ash::health::mojom::DiagnosticsService>&
+mojo::Remote<crosapi::mojom::DiagnosticsService>&
 DiagnosticsApiFunctionBase::GetRemoteService() {
   return remote_diagnostics_service_strategy_->GetRemoteService();
 }
@@ -45,7 +45,7 @@ void OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
 }
 
 void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
-    const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines) {
+    const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>& routines) {
   api::os_diagnostics::GetAvailableRoutinesResponse result;
   for (const auto in : routines) {
     api::os_diagnostics::RoutineType out;
@@ -84,7 +84,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
 }
 
 void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
-    ash::health::mojom::RoutineUpdatePtr ptr) {
+    crosapi::mojom::DiagnosticsRoutineUpdatePtr ptr) {
   if (!ptr) {
     // |ptr| should never be null, otherwise Mojo validation will fail.
     // However it's safer to handle it in case of API changes.
@@ -101,14 +101,15 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
   }
 
   switch (ptr->routine_update_union->which()) {
-    case ash::health::mojom::RoutineUpdateUnion::Tag::kNoninteractiveUpdate: {
+    case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::
+        kNoninteractiveUpdate: {
       auto& routine_update =
           ptr->routine_update_union->get_noninteractive_update();
       result.status = converters::ConvertRoutineStatus(routine_update->status);
       result.status_message = std::move(routine_update->status_message);
       break;
     }
-    case ash::health::mojom::RoutineUpdateUnion::Tag::kInteractiveUpdate:
+    case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::kInteractiveUpdate:
       // Routine is waiting for user action. Set the status to waiting.
       result.status = api::os_diagnostics::RoutineStatus::
           ROUTINE_STATUS_WAITING_USER_ACTION;
@@ -130,7 +131,7 @@ DiagnosticsApiRunRoutineFunctionBase::~DiagnosticsApiRunRoutineFunctionBase() =
     default;
 
 void DiagnosticsApiRunRoutineFunctionBase::OnResult(
-    ash::health::mojom::RunRoutineResponsePtr ptr) {
+    crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr) {
   if (!ptr) {
     // |ptr| should never be null, otherwise Mojo validation will fail.
     // However it's safer to handle it in case of API changes.

@@ -29,7 +29,7 @@ class DiagnosticsApiFunctionBase
  protected:
   ~DiagnosticsApiFunctionBase() override;
 
-  mojo::Remote<ash::health::mojom::DiagnosticsService>& GetRemoteService();
+  mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService();
 
  private:
   std::unique_ptr<RemoteDiagnosticsServiceStrategy>
@@ -55,7 +55,7 @@ class OsDiagnosticsGetAvailableRoutinesFunction
   void RunIfAllowed() override;
 
   void OnResult(
-      const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines);
+      const std::vector<crosapi::mojom::DiagnosticsRoutineEnum>& routines);
 };
 
 class OsDiagnosticsGetRoutineUpdateFunction
@@ -76,7 +76,7 @@ class OsDiagnosticsGetRoutineUpdateFunction
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::RoutineUpdatePtr ptr);
+  void OnResult(crosapi::mojom::DiagnosticsRoutineUpdatePtr ptr);
 };
 
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
@@ -88,7 +88,7 @@ class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
   DiagnosticsApiRunRoutineFunctionBase& operator=(
       const DiagnosticsApiRunRoutineFunctionBase&) = delete;
 
-  void OnResult(ash::health::mojom::RunRoutineResponsePtr ptr);
+  void OnResult(crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr);
 
  protected:
   ~DiagnosticsApiRunRoutineFunctionBase() override;

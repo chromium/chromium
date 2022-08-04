@@ -20,20 +20,20 @@ namespace cros_healthd {
 namespace mojom = ::chromeos::cros_healthd::mojom;
 }  // namespace cros_healthd
 
-class DiagnosticsService : public health::mojom::DiagnosticsService {
+class DiagnosticsService : public crosapi::mojom::DiagnosticsService {
  public:
   class Factory {
    public:
-    static std::unique_ptr<health::mojom::DiagnosticsService> Create(
-        mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
+    static std::unique_ptr<crosapi::mojom::DiagnosticsService> Create(
+        mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
 
     static void SetForTesting(Factory* test_factory);
 
     virtual ~Factory();
 
    protected:
-    virtual std::unique_ptr<health::mojom::DiagnosticsService> CreateInstance(
-        mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver) = 0;
+    virtual std::unique_ptr<crosapi::mojom::DiagnosticsService> CreateInstance(
+        mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) = 0;
 
    private:
     static Factory* test_factory_;
@@ -45,7 +45,7 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
 
  private:
   explicit DiagnosticsService(
-      mojo::PendingReceiver<health::mojom::DiagnosticsService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
   // Ensures that |service_| created and connected to the
   // CrosHealthdDiagnosticsService.
   cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();
@@ -54,7 +54,7 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
 
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
-                        health::mojom::DiagnosticRoutineCommandEnum command,
+                        crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
   void RunBatteryCapacityRoutine(
@@ -63,9 +63,10 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunAcPowerRoutine(health::mojom::AcPowerStatusEnum expected_status,
-                         const absl::optional<std::string>& expected_power_type,
-                         RunAcPowerRoutineCallback callback) override;
+  void RunAcPowerRoutine(
+      crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
+      const absl::optional<std::string>& expected_power_type,
+      RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
   void RunCpuStressRoutine(uint32_t length_seconds,
@@ -77,12 +78,13 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
       uint32_t wear_level_threshold,
       RunNvmeWearLevelRoutineCallback callback) override;
   void RunNvmeSelfTestRoutine(
-      health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+      crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void RunDiskReadRoutine(health::mojom::DiskReadRoutineTypeEnum type,
-                          uint32_t length_seconds,
-                          uint32_t file_size_mb,
-                          RunDiskReadRoutineCallback callback) override;
+  void RunDiskReadRoutine(
+      crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
+      uint32_t length_seconds,
+      uint32_t file_size_mb,
+      RunDiskReadRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunBatteryDischargeRoutine(
@@ -104,7 +106,7 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<health::mojom::DiagnosticsService> receiver_;
+  mojo::Receiver<crosapi::mojom::DiagnosticsService> receiver_;
 };
 
 }  // namespace ash

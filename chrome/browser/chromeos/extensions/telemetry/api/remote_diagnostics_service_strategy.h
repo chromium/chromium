@@ -25,7 +25,7 @@ class RemoteDiagnosticsServiceStrategy {
       const RemoteDiagnosticsServiceStrategy&) = delete;
   virtual ~RemoteDiagnosticsServiceStrategy();
 
-  virtual mojo::Remote<ash::health::mojom::DiagnosticsService>&
+  virtual mojo::Remote<crosapi::mojom::DiagnosticsService>&
   GetRemoteService() = 0;
 
  protected:
