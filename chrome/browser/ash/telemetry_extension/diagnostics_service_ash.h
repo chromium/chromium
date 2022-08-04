@@ -111,9 +111,4 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::DiagnosticsServiceAsh;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_ASH_H_
