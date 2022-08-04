@@ -16,6 +16,28 @@
 
 namespace {
 
+crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
+    net::ProxyServer::Scheme in) {
+  switch (in) {
+    case net::ProxyServer::Scheme::SCHEME_INVALID:
+      return crosapi::mojom::ProxyLocation::Scheme::kInvalid;
+    case net::ProxyServer::Scheme::SCHEME_DIRECT:
+      return crosapi::mojom::ProxyLocation::Scheme::kDirect;
+    case net::ProxyServer::Scheme::SCHEME_HTTP:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttp;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS4:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks4;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS5:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks5;
+    case net::ProxyServer::Scheme::SCHEME_HTTPS:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttps;
+    case net::ProxyServer::Scheme::SCHEME_QUIC:
+      return crosapi::mojom::ProxyLocation::Scheme::kQuic;
+  }
+
+  return crosapi::mojom::ProxyLocation::Scheme::kUnknown;
+}
+
 std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     const net::ProxyList& proxy_list) {
   std::vector<net::ProxyServer> proxies = proxy_list.GetAll();
@@ -25,6 +47,7 @@ std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     proxy_ptr = crosapi::mojom::ProxyLocation::New();
     proxy_ptr->host = proxy.host_port_pair().host();
     proxy_ptr->port = proxy.host_port_pair().port();
+    proxy_ptr->scheme = NetSchemeToCrosapiScheme(proxy.scheme());
     proxy_ptr_list.push_back(std::move(proxy_ptr));
   }
   return proxy_ptr_list;

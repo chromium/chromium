@@ -62,6 +62,34 @@ net::ProxyConfigWithAnnotation TranslateWpadProxySettings(
                                         kAshProxyConfigTrafficAnnotation);
 }
 
+net::ProxyServer::Scheme CrosapiSchemeToNetScheme(
+    crosapi::mojom::ProxyLocation::Scheme in) {
+  switch (in) {
+    // We map kUnknown to HTTP because this will make the proxy setting work for
+    // most deployments with older ASH browser versions which do not support
+    // sending the ProxyLocation::Scheme yet, as HTTP is the most commonly used
+    // scheme for communicating with a HTTP proxy server.
+    case crosapi::mojom::ProxyLocation::Scheme::kUnknown:
+      return net::ProxyServer::Scheme::SCHEME_HTTP;
+    case crosapi::mojom::ProxyLocation::Scheme::kInvalid:
+      return net::ProxyServer::Scheme::SCHEME_INVALID;
+    case crosapi::mojom::ProxyLocation::Scheme::kDirect:
+      return net::ProxyServer::Scheme::SCHEME_DIRECT;
+    case crosapi::mojom::ProxyLocation::Scheme::kHttp:
+      return net::ProxyServer::Scheme::SCHEME_HTTP;
+    case crosapi::mojom::ProxyLocation::Scheme::kSocks4:
+      return net::ProxyServer::Scheme::SCHEME_SOCKS4;
+    case crosapi::mojom::ProxyLocation::Scheme::kSocks5:
+      return net::ProxyServer::Scheme::SCHEME_SOCKS5;
+    case crosapi::mojom::ProxyLocation::Scheme::kHttps:
+      return net::ProxyServer::Scheme::SCHEME_HTTPS;
+    case crosapi::mojom::ProxyLocation::Scheme::kQuic:
+      return net::ProxyServer::Scheme::SCHEME_QUIC;
+  }
+
+  return net::ProxyServer::Scheme::SCHEME_INVALID;
+}
+
 net::ProxyConfigWithAnnotation TranslateManualProxySettings(
     crosapi::mojom::ProxySettingsManualPtr proxy_settings) {
   net::ProxyConfig proxy_config = net::ProxyConfig();
@@ -70,18 +98,18 @@ net::ProxyConfigWithAnnotation TranslateManualProxySettings(
 
   for (auto const& proxy : proxy_settings->http_proxies) {
     proxy_config.proxy_rules().proxies_for_http.AddProxyServer(
-        net::ProxyServer(net::ProxyServer::Scheme::SCHEME_HTTP,
+        net::ProxyServer(CrosapiSchemeToNetScheme(proxy->scheme),
                          net::HostPortPair(proxy->host, proxy->port)));
   }
   for (auto const& proxy : proxy_settings->secure_http_proxies) {
     proxy_config.proxy_rules().proxies_for_https.AddProxyServer(
-        net::ProxyServer(net::ProxyServer::Scheme::SCHEME_HTTPS,
+        net::ProxyServer(CrosapiSchemeToNetScheme(proxy->scheme),
                          net::HostPortPair(proxy->host, proxy->port)));
   }
   for (auto const& proxy : proxy_settings->socks_proxies) {
     // See `net::ProxyServer::GetSchemeFromPacTypeInternal()`.
     proxy_config.proxy_rules().fallback_proxies.AddProxyServer(
-        net::ProxyServer(net::ProxyServer::Scheme::SCHEME_SOCKS4,
+        net::ProxyServer(CrosapiSchemeToNetScheme(proxy->scheme),
                          net::HostPortPair(proxy->host, proxy->port)));
   }
 

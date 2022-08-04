@@ -14,28 +14,71 @@
 
 namespace {
 
-// While "socks" is not a URL scheme, it is given in the same spot in the proxy
-// server specifier strings.
+// Some strings are not URL schemes, but they are given in the same spot in
+// the proxy server specifier strings. So we return other strings in that
+// case.
+constexpr char kInvalidScheme[] = "invalid";
+constexpr char kDirectScheme[] = "direct";
 constexpr char kSocksScheme[] = "socks";
+constexpr char kSocks5Scheme[] = "socks5";
 
-// See //net/docs/proxy.md for translation rules.
+// Format the proxy url. The request scheme is the scheme the request to the
+// actual web server is using. The proxy scheme is the scheme the proxy is using
+// to receive requests. For example a proxy receiving its request through http
+// can forward requests going to an https server.
+std::string FormatProxyUri(const char* request_scheme,
+                           const crosapi::mojom::ProxyLocationPtr& proxy) {
+  const char* proxy_scheme_string = url::kHttpScheme;
+
+  switch (proxy->scheme) {
+    // We map kUnknown to HTTP because this will make the proxy setting work for
+    // most deployments with older ASH browser versions which do not support
+    // sending the ProxyLocation::Scheme yet, as HTTP is the most commonly used
+    // scheme for communicating with a HTTP proxy server.
+    case crosapi::mojom::ProxyLocation::Scheme::kUnknown:
+      proxy_scheme_string = url::kHttpScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kInvalid:
+      proxy_scheme_string = kInvalidScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kDirect:
+      proxy_scheme_string = kDirectScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kHttp:
+      proxy_scheme_string = url::kHttpScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kSocks4:
+      proxy_scheme_string = kSocksScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kSocks5:
+      proxy_scheme_string = kSocks5Scheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kHttps:
+      proxy_scheme_string = url::kHttpsScheme;
+      break;
+    case crosapi::mojom::ProxyLocation::Scheme::kQuic:
+      proxy_scheme_string = url::kQuicTransportScheme;
+      break;
+  }
+
+  return base::StringPrintf("%s=%s://%s:%d", request_scheme,
+                            proxy_scheme_string, proxy->host.c_str(),
+                            proxy->port);
+}
+
+// See //net/docs/proxy.md and net::ProxyConfig::ProxyRules::ParseFromString()
+// for translation rules.
 base::Value TranslateManualProxySettings(
     crosapi::mojom::ProxySettingsManualPtr proxy_settings) {
   std::vector<std::string> proxy_server_specs;
-  const std::string kProxyFormat = "%s=%s:%d";
   for (auto const& proxy : proxy_settings->http_proxies) {
-    proxy_server_specs.push_back(
-        base::StringPrintf(kProxyFormat.c_str(), url::kHttpScheme,
-                           proxy->host.c_str(), proxy->port));
+    proxy_server_specs.push_back(FormatProxyUri(url::kHttpScheme, proxy));
   }
   for (auto const& proxy : proxy_settings->secure_http_proxies) {
-    proxy_server_specs.push_back(
-        base::StringPrintf(kProxyFormat.c_str(), url::kHttpsScheme,
-                           proxy->host.c_str(), proxy->port));
+    proxy_server_specs.push_back(FormatProxyUri(url::kHttpsScheme, proxy));
   }
   for (auto const& proxy : proxy_settings->socks_proxies) {
-    proxy_server_specs.push_back(base::StringPrintf(
-        kProxyFormat.c_str(), kSocksScheme, proxy->host.c_str(), proxy->port));
+    proxy_server_specs.push_back(FormatProxyUri(kSocksScheme, proxy));
   }
 
   if (proxy_server_specs.empty()) {

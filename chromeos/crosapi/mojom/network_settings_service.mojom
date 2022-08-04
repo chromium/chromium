@@ -9,8 +9,26 @@ import "url/mojom/url.mojom";
 [Stable]
 struct ProxyLocation {
     // Host (or IP address) to use for proxy.
-   string host;
-   int32 port;
+    string host;
+    int32 port;
+
+    [Stable,Extensible]
+    enum Scheme {
+        [Default] kUnknown,
+        kInvalid,
+        kDirect,
+        kHttp,
+        kSocks4,
+        kSocks5,
+        kHttps,
+        kQuic,
+    };
+
+    // Identifies the scheme which is used to connect to the proxy. This is
+    // independent of the type of the transmitted requests, e.g. it does not
+    // have to be kHttps for a proxy which handles https requests. That's why
+    // it has to be transmitted.
+    [MinVersion=1] Scheme scheme;
 };
 
 // Description of the extension in the primary profile which is controlling the
