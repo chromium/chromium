@@ -391,7 +391,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
   std::vector<const BookmarkNode*> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       parent_, browser_, profile_, get_navigator_,
-      BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(), nodes,
+      location_, node->parent(), nodes,
       ShouldCloseOnRemove(node));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
