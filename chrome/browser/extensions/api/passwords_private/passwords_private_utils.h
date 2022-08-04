@@ -43,8 +43,8 @@ extensions::api::passwords_private::PasswordStoreSet StoreSetFromCredential(
 // differences:
 // - IdGenerator owns a copy of the key data, so that clients don't need to
 //   worry about dangling pointers.
-// - Repeated calls to GenerateId with the same |key| are no-ops, and return the
-//   same ids.
+// - Repeated calls to GenerateId with the same |key| return the same ids and
+//   replace the |key|.
 template <typename KeyT,
           typename IdT = int32_t,
           typename KeyCompare = std::less<>>
@@ -57,6 +57,7 @@ class IdGenerator {
   // a == b.
   IdT GenerateId(const KeyT& key) {
     auto result = key_cache_.emplace(key, next_id_);
+    IdT id_for_key = result.first->second;
     if (result.second) {
       // In case we haven't seen |key| before, add a pointer to the inserted key
       // and the corresponding id to the |id_cache_|. This insertion should
@@ -65,9 +66,15 @@ class IdGenerator {
                                          &result.first->first);
       DCHECK_EQ(&result.first->first, iter->second);
       ++next_id_;
+    } else {
+      // Refresh the |key| in the caches, as the |result.first->first| may
+      // compare the same due to |KeyCompare|.
+      key_cache_.erase(result.first);
+      auto new_result = key_cache_.emplace(key, id_for_key);
+      id_cache_[id_for_key] = &new_result.first->first;
     }
 
-    return result.first->second;
+    return id_for_key;
   }
 
   // This method tries to return the key corresponding to |id|. In case |id| was

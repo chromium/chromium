@@ -16,6 +16,12 @@ namespace {
 
 using password_manager::CredentialUIEntry;
 
+struct StringFirstLetterCmp {
+  bool operator()(const std::string& lhs, const std::string& rhs) const {
+    return lhs.empty() ? !rhs.empty() : lhs[0] < rhs[0];
+  }
+};
+
 }  // namespace
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
@@ -101,6 +107,20 @@ TEST(IdGeneratorTest, GenerateIds) {
 
   EXPECT_THAT(id_generator.TryGetKey(bar_id), Pointee(Eq("bar")));
   EXPECT_THAT(id_generator.TryGetKey(baz_id), Pointee(Eq("baz")));
+
+  // Check that due to clashing |KeyCompare|, new |key|s invalidate existing
+  // |key|.
+  IdGenerator<std::string, int32_t, StringFirstLetterCmp>
+      clashing_id_generator_;
+  int crab_id = clashing_id_generator_.GenerateId("crab");
+
+  EXPECT_THAT(clashing_id_generator_.TryGetKey(crab_id), Pointee(Eq("crab")));
+
+  int chromium_id = clashing_id_generator_.GenerateId("chromium");
+
+  EXPECT_EQ(crab_id, chromium_id);
+  EXPECT_THAT(clashing_id_generator_.TryGetKey(chromium_id),
+              Pointee(Eq("chromium")));
 }
 
 }  // namespace extensions
