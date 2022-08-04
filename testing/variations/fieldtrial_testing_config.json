@@ -8048,6 +8048,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:crow_tab_menu_item_iph_triggered;comparator:<3;window:7;storage:7",
+                        "event_used": "name:crow_tab_menu_item_clicked;comparator:any;window:360;storage:360",
+                        "session_rate": "any"
+                    },
                     "enable_features": [
                         "ShareCrowButton"
                     ]
