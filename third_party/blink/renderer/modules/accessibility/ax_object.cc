@@ -649,7 +649,6 @@ void AXObject::Init(AXObject* parent) {
   DCHECK(!is_initializing_);
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
 #endif  // DCHECK_IS_ON()
-
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
@@ -691,6 +690,9 @@ void AXObject::Init(AXObject* parent) {
     AXObjectCache().MaybeNewRelationTarget(*GetNode(), this);
 
   UpdateCachedAttributeValuesIfNeeded(false);
+
+  DCHECK(GetDocument()) << "All AXObjects must have a document: "
+                        << ToString(true, true);
 }
 
 void AXObject::Detach() {
@@ -6669,6 +6671,9 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
         }
       }
     }
+
+    if (!GetDocument())
+      string_builder = string_builder + " missingDocument";
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {

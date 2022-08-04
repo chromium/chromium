@@ -952,6 +952,12 @@ void AccessibleNode::appendChild(AccessibleNode* child,
     return;
   }
   child->document_ = GetAncestorDocument();
+  if (!child->document_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "AccessibleNode must have an ancestor that is attached to a document.");
+    return;
+  }
   child->parent_ = this;
 
   if (!GetExecutionContext()) {

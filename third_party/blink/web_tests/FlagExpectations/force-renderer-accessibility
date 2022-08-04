@@ -4,8 +4,6 @@
 # crbug.com/1138028 tracks the removal of these failure expectations
 
 # Unintentional failure
-external/wpt/accessibility/crashtests/serialize-with-no-document.html [ Skip ]
-external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Skip ]
 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Skip ]
 external/wpt/css/css-display/display-contents-shadow-dom-1.html [ Skip ]

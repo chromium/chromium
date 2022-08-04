@@ -1299,6 +1299,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
   if (AXObject* obj = Get(accessible_node))
     return obj;
 
+  DCHECK_EQ(accessible_node->GetDocument(), &GetDocument());
+
   DCHECK(parent)
       << "A virtual object must have a parent, and cannot exist without one. "
          "The parent is set when the object is constructed.";
@@ -1680,8 +1682,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
 
 // This is safe to call even if there isn't a current mapping.
 void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
-  if (!accessible_node)
-    return;
+  DCHECK(accessible_node);
 
   auto iter = accessible_node_mapping_.find(accessible_node);
   if (iter == accessible_node_mapping_.end())

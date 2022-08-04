@@ -99,6 +99,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
     }
     return accessible_node_;
   }
+  void ClearAccessibleNode() { accessible_node_.Clear(); }
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     if (!display_lock_context_) {
@@ -521,6 +522,10 @@ class ElementRareData final : public NodeRareData {
   }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
     return EnsureSuperRareData().EnsureAccessibleNode(owner_element);
+  }
+  void ClearAccessibleNode() {
+    if (super_rare_data_)
+      super_rare_data_->ClearAccessibleNode();
   }
 
   AttrNodeList& EnsureAttrNodeList();

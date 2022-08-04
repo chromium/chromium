@@ -3662,9 +3662,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       UpdateName(name_value, g_null_atom);
   }
 
-  if (AccessibleNode* accessible_node = ExistingAccessibleNode())
-    accessible_node->DetachedFromDocument();
-
   ContainerNode::RemovedFrom(insertion_point);
 
   if (was_in_document) {
@@ -3706,6 +3703,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       context->ElementDisconnected();
 
     DCHECK(!data->HasPseudoElements());
+
+    if (AccessibleNode* accessible_node = ExistingAccessibleNode()) {
+      accessible_node->DetachedFromDocument();
+      data->ClearAccessibleNode();
+    }
   }
 
   if (auto* const frame = GetDocument().GetFrame()) {
