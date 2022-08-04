@@ -6,7 +6,12 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 
 RequestDesktopSiteWebContentsObserverAndroid::
     RequestDesktopSiteWebContentsObserverAndroid(content::WebContents* contents)
@@ -17,6 +22,10 @@ RequestDesktopSiteWebContentsObserverAndroid::
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile);
+  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
+    pref_service_ = profile->GetPrefs();
+    tab_android_ = TabAndroid::FromWebContents(contents);
+  }
 }
 
 RequestDesktopSiteWebContentsObserverAndroid::
@@ -36,15 +45,38 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   if (!navigation_handle->IsRendererInitiated()) {
     return;
   }
+  if (!base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
+    // Stop UA override if there is a tab level setting.
+    TabModel::TabUserAgent tabSetting =
+        tab_android_
+            ? static_cast<TabModel::TabUserAgent>(tab_android_->GetUserAgent())
+            : TabModel::TabUserAgent::DEFAULT;
+    if (tabSetting != TabModel::TabUserAgent::DEFAULT) {
+      return;
+    }
+  }
 
   const GURL& url = navigation_handle->GetParentFrameOrOuterDocument()
                         ? navigation_handle->GetParentFrameOrOuterDocument()
                               ->GetOutermostMainFrame()
                               ->GetLastCommittedURL()
                         : navigation_handle->GetURL();
-  ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
-  bool use_rds = setting == CONTENT_SETTING_ALLOW;
+  content_settings::SettingInfo setting_info;
+  const base::Value setting = host_content_settings_map_->GetWebsiteSetting(
+      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, &setting_info);
+  bool use_rds =
+      content_settings::ValueToContentSetting(setting) == CONTENT_SETTING_ALLOW;
+
+  // Take secondary settings into account if ContentSetting is global setting.
+  if (!use_rds &&
+      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions) &&
+      setting_info.primary_pattern.MatchesAllHosts()) {
+    bool use_rds_peripheral =
+        pref_service_->GetBoolean(prefs::kDesktopSitePeripheralSettingEnabled);
+    if (use_rds_peripheral) {
+      use_rds = TabAndroid::isHardwareKeyboardAvailable(tab_android_);
+    }
+  }
   navigation_handle->SetIsOverridingUserAgent(use_rds);
 }
 

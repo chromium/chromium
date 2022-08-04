@@ -84,6 +84,7 @@ class TabAndroid : public base::SupportsUserData {
   int GetAndroidId() const;
   bool IsNativePage() const;
   int GetLaunchType() const;
+  int GetUserAgent() const;
 
   // Return the tab title.
   std::u16string GetTitle() const;
@@ -117,6 +118,8 @@ class TabAndroid : public base::SupportsUserData {
 
   bool IsCustomTab();
   bool IsHidden();
+
+  static bool isHardwareKeyboardAvailable(raw_ptr<TabAndroid> tab_android);
 
   // Observers -----------------------------------------------------------------
 

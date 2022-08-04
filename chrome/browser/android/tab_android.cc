@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/layer.h"
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
+#include "chrome/android/chrome_jni_headers/TabUtils_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/metrics/uma_utils.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "chrome/browser/tab/jni_headers/CriticalPersistedTabData_jni.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/android/infobars/infobar_container_android.h"
@@ -175,6 +177,12 @@ int TabAndroid::GetLaunchType() const {
   return Java_TabImpl_getLaunchType(env, weak_java_tab_.get(env));
 }
 
+int TabAndroid::GetUserAgent() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_CriticalPersistedTabData_getUserAgent(env,
+                                                    weak_java_tab_.get(env));
+}
+
 bool TabAndroid::IsNativePage() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isNativePage(env, weak_java_tab_.get(env));
@@ -266,6 +274,12 @@ bool TabAndroid::IsCustomTab() {
 bool TabAndroid::IsHidden() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
+}
+
+bool TabAndroid::isHardwareKeyboardAvailable(raw_ptr<TabAndroid> tab_android) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabUtils_isHardwareKeyboardAvailable(
+      env, tab_android->GetJavaObject());
 }
 
 void TabAndroid::AddObserver(Observer* observer) {

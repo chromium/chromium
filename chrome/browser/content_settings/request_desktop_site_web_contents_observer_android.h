@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_REQUEST_DESKTOP_SITE_WEB_CONTENTS_OBSERVER_ANDROID_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_REQUEST_DESKTOP_SITE_WEB_CONTENTS_OBSERVER_ANDROID_H_
 
+#include "chrome/browser/android/tab_android.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -12,6 +13,7 @@
 // This observer is Android-specific and intercepts each navigation on the main
 // frame. For sites configured so, it overrides the user agent to request the
 // desktop version of the site.
+// TODO(crbug.com/1349647): Add tests for this class.
 class RequestDesktopSiteWebContentsObserverAndroid
     : public content::WebContentsObserver,
       public content::WebContentsUserData<
@@ -35,6 +37,8 @@ class RequestDesktopSiteWebContentsObserverAndroid
       RequestDesktopSiteWebContentsObserverAndroid>;
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<TabAndroid> tab_android_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

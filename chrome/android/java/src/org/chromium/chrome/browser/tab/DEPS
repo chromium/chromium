@@ -96,6 +96,8 @@ specific_include_rules = {
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
     "+components/version_info/android",
+    "+components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java",
+    "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
