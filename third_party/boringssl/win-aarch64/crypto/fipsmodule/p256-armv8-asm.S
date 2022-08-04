@@ -32,62 +32,6 @@ LordK:
 .byte	69,67,80,95,78,73,83,84,90,50,53,54,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 
-// void	ecp_nistz256_to_mont(BN_ULONG x0[4],const BN_ULONG x1[4]);
-.globl	ecp_nistz256_to_mont
-
-.def ecp_nistz256_to_mont
-   .type 32
-.endef
-.align	6
-ecp_nistz256_to_mont:
-	AARCH64_SIGN_LINK_REGISTER
-	stp	x29,x30,[sp,#-32]!
-	add	x29,sp,#0
-	stp	x19,x20,[sp,#16]
-
-	ldr	x3,LRR		// bp[0]
-	ldp	x4,x5,[x1]
-	ldp	x6,x7,[x1,#16]
-	ldr	x12,Lpoly+8
-	ldr	x13,Lpoly+24
-	adr	x2,LRR		// &bp[0]
-
-	bl	__ecp_nistz256_mul_mont
-
-	ldp	x19,x20,[sp,#16]
-	ldp	x29,x30,[sp],#32
-	AARCH64_VALIDATE_LINK_REGISTER
-	ret
-
-
-// void	ecp_nistz256_from_mont(BN_ULONG x0[4],const BN_ULONG x1[4]);
-.globl	ecp_nistz256_from_mont
-
-.def ecp_nistz256_from_mont
-   .type 32
-.endef
-.align	4
-ecp_nistz256_from_mont:
-	AARCH64_SIGN_LINK_REGISTER
-	stp	x29,x30,[sp,#-32]!
-	add	x29,sp,#0
-	stp	x19,x20,[sp,#16]
-
-	mov	x3,#1			// bp[0]
-	ldp	x4,x5,[x1]
-	ldp	x6,x7,[x1,#16]
-	ldr	x12,Lpoly+8
-	ldr	x13,Lpoly+24
-	adr	x2,Lone		// &bp[0]
-
-	bl	__ecp_nistz256_mul_mont
-
-	ldp	x19,x20,[sp,#16]
-	ldp	x29,x30,[sp],#32
-	AARCH64_VALIDATE_LINK_REGISTER
-	ret
-
-
 // void	ecp_nistz256_mul_mont(BN_ULONG x0[4],const BN_ULONG x1[4],
 //					     const BN_ULONG x2[4]);
 .globl	ecp_nistz256_mul_mont
