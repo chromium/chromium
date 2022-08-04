@@ -23017,7 +23017,6 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'max_size': 1048576,
       'example_value': [{
         'url': 'https://www.google.com/maps',
         'default_launch_container': 'window',

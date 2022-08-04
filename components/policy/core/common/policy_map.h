@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -322,6 +323,11 @@ class POLICY_EXPORT PolicyMap {
   // Returns the set containing device affiliation ID strings.
   const base::flat_set<std::string>& GetDeviceAffiliationIds() const;
 
+  // Sets the ChromePolicyDetailsCallback, which is used in IsPolicyExternal(),
+  // in test environments
+  void set_chrome_policy_details_callback_for_test(
+      const GetChromePolicyDetailsCallback& details_callback);
+
   bool Equals(const PolicyMap& other) const;
   bool empty() const;
   size_t size() const;
@@ -359,7 +365,12 @@ class POLICY_EXPORT PolicyMap {
   // Updates the stored state of user affiliation.
   void UpdateStoredUserAffiliation();
 
+  // Returns True if the passed policy has a max_external_data_size > 0
+  bool IsPolicyExternal(const std::string& policy);
+
   PolicyMapType map_;
+
+  GetChromePolicyDetailsCallback details_callback_;
 
   // Affiliation
   bool is_user_affiliated_ = false;

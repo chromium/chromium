@@ -1238,6 +1238,12 @@ class PolicyTemplateChecker(object):
         # Each policy referencing external data must specify a maximum data
         # size.
         self._CheckContains(policy, 'max_size', int)
+      else:
+        max_size = self._CheckContains(policy, 'max_size', int, True)
+        if max_size:
+          self._Error(
+              "%s: \'max_size\' is only allowed for external policies." %
+              policy.get('name'))
 
   def _CheckPlatform(self, platforms, field_name, policy_name):
     ''' Verifies the |platforms| list. Records any error with |field_name| and
