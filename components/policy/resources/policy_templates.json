@@ -15312,7 +15312,7 @@
     },
     {
       'name': 'VirtualKeyboardEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['shend@google.com','e14s-eng@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:34-'],
