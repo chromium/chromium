@@ -329,45 +329,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:9bc5-20.0.8",
-              "os": "Ubuntu-18.04.6",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
@@ -460,47 +421,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:9bc5-20.0.8",
-              "os": "Ubuntu-18.04.6",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1367,45 +1287,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:9bc5-20.0.8",
-              "os": "Ubuntu-18.04.6",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
@@ -1498,47 +1379,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:9bc5-20.0.8",
-              "os": "Ubuntu-18.04.6",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2432,48 +2272,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11",
@@ -2570,50 +2368,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4626,48 +4380,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--platform=mac-mac11",
@@ -4764,50 +4476,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:6821",
-              "hidpi": "1",
-              "os": "Mac-12.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6019,45 +5687,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -6148,47 +5777,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -7037,45 +6625,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
@@ -7166,47 +6715,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8028,45 +7536,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -8155,47 +7624,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9011,45 +8439,6 @@
       },
       {
         "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_cts_with_validation_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
           "--flag-specific=webgpu-swiftshader",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
@@ -9138,47 +8527,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "webgpu_swiftshader_web_platform_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgpu_cts",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
-          "--use-webgpu-adapter=swiftshader",
-          "--test-filter=*web_platform*",
-          "--enable-dawn-backend-validation",
-          "--retry-limit=3",
-          "--jobs=4"
-        ],
-        "ci_only": true,
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
