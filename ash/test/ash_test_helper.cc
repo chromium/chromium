@@ -49,6 +49,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -189,6 +190,10 @@ void AshTestHelper::TearDown() {
   prefs_provider_.reset();
   statistics_provider_.reset();
   command_line_.reset();
+
+  // Purge ColorProviderManager between tests so that we don't accumulate
+  // ColorProviderInitializers. crbug.com/1349232.
+  ui::ColorProviderManager::ResetForTesting();
 
   AuraTestHelper::TearDown();
 

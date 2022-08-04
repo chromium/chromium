@@ -3545,6 +3545,7 @@ static_library("test_support") {
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/base:test_support",
+    "//ui/color:mixers",
     "//ui/compositor:test_support",
     "//ui/display",
     "//ui/display/types",
