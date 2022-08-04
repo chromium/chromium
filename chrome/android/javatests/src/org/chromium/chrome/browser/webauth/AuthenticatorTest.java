@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -36,7 +37,8 @@ import org.chromium.net.test.ServerCertificate;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
         "enable-experimental-web-platform-features", "enable-features=WebAuthentication",
-        "ignore-certificate-errors"})
+        "ignore-certificate-errors", "enable-features=WebAuthenticationConditionalUI"})
+@Batch(Batch.PER_CLASS)
 public class AuthenticatorTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -84,6 +86,7 @@ public class AuthenticatorTest {
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         mMockCredentialRequest = new MockFido2CredentialRequest();
+        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
     }
 
     @After
@@ -104,7 +107,6 @@ public class AuthenticatorTest {
     @Feature({"WebAuth"})
     public void testCreatePublicKeyCredential() throws Exception {
         mActivityTestRule.loadUrl(mUrl);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
         mActivityTestRule.runJavaScriptCodeInCurrentTab("doCreatePublicKeyCredential()");
         Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
     }
@@ -121,7 +123,6 @@ public class AuthenticatorTest {
     @Feature({"WebAuth"})
     public void testGetPublicKeyCredential() throws Exception {
         mActivityTestRule.loadUrl(mUrl);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
         mActivityTestRule.runJavaScriptCodeInCurrentTab("doGetPublicKeyCredential()");
         Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
     }
@@ -137,9 +138,22 @@ public class AuthenticatorTest {
     @Feature({"WebAuth"})
     public void testIsUserVerifyingPlatformAuthenticatorAvailable() throws Exception {
         mActivityTestRule.loadUrl(mUrl);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
         mActivityTestRule.runJavaScriptCodeInCurrentTab(
                 "doIsUserVerifyingPlatformAuthenticatorAvailable()");
+        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
+    }
+
+    /**
+     * Verify that the Mojo bridge between Blink and Java is working for
+     * PublicKeyCredential.isConditionalMediationAvailable.
+     */
+    @Test
+    @DisableIf.Build(sdk_is_less_than = 24)
+    @MediumTest
+    @Feature({"WebAuth"})
+    public void testIsConditionalMediationAvailable() throws Exception {
+        mActivityTestRule.loadUrl(mUrl);
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("doIsConditionalMediationAvailable()");
         Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
     }
 }

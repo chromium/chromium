@@ -37,6 +37,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
       WinWebAuthnApi* api,
       base::OnceCallback<void(bool is_available)>);
 
+  // This method is safe to call without checking WinWebAuthnApi::IsAvailable().
+  // Returns false if |api| is nullptr.
+  static void IsConditionalMediationAvailable(
+      WinWebAuthnApi* api,
+      base::OnceCallback<void(bool is_available)>);
+
   // Get metadata for all credentials in the platform authenticator. If such
   // metadata is not available then the callback will be invoked with an empty
   // list.

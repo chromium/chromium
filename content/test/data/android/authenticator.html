@@ -97,6 +97,30 @@
                         window.document.title = 'Fail: ' + e.name + " " + e.message;
                 });
             }
+
+            function doIsConditionalMediationAvailable() {
+                if (window.PublicKeyCredential === undefined) {
+                    window.document.title = 'Fail: PublicKeyCredential === undefined';
+                    return;
+                }
+
+                if (window.PublicKeyCredential.isConditionalMediationAvailable === undefined) {
+                    window.document.title = 'Fail: isConditionalMediationAvailable() === undefined';
+                    return;
+                }
+
+                PublicKeyCredential.isConditionalMediationAvailable()
+                    .then(r => {
+                        if (r == false) {
+                            window.document.title = 'Success';
+                        } else {
+                            window.document.title = 'Fail: expected response to be false, got ' + r + ' instead';
+                        }
+                    })
+                    .catch(e => {
+                        window.document.title = 'Fail: ' + e.name + " " + e.message;
+                });
+            }
         </script>
     </head>
     <body>

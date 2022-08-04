@@ -140,6 +140,10 @@ export class MockAuthenticator {
     return false;
   }
 
+  async isConditionalMediationAvailable() {
+    return false;
+  }
+
   async cancel() {}
 
   // Resets state of mock Authenticator.

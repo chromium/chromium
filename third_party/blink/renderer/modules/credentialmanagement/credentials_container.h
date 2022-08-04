@@ -38,7 +38,6 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
                        const CredentialCreationOptions*,
                        ExceptionState&);
   ScriptPromise preventSilentAccess(ScriptState*);
-  bool conditionalMediationSupported();
 
   void Trace(Visitor*) const override;
 };

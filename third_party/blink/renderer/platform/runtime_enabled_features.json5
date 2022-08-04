@@ -2532,9 +2532,11 @@
     },
     // A more subtle UI for WebAuthn that is web exposed. Under development.
     // It's controlled by the corresponding Chromium feature which needs to
-    // be enabled to make the whole feature work.
+    // be enabled to make the whole feature work, except for WPTs where the
+    // virtual authenticator environment is used.
     {
       name: "WebAuthenticationConditionalUI",
+      status: "test",
     },
     {
       name: "WebAuthenticationLargeBlobExtension",

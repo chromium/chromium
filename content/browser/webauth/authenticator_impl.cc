@@ -71,6 +71,11 @@ void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
 
+void AuthenticatorImpl::IsConditionalMediationAvailable(
+    IsConditionalMediationAvailableCallback callback) {
+  authenticator_common_->IsConditionalMediationAvailable(std::move(callback));
+}
+
 void AuthenticatorImpl::Cancel() {
   authenticator_common_->Cancel();
 }

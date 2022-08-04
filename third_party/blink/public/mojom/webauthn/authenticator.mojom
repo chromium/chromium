@@ -587,6 +587,12 @@ interface Authenticator {
   // credential using a user-verifying platform authenticator.
   IsUserVerifyingPlatformAuthenticatorAvailable() => (bool available);
 
+  // Returns true if Conditional Mediation is available. Relying Parties can use
+  // this method to determine whether they can pass "conditional" to the
+  // "mediation" parameter of a webauthn get call and have the browser autofill
+  // webauthn credentials on form inputs.
+  IsConditionalMediationAvailable() => (bool available);
+
   // Cancel an ongoing MakeCredential or GetAssertion request
   // Only one MakeCredential or GetAssertion call at a time is allowed,
   // any future calls are cancelled

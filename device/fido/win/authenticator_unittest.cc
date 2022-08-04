@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -186,6 +187,22 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   EXPECT_EQ(cred.cred_id, kCredentialId);
   EXPECT_EQ(cred.user.name, kUserName);
   EXPECT_EQ(cred.user.display_name, kUserDisplayName);
+}
+
+TEST_F(WinAuthenticatorTest, IsConditionalMediationAvailable) {
+  for (bool silent_discovery : {false, true}) {
+    SCOPED_TRACE(silent_discovery);
+    fake_webauthn_api_->set_supports_silent_discovery(silent_discovery);
+    test::TestCallbackReceiver<bool> callback;
+    base::RunLoop run_loop;
+    WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
+        fake_webauthn_api_.get(),
+        base::BindLambdaForTesting([&](bool is_available) {
+          EXPECT_EQ(is_available, silent_discovery);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 }  // namespace

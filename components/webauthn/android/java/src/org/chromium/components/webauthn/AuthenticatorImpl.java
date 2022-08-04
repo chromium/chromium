@@ -190,6 +190,25 @@ public final class AuthenticatorImpl implements Authenticator {
     }
 
     @Override
+    public void isConditionalMediationAvailable(
+            final IsConditionalMediationAvailable_Response callback) {
+        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
+            callback.call(false);
+            return;
+        }
+
+        // The WebAuthenticationConditionalUI feature will only be enabled on Android when gmscore
+        // supports silent discovery. If the gmscore and chromium versions are out of sync for some
+        // reason, this method will return true but chrome will ignore conditional requests.
+        // Android surfaces only platform credentials on conditional requests, use IsUVPAA as a
+        // proxy for availability.
+        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
+        getFido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
+                mRenderFrameHost,
+                isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+    }
+
+    @Override
     public void cancel() {
         // Not implemented, ignored because request sent to gmscore fido cannot be cancelled.
         return;

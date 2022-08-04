@@ -6730,6 +6730,7 @@ interface PromiseRejectionEvent : Event
     getter reason
     method constructor
 interface PublicKeyCredential : Credential
+    static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable
     attribute @@toStringTag
     getter authenticatorAttachment

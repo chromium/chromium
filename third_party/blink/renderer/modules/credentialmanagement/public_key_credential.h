@@ -44,6 +44,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
   static ScriptPromise isUserVerifyingPlatformAuthenticatorAvailable(
       ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
+  static ScriptPromise isConditionalMediationAvailable(ScriptState*);
 
   // Credential:
   void Trace(Visitor*) const override;

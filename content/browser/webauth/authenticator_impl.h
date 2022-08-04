@@ -57,6 +57,8 @@ class CONTENT_EXPORT AuthenticatorImpl
                     GetAssertionCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override;
+  void IsConditionalMediationAvailable(
+      IsConditionalMediationAvailableCallback callback) override;
   void Cancel() override;
 
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;

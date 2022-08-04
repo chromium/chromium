@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -22,11 +21,8 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -89,6 +85,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback);
+  void IsConditionalMediationAvailable(
+      blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
+          callback);
   void Cancel();
 
   void Cleanup();

@@ -3636,6 +3636,7 @@ enum WebFeature {
   kPersistentQuotaType = 4315,
   kCrossOriginScrollIntoView = 4316,
   kLinkRelCanonical = 4317,
+  kCredentialManagerIsConditionalMediationAvailable = 4318,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

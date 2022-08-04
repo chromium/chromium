@@ -9,7 +9,6 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
@@ -56,6 +55,7 @@ PublicKeyCredential::PublicKeyCredential(
           AuthenticatorAttachmentToString(authenticator_attachment)),
       extension_outputs_(extension_outputs) {}
 
+// static
 ScriptPromise
 PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
     ScriptState* script_state) {
@@ -87,6 +87,31 @@ AuthenticationExtensionsClientOutputs*
 PublicKeyCredential::getClientExtensionResults() const {
   return const_cast<AuthenticationExtensionsClientOutputs*>(
       extension_outputs_.Get());
+}
+
+// static
+ScriptPromise PublicKeyCredential::isConditionalMediationAvailable(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  // Ignore calls if the current realm execution context is no longer valid,
+  // e.g., because the responsible document was detached.
+  DCHECK(resolver->GetExecutionContext());
+  if (resolver->GetExecutionContext()->IsContextDestroyed()) {
+    resolver->Reject();
+    return promise;
+  }
+  UseCounter::Count(
+      resolver->GetExecutionContext(),
+      WebFeature::kCredentialManagerIsConditionalMediationAvailable);
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  authenticator->IsConditionalMediationAvailable(
+      WTF::Bind([](std::unique_ptr<ScopedPromiseResolver> resolver,
+                   bool available) { resolver->Release()->Resolve(available); },
+                std::make_unique<ScopedPromiseResolver>(resolver)));
+  return promise;
 }
 
 void PublicKeyCredential::Trace(Visitor* visitor) const {

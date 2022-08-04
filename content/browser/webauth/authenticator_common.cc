@@ -13,38 +13,27 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/utf_string_conversion_utils.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/client_data_json.h"
-#include "content/browser/webauth/is_uvpaa.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/device_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_switches.h"
 #include "crypto/sha2.h"
-#include "device/base/features.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -56,15 +45,11 @@
 #include "device/fido/public_key.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cert/asn1_util.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/url_constants.h"
-#include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
@@ -73,6 +58,16 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
+#include "device/fido/features.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/features.h"
+#include "device/fido/win/authenticator.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#include "content/browser/webauth/is_uvpaa.h"
 #endif
 
 namespace content {
@@ -1156,6 +1151,30 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
 #else
   std::move(uma_decorated_callback).Run(false);
+#endif
+}
+
+void AuthenticatorCommon::IsConditionalMediationAvailable(
+    blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
+        callback) {
+  // Conditional mediation is always supported if the virtual environment is
+  // providing a platform authenticator.
+  absl::optional<bool> embedder_isuvpaa_override =
+      GetWebAuthenticationDelegate()
+          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+              GetRenderFrameHost());
+  if (embedder_isuvpaa_override.has_value()) {
+    std::move(callback).Run(*embedder_isuvpaa_override);
+    return;
+  }
+#if BUILDFLAG(IS_MAC)
+  std::move(callback).Run(true);
+#elif BUILDFLAG(IS_WIN)
+  device::WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
+      AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api(),
+      std::move(callback));
+#else
+  std::move(callback).Run(false);
 #endif
 }
 
