@@ -3823,10 +3823,6 @@ bool AXObject::IsHiddenViaStyle() const {
 // https://github.com/w3c/accname/issues/57
 bool AXObject::IsHiddenForTextAlternativeCalculation(
     const AXObject* aria_label_or_description_root) const {
-  // aria-hidden=false allows hidden contents to be used in name from contents.
-  if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
-    return false;
-
   auto* node = GetNode();
   if (!node)
     return false;
@@ -3851,6 +3847,12 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   if (IsA<SVGDescElement>(node))
     return false;
 
+  // Always contribute text nodes, because they don't have display-related
+  // properties of their own, only their parents do. Parents should have been
+  // checked for their contribution earlier in the process.
+  if (IsA<Text>(node))
+    return false;
+
   // Markers do not contribute to the accessible name.
   // TODO(accessibility): Chrome has never included markers, but that's
   // actually undefined behavior. We will have to revisit after this is
@@ -3864,8 +3866,28 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   // are explicitly hidden or they inherited the hidden value, so we resort to
   // contributing them all. See also: https://github.com/w3c/accname/issues/57
   if (aria_label_or_description_root &&
-      aria_label_or_description_root->IsHiddenViaStyle())
+      !aria_label_or_description_root->IsVisible()) {
     return false;
+  }
+
+  // aria-hidden nodes are generally excluded, with the exception:
+  // when computing name/description through an aria-labelledby/describedby
+  // relation, if the target of the relation is hidden it will expose the entire
+  // subtree, including aria-hidden=true nodes. The exception was accounted in
+  // the previous if block, so we are safe to hide any node with
+  // aria-hidden=true at this point.
+  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
+    // We only hide aria-hidden text if the node does not support focus as a
+    // bad authoring correction.
+    if (!CanSetFocusAttribute())
+      return true;
+  } else {
+    // When IsAriaHidden() returns false, we only know the node is not in an
+    // aria-hidden="true" subtree. We need to check for the case where
+    // aria-hidden="false" specifically.
+    if (AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty::kHidden))
+      return false;
+  }
 
   return IsHiddenViaStyle();
 }

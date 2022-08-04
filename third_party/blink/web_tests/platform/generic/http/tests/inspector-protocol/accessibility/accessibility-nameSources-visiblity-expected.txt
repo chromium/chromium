@@ -777,7 +777,7 @@ Tests name sources in invisible nodes.
                         [0] : {
                             idref : heading4
                             nodeResult : h3#heading4
-                            text : Before After
+                            text : Before Text within hidden subtree After
                         }
                     ]
                     type : idrefList
@@ -786,7 +786,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : Before After
+                    value : Before Text within hidden subtree After
                 }
             }
             [1] : {
@@ -810,7 +810,7 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : Before After
+        value : Before Text within hidden subtree After
     }
     nodeId : <string>
     parentId : <string>
@@ -836,7 +836,7 @@ Tests name sources in invisible nodes.
                     [0] : {
                         idref : heading4
                         nodeResult : h3#heading4
-                        text : Before After
+                        text : Before Text within hidden subtree After
                     }
                 ]
                 type : nodeList
@@ -872,7 +872,7 @@ Tests name sources in invisible nodes.
                     relatedNodes : [
                         [0] : {
                             backendDOMNodeId : <number>
-                            text : Before After
+                            text : 
                         }
                     ]
                     type : nodeList
@@ -880,7 +880,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value : Before After
+                    value : 
                 }
             }
             [3] : {
@@ -900,7 +900,7 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value : Before After
+        value : 
     }
     nodeId : <string>
     parentId : <string>
@@ -960,7 +960,7 @@ Tests name sources in invisible nodes.
                 relatedNodes : [
                     [0] : {
                         nodeResult : label
-                        text : Before After
+                        text : 
                     }
                 ]
                 type : nodeList

@@ -104,34 +104,6 @@ dump both an ignored and an unignored axnode
     childIds : <object>
     chromeRole : {
         type : internalRole
-        value : 96
-    }
-    ignored : true
-    ignoredReasons : [
-        [0] : {
-            name : ariaHiddenElement
-            value : {
-                type : boolean
-                value : true
-            }
-        }
-    ]
-    name : {
-        type : computedString
-        value : title
-    }
-    nodeId : <string>
-    parentId : <string>
-    role : {
-        type : role
-        value : heading
-    }
-}
-{
-    backendDOMNodeId : <number>
-    childIds : <object>
-    chromeRole : {
-        type : internalRole
         value : 158
     }
     ignored : true
@@ -191,7 +163,6 @@ dump both an ignored and an unignored axnode
 
 Running test: testGetNodesForSubtreeByAccessibleName
 find all elements with accessible name "foo"
-node3
 node5
 node6
 find all elements with accessible name "foo" inside container

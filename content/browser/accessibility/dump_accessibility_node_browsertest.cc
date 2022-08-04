@@ -970,6 +970,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyAriaHiddenDifferentVisibilityTypes) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-text-labelledby-aria-hidden-different-visibility-types.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameTextLabelledbyHiddenDifferentVisibilityTypes) {
   RunAccNameTest(FILE_PATH_LITERAL(
       "name-text-labelledby-hidden-different-visibility-types.html"));
