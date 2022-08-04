@@ -129,6 +129,7 @@ TEST_F(TooltipControllerTest, HideTooltipWhenCursorHidden) {
   Shell::Get()->cursor_manager()->EnableMouseEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+  generator.MoveMouseBy(0, 1);
   helper_->UpdateIfRequired(TooltipTrigger::kCursor);
   EXPECT_TRUE(helper_->IsTooltipVisible());
 }

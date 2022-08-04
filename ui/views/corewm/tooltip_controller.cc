@@ -222,6 +222,10 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
+      // Synthesized mouse moves shouldn't cause us to show a tooltip. See
+      // https://crbug.com/1146981.
+      if (event->IsSynthesized())
+        break;
       last_mouse_loc_ = event->location();
       aura::Window* target = nullptr;
       // Avoid a call to display::Screen::GetWindowAtScreenPoint() since it can
