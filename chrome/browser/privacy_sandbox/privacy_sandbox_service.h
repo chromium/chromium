@@ -5,20 +5,18 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 
+#include <set>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
 
 class Browser;
 class PrefService;
@@ -47,10 +45,7 @@ class BrowsingTopicsService;
 // preferences and content settings) by the PrivacySandboxSettings located in
 // components/privacy_sandbox/, which in turn makes them available to Privacy
 // Sandbox APIs.
-class PrivacySandboxService : public KeyedService,
-                              public policy::PolicyService::Observer,
-                              public syncer::SyncServiceObserver,
-                              public signin::IdentityManager::Observer {
+class PrivacySandboxService : public KeyedService {
  public:
   // Possible types of Privacy Sandbox prompts that may be shown to the user.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
