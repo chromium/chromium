@@ -267,9 +267,9 @@ void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
       ->Show();
 }
 
-void ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
-                  content::WebContents* web_contents) {
-  constrained_window::ShowWebModalDialogViews(
+views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                            content::WebContents* web_contents) {
+  return constrained_window::ShowWebModalDialogViews(
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
                                                 ui::MODAL_TYPE_CHILD)
           .release(),

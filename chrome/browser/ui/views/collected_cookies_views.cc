@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/cookie_info_view.h"
+#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -26,6 +27,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/page_info/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -134,12 +136,12 @@ class CollectedCookiesViews::WebContentsUserData
     tracker_.view()->GetWidget()->CloseNow();
   }
 
-  static CollectedCookiesViews* GetDialog(content::WebContents* web_contents) {
+  static views::View* GetDialogView(content::WebContents* web_contents) {
     WebContentsUserData* handle = static_cast<WebContentsUserData*>(
         web_contents->GetUserData(UserDataKey()));
     if (!handle)
       return nullptr;
-    return handle->GetCollectedCookiesViews();
+    return handle->GetDialogView();
   }
 
   static void Create(content::WebContents* web_contents) {
@@ -153,15 +155,24 @@ class CollectedCookiesViews::WebContentsUserData
   explicit WebContentsUserData(content::WebContents* web_contents)
       : content::WebContentsUserData<
             CollectedCookiesViews::WebContentsUserData>(*web_contents) {
-    // Owned by its Widget
-    CollectedCookiesViews* const dialog =
-        new CollectedCookiesViews(web_contents);
-    tracker_.SetView(dialog);
+    // TODO(crbug.com/1344787): Provide a public interface to show cookies
+    // dialog independent on the actual implementation, not tied to any views
+    // class.
+    if (base::FeatureList::IsEnabled(page_info::kPageSpecificSiteDataDialog)) {
+      views::Widget* widget = ShowPageSpecificSiteDataDialog(web_contents);
+      tracker_.SetView(widget->GetRootView());
+    } else {
+      // CollectedCookiesViews is DialogDelegateView and it's owned by its
+      // widget. It created the widget in the constructor using
+      // `ShowWebModalDialogViews()`. It will be destroyed when its widget is
+      // destroyed.
+      CollectedCookiesViews* const dialog =
+          new CollectedCookiesViews(web_contents);
+      tracker_.SetView(dialog);
+    }
   }
 
-  CollectedCookiesViews* GetCollectedCookiesViews() {
-    return static_cast<CollectedCookiesViews*>(tracker_.view());
-  }
+  views::View* GetDialogView() { return tracker_.view(); }
 
   views::ViewTracker tracker_;
 
@@ -322,8 +333,8 @@ CollectedCookiesViews::~CollectedCookiesViews() {
 // static
 void CollectedCookiesViews::CreateAndShowForWebContents(
     content::WebContents* web_contents) {
-  CollectedCookiesViews* instance =
-      CollectedCookiesViews::WebContentsUserData::GetDialog(web_contents);
+  views::View* const instance =
+      CollectedCookiesViews::WebContentsUserData::GetDialogView(web_contents);
   if (!instance) {
     CollectedCookiesViews::WebContentsUserData::Create(web_contents);
     return;
@@ -345,7 +356,9 @@ void CollectedCookiesViews::CreateAndShowForWebContents(
 
 CollectedCookiesViews* CollectedCookiesViews::GetDialogForTesting(
     content::WebContents* web_contents) {
-  return CollectedCookiesViews::WebContentsUserData::GetDialog(web_contents);
+  CHECK(!base::FeatureList::IsEnabled(page_info::kPageSpecificSiteDataDialog));
+  return static_cast<CollectedCookiesViews*>(
+      CollectedCookiesViews::WebContentsUserData::GetDialogView(web_contents));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

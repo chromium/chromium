@@ -4887,6 +4887,8 @@ static_library("ui") {
       "views/side_search/unified_side_search_controller.cc",
       "views/side_search/unified_side_search_controller.h",
       "views/side_search/unified_side_search_helper.cc",
+      "views/site_data/page_specific_site_data_dialog.cc",
+      "views/site_data/page_specific_site_data_dialog.h",
       "views/ssl_client_certificate_selector.cc",
       "views/ssl_client_certificate_selector.h",
       "views/status_bubble_views.cc",
