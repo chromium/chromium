@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/reading_list_activity.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,7 +43,7 @@ NSString* const kReadingListActivityType =
   if (self = [super init]) {
     _dispatcher = dispatcher;
     _activityURL = activityURL;
-    _title = [NSString stringWithString:title];
+    _title = [title copy];
   }
   return self;
 }
@@ -71,8 +72,11 @@ NSString* const kReadingListActivityType =
 
 - (void)performActivity {
   [self activityDidFinish:YES];
+  // Reading list does not support not having title, so add host instead.
+  NSString* title =
+      _title ? _title : base::SysUTF8ToNSString(_activityURL.host());
   ReadingListAddCommand* command =
-      [[ReadingListAddCommand alloc] initWithURL:_activityURL title:_title];
+      [[ReadingListAddCommand alloc] initWithURL:_activityURL title:title];
   [_dispatcher addToReadingList:command];
 }
 
