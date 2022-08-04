@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2022-12-04">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2022-12-04">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="2022-12-04">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -339,86 +339,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2022-12-04">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The time ANGLE spends calling the D3D shader compiler. Tracks total time we
-    spend compiling shaders on startup and during Chrome's lifetime. Recorded on
-    D3D shader compilation when ANGLE's D3D backend is in use.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.DisplayInitializeMS" units="ms"
-    expires_after="2022-06-01">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    Time ANGLE spends in eglInitialize, where it spins up a Renderer. This can
-    gives us insight into how much time we're spending initializing the GPU.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.ProgramCache.BinaryCacheHitTimeUS"
-    units="microseconds" expires_after="M85">
-  <owner>jmadill@chromium.org</owner>
-  <summary>
-    The time to load a gpu program from the program cache.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.ProgramCache.BinaryCacheMissTimeUS"
-    units="microseconds" expires_after="M85">
-  <owner>jmadill@chromium.org</owner>
-  <summary>
-    The time to link a gpu program.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.ProgramCache.CacheResult"
-    enum="ANGLEProgramCacheResult" expires_after="M85">
-  <owner>jmadill@chromium.org</owner>
-  <summary>
-    If a successfully linked program was found in the GPU program cache during a
-    program link call, and if the hit was originally loaded from disk.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.ProgramCache.LoadBinarySuccess"
-    enum="BooleanSuccess" expires_after="2022-06-01">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    Records if the call to load a cached binary was successful. Calls are made
-    on shader creation and linking. This can legitimately fail if the driver
-    wants chrome to re-link and re-cache the gpu program.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ANGLE.ProgramCache.ProgramBinarySizeBytes" units="bytes"
-    expires_after="2022-06-01">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    Records the size of program binaries loaded into the gpu program cache.
-    Programs are loaded into the cache upon use in draw and dispatch calls.
-  </summary>
-</histogram>
-
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="2023-01-15">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -554,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2022-12-04">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -781,15 +703,6 @@ chromium-metrics-reviews@google.com.
     What code path was used to present a video frame. Recorded on each present.
     (Might be lack of metrics coverage between 2022-03-06 and 2022-06-24 due to
     metric expiration.)
-  </summary>
-</histogram>
-
-<histogram name="GPU.DoLinkProgramTime" units="ms" expires_after="2022-06-01">
-  <owner>jonahr@google.com</owner>
-  <owner>angle-team@google.com</owner>
-  <summary>
-    The time we spend in GLES2DecoderImpl::DoLinkProgram. Related to how much
-    time we spend compiling shaders during startup.
   </summary>
 </histogram>
 
@@ -1037,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1260,12 +1173,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PassthroughDoLinkProgramTime" units="ms"
-    expires_after="2022-06-01">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The time we spend in GLES2DecoderPassthroughImpl::DoLinkProgram. Related to
-    how much time we spend compiling shaders during startup.
+    how much time we spend compiling shaders during startup. Expired in June
+    2022, and revived in M106. Data may be incomplete for the period during
+    which the histogram was expired.
   </summary>
 </histogram>
 
@@ -1315,12 +1230,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProgramCache.CacheHit" enum="BooleanSuccess"
-    expires_after="2022-06-01">
+    expires_after="2023-01-01">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     If a successfully linked program was found in the GPU program cache during a
-    program link call.
+    program link call. Expired in June 2022, and revived in M106. Data may be
+    incomplete for the period during which the histogram was expired.
   </summary>
 </histogram>
 

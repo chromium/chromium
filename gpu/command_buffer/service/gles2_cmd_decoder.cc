@@ -9784,7 +9784,6 @@ void GLES2DecoderImpl::DoLineWidth(GLfloat width) {
 
 void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
   TRACE_EVENT0("gpu", "GLES2DecoderImpl::DoLinkProgram");
-  SCOPED_UMA_HISTOGRAM_TIMER("GPU.DoLinkProgramTime");
   Program* program = GetProgramInfoNotShader(
       program_id, "glLinkProgram");
   if (!program) {
