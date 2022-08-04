@@ -566,11 +566,6 @@ void FakeDriveFs::ToggleSyncForPath(
   std::move(callback).Run(drive::FileError::FILE_ERROR_OK);
 }
 
-void FakeDriveFs::GetSyncingPaths(
-    drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
-  std::move(callback).Run(drive::FILE_ERROR_OK, syncing_paths_);
-}
-
 void FakeDriveFs::PollHostedFilePinStates() {}
 
 }  // namespace drivefs

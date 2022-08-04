@@ -27,6 +27,8 @@
 namespace drive {
 
 using ::base::test::RunClosure;
+using ::base::test::RunOnceCallback;
+using testing::_;
 
 class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -401,18 +403,12 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   }
 
   void AddSyncingPath(const base::FilePath& path) {
-    auto* drive_service =
-        DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
-
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    drive_service->ToggleSyncForPath(
-        path, drivefs::mojom::MirrorPathStatus::kStart,
-        base::BindLambdaForTesting([quit_closure](FileError status) {
-          EXPECT_EQ(FILE_ERROR_OK, status);
-          quit_closure.Run();
-        }));
-    run_loop.Run();
+    drivefs::FakeDriveFs* fake_drivefs =
+        GetFakeDriveFsForProfile(browser()->profile());
+    std::vector<base::FilePath> return_paths{path};
+    EXPECT_CALL(*fake_drivefs, GetSyncingPaths(_))
+        .WillOnce(RunOnceCallback<0>(drive::FileError::FILE_ERROR_OK,
+                                     std::move(return_paths)));
   }
 
  private:

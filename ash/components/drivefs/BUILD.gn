@@ -64,6 +64,7 @@ source_set("test_support") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/dbus:test_support",
     "//net",
+    "//testing/gmock",
   ]
 }
 

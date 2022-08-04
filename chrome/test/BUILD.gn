@@ -4169,6 +4169,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
+        "//chrome/browser/ui/webui/chromeos/manage_mirrorsync:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings",
         "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
         "//chrome/services/file_util/public/cpp:browser_tests",

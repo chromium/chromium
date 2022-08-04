@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace drivefs {
 
@@ -72,6 +73,11 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   mojo::Remote<drivefs::mojom::DriveFsDelegate>& delegate() {
     return delegate_;
   }
+
+  MOCK_METHOD(void,
+              GetSyncingPaths,
+              (drivefs::mojom::DriveFs::GetSyncingPathsCallback callback),
+              (override));
 
   const base::FilePath& mount_path() { return mount_path_; }
 
@@ -156,9 +162,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       const base::FilePath& path,
       drivefs::mojom::MirrorPathStatus status,
       drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) override;
-
-  void GetSyncingPaths(
-      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) override;
 
   void PollHostedFilePinStates() override;
 

@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 
 namespace chromeos {
@@ -61,7 +62,8 @@ ManageMirrorSyncPageHandler::ManageMirrorSyncPageHandler(
     mojo::PendingReceiver<manage_mirrorsync::mojom::PageHandler>
         pending_page_handler,
     Profile* profile)
-    : my_files_dir_(file_manager::util::GetMyFilesFolderForProfile(profile)),
+    : profile_(profile),
+      my_files_dir_(file_manager::util::GetMyFilesFolderForProfile(profile)),
       receiver_{this, std::move(pending_page_handler)} {}
 
 ManageMirrorSyncPageHandler::~ManageMirrorSyncPageHandler() = default;
@@ -116,6 +118,52 @@ void ManageMirrorSyncPageHandler::OnGetChildFolders(
     GetChildFoldersCallback callback,
     std::vector<base::FilePath> child_folders) {
   std::move(callback).Run(std::move(child_folders));
+}
+
+using manage_mirrorsync::mojom::PageHandler;
+
+void ManageMirrorSyncPageHandler::GetSyncingPaths(
+    GetSyncingPathsCallback callback) {
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
+  if (drive_service == nullptr) {
+    LOG(ERROR) << "Drive service is not available";
+    std::move(callback).Run(PageHandler::GetSyncPathError::kServiceUnavailable,
+                            {});
+    return;
+  }
+
+  drive_service->GetSyncingPaths(
+      base::BindOnce(&ManageMirrorSyncPageHandler::OnGetSyncingPaths,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ManageMirrorSyncPageHandler::OnGetSyncingPaths(
+    GetSyncingPathsCallback callback,
+    drive::FileError status,
+    const std::vector<base::FilePath>& syncing_paths) {
+  if (status != drive::FileError::FILE_ERROR_OK) {
+    LOG(ERROR) << "Failed retrieving sync paths: " << status;
+    const auto error =
+        (status == drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE)
+            ? PageHandler::GetSyncPathError::kServiceUnavailable
+            : PageHandler::GetSyncPathError::kFailed;
+    std::move(callback).Run(std::move(error), {});
+    return;
+  }
+
+  std::vector<base::FilePath> remapped_paths;
+  for (const base::FilePath& path : syncing_paths) {
+    if (!my_files_dir_.IsParent(path)) {
+      LOG(ERROR) << "Syncing path is not parented at MyFiles";
+      continue;
+    }
+    base::FilePath remapped_path("/");
+    my_files_dir_.AppendRelativePath(path, &remapped_path);
+    remapped_paths.push_back(std::move(remapped_path));
+  }
+  std::move(callback).Run(PageHandler::GetSyncPathError::kSuccess,
+                          std::move(remapped_paths));
 }
 
 }  // namespace chromeos

@@ -9,8 +9,10 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
+#include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,6 +42,8 @@ class ManageMirrorSyncPageHandler
   void GetChildFolders(const base::FilePath& path,
                        GetChildFoldersCallback callback) override;
 
+  void GetSyncingPaths(GetSyncingPathsCallback callback) override;
+
  private:
   void OnDirectoryExists(const base::FilePath& absolute_path,
                          GetChildFoldersCallback callback,
@@ -48,6 +52,11 @@ class ManageMirrorSyncPageHandler
   void OnGetChildFolders(GetChildFoldersCallback callback,
                          std::vector<base::FilePath> child_folders);
 
+  void OnGetSyncingPaths(GetSyncingPathsCallback callback,
+                         drive::FileError error,
+                         const std::vector<base::FilePath>& syncing_paths);
+
+  raw_ptr<Profile> profile_;
   const base::FilePath my_files_dir_;
   mojo::Receiver<manage_mirrorsync::mojom::PageHandler> receiver_;
   base::WeakPtrFactory<ManageMirrorSyncPageHandler> weak_ptr_factory_{this};
