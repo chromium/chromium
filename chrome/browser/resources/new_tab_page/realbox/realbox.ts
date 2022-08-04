@@ -593,7 +593,8 @@ export class RealboxElement extends PolymerElement {
 
     // Update the input.
     const newFill = decodeString16(this.selectedMatch_!.fillIntoEdit);
-    const newInline = this.selectedMatch_!.allowedToBeDefaultMatch ?
+    const newInline = this.selectedMatchIndex_ === 0 &&
+            this.selectedMatch_!.allowedToBeDefaultMatch ?
         decodeString16(this.selectedMatch_!.inlineAutocompletion) :
         '';
     const newFillEnd = newFill.length - newInline.length;
