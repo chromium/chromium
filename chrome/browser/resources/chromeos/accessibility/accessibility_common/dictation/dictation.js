@@ -144,6 +144,13 @@ export class Dictation {
   /** @private */
   startDictation_() {
     this.active_ = true;
+    if (this.chromeVoxEnabled_) {
+      // Silence ChromeVox in case it was speaking. It can speak over the start
+      // tone and also cause a feedback loop if the user is not using
+      // headphones. This does not stop ChromeVox from speaking additional
+      // utterances added to the queue later.
+      chrome.accessibilityPrivate.silenceSpokenFeedback();
+    }
     this.startTone_.play();
     this.setStopTimeout_(
         Dictation.Timeouts.NO_FOCUSED_IME_MS,

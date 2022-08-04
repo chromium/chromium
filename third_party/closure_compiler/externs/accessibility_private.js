@@ -557,6 +557,11 @@ chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode = function(keyCod
 chrome.accessibilityPrivate.updateDictationBubble = function(properties) {};
 
 /**
+ * Cancels the current and queued speech from ChromeVox.
+ */
+chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */

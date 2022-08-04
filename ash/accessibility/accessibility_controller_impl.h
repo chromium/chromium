@@ -354,9 +354,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Toggle dictation.
   void ToggleDictation();
 
-  // Cancels all current and queued speech immediately.
-  void SilenceSpokenFeedback();
-
   // Called when we first detect two fingers are held down, which can be used to
   // toggle spoken feedback on some touch-only devices.
   void OnTwoFingerTouchStart();
@@ -462,6 +459,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const absl::optional<std::u16string>& text,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints)
       override;
+  void SilenceSpokenFeedback() override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
