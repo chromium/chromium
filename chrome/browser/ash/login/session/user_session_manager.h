@@ -455,6 +455,9 @@ class UserSessionManager
   // Launches the Help App depending on flags / prefs / user.
   void MaybeLaunchHelpApp(Profile* profile) const;
 
+  // Start user onboarding if the user is new.
+  bool MaybeStartNewUserOnboarding(Profile* profile);
+
   // Perform session initialization and either move to additional login flows
   // such as TOS (public sessions), priority pref sync UI (new users) or
   // launch browser.
