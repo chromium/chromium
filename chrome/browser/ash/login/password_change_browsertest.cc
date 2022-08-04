@@ -18,9 +18,12 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -57,14 +60,16 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 namespace {
 
-const char kUserEmail[] = "test-user@gmail.com";
-const char kGaiaID[] = "111111";
-const char kTokenHandle[] = "test_token_handle";
+constexpr char kUserEmail[] = "test-user@gmail.com";
+constexpr char kGaiaID[] = "111111";
+constexpr char kTokenHandle[] = "test_token_handle";
+constexpr char kTestingFileName[] = "testing-file.txt";
 
 const test::UIPath kPasswordStep = {"gaia-password-changed", "passwordStep"};
 const test::UIPath kOldPasswordInput = {"gaia-password-changed",
@@ -178,6 +183,7 @@ class PasswordChangeTest : public PasswordChangeTestBase,
     auto account_identifier =
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
     FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+    CreateTestingFile();
 
     // Hash the password, as only hashed passwords appear at the userdataauth
     // level.
@@ -194,6 +200,11 @@ class PasswordChangeTest : public PasswordChangeTestBase,
                                                    cryptohome_key);
   }
 
+  bool TestingFileExists() const {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::PathExists(GetTestingFilePath());
+  }
+
   void SetGaiaScreenCredentials(const AccountId& account_id,
                                 const std::string& password) {
     LoginDisplayHost::default_host()
@@ -204,6 +215,24 @@ class PasswordChangeTest : public PasswordChangeTestBase,
   }
 
  private:
+  base::FilePath GetTestingFilePath() const {
+    auto account_identifier =
+        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
+    absl::optional<base::FilePath> profile_dir =
+        FakeUserDataAuthClient::TestApi::Get()->GetUserProfileDir(
+            account_identifier);
+    if (!profile_dir) {
+      ADD_FAILURE() << "Failed to get user profile dir";
+      return base::FilePath();
+    }
+    return profile_dir.value().AppendASCII(kTestingFileName);
+  }
+
+  void CreateTestingFile() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::WriteFile(GetTestingFilePath(), /*data=*/""));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
@@ -228,6 +257,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, MigrateOldCryptohome) {
   OobeWindowVisibilityWaiter(false).Wait();
 
   login_mixin_.WaitForActiveSession();
+  EXPECT_TRUE(TestingFileExists());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SubmitOnEnterKeyPressed) {
@@ -280,6 +310,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, RetryOnWrongPassword) {
   // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
   login_mixin_.WaitForActiveSession();
+  EXPECT_TRUE(TestingFileExists());
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordChangeTest, SkipDataRecovery) {
@@ -304,6 +335,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, SkipDataRecovery) {
   OobeWindowVisibilityWaiter(false).Wait();
 
   login_mixin_.WaitForActiveSession();
+  EXPECT_FALSE(TestingFileExists());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest,

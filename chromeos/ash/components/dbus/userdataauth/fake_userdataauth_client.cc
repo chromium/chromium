@@ -298,7 +298,7 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
 }
 
 void FakeUserDataAuthClient::TestApi::AddExistingUser(
-    cryptohome::AccountIdentifier account_id) {
+    const cryptohome::AccountIdentifier& account_id) {
   const auto [user_it, was_inserted] =
       client_->users_.insert({std::move(account_id), UserCryptohomeState()});
   if (!was_inserted) {
@@ -316,6 +316,12 @@ void FakeUserDataAuthClient::TestApi::AddExistingUser(
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::CreateDirectory(*profile_dir));
+}
+
+absl::optional<base::FilePath>
+FakeUserDataAuthClient::TestApi::GetUserProfileDir(
+    const cryptohome::AccountIdentifier& account_id) const {
+  return client_->GetUserProfileDir(account_id);
 }
 
 void FakeUserDataAuthClient::TestApi::AddKey(

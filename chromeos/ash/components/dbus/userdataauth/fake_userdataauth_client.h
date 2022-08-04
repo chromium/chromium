@@ -93,7 +93,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Marks a user as existing and creates the user's home directory. No auth
     // factors are added.
-    void AddExistingUser(cryptohome::AccountIdentifier account_id);
+    void AddExistingUser(const cryptohome::AccountIdentifier& account_id);
+
+    // Returns the user's home directory, or an empty optional if the user data
+    // directory is not initialized or the user doesn't exist.
+    absl::optional<base::FilePath> GetUserProfileDir(
+        const cryptohome::AccountIdentifier& account_id) const;
 
     // Adds the given key as a fake auth factor to the user (the user must
     // already exist).
