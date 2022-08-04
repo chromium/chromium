@@ -367,6 +367,9 @@ class PageInfo {
   int GetThirdPartyAllowedCookiesCount(const GURL& site_url);
   int GetThirdPartyBlockedCookiesCount(const GURL& site_url);
 
+  // Get the count of sites allowed to access cookies.
+  int GetSitesWithAllowedCookiesCount();
+
   // The page info UI displays information and controls for site-
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific

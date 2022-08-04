@@ -72,6 +72,8 @@ class PageInfoUI {
 
   // |CookieInfo| contains information about the cookies from a specific source.
   // A source can for example be a specific origin or an entire wildcard domain.
+  // TODO(crbug.com/1346305): Remove after finishing cookies subpage
+  // implementation.
   struct CookieInfo {
     CookieInfo();
 
@@ -83,6 +85,31 @@ class PageInfoUI {
     // Whether these cookies are from the current top-level origin as seen by
     // the user, or from third-party origins.
     bool is_first_party;
+  };
+
+  // |CookiesFPSInfo| contains information about a specific First-Party Set.
+  struct CookiesFPSInfo {
+    CookiesFPSInfo();
+    ~CookiesFPSInfo();
+
+    // The number of sites in the same FPS.
+    int sites_accessing_data_count = -1;
+
+    // The name of the owner of the FPS.
+    std::string owner_name;
+  };
+
+  // |CookiesNewInfo| contains information about the sites that are allowed
+  // to access cookies and fps cookies info for new UI.
+  // TODO(crbug.com/1346305):  Change the name to "CookieInfo" after finishing
+  // cookies subpage implementation
+  struct CookiesNewInfo {
+    CookiesNewInfo();
+
+    // The number of sites allowed to access cookies.
+    int allowed_sites_count = -1;
+
+    CookiesFPSInfo fps_info;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of
@@ -242,7 +269,10 @@ class PageInfoUI {
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
   // Sets cookie information.
+  // TODO(crbug.com/1346305) remove unused function overload after finished
+  // project. Sets cookie information.
   virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
+  virtual void SetCookieInfo(const CookiesNewInfo& cookie_info) {}
 
   // Sets permission information.
   virtual void SetPermissionInfo(const PermissionInfoList& permission_info_list,

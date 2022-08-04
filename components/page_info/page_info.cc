@@ -1130,22 +1130,38 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   if (!web_contents_ || web_contents_->IsBeingDestroyed())
     return;
 
-  CookieInfoList cookie_info_list;
+  bool is_cookies_subpage_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  is_cookies_subpage_enabled =
+      base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage);
+#endif
 
-  // Add first party cookie and site data counts.
-  PageInfoUI::CookieInfo cookie_info;
-  cookie_info.allowed = GetFirstPartyAllowedCookiesCount(site_url_);
-  cookie_info.blocked = GetFirstPartyBlockedCookiesCount(site_url_);
-  cookie_info.is_first_party = true;
-  cookie_info_list.push_back(cookie_info);
+  if (is_cookies_subpage_enabled) {
+    // Add allowed sites count.
+    PageInfoUI::CookiesNewInfo cookies_info;
+    cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesCount();
 
-  // Add third party cookie counts.
-  cookie_info.allowed = GetThirdPartyAllowedCookiesCount(site_url_);
-  cookie_info.blocked = GetThirdPartyBlockedCookiesCount(site_url_);
-  cookie_info.is_first_party = false;
-  cookie_info_list.push_back(cookie_info);
+    // TODO(crbug.com/1346305): Add data flow for FPS.
 
-  ui_->SetCookieInfo(cookie_info_list);
+    ui_->SetCookieInfo(cookies_info);
+  } else {
+    CookieInfoList cookie_info_list;
+
+    // Add first party cookie and site data counts.
+    PageInfoUI::CookieInfo cookie_info;
+    cookie_info.allowed = GetFirstPartyAllowedCookiesCount(site_url_);
+    cookie_info.blocked = GetFirstPartyBlockedCookiesCount(site_url_);
+    cookie_info.is_first_party = true;
+    cookie_info_list.push_back(cookie_info);
+
+    // Add third party cookie counts.
+    cookie_info.allowed = GetThirdPartyAllowedCookiesCount(site_url_);
+    cookie_info.blocked = GetThirdPartyBlockedCookiesCount(site_url_);
+    cookie_info.is_first_party = false;
+    cookie_info_list.push_back(cookie_info);
+
+    ui_->SetCookieInfo(cookie_info_list);
+  }
 
   std::move(done).Run();
 }
@@ -1328,6 +1344,13 @@ int PageInfo::GetFirstPartyAllowedCookiesCount(const GURL& site_url) {
     return 0;
   return settings->allowed_local_shared_objects().GetObjectCountForDomain(
       site_url);
+}
+
+int PageInfo::GetSitesWithAllowedCookiesCount() {
+  auto* settings = GetPageSpecificContentSettings();
+  if (!settings)
+    return 0;
+  return settings->allowed_local_shared_objects().GetDomainCount();
 }
 
 int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {

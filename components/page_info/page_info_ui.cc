@@ -371,6 +371,12 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
 
 PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
 
+PageInfoUI::CookiesNewInfo::CookiesNewInfo() = default;
+
+PageInfoUI::CookiesFPSInfo::CookiesFPSInfo() = default;
+
+PageInfoUI::CookiesFPSInfo::~CookiesFPSInfo() = default;
+
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,
     std::unique_ptr<permissions::ObjectPermissionContextBase::Object>
