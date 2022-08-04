@@ -12,6 +12,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -223,12 +224,6 @@ class PasswordCheckManager
   // Object storing the progress of a running password check.
   std::unique_ptr<PasswordCheckProgress> progress_;
 
-  // Handle to the password store, powering both `saved_passwords_presenter_`
-  // and `insecure_credentials_manager_`.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS);
-
   // Used to check whether autofill assistant scripts are available for
   // the specified domain.
   raw_ptr<password_manager::PasswordScriptsFetcher> password_script_fetcher_ =
@@ -238,11 +233,20 @@ class PasswordCheckManager
   // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
-      password_store_};
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile_,
+          ServiceAccessType::EXPLICIT_ACCESS)};
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_{
-      &saved_passwords_presenter_, password_store_};
+      &saved_passwords_presenter_,
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile_,
+          ServiceAccessType::EXPLICIT_ACCESS)};
 
   // Adapter used to start, monitor and stop a bulk leak check.
   password_manager::BulkLeakCheckServiceAdapter

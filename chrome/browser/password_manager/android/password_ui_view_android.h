@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -149,13 +150,15 @@ class PasswordUIViewAndroid
   raw_ptr<SerializationResult> export_target_for_testing_ = nullptr;
 
   // Pointer to the password store, powering |saved_passwords_presenter_|.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
       PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
                                           ServiceAccessType::EXPLICIT_ACCESS);
 
   // Manages the list of saved passwords, including updates.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
-      password_store_};
+      profile_store_, AccountPasswordStoreFactory::GetForProfile(
+                          ProfileManager::GetLastUsedProfile(),
+                          ServiceAccessType::EXPLICIT_ACCESS)};
 
   // Cached passwords and blocked sites.
   std::vector<password_manager::CredentialUIEntry> passwords_;

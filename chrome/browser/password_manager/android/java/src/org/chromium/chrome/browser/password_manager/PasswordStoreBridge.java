@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -75,8 +77,9 @@ public class PasswordStoreBridge {
     /**
      * Inserts new credential into the password store.
      */
+    @VisibleForTesting
     public void insertPasswordCredential(PasswordStoreCredential credential) {
-        PasswordStoreBridgeJni.get().insertPasswordCredential(
+        PasswordStoreBridgeJni.get().insertPasswordCredentialForTesting(
                 mNativePasswordStoreBridge, credential);
     }
 
@@ -106,13 +109,6 @@ public class PasswordStoreBridge {
                 new PasswordStoreCredential[getPasswordStoreCredentialsCount()];
         PasswordStoreBridgeJni.get().getAllCredentials(mNativePasswordStoreBridge, credentials);
         return credentials;
-    }
-
-    /**
-     * Empties the password store.
-     */
-    public void clearAllPasswords() {
-        PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
     }
 
     /**
@@ -152,14 +148,13 @@ public class PasswordStoreBridge {
     @NativeMethods
     interface Natives {
         long init(PasswordStoreBridge passwordStoreBridge);
-        void insertPasswordCredential(
+        void insertPasswordCredentialForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
         boolean editPassword(long nativePasswordStoreBridge, PasswordStoreCredential credential,
                 String newPassword);
         int getPasswordStoreCredentialsCount(long nativePasswordStoreBridge);
         void getAllCredentials(
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);
-        void clearAllPasswords(long nativePasswordStoreBridge);
         void destroy(long nativePasswordStoreBridge);
     }
 }

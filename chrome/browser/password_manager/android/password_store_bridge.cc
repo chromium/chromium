@@ -53,10 +53,10 @@ PasswordStoreBridge::PasswordStoreBridge(
 
 PasswordStoreBridge::~PasswordStoreBridge() = default;
 
-void PasswordStoreBridge::InsertPasswordCredential(
+void PasswordStoreBridge::InsertPasswordCredentialForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential) {
-  password_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+  profile_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
 }
 
 bool PasswordStoreBridge::EditPassword(
@@ -90,13 +90,6 @@ void PasswordStoreBridge::GetAllCredentials(
         base::android::ConvertUTF16ToJavaString(env,
                                                 credential.password_value));
   }
-}
-
-void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  password_store_->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time::Max(),
-      base::BindOnce(&PasswordStoreBridge::OnPasswordStoreCleared,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void PasswordStoreBridge::OnPasswordStoreCleared(bool success) {
