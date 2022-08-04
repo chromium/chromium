@@ -2317,7 +2317,8 @@ void AXObjectCacheImpl::SlotAssignmentWillChange(Node* node) {
 }
 
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
-  ChildrenChanged(Get(node));
+  // Use SafeGet() because there is no guarantee that layout is clean right now.
+  ChildrenChanged(SafeGet(node));
 }
 
 // ChildrenChanged gets called a lot. For the accessibility tests that
