@@ -1099,7 +1099,7 @@ class XDesktop(Desktop):
         suffix=".conf", delete=False) as config_file:
       config_file.write(gen_xorg_config().encode())
 
-    self.server_supports_exact_resize = False
+    self.server_supports_exact_resize = True
     self.server_supports_randr = True
     self.randr_add_sizes = True
     self.xorg_conf = config_file.name

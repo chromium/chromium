@@ -49,6 +49,7 @@
 namespace {
 
 constexpr auto kInvalidMode = static_cast<x11::RandR::Mode>(0);
+constexpr auto kDisabledCrtc = static_cast<x11::RandR::Crtc>(0);
 
 int PixelsToMillimeters(int pixels, int dpi) {
   DCHECK(dpi != 0);
@@ -89,16 +90,6 @@ x11::RandR::Mode ScreenResources::GetIdForMode(const std::string& name) {
       return static_cast<x11::RandR::Mode>(mode_info.id);
   }
   return kInvalidMode;
-}
-
-x11::RandR::Output ScreenResources::GetOutput() {
-  CHECK(resources_);
-  return resources_->outputs[0];
-}
-
-x11::RandR::Crtc ScreenResources::GetCrtc() {
-  CHECK(resources_);
-  return resources_->crtcs[0];
 }
 
 x11::RandR::GetScreenResourcesCurrentReply* ScreenResources::get() {
@@ -187,8 +178,14 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
   // that the display configuration doesn't change under our feet.
   ScopedXGrabServer grabber(connection_);
 
+  if (!resources_.Refresh(randr_, root_))
+    return;
+
+  // TODO(crbug.com/1326339): Instead of hard-coding the first output, find the
+  // one attached to the RANDR monitor |screen_id|.
+  x11::RandR::Output output = resources_.get()->outputs[0];
   if (exact_resize_)
-    SetResolutionNewMode(resolution);
+    SetResolutionNewMode(output, resolution);
   else
     SetResolutionExistingMode(resolution);
 }
@@ -199,6 +196,7 @@ void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
 }
 
 void DesktopResizerX11::SetResolutionNewMode(
+    x11::RandR::Output output,
     const ScreenResolution& resolution) {
   // The name of the mode representing the current client view resolution and
   // the temporary mode used for the reasons described at the top of this file.
@@ -219,19 +217,19 @@ void DesktopResizerX11::SetResolutionNewMode(
       PixelsToMillimeters(resolution.dimensions().width(), kDefaultDPI);
   uint32_t height_mm =
       PixelsToMillimeters(resolution.dimensions().height(), kDefaultDPI);
-  CreateMode(kTempModeName, resolution.dimensions().width(),
+  CreateMode(output, kTempModeName, resolution.dimensions().width(),
              resolution.dimensions().height());
-  SwitchToMode(nullptr);
+  SwitchToMode(output, nullptr);
   randr_->SetScreenSize(
       {root_, static_cast<uint16_t>(resolution.dimensions().width()),
        static_cast<uint16_t>(resolution.dimensions().height()), width_mm,
        height_mm});
-  SwitchToMode(kTempModeName);
-  DeleteMode(kModeName);
-  CreateMode(kModeName, resolution.dimensions().width(),
+  SwitchToMode(output, kTempModeName);
+  DeleteMode(output, kModeName);
+  CreateMode(output, kModeName, resolution.dimensions().width(),
              resolution.dimensions().height());
-  SwitchToMode(kModeName);
-  DeleteMode(kTempModeName);
+  SwitchToMode(output, kModeName);
+  DeleteMode(output, kTempModeName);
 }
 
 void DesktopResizerX11::SetResolutionExistingMode(
@@ -256,7 +254,10 @@ void DesktopResizerX11::SetResolutionExistingMode(
   }
 }
 
-void DesktopResizerX11::CreateMode(const char* name, int width, int height) {
+void DesktopResizerX11::CreateMode(x11::RandR::Output output,
+                                   const char* name,
+                                   int width,
+                                   int height) {
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
@@ -266,36 +267,72 @@ void DesktopResizerX11::CreateMode(const char* name, int width, int height) {
   if (!resources_.Refresh(randr_, root_))
     return;
   x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
-  if (mode_id == kInvalidMode)
+  if (mode_id == kInvalidMode) {
+    LOG(ERROR) << "No ID found for mode: " << name;
     return;
+  }
   randr_->AddOutputMode({
-      resources_.GetOutput(),
+      output,
       mode_id,
   });
 }
 
-void DesktopResizerX11::DeleteMode(const char* name) {
+void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
+                                   const char* name) {
   x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
   if (mode_id != kInvalidMode) {
-    randr_->DeleteOutputMode({resources_.GetOutput(), mode_id});
+    randr_->DeleteOutputMode({output, mode_id});
     randr_->DestroyMode({mode_id});
     resources_.Refresh(randr_, root_);
   }
 }
 
-void DesktopResizerX11::SwitchToMode(const char* name) {
+void DesktopResizerX11::SwitchToMode(x11::RandR::Output output,
+                                     const char* name) {
   auto mode_id = kInvalidMode;
   std::vector<x11::RandR::Output> outputs;
   if (name) {
     mode_id = resources_.GetIdForMode(name);
-    CHECK_NE(mode_id, kInvalidMode);
-    outputs = resources_.get()->outputs;
+    if (mode_id == kInvalidMode) {
+      LOG(ERROR) << "No ID found for mode: " << name;
+      return;
+    }
+
+    // The case where a CRTC has multiple outputs is unsupported here. With
+    // Xvfb, there exists only 1 output. With Xorg+video-dummy, there are
+    // several outputs, but each one has a separate CRTC it can attach to.
+    outputs = {output};
   }
-  const auto* resources = resources_.get();
+
+  x11::Time config_timestamp = resources_.get()->config_timestamp;
+  auto output_info = randr_->GetOutputInfo({output, config_timestamp}).Sync();
+  if (!output_info)
+    return;
+
+  x11::RandR::Crtc crtc = output_info->crtc;
+  if (crtc == kDisabledCrtc) {
+    // The output is disabled. If |name| is nullptr, the caller requested the
+    // output be disabled, so there is nothing further to do.
+    if (!name)
+      return;
+
+    // |crtcs| is the set of CRTCs that this output is allowed to attach to.
+    if (output_info->crtcs.size() != 1) {
+      // |crtcs| should always be non-empty. To properly handle the size() > 1
+      // case, the code should step through |crtcs| and fetch the outputs using
+      // GetCrtcInfo(), stopping when a CRTC is found with empty outputs. With
+      // Xorg+video-dummy, this case never happens - the driver allocates a
+      // single CRTC for each output.
+      LOG(ERROR) << "Unexpected #crtcs: " << output_info->crtcs.size();
+      return;
+    }
+    crtc = output_info->crtcs[0];
+  }
+
   randr_->SetCrtcConfig({
-      .crtc = resources_.GetCrtc(),
+      .crtc = crtc,
       .timestamp = x11::Time::CurrentTime,
-      .config_timestamp = resources->config_timestamp,
+      .config_timestamp = config_timestamp,
       .x = 0,
       .y = 0,
       .mode = mode_id,
