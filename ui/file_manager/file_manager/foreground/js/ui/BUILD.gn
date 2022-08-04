@@ -413,6 +413,7 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:import_history",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",

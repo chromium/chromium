@@ -48,7 +48,7 @@ testcase.transferShowDlpToast = async () => {
 
 /**
  * Tests that if the file is restricted by DLP, a managed icon is shown in the
- * detail list .
+ * detail list and a tooltip is displayed when hovering over that icon.
  */
 testcase.dlpShowManagedIcon = async () => {
   // Setup the restrictions.
@@ -57,11 +57,23 @@ testcase.dlpShowManagedIcon = async () => {
   // Open Files app.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  const dlpManagedIcon = '#file-list .dlp-managed-icon';
 
   // Check: only three of the five files should have the 'dlp-managed-icon'
   // class, which means that the icon is displayed.
-  await remoteCall.waitForElementsCount(
-      appId, ['#file-list .dlp-managed-icon'], 3);
+  await remoteCall.waitForElementsCount(appId, [dlpManagedIcon], 3);
+
+  // Hover over an icon: a tooltip should appear.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [dlpManagedIcon]));
+
+  // Check: the DLP managed icon tooltip should be visible. The full text
+  // contains a placeholder for the link so here we only check the first part.
+  const labelTextPrefix = 'This file is confidential and subject ' +
+      'to restrictions by administrator policy.';
+  const label = await remoteCall.waitForElement(
+      appId, ['files-tooltip[visible=true]', '#label']);
+  chrome.test.assertTrue(label.text.startsWith(labelTextPrefix));
 };
 
 /**

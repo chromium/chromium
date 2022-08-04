@@ -1551,5 +1551,8 @@
   <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS" desc="Context menu item that shows the DLP restriction details for the selected file.">
     Restriction details
   </message>
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP" desc="Tooltip of the data leak prevention managed icon.">
+    This file is confidential and subject to restrictions by administrator policy. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn more<ph name="END_LINK_HELP">&lt;/a&gt;</ph>
+  </message>
 
 </grit-part>

@@ -7,6 +7,7 @@ import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
+const tooltipQuery = 'files-tooltip';
 const tooltipQueryHidden = 'files-tooltip:not([visible])';
 const tooltipQueryVisible = 'files-tooltip[visible=true]';
 const searchButton = '#search-button[has-tooltip]';
@@ -186,6 +187,43 @@ testcase.filesTooltipMouseOver = async () => {
   const lastElement =
       await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
   chrome.test.assertEq(expectedLabelText, lastElement.text);
+};
+
+/**
+ * Tests that tooltips stay open when hovering over the tooltip.
+ */
+testcase.filesTooltipMouseOverStaysOpen = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+
+  // Mouse hover over a button that has a tooltip: the search button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [searchButton]));
+
+  // Check: the search button tooltip should be visible.
+  const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  const firstElement =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, firstElement.text);
+
+  // Move the mouse away from the search button, but on the tooltip.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, [searchButton]));
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [tooltipQuery]));
+
+  // Check: the tooltip should still be visible.
+  await remoteCall.waitForElement(appId, tooltipQueryVisible);
+
+  // Move the mouse away from the tooltip.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, [tooltipQuery]));
+
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 };
 
 /**

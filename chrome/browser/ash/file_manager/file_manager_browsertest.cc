@@ -1677,6 +1677,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("filesTooltipLabelChange").FilesSwa(),
         TestCase("filesTooltipMouseOver"),
         TestCase("filesTooltipMouseOver").FilesSwa(),
+        TestCase("filesTooltipMouseOverStaysOpen"),
+        TestCase("filesTooltipMouseOverStaysOpen").FilesSwa(),
         TestCase("filesTooltipClickHides"),
         TestCase("filesTooltipClickHides").FilesSwa(),
         TestCase("filesTooltipHidesOnWindowResize"),

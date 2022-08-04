@@ -34,7 +34,7 @@ export const FilesTooltip = Polymer({
      */
     hideTimeout: {
       type: Number,
-      value: 250,  // ms
+      value: 500,  // ms
       readOnly: true,
     },
   },
@@ -75,9 +75,13 @@ export const FilesTooltip = Polymer({
   attached: function() {
     const closeTooltipHandler = this.onDocumentMouseDown_.bind(this);
     const cleanupTooltipHandler = this.onTransitionEnd_.bind(this);
+    const mouseoverHandler = this.onMouseOver_.bind(this, null);
+    const mouseoutHandler = this.onMouseOut_.bind(this, null);
     document.body.addEventListener('mousedown', closeTooltipHandler);
     this.addEventListener('transitionend', cleanupTooltipHandler);
     window.addEventListener('resize', closeTooltipHandler);
+    this.addEventListener('mouseover', mouseoverHandler);
+    this.addEventListener('mouseout', mouseoutHandler);
   },
 
   /**
@@ -140,6 +144,7 @@ export const FilesTooltip = Polymer({
     // check if the label is different from the existing tooltip text, because
     // if label text changes, we need to show the tooltip.
     if (this.visibleTooltipTarget_ === target &&
+        target.hasAttribute('aria-label') &&
         this.$.label.textContent === target.getAttribute('aria-label')) {
       return;
     }
@@ -191,11 +196,19 @@ export const FilesTooltip = Polymer({
     const windowEdgePadding = 6;
 
     const label = target.getAttribute('aria-label');
+    const showLinkTooltip = target.hasAttribute('show-link-tooltip');
     if (!label) {
       return;
     }
 
-    this.$.label.textContent = label;
+    if (showLinkTooltip) {
+      // Use innerHTML since link tooltip contains a <a href> in the label.
+      this.$.label.innerHTML = label;
+      this.$.label.classList.add('link-label');
+    } else {
+      this.$.label.textContent = label;
+    }
+
     const invert = 'invert-tooltip';
     this.$.label.toggleAttribute('invert', target.hasAttribute(invert));
 
@@ -216,7 +229,7 @@ export const FilesTooltip = Polymer({
 
     if (useCardTooltip) {
       this.className = 'card-tooltip';
-      this.$.label.className = 'card-label';
+      this.$.label.classList.add('card-label');
 
       // Push left to the body's left when tooltip is longer than viewport.
       if (this.offsetWidth > document.body.offsetWidth) {
@@ -278,7 +291,8 @@ export const FilesTooltip = Polymer({
    * @private
    */
   onMouseOver_: function(target, event) {
-    this.initShowingTooltip_(target);
+    const actualTarget = target || this.visibleTooltipTarget_;
+    this.initShowingTooltip_(actualTarget);
   },
 
   /**
@@ -286,7 +300,8 @@ export const FilesTooltip = Polymer({
    * @private
    */
   onMouseOut_: function(target, event) {
-    this.initHidingTooltip_(target);
+    const actualTarget = target || this.visibleTooltipTarget_;
+    this.initHidingTooltip_(actualTarget);
   },
 
   /**

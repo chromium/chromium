@@ -9,7 +9,6 @@
     display: flex;
     height: 24px;
     opacity: 0;
-    pointer-events: none;
     position: absolute;
     transition: opacity 300ms;
     z-index: 1000;
@@ -36,6 +35,11 @@
     height: auto;
     margin-top: 4px;
     padding: 12px 16px;
+  }
+
+  #label.link-label {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   #label.card-label {
