@@ -57,6 +57,7 @@ DragOperation DropBookmarks(Profile* profile,
            bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));
     if (!dragged_nodes.empty()) {
       // Drag from same profile. Copy or move nodes.
+      bool is_reorder = !copy && dragged_nodes[0]->parent() == parent_node;
       for (size_t i = 0; i < dragged_nodes.size(); ++i) {
         if (copy) {
           model->Copy(dragged_nodes[i], parent_node, index);
@@ -65,11 +66,13 @@ DragOperation DropBookmarks(Profile* profile,
         }
         index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
       }
+      RecordBookmarkDropped(data, parent_node, is_reorder);
       return copy ? DragOperation::kCopy : DragOperation::kMove;
     }
     return DragOperation::kNone;
   }
   RecordBookmarksAdded(profile);
+  RecordBookmarkDropped(data, parent_node, false);
   // Dropping a folder from different profile. Always accept.
   bookmarks::CloneBookmarkNode(model, data.elements, parent_node, index, true);
   return DragOperation::kCopy;

@@ -11503,6 +11503,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="24" label="From out-of-scope app window to popup."/>
 </enum>
 
+<enum name="BookmarkBarDragDropType">
+  <int value="0" label="Drop single URL onto bar"/>
+  <int value="1" label="Drop single URL into folder"/>
+  <int value="2" label="Drop bookmark onto bar"/>
+  <int value="3" label="Drop bookmark into folder"/>
+  <int value="4" label="Drop folder onto bar"/>
+  <int value="5" label="Drop folder into folder"/>
+  <int value="6" label="Reorder bookmark on bar"/>
+  <int value="7" label="Reorder bookmark in folder"/>
+  <int value="8" label="Reorder folder on bar"/>
+  <int value="9" label="Reorder subfolder in folder"/>
+</enum>
+
 <enum name="BookmarkBarPrefAndState">
   <summary>
     The Boomarks bar pref state and whether the user is on the NTP when the

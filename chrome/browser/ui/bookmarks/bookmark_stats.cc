@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node_data.h"
 
 using bookmarks::BookmarkNode;
 
@@ -83,4 +84,51 @@ void RecordBookmarkAllTabsWithTabsCount(const Profile* profile, int count) {
     UMA_HISTOGRAM_COUNTS_100("Bookmarks.BookmarkAllTabsWithTabsCount.Incognito",
                              count);
   }
+}
+
+void RecordBookmarkDropped(const bookmarks::BookmarkNodeData& data,
+                           const bookmarks::BookmarkNode* parent_node,
+                           bool is_reorder) {
+  enum class DropType : int {
+    kDropURLOntoBar = 0,
+    kDropURLIntoFolder = 1,
+    kDropBookmarkOntoBar = 2,
+    kDropBookmarkIntoFolder = 3,
+    kDropFolderOntoBar = 4,
+    kDropFolderIntoFolder = 5,
+    kReorderBookmarkOnBar = 6,
+    kReorderBookmarkInFolder = 7,
+    kReorderFolderOnBar = 8,
+    kReorderSubfolderInFolder = 9,
+    kMaxValue = kReorderSubfolderInFolder
+  };
+
+  // Note that `has_single_url()` is true for individual existing bookmarks as
+  // well as raw URLs, so we have to check the ID as well.
+  DropType drop_type;
+  if (data.has_single_url() && data.elements[0].id() == 0) {
+    drop_type = parent_node->is_permanent_node() ? DropType::kDropURLOntoBar
+                                                 : DropType::kDropURLIntoFolder;
+  } else if (is_reorder) {
+    if (data.has_single_url()) {
+      drop_type = parent_node->is_permanent_node()
+                      ? DropType::kReorderBookmarkOnBar
+                      : DropType::kReorderBookmarkInFolder;
+    } else {
+      drop_type = parent_node->is_permanent_node()
+                      ? DropType::kReorderFolderOnBar
+                      : DropType::kReorderSubfolderInFolder;
+    }
+  } else {
+    if (data.has_single_url()) {
+      drop_type = parent_node->is_permanent_node()
+                      ? DropType::kDropBookmarkOntoBar
+                      : DropType::kDropBookmarkIntoFolder;
+    } else {
+      drop_type = parent_node->is_permanent_node()
+                      ? DropType::kDropFolderOntoBar
+                      : DropType::kDropFolderIntoFolder;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.BookmarksBar.DragDropType", drop_type);
 }
