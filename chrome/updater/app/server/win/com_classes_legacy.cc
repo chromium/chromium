@@ -868,9 +868,13 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
                 [](base::WaitableEvent& event) { event.Signal(); },
                 std::ref(event)));
 
+            const auto prefs = AppServerSingletonInstance()->prefs();
+            if (!prefs)
+              return;
+
             const auto persisted_data =
                 base::MakeRefCounted<const PersistedData>(
-                    AppServerSingletonInstance()->prefs()->GetPrefService());
+                    prefs->GetPrefService());
             if (!persisted_data)
               return;
 
