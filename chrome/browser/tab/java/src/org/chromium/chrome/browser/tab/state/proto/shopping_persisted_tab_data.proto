@@ -31,4 +31,7 @@ message ShoppingPersistedTabDataProto {
 
   // The gurl associated with the price drop.
   optional string serialized_gurl = 7;
+
+  // Whether the user has seen the current price drop in the tab switcher grid.
+  optional bool is_current_price_drop_seen = 8;
 }

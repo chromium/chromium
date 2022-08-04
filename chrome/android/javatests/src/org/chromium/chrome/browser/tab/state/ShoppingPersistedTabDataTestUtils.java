@@ -42,6 +42,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -170,6 +171,24 @@ public abstract class ShoppingPersistedTabDataTestUtils {
             shoppingPersistedTabData.setLastUpdatedMs(System.currentTimeMillis());
             shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
             shoppingPersistedTabData.save();
+            res.set(shoppingPersistedTabData);
+        });
+        return res.get();
+    }
+
+    static ShoppingPersistedTabData createShoppingPersistedTabDataWithPriceDropOnUiThread(Tab tab) {
+        AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+            supplier.set(true);
+            shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
+            shoppingPersistedTabData.setPriceMicros(UPDATED_PRICE_MICROS);
+            shoppingPersistedTabData.setPreviousPriceMicros(PRICE_MICROS);
+            shoppingPersistedTabData.setLastUpdatedMs(
+                    System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2));
+            shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
+            shoppingPersistedTabData.setCurrencyCode(UNITED_STATES_CURRENCY_CODE);
             res.set(shoppingPersistedTabData);
         });
         return res.get();

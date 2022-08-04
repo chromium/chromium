@@ -70,6 +70,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             "price_tracking_with_optimization_guide";
     private static final String RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM =
             "return_empty_price_drops_until_init";
+    private static final String CHECK_IF_PRICE_DROP_IS_SEEN_PARAM = "check_if_price_drop_is_seen";
     private static final String METRICS_IDENTIFIER_PREFIX = "NavigationComplete";
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
@@ -189,6 +190,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         public String currencyCode;
         public String offerId;
         public GURL gurl;
+        public boolean isCurrentPriceDropSeen;
 
         PriceDropData() {
             this.priceMicros = NO_PRICE_KNOWN;
@@ -686,6 +688,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         BuyableProduct buyableProduct = priceTrackingData.getBuyableProduct();
 
         if (hasPriceUpdate(priceTrackingData)) {
+            if (hasPriceChange(productUpdate)) {
+                setIsCurrentPriceDropSeen(false);
+            }
             setPriceMicros(productUpdate.getNewPrice().getAmountMicros());
             setPreviousPriceMicros(productUpdate.getOldPrice().getAmountMicros());
             setCurrencyCode(productUpdate.getOldPrice().getCurrencyCode());
@@ -701,6 +706,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             // Use UnsignedLongs to convert OfferId to avoid overflow.
             setMainOfferId(UnsignedLongs.toString(buyableProduct.getOfferId()));
             setPriceDropGurl(tab.getUrl());
+            setIsCurrentPriceDropSeen(false);
             foundBuyableProduct = FoundBuyableProduct.FOUND;
         }
 
@@ -909,6 +915,27 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return true;
     }
 
+    /**
+     * Sets whether the current price drop has been viewed in the tab switcher grid.
+     * @param isSeen  is true if the current price drop has been seen.
+     */
+    public void setIsCurrentPriceDropSeen(boolean isSeen) {
+        if (isCheckIfPriceDropIsSeenEnabled()) {
+            mPriceDropData.isCurrentPriceDropSeen = isSeen;
+            save();
+        }
+    }
+
+    /**
+     * @return returns whether the current price drop has been seen.
+     */
+    public boolean getIsCurrentPriceDropSeen() {
+        if (isCheckIfPriceDropIsSeenEnabled()) {
+            return mPriceDropData.isCurrentPriceDropSeen;
+        }
+        return false;
+    }
+
     // TODO(crbug.com/1151156) Make parameters finch configurable
     private static int getMinimumDroppedThresholdPercentage() {
         return MINIMUM_DROP_PERCENTAGE;
@@ -942,7 +969,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         .setPriceMicros(mPriceDropData.priceMicros)
                         .setPreviousPriceMicros(mPriceDropData.previousPriceMicros)
                         .setLastUpdatedMs(getLastUpdatedMs())
-                        .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs);
+                        .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs)
+                        .setIsCurrentPriceDropSeen(mPriceDropData.isCurrentPriceDropSeen);
         if (mPriceDropData.offerId != null) {
             builder.setMainOfferId(mPriceDropData.offerId);
         }
@@ -979,6 +1007,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mPriceDropData.currencyCode = shoppingPersistedTabDataProto.getPriceCurrencyCode();
             mPriceDropData.gurl =
                     GURL.deserialize(shoppingPersistedTabDataProto.getSerializedGurl());
+            mPriceDropData.isCurrentPriceDropSeen =
+                    shoppingPersistedTabDataProto.getIsCurrentPriceDropSeen();
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
@@ -1064,6 +1094,18 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return false;
     }
 
+    /**
+     * @return true if checking if a price drop is spotted is enabled.
+     */
+    public static boolean isCheckIfPriceDropIsSeenEnabled() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, CHECK_IF_PRICE_DROP_IS_SEEN_PARAM,
+                    false);
+        }
+        return false;
+    }
+
     private static @DelayedInitMethod int getDelayedInitMethod() {
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -1100,6 +1142,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             callback.onResult(decision == OptimizationGuideDecision.TRUE
                                     || decision == OptimizationGuideDecision.UNKNOWN);
                         });
+    }
+
+    /**
+     * Returns true if there is an incoming change for the price.
+     * @param productPriceUpdate incoming price update data.
+     * @return
+     */
+    private boolean hasPriceChange(ProductPriceUpdate productPriceUpdate) {
+        if (productPriceUpdate.getNewPrice().getAmountMicros() != mPriceDropData.priceMicros) {
+            return true;
+        }
+        if (!productPriceUpdate.getNewPrice().getCurrencyCode().equals(
+                    mPriceDropData.currencyCode)) {
+            return true;
+        }
+        return false;
     }
 
     /**
