@@ -42,7 +42,6 @@ namespace ash {
 
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
-  UpdateStatus();
 
   PowerStatus::Get()->AddObserver(this);
 }
@@ -78,6 +77,7 @@ const char* PowerTrayView::GetClassName() const {
 
 void PowerTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
+  UpdateStatus();
   UpdateImage(/*icon_color_changed=*/true);
 }
 
@@ -117,9 +117,6 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   if (info_ && info_->ApproximatelyEqual(info) && !icon_color_changed)
     return;
   info_ = info;
-
-  if (!icon_color_changed)
-    return;
 
   // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
   const SkColor icon_fg_color = TrayIconColor(session_state_);
