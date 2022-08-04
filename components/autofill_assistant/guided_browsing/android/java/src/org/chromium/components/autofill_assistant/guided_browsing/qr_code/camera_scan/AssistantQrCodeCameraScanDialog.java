@@ -7,11 +7,13 @@ package org.chromium.components.autofill_assistant.guided_browsing.qr_code.camer
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.components.autofill_assistant.guided_browsing.R;
+import org.chromium.components.autofill_assistant.guided_browsing.qr_code.AssistantQrCodeDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -68,6 +70,19 @@ public class AssistantQrCodeCameraScanDialog extends DialogFragment {
     public void onPause() {
         super.onPause();
         mCameraScanCoordinator.pause();
+    }
+
+    /**
+     * Cancel QR Code Scanning via Camera Preview and forward the event via delegate.
+     */
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        AssistantQrCodeDelegate delegate =
+                mCameraScanModel.get(AssistantQrCodeCameraScanModel.DELEGATE);
+        if (delegate != null) {
+            delegate.onScanCancelled();
+        }
     }
 
     @Override
