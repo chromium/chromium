@@ -2963,6 +2963,18 @@ class NewImagesWarningTest(unittest.TestCase):
     results = PRESUBMIT._CheckNewImagesWarning(mock_input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+class ProductIconsTest(unittest.TestCase):
+  def test(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockFile('components/vector_icons/google_jetpack.icon', []),
+      MockFile('components/vector_icons/generic_jetpack.icon', []),
+    ]
+
+    results = PRESUBMIT.CheckNoProductIconsAddedToPublicRepo(mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual(1, len(results[0].items))
+    self.assertTrue('google_jetpack.icon' in results[0].items[0])
 
 class CheckUniquePtrTest(unittest.TestCase):
   def testTruePositivesNullptr(self):

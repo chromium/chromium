@@ -2202,6 +2202,26 @@ def CheckNoAbbreviationInPngFileName(input_api, output_api):
                 'Contact oshima@chromium.org if you have questions.', errors))
     return results
 
+def CheckNoProductIconsAddedToPublicRepo(input_api, output_api):
+    """Heuristically identifies product icons based on their file name and reminds
+    contributors not to add them to the Chromium repository.
+    """
+    errors = []
+    files_to_check = [r'.*google.*\.png$|.*google.*\.svg$|.*google.*\.icon$']
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=files_to_check)
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=file_filter):
+        errors.append('    %s' % f.LocalPath())
+
+    results = []
+    if errors:
+        results.append(
+            output_api.PresubmitError(
+                'Trademarked images should not be added to the public repo. '
+                'See crbug.com/944754', errors))
+    return results
+
 
 def _ExtractAddRulesFromParsedDeps(parsed_deps):
     """Extract the rules that add dependencies from a parsed DEPS file.
