@@ -1756,6 +1756,20 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
   return ToAnnotatedVisits(visit_rows);
 }
 
+std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
+    const std::vector<VisitID>& visit_ids) {
+  auto annotated_visits = ToAnnotatedVisits(visit_ids);
+  std::vector<ClusterVisit> cluster_visits;
+  base::ranges::transform(annotated_visits, std::back_inserter(cluster_visits),
+                          [&](const auto& annotated_visit) {
+                            ClusterVisit cluster_visit = db_->GetClusterVisit(
+                                annotated_visit.visit_row.visit_id);
+                            cluster_visit.annotated_visit = annotated_visit;
+                            return cluster_visit;
+                          });
+  return cluster_visits;
+}
+
 base::Time HistoryBackend::FindMostRecentClusteredTime() {
   // TODO(manukh): Implement. Since we don't have persisted clustered visits
   //  yet, there are no visits to take the timestamp of.
@@ -1794,20 +1808,9 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id) {
   if (!db_)
     return {};
 
-  // TODO(manukh): `Cluster`s and `ClusterRow`s have more fields that should be
-  //  set here once we begin persisting them to DB.
-
-  Cluster cluster;
+  Cluster cluster = db_->GetCluster(cluster_id);
   cluster.cluster_id = cluster_id;
-
-  const auto visit_ids = db_->GetVisitIdsInCluster(cluster_id);
-  const auto annotated_visits = ToAnnotatedVisits(visit_ids);
-  base::ranges::transform(annotated_visits, std::back_inserter(cluster.visits),
-                          [&](const auto& annotated_visit) {
-                            ClusterVisit cluster_visit;
-                            cluster_visit.annotated_visit = annotated_visit;
-                            return cluster_visit;
-                          });
+  cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id));
   return cluster;
 }
 

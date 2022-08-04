@@ -3968,10 +3968,27 @@ TEST_F(HistoryBackendTest, GetRedirectChain) {
 TEST_F(HistoryBackendTest, GetCluster) {
   AddAnnotatedVisit(0);
   AddAnnotatedVisit(1);
-  AddCluster({1, 2});
 
-  VerifyCluster(backend_->GetCluster(1), {1, {2, 1}});
-  VerifyCluster(backend_->GetCluster(2), {2});
+  ClusterVisit visit_1;
+  visit_1.annotated_visit.visit_row.visit_id = 1;
+  // Verify the cluster visits are being flushed out.
+  visit_1.url_for_display = u"url_for_display";
+  ClusterVisit visit_2;
+  visit_2.annotated_visit.visit_row.visit_id = 2;
+  // A cluster visit without a corresponding annotated visit shouldn't be
+  // returned.
+  ClusterVisit visit_3;
+  visit_3.annotated_visit.visit_row.visit_id = 3;
+  backend_->db_->AddClusters(
+      {{0, {visit_1, visit_2, visit_3}, {}, false, u"label"}});
+
+  const auto cluster = backend_->GetCluster(1);
+  VerifyCluster(cluster, {1, {2, 1}});
+  EXPECT_EQ(cluster.cluster_id, 1);
+  EXPECT_EQ(cluster.label, u"label");
+  EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
+
+  VerifyCluster(backend_->GetCluster(3), {3});
 }
 
 TEST_F(HistoryBackendTest, ReplaceClusters) {
