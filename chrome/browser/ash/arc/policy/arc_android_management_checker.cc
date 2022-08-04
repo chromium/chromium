@@ -72,12 +72,12 @@ void ArcAndroidManagementChecker::StartClient() {
 void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
   DCHECK(callback_.is_null());
 
-  // Do not send requests for Chrome OS managed users, nor for well-known
-  // consumer domains.
+  // No need to check Android Management if the user is a Chrome OS managed
+  // user, or belongs to a well-known non-enterprise domain.
   if (policy_util::IsAccountManaged(profile_) ||
       policy::BrowserPolicyConnector::IsNonEnterpriseUser(
           profile_->GetProfileUserName())) {
-    std::move(callback).Run(policy::AndroidManagementClient::Result::UNMANAGED);
+    std::move(callback).Run(CheckResult::ALLOWED);
     return;
   }
 
@@ -115,7 +115,7 @@ void ArcAndroidManagementChecker::StartCheckInternal() {
 
   if (!identity_manager_->HasAccountWithRefreshToken(device_account_id_)) {
     VLOG(2) << "No refresh token is available for android management check.";
-    std::move(callback_).Run(policy::AndroidManagementClient::Result::ERROR);
+    std::move(callback_).Run(CheckResult::ERROR);
     return;
   }
 
@@ -126,16 +126,28 @@ void ArcAndroidManagementChecker::StartCheckInternal() {
 }
 
 void ArcAndroidManagementChecker::OnAndroidManagementChecked(
-    policy::AndroidManagementClient::Result result) {
+    policy::AndroidManagementClient::Result management_result) {
   DCHECK(!callback_.is_null());
-  VLOG(2) << "Android management check done " << result << ".";
+  VLOG(2) << "Android management check done " << management_result << ".";
   if (retry_on_error_ &&
-      result == policy::AndroidManagementClient::Result::ERROR) {
+      management_result == policy::AndroidManagementClient::Result::ERROR) {
     ScheduleRetry();
     return;
   }
 
-  std::move(callback_).Run(result);
+  CheckResult check_result = CheckResult::ERROR;
+  switch (management_result) {
+    case policy::AndroidManagementClient::Result::MANAGED:
+      check_result = CheckResult::DISALLOWED;
+      break;
+    case policy::AndroidManagementClient::Result::UNMANAGED:
+      check_result = CheckResult::ALLOWED;
+      break;
+    case policy::AndroidManagementClient::Result::ERROR:
+      check_result = CheckResult::ERROR;
+      break;
+  }
+  std::move(callback_).Run(check_result);
 }
 
 void ArcAndroidManagementChecker::ScheduleRetry() {

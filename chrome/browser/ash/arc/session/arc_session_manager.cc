@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
-#include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -933,7 +932,7 @@ bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
 }
 
 void ArcSessionManager::OnBackgroundAndroidManagementCheckedForTesting(
-    policy::AndroidManagementClient::Result result) {
+    ArcAndroidManagementChecker::CheckResult result) {
   OnBackgroundAndroidManagementChecked(result);
 }
 
@@ -1062,8 +1061,8 @@ bool ArcSessionManager::RequestEnableImpl() {
     // Note: StartBackgroundAndroidManagementCheck() may call
     // OnBackgroundAndroidManagementChecked() synchronously (or
     // asynchronously). In the callback, Google Play Store enabled preference
-    // can be set to false if managed, and it triggers RequestDisable() via
-    // ArcPlayStoreEnabledPreferenceHandler.
+    // can be set to false if Android management is enabled, and it triggers
+    // RequestDisable() via ArcPlayStoreEnabledPreferenceHandler.
     // Thus, StartArc() should be called so that disabling should work even
     // if synchronous call case.
     StartBackgroundAndroidManagementCheck();
@@ -1285,18 +1284,18 @@ void ArcSessionManager::StartAndroidManagementCheck() {
 }
 
 void ArcSessionManager::OnAndroidManagementChecked(
-    policy::AndroidManagementClient::Result result) {
+    ArcAndroidManagementChecker::CheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::CHECKING_ANDROID_MANAGEMENT);
   DCHECK(android_management_checker_);
   android_management_checker_.reset();
 
   switch (result) {
-    case policy::AndroidManagementClient::Result::UNMANAGED:
+    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
       VLOG(1) << "Starting ARC for first sign in.";
       StartArc();
       break;
-    case policy::AndroidManagementClient::Result::MANAGED:
+    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
       ShowArcSupportHostError(
           ArcSupportHost::ErrorInfo(
               ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR),
@@ -1304,7 +1303,7 @@ void ArcSessionManager::OnAndroidManagementChecked(
           false /* should_show_run_network_tests */);
       UpdateOptInCancelUMA(OptInCancelReason::ANDROID_MANAGEMENT_REQUIRED);
       break;
-    case policy::AndroidManagementClient::Result::ERROR:
+    case ArcAndroidManagementChecker::CheckResult::ERROR:
       ShowArcSupportHostError(
           ArcSupportHost::ErrorInfo(
               ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
@@ -1321,8 +1320,8 @@ void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
   DCHECK(!android_management_checker_);
 
   // Skip Android management check for testing.
-  // We also skip if Android management check for Kiosk and Public Session mode,
-  // because there are no managed human users for them exist.
+  // We also skip Android management check for Kiosk and Public Session mode,
+  // because they don't use real google accounts.
   if (IsArcOptInVerificationDisabled() || IsRobotOrOfflineDemoAccountMode() ||
       (!g_ui_enabled &&
        !g_enable_check_android_management_in_tests.value_or(false))) {
@@ -1337,7 +1336,7 @@ void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
 }
 
 void ArcSessionManager::OnBackgroundAndroidManagementChecked(
-    policy::AndroidManagementClient::Result result) {
+    ArcAndroidManagementChecker::CheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (g_enable_check_android_management_in_tests.value_or(true)) {
@@ -1346,10 +1345,10 @@ void ArcSessionManager::OnBackgroundAndroidManagementChecked(
   }
 
   switch (result) {
-    case policy::AndroidManagementClient::Result::UNMANAGED:
+    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
       // Do nothing. ARC should be started already.
       break;
-    case policy::AndroidManagementClient::Result::MANAGED:
+    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
       if (base::FeatureList::IsEnabled(
               arc::kEnableUnmanagedToManagedTransitionFeature)) {
         WaitForPoliciesLoad();
@@ -1357,7 +1356,7 @@ void ArcSessionManager::OnBackgroundAndroidManagementChecked(
         SetArcPlayStoreEnabledForProfile(profile_, false /* enabled */);
       }
       break;
-    case policy::AndroidManagementClient::Result::ERROR:
+    case ArcAndroidManagementChecker::CheckResult::ERROR:
       // This code should not be reached. For background check,
       // retry_on_error should be set.
       NOTREACHED();

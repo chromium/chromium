@@ -15,8 +15,17 @@ class Profile;
 
 namespace arc {
 
+// ArcAndroidManagementChecker checks if Android management is enabled for the
+// user while not being a managed ChromeOS user. ARC is disabled if these
+// conditions are met (b/26848810).
 class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
  public:
+  enum class CheckResult {
+    ALLOWED,     // It's OK to enable ARC for the user.
+    DISALLOWED,  // The user shouldn't use ARC.
+    ERROR,       // There was an error.
+  };
+
   ArcAndroidManagementChecker(Profile* profile, bool retry_on_error);
 
   ArcAndroidManagementChecker(const ArcAndroidManagementChecker&) = delete;
@@ -31,14 +40,13 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   // |result|. This must not be called if there is inflight check.
   // If the instance is destructed while it has inflight check, then the
   // check will be cancelled and |callback| will not be called.
-  using CheckCallback =
-      base::OnceCallback<void(policy::AndroidManagementClient::Result result)>;
+  using CheckCallback = base::OnceCallback<void(CheckResult result)>;
   void StartCheck(CheckCallback callback);
 
  private:
   void StartCheckInternal();
   void OnAndroidManagementChecked(
-      policy::AndroidManagementClient::Result result);
+      policy::AndroidManagementClient::Result management_result);
   void ScheduleRetry();
 
   // Ensures the refresh token is loaded in the |identity_manager|.

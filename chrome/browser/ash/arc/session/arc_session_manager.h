@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
+#include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -41,7 +42,6 @@ constexpr const char kGeneratedBuildPropertyFilePath[] =
 constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
     "/run/arcvm/host_generated/combined.prop";
 
-class ArcAndroidManagementChecker;
 class ArcDataRemover;
 class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
@@ -309,7 +309,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Invokes OnBackgroundAndroidManagementChecked as if the check is done.
   void OnBackgroundAndroidManagementCheckedForTesting(
-      policy::AndroidManagementClient::Result result);
+      ArcAndroidManagementChecker::CheckResult result);
 
   void reset_property_files_expansion_result() {
     property_files_expansion_result_.reset();
@@ -364,7 +364,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Called when the Android management check is done in opt-in flow or
   // OOBE flow.
   void OnAndroidManagementChecked(
-      policy::AndroidManagementClient::Result result);
+      ArcAndroidManagementChecker::CheckResult result);
 
   // Starts Android management check in background (in parallel with starting
   // ARC). This is for secondary or later ARC enabling.
@@ -378,7 +378,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Called when the background Android management check is done. It is
   // triggered when the second or later ARC boot timing.
   void OnBackgroundAndroidManagementChecked(
-      policy::AndroidManagementClient::Result result);
+      ArcAndroidManagementChecker::CheckResult result);
 
   // Requests to start ARC instance. Also, updates the internal state to
   // ACTIVE.

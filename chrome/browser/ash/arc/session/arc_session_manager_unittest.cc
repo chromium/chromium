@@ -2019,7 +2019,7 @@ TEST_P(ArcTransitionToManagedTest, TransitionFlow) {
 
   // Android management check response.
   arc_session_manager()->OnBackgroundAndroidManagementCheckedForTesting(
-      policy::AndroidManagementClient::Result::MANAGED);
+      ArcAndroidManagementChecker::CheckResult::DISALLOWED);
   base::RunLoop().RunUntilIdle();
 
   // Verify ARC state and ARC transition value.
