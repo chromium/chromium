@@ -212,8 +212,9 @@ available, please send an email to lsc-owners-override@chromium.org for help.
 
 Note that Owners-Override by itself is not enough on your own CLs. Where this
 matters is when you are sheriffing. For example, if you want to revert or
-disable a test, your Owners-Override on the CL is not enough. You need
-another committer to LGTM the CL.
+disable a test, your Owners-Override on the CL is not enough. You also need
+either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
++1` from the [rubber-stamper bot](#automated-code_review).
 
 ## Mechanical changes
 
