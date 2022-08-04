@@ -64,11 +64,11 @@ struct SignalData {
 class TestDefaultModelManager : public DefaultModelManager {
  public:
   TestDefaultModelManager()
-      : DefaultModelManager(nullptr, std::vector<SegmentId>()) {}
+      : DefaultModelManager(nullptr, base::flat_set<SegmentId>()) {}
   ~TestDefaultModelManager() override = default;
 
   void GetAllSegmentInfoFromDefaultModel(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -76,7 +76,7 @@ class TestDefaultModelManager : public DefaultModelManager {
   }
 
   void GetAllSegmentInfoFromBothModels(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback) override {
     segment_database->GetSegmentInfoForSegments(

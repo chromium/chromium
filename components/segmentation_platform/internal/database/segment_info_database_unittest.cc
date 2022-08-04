@@ -70,7 +70,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
     segment_db_.reset();
   }
 
-  void VerifyDb(std::vector<SegmentId> expected_ids) {
+  void VerifyDb(base::flat_set<SegmentId> expected_ids) {
     EXPECT_EQ(expected_ids.size(), db_entries_.size());
     for (auto segment_id : expected_ids)
       EXPECT_TRUE(db_entries_.find(ToString(segment_id)) != db_entries_.end());

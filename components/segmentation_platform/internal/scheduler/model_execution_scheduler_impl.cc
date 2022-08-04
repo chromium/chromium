@@ -59,10 +59,8 @@ void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
 
 void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
     bool expired_only) {
-  std::vector<SegmentId> segment_ids(all_segment_ids_.begin(),
-                                     all_segment_ids_.end());
   segment_database_->GetSegmentInfoForSegments(
-      segment_ids,
+      all_segment_ids_,
       base::BindOnce(&ModelExecutionSchedulerImpl::FilterEligibleSegments,
                      weak_ptr_factory_.GetWeakPtr(), expired_only));
 }

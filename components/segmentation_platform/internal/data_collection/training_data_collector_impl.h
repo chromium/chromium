@@ -92,7 +92,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       immediate_collection_histograms_;
 
   // A list of segment IDs that needs to report metrics continuously.
-  std::set<SegmentId> continuous_collection_segments_;
+  base::flat_set<SegmentId> continuous_collection_segments_;
 
   base::WeakPtrFactory<TrainingDataCollectorImpl> weak_ptr_factory_{this};
 };

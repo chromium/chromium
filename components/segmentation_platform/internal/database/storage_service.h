@@ -65,7 +65,7 @@ class StorageService {
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::Clock* clock,
                  UkmDataManager* ukm_data_manager,
-                 base::flat_set<proto::SegmentId> all_segment_ids,
+                 const base::flat_set<proto::SegmentId>& all_segment_ids,
                  ModelProviderFactory* model_provider_factory);
 
   // For tests:
@@ -78,7 +78,7 @@ class StorageService {
           signal_storage_config_db,
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
-      base::flat_set<proto::SegmentId> all_segment_ids,
+      const base::flat_set<proto::SegmentId>& all_segment_ids,
       ModelProviderFactory* model_provider_factory);
 
   // For tests:

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace history {
@@ -35,7 +36,7 @@ class SignalHandler {
 
   void Initialize(StorageService* storage_service,
                   history::HistoryService* history_service,
-                  const std::vector<proto::SegmentId>& segment_ids,
+                  const base::flat_set<proto::SegmentId>& segment_ids,
                   base::RepeatingClosure model_refresh_callback);
 
   void TearDown();

@@ -156,12 +156,11 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   // Report training data for all models that are interested in
   // |histogram_name| as output.
   if (it != immediate_collection_histograms_.end()) {
-    std::vector<SegmentId> segment_ids(it->second.begin(), it->second.end());
     auto param = absl::make_optional<ImmediaCollectionParam>();
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     segment_info_database_->GetSegmentInfoForSegments(
-        segment_ids,
+        it->second,
         base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
                        weak_ptr_factory_.GetWeakPtr(), std::move(param)));
   }
@@ -335,8 +334,7 @@ void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
   base::Time next_collection_time = GetNextReportTime(last_collection_time);
   if (clock_->Now() >= next_collection_time) {
     segment_info_database_->GetSegmentInfoForSegments(
-        std::vector<SegmentId>(continuous_collection_segments_.begin(),
-                               continuous_collection_segments_.end()),
+        continuous_collection_segments_,
         base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
                        weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
   }

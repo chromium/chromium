@@ -33,7 +33,7 @@ void TestSegmentInfoDatabase::GetAllSegmentInfo(
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
-    const std::vector<SegmentId>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {

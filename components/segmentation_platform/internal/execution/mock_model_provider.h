@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,7 +68,7 @@ class TestModelProviderFactory : public ModelProviderFactory {
     std::map<proto::SegmentId, ModelProvider::ModelUpdatedCallback>
         model_providers_callbacks;
 
-    std::vector<SegmentId> segments_supporting_default_model;
+    base::flat_set<SegmentId> segments_supporting_default_model;
   };
 
   // Records requests to `data`. `data` is not owned, and the caller must ensure

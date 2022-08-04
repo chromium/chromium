@@ -57,7 +57,7 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               (override));
   MOCK_METHOD(void,
               GetSegmentInfoForSegments,
-              (const std::vector<SegmentId>& segment_ids,
+              (const base::flat_set<SegmentId>& segment_ids,
                MultipleSegmentInfoCallback callback),
               (override));
   MOCK_METHOD(void,
@@ -100,7 +100,7 @@ class ModelExecutionManagerTest : public testing::Test {
   }
 
   void CreateModelExecutionManager(
-      std::vector<SegmentId> segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),

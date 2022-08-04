@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -51,7 +52,7 @@ class SegmentInfoDatabase {
 
   // Called to get metadata for a given list of segments.
   virtual void GetSegmentInfoForSegments(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
   // Called to get the metadata for a given segment.

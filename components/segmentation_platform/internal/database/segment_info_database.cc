@@ -53,7 +53,7 @@ void SegmentInfoDatabase::OnMultipleSegmentInfoLoaded(
 }
 
 void SegmentInfoDatabase::GetSegmentInfoForSegments(
-    const std::vector<SegmentId>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
   std::vector<std::string> keys;
   for (SegmentId target : segment_ids)

@@ -28,7 +28,7 @@ class SignalFilterProcessor {
                         UserActionSignalHandler* user_action_signal_handler,
                         HistogramSignalHandler* histogram_signal_handler,
                         HistoryServiceObserver* history_observer,
-                        const std::vector<SegmentId>& segment_ids);
+                        const base::flat_set<SegmentId>& segment_ids);
   ~SignalFilterProcessor();
 
   // Disallow copy/assign.
@@ -56,7 +56,7 @@ class SignalFilterProcessor {
   const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   const raw_ptr<HistoryServiceObserver> history_observer_;
-  std::vector<SegmentId> segment_ids_;
+  const base::flat_set<SegmentId> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};
 };

@@ -61,11 +61,11 @@ class MockHistoryObserver : public HistoryServiceObserver {
 class TestDefaultModelManager : public DefaultModelManager {
  public:
   TestDefaultModelManager()
-      : DefaultModelManager(nullptr, std::vector<SegmentId>()) {}
+      : DefaultModelManager(nullptr, base::flat_set<SegmentId>()) {}
   ~TestDefaultModelManager() override = default;
 
   void GetAllSegmentInfoFromDefaultModel(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -73,7 +73,7 @@ class TestDefaultModelManager : public DefaultModelManager {
   }
 
   void GetAllSegmentInfoFromBothModels(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback) override {
     segment_database->GetSegmentInfoForSegments(
@@ -104,7 +104,7 @@ class SignalFilterProcessorTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    std::vector<SegmentId> segment_ids(
+    base::flat_set<SegmentId> segment_ids(
         {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE});
     user_action_signal_handler_ =

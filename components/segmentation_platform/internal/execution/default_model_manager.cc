@@ -14,15 +14,14 @@ DefaultModelManager::SegmentInfoWrapper::~SegmentInfoWrapper() = default;
 
 DefaultModelManager::DefaultModelManager(
     ModelProviderFactory* model_provider_factory,
-    const std::vector<SegmentId>& segment_ids)
+    const base::flat_set<SegmentId>& segment_ids)
     : model_provider_factory_(model_provider_factory) {
   for (SegmentId segment_id : segment_ids) {
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory->CreateDefaultProvider(segment_id);
     if (!provider)
       continue;
-    default_model_providers_.emplace(
-        std::make_pair(segment_id, std::move(provider)));
+    default_model_providers_.emplace(segment_id, std::move(provider));
   }
 }
 
@@ -36,7 +35,7 @@ ModelProvider* DefaultModelManager::GetDefaultProvider(SegmentId segment_id) {
 }
 
 void DefaultModelManager::GetAllSegmentInfoFromDefaultModel(
-    const std::vector<SegmentId>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
   auto result = std::make_unique<SegmentInfoList>();
   std::deque<SegmentId> remaining_segment_ids(segment_ids.begin(),
@@ -93,7 +92,7 @@ void DefaultModelManager::OnFetchDefaultModel(
 }
 
 void DefaultModelManager::GetAllSegmentInfoFromBothModels(
-    const std::vector<SegmentId>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     SegmentInfoDatabase* segment_database,
     MultipleSegmentInfoCallback callback) {
   segment_database->GetSegmentInfoForSegments(
@@ -104,7 +103,7 @@ void DefaultModelManager::GetAllSegmentInfoFromBothModels(
 }
 
 void DefaultModelManager::OnGetAllSegmentInfoFromDatabase(
-    const std::vector<SegmentId>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback,
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
   GetAllSegmentInfoFromDefaultModel(

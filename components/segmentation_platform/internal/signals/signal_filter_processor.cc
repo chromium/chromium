@@ -15,7 +15,6 @@
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/history_service_observer.h"
-#include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -95,7 +94,7 @@ SignalFilterProcessor::SignalFilterProcessor(
     UserActionSignalHandler* user_action_signal_handler,
     HistogramSignalHandler* histogram_signal_handler,
     HistoryServiceObserver* history_observer,
-    const std::vector<SegmentId>& segment_ids)
+    const base::flat_set<SegmentId>& segment_ids)
     : storage_service_(storage_service),
       user_action_signal_handler_(user_action_signal_handler),
       histogram_signal_handler_(histogram_signal_handler),

@@ -87,12 +87,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         model_provider_factory_.get());
   }
 
-  std::vector<SegmentId> segment_id_vec(all_segment_ids_.begin(),
-                                        all_segment_ids_.end());
-
   // Construct signal processors.
   signal_handler_.Initialize(
-      storage_service_.get(), init_params->history_service, segment_id_vec,
+      storage_service_.get(), init_params->history_service, all_segment_ids_,
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));

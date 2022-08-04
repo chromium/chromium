@@ -19,14 +19,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/typed_macros.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
-#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace {
@@ -106,9 +104,8 @@ DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
-  std::vector<SegmentId> segment_ids(segment_ids_.begin(), segment_ids_.end());
   default_model_manager_->GetAllSegmentInfoFromBothModels(
-      segment_ids, segment_info_database_,
+      segment_ids_, segment_info_database_,
       base::BindOnce(&DatabaseMaintenanceImpl::OnSegmentInfoCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }

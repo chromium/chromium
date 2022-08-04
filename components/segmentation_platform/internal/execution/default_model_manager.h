@@ -31,7 +31,7 @@ class SegmentInfoDatabase;
 class DefaultModelManager {
  public:
   DefaultModelManager(ModelProviderFactory* model_provider_factory,
-                      const std::vector<SegmentId>& segment_ids);
+                      const base::flat_set<SegmentId>& segment_ids);
   virtual ~DefaultModelManager();
 
   // Disallow copy/assign.
@@ -60,14 +60,14 @@ class DefaultModelManager {
   // default model for a given set of segment IDs. The result can contain
   // the same segment ID multiple times.
   virtual void GetAllSegmentInfoFromBothModels(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback);
 
   // Called to get the segment info from the default model for a given set of
   // segment IDs.
   virtual void GetAllSegmentInfoFromDefaultModel(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
   // Returns the default provider or `nulllptr` when unavailable.
@@ -90,7 +90,7 @@ class DefaultModelManager {
                            int64_t model_version);
 
   void OnGetAllSegmentInfoFromDatabase(
-      const std::vector<SegmentId>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
 
