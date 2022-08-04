@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-16-init-572-gdde41c6c'
-CLANG_SUB_REVISION = 3
+CLANG_SUB_REVISION = 4
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '16.0.0'
@@ -181,8 +181,11 @@ def GetPlatformUrlPrefix(host_os):
   return CDS_URL + '/' + _HOST_OS_URL_MAP[host_os] + '/'
 
 
-def DownloadAndUnpackPackage(package_file, output_dir, host_os):
-  cds_file = "%s-%s.tar.xz" % (package_file, PACKAGE_VERSION)
+def DownloadAndUnpackPackage(package_file,
+                             output_dir,
+                             host_os,
+                             version=PACKAGE_VERSION):
+  cds_file = "%s-%s.tar.xz" % (package_file, version)
   cds_full_url = GetPlatformUrlPrefix(host_os) + cds_file
   try:
     DownloadAndUnpack(cds_full_url, output_dir)

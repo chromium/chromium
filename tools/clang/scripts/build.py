@@ -28,7 +28,8 @@ import tempfile
 from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
                     FORCE_HEAD_REVISION_FILE, PACKAGE_VERSION, RELEASE_VERSION,
                     STAMP_FILE, THIS_DIR, DownloadUrl, DownloadAndUnpack,
-                    EnsureDirExists, ReadStampFile, RmTree, WriteStampFile)
+                    DownloadAndUnpackPackage, EnsureDirExists, GetDefaultHostOs,
+                    ReadStampFile, RmTree, WriteStampFile)
 
 # Path constants. (All of these should be absolute paths.)
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
@@ -381,22 +382,9 @@ def DownloadRPMalloc():
 
 
 def DownloadPinnedClang():
-  # The update.py in this current revision may have a patched revision while
-  # building new clang packages. Get update.py off HEAD~ to pull the current
-  # pinned clang.
-  if not os.path.exists(PINNED_CLANG_DIR):
-    os.mkdir(os.path.join(PINNED_CLANG_DIR))
-
-  script_path = os.path.join(PINNED_CLANG_DIR, 'update.py')
-
-  with open(script_path, 'w') as f:
-    subprocess.check_call(
-        ['git', 'show', 'HEAD~:tools/clang/scripts/update.py'],
-        stdout=f,
-        cwd=CHROMIUM_DIR)
-  print("Running pinned update.py")
-  subprocess.check_call(
-      [sys.executable, script_path, '--output-dir=' + PINNED_CLANG_DIR])
+  PINNED_CLANG_VERSION = 'llvmorg-16-init-572-gdde41c6c-3'
+  DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
+                           PINNED_CLANG_VERSION)
 
 
 # TODO(crbug.com/929645): Remove once we don't need gcc's libstdc++.
