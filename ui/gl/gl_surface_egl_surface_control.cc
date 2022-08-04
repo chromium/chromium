@@ -521,7 +521,11 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     // with no fence, since its not being released and so shouldn't be in
     // |released_resources| either.
     if (it == released_resources.end()) {
-      DCHECK(!surface_stat.fence.is_valid());
+      // TODO(vasilyt): We used to DCHECK(!surface_stat.fence.is_valid()) here,
+      // but due to flinger behavior it doesn't hold. This seems to be a
+      // potential fligner bug.  DCHECK is useful for catching resource
+      // life-time issues, so we should consider bringing it back when Android
+      // side will be fixed.
       continue;
     }
 
