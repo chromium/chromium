@@ -46,8 +46,7 @@ void WaylandPointer::Enter(void* data,
                            wl_surface* surface,
                            wl_fixed_t surface_x,
                            wl_fixed_t surface_y) {
-  DCHECK(data);
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   pointer->connection_->serial_tracker().UpdateSerial(
       wl::SerialType::kMouseEnter, serial);
 
@@ -64,8 +63,7 @@ void WaylandPointer::Leave(void* data,
                            wl_pointer* obj,
                            uint32_t serial,
                            wl_surface* surface) {
-  DCHECK(data);
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   pointer->connection_->serial_tracker().ResetSerial(
       wl::SerialType::kMouseEnter);
 
@@ -79,7 +77,7 @@ void WaylandPointer::Motion(void* data,
                             uint32_t time,
                             wl_fixed_t surface_x,
                             wl_fixed_t surface_y) {
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   gfx::PointF location(wl_fixed_to_double(surface_x),
                        wl_fixed_to_double(surface_y));
   const WaylandWindow* target = pointer->delegate_->GetPointerTarget();
@@ -95,7 +93,7 @@ void WaylandPointer::Button(void* data,
                             uint32_t time,
                             uint32_t button,
                             uint32_t state) {
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   int changed_button;
   switch (button) {
     case BTN_LEFT:
@@ -135,7 +133,7 @@ void WaylandPointer::Axis(void* data,
                           uint32_t axis,
                           wl_fixed_t value) {
   static const double kAxisValueScale = 10.0;
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   gfx::Vector2dF offset;
   // Wayland compositors send axis events with values in the surface coordinate
   // space. They send a value of 10 per mouse wheel click by convention, so
@@ -163,7 +161,7 @@ void WaylandPointer::Axis(void* data,
 
 // static
 void WaylandPointer::Frame(void* data, wl_pointer* obj) {
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   // The frame event ends the sequence of pointer events.  Clear the flag.  The
   // next frame will set it when necessary.
   pointer->axis_source_received_ = false;
@@ -174,7 +172,7 @@ void WaylandPointer::Frame(void* data, wl_pointer* obj) {
 void WaylandPointer::AxisSource(void* data,
                                 wl_pointer* obj,
                                 uint32_t axis_source) {
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   pointer->axis_source_received_ = true;
   pointer->delegate_->OnPointerAxisSourceEvent(axis_source);
 }
@@ -184,7 +182,7 @@ void WaylandPointer::AxisStop(void* data,
                               wl_pointer* obj,
                               uint32_t time,
                               uint32_t axis) {
-  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  auto* pointer = static_cast<WaylandPointer*>(data);
   pointer->delegate_->OnPointerAxisStopEvent(axis);
 }
 

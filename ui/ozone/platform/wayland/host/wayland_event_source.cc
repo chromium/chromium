@@ -57,8 +57,7 @@ EventTarget* GetRootTarget(EventTarget* target) {
 
 gfx::Point GetOriginInScreen(WaylandWindow* target) {
   gfx::Point origin = target->GetBoundsInDIP().origin();
-  WaylandWindow* parent =
-      static_cast<WaylandWindow*>(target->GetParentTarget());
+  auto* parent = static_cast<WaylandWindow*>(target->GetParentTarget());
   while (parent) {
     origin += parent->GetBoundsInDIP().origin().OffsetFromOrigin();
     parent = static_cast<WaylandWindow*>(parent->GetParentTarget());
@@ -67,7 +66,7 @@ gfx::Point GetOriginInScreen(WaylandWindow* target) {
 }
 
 gfx::Point GetLocationInScreen(LocatedEvent* event) {
-  WaylandWindow* root_window =
+  auto* root_window =
       static_cast<WaylandWindow*>(GetRootTarget(event->target()));
   return event->root_location() +
          root_window->GetBoundsInDIP().origin().OffsetFromOrigin();
@@ -75,7 +74,7 @@ gfx::Point GetLocationInScreen(LocatedEvent* event) {
 
 void SetRootLocation(LocatedEvent* event) {
   gfx::PointF location = event->location_f();
-  WaylandWindow* target = static_cast<WaylandWindow*>(event->target());
+  auto* target = static_cast<WaylandWindow*>(event->target());
 
   while (target->GetParentTarget()) {
     location += target->GetBoundsInDIP().origin().OffsetFromOrigin();
@@ -127,7 +126,7 @@ WaylandEventSource::TouchFrame::~TouchFrame() = default;
 // static
 void WaylandEventSource::ConvertEventToTarget(const EventTarget* new_target,
                                               LocatedEvent* event) {
-  WaylandWindow* current_target = static_cast<WaylandWindow*>(event->target());
+  auto* current_target = static_cast<WaylandWindow*>(event->target());
   gfx::Vector2d diff = GetOriginInScreen(current_target) -
                        GetOriginInScreen(static_cast<WaylandWindow*>(
                            const_cast<EventTarget*>(new_target)));
