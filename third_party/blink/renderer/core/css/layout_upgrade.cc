@@ -37,6 +37,8 @@ NodeLayoutUpgrade::Reasons NodeLayoutUpgrade::GetReasons(const Node& node) {
 }
 
 bool NodeLayoutUpgrade::ShouldUpgrade() {
+  if (!node_.isConnected())
+    return false;
   // We do not allow any elements to remain in a skipped state after a style
   // update, therefore we always upgrade whenever we've skipped something, even
   // if the current ancestors chain does not depend on layout.
