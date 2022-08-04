@@ -50,6 +50,12 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
   virtual void ResumeFromHibernate(const std::string& account_id,
                                    ResumeFromHibernateCallback callback) = 0;
 
+  // Resume from hibernate with an auth session, if possible. Upon a successful
+  // resume from hibernation, this function does not return, as execution
+  // continues in the resumed image.
+  virtual void ResumeFromHibernateAS(const std::string& auth_session_id,
+                                     ResumeFromHibernateCallback callback) = 0;
+
  protected:
   // Initialize/Shutdown should be used instead.
   HibermanClient();

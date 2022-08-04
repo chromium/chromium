@@ -69,6 +69,22 @@ class HibermanClientImpl : public HibermanClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void ResumeFromHibernateAS(const std::string& auth_session_id,
+                             ResumeFromHibernateCallback callback) override {
+    dbus::MethodCall method_call(::hiberman::kHibernateResumeInterface,
+                                 ::hiberman::kResumeFromHibernateASMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendArrayOfBytes(
+        reinterpret_cast<const uint8_t*>(&auth_session_id[0]),
+        auth_session_id.length());
+    // Bind with the weak pointer of |this| so the response is not
+    // handled once |this| is already destroyed.
+    proxy_->CallMethod(
+        &method_call, kHibermanResumeTimeoutMS,
+        base::BindOnce(&HibermanClientImpl::HandleResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   void HandleResponse(VoidDBusMethodCallback callback,
                       dbus::Response* response) {

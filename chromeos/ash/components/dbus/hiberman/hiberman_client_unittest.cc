@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
@@ -81,6 +82,15 @@ class HibermanClientTest : public testing::Test {
       // The Resume method should have an account_id string.
       ASSERT_TRUE(reader.PopString(&account_id));
       // There's no reply data for this method.
+    } else if (method_call->GetMember() ==
+               ::hiberman::kResumeFromHibernateASMethod) {
+      dbus::MessageReader reader(method_call);
+      const uint8_t* bytes = nullptr;
+      size_t length = 0;
+      // The ResumeFromHibernateAS method should have an auth_session_id byte
+      // array.
+      EXPECT_TRUE(reader.PopArrayOfBytes(&bytes, &length));
+      EXPECT_NE(length, static_cast<size_t>(0));
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -95,17 +105,21 @@ class HibermanClientTest : public testing::Test {
 };
 
 TEST_F(HibermanClientTest, ResumeFromHibernate) {
-  bool callback_called = false;
-  auto callback = base::BindOnce(
-      [](bool* callback_was_called,
-         bool method_call_success) {
-        *callback_was_called = true;
-      },
-      &callback_called);
-
-  client_->ResumeFromHibernate("test@google.com", std::move(callback));
+  base::test::TestFuture<bool> future;
+  client_->ResumeFromHibernate("test@google.com", future.GetCallback());
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(callback_called);
+  // Assert that the callback was called and that the method_call_success
+  // parameter returned true.
+  ASSERT_TRUE(future.Get<0>());
+}
+
+TEST_F(HibermanClientTest, ResumeFromHibernateAS) {
+  base::test::TestFuture<bool> future;
+  client_->ResumeFromHibernateAS("fake_auth_session_id", future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  // Assert that the callback was called and that the method_call_success
+  // parameter returned true.
+  ASSERT_TRUE(future.Get<0>());
 }
 
 }  // namespace ash

@@ -40,6 +40,13 @@ void FakeHibermanClient::ResumeFromHibernate(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+void FakeHibermanClient::ResumeFromHibernateAS(
+    const std::string& auth_session_id,
+    ResumeFromHibernateCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 void FakeHibermanClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   // Don't call us, we'll call you ;)
