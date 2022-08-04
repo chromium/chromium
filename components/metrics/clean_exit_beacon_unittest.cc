@@ -39,12 +39,8 @@ class TestCleanExitBeacon : public CleanExitBeacon {
  public:
   explicit TestCleanExitBeacon(
       PrefService* local_state,
-      const base::FilePath& user_data_dir = base::FilePath(),
-      version_info::Channel channel = version_info::Channel::UNKNOWN)
-      : CleanExitBeacon(kDummyWindowsRegistryKey,
-                        user_data_dir,
-                        local_state,
-                        channel) {
+      const base::FilePath& user_data_dir = base::FilePath())
+      : CleanExitBeacon(kDummyWindowsRegistryKey, user_data_dir, local_state) {
     Initialize();
   }
 

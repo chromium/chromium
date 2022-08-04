@@ -493,10 +493,6 @@ source_set("unit_tests") {
     "//components/sync/driver:test_support",
     "//components/variations",
     "//components/variations:test_support",
-
-    # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
-    # Mode experiment is over.
-    "//components/version_info",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//net:test_support",

@@ -211,14 +211,12 @@ const base::FilePath::CharType kCleanExitBeaconFilename[] =
 
 CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
                                  const base::FilePath& user_data_dir,
-                                 PrefService* local_state,
-                                 version_info::Channel channel)
+                                 PrefService* local_state)
     : backup_registry_key_(backup_registry_key),
       user_data_dir_(user_data_dir),
       local_state_(local_state),
       initial_browser_last_live_timestamp_(
-          local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
-      channel_(channel) {
+          local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
 }

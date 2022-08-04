@@ -26,7 +26,6 @@
 #include "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #include "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -89,7 +88,7 @@ IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), std::wstring(),
-        user_data_dir, metrics::StartupVisibility::kUnknown, GetChannel());
+        user_data_dir, metrics::StartupVisibility::kUnknown);
   }
   return metrics_state_manager_.get();
 }

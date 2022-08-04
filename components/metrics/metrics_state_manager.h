@@ -18,7 +18,6 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/entropy_state.h"
-#include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
@@ -196,17 +195,12 @@ class MetricsStateManager final {
   //
   // |startup_visibility| denotes whether this session is expected to come to
   // the foreground.
-  //
-  // TODO(crbug/1241702): Remove |channel| at the end of the Extended Variations
-  // Safe Mode experiment. |channel| is used to enable the experiment on only
-  // certain channels.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
       StartupVisibility startup_visibility = StartupVisibility::kUnknown,
-      version_info::Channel channel = version_info::Channel::UNKNOWN,
       StoreClientInfoCallback store_client_info = StoreClientInfoCallback(),
       LoadClientInfoCallback load_client_info = LoadClientInfoCallback(),
       base::StringPiece external_client_id = base::StringPiece());
@@ -277,7 +271,6 @@ class MetricsStateManager final {
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
                       StartupVisibility startup_visibility,
-                      version_info::Channel channel,
                       StoreClientInfoCallback store_client_info,
                       LoadClientInfoCallback load_client_info,
                       base::StringPiece external_client_id);

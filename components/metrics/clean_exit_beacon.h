@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
@@ -71,14 +70,9 @@ class CleanExitBeacon {
   //
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // the beacon file is not used.
-  //
-  // TODO(crbug/1241702): Remove |channel| at the end of the Extended Variations
-  // Safe Mode experiment. |channel| is used to enable the experiment on only
-  // certain channels.
   CleanExitBeacon(const std::wstring& backup_registry_key,
                   const base::FilePath& user_data_dir,
-                  PrefService* local_state,
-                  version_info::Channel channel);
+                  PrefService* local_state);
 
   virtual ~CleanExitBeacon() = default;
 
@@ -215,11 +209,6 @@ class CleanExitBeacon {
   // of construction. It is a timestamp from the previous browser session when
   // the browser was known to be alive.
   const base::Time initial_browser_last_live_timestamp_;
-
-  // The client's channel, e.g. Canary. Used to help determine whether the
-  // client should participate in the Extended Variations Safe Mode experiment.
-  // TODO(crbug/1241702): Remove at the end of the experiment.
-  [[maybe_unused]] const version_info::Channel channel_;
 
   bool did_previous_session_exit_cleanly_ = false;
 
