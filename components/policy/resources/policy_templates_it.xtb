@@ -3119,6 +3119,16 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno trasferire i file su Drive tramite la connessione a una rete cellulare.</translation>
 <translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4259636715493757956">Ti consente di specificare le configurazioni per gli URL di autenticazione in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Questi URL di autenticazione vengono trattati in modo speciale da <ph name="WEBVIEW_PRODUCT_NAME" /> in modo che, quando durante l'autenticazione una pagina web in <ph name="WEBVIEW_PRODUCT_NAME" /> indirizza agli URL di autenticazione, venga avviata l'app di autenticazione dei provider di identità corrispondente che può gestire l'URL di autenticazione in questione.
+
+      Questo flusso di avvio dell'app di autenticazione dei provider di identità viene utilizzato dai provider di identità per consentire casi d'uso come fornire SSO nelle app oppure per garantire maggiore sicurezza raccogliendo indicatori dei dispositivi Zero Trust per comprendere il comportamento dei dispositivi durante l'autenticazione.
+
+      Se sul dispositivo non è installata alcuna app valida per la gestione dell'URL di autenticazione, la navigazione continua in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Il pattern dell'URL di autenticazione deve essere nel formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format.
+      </translation>
 <translation id="4260027436474745627">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita in un processo dedicato. Il processo di ogni origine denominata potrà contenere solo documenti provenienti da tale origine e i relativi sottodomini. Ad esempio, specificare https://a1.example.com/ consente https://a2.a1.example.com/ nello stesso processo, ma non https://example.com o https://b.example.com.
 
       A partire da <ph name="PRODUCT_NAME" /> 77, puoi specificare anche un intervallo di origini da isolare utilizzando un carattere jolly. Ad esempio, specificare https://[*.]corp.example.com consentirà a ogni origine al di sotto di https://corp.example.com il proprio processo dedicato, inclusi https://corp.example.com stesso, https://a1.corp.example.com e https://a2.a1.corp.example.com.
@@ -4078,11 +4088,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se per questa norma viene impostato un elenco di identificatori di metodi di immissione, i metodi specificati saranno disponibili nella schermata di accesso. Verrà preselezionato il primo metodo di immissione specificato. Anche se il pod dell'utente è basato sulla schermata di accesso, oltre ai metodi di immissione specificati in questa norma sarà disponibile anche l'ultimo metodo usato dall'utente. Se questa norma non viene impostata, i metodi di immissione per la schermata di accesso saranno recuperati in base alla lingua in cui è visualizzata la schermata di accesso. I valori che non corrispondono a identificatori di metodi di immissione validi verranno ignorati.</translation>
 <translation id="5407008856008996384">Consenti l'accesso alle stampanti CUPS</translation>
 <translation id="5413051574966911176">Disattiva l'UI relativa alla connessione sul computer desktop host remoto quando è attiva una connessione</translation>
-<translation id="5417597818300833094">L'impostazione del criterio consente agli utenti di scegliere uno dei metodi di immissione per le sessioni <ph name="PRODUCT_OS_NAME" /> specificate.
-
-       Se il criterio non viene configurato o se è impostato su un elenco vuoto, gli utenti possono selezionare tutti i metodi di immissione supportati.
-
-      Nota: se il metodo di immissione corrente non è supportato, il criterio passa automaticamente al layout della tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="5417906792459853336">Consente di segnalare informazioni sull'inventario delle applicazioni di un dispositivo e sul relativo utilizzo.
 
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.

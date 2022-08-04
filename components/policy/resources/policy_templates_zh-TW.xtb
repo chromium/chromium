@@ -3074,6 +3074,16 @@
       如果將這項政策設為停用或不設定，使用者可在使用行動網路連線時，將檔案傳輸至雲端硬碟。</translation>
 <translation id="4248277954659222481">允許符合網址模式許可清單的網頁自動播放媒體</translation>
 <translation id="4250680216510889253">否</translation>
+<translation id="4259636715493757956">這項政策允許你在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中指定驗證網址的設定。
+
+      <ph name="WEBVIEW_PRODUCT_NAME" /> 會將這些驗證網址視為特殊網址，因此系統將 <ph name="WEBVIEW_PRODUCT_NAME" /> 的網頁重新導向到驗證網址時，就會在驗證期間啟動可處理這個驗證網址的對應識別資訊提供者驗證器應用程式。
+
+      有了這項識別資訊提供者驗證器應用程式啟動流程，識別資訊提供者得以提供許多服務，例如在應用程式間提供單一登入 (SSO) 服務，或者透過收集零信任裝置信號的方式瞭解裝置在驗證時的狀態，以提供更完善的安全防護。
+
+      如果裝置未安裝可處理驗證網址的有效應用程式，系統就會在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中繼續進行導向。
+
+      驗證網址模式的格式必須符合 https://www.chromium.org/administrators/url-blocklist-filter-format 的規定。
+      </translation>
 <translation id="4260027436474745627">如果設定這項政策，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。
 
       自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
@@ -4025,11 +4035,6 @@
       如果將這項政策設為輸入法 ID 清單，登入畫面即可顯示指定的輸入法。系統會預先選取第一個指定的輸入法。在特定使用者視窗的登入畫面中，除了這項政策指定的輸入法之外，還會提供使用者最後一次使用的輸入法。如果未設定這項政策，系統會根據登入畫面顯示的語言代碼提供登入畫面的輸入法。如果值不是有效的輸入法 ID，則會遭到忽略。</translation>
 <translation id="5407008856008996384">允許存取 CUPS 印表機</translation>
 <translation id="5413051574966911176">連線時，在遠端主機桌面停用連線相關 UI</translation>
-<translation id="5417597818300833094">透過這項政策，你可以讓使用者為 <ph name="PRODUCT_OS_NAME" /> 工作階段選擇你指定的其中一種輸入法。
-
-       如果不設定這項政策或將清單設為空白，使用者可以選取任何支援的輸入法。
-
-      注意：若系統不支援目前的輸入法，就會將輸入法切換至硬體鍵盤配置 (如果情況允許)，或是這份清單中的第一個有效項目。系統會忽略無效或不支援的輸入法。</translation>
 <translation id="5417906792459853336">回報裝置的應用程式清單和使用狀況資訊。
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。

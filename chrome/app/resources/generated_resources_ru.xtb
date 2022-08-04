@@ -6179,6 +6179,10 @@
 <translation id="6943939122536910181">Отключено устройство "<ph name="DEVICE" />"</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="694592694773692225">Попытка переадресации на этой странице заблокирована</translation>
+<translation id="6947015141909171112">Эти рецепты показаны с учетом вашей истории поиска.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6949434160682548041">Пароль (необязательно)</translation>
 <translation id="6950627417367801484">Восстановить приложения</translation>
 <translation id="6952242901357037157">Вы можете добавить в этот список пароли из вашего <ph name="BEGIN_LINK" />аккаунта Google<ph name="END_LINK" /></translation>

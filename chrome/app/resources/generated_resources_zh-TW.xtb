@@ -6168,6 +6168,10 @@
 <translation id="6943939122536910181">已中斷與「<ph name="DEVICE" />」的連線</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在這個網頁禁止重新導向。</translation>
+<translation id="6947015141909171112">系統會根據你最近搜尋的食譜，向你顯示食譜。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="6949434160682548041">密碼 (選填)</translation>
 <translation id="6950627417367801484">還原應用程式</translation>
 <translation id="6952242901357037157">你也可以在這裡顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>

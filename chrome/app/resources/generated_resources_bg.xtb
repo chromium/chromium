@@ -6186,6 +6186,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6943939122536910181">Връзката с(ъс) <ph name="DEVICE" /> е прекратена</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="694592694773692225">На тази страница бе блокирано пренасочване.</translation>
+<translation id="6947015141909171112">Показват се рецепти въз основа на скорошната ви активност при търсене на такива.
+        <ph name="BREAK" />
+<ph name="BREAK" />
+Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="6949434160682548041">Парола (по избор)</translation>
 <translation id="6950627417367801484">Възстановяване на приложенията</translation>
 <translation id="6952242901357037157">Тук могат също да се показват паролите от <ph name="BEGIN_LINK" />профила ви в Google<ph name="END_LINK" /></translation>

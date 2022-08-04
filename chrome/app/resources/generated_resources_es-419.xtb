@@ -6169,6 +6169,10 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se bloqueó el redireccionamiento en esta página.</translation>
+<translation id="6947015141909171112">Estás viendo recetas según tu actividad de búsqueda reciente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950627417367801484">Restablecer apps</translation>
 <translation id="6952242901357037157">También puedes mostrar las contraseñas de tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> aquí</translation>

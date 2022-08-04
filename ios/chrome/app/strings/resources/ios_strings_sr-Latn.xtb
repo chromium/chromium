@@ -777,7 +777,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7400418766976504921">URL adresa</translation>
 <translation id="7409985198648820906">Nepročitanih članaka: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Nastavi</translation>
-<translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
 <translation id="7425346204213733349">Promene obeleživača, istorije, lozinki i drugih podešavanja se više neće sinhronizovati sa Google nalogom. Međutim, postojeći podaci će ostati sačuvani na Google nalogu.</translation>
 <translation id="7431991332293347422">Kontrolišite kako se istorija pregledanja koristi za personalizovanje Pretrage i drugih usluga</translation>
 <translation id="7435356471928173109">Isključio je administrator</translation>
@@ -847,6 +846,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="7987685713885608670">Radi dodatne zaštite šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>
 <translation id="7993619969781047893">Funkcije na nekim sajtovima mogu da prestanu sa radom</translation>
 <translation id="800361585186029508">Otvara unete URL-ove u Google Chrome-u.</translation>
+<translation id="8016714545083187120">Uvek koristi bezbedne veze</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8023878949384262191">Proširuje odeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>

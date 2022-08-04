@@ -777,7 +777,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>
 <translation id="7412027924265291969">Continuer</translation>
-<translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
@@ -847,6 +846,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL entrées dans Google Chrome.</translation>
+<translation id="8016714545083187120">Toujours utiliser des connexions sécurisées</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>

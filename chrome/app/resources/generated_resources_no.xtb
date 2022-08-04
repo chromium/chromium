@@ -6178,6 +6178,10 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6943939122536910181">Koblet fra <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="694592694773692225">Viderekobling er blokkert på denne siden.</translation>
+<translation id="6947015141909171112">Du ser oppskrifter basert på nylig søkeaktivitet knyttet til oppskrifter.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="6949434160682548041">Passord (valgfritt)</translation>
 <translation id="6950627417367801484">Gjenopprett apper</translation>
 <translation id="6952242901357037157">Du kan også vise passord fra <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din her</translation>

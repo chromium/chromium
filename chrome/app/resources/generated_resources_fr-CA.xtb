@@ -6176,6 +6176,10 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6943939122536910181">Déconnecté de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="694592694773692225">Redirection bloquée sur cette page.</translation>
+<translation id="6947015141909171112">Des recettes sont affichées en fonction de votre activité de recherche récente sur ce sujet.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'options dans Personnaliser Chrome.</translation>
 <translation id="6949434160682548041">Mot de passe (facultatif)</translation>
 <translation id="6950627417367801484">Restaurer les applications</translation>
 <translation id="6952242901357037157">Vous pouvez aussi afficher les mots de passe de votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> ici</translation>

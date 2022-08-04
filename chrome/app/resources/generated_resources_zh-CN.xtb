@@ -6157,6 +6157,10 @@
 <translation id="6943939122536910181">已断开与“<ph name="DEVICE" />”的连接</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="694592694773692225">已在此网页上阻止重定向。</translation>
+<translation id="6947015141909171112">系统会根据您近期在 Google 搜索中进行过的食谱搜索活动向您显示食谱。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可从卡片菜单中管理设置，或者在“自定义 Chrome”部分中查看更多选项。</translation>
 <translation id="6949434160682548041">密码（选填）</translation>
 <translation id="6950627417367801484">还原应用</translation>
 <translation id="6952242901357037157">您还可在此处显示您 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中存储的密码</translation>

@@ -777,7 +777,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos não lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
-<translation id="7419565702166471774">Usar sempre ligações seguras</translation>
 <translation id="7425346204213733349">As alterações aos marcadores, ao histórico, às palavras-passe e a outras definições deixam de ser sincronizadas com a Conta Google. Contudo, os dados existentes permanecem armazenados na Conta Google.</translation>
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
@@ -847,6 +846,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="7987685713885608670">Para maior segurança, encripte as palavras-passe no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="7993619969781047893">As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="800361585186029508">Abre os URLs introduzidos no Google Chrome.</translation>
+<translation id="8016714545083187120">Usar sempre ligações seguras</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8023878949384262191">Expande a secção.</translation>
 <translation id="8027581147000338959">Abrir numa Nova Janela</translation>

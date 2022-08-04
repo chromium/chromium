@@ -3078,6 +3078,16 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden overzetten naar Drive via een mobiele verbinding.</translation>
 <translation id="4248277954659222481">Automatisch afspelen van media toestaan op een toelatingslijst met URL-patronen</translation>
 <translation id="4250680216510889253">Nee</translation>
+<translation id="4259636715493757956">Hiermee kun je instellingen voor verificatie-URL's opgeven in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Deze verificatie-URL's worden speciaal behandeld door <ph name="WEBVIEW_PRODUCT_NAME" />. Als je tijdens de verificatie een webpagina in <ph name="WEBVIEW_PRODUCT_NAME" /> bezoekt via verificatie-URL's, wordt bijvoorbeeld de authenticator-app van de overeenkomende identiteitsprovider gelanceerd die deze verificatie-URL kan verwerken.
+
+      Het proces voor de lancering van de authenticator-app van de identiteitsprovider wordt door identiteitsproviders gebruikt om toepassingen mogelijk te maken zoals SSO in apps bieden of betere beveiliging leveren door signalen van veilige apparaten te verzamelen voor meer inzicht in de toestand van het apparaat tijdens verificatie.
+
+      Als er geen geldige app voor de verwerking van verificatie-URL's is geïnstalleerd op het apparaat, gaat de navigatie verder in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Het patroon voor verificatie-URL's moet worden opgemaakt volgens https://www.chromium.org/administrators/url-blocklist-filter-format.
+      </translation>
 <translation id="4260027436474745627">Als je dit beleid toepast, wordt elk van de benoemde herkomsten in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Elk proces van een benoemde herkomst mag alleen documenten bevatten van de betreffende herkomst en de subdomeinen daarvan. Als je bijvoorbeeld https://a1.example.com/ opgeeft, valt https://a2.a1.example.com/ onder hetzelfde proces, maar https://example.com of https://b.example.com niet.
 
 Sinds <ph name="PRODUCT_NAME" /> 77 kun je met een jokerteken een herkomstbereik opgeven om te isoleren. Als je bijvoorbeeld https://[*.]corp.example.com opgeeft, wordt elke herkomst onder https://corp.example.com uitgevoerd in een eigen proces, waaronder https://corp.example.com zelf, https://a1.corp.example.com en https://a2.a1.corp.example.com.
@@ -4029,11 +4039,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als dit beleid is ingesteld op een lijst met invoermethode-ID's, zijn de opgegeven invoermethoden beschikbaar in het inlogscherm. De eerste opgegeven invoermethode wordt vooraf geselecteerd. Hoewel een gebruikerspod is gericht op het inlogscherm, is de laatst gebruikte invoermethode van de gebruiker beschikbaar naast de invoermethoden die door dit beleid worden aangegeven. Als dit beleid niet is ingesteld, worden de invoermethoden op het inlogscherm afgeleid van de taal waarin het inlogscherm zichtbaar is. Waarden die geen geldige invoermethode-ID's zijn, worden genegeerd.</translation>
 <translation id="5407008856008996384">Toegang tot CUPS-printers toestaan</translation>
 <translation id="5413051574966911176">Verbindingsgerelateerde UI uitzetten op de externe hostdesktop bij een actieve verbinding</translation>
-<translation id="5417597818300833094">Als je het beleid instelt, kunnen gebruikers een van de invoermethoden voor <ph name="PRODUCT_OS_NAME" />-sessies kiezen die je opgeeft.
-
-       Als je het beleid niet instelt of instelt op een lege lijst, kunnen gebruikers alle ondersteunde invoermethoden selecteren.
-
-      Opmerking: Als de huidige invoermethode niet wordt ondersteund, wordt de invoermethode overgeschakeld naar het hardwaretoetsenbord (indien toegestaan) of het eerste geldige item in deze lijst. Ongeldige of niet-ondersteunde methoden worden genegeerd.</translation>
 <translation id="5417906792459853336">Gegevens rapporteren over de app-voorraad en het gebruik van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.

@@ -1235,7 +1235,7 @@
 <translation id="214169863967063661">ప్రదర్శన సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2142328300403846845">లింక్‌ను దీని తరపున తెరువు</translation>
 <translation id="2142582065325732898">ఇటీవలి Chrome ట్యాబ్‌లను చూడటానికి, <ph name="LINK1_BEGIN" />Chrome సింక్<ph name="LINK1_END" />ను ఆన్ చేయండి. <ph name="LINK2_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK2_END" /></translation>
-<translation id="2143765403545170146">ఫుల్-స్క్రీన్‌లో ఎల్లప్పుడూ సాధన పట్టీని చూపు</translation>
+<translation id="2143765403545170146">ఫుల్-స్క్రీన్‌లో ఎల్లప్పుడూ సాధన బార్‌ను చూపు</translation>
 <translation id="2143778271340628265">మాన్యువల్ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
 <translation id="2144536955299248197">సర్టిఫికెట్ వ్యూవర్: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android యాప్ డెవలప్‌మెంట్</translation>
@@ -4097,7 +4097,7 @@
 <translation id="4878653975845355462">మీ నిర్వాహకుడి ద్వారా అనుకూల బ్యాక్‌గ్రౌండ్‌లు ఆపివేయబడ్డాయి</translation>
 <translation id="4878718769565915065">ఈ సెక్యూరిటీ కీకి వేలిముద్రను జోడంచడం విఫలమైంది</translation>
 <translation id="4879491255372875719">ఆటోమేటిక్ (డిఫాల్ట్)</translation>
-<translation id="4880827082731008257">శోధన చరిత్ర</translation>
+<translation id="4880827082731008257">హిస్టరీలో సెర్చ్ చేయండి</translation>
 <translation id="4881685975363383806">నాకు మళ్లీ గుర్తు చేయవద్దు</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="488211015466188466">సైట్‌ను ఫాలో చేయండి</translation>
@@ -5901,7 +5901,7 @@
 <translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="6675665718701918026">కర్సర్‌ను నియంత్రించే పరికరం కనెక్ట్ చేయబడింది</translation>
 <translation id="6676212663108450937">మీ వాయిస్‌ను గుర్తించేలా శిక్షణ ఇచ్చే సమయంలో హెడ్‌ఫోన్స్ ఉపయోగించండి</translation>
-<translation id="6678717876183468697">ప్రశ్న URL</translation>
+<translation id="6678717876183468697">క్వెరీ URL</translation>
 <translation id="6680442031740878064">అందుబాటులో ఉంది: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">రేట్</translation>
 <translation id="6681668084120808868">ఫోటోను తీయి</translation>

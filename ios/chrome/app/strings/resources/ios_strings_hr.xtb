@@ -777,7 +777,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906">Nepročitanih članaka: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Nastavi</translation>
-<translation id="7419565702166471774">Uvijek upotrebljavaj sigurne veze</translation>
 <translation id="7425346204213733349">Promjene oznaka, povijesti, zaporki i drugih postavki više se neće sinkronizirati s vašim Google računom. No vaši postojeći podaci ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="7431991332293347422">Odredite na koji će se način vaša povijest pregledavanja upotrebljavati za prilagodbu Pretraživanja i drugih značajki</translation>
 <translation id="7435356471928173109">Isključio vaš administrator</translation>
@@ -847,6 +846,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="7987685713885608670">Radi dodatne sigurnosti šifrirajte zaporke na uređaju prije spremanja na Google upravitelj zaporki.</translation>
 <translation id="7993619969781047893">Značajke na nekim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="800361585186029508">Otvara URL-ove unesene u Google Chrome.</translation>
+<translation id="8016714545083187120">Uvijek upotrebljavaj sigurne veze</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8023878949384262191">Proširuje odjeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>

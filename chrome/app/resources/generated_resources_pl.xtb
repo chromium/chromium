@@ -6161,6 +6161,8 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6943939122536910181">Rozłączono z: <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="694592694773692225">Przekierowanie zostało zablokowane na tej stronie.</translation>
+<translation id="6947015141909171112">Widzisz przepisy wybrane na podstawie Twojej ostatniej aktywności związanej z ich wyszukiwaniem.
+        <ph name="BREAK" /><ph name="BREAK" />Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="6949434160682548041">Hasło (opcjonalnie)</translation>
 <translation id="6950627417367801484">Przywróć aplikacje</translation>
 <translation id="6952242901357037157">Możesz tu też wyświetlać hasła zapisane na <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>

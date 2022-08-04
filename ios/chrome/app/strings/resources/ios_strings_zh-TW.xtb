@@ -777,7 +777,6 @@
 <translation id="7400418766976504921">網址</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 篇未讀文章。</translation>
 <translation id="7412027924265291969">繼續</translation>
-<translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7425346204213733349">你更改過的書籤、歷史記錄、密碼和其他設定不會繼續與 Google 帳戶中的資料保持同步，但是 Google 帳戶現有的資料仍會保留。</translation>
 <translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
@@ -847,6 +846,7 @@
 <translation id="7987685713885608670">為進一步加強安全性，系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟輸入的網址。</translation>
+<translation id="8016714545083187120">一律使用安全連線</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023878949384262191">展開這個專區。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>

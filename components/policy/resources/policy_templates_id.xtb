@@ -3142,6 +3142,18 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentransfer file ke Drive melalui koneksi seluler.</translation>
 <translation id="4248277954659222481">Izinkan pemutaran otomatis media pada pola URL yang diizinkan</translation>
 <translation id="4250680216510889253">Tidak</translation>
+<translation id="4259636715493757956">Mengizinkan Anda menentukan konfigurasi untuk URL autentikasi di <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      URL Autentikasi ini akan diperlakukan khusus oleh <ph name="WEBVIEW_PRODUCT_NAME" />. Dengan begitu, saat halaman web dalam <ph name="WEBVIEW_PRODUCT_NAME" />
+      membuka URL autentikasi, aplikasi pengautentikasi Penyedia Identitas terkait yang dapat menangani URL autentikasi ini akan diluncurkan selama autentikasi berlangsung.
+
+      Alur peluncuran aplikasi pengautentikasi Penyedia Identitas ini akan digunakan oleh Penyedia Identitas untuk mengaktifkan
+      kasus penggunaan, seperti menyediakan SSO di seluruh aplikasi atau memberikan keamanan yang lebih baik dengan mengumpulkan sinyal perangkat zero-trust untuk memahami postur perangkat selama autentikasi.
+
+      Jika tidak ada aplikasi valid yang diinstal untuk menangani URL autentikasi di perangkat, navigasi akan dilanjutkan di <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Pola URL autentikasi harus diformat sesuai dengan https://www.chromium.org/administrators/url-blocklist-filter-format.
+      </translation>
 <translation id="4260027436474745627">Jika kebijakan ini disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com.
 
       Sejak <ph name="PRODUCT_NAME" /> 77, Anda juga dapat menentukan rentang asal yang akan diisolasi menggunakan karakter pengganti. Misalnya, menentukan https://[*.]corp.example.com akan memberi setiap asal di bawah https://corp.example.com proses khususnya sendiri, termasuk https://corp.example.com itu sendiri, https://a1.corp.example.com, dan https://a2.a1.corp.example.com.
@@ -4099,11 +4111,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini disetel ke daftar pengenal metode masukan, metode masukan yang diberikan akan tersedia di layar login. Metode masukan yang diberikan pertama telah dipilih sebelumnya. Sementara pod pengguna difokuskan pada layar login, metode masukan yang terakhir kali digunakan oleh pengguna akan tersedia, selain dari metode masukan yang diberikan oleh kebijakan ini. Jika kebijakan ini tidak disetel, metode masukan pada layar login akan diambil dari lokal yang menampilkan layar login. Pengenal metode masukan akan mengabaikan nilai yang tidak valid.</translation>
 <translation id="5407008856008996384">Mengizinkan akses ke printer CUPS</translation>
 <translation id="5413051574966911176">Nonaktifkan UI terkait koneksi pada desktop host jarak jauh saat koneksi aktif</translation>
-<translation id="5417597818300833094">Jika kebijakan disetel, pengguna akan dapat memilih salah satu metode input untuk sesi <ph name="PRODUCT_OS_NAME" /> yang Anda tentukan.
-
-       Jika kebijakan tidak disetel atau disetel ke daftar kosong, pengguna akan dapat memilih semua metode input yang didukung.
-
-      Catatan: Jika metode input saat ini tidak didukung, metode akan beralih ke tata letak keyboard hardware (jika diizinkan) atau entri pertama yang valid dalam daftar ini. Metode yang tidak valid atau tidak didukung akan diabaikan.</translation>
 <translation id="5417906792459853336">Melaporkan informasi untuk inventaris dan penggunaan aplikasi perangkat.
 
       Jika kebijakan ditetapkan ke salah, atau tidak ditetapkan, informasi tidak akan dilaporkan.

@@ -6170,6 +6170,10 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6943939122536910181"><ph name="DEVICE" /> adlı cihazın bağlantısı kesildi</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="694592694773692225">Yönlendirme bu sayfada engellendi.</translation>
+<translation id="6947015141909171112">Yemek tarifleriyle ilgili en son arama etkinliğinize göre belirlenen yemek tariflerini görüyorsunuz.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="6949434160682548041">Şifre (isteğe bağlı)</translation>
 <translation id="6950627417367801484">Uygulamaları geri yükle</translation>
 <translation id="6952242901357037157"><ph name="BEGIN_LINK" />Google Hesabınızdaki<ph name="END_LINK" /> şifreleri burada da gösterebilirsiniz</translation>

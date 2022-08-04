@@ -6186,6 +6186,10 @@
 <translation id="6943939122536910181">ຕັດການເຊື່ອມຕໍ່ຈາກ <ph name="DEVICE" /> ແລ້ວ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="694592694773692225">ບລັອກການປ່ຽນເສັ້ນທາງໃນໜ້ານີ້ແລ້ວ.</translation>
+<translation id="6947015141909171112">ທ່ານກຳລັງເບິ່ງສູດໂດຍອ້າງອີງຈາກການເຄື່ອນໄຫວການຊອກຫາຫຼ້າສຸດຂອງທ່ານສຳລັບສູດ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ທ່ານສາມາດຈັດການການຕັ້ງຄ່າໄດ້ຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນ Chrome ທີ່ມີການປັບແຕ່ງ.</translation>
 <translation id="6949434160682548041">ລະຫັດຜ່ານ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6950627417367801484">ກູ້ຄືນແອັບ</translation>
 <translation id="6952242901357037157">ນອກນັ້ນທ່ານຍັງສາມາດສະແດງລະຫັດຜ່ານຈາກ <ph name="BEGIN_LINK" />ບັນຊີ Google<ph name="END_LINK" /> ຂອງທ່ານຢູ່ບ່ອນນີ້ໄດ້ນຳ</translation>

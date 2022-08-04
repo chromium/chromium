@@ -777,7 +777,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> unread articles.</translation>
 <translation id="7412027924265291969">Continue</translation>
-<translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
@@ -847,6 +846,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
+<translation id="8016714545083187120">Always use secure connections</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023878949384262191">Expands the section.</translation>
 <translation id="8027581147000338959">Open in new window</translation>

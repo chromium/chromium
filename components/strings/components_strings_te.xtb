@@ -743,7 +743,7 @@
 <translation id="2951588413176968965">నా మెయిల్‌బాక్స్</translation>
 <translation id="2952820037279740115">అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
 <translation id="295526156371527179">హెచ్చరిక: ఈ విధానం ఒక నిఘంటువు కానందున, విధానంలో పేర్కొన్నట్లు నిఘంటువు లాగా విలీనం చేయబడలేదు.</translation>
-<translation id="2955913368246107853">కనుగొను పట్టీని మూసివేయి</translation>
+<translation id="2955913368246107853">కనుగొను బార్‌ను మూసివేయి</translation>
 <translation id="2958544468932521864">క్రికెట్</translation>
 <translation id="2959113999220720579">ముఖం &amp; శరీర సంరక్షణ</translation>
 <translation id="2968103128155246731">వ్యాన్‌లు &amp; మినీ వ్యాన్‌లు</translation>
@@ -1436,7 +1436,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> శోధన</translation>
 <translation id="4879491255372875719">ఆటోమేటిక్ (డిఫాల్ట్)</translation>
-<translation id="4880827082731008257">శోధన చరిత్ర</translation>
+<translation id="4880827082731008257">హిస్టరీలో సెర్చ్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4885256590493466218">చెక్అవుట్‌లో <ph name="CARD_DETAIL" />తో పేమెంట్ చేయండి</translation>
 <translation id="4888600795924685526">విదేశీ భాషా అధ్యయనం</translation>
@@ -2684,7 +2684,7 @@
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">మీ భద్రతకు వాటిల్లే ఆపదల గురించి మీకు అర్థం అయ్యి ఉంటే, హానికర ప్రోగ్రామ్‌లు తీసివేయబడటానికి ముందే మీరు <ph name="BEGIN_LINK" />ఈ సైట్‌ను సందర్శించవచ్చు<ph name="END_LINK" />.</translation>
 <translation id="8347658365704983341">దూర విద్య</translation>
-<translation id="8349305172487531364">బుక్‌మార్క్‌ల పట్టీ</translation>
+<translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
 <translation id="8355270400102541638">స్థానిక క్రాష్ సందర్భం:</translation>
 <translation id="8363502534493474904">ఎయిర్‌ప్లైన్ మోడ్‌ను ఆఫ్ చేయడం</translation>

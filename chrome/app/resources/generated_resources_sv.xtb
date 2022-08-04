@@ -6188,6 +6188,10 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6943939122536910181">Frånkopplad från <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="694592694773692225">Omdirigering blockerad på den här sidan.</translation>
+<translation id="6947015141909171112">Receptförslag visas utifrån dina senaste receptsökningar på Sök.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="6949434160682548041">Lösenord (valfritt)</translation>
 <translation id="6950627417367801484">Återställ appar</translation>
 <translation id="6952242901357037157">Du kan även visa lösenord från <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> här</translation>

@@ -4067,11 +4067,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur une liste d'identifiants de modes de saisie, les modes de saisie indiqués sont disponibles sur l'écran de connexion. Le premier mode de saisie proposé est présélectionné. Lorsqu'un profil utilisateur est actif sur l'écran de connexion, le dernier mode de saisie utilisé par l'utilisateur est disponible en plus des modes de saisie fournis par cette règle. Si cette règle n'est pas définie, les modes de saisie sur l'écran de connexion sont dérivés des paramètres régionaux dans lesquels cet écran est affiché. Les valeurs qui ne constituent pas des identifiants de modes de saisie valides sont ignorées.</translation>
 <translation id="5407008856008996384">Permet d'autoriser l'accès aux imprimantes CUPS</translation>
 <translation id="5413051574966911176">Désactiver l'interface utilisateur liée à la connexion sur le bureau de l'hôte à distance lorsqu'une connexion est active</translation>
-<translation id="5417597818300833094">Permet aux utilisateurs de sélectionner l'un des modes de saisie que vous spécifiez pour les sessions <ph name="PRODUCT_OS_NAME" />.
-
-       Si cette règle n'est pas configurée ou qu'aucun mode de saisie n'est indiqué dans la liste, les utilisateurs peuvent en choisir un parmi tous ceux compatibles.
-
-      Remarque : Si le mode de saisie actuel n'est pas compatible, la disposition du clavier matériel (si elle est autorisée) ou la première entrée valide dans cette liste est utilisée. Les modes de saisie non valides ou incompatibles sont ignorés.</translation>
 <translation id="5417906792459853336">Transmet des informations concernant l'inventaire et l'utilisation des applications d'un appareil.
 
       Si la règle est définie sur "False" ou n'est pas configurée, ces informations ne sont pas transmises.

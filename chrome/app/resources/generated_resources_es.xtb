@@ -6171,6 +6171,10 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se ha bloqueado la redirección bloqueada en esta página.</translation>
+<translation id="6947015141909171112">Estás viendo recetas basadas en tu reciente actividad de búsqueda de recetas.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes gestionar los ajustes en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950627417367801484">Restaurar aplicaciones</translation>
 <translation id="6952242901357037157">También puedes mostrar contraseñas de tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> aquí</translation>

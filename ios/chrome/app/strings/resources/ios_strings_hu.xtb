@@ -777,7 +777,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> olvasatlan cikk.</translation>
 <translation id="7412027924265291969">Tovább</translation>
-<translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>
 <translation id="7425346204213733349">Könyvjelzői, előzményei, jelszavai és más beállításai a továbbiakban már nem lesznek szinkronizálva Google-fiókjával. Meglévő adatait azonban továbbra is tárolni fogja a fiók.</translation>
 <translation id="7431991332293347422">Beállíthatja, hogy a rendszer hogyan szabja személyre a Keresést és egyebeket a böngészési előzmények alapján</translation>
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
@@ -847,6 +846,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="7987685713885608670">A fokozott biztonság érdekében titkosíthatja jelszavait eszközén, mielőtt a rendszer elmenti őket a Google Jelszókezelőbe.</translation>
 <translation id="7993619969781047893">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek megfelelően</translation>
 <translation id="800361585186029508">A megadott URL-eket a Google Chrome-ban nyitja meg.</translation>
+<translation id="8016714545083187120">Mindig biztonságos kapcsolatok használata</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8023878949384262191">Kibontja a panelt.</translation>
 <translation id="8027581147000338959">Megnyitás új ablakban</translation>

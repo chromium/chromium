@@ -777,7 +777,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ungelesene Artikel.</translation>
 <translation id="7412027924265291969">Weiter</translation>
-<translation id="7419565702166471774">Immer sichere Verbindungen verwenden</translation>
 <translation id="7425346204213733349">Änderungen an deinen Lesezeichen, dem Verlauf, deinen Passwörtern und anderen Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert. Deine vorhandenen Daten bleiben aber in deinem Google-Konto gespeichert.</translation>
 <translation id="7431991332293347422">Lege fest, wie dein Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von deinem Administrator deaktiviert</translation>
@@ -847,6 +846,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7987685713885608670">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Passwortmanager von Google gespeichert werden.</translation>
 <translation id="7993619969781047893">Funktionen auf manchen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="800361585186029508">Öffnet die eingegebenen URLs in Google Chrome.</translation>
+<translation id="8016714545083187120">Immer sichere Verbindungen verwenden</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8023878949384262191">Maximiert den Abschnitt</translation>
 <translation id="8027581147000338959">In neuem Fenster öffnen</translation>
