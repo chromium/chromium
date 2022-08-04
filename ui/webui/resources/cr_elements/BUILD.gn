@@ -92,8 +92,6 @@ if (is_chromeos_ash) {
       "cr_container_shadow_behavior.js",
       "cr_dialog/cr_dialog.html",
       "cr_dialog/cr_dialog.js",
-      "cr_expand_button/cr_expand_button.html",
-      "cr_expand_button/cr_expand_button.js",
       "cr_icon_button/cr_icon_button.html",
       "cr_icon_button/cr_icon_button.js",
       "cr_icons_css.html",
@@ -146,7 +144,7 @@ if (include_polymer) {
       "cr_checkbox/cr_checkbox.m.js",
       "cr_container_shadow_behavior.m.js",
       "cr_dialog/cr_dialog.m.js",
-      "cr_expand_button/cr_expand_button.m.js",
+      "cr_expand_button/cr_expand_button.js",
       "cr_icon_button/cr_icon_button.m.js",
       "cr_icons_css.m.js",
       "cr_input/cr_input.m.js",
@@ -207,7 +205,6 @@ if (include_polymer) {
     if (is_chromeos_ash) {
       deps += [
         "cr_button:closure_compile",
-        "cr_expand_button:closure_compile",
         "cr_radio_group:closure_compile",
       ]
     }
@@ -303,7 +300,7 @@ if (include_polymer) {
       "cr_button:cr_button_module",
       "cr_checkbox:cr_checkbox_module",
       "cr_dialog:cr_dialog_module",
-      "cr_expand_button:cr_expand_button_module",
+      "cr_expand_button:web_components",
       "cr_icon_button:cr_icon_button_module",
       "cr_input:polymer3_elements",
       "cr_lottie:cr_lottie_module",

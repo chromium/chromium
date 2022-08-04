@@ -4,35 +4,20 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-if (is_chromeos_ash) {
-  js_type_check("closure_compile") {
-    uses_legacy_modules = true
-    deps = [ ":cr_expand_button" ]
-  }
-
-  js_library("cr_expand_button") {
-    deps = [ "//ui/webui/resources/js/cr/ui:focus_without_ink" ]
-  }
-}
-
-polymer_modulizer("cr_expand_button") {
-  js_file = "cr_expand_button.js"
-  html_file = "cr_expand_button.html"
-  html_type = "dom-module"
+html_to_js("web_components") {
+  js_files = [ "cr_expand_button.js" ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_expand_button.m" ]
+  deps = [ ":cr_expand_button" ]
 }
 
-js_library("cr_expand_button.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_expand_button/cr_expand_button.m.js" ]
+js_library("cr_expand_button") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":cr_expand_button_module" ]
 }

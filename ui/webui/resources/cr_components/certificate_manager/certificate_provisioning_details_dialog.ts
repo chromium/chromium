@@ -6,7 +6,7 @@
  * @fileoverview 'certificate-provisioning-details-dialog' allows the user to
  * view the details of an in-progress certiifcate provisioning process.
  */
-import '../../cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '../../cr_elements/cr_expand_button/cr_expand_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 

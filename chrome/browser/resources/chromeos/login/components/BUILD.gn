@@ -66,12 +66,12 @@ group("polymer3_elements") {
                   ":network_select_login_module",
                   ":notification_card_module",
                   ":oobe_a11y_option_module",
+                  ":oobe_a11y_option_module",
                   ":oobe_apps_list_module",
                   ":oobe_carousel_module",
                   ":oobe_cr_lottie_module",
-                  ":oobe_icons_module",
                   ":oobe_i18n_dropdown_module",
-                  ":oobe_a11y_option_module",
+                  ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
                   ":oobe_slide_module",
@@ -350,6 +350,7 @@ polymer_modulizer("oobe_apps_list") {
   html_file = "oobe_apps_list.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
