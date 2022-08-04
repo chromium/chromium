@@ -354,9 +354,9 @@ TEST_P(PrintContextTest, LinkedTarget) {
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[5].type);
   EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[5].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[6].type);
-  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[6].rect);
+  EXPECT_SKRECT_EQ(450, 60, 0, 0, operations[6].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[7].type);
-  EXPECT_SKRECT_EQ(450, 60, 0, 0, operations[7].rect);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[7].rect);
 }
 
 TEST_P(PrintContextTest, EmptyLinkedTarget) {

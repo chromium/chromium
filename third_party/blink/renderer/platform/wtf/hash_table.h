@@ -1055,15 +1055,6 @@ inline HashTable<Key,
                 "off-heap collection.");
 }
 
-inline unsigned DoubleHash(unsigned key) {
-  key = ~key + (key >> 23);
-  key ^= (key << 12);
-  key ^= (key >> 7);
-  key ^= (key << 2);
-  key ^= (key >> 20);
-  return key;
-}
-
 inline unsigned CalculateCapacity(unsigned size) {
   for (unsigned mask = size; mask; mask >>= 1)
     size |= mask;         // 00110101010 -> 00111111111
@@ -1131,10 +1122,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   if (!table)
     return nullptr;
 
-  size_t k = 0;
   size_t size_mask = TableSizeMask();
   unsigned h = HashTranslator::GetHash(key);
   size_t i = h & size_mask;
+  size_t probe_count = 0;
 
   UPDATE_ACCESS_COUNTS();
 
@@ -1155,10 +1146,9 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
           HashTranslator::Equal(Extractor::Extract(*entry), key))
         return entry;
     }
+    ++probe_count;
     UPDATE_PROBE_COUNTS();
-    if (!k)
-      k = 1 | DoubleHash(h);
-    i = (i + k) & size_mask;
+    i = (i + probe_count) & size_mask;
   }
 }
 
@@ -1184,10 +1174,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   RegisterModification();
 
   ValueType* table = table_;
-  size_t k = 0;
   size_t size_mask = TableSizeMask();
   unsigned h = HashTranslator::GetHash(key);
   size_t i = h & size_mask;
+  size_t probe_count = 0;
 
   UPDATE_ACCESS_COUNTS();
 
@@ -1211,10 +1201,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
       else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
         return LookupType(entry, true);
     }
+
+    ++probe_count;
     UPDATE_PROBE_COUNTS();
-    if (!k)
-      k = 1 | DoubleHash(h);
-    i = (i + k) & size_mask;
+    i = (i + probe_count) & size_mask;
   }
 }
 
@@ -1240,10 +1230,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   RegisterModification();
 
   ValueType* table = table_;
-  size_t k = 0;
   size_t size_mask = TableSizeMask();
   unsigned h = HashTranslator::GetHash(key);
   size_t i = h & size_mask;
+  size_t probe_count = 0;
 
   UPDATE_ACCESS_COUNTS();
 
@@ -1267,10 +1257,9 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
       else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
         return MakeLookupResult(entry, true, h);
     }
+    ++probe_count;
     UPDATE_PROBE_COUNTS();
-    if (!k)
-      k = 1 | DoubleHash(h);
-    i = (i + k) & size_mask;
+    i = (i + probe_count) & size_mask;
   }
 }
 
@@ -1375,10 +1364,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   DCHECK(table_);
 
   ValueType* table = table_;
-  size_t k = 0;
   size_t size_mask = TableSizeMask();
   unsigned h = HashTranslator::GetHash(key);
   size_t i = h & size_mask;
+  size_t probe_count = 0;
 
   UPDATE_ACCESS_COUNTS();
 
@@ -1405,10 +1394,9 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
       else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
         return AddResult(this, entry, false);
     }
+    ++probe_count;
     UPDATE_PROBE_COUNTS();
-    if (!k)
-      k = 1 | DoubleHash(h);
-    i = (i + k) & size_mask;
+    i = (i + probe_count) & size_mask;
   }
 
   RegisterModification();

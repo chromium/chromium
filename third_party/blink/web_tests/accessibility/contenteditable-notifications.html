@@ -82,8 +82,8 @@ async_test((t) => {
   ]);
   // SelectedTextChanged at 4.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(insert,insertText,none,none)',
+    'AXEventIntent(setSelection,none,character,forward)'
   ]);
   eventSender.keyDown('x', []);
 
@@ -111,8 +111,8 @@ async_test((t) => {
   ]);
   // SelectedTextChanged at 7.
   expectedSelectedTextChangedIntents.push([
-    'AXEventIntent(setSelection,none,character,forward)',
-    'AXEventIntent(insert,insertText,none,none)'
+    'AXEventIntent(insert,insertText,none,none)',
+    'AXEventIntent(setSelection,none,character,forward)'
   ]);
   eventSender.keyDown('y', []);
 

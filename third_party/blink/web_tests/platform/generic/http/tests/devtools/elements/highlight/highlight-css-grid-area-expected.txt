@@ -315,13 +315,13 @@ grid-with-areas{
       "rowLineNameOffsets": [
         {
           "x": 0,
-          "y": 601,
-          "name": "sidebar-end"
+          "y": 0,
+          "name": "header-start"
         },
         {
           "x": 0,
-          "y": 300.5,
-          "name": "sidebar-start"
+          "y": 601,
+          "name": "sidebar-end"
         },
         {
           "x": 0,
@@ -340,20 +340,20 @@ grid-with-areas{
         },
         {
           "x": 0,
-          "y": 0,
-          "name": "header-start"
+          "y": 300.5,
+          "name": "sidebar-start"
         }
       ],
       "columnLineNameOffsets": [
         {
+          "x": 0,
+          "y": 0,
+          "name": "header-start"
+        },
+        {
           "x": 200.5,
           "y": 0,
           "name": "sidebar-end"
-        },
-        {
-          "x": 0,
-          "y": 0,
-          "name": "sidebar-start"
         },
         {
           "x": 401,
@@ -373,7 +373,7 @@ grid-with-areas{
         {
           "x": 0,
           "y": 0,
-          "name": "header-start"
+          "name": "sidebar-start"
         }
       ],
       "gridBorder": [
