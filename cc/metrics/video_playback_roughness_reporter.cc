@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -84,19 +85,18 @@ void VideoPlaybackRoughnessReporter::FrameSubmitted(
 void VideoPlaybackRoughnessReporter::FramePresented(TokenType token,
                                                     base::TimeTicks timestamp,
                                                     bool reliable_timestamp) {
-  for (auto it = frames_.rbegin(); it != frames_.rend(); it++) {
-    FrameInfo& info = *it;
-    if (token == it->token) {
-      if (info.decode_time.has_value()) {
-        auto time_since_decode = timestamp - info.decode_time.value();
+  for (auto& frame : base::Reversed(frames_)) {
+    if (token == frame.token) {
+      if (frame.decode_time.has_value()) {
+        auto time_since_decode = timestamp - frame.decode_time.value();
         UMA_HISTOGRAM_TIMES("Media.VideoFrameSubmitter", time_since_decode);
       }
 
       if (reliable_timestamp)
-        info.presentation_time = timestamp;
+        frame.presentation_time = timestamp;
       break;
     }
-    if (viz::FrameTokenGT(token, it->token))
+    if (viz::FrameTokenGT(token, frame.token))
       break;
   }
 }

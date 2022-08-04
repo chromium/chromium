@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
@@ -68,8 +69,7 @@ bool MessageBundle::Init(const CatalogVector& locale_catalogs,
                          std::string* error) {
   dictionary_.clear();
 
-  for (auto it = locale_catalogs.rbegin(); it != locale_catalogs.rend(); ++it) {
-    base::DictionaryValue* catalog = (*it).get();
+  for (const auto& catalog : base::Reversed(locale_catalogs)) {
     for (base::DictionaryValue::Iterator message_it(*catalog);
          !message_it.IsAtEnd(); message_it.Advance()) {
       std::string key(base::ToLowerASCII(message_it.key()));

@@ -8,6 +8,7 @@
 
 #include "ash/assistant/ui/logo_view/shape/shape.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
@@ -110,8 +111,8 @@ void LogoViewImpl::DrawDots(gfx::Canvas* canvas) {
   // TODO: The Green Mic parts seems overlapped on the Red Mic part. Draw dots
   // in reverse order so that the Red Mic part is on top of Green Mic parts. But
   // we need to find out why the Mic parts are overlapping in the first place.
-  for (auto iter = logo_.dots().rbegin(); iter != logo_.dots().rend(); ++iter)
-    DrawDot(canvas, (*iter).get());
+  for (const auto& dot : base::Reversed(logo_.dots()))
+    DrawDot(canvas, dot.get());
 }
 
 void LogoViewImpl::DrawDot(gfx::Canvas* canvas, Dot* dot) {

@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/containers/adapters.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
@@ -69,9 +70,9 @@ bool ValidateStructHeaderAndVersionSizeAndClaimMemory(
   const auto& header = *static_cast<const StructHeader*>(data);
   if (header.version <= version_sizes.back().version) {
     // Scan in reverse order to optimize for more recent versions.
-    for (auto it = version_sizes.rbegin(); it != version_sizes.rend(); ++it) {
-      if (header.version >= it->version) {
-        if (header.num_bytes == it->num_bytes)
+    for (const auto& version_size : base::Reversed(version_sizes)) {
+      if (header.version >= version_size.version) {
+        if (header.num_bytes == version_size.num_bytes)
           break;
         ReportValidationError(validation_context,
                               VALIDATION_ERROR_UNEXPECTED_STRUCT_HEADER);

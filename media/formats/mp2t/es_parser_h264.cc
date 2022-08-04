@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
@@ -113,8 +114,8 @@ std::unique_ptr<uint8_t[]> AdjustAUForSampleAES(
     result.reset(new uint8_t[au_end_pos]);
     uint8_t* temp = result.get();
     memcpy(temp, au, au_end_pos);
-    for (auto epb_pos = epbs.rbegin(); epb_pos != epbs.rend(); ++epb_pos) {
-      RemoveByte(temp, *epb_pos, au_end_pos);
+    for (const auto& epb : base::Reversed(epbs)) {
+      RemoveByte(temp, epb, au_end_pos);
       au_end_pos--;
     }
     au = temp;

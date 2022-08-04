@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/adapters.h"
+
 namespace blink {
 
 MainThreadEventQueueTaskList::MainThreadEventQueueTaskList() {}
@@ -15,9 +17,8 @@ MainThreadEventQueueTaskList::~MainThreadEventQueueTaskList() {}
 MainThreadEventQueueTaskList::EnqueueResult
 MainThreadEventQueueTaskList::Enqueue(
     std::unique_ptr<MainThreadEventQueueTask> event) {
-  for (auto last_event_iter = queue_.rbegin(); last_event_iter != queue_.rend();
-       ++last_event_iter) {
-    switch ((*last_event_iter)->FilterNewEvent(event.get())) {
+  for (const auto& last_event : base::Reversed(queue_)) {
+    switch (last_event->FilterNewEvent(event.get())) {
       case MainThreadEventQueueTask::FilterResult::CoalescedEvent:
         return EnqueueResult::kCoalesced;
       case MainThreadEventQueueTask::FilterResult::StopIterating:

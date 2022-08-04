@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -598,8 +599,7 @@ Element* Fullscreen::FullscreenElementFrom(Document& document) {
   // whose fullscreen flag is set, if any, and null otherwise.
 
   const auto& elements = document.TopLayerElements();
-  for (auto it = elements.rbegin(); it != elements.rend(); ++it) {
-    Element* element = (*it).Get();
+  for (const auto& element : base::Reversed(elements)) {
     if (HasFullscreenFlag(*element))
       return element;
   }

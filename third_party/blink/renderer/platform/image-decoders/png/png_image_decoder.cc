@@ -40,6 +40,7 @@
 
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -93,15 +94,15 @@ void PNGImageDecoder::Decode(wtf_size_t index) {
   UpdateAggressivePurging(index);
 
   Vector<wtf_size_t> frames_to_decode = FindFramesToDecode(index);
-  for (auto i = frames_to_decode.rbegin(); i != frames_to_decode.rend(); i++) {
-    current_frame_ = *i;
-    if (!reader_->Decode(*data_, *i)) {
+  for (const auto& frame : base::Reversed(frames_to_decode)) {
+    current_frame_ = frame;
+    if (!reader_->Decode(*data_, frame)) {
       SetFailed();
       return;
     }
 
     // If this returns false, we need more data to continue decoding.
-    if (!PostDecodeProcessing(*i))
+    if (!PostDecodeProcessing(frame))
       break;
   }
 

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
@@ -531,8 +532,7 @@ void MultiBufferDataSource::SeekTask_Locked() {
     // Iterate backwards, because if two positions have the same
     // amount of buffered data, we probably want to prefer the latest
     // one in the array.
-    for (auto i = seek_positions_.rbegin(); i != seek_positions_.rend(); ++i) {
-      int64_t new_pos = *i;
+    for (const auto& new_pos : base::Reversed(seek_positions_)) {
       int64_t available_at_new_pos = reader_->AvailableAt(new_pos);
 
       if (total_bytes_ != kPositionNotSpecified) {

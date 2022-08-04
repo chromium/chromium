@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -415,13 +416,12 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
 
   // Iterate down from the top intermediate node found in the previous loop,
   // computing and memoizing clip rects as we go.
-  for (auto it = intermediate_nodes.rbegin(); it != intermediate_nodes.rend();
-       ++it) {
+  for (auto* const node : base::Reversed(intermediate_nodes)) {
     ExtraProjectionResult extra_result;
     bool success = false;
     const auto& translation_2d_or_matrix =
         SourceToDestinationProjectionInternal(
-            (*it)->LocalTransformSpace().Unalias(), ancestor_transform,
+            node->LocalTransformSpace().Unalias(), ancestor_transform,
             extra_result, success);
     if (!success)
       return FloatClipRect(gfx::RectF());
@@ -432,14 +432,14 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
 
     // This is where we generate the roundedness and tightness of clip rect
     // from clip and transform properties, and propagate them to |clip|.
-    FloatClipRect mapped_rect(GetClipRect(**it, clip_behavior));
+    FloatClipRect mapped_rect(GetClipRect(*node, clip_behavior));
     translation_2d_or_matrix.MapFloatClipRect(mapped_rect);
     if (inclusive_behavior == kInclusiveIntersect) {
       clip.InclusiveIntersect(mapped_rect);
     } else {
       clip.Intersect(mapped_rect);
       // Inclusive intersected clips are not cached at present.
-      (*it)->GetClipCache().SetCachedClip(
+      node->GetClipCache().SetCachedClip(
           GeometryMapperClipCache::ClipCacheEntry{clip_and_transform, clip,
                                                   extra_result.has_animation,
                                                   extra_result.has_sticky});

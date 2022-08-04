@@ -10,6 +10,7 @@
 #include "ash/components/login/auth/public/auth_callbacks.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/containers/stack.h"
 
 namespace ash {
@@ -46,8 +47,8 @@ void RunOperationChain(std::unique_ptr<UserContext> context,
     return;
   }
   base::stack<AuthOperation> reversed_ops;
-  for (auto rit = operations.rbegin(); rit != operations.rend(); ++rit)
-    reversed_ops.push(std::move(*rit));
+  for (auto& operation : base::Reversed(operations))
+    reversed_ops.push(std::move(operation));
 
   AuthOperation first = std::move(reversed_ops.top());
   reversed_ops.pop();

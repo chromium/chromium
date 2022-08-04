@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -458,8 +459,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     DictionaryPrefUpdate daily_google_photos_ids_update(
         local_state_, prefs::kRecentDailyGooglePhotosWallpapers);
     base::Value::List id_list;
-    for (auto id = ids.rbegin(); id != ids.rend(); id++) {
-      id_list.Append(base::NumberToString(*id));
+    for (const auto& id : base::Reversed(ids)) {
+      id_list.Append(base::NumberToString(id));
     }
     base::Value id_list_value(std::move(id_list));
     daily_google_photos_ids_update->SetKey(account_id.GetUserEmail(),

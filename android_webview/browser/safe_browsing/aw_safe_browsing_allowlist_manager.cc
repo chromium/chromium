@@ -66,10 +66,9 @@ void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
                       TrieNode* root,
                       bool match_prefix) {
   TrieNode* node = root;
-  for (auto hostcomp = components.rbegin(); hostcomp != components.rend();
-       ++hostcomp) {
+  for (const auto& hostcomp : base::Reversed(components)) {
     DCHECK(!node->match_prefix);
-    std::string component(*hostcomp);
+    std::string component(hostcomp);
     auto child_node = node->children.find(component);
     if (child_node == node->children.end()) {
       std::unique_ptr<TrieNode> temp = std::make_unique<TrieNode>();

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -169,9 +170,9 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 
   // Loop from LRU to MRU
   int stale_resource_count = 0;
-  for (auto it = unused_providers_.rbegin(); it != unused_providers_.rend();
-       ++it) {
-    if ((current_timer_id_ - it->timer_id_) < kTimerIdDeltaForDeletion) {
+  for (const auto& unused_provider : base::Reversed(unused_providers_)) {
+    if ((current_timer_id_ - unused_provider.timer_id_) <
+        kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
       break;

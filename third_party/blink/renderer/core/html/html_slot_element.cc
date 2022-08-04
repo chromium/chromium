@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -370,9 +371,8 @@ void HTMLSlotElement::RebuildDistributedChildrenLayoutTrees(
 
   // This loop traverses the nodes from right to left for the same reason as the
   // one described in ContainerNode::RebuildChildrenLayoutTrees().
-  for (auto it = flat_tree_children_.rbegin(); it != flat_tree_children_.rend();
-       ++it) {
-    RebuildLayoutTreeForChild(*it, whitespace_attacher);
+  for (const auto& child : base::Reversed(flat_tree_children_)) {
+    RebuildLayoutTreeForChild(child, whitespace_attacher);
   }
 }
 

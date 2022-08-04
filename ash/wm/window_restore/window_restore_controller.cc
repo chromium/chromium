@@ -24,6 +24,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
@@ -183,12 +184,11 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
   // Only the topmost unminimize restored window can be activated.
   auto siblings = desk_container->children();
-  for (auto child_iter = siblings.rbegin(); child_iter != siblings.rend();
-       ++child_iter) {
-    if (WindowState::Get(*child_iter)->IsMinimized())
+  for (auto* const sibling : base::Reversed(siblings)) {
+    if (WindowState::Get(sibling)->IsMinimized())
       continue;
 
-    return window == (*child_iter);
+    return window == sibling;
   }
 
   return false;
