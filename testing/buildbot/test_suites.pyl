@@ -6863,8 +6863,7 @@
     'lacros_skylab_arm64': {
       'lacros_skylab_arm64_tests': {
         'variants': [
-          'CROS_CHERRY64_RELEASE_LKGM',
-          'CROS_JACUZZI64_RELEASE_LKGM',
+          'CROS_HEROBRINE_RELEASE_LKGM',
         ]
       },
     },

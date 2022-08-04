@@ -2255,9 +2255,9 @@
     "skylab_tests": [
       {
         "args": [],
-        "cros_board": "cherry",
-        "cros_img": "cherry64-release/R106-15019.0.0",
-        "name": "lacros_all_tast_tests CHERRY64_RELEASE_LKGM",
+        "cros_board": "herobrine",
+        "cros_img": "herobrine-release/R106-14997.0.0",
+        "name": "lacros_all_tast_tests HEROBRINE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2267,23 +2267,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "CHERRY64_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi64-release/R106-15019.0.0",
-        "name": "lacros_all_tast_tests JACUZZI64_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI64_RELEASE_LKGM"
+        "variant_id": "HEROBRINE_RELEASE_LKGM"
       }
     ]
   },
