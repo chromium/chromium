@@ -65,15 +65,21 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 // |icon_letter| into a rounded background of |color|.
 SkBitmap GenerateBitmap(SquareSizePx output_size,
                         SkColor color,
-                        char16_t icon_letter);
+                        char32_t icon_letter);
 
 // Returns the first letter from |app_url| that will be painted on the generated
 // icon.
-char16_t GenerateIconLetterFromUrl(const GURL& app_url);
+char32_t GenerateIconLetterFromUrl(const GURL& app_url);
 
 // Returns the first letter from |app_name| that will be painted on the
 // generated icon.
-char16_t GenerateIconLetterFromAppName(const std::u16string& app_name);
+char32_t GenerateIconLetterFromAppName(const std::u16string& app_name);
+
+// Converts a codepoint (intended to be the first letter of an app name or URL)
+// to a UTF-16 string.
+//
+// Public for testing.
+std::u16string IconLetterToString(char32_t cp);
 
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |icon_letter| is the first letter of app name if available
@@ -84,7 +90,7 @@ char16_t GenerateIconLetterFromAppName(const std::u16string& app_name);
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    char16_t icon_letter,
+    char32_t icon_letter,
     SkColor* generated_icon_color,
     bool* is_generated_icon);
 
