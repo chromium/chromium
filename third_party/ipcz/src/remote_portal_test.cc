@@ -335,7 +335,12 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, DisconnectThroughProxyClient3) {
   CloseAll({p, b});
 }
 
-TEST_P(RemotePortalTest, DisconnectThroughProxy) {
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DisconnectThroughProxy DISABLED_DisconnectThroughProxy
+#else
+#define MAYBE_DisconnectThroughProxy DisconnectThroughProxy
+#endif
+TEST_P(RemotePortalTest, MAYBE_DisconnectThroughProxy) {
   // Exercises node disconnection. Namely if portals on nodes 1 and 3 are
   // connected via proxy on node 2, and node 3 disappears, node 1's portal
   // should observe peer closure.
