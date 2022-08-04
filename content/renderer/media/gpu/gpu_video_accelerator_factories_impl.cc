@@ -162,15 +162,6 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
                      base::Unretained(this)));
 
   if (video_encode_accelerator_enabled_) {
-    {
-      // TODO(crbug.com/709631): This should be removed.
-      base::AutoLock lock(supported_profiles_lock_);
-      supported_vea_profiles_ =
-          media::GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
-              gpu_channel_host_->gpu_info()
-                  .video_encode_accelerator_supported_profiles);
-    }
-
     vea_provider_.set_disconnect_handler(base::BindOnce(
         &GpuVideoAcceleratorFactoriesImpl::OnEncoderSupportFailed,
         base::Unretained(this)));

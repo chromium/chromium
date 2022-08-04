@@ -878,9 +878,7 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
 
   GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
 
-  // Since Android never had PPAPI/NaCl it doesn't initialize encoder profiles
-  // at GPU process startup. Query them now so chrome://gpu is accurate.
-#if BUILDFLAG(IS_ANDROID)
+  // Query VEA profiles to show in chrome://gpu
   auto update_vea_profiles_callback = base::BindPostTask(
       GetUIThreadTaskRunner({}),
       base::BindOnce([](const media::VideoEncodeAccelerator::SupportedProfiles&
@@ -926,7 +924,6 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
                     std::move(vea_provider)));
           },
           std::move(update_vea_profiles_callback)));
-#endif
 }
 
 bool GpuDataManagerImplPrivate::IsEssentialGpuInfoAvailable() const {

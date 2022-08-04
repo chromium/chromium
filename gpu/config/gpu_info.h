@@ -438,6 +438,8 @@ struct GPU_EXPORT GPUInfo {
   VideoDecodeAcceleratorSupportedProfiles
       video_decode_accelerator_supported_profiles;
 
+  // DO NOT use for anything but diagnostics/metrics like chrome://gpu,
+  // it's not populated at start up and can be unreliable for a while.
   VideoEncodeAcceleratorSupportedProfiles
       video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;

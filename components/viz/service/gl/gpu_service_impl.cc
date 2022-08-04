@@ -273,39 +273,9 @@ bool IsAcceleratedJpegDecodeSupported() {
 void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
                           const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
                           gpu::GPUInfo* gpu_info) {
-  // Due to https://crbug.com/709631, we don't want to query Android video
-  // decode/encode capabilities during startup. The renderer needs this info
-  // though, so assume some baseline capabilities.
-#if BUILDFLAG(IS_ANDROID)
-  // Note: Video encoding on Android relies on MediaCodec, so all cases
-  // where it's disabled for decoding it is also disabled for encoding.
-  if (gpu_preferences.disable_accelerated_video_decode ||
-      gpu_preferences.disable_accelerated_video_encode) {
-    return;
-  }
-
-  auto& encoding_profiles =
-      gpu_info->video_encode_accelerator_supported_profiles;
-
-  gpu::VideoEncodeAcceleratorSupportedProfile vea_profile;
-  vea_profile.max_resolution = gfx::Size(1280, 720);
-  vea_profile.max_framerate_numerator = 30;
-  vea_profile.max_framerate_denominator = 1;
-
-  if (media::MediaCodecUtil::IsVp8EncoderAvailable()) {
-    vea_profile.profile = gpu::VP8PROFILE_ANY;
-    encoding_profiles.push_back(vea_profile);
-  }
-
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  vea_profile.profile = gpu::H264PROFILE_BASELINE;
-  encoding_profiles.push_back(vea_profile);
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
   // Note: Since Android doesn't have to support PPAPI/Flash, we have not
   // returned the decoder profiles here since https://crrev.com/665999.
-#else   // BUILDFLAG(IS_ANDROID)
-
+#if !BUILDFLAG(IS_ANDROID)
   // GpuMojoMediaClient controls which decoder is actually being used, so
   // it should be the source of truth for supported profiles.
   auto maybe_decoder_configs =
@@ -317,13 +287,7 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
         media::GpuVideoAcceleratorUtil::ConvertMediaConfigsToGpuDecodeProfiles(
             *maybe_decoder_configs);
   }
-
-  gpu_info->video_encode_accelerator_supported_profiles =
-      media::GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
-          media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-              gpu_preferences, gpu_workarounds, gpu_info->active_gpu(),
-              /*populate_extended_info=*/false));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Returns a callback which does a PostTask to run |callback| on the |runner|
