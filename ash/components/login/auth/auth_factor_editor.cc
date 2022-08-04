@@ -4,6 +4,7 @@
 
 #include "ash/components/login/auth/auth_factor_editor.h"
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
@@ -15,6 +16,8 @@
 #include "base/callback.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
+
+using cryptohome::KeyLabel;
 
 namespace ash {
 
@@ -132,8 +135,9 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
   request.set_old_credential_label(context->GetKey()->GetLabel());
   const Key* key = context->GetReplacementKey();
   cryptohome::KeyDefinitionToKey(
-      cryptohome::KeyDefinition::CreateForPassword(
-          key->GetSecret(), key->GetLabel(), cryptohome::PRIV_DEFAULT),
+      cryptohome::KeyDefinition::CreateForPassword(key->GetSecret(),
+                                                   KeyLabel(key->GetLabel()),
+                                                   cryptohome::PRIV_DEFAULT),
       request.mutable_authorization()->mutable_key());
 
   UserDataAuthClient::Get()->UpdateCredential(

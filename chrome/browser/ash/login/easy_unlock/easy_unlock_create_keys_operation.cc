@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
@@ -27,6 +28,8 @@
 #include "crypto/symmetric_key.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+using cryptohome::KeyLabel;
 
 namespace ash {
 namespace {
@@ -315,7 +318,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
 
   EasyUnlockDeviceKeyData* device = &devices_[index];
   auto key_def = cryptohome::KeyDefinition::CreateForPassword(
-      user_key.GetSecret(), EasyUnlockKeyManager::GetKeyLabel(index),
+      user_key.GetSecret(), KeyLabel(EasyUnlockKeyManager::GetKeyLabel(index)),
       kEasyUnlockKeyPrivileges);
   key_def.revision = kEasyUnlockKeyRevision;
   key_def.provider_data.push_back(cryptohome::KeyDefinition::ProviderData(
@@ -349,8 +352,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
   // Create the authorization request with an empty label, in order to act as a
   // wildcard. See https://crbug.com/1002336 for more.
   *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(std::string() /* label */,
-                                             auth_key->GetSecret());
+      cryptohome::CreateAuthorizationRequest(KeyLabel(), auth_key->GetSecret());
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context_.GetAccountId()));
   UserDataAuthClient::Get()->AddKey(

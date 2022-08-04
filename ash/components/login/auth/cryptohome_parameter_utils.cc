@@ -4,6 +4,7 @@
 
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "ash/components/login/auth/public/key.h"
@@ -11,6 +12,7 @@
 #include "base/check_op.h"
 
 using cryptohome::KeyDefinition;
+using cryptohome::KeyLabel;
 
 namespace ash {
 namespace cryptohome_parameter_utils {
@@ -21,8 +23,8 @@ KeyDefinition CreateKeyDefFromUserContext(const UserContext& user_context) {
     // information.
     return KeyDefinition::CreateForChallengeResponse(
         user_context.GetChallengeResponseKeys(),
-        GenerateChallengeResponseKeyLabel(
-            user_context.GetChallengeResponseKeys()),
+        KeyLabel(GenerateChallengeResponseKeyLabel(
+            user_context.GetChallengeResponseKeys())),
         cryptohome::PRIV_DEFAULT);
   }
 
@@ -31,8 +33,8 @@ KeyDefinition CreateKeyDefFromUserContext(const UserContext& user_context) {
   // If the |key| is a plain text password, crash rather than attempting to
   // mount the cryptohome with a plain text password.
   CHECK_NE(Key::KEY_TYPE_PASSWORD_PLAIN, key->GetKeyType());
-  return KeyDefinition::CreateForPassword(key->GetSecret(), key->GetLabel(),
-                                          cryptohome::PRIV_DEFAULT);
+  return KeyDefinition::CreateForPassword(
+      key->GetSecret(), KeyLabel(key->GetLabel()), cryptohome::PRIV_DEFAULT);
 }
 
 KeyDefinition CreateAuthorizationKeyDefFromUserContext(
@@ -50,7 +52,7 @@ KeyDefinition CreateAuthorizationKeyDefFromUserContext(
   switch (key_def.type) {
     case KeyDefinition::TYPE_PASSWORD:
       if (!user_context.IsUsingPin())
-        key_def.label.clear();
+        key_def.label.value().clear();
       break;
     case KeyDefinition::TYPE_CHALLENGE_RESPONSE:
       break;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/public/auth_factors_data.h"
@@ -25,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::cryptohome::KeyLabel;
 using ::testing::_;
 
 namespace ash {
@@ -33,7 +35,7 @@ namespace {
 void SetupUserWithLegacyPassword(UserContext* context) {
   std::vector<cryptohome::KeyDefinition> keys;
   keys.push_back(cryptohome::KeyDefinition::CreateForPassword(
-      "secret", "legacy-0", /*privileges=*/0));
+      "secret", KeyLabel("legacy-0"), /*privileges=*/0));
   AuthFactorsData data(keys);
   context->SetAuthFactorsData(data);
 }

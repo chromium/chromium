@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_remove_keys_operation.h"
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+using cryptohome::KeyLabel;
 
 namespace ash {
 
@@ -57,7 +60,7 @@ void EasyUnlockRemoveKeysOperation::RemoveKey() {
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification((user_context_.GetAccountId())));
   *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(auth_key->GetLabel(),
+      cryptohome::CreateAuthorizationRequest(KeyLabel(auth_key->GetLabel()),
                                              auth_key->GetSecret());
   UserDataAuthClient::Get()->RemoveKey(
       request, base::BindOnce(&EasyUnlockRemoveKeysOperation::OnKeyRemoved,

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -120,13 +121,13 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
 
   // Creates an instance with the TYPE_PASSWORD type.
   static KeyDefinition CreateForPassword(const std::string& secret,
-                                         const std::string& label,
+                                         const KeyLabel& label,
                                          int privileges);
   // Creates an instance with the TYPE_CHALLENGE_RESPONSE type.
   static KeyDefinition CreateForChallengeResponse(
       const std::vector<chromeos::ChallengeResponseKey>&
           challenge_response_keys,
-      const std::string& label,
+      const KeyLabel& label,
       int privileges);
 
   KeyDefinition();
@@ -136,7 +137,7 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
   bool operator==(const KeyDefinition& other) const;
 
   Type type = TYPE_PASSWORD;
-  std::string label;
+  KeyLabel label;
   // Privileges associated with key. Combination of |AuthKeyPrivileges| values.
   int privileges = 0;
   Policy policy;
@@ -149,13 +150,14 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
 
 // Authorization attempt data for user.
 struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) Authorization {
-  Authorization(const std::string& key, const std::string& label);
+  Authorization(const std::string& key, const KeyLabel& label);
   explicit Authorization(const KeyDefinition& key);
+  ~Authorization();
 
   bool operator==(const Authorization& other) const;
 
   std::string key;
-  std::string label;
+  KeyLabel label;
 };
 
 }  // namespace cryptohome

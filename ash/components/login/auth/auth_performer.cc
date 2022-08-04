@@ -115,7 +115,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
           CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
-    context->GetKey()->SetLabel(key_def->label);
+    context->GetKey()->SetLabel(key_def->label.value());
   }
 
   LOGIN_LOG(EVENT) << "Authenticating using key "
@@ -222,8 +222,8 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   }
   // Use Key until proper migration to AuthFactors API.
   Key key(pin);
-  DCHECK_EQ(key_def->label, kCryptohomePinLabel);
-  key.SetLabel(key_def->label);
+  DCHECK_EQ(key_def->label.value(), kCryptohomePinLabel);
+  key.SetLabel(key_def->label.value());
 
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
   AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
@@ -251,7 +251,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
         CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
     return;
   }
-  key_data->set_label(key_def->label);
+  key_data->set_label(key_def->label.value());
 
   client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,

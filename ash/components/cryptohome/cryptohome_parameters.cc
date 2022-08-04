@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
@@ -150,7 +151,7 @@ bool KeyDefinition::Policy::operator!=(const Policy& other) const {
 
 KeyDefinition KeyDefinition::CreateForPassword(
     const std::string& secret,
-    const std::string& label,
+    const KeyLabel& label,
     int /*AuthKeyPrivileges*/ privileges) {
   KeyDefinition key_def;
   key_def.type = TYPE_PASSWORD;
@@ -162,7 +163,7 @@ KeyDefinition KeyDefinition::CreateForPassword(
 
 KeyDefinition KeyDefinition::CreateForChallengeResponse(
     const std::vector<ChallengeResponseKey>& challenge_response_keys,
-    const std::string& label,
+    const KeyLabel& label,
     int /*AuthKeyPrivileges*/ privileges) {
   KeyDefinition key_def;
   key_def.type = TYPE_CHALLENGE_RESPONSE;
@@ -194,7 +195,7 @@ bool KeyDefinition::operator==(const KeyDefinition& other) const {
   return true;
 }
 
-Authorization::Authorization(const std::string& key, const std::string& label)
+Authorization::Authorization(const std::string& key, const KeyLabel& label)
     : key(key), label(label) {}
 
 Authorization::Authorization(const KeyDefinition& key_def)
@@ -203,5 +204,7 @@ Authorization::Authorization(const KeyDefinition& key_def)
 bool Authorization::operator==(const Authorization& other) const {
   return key == other.key && label == other.label;
 }
+
+Authorization::~Authorization() = default;
 
 }  // namespace cryptohome

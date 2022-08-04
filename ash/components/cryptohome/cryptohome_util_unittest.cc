@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
@@ -17,55 +18,60 @@ namespace cryptohome {
 
 using ::chromeos::ChallengeResponseKey;
 
-constexpr char kKeyLabel[] = "key_label";
+constexpr char kKeyLabelStr[] = "key_label";
 
-TEST(CryptohomeUtilTest, CreateAuthorizationRequestEmptyLabel) {
+class CryptohomeUtilTest : public ::testing::Test {
+ protected:
+  const KeyLabel kKeyLabel = KeyLabel(kKeyLabelStr);
+};
+
+TEST_F(CryptohomeUtilTest, CreateAuthorizationRequestEmptyLabel) {
   const std::string kExpectedSecret = "secret";
 
   const AuthorizationRequest auth_request =
-      CreateAuthorizationRequest(std::string(), kExpectedSecret);
+      CreateAuthorizationRequest(KeyLabel(), kExpectedSecret);
 
   EXPECT_FALSE(auth_request.key().data().has_label());
   EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
 }
 
-TEST(CryptohomeUtilTest, CreateAuthorizationRequestWithLabel) {
+TEST_F(CryptohomeUtilTest, CreateAuthorizationRequestWithLabel) {
   const std::string kExpectedLabel = "some_label";
   const std::string kExpectedSecret = "some_secret";
 
   const AuthorizationRequest auth_request =
-      CreateAuthorizationRequest(kExpectedLabel, kExpectedSecret);
+      CreateAuthorizationRequest(KeyLabel(kExpectedLabel), kExpectedSecret);
 
   EXPECT_EQ(auth_request.key().data().label(), kExpectedLabel);
   EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
 }
 
-TEST(CryptohomeUtilTest,
-     CreateAuthorizationRequestFromKeyDefPasswordEmptyLabel) {
+TEST_F(CryptohomeUtilTest,
+       CreateAuthorizationRequestFromKeyDefPasswordEmptyLabel) {
   const std::string kExpectedSecret = "secret";
 
   const AuthorizationRequest auth_request =
       CreateAuthorizationRequestFromKeyDef(KeyDefinition::CreateForPassword(
-          kExpectedSecret, std::string() /* label */, PRIV_DEFAULT));
+          kExpectedSecret, KeyLabel(), PRIV_DEFAULT));
 
   EXPECT_FALSE(auth_request.key().data().has_label());
   EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
 }
 
-TEST(CryptohomeUtilTest,
-     CreateAuthorizationRequestFromKeyDefPasswordWithLabel) {
+TEST_F(CryptohomeUtilTest,
+       CreateAuthorizationRequestFromKeyDefPasswordWithLabel) {
   const std::string kExpectedSecret = "secret";
 
   const AuthorizationRequest auth_request =
       CreateAuthorizationRequestFromKeyDef(KeyDefinition::CreateForPassword(
           kExpectedSecret, kKeyLabel, PRIV_DEFAULT));
 
-  EXPECT_EQ(auth_request.key().data().label(), kKeyLabel);
+  EXPECT_EQ(auth_request.key().data().label(), kKeyLabelStr);
   EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
 }
 
-TEST(CryptohomeUtilTest,
-     CreateAuthorizationRequestFromKeyDefChallengeResponse) {
+TEST_F(CryptohomeUtilTest,
+       CreateAuthorizationRequestFromKeyDefChallengeResponse) {
   using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
   const std::string kKeySpki = "spki";
   const Algorithm kKeyAlgorithm = Algorithm::kRsassaPkcs1V15Sha1;
@@ -84,7 +90,7 @@ TEST(CryptohomeUtilTest,
   EXPECT_FALSE(auth_request.key().has_secret());
   EXPECT_EQ(auth_request.key().data().type(),
             KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-  EXPECT_EQ(auth_request.key().data().label(), kKeyLabel);
+  EXPECT_EQ(auth_request.key().data().label(), kKeyLabelStr);
   ASSERT_EQ(auth_request.key().data().challenge_response_key_size(), 1);
   EXPECT_EQ(
       auth_request.key().data().challenge_response_key(0).public_key_spki_der(),
@@ -100,7 +106,7 @@ TEST(CryptohomeUtilTest,
       kKeyAlgorithmProto);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyType) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyType) {
   Key key;
 
   KeyDefinitionToKey(KeyDefinition(), &key);
@@ -108,7 +114,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyType) {
   EXPECT_EQ(key.data().type(), KeyData::KEY_TYPE_PASSWORD);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeySecret) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeySecret) {
   const std::string kExpectedSecret = "my_dog_ate_my_homework";
   KeyDefinition key_def;
   key_def.secret = kExpectedSecret;
@@ -119,10 +125,10 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeySecret) {
   EXPECT_EQ(key.secret(), kExpectedSecret);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyLabel) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyLabel) {
   const std::string kExpectedLabel = "millenials hate labels";
   KeyDefinition key_def;
-  key_def.label = kExpectedLabel;
+  key_def.label = KeyLabel(kExpectedLabel);
   Key key;
 
   KeyDefinitionToKey(key_def, &key);
@@ -130,7 +136,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyLabel) {
   EXPECT_EQ(key.data().label(), kExpectedLabel);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyNonpositiveRevision) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyNonpositiveRevision) {
   KeyDefinition key_def;
   key_def.revision = -1;
   Key key;
@@ -140,7 +146,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyNonpositiveRevision) {
   EXPECT_EQ(key.data().revision(), 0);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyPositiveRevision) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyPositiveRevision) {
   constexpr int kExpectedRevision = 10;
   KeyDefinition key_def;
   key_def.revision = kExpectedRevision;
@@ -151,7 +157,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyPositiveRevision) {
   EXPECT_EQ(key.data().revision(), kExpectedRevision);
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyDefaultPrivileges) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyDefaultPrivileges) {
   KeyDefinition key_def;
   Key key;
 
@@ -163,7 +169,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyDefaultPrivileges) {
   EXPECT_TRUE(privileges.update());
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
   KeyDefinition key_def;
   key_def.privileges = PRIV_ADD;
   Key key;
@@ -176,7 +182,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAddPrivileges) {
   EXPECT_FALSE(privileges.update());
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
   KeyDefinition key_def;
   key_def.privileges = PRIV_REMOVE;
   Key key;
@@ -189,7 +195,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyRemovePrivileges) {
   EXPECT_FALSE(privileges.update());
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
   KeyDefinition key_def;
   key_def.privileges = PRIV_MIGRATE;
   Key key;
@@ -202,7 +208,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyUpdatePrivileges) {
   EXPECT_TRUE(privileges.update());
 }
 
-TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
   KeyDefinition key_def;
   key_def.privileges = PRIV_DEFAULT;
   Key key;
@@ -217,7 +223,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKeyAllPrivileges) {
 
 // Test the KeyDefinitionToKey() function against the KeyDefinition struct of
 // the |TYPE_CHALLENGE_RESPONSE| type.
-TEST(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
+TEST_F(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
   using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
   const int kPrivileges = 0;
   const std::string kKey1Spki = "spki1";
@@ -248,7 +254,7 @@ TEST(CryptohomeUtilTest, KeyDefinitionToKey_ChallengeResponse) {
 
   EXPECT_FALSE(key.has_secret());
   EXPECT_EQ(key.data().type(), KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-  EXPECT_EQ(key.data().label(), kKeyLabel);
+  EXPECT_EQ(key.data().label(), kKeyLabelStr);
   ASSERT_EQ(key.data().challenge_response_key_size(), 2);
   EXPECT_EQ(key.data().challenge_response_key(0).public_key_spki_der(),
             kKey1Spki);

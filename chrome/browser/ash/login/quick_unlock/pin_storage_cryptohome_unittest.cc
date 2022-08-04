@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
@@ -24,8 +25,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_unlock {
+using cryptohome::KeyLabel;
+
+namespace ash::quick_unlock {
 namespace {
 
 constexpr char kDummyPin[] = "123456";
@@ -126,7 +128,8 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
     const cryptohome::KeyDefinition key_def =
         cryptohome::KeyDefinition::CreateForPassword(
-            password, kCryptohomeGaiaKeyLabel, cryptohome::PRIV_MIGRATE);
+            password, KeyLabel(kCryptohomeGaiaKeyLabel),
+            cryptohome::PRIV_MIGRATE);
     cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
     *request.mutable_account_id() =
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
@@ -149,8 +152,8 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     ::user_data_auth::AddKeyRequest request;
 
     const cryptohome::KeyDefinition key_def =
-        cryptohome::KeyDefinition::CreateForPassword(pin, kCryptohomePinLabel,
-                                                     cryptohome::PRIV_MIGRATE);
+        cryptohome::KeyDefinition::CreateForPassword(
+            pin, KeyLabel(kCryptohomePinLabel), cryptohome::PRIV_MIGRATE);
     cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
     request.mutable_key()
         ->mutable_data()
@@ -275,5 +278,4 @@ TEST_F(PinStorageCryptohomeUnitTest, UnlockWebAuthnSecret) {
       FakeUserDataAuthClient::Get()->get_last_unlock_webauthn_secret());
 }
 
-}  // namespace quick_unlock
-}  // namespace ash
+}  // namespace ash::quick_unlock

@@ -22,12 +22,13 @@ AuthFactorsData& AuthFactorsData::operator=(const AuthFactorsData&) = default;
 const cryptohome::KeyDefinition* AuthFactorsData::FindOnlinePasswordKey()
     const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
-    if (key_def.label == kCryptohomeGaiaKeyLabel)
+    if (key_def.label.value() == kCryptohomeGaiaKeyLabel)
       return &key_def;
   }
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     // Check if label starts with prefix and has required type.
-    if ((key_def.label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0) &&
+    if ((key_def.label.value().find(kCryptohomeGaiaKeyLegacyLabelPrefix) ==
+         0) &&
         key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD)
       return &key_def;
   }
@@ -47,7 +48,7 @@ bool AuthFactorsData::HasPasswordKey(const std::string& label) const {
 
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
-        key_def.label == label)
+        key_def.label.value() == label)
       return true;
   }
   return false;
@@ -57,7 +58,7 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindPinKey() const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
         key_def.policy.low_entropy_credential) {
-      DCHECK_EQ(key_def.label, kCryptohomePinLabel);
+      DCHECK_EQ(key_def.label.value(), kCryptohomePinLabel);
       return &key_def;
     }
   }

@@ -4,13 +4,16 @@
 
 #include "ash/components/cryptohome/userdataauth_util.h"
 
+#include "ash/components/cryptohome/common_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using cryptohome::KeyLabel;
 
 namespace user_data_auth {
 
 namespace {
 
-constexpr char kKeyLabel[] = "key_label";
+constexpr char kKeyLabelStr[] = "key_label";
 
 constexpr int64_t kKeyRevision = 123;
 constexpr char kProviderData1Name[] = "data_1";
@@ -20,26 +23,31 @@ constexpr char kProviderData2Bytes[] = "data_2 bytes";
 
 }  // namespace
 
-TEST(UserDataAuthUtilTest, ReplyToMountErrorNullOptional) {
+class UserDataAuthUtilTest : public ::testing::Test {
+ protected:
+  const KeyLabel kKeyLabel = KeyLabel(kKeyLabelStr);
+};
+
+TEST_F(UserDataAuthUtilTest, ReplyToMountErrorNullOptional) {
   const absl::optional<RemoveReply> reply = absl::nullopt;
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_FATAL);
 }
 
-TEST(UserDataAuthUtilTest, ReplyToMountErrorNoError) {
+TEST_F(UserDataAuthUtilTest, ReplyToMountErrorNoError) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_NOT_SET);
   const absl::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_NONE);
 }
 
-TEST(UserDataAuthUtilTest, BaseReplyToMountErrorAuthFailure) {
+TEST_F(UserDataAuthUtilTest, BaseReplyToMountErrorAuthFailure) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
   const absl::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_KEY_FAILURE);
 }
 
-TEST(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
+TEST_F(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
   // Test a few commonly seen input output pair.
   EXPECT_EQ(CryptohomeErrorToMountError(CRYPTOHOME_ERROR_NOT_SET),
             cryptohome::MOUNT_ERROR_NONE);
@@ -51,12 +59,12 @@ TEST(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
             cryptohome::MOUNT_ERROR_TPM_NEEDS_REBOOT);
 }
 
-TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
+TEST_F(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
   GetKeyDataReply result;
   result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
   cryptohome::KeyData* key_data = result.add_key_data();
   key_data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-  key_data->set_label(kKeyLabel);
+  key_data->set_label(kKeyLabelStr);
   key_data->mutable_privileges()->set_update(false);
   key_data->set_revision(kKeyRevision);
   cryptohome::KeyProviderData* data = key_data->mutable_provider_data();
@@ -96,12 +104,13 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
 // Test the GetKeyDataReplyToKeyDefinitions() function against the
 // GetKeyDataReply proto containing the KeyData proto of the
 // |KEY_TYPE_CHALLENGE_RESPONSE| type.
-TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
+TEST_F(UserDataAuthUtilTest,
+       GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
   GetKeyDataReply result;
   result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
   cryptohome::KeyData* key_data = result.add_key_data();
   key_data->set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-  key_data->set_label(kKeyLabel);
+  key_data->set_label(kKeyLabelStr);
   const absl::optional<GetKeyDataReply> reply = std::move(result);
 
   const std::vector<cryptohome::KeyDefinition> key_definitions =
@@ -114,13 +123,13 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
   EXPECT_EQ(kKeyLabel, key_definition.label);
 }
 
-TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
+TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
   const absl::optional<GetAccountDiskUsageReply> reply = absl::nullopt;
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
 
-TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
+TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
   GetAccountDiskUsageReply result;
   result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_IMPLEMENTED);
   const absl::optional<GetAccountDiskUsageReply> reply = std::move(result);
@@ -128,7 +137,7 @@ TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
 
-TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeValidity) {
+TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeValidity) {
   constexpr int64_t kSize = 0x123456789ABCLL;
   GetAccountDiskUsageReply result;
   result.set_size(kSize);

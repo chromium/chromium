@@ -160,7 +160,9 @@ void AuthenticationDialog::ValidateAuthFactor() {
   // Create a copy of `user_context_` so that we don't lose it to std::move
   // for future auth attempts
   auth_performer_->AuthenticateWithPassword(
-      user_context_->GetAuthFactorsData().FindOnlinePasswordKey()->label,
+      user_context_->GetAuthFactorsData()
+          .FindOnlinePasswordKey()
+          ->label.value(),
       base::UTF16ToUTF8(password_field_->GetText()),
       std::make_unique<UserContext>(*user_context_),
       base::BindOnce(&AuthenticationDialog::OnAuthFactorValidityChecked,

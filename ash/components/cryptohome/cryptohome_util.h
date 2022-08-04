@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
@@ -29,7 +30,7 @@ KeyDefinition KeyDataToKeyDefinition(const KeyData& key_data);
 
 // Creates an AuthorizationRequest from the given secret and label.
 COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
-AuthorizationRequest CreateAuthorizationRequest(const std::string& label,
+AuthorizationRequest CreateAuthorizationRequest(const KeyLabel& label,
                                                 const std::string& secret);
 
 // Creates an AuthorizationRequest from the given key definition.

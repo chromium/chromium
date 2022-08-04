@@ -545,7 +545,7 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
   const cryptohome::KeyDefinition* password_key_def =
       context->GetAuthFactorsData().FindOnlinePasswordKey();
   DCHECK(password_key_def);
-  const std::string key_label = password_key_def->label;
+  const std::string key_label = password_key_def->label.value();
 
   if (!context->HasReplacementKey()) {
     // Assume that there was an attempt to use the key, so it is was already

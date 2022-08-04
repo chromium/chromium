@@ -22,6 +22,7 @@ component("cryptohome") {
     "//components/user_manager",
   ]
   sources = [
+    "common_types.h",
     "cryptohome_parameters.cc",
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
