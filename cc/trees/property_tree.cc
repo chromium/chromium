@@ -494,7 +494,7 @@ gfx::Vector2dF TransformTree::AnchorScrollOffset(TransformNode* node) {
       break;
     scroller_id = scroll_node->parent_id;
   }
-  return -accumulated_scroll_offset;
+  return data->accumulated_scroll_origin - accumulated_scroll_offset;
 }
 
 bool TransformTree::ShouldUndoOverscroll(const TransformNode* node) const {

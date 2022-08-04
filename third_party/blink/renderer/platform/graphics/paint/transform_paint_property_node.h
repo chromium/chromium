@@ -165,17 +165,21 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   struct AnchorScrollContainersData {
     scoped_refptr<const TransformPaintPropertyNode> inner_most_scroll_container;
     scoped_refptr<const TransformPaintPropertyNode> outer_most_scroll_container;
+    gfx::Vector2d accumulated_scroll_origin;
 
     AnchorScrollContainersData(scoped_refptr<const TransformPaintPropertyNode>
                                    inner_most_scroll_container,
                                scoped_refptr<const TransformPaintPropertyNode>
-                                   outer_most_scroll_container)
+                                   outer_most_scroll_container,
+                               gfx::Vector2d accumulated_scroll_origin)
         : inner_most_scroll_container(std::move(inner_most_scroll_container)),
-          outer_most_scroll_container(std::move(outer_most_scroll_container)) {}
+          outer_most_scroll_container(std::move(outer_most_scroll_container)),
+          accumulated_scroll_origin(accumulated_scroll_origin) {}
 
     bool operator==(const AnchorScrollContainersData& other) const {
       return inner_most_scroll_container == other.inner_most_scroll_container &&
-             outer_most_scroll_container == other.outer_most_scroll_container;
+             outer_most_scroll_container == other.outer_most_scroll_container &&
+             accumulated_scroll_origin == other.accumulated_scroll_origin;
     }
   };
 

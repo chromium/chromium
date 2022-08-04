@@ -769,12 +769,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       const PaintLayer* outer_most_scroll_container_layer =
           inner_most_scroll_container_layer;
       gfx::Vector2dF accumulated_scroll_offset(0, 0);
+      gfx::Vector2d accumulated_scroll_origin(0, 0);
       for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
            layer = layer->ContainingScrollContainerLayer()) {
         if (layer == box.Layer()->ContainingScrollContainerLayer())
           break;
         accumulated_scroll_offset +=
-            layer->GetScrollableArea()->ScrollPosition().OffsetFromOrigin();
+            layer->GetScrollableArea()->GetScrollOffset();
+        accumulated_scroll_origin +=
+            layer->GetScrollableArea()->ScrollOrigin().OffsetFromOrigin();
         outer_most_scroll_container_layer = layer;
       }
 
@@ -812,7 +815,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       state.anchor_scroll_containers_data = std::make_unique<
           TransformPaintPropertyNode::AnchorScrollContainersData>(
           std::move(inner_most_scroll_container),
-          std::move(outer_most_scroll_container));
+          std::move(outer_most_scroll_container), accumulated_scroll_origin);
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));

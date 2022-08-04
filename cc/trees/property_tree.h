@@ -312,6 +312,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 struct AnchorScrollContainersData {
   int inner_most_scroll_container_id = kInvalidPropertyNodeId;
   int outer_most_scroll_container_id = kInvalidPropertyNodeId;
+  gfx::Vector2d accumulated_scroll_origin;
 };
 
 struct StickyPositionNodeData {

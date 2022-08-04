@@ -476,6 +476,8 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
         *anchor_scroll_data->inner_most_scroll_container);
     compositor_data.outer_most_scroll_container_id = EnsureCompositorScrollNode(
         *anchor_scroll_data->outer_most_scroll_container);
+    compositor_data.accumulated_scroll_origin =
+        anchor_scroll_data->accumulated_scroll_origin;
   }
 
   auto compositor_element_id = transform_node.GetCompositorElementId();
