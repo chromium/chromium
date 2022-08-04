@@ -87,17 +87,6 @@ def ProcessArgs(args, parser=None):
     rest_args_filtered.append('--retry-limit=2')
   rest_args_filtered.extend(
       ['--repository-absolute-path', gpu_path_util.CHROMIUM_SRC_DIR])
-
-  # This is a dirty hack to debug crbug.com/1345782 and should be removed ASAP.
-  if (sys.platform == 'darwin' and os.environ.get('GTEST_SHARD_INDEX') == '7'
-      and 'webgl_conformance' in args):
-    jobs_parser = argparse.ArgumentParser()
-    jobs_parser.add_argument('--jobs', type=int, help=argparse.SUPPRESS)
-    job_args, jobless_args = jobs_parser.parse_known_args(rest_args_filtered)
-    if job_args.jobs:
-      jobless_args.append('--jobs=1')
-      rest_args_filtered = jobless_args
-
   return rest_args_filtered
 
 
