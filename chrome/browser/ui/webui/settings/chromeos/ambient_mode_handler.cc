@@ -294,28 +294,27 @@ void AmbientModeHandler::SendTemperatureUnit() {
 
 void AmbientModeHandler::SendTopicSource() {
   DCHECK(settings_);
-  base::Value topic_source(base::Value::Type::DICTIONARY);
-  topic_source.SetKey("hasGooglePhotosAlbums",
-                      base::Value(!personal_albums_.albums.empty()));
-  topic_source.SetKey("topicSource",
-                      base::Value(static_cast<int>(settings_->topic_source)));
-  FireWebUIListener("topic-source-changed",
-                    base::Value(std::move(topic_source)));
+  base::Value::Dict topic_source;
+  topic_source.Set("hasGooglePhotosAlbums",
+                   base::Value(!personal_albums_.albums.empty()));
+  topic_source.Set("topicSource",
+                   base::Value(static_cast<int>(settings_->topic_source)));
+  FireWebUIListener("topic-source-changed", topic_source);
 }
 
 void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
   DCHECK(settings_);
 
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  base::Value albums(base::Value::Type::LIST);
+  base::Value::Dict dictionary;
+  base::Value::List albums;
   switch (topic_source) {
     case ash::AmbientModeTopicSource::kGooglePhotos:
       for (const auto& album : personal_albums_.albums) {
-        base::Value value(base::Value::Type::DICTIONARY);
-        value.SetKey("albumId", base::Value(album.album_id));
-        value.SetKey("checked", base::Value(album.selected));
-        value.SetKey("description", base::Value(GetAlbumDescription(album)));
-        value.SetKey("title", base::Value(album.album_name));
+        base::Value::Dict value;
+        value.Set("albumId", album.album_id);
+        value.Set("checked", album.selected);
+        value.Set("description", GetAlbumDescription(album));
+        value.Set("title", album.album_name);
         albums.Append(std::move(value));
       }
       break;
@@ -323,39 +322,39 @@ void AmbientModeHandler::SendAlbums(ash::AmbientModeTopicSource topic_source) {
       for (const auto& setting : settings_->art_settings) {
         if (!setting.visible)
           continue;
-        base::Value value(base::Value::Type::DICTIONARY);
-        value.SetKey("albumId", base::Value(setting.album_id));
-        value.SetKey("checked", base::Value(setting.enabled));
-        value.SetKey("description", base::Value(setting.description));
-        value.SetKey("title", base::Value(setting.title));
+        base::Value::Dict value;
+        value.Set("albumId", setting.album_id);
+        value.Set("checked", setting.enabled);
+        value.Set("description", setting.description);
+        value.Set("title", setting.title);
         albums.Append(std::move(value));
       }
       break;
   }
 
-  dictionary.SetKey("topicSource", base::Value(static_cast<int>(topic_source)));
-  dictionary.SetKey("selectedTopicSource",
-                    base::Value(static_cast<int>(settings_->topic_source)));
-  dictionary.SetKey("albums", std::move(albums));
-  FireWebUIListener("albums-changed", std::move(dictionary));
+  dictionary.Set("topicSource", static_cast<int>(topic_source));
+  dictionary.Set("selectedTopicSource",
+                 static_cast<int>(settings_->topic_source));
+  dictionary.Set("albums", std::move(albums));
+  FireWebUIListener("albums-changed", dictionary);
 }
 
 void AmbientModeHandler::SendAlbumPreview(
     ash::AmbientModeTopicSource topic_source,
     const std::string& album_id,
     std::string&& png_data_url) {
-  base::Value album(base::Value::Type::DICTIONARY);
-  album.SetKey("albumId", base::Value(album_id));
-  album.SetKey("topicSource", base::Value(static_cast<int>(topic_source)));
-  album.SetKey("url", base::Value(png_data_url));
-  FireWebUIListener("album-preview-changed", std::move(album));
+  base::Value::Dict album;
+  album.Set("albumId", album_id);
+  album.Set("topicSource", static_cast<int>(topic_source));
+  album.Set("url", png_data_url);
+  FireWebUIListener("album-preview-changed", album);
 }
 
 void AmbientModeHandler::SendRecentHighlightsPreviews() {
   if (!FindPersonalAlbumById(ash::kAmbientModeRecentHighlightsAlbumId))
     return;
 
-  base::Value png_data_urls(base::Value::Type::LIST);
+  base::Value::List png_data_urls;
   for (const auto& image : recent_highlights_preview_images_) {
     if (image.isNull())
       continue;
@@ -363,17 +362,16 @@ void AmbientModeHandler::SendRecentHighlightsPreviews() {
     std::vector<unsigned char> encoded_image_bytes;
     EncodeImage(image, &encoded_image_bytes);
     if (!encoded_image_bytes.empty()) {
-      png_data_urls.Append(base::Value(webui::GetPngDataUrl(
-          &encoded_image_bytes.front(), encoded_image_bytes.size())));
+      png_data_urls.Append(webui::GetPngDataUrl(&encoded_image_bytes.front(),
+                                                encoded_image_bytes.size()));
     }
   }
 
-  base::Value album(base::Value::Type::DICTIONARY);
-  album.SetKey("albumId",
-               base::Value(ash::kAmbientModeRecentHighlightsAlbumId));
-  album.SetKey("topicSource", base::Value(static_cast<int>(
-                                  ash::AmbientModeTopicSource::kGooglePhotos)));
-  album.SetKey("recentHighlightsUrls", std::move(png_data_urls));
+  base::Value::Dict album;
+  album.Set("albumId", ash::kAmbientModeRecentHighlightsAlbumId);
+  album.Set("topicSource",
+            static_cast<int>(ash::AmbientModeTopicSource::kGooglePhotos));
+  album.Set("recentHighlightsUrls", std::move(png_data_urls));
   FireWebUIListener("album-preview-changed", std::move(album));
 }
 

@@ -51,13 +51,13 @@ void DeviceNameHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-base::Value DeviceNameHandler::GetDeviceNameMetadata() const {
-  base::Value metadata(base::Value::Type::DICTIONARY);
+base::Value::Dict DeviceNameHandler::GetDeviceNameMetadata() const {
+  base::Value::Dict metadata;
   DeviceNameStore::DeviceNameMetadata device_name_metadata =
       device_name_store_->GetDeviceNameMetadata();
-  metadata.SetStringKey(kMetadataFirstKey, device_name_metadata.device_name);
-  metadata.SetIntKey(kMetadataSecondKey,
-                     static_cast<int>(device_name_metadata.device_name_state));
+  metadata.Set(kMetadataFirstKey, device_name_metadata.device_name);
+  metadata.Set(kMetadataSecondKey,
+               static_cast<int>(device_name_metadata.device_name_state));
   return metadata;
 }
 
@@ -79,12 +79,12 @@ void DeviceNameHandler::HandleNotifyReadyForDeviceName(
     const base::Value::List& args) {
   AllowJavascript();
   FireWebUIListener("settings.updateDeviceNameMetadata",
-                    base::Value(GetDeviceNameMetadata()));
+                    GetDeviceNameMetadata());
 }
 
 void DeviceNameHandler::OnDeviceNameMetadataChanged() {
   FireWebUIListener("settings.updateDeviceNameMetadata",
-                    base::Value(GetDeviceNameMetadata()));
+                    GetDeviceNameMetadata());
 }
 
 }  // namespace settings

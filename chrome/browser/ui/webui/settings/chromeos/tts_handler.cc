@@ -39,7 +39,7 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
   // Ensure the built in tts engine is loaded to be able to respond to messages.
   WakeTtsEngine(base::Value::List());
 
-  base::ListValue responses;
+  base::Value::List responses;
   Profile* profile = Profile::FromWebUI(web_ui());
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -58,11 +58,11 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
       // be updated again after extension load.
       continue;
     }
-    base::DictionaryValue response;
-    response.SetStringKey("name", extension->name());
-    response.SetStringKey("extensionId", extension_id);
+    base::Value::Dict response;
+    response.Set("name", extension->name());
+    response.Set("extensionId", extension_id);
     if (extensions::OptionsPageInfo::HasOptionsPage(extension)) {
-      response.SetStringKey(
+      response.Set(
           "optionsPage",
           extensions::OptionsPageInfo::GetOptionsPage(extension).spec());
     }
@@ -78,28 +78,28 @@ void TtsHandler::OnVoicesChanged() {
   std::vector<content::VoiceData> voices;
   tts_controller->GetVoices(Profile::FromWebUI(web_ui()), GURL(), &voices);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  base::ListValue responses;
+  base::Value::List responses;
   for (const auto& voice : voices) {
-    base::DictionaryValue response;
+    base::Value::Dict response;
     int language_score = GetVoiceLangMatchScore(&voice, app_locale);
     std::string language_code;
     if (voice.lang.empty()) {
       language_code = "noLanguageCode";
-      response.SetStringKey(
+      response.Set(
           "displayLanguage",
           l10n_util::GetStringUTF8(IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE));
     } else {
       language_code = l10n_util::GetLanguage(voice.lang);
-      response.SetStringKey(
+      response.Set(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
               language_code, g_browser_process->GetApplicationLocale(), true));
     }
-    response.SetStringKey("name", voice.name);
-    response.SetStringKey("languageCode", language_code);
-    response.SetStringKey("fullLanguageCode", voice.lang);
-    response.SetIntKey("languageScore", language_score);
-    response.SetStringKey("extensionId", voice.engine_id);
+    response.Set("name", voice.name);
+    response.Set("languageCode", language_code);
+    response.Set("fullLanguageCode", voice.lang);
+    response.Set("languageScore", language_score);
+    response.Set("extensionId", voice.engine_id);
     responses.Append(std::move(response));
   }
   AllowJavascript();

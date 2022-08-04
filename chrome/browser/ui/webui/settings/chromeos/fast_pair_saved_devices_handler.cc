@@ -37,14 +37,14 @@ const char kSavedDeviceAccountKeyKey[] = "accountKey";
 
 // Converts |device| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value SavedDeviceToDictionary(const std::string& device_name,
-                                    const std::string& image_url,
-                                    const std::string account_key) {
+base::Value::Dict SavedDeviceToDictionary(const std::string& device_name,
+                                          const std::string& image_url,
+                                          const std::string account_key) {
   base::Value::Dict dictionary;
   dictionary.Set(kSavedDeviceNameKey, device_name);
   dictionary.Set(kSavedDeviceImageUrlKey, image_url);
   dictionary.Set(kSavedDeviceAccountKeyKey, EncodeKey(account_key));
-  return base::Value(std::move(dictionary));
+  return dictionary;
 }
 
 }  // namespace
@@ -125,8 +125,7 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
     base::Value::List saved_devices_list;
     ash::quick_pair::RecordSavedDevicesCount(
         /*num_devices=*/saved_devices_list.size());
-    FireWebUIListener(kSavedDevicesListMessage,
-                      base::Value(std::move(saved_devices_list)));
+    FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
     loading_saved_device_page_ = false;
     base::TimeDelta total_load_time =
         base::TimeTicks::Now() - loading_start_time_;
@@ -231,8 +230,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
 
   ash::quick_pair::RecordSavedDevicesCount(
       /*num_devices=*/saved_devices_list.size());
-  FireWebUIListener(kSavedDevicesListMessage,
-                    base::Value(std::move(saved_devices_list)));
+  FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
   QP_LOG(VERBOSE) << __func__ << ": Sending device list";
   base::TimeDelta total_load_time =
       base::TimeTicks::Now() - loading_start_time_;

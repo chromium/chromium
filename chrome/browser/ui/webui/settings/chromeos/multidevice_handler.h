@@ -23,10 +23,6 @@
 
 class PrefService;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace chromeos {
 namespace settings {
 
@@ -145,7 +141,7 @@ class MultideviceHandler
   void NotifySmartLockSignInAllowedChanged();
   // Generate android sms info dictionary containing the messages for web
   // content settings origin url and messages feature state.
-  std::unique_ptr<base::DictionaryValue> GenerateAndroidSmsInfo();
+  base::Value::Dict GenerateAndroidSmsInfo();
   void NotifyAndroidSmsInfoChange();
 
   // Returns true if |auth_token| matches the current auth token stored in
@@ -161,7 +157,7 @@ class MultideviceHandler
   // Returns null if requisite data has not yet been fetched (i.e., if one or
   // both of |last_host_status_update_| and |last_feature_states_update_| is
   // null).
-  std::unique_ptr<base::DictionaryValue> GeneratePageContentDataDictionary();
+  base::Value::Dict GeneratePageContentDataDictionary();
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
   GetHostStatusWithDevice();

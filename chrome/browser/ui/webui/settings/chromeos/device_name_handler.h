@@ -41,7 +41,7 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
 
   explicit DeviceNameHandler(DeviceNameStore* device_name_store);
 
-  base::Value GetDeviceNameMetadata() const;
+  base::Value::Dict GetDeviceNameMetadata() const;
 
   DeviceNameStore* device_name_store_;
 

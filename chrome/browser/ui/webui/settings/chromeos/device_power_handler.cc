@@ -116,29 +116,28 @@ PowerHandler::TestAPI::TestAPI(PowerHandler* handler) : handler_(handler) {}
 PowerHandler::TestAPI::~TestAPI() = default;
 
 void PowerHandler::TestAPI::RequestPowerManagementSettings() {
-  base::Value args(base::Value::Type::LIST);
-  handler_->HandleRequestPowerManagementSettings(args.GetList());
+  handler_->HandleRequestPowerManagementSettings(base::Value::List());
 }
 
 void PowerHandler::TestAPI::SetIdleBehavior(IdleBehavior behavior,
                                             bool when_on_ac) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(static_cast<int>(behavior));
   args.Append(when_on_ac);
-  handler_->HandleSetIdleBehavior(args.GetList());
+  handler_->HandleSetIdleBehavior(args);
 }
 
 void PowerHandler::TestAPI::SetLidClosedBehavior(
     PowerPolicyController::Action behavior) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(behavior);
-  handler_->HandleSetLidClosedBehavior(args.GetList());
+  handler_->HandleSetLidClosedBehavior(args);
 }
 
 void PowerHandler::TestAPI::SetAdaptiveCharging(bool enabled) {
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(enabled);
-  handler_->HandleSetAdaptiveCharging(args.GetList());
+  handler_->HandleSetAdaptiveCharging(args);
 }
 
 PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}
@@ -346,15 +345,15 @@ void PowerHandler::SendBatteryStatus() {
                                              base::NumberToString16(percent));
   }
 
-  base::DictionaryValue battery_dict;
-  battery_dict.SetBoolKey(
+  base::Value::Dict battery_dict;
+  battery_dict.Set(
       "present",
       proto->battery_state() !=
           power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT);
-  battery_dict.SetBoolKey("charging", charging);
-  battery_dict.SetBoolKey("calculating", calculating);
-  battery_dict.SetIntKey("percent", percent);
-  battery_dict.SetStringKey("statusText", status_text);
+  battery_dict.Set("charging", charging);
+  battery_dict.Set("calculating", calculating);
+  battery_dict.Set("percent", percent);
+  battery_dict.Set("statusText", status_text);
 
   FireWebUIListener("battery-status-changed", battery_dict);
 }
@@ -375,7 +374,7 @@ void PowerHandler::SendPowerSources() {
   }
 
   FireWebUIListener(
-      "power-sources-changed", base::Value(std::move(sources_list)),
+      "power-sources-changed", sources_list,
       base::Value(proto->external_power_source_id()),
       base::Value(proto->external_power() ==
                   power_manager::PowerSupplyProperties_ExternalPower_USB));
@@ -407,26 +406,25 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
     return;
   }
 
-  base::DictionaryValue dict;
-  base::Value* list = dict.SetKey(kPossibleAcIdleBehaviorsKey,
-                                  base::Value(base::Value::Type::LIST));
+  base::Value::Dict dict;
+  base::Value* list =
+      dict.Set(kPossibleAcIdleBehaviorsKey, base::Value::List());
   for (auto idle_behavior : ac_idle_info.possible_behaviors)
     list->Append(static_cast<int>(idle_behavior));
 
-  list = dict.SetKey(kPossibleBatteryIdleBehaviorsKey,
-                     base::Value(base::Value::Type::LIST));
+  list = dict.Set(kPossibleBatteryIdleBehaviorsKey, base::Value::List());
   for (auto idle_behavior : battery_idle_info.possible_behaviors)
     list->Append(static_cast<int>(idle_behavior));
-  dict.SetIntKey(kCurrentAcIdleBehaviorKey,
-                 static_cast<int>(ac_idle_info.current_behavior));
-  dict.SetIntKey(kCurrentBatteryIdleBehaviorKey,
-                 static_cast<int>(battery_idle_info.current_behavior));
-  dict.SetIntKey(kLidClosedBehaviorKey, lid_closed_behavior);
-  dict.SetBoolKey(kAcIdleManagedKey, ac_idle_info.is_managed);
-  dict.SetBoolKey(kBatteryIdleManagedKey, battery_idle_info.is_managed);
-  dict.SetBoolKey(kLidClosedControlledKey, lid_closed_controlled);
-  dict.SetBoolKey(kHasLidKey, has_lid);
-  dict.SetBoolKey(kAdaptiveChargingKey, adaptive_charging);
+  dict.Set(kCurrentAcIdleBehaviorKey,
+           static_cast<int>(ac_idle_info.current_behavior));
+  dict.Set(kCurrentBatteryIdleBehaviorKey,
+           static_cast<int>(battery_idle_info.current_behavior));
+  dict.Set(kLidClosedBehaviorKey, lid_closed_behavior);
+  dict.Set(kAcIdleManagedKey, ac_idle_info.is_managed);
+  dict.Set(kBatteryIdleManagedKey, battery_idle_info.is_managed);
+  dict.Set(kLidClosedControlledKey, lid_closed_controlled);
+  dict.Set(kHasLidKey, has_lid);
+  dict.Set(kAdaptiveChargingKey, adaptive_charging);
   FireWebUIListener(kPowerManagementSettingsChangedName, dict);
 
   last_ac_idle_info_ = ac_idle_info;

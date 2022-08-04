@@ -136,9 +136,9 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_RELEASED)
     return;
 
-  base::DictionaryValue response;
-  response.SetIntPath("keyCode", static_cast<int>(event->key_code()));
-  response.SetStringPath("key", GetStringForKeyboardCode(event->key_code()));
+  base::Value::Dict response;
+  response.Set("keyCode", static_cast<int>(event->key_code()));
+  response.Set("key", GetStringForKeyboardCode(event->key_code()));
   ui::InputDeviceType deviceType = ui::INPUT_DEVICE_UNKNOWN;
 
   int source_device_id = event->source_device_id();
@@ -149,7 +149,7 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
       break;
     }
   }
-  response.SetStringPath("device", GetSwitchAccessDevice(deviceType));
+  response.Set("device", GetSwitchAccessDevice(deviceType));
 
   FireWebUIListener("switch-access-got-key-press-for-assignment", response);
 }
@@ -175,7 +175,7 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
 }
 
 void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
-  base::DictionaryValue response;
+  base::Value::Dict response;
 
   static base::NoDestructor<std::vector<AssignmentInfo>> kAssignmentInfo({
       {"select", ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes},
@@ -186,7 +186,7 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
 
   for (const AssignmentInfo& info : *kAssignmentInfo) {
     auto* keycodes = prefs_->GetDictionary(info.pref_name);
-    base::ListValue keys;
+    base::Value::List keys;
     for (const auto item : keycodes->DictItems()) {
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
@@ -194,14 +194,14 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
         return;
       }
       for (const base::Value& device_type : item.second.GetListDeprecated()) {
-        base::DictionaryValue key;
-        key.SetStringPath("key", GetStringForKeyboardCode(
-                                     static_cast<ui::KeyboardCode>(key_code)));
-        key.SetStringPath("device", device_type.GetString());
+        base::Value::Dict key;
+        key.Set("key", GetStringForKeyboardCode(
+                           static_cast<ui::KeyboardCode>(key_code)));
+        key.Set("device", device_type.GetString());
         keys.Append(std::move(key));
       }
     }
-    response.SetPath(info.action_name_for_js, std::move(keys));
+    response.SetByDottedPath(info.action_name_for_js, std::move(keys));
   }
 
   FireWebUIListener("switch-access-assignments-changed", response);

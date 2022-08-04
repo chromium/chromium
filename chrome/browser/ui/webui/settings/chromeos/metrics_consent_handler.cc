@@ -58,16 +58,15 @@ void MetricsConsentHandler::HandleGetMetricsConsentState(
 
   const base::Value& callback_id = args[0];
 
-  base::Value response(base::Value::Type::DICTIONARY);
+  base::Value::Dict response;
 
   base::Value consent_pref =
       ShouldUseUserConsent()
           ? base::Value(::metrics::prefs::kMetricsUserConsent)
           : base::Value(::ash::kStatsReportingPref);
 
-  response.SetKey("prefName", std::move(consent_pref));
-  response.SetKey("isConfigurable",
-                  base::Value(IsMetricsConsentConfigurable()));
+  response.Set("prefName", std::move(consent_pref));
+  response.Set("isConfigurable", base::Value(IsMetricsConsentConfigurable()));
 
   ResolveJavascriptCallback(callback_id, response);
 }
@@ -79,7 +78,7 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
   CHECK_EQ(args[1].type(), base::Value::Type::DICTIONARY);
 
   const base::Value& callback_id = args[0];
-  absl::optional<bool> metrics_consent = args[1].FindBoolKey("consent");
+  absl::optional<bool> metrics_consent = args[1].GetDict().FindBool("consent");
   CHECK(metrics_consent);
 
   if (!ShouldUseUserConsent()) {

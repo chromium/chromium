@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -17,10 +18,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace chromeos {
 namespace settings {
@@ -53,7 +50,7 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
  private:
-  std::unique_ptr<base::DictionaryValue> BuildAndroidAppsInfo();
+  base::Value::Dict BuildAndroidAppsInfo();
   void HandleRequestAndroidAppsInfo(const base::Value::List& args);
   void HandleAppChanged(const std::string& app_id);
   void SendAndroidAppsInfo();

@@ -33,21 +33,20 @@ namespace {
 // The max number of fingerprints that can be stored.
 constexpr int kMaxAllowedFingerprints = 3;
 
-std::unique_ptr<base::DictionaryValue> GetFingerprintsInfo(
+base::Value::Dict GetFingerprintsInfo(
     const std::vector<std::string>& fingerprints_list) {
-  auto response = std::make_unique<base::DictionaryValue>();
-  base::ListValue fingerprints;
+  base::Value::Dict response;
+  base::Value::List fingerprints;
 
   DCHECK_LE(static_cast<int>(fingerprints_list.size()),
             kMaxAllowedFingerprints);
   for (auto& fingerprint_name: fingerprints_list) {
-    base::Value str(fingerprint_name);
-    fingerprints.Append(std::move(str));
+    fingerprints.Append(fingerprint_name);
   }
 
-  response->SetKey("fingerprintsList", std::move(fingerprints));
-  response->SetBoolKey("isMaxed", static_cast<int>(fingerprints_list.size()) >=
-                                      kMaxAllowedFingerprints);
+  response.Set("fingerprintsList", std::move(fingerprints));
+  response.Set("isMaxed", static_cast<int>(fingerprints_list.size()) >=
+                              kMaxAllowedFingerprints);
   return response;
 }
 
@@ -115,12 +114,12 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
           << scan_result
           << ", enroll_session_complete=" << enroll_session_complete
           << ", percent_complete=" << percent_complete;
-  auto scan_attempt = std::make_unique<base::DictionaryValue>();
-  scan_attempt->SetIntKey("result", static_cast<int>(scan_result));
-  scan_attempt->SetBoolKey("isComplete", enroll_session_complete);
-  scan_attempt->SetIntKey("percentComplete", percent_complete);
+  base::Value::Dict scan_attempt;
+  scan_attempt.Set("result", static_cast<int>(scan_result));
+  scan_attempt.Set("isComplete", enroll_session_complete);
+  scan_attempt.Set("percentComplete", percent_complete);
 
-  FireWebUIListener("on-fingerprint-scan-received", *scan_attempt);
+  FireWebUIListener("on-fingerprint-scan-received", scan_attempt);
 }
 
 void FingerprintHandler::OnAuthScanDone(
@@ -163,9 +162,8 @@ void FingerprintHandler::OnGetFingerprintsList(
   profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
                                    fingerprints_list_mapping.size());
 
-  std::unique_ptr<base::DictionaryValue> fingerprint_info =
-      GetFingerprintsInfo(fingerprints_labels_);
-  ResolveJavascriptCallback(base::Value(callback_id), *fingerprint_info);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            GetFingerprintsInfo(fingerprints_labels_));
 }
 
 void FingerprintHandler::HandleGetNumFingerprints(

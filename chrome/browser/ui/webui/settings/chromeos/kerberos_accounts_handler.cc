@@ -251,7 +251,7 @@ void KerberosAccountsHandler::HandleGetKerberosAccounts(
 void KerberosAccountsHandler::OnListAccounts(
     const std::string& callback_id,
     const kerberos::ListAccountsResponse& response) {
-  base::ListValue accounts;
+  base::Value::List accounts;
 
   // Ticket icon is a key.
   gfx::ImageSkia skia_ticket_icon =
@@ -274,21 +274,20 @@ void KerberosAccountsHandler::OnListAccounts(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         tgt_validity < base::Days(1) ? -1 : 0, tgt_validity);
 
-    base::DictionaryValue account_dict;
-    account_dict.SetStringKey("principalName", account.principal_name());
-    account_dict.SetStringKey("config", account.krb5conf());
-    account_dict.SetBoolKey("isSignedIn", account.tgt_validity_seconds() > 0);
-    account_dict.SetStringKey("validForDuration", valid_for_duration);
-    account_dict.SetBoolKey("isActive",
-                            account.principal_name() == active_principal);
-    account_dict.SetBoolKey("isManaged", account.is_managed());
-    account_dict.SetBoolKey("passwordWasRemembered",
-                            account.password_was_remembered());
-    account_dict.SetStringKey("pic", ticket_icon);
+    base::Value::Dict account_dict;
+    account_dict.Set("principalName", account.principal_name());
+    account_dict.Set("config", account.krb5conf());
+    account_dict.Set("isSignedIn", account.tgt_validity_seconds() > 0);
+    account_dict.Set("validForDuration", valid_for_duration);
+    account_dict.Set("isActive", account.principal_name() == active_principal);
+    account_dict.Set("isManaged", account.is_managed());
+    account_dict.Set("passwordWasRemembered",
+                     account.password_was_remembered());
+    account_dict.Set("pic", ticket_icon);
     accounts.Append(std::move(account_dict));
   }
 
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(accounts));
+  ResolveJavascriptCallback(base::Value(callback_id), accounts);
 }
 
 void KerberosAccountsHandler::HandleAddKerberosAccount(
@@ -374,17 +373,16 @@ void KerberosAccountsHandler::HandleValidateKerberosConfig(
 void KerberosAccountsHandler::OnValidateConfig(
     const std::string& callback_id,
     const kerberos::ValidateConfigResponse& response) {
-  base::Value error_info(base::Value::Type::DICTIONARY);
-  error_info.SetKey("code", base::Value(response.error_info().code()));
+  base::Value::Dict error_info;
+  error_info.Set("code", response.error_info().code());
   if (response.error_info().has_line_index()) {
-    error_info.SetKey("lineIndex",
-                      base::Value(response.error_info().line_index()));
+    error_info.Set("lineIndex", response.error_info().line_index());
   }
 
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey("error", base::Value(static_cast<int>(response.error())));
-  value.SetKey("errorInfo", std::move(error_info));
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(value));
+  base::Value::Dict value;
+  value.Set("error", static_cast<int>(response.error()));
+  value.Set("errorInfo", std::move(error_info));
+  ResolveJavascriptCallback(base::Value(callback_id), value);
 }
 
 void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(

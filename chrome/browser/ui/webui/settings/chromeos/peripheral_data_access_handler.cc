@@ -113,9 +113,9 @@ void PeripheralDataAccessHandler::HandleGetPolicyState(
                                      ? local_state_pref_name
                                      : cros_setting_pref_name;
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey("prefName", base::Value(pref_name));
-  response.SetKey("isUserConfigurable", base::Value(is_user_configurable_));
+  base::Value::Dict response;
+  response.Set("prefName", pref_name);
+  response.Set("isUserConfigurable", is_user_configurable_);
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 

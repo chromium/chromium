@@ -111,8 +111,7 @@ void StylusHandler::UpdateNoteTakingApps() {
     }
   }
 
-  FireWebUIListener("onNoteTakingAppsUpdated",
-                    base::Value(std::move(apps_list)),
+  FireWebUIListener("onNoteTakingAppsUpdated", apps_list,
                     base::Value(waiting_for_android));
 }
 

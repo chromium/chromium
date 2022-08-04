@@ -252,7 +252,7 @@ void InternetHandler::SendGmsCoreNotificationsDisabledDeviceNames() {
   if (!IsJavascriptAllowed())
     return;
 
-  base::ListValue device_names_value;
+  base::Value::List device_names_value;
   for (const auto& device_name : device_names_without_notifications_)
     device_names_value.Append(device_name.Clone());
 

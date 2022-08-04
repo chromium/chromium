@@ -199,7 +199,7 @@ void StorageHandler::HandleUpdateExternalStorages(
 }
 
 void StorageHandler::UpdateExternalStorages() {
-  base::Value devices(base::Value::Type::LIST);
+  base::Value::List devices;
   for (const auto& itr : DiskMountManager::GetInstance()->mount_points()) {
     const DiskMountManager::MountPointInfo& mount_info = itr.second;
     if (!IsEligibleForAndroidStorage(mount_info.source_path))
@@ -219,9 +219,9 @@ void StorageHandler::UpdateExternalStorages() {
       // Files app. crbug.com/1002535.
       label = base::FilePath(mount_info.mount_path).BaseName().AsUTF8Unsafe();
     }
-    base::Value device(base::Value::Type::DICTIONARY);
-    device.SetKey("uuid", base::Value(uuid));
-    device.SetKey("label", base::Value(label));
+    base::Value::Dict device;
+    device.Set("uuid", uuid);
+    device.Set("label", label);
     devices.Append(std::move(device));
   }
   FireWebUIListener("onExternalStoragesUpdated", devices);
@@ -229,9 +229,8 @@ void StorageHandler::UpdateExternalStorages() {
 
 void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   base::Value::Dict update;
-  update.Set(
-      kAndroidEnabled,
-      base::Value(features::ShouldShowExternalStorageSettings(profile_)));
+  update.Set(kAndroidEnabled,
+             features::ShouldShowExternalStorageSettings(profile_));
   content::WebUIDataSource::Update(profile_, source_name_, std::move(update));
 }
 
@@ -343,11 +342,10 @@ void StorageHandler::UpdateOverallStatistics() {
     return;
   }
 
-  base::DictionaryValue size_stat;
-  size_stat.SetStringKey("availableSize", ui::FormatBytes(available_bytes));
-  size_stat.SetStringKey("usedSize", ui::FormatBytes(in_use_bytes));
-  size_stat.SetDoubleKey("usedRatio",
-                         static_cast<double>(in_use_bytes) / total_bytes);
+  base::Value::Dict size_stat;
+  size_stat.Set("availableSize", ui::FormatBytes(available_bytes));
+  size_stat.Set("usedSize", ui::FormatBytes(in_use_bytes));
+  size_stat.Set("usedRatio", static_cast<double>(in_use_bytes) / total_bytes);
   int storage_space_state =
       static_cast<int>(StorageSpaceState::kStorageSpaceNormal);
   if (available_bytes < kSpaceCriticallyLowBytes)
@@ -355,7 +353,7 @@ void StorageHandler::UpdateOverallStatistics() {
         static_cast<int>(StorageSpaceState::kStorageSpaceCriticallyLow);
   else if (available_bytes < kSpaceLowBytes)
     storage_space_state = static_cast<int>(StorageSpaceState::kStorageSpaceLow);
-  size_stat.SetIntKey("spaceState", storage_space_state);
+  size_stat.Set("spaceState", storage_space_state);
 
   FireWebUIListener(CalculationTypeToEventName(
                         calculator::SizeCalculator::CalculationType::kTotal),

@@ -342,18 +342,17 @@ void MultideviceHandler::OnNearbySharingEnabledChanged() {
 }
 
 void MultideviceHandler::UpdatePageContent() {
-  std::unique_ptr<base::DictionaryValue> page_content_dictionary =
+  base::Value::Dict page_content_dictionary =
       GeneratePageContentDataDictionary();
-  DCHECK(page_content_dictionary);
   PA_LOG(INFO) << "Updating MultiDevice settings page content with: "
-               << *page_content_dictionary << ".";
+               << page_content_dictionary << ".";
   FireWebUIListener("settings.updateMultidevicePageContentData",
-                    *page_content_dictionary);
+                    page_content_dictionary);
 }
 
 void MultideviceHandler::NotifyAndroidSmsInfoChange() {
-  auto android_sms_info = GenerateAndroidSmsInfo();
-  FireWebUIListener("settings.onAndroidSmsInfoChange", *android_sms_info);
+  FireWebUIListener("settings.onAndroidSmsInfoChange",
+                    GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
@@ -370,13 +369,12 @@ void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
   DCHECK(callback_id.is_string());
 
-  std::unique_ptr<base::DictionaryValue> page_content_dictionary =
+  base::Value::Dict page_content_dictionary =
       GeneratePageContentDataDictionary();
-  DCHECK(page_content_dictionary);
   PA_LOG(INFO) << "Responding to getPageContentData() request with: "
-               << *page_content_dictionary << ".";
+               << page_content_dictionary << ".";
 
-  ResolveJavascriptCallback(callback_id, *page_content_dictionary);
+  ResolveJavascriptCallback(callback_id, page_content_dictionary);
 }
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
@@ -471,16 +469,15 @@ void MultideviceHandler::HandleGetSmartLockSignInAllowed(
   ResolveJavascriptCallback(callback_id, base::Value(sign_in_allowed));
 }
 
-std::unique_ptr<base::DictionaryValue>
-MultideviceHandler::GenerateAndroidSmsInfo() {
+base::Value::Dict MultideviceHandler::GenerateAndroidSmsInfo() {
   absl::optional<GURL> app_url;
   if (android_sms_app_manager_)
     app_url = android_sms_app_manager_->GetCurrentAppUrl();
   if (!app_url)
     app_url = android_sms::GetAndroidMessagesURL();
 
-  auto android_sms_info = std::make_unique<base::DictionaryValue>();
-  android_sms_info->SetStringKey(
+  base::Value::Dict android_sms_info;
+  android_sms_info.Set(
       kAndroidSmsInfoOriginKey,
       ContentSettingsPattern::FromURLNoWildcard(*app_url).ToString());
 
@@ -492,7 +489,7 @@ MultideviceHandler::GenerateAndroidSmsInfo() {
           multidevice_setup::mojom::FeatureState::kEnabledByUser ||
       messages_state ==
           multidevice_setup::mojom::FeatureState::kFurtherSetupRequired;
-  android_sms_info->SetBoolKey(kAndroidSmsInfoEnabledKey, enabled_state);
+  android_sms_info.Set(kAndroidSmsInfoEnabledKey, enabled_state);
 
   return android_sms_info;
 }
@@ -501,7 +498,7 @@ void MultideviceHandler::HandleGetAndroidSmsInfo(
     const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, *GenerateAndroidSmsInfo());
+  ResolveJavascriptCallback(callback_id, GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(
@@ -662,37 +659,36 @@ void MultideviceHandler::OnSetFeatureStateEnabledResult(
   ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(success));
 }
 
-std::unique_ptr<base::DictionaryValue>
-MultideviceHandler::GeneratePageContentDataDictionary() {
-  auto page_content_dictionary = std::make_unique<base::DictionaryValue>();
+base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
+  base::Value::Dict page_content_dictionary;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device = GetHostStatusWithDevice();
   multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap feature_states =
       GetFeatureStatesMap();
 
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataModeKey,
       static_cast<int32_t>(host_status_with_device.first));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataBetterTogetherStateKey,
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kBetterTogetherSuite]));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataInstantTetheringStateKey,
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kInstantTethering]));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataMessagesStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kMessages]));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataSmartLockStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kSmartLock]));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataPhoneHubStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kPhoneHub]));
@@ -701,15 +697,14 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
           ? feature_states
                 [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]
           : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
-  page_content_dictionary->SetIntKey(
-      kPageContentDataPhoneHubCameraRollStateKey,
-      static_cast<int32_t>(cameraRoll_feature_state));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(kPageContentDataPhoneHubCameraRollStateKey,
+                              static_cast<int32_t>(cameraRoll_feature_state));
+  page_content_dictionary.Set(
       kPageContentDataPhoneHubNotificationsStateKey,
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubNotifications]));
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataPhoneHubTaskContinuationStateKey,
       static_cast<int32_t>(
           feature_states
@@ -718,21 +713,20 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)
           ? feature_states[multidevice_setup::mojom::Feature::kEche]
           : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
-  page_content_dictionary->SetIntKey(kPageContentDataPhoneHubAppsStateKey,
-                                     static_cast<int32_t>(eche_feature_state));
+  page_content_dictionary.Set(kPageContentDataPhoneHubAppsStateKey,
+                              static_cast<int32_t>(eche_feature_state));
 
-  page_content_dictionary->SetIntKey(
+  page_content_dictionary.Set(
       kPageContentDataWifiSyncStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kWifiSync]));
 
   if (host_status_with_device.second) {
-    page_content_dictionary->SetStringKey(
-        kPageContentDataHostDeviceNameKey,
-        host_status_with_device.second->name());
+    page_content_dictionary.Set(kPageContentDataHostDeviceNameKey,
+                                host_status_with_device.second->name());
   }
 
-  page_content_dictionary->SetBoolKey(
+  page_content_dictionary.Set(
       kIsAndroidSmsPairingComplete,
       android_sms_pairing_state_tracker_
           ? android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete()
@@ -751,11 +745,10 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
                  ->GetNotificationAccessProhibitedReason();
   }
 
-  page_content_dictionary->SetInteger(
-      kNotificationAccessStatus,
-      static_cast<int32_t>(notification_access_status));
-  page_content_dictionary->SetIntKey(kNotificationAccessProhibitedReason,
-                                     static_cast<int32_t>(reason));
+  page_content_dictionary.Set(kNotificationAccessStatus,
+                              static_cast<int32_t>(notification_access_status));
+  page_content_dictionary.Set(kNotificationAccessProhibitedReason,
+                              static_cast<int32_t>(reason));
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus
       camera_roll_access_status = phonehub::MultideviceFeatureAccessManager::
@@ -763,8 +756,8 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   if (multidevice_feature_access_manager_)
     camera_roll_access_status =
         multidevice_feature_access_manager_->GetCameraRollAccessStatus();
-  page_content_dictionary->SetInteger(
-      kCameraRollAccessStatus, static_cast<int32_t>(camera_roll_access_status));
+  page_content_dictionary.Set(kCameraRollAccessStatus,
+                              static_cast<int32_t>(camera_roll_access_status));
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
       phonehub::MultideviceFeatureAccessManager::AccessStatus::
@@ -772,8 +765,8 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   if (apps_access_manager_)
     apps_access_status = apps_access_manager_->GetAccessStatus();
 
-  page_content_dictionary->SetInteger(kAppsAccessStatus,
-                                      static_cast<int32_t>(apps_access_status));
+  page_content_dictionary.Set(kAppsAccessStatus,
+                              static_cast<int32_t>(apps_access_status));
 
   bool is_camera_roll_file_permission_granted = false;
   if (camera_roll_manager_) {
@@ -782,29 +775,27 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
         ash::phonehub::CameraRollManager::CameraRollUiState::
             NO_STORAGE_PERMISSION;
   }
-  page_content_dictionary->SetBoolKey(kIsCameraRollFilePermissionGranted,
-                                      is_camera_roll_file_permission_granted);
+  page_content_dictionary.Set(kIsCameraRollFilePermissionGranted,
+                              is_camera_roll_file_permission_granted);
 
   bool is_nearby_share_disallowed_by_policy =
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           Profile::FromWebUI(web_ui())) &&
       (GetNearbyShareEnabledState(prefs_) ==
        NearbyShareEnabledState::kDisallowedByPolicy);
-  page_content_dictionary->SetBoolKey(kIsNearbyShareDisallowedByPolicy,
-                                      is_nearby_share_disallowed_by_policy);
+  page_content_dictionary.Set(kIsNearbyShareDisallowedByPolicy,
+                              is_nearby_share_disallowed_by_policy);
 
   bool is_phone_hub_permissions_dialog_supported =
       features::IsEcheSWAEnabled() || features::IsPhoneHubCameraRollEnabled();
-  page_content_dictionary->SetBoolean(
-      kIsPhoneHubPermissionsDialogSupported,
-      is_phone_hub_permissions_dialog_supported);
+  page_content_dictionary.Set(kIsPhoneHubPermissionsDialogSupported,
+                              is_phone_hub_permissions_dialog_supported);
 
-  page_content_dictionary->SetBoolKey(
-      kIsPhoneHubFeatureCombinedSetupSupported,
-      multidevice_feature_access_manager_
-          ? multidevice_feature_access_manager_
-                ->GetFeatureSetupRequestSupported()
-          : false);
+  page_content_dictionary.Set(kIsPhoneHubFeatureCombinedSetupSupported,
+                              multidevice_feature_access_manager_
+                                  ? multidevice_feature_access_manager_
+                                        ->GetFeatureSetupRequestSupported()
+                                  : false);
 
   return page_content_dictionary;
 }

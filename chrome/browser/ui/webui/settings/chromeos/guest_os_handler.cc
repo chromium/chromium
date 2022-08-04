@@ -19,15 +19,15 @@ namespace chromeos {
 
 namespace {
 
-base::ListValue GetSharableUsbDevices(CrosUsbDetector* detector) {
-  base::ListValue usb_devices_list;
+base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
+  base::Value::List usb_devices_list;
   for (const auto& device : detector->GetShareableDevices()) {
-    base::Value device_info(base::Value::Type::DICTIONARY);
-    device_info.SetStringKey("guid", device.guid);
-    device_info.SetStringKey("label", device.label);
+    base::Value::Dict device_info;
+    device_info.Set("guid", device.guid);
+    device_info.Set("label", device.label);
     if (device.shared_vm_name)
-      device_info.SetStringKey("sharedWith", device.shared_vm_name.value());
-    device_info.SetBoolKey("promptBeforeSharing", device.prompt_before_sharing);
+      device_info.Set("sharedWith", device.shared_vm_name.value());
+    device_info.Set("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }
   return usb_devices_list;
@@ -78,7 +78,7 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
 
-  base::Value texts(base::Value::Type::LIST);
+  base::Value::List texts;
   for (const auto& path : args[1].GetListDeprecated()) {
     texts.Append(file_manager::util::GetPathDisplayTextForSettings(
         profile_, path.GetString()));

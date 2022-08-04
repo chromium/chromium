@@ -140,24 +140,20 @@ void KeyboardHandler::UpdateShowKeys() {
                              !base::CommandLine::ForCurrentProcess()->HasSwitch(
                                  switches::kHasChromeOSKeyboard);
 
-  base::Value keyboard_params(base::Value::Type::DICTIONARY);
-  keyboard_params.SetKey("showCapsLock", base::Value(has_caps_lock));
-  keyboard_params.SetKey(
-      "showExternalMetaKey",
-      base::Value(keyboards_state.has_external_generic_keyboard));
-  keyboard_params.SetKey(
-      "showAppleCommandKey",
-      base::Value(keyboards_state.has_external_apple_keyboard));
+  base::Value::Dict keyboard_params;
+  keyboard_params.Set("showCapsLock", has_caps_lock);
+  keyboard_params.Set("showExternalMetaKey",
+                      keyboards_state.has_external_generic_keyboard);
+  keyboard_params.Set("showAppleCommandKey",
+                      keyboards_state.has_external_apple_keyboard);
   // An external (USB/BT) ChromeOS keyboard is treated similarly to an internal
   // ChromeOS keyboard. i.e. they are functionally the same.
-  keyboard_params.SetKey(
-      "hasLauncherKey",
-      base::Value(keyboards_state.has_launcher_key ||
-                  keyboards_state.has_external_chromeos_keyboard));
+  keyboard_params.Set("hasLauncherKey",
+                      keyboards_state.has_launcher_key ||
+                          keyboards_state.has_external_chromeos_keyboard);
 
   const bool show_assistant_key_settings = ui::DeviceKeyboardHasAssistantKey();
-  keyboard_params.SetKey("hasAssistantKey",
-                         base::Value(show_assistant_key_settings));
+  keyboard_params.Set("hasAssistantKey", show_assistant_key_settings);
 
   FireWebUIListener(kShowKeysChangedName, keyboard_params);
 }

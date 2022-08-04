@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 
 #include "base/bind.h"
-#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -81,17 +80,14 @@ void AndroidAppsHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   SendAndroidAppsInfo();
 }
 
-std::unique_ptr<base::DictionaryValue>
-AndroidAppsHandler::BuildAndroidAppsInfo() {
-  std::unique_ptr<base::DictionaryValue> info(new base::DictionaryValue);
-  info->SetBoolKey("playStoreEnabled",
-                   arc::IsArcPlayStoreEnabledForProfile(profile_));
+base::Value::Dict AndroidAppsHandler::BuildAndroidAppsInfo() {
+  base::Value::Dict info;
+  info.Set("playStoreEnabled", arc::IsArcPlayStoreEnabledForProfile(profile_));
   const ArcAppListPrefs* arc_apps_pref = ArcAppListPrefs::Get(profile_);
   // TODO(khmel): Inverstigate why in some browser tests
   // playStoreEnabled is true but arc_apps_pref is not set.
-  info->SetBoolKey(
-      "settingsAppAvailable",
-      arc_apps_pref && arc_apps_pref->IsRegistered(arc::kSettingsAppId));
+  info.Set("settingsAppAvailable",
+           arc_apps_pref && arc_apps_pref->IsRegistered(arc::kSettingsAppId));
   return info;
 }
 
@@ -102,8 +98,7 @@ void AndroidAppsHandler::HandleRequestAndroidAppsInfo(
 }
 
 void AndroidAppsHandler::SendAndroidAppsInfo() {
-  std::unique_ptr<base::DictionaryValue> info = BuildAndroidAppsInfo();
-  FireWebUIListener("android-apps-info-update", *info);
+  FireWebUIListener("android-apps-info-update", BuildAndroidAppsInfo());
 }
 
 void AndroidAppsHandler::ShowAndroidAppsSettings(

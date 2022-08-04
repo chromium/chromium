@@ -242,15 +242,15 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
     ui_languages.insert(language::SplitIntoMainAndTail(enabled_language).first);
   }
 
-  base::Value locales_list(base::Value::Type::LIST);
+  base::Value::List locales_list;
   for (auto& locale : locales) {
-    base::Value option(base::Value::Type::DICTIONARY);
-    option.SetKey("value", base::Value(locale.first));
-    option.SetKey("name",
-                  base::Value(l10n_util::GetDisplayNameForLocale(
-                      locale.first, application_locale, /*is_for_ui=*/true)));
-    option.SetKey("worksOffline", base::Value(locale.second.works_offline));
-    option.SetKey("installed", base::Value(locale.second.installed));
+    base::Value::Dict option;
+    option.Set("value", locale.first);
+    option.Set("name",
+               l10n_util::GetDisplayNameForLocale(
+                   locale.first, application_locale, /*is_for_ui=*/true));
+    option.Set("worksOffline", locale.second.works_offline);
+    option.Set("installed", locale.second.installed);
 
     // We can recommend languages that match the current application
     // locale, IME languages or enabled preferred languages.
@@ -258,7 +258,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
         language::SplitIntoMainAndTail(locale.first);
     bool is_recommended = base::Contains(ui_languages, lang_and_locale.first);
 
-    option.SetKey("recommended", base::Value(is_recommended));
+    option.Set("recommended", is_recommended);
     locales_list.Append(std::move(option));
   }
 
