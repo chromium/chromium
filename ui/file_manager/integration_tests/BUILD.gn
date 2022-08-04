@@ -19,6 +19,7 @@ js_type_check("closure_compile") {
   ]
   closure_flags =
       strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
         "js_module_root=../../ui",
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
