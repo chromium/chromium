@@ -782,7 +782,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1350105,crbug.com/1341234,crbug.com/1350117): Flaky on
+// ubuntu and chromeos
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_BackOnTermsScreen DISABLED_BackOnTermsScreen
 #else
 #define MAYBE_BackOnTermsScreen BackOnTermsScreen
