@@ -159,6 +159,26 @@ TEST(RectFTest, UnionEvenIfEmpty) {
                                         RectF(8.8f, 9.9f, 2.2f, 0)));
 }
 
+TEST(RectFTest, UnionEnsuresContainWithFloatingError) {
+  for (float f = 0.1f; f < 5; f += 0.1f) {
+    gfx::RectF r1(1, 2, 3, 4);
+    r1.Scale(f, f + 0.05f);
+    gfx::RectF r2 = r1 + gfx::Vector2dF(10.f + f, f - 10.f);
+    gfx::RectF r3 = gfx::UnionRects(r1, r2);
+    EXPECT_TRUE(r3.Contains(r1));
+    EXPECT_TRUE(r3.Contains(r2));
+  }
+}
+
+TEST(RectFTest, UnionMaxRects) {
+  constexpr float kMaxFloat = std::numeric_limits<float>::max();
+  constexpr float kMinFloat = std::numeric_limits<float>::min();
+  gfx::RectF r1(kMinFloat, 0, kMaxFloat, kMaxFloat);
+  gfx::RectF r2(0, kMinFloat, kMaxFloat, kMaxFloat);
+  // This should not trigger DCHECK failure.
+  r1.Union(r2);
+}
+
 TEST(RectFTest, CenterPoint) {
   PointF center;
 

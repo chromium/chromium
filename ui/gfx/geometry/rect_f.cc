@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -148,6 +149,18 @@ void RectF::UnionEvenIfEmpty(const RectF& rect) {
   float rb = std::max(bottom(), rect.bottom());
 
   SetRect(rx, ry, rr - rx, rb - ry);
+
+  // Due to floating errors, the new rect may not fully contain the original
+  // rects at the right/bottom side. Expand the rect in the case.
+  constexpr auto kFloatMax = std::numeric_limits<float>::max();
+  if (UNLIKELY(right() < rr && width() < kFloatMax)) {
+    set_width(std::nextafter(width(), kFloatMax));
+    DCHECK_GE(right(), rr);
+  }
+  if (UNLIKELY(bottom() < rb && height() < kFloatMax)) {
+    set_height(std::nextafter(height(), kFloatMax));
+    DCHECK_GE(bottom(), rb);
+  }
 }
 
 void RectF::Subtract(const RectF& rect) {
