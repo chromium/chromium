@@ -259,7 +259,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
   }
 
   // Finds the element at the given |point| and compares it against
-  // |expected_result|. Retries up to 5 times if there is a mismatch.  Without
+  // |expected_result|. Retries if there is a mismatch.  Without
   // the retry logic, these tests fail flakily, possibly because they attempt to
   // find the element before the webview has completed layout and/or
   // rendering. This occurs on all iOS versions, but seems to be worse on iOS
@@ -271,7 +271,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
   void CheckElementResult(CGPoint point,
                           const base::Value& expected_result,
                           const std::vector<const char*>& ignored_keys) {
-    constexpr int kNumTries = 5;
+    constexpr int kNumTries = 13;
     for (int i = 0; i < kNumTries; ++i) {
       base::Value result = FindElementAtPoint(point);
       for (const char* key : ignored_keys) {
