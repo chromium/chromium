@@ -28,7 +28,7 @@ namespace {
 
 // Associates the variations params of |experiment|, if present.
 void RegisterExperimentParams(const Study& study,
-                              const Study_Experiment& experiment) {
+                              const Study::Experiment& experiment) {
   std::map<std::string, std::string> params;
   for (int i = 0; i < experiment.param_size(); ++i) {
     if (experiment.param(i).has_name() && experiment.param(i).has_value())
@@ -42,7 +42,7 @@ void RegisterExperimentParams(const Study& study,
 // Returns nullopt when |experiment| doesn't have a Google web or Google web
 // trigger experiment ID.
 absl::optional<IDCollectionKey> GetKeyForWebExperiment(
-    const Study_Experiment& experiment) {
+    const Study::Experiment& experiment) {
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
   bool has_web_trigger_experiment_id =
       experiment.has_google_web_trigger_experiment_id();
@@ -55,8 +55,8 @@ absl::optional<IDCollectionKey> GetKeyForWebExperiment(
   // server before generating a variations seed.
   DCHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
 
-  Study_GoogleWebVisibility visibility = experiment.google_web_visibility();
-  if (visibility == Study_GoogleWebVisibility_FIRST_PARTY) {
+  Study::GoogleWebVisibility visibility = experiment.google_web_visibility();
+  if (visibility == Study::FIRST_PARTY) {
     return has_web_trigger_experiment_id
                ? GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY
                : GOOGLE_WEB_PROPERTIES_FIRST_PARTY;
@@ -68,7 +68,7 @@ absl::optional<IDCollectionKey> GetKeyForWebExperiment(
 
 // If there are VariationIDs associated with |experiment|, register the
 // VariationIDs.
-void RegisterVariationIds(const Study_Experiment& experiment,
+void RegisterVariationIds(const Study::Experiment& experiment,
                           const std::string& trial_name) {
   if (experiment.has_google_app_experiment_id()) {
     const VariationID variation_id =
@@ -96,12 +96,12 @@ void RegisterVariationIds(const Study_Experiment& experiment,
 
 // Executes |callback| on every override defined by |experiment|.
 void ApplyUIStringOverrides(
-    const Study_Experiment& experiment,
+    const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
   UMA_HISTOGRAM_COUNTS_100("Variations.StringsOverridden",
                            experiment.override_ui_string_size());
   for (int i = 0; i < experiment.override_ui_string_size(); ++i) {
-    const Study_Experiment_OverrideUIString& override =
+    const Study::Experiment::OverrideUIString& override =
         experiment.override_ui_string(i);
     callback.Run(override.name_hash(), base::UTF8ToUTF16(override.value()));
   }
@@ -110,12 +110,12 @@ void ApplyUIStringOverrides(
 // Forces the specified |experiment| to be enabled in |study|.
 void ForceExperimentState(
     const Study& study,
-    const Study_Experiment& experiment,
+    const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
     base::FieldTrial* trial) {
   RegisterExperimentParams(study, experiment);
   RegisterVariationIds(experiment, study.name());
-  if (study.activation_type() == Study_ActivationType_ACTIVATE_ON_STARTUP) {
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
@@ -138,7 +138,7 @@ void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
     return;
 
   const Study& study = *processed_study.study();
-  const Study_Experiment& experiment = study.experiment(experiment_index);
+  const Study::Experiment& experiment = study.experiment(experiment_index);
 
   // Process all the features to enable.
   int feature_count = experiment.feature_association().enable_feature_size();
@@ -169,7 +169,7 @@ void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
 // Checks if |experiment| is associated with a forcing flag or feature and if it
 // is, returns whether it should be forced enabled based on the |command_line|
 // or |feature_list| state.
-bool ShouldForceExperiment(const Study_Experiment& experiment,
+bool ShouldForceExperiment(const Study::Experiment& experiment,
                            const base::CommandLine& command_line,
                            const base::FeatureList& feature_list) {
   if (experiment.feature_association().has_forcing_feature_on()) {
@@ -217,7 +217,7 @@ bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
   // This should be kept in sync with the server-side layer validation
   // code: https://go/chrome-variations-layer-validation
   for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study_Experiment& experiment = study.experiment(i);
+    const Study::Experiment& experiment = study.experiment(i);
     if (experiment.has_google_web_experiment_id() ||
         experiment.has_google_web_trigger_experiment_id() ||
         experiment.has_chrome_sync_experiment_id()) {
@@ -248,7 +248,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   // flag. Force the first experiment with an existing flag.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study_Experiment& experiment = study.experiment(i);
+    const Study::Experiment& experiment = study.experiment(i);
     if (ShouldForceExperiment(experiment, *command_line, *feature_list)) {
       base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
           study.name(), experiment.name());
@@ -305,7 +305,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   bool has_overrides = false;
   bool enables_or_disables_features = false;
   for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study_Experiment& experiment = study.experiment(i);
+    const Study::Experiment& experiment = study.experiment(i);
     RegisterExperimentParams(study, experiment);
 
     // Groups with forcing flags have probability 0 and will never be selected.
@@ -335,7 +335,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   if (enables_or_disables_features)
     RegisterFeatureOverrides(processed_study, trial.get(), feature_list);
 
-  if (study.activation_type() == Study_ActivationType_ACTIVATE_ON_STARTUP) {
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.

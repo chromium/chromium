@@ -56,9 +56,10 @@ const char kForcingFlag2[] = "flag_test2";
 const VariationID kExperimentId = 123;
 
 // Adds an experiment to |study| with the specified |name| and |probability|.
-Study_Experiment* AddExperiment(const std::string& name, int probability,
-                                Study* study) {
-  Study_Experiment* experiment = study->add_experiment();
+Study::Experiment* AddExperiment(const std::string& name,
+                                 int probability,
+                                 Study* study) {
+  Study::Experiment* experiment = study->add_experiment();
   experiment->set_name(name);
   experiment->set_probability_weight(probability);
   return experiment;
@@ -233,9 +234,9 @@ TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId_FirstParty) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  Study_Experiment* experiment1 = study.mutable_experiment(1);
+  Study::Experiment* experiment1 = study.mutable_experiment(1);
   experiment1->set_google_web_experiment_id(kExperimentId);
-  experiment1->set_google_web_visibility(Study_GoogleWebVisibility_FIRST_PARTY);
+  experiment1->set_google_web_visibility(Study::FIRST_PARTY);
 
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ(kFlagGroup1Name,
@@ -362,16 +363,16 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStrings) {
   Study study;
   study.set_name("Study1");
   study.set_default_experiment_name("B");
-  study.set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
-  Study_Experiment* experiment1 = AddExperiment("A", 0, &study);
-  Study_Experiment_OverrideUIString* override =
+  Study::Experiment* experiment1 = AddExperiment("A", 0, &study);
+  Study::Experiment::OverrideUIString* override =
       experiment1->add_override_ui_string();
 
   override->set_name_hash(1234);
   override->set_value("test");
 
-  Study_Experiment* experiment2 = AddExperiment("B", 1, &study);
+  Study::Experiment* experiment2 = AddExperiment("B", 1, &study);
 
   EXPECT_TRUE(CreateTrialFromStudy(study));
 
@@ -395,8 +396,8 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   ASSERT_EQ(kForcingFlag1, study.experiment(1).forcing_flag());
 
-  study.set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
-  Study_Experiment_OverrideUIString* override =
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  Study::Experiment::OverrideUIString* override =
       study.mutable_experiment(1)->add_override_ui_string();
   override->set_name_hash(1234);
   override->set_value("test");
@@ -417,7 +418,7 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudy) {
   study.set_name("study");
   study.set_default_experiment_name("def");
   AddExperiment("abc", 100, &study);
-  Study_Experiment* default_group = AddExperiment("def", 200, &study);
+  Study::Experiment* default_group = AddExperiment("def", 200, &study);
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study, false));
@@ -453,7 +454,7 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudy) {
 
   default_group->set_name("def");
   EXPECT_TRUE(processed_study.Init(&study, false));
-  Study_Experiment* repeated_group = study.add_experiment();
+  Study::Experiment* repeated_group = study.add_experiment();
   repeated_group->set_name("abc");
   repeated_group->set_probability_weight(1);
   EXPECT_FALSE(processed_study.Init(&study, false));
@@ -463,9 +464,9 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudyWithAssociatedFeatures) {
   Study study;
   study.set_name("study");
   study.set_default_experiment_name("def");
-  Study_Experiment* exp1 = AddExperiment("exp1", 100, &study);
-  Study_Experiment* exp2 = AddExperiment("exp2", 100, &study);
-  Study_Experiment* exp3 = AddExperiment("exp3", 100, &study);
+  Study::Experiment* exp1 = AddExperiment("exp1", 100, &study);
+  Study::Experiment* exp2 = AddExperiment("exp2", 100, &study);
+  Study::Experiment* exp3 = AddExperiment("exp3", 100, &study);
   AddExperiment("def", 100, &study);
 
   ProcessedStudy processed_study;
@@ -508,7 +509,7 @@ TEST_F(VariationsSeedProcessorTest, ValidateStudyWithAssociatedFeatures) {
 
   // Setting a different activation type should result in empty
   // |associated_features|.
-  study.set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
   EXPECT_TRUE(processed_study.Init(&study, false));
   EXPECT_THAT(processed_study.associated_features(), IsEmpty());
 }
@@ -550,12 +551,12 @@ TEST_F(VariationsSeedProcessorTest, VariationParams) {
   study.set_name("Study1");
   study.set_default_experiment_name("B");
 
-  Study_Experiment* experiment1 = AddExperiment("A", 1, &study);
-  Study_Experiment_Param* param = experiment1->add_param();
+  Study::Experiment* experiment1 = AddExperiment("A", 1, &study);
+  Study::Experiment::Param* param = experiment1->add_param();
   param->set_name("x");
   param->set_value("y");
 
-  Study_Experiment* experiment2 = AddExperiment("B", 0, &study);
+  Study::Experiment* experiment2 = AddExperiment("B", 0, &study);
 
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ("y", GetVariationParamValue("Study1", "x"));
@@ -570,7 +571,7 @@ TEST_F(VariationsSeedProcessorTest, VariationParams) {
 TEST_F(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   ASSERT_EQ(kForcingFlag1, study.experiment(1).forcing_flag());
-  Study_Experiment_Param* param = study.mutable_experiment(1)->add_param();
+  Study::Experiment::Param* param = study.mutable_experiment(1)->add_param();
   param->set_name("x");
   param->set_value("y");
 
@@ -593,14 +594,14 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   study2->set_default_experiment_name("Default");
   AddExperiment("BB", 100, study2);
   AddExperiment("Default", 0, study2);
-  study2->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study2->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   Study* study3 = seed.add_study();
   study3->set_name("C");
   study3->set_default_experiment_name("Default");
   AddExperiment("CC", 100, study3);
   AddExperiment("Default", 0, study3);
-  study3->set_activation_type(Study_ActivationType_ACTIVATE_ON_QUERY);
+  study3->set_activation_type(Study::ACTIVATE_ON_QUERY);
 
   ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.locale = "en-CA";
@@ -636,7 +637,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActiveWithFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  study.set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kFlagStudyName));
@@ -648,7 +649,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActiveWithFlag) {
 TEST_F(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   ASSERT_EQ(kNonFlagGroupName, study.experiment(0).name());
-  Study_Experiment_Param* param = study.mutable_experiment(0)->add_param();
+  Study::Experiment::Param* param = study.mutable_experiment(0)->add_param();
   param->set_name("x");
   param->set_value("y");
   study.mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
@@ -707,8 +708,8 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     study.set_default_experiment_name("B");
     AddExperiment("B", 0, &study);
 
-    Study_Experiment* experiment = AddExperiment("A", 1, &study);
-    Study_Experiment_FeatureAssociation* association =
+    Study::Experiment* experiment = AddExperiment("A", 1, &study);
+    Study::Experiment::FeatureAssociation* association =
         experiment->mutable_feature_association();
     if (test_case.enable_feature)
       association->add_enable_feature(test_case.enable_feature);
@@ -836,12 +837,12 @@ TEST_F(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     study.set_default_experiment_name(kDefaultGroup);
     AddExperiment(kDefaultGroup, group == DEFAULT_GROUP ? 1 : 0, &study);
 
-    Study_Experiment* feature_enable =
+    Study::Experiment* feature_enable =
         AddExperiment(kEnabledGroup, group == ENABLE_GROUP ? 1 : 0, &study);
     feature_enable->mutable_feature_association()->add_enable_feature(
         test_case.feature.name);
 
-    Study_Experiment* feature_disable =
+    Study::Experiment* feature_disable =
         AddExperiment(kDisabledGroup, group == DISABLE_GROUP ? 1 : 0, &study);
     feature_disable->mutable_feature_association()->add_disable_feature(
         test_case.feature.name);
@@ -911,7 +912,7 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
     study.set_expiry_date(TimeToProtoTime(test_case.expiry_date));
 
     AddExperiment("Default", 0, &study);
-    Study_Experiment* feature_experiment = AddExperiment("Feature", 1, &study);
+    Study::Experiment* feature_experiment = AddExperiment("Feature", 1, &study);
     if (test_case.study_force_feature_state) {
       feature_experiment->mutable_feature_association()->add_enable_feature(
           test_case.feature.name);
@@ -1047,7 +1048,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer = study->mutable_layer();
   layer->set_layer_id(42);
@@ -1075,7 +1076,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1103,7 +1104,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerSelected) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1129,7 +1130,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1162,7 +1163,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1190,7 +1191,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithOutOfRangeSlots) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1218,7 +1219,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1263,7 +1264,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1305,7 +1306,7 @@ TEST_F(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1405,7 +1406,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
@@ -1434,7 +1435,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
 
   Study* study = seed.add_study();
   study->set_name("Study1");
-  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
