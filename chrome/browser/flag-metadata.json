@@ -371,6 +371,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "audio-hfp-mic-sr",
+    "owners": [ "paulhsia", "cranelw", "chromeos-audio@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 113

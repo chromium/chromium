@@ -4508,6 +4508,11 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
+const char kAudioHFPMicSRName[] =
+    "Audio super-resolution Bluetooth HFP microphone";
+const char kAudioHFPMicSRDescription[] =
+    "Enable super-resolution Bluetooth HFP microphone recording.";
+
 const char kAudioSettingsPageName[] = "Audio Settings Page";
 const char kAudioSettingsPageDescription[] =
     "Enables the dedicated Audio Settings Page in system settings, which "

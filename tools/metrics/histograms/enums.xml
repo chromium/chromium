@@ -56738,6 +56738,7 @@ from previous Chrome versions.
   <int value="-1373048294"
       label="ChromeCleanupScanCompletedNotification:enabled"/>
   <int value="-1372926635" label="AndroidManagedByMenuItem:disabled"/>
+  <int value="-1372833098" label="CrOSLateBootAudioHFPMicSR:enabled"/>
   <int value="-1371984027" label="CrostiniWebUIUpgrader:disabled"/>
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
   <int value="-1370883795" label="TerminalTmuxIntegration:disabled"/>
@@ -61738,6 +61739,7 @@ from previous Chrome versions.
   <int value="1824931483"
       label="EnableHistoryFaviconsGoogleServerQuery:disabled"/>
   <int value="1825369164" label="EnableNewBadgeOnMenuItems:disabled"/>
+  <int value="1825605721" label="CrOSLateBootAudioHFPMicSR:disabled"/>
   <int value="1825812252" label="EnableNeuralPalmAdaptiveHold:disabled"/>
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>

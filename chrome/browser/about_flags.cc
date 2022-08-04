@@ -3544,6 +3544,9 @@ const FeatureEntry kFeatureEntries[] = {
     },
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"audio-hfp-mic-sr", flag_descriptions::kAudioHFPMicSRName,
+     flag_descriptions::kAudioHFPMicSRDescription, kOsCrOS,
+     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAudioHFPMicSR")},
     {
         "audio-settings-page",
         flag_descriptions::kAudioSettingsPageName,

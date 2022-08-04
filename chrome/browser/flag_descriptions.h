@@ -2585,6 +2585,9 @@ extern const char kAshEnablePipRoundedCornersDescription[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAudioHFPMicSRName[];
+extern const char kAudioHFPMicSRDescription[];
+
 extern const char kAudioSettingsPageName[];
 extern const char kAudioSettingsPageDescription[];
 
