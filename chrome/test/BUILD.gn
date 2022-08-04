@@ -852,6 +852,7 @@ if (is_android) {
       "//components/ukm:ukm_test_helper",
       "//components/ukm/content",
       "//components/unified_consent",
+      "//components/variations/service",
       "//components/webapps/browser",
 
       # TODO(crbug.com/961849): This is needed for ShellManager which is what

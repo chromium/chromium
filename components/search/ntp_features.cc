@@ -56,7 +56,7 @@ const base::Feature kRealboxUseGoogleGIcon{"NtpRealboxUseGoogleGIcon",
 
 // If enabled, chrome cart module will be shown.
 const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
 const base::Feature kNtpDummyModules{"NtpDummyModules",

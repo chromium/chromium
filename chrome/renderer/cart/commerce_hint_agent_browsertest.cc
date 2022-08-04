@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -40,10 +41,13 @@
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/session_proto_db/session_proto_db.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #endif
 
 namespace {
@@ -184,7 +188,9 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   using XHREntry = ukm::builders::Shopping_WillSendRequest;
   using ExtractionEntry = ukm::builders::Shopping_CartExtraction;
 
-  CommerceHintAgentTest() {
+  CommerceHintAgentTest() = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{
 #if !BUILDFLAG(IS_ANDROID)
@@ -1538,13 +1544,19 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
 // TODO(crbug/1310497): This test is flaky on ChromeOS.
 class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
  public:
-  CommerceHintAgentFencedFrameTest() = default;
-  ~CommerceHintAgentFencedFrameTest() override = default;
-  CommerceHintAgentFencedFrameTest(const CommerceHintAgentFencedFrameTest&) =
-      delete;
+  CommerceHintAgentFencedFrameTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+#if !BUILDFLAG(IS_ANDROID)
+          ntp_features::kNtpChromeCartModule
+#else
+          commerce::kCommerceHintAndroid
+#endif
+        },
+        {optimization_guide::features::kOptimizationHints});
+  }
 
-  CommerceHintAgentFencedFrameTest& operator=(
-      const CommerceHintAgentFencedFrameTest&) = delete;
+  void SetUpInProcessBrowserTestFixture() override {}
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_helper_;
@@ -1552,6 +1564,7 @@ class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
@@ -1575,18 +1588,21 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
 
 class CommerceHintAgentPortalBrowserTest : public CommerceHintAgentTest {
  public:
-  CommerceHintAgentPortalBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPortals, {}},
+         {blink::features::kPortalsCrossOrigin, {}},
+         {
+#if !BUILDFLAG(IS_ANDROID)
+             ntp_features::kNtpChromeCartModule,
+#else
+             commerce::kCommerceHintAndroid,
+#endif
+             {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
+              // Extend timeout to avoid flakiness.
+              {"cart-extraction-timeout", "1m"}}}},
+        {optimization_guide::features::kOptimizationHints});
   }
-  ~CommerceHintAgentPortalBrowserTest() override = default;
-  CommerceHintAgentPortalBrowserTest(
-      const CommerceHintAgentPortalBrowserTest&) = delete;
-
-  CommerceHintAgentPortalBrowserTest& operator=(
-      const CommerceHintAgentPortalBrowserTest&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1604,5 +1620,61 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentPortalBrowserTest, VisitCartInPortal) {
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+class CommerceHintFeatureDefaultWithoutGeoTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {}, {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintFeatureDefaultWithoutGeoTest,
+                       DisableWithoutGeo) {
+  ASSERT_FALSE(IsCartModuleEnabled());
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  WaitForUmaCount("Commerce.Carts.VisitCart", 0);
+  WaitForCartCount(kEmptyExpected);
+}
+
+class CommerceHintFeatureDefaultWithGeoTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {}, {optimization_guide::features::kOptimizationHints});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CommerceHintAgentTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "us");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintFeatureDefaultWithGeoTest, EnableWithGeo) {
+  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(IsCartModuleEnabled());
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
+#else
+  ASSERT_FALSE(IsCartModuleEnabled());
+
+  WaitForUmaCount("Commerce.Carts.VisitCart", 0);
+  WaitForCartCount(kEmptyExpected);
+#endif
+}
+#endif
 
 }  // namespace

@@ -19,6 +19,7 @@
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/component_updater/component_updater_paths.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/search/ntp_features.h"
 #else
 #include "components/commerce/core/commerce_feature_list.h"
@@ -187,7 +188,7 @@ CommerceHeuristicsInstallerPolicy::GetInstallerAttributes() const {
 void RegisterCommerceHeuristicsComponent(
     component_updater::ComponentUpdateService* cus) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
+  if (IsCartModuleEnabled()) {
 #else
   if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid)) {
 #endif

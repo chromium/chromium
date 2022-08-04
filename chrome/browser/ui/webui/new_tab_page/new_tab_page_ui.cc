@@ -97,7 +97,6 @@ const std::pair<const char*, const base::Feature&> kModuleFeatures[] = {
 #if !defined(OFFICIAL_BUILD)
     {"dummyModulesEnabled", ntp_features::kNtpDummyModules},
 #endif
-    {"chromeCartModuleEnabled", ntp_features::kNtpChromeCartModule},
     {"photosModuleEnabled", ntp_features::kNtpPhotosModule},
     {"feedModuleEnabled", ntp_features::kNtpFeedModule},
 };
@@ -443,6 +442,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                        base::FeatureList::IsEnabled(nameFeature.second));
   }
   source->AddBoolean("recipeTasksModuleEnabled", IsRecipeTasksModuleEnabled());
+  source->AddBoolean("chromeCartModuleEnabled", IsCartModuleEnabled());
   source->AddString("photosModuleCustomArtWork",
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
@@ -836,6 +836,7 @@ void NewTabPageUI::OnLoad() {
     anyModuleEnabled |= base::FeatureList::IsEnabled(nameFeature.second);
   }
   anyModuleEnabled |= IsRecipeTasksModuleEnabled();
+  anyModuleEnabled |= IsCartModuleEnabled();
   // Only enable modules if account credentials are available as most modules
   // won't have data to render otherwise. We can override this behavior with the
   // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
