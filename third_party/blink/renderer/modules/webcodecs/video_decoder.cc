@@ -574,6 +574,19 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
       ParseAv1KeyFrame(*decoder_buffer, &is_key_frame);
     } else if (current_codec_ == media::VideoCodec::kH264) {
       ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      // Use a more helpful error message if we think the user may have forgot
+      // to provide a description for AVC H.264. We could try to guess at the
+      // NAL unit size and see if a NAL unit parses out, but this seems fine.
+      if (!is_key_frame && !h264_converter_) {
+        return media::DecoderStatus(
+            media::DecoderStatus::Codes::kKeyFrameRequired,
+            "A key frame is required after configure() or flush(). If you're "
+            "using AVC formatted H.264 you must fill out the description field "
+            "in the VideoDecoderConfig.");
+      }
+#endif
     }
 
     if (!is_key_frame) {
