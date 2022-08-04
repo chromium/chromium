@@ -11564,6 +11564,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Bookmark manager"/>
   <int value="6" label="Omnibox suggestion"/>
   <int value="7" label="Top application menu (Mac, etc.)"/>
+  <int value="8" label="Side panel folder"/>
+  <int value="9" label="Side panel subfolder"/>
+  <int value="10" label="Side panel reading list"/>
+  <int value="11" label="Reading list dialog"/>
+  <int value="12" label="Side panel context menu"/>
 </enum>
 
 <enum name="BookmarkManagerCommand">
