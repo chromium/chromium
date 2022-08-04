@@ -25330,7 +25330,7 @@
 
           If this policy is set, the "Kerberos username" field shows the prefilled domain on the right. If the user enters their username it is going to be concatenated with the prefilled domain. If the user's input contains "@", the prefilled domain is not shown and does not affect the input.
 
-          If this policy is unset, no adittional information is shown and creating the ticket works as usual.''',
+          If this policy is unset, no additional information is shown and creating the ticket works as usual.''',
     },
     {
       'name': 'CommandLineFlagSecurityWarningsEnabled',
