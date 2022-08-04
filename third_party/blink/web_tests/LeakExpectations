@@ -56,6 +56,9 @@ crbug.com/1219915 [ Linux ] touchadjustment/touch-links-longpress.html [ Failure
 # Sheriff 2021-11-18
 crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigation-headers.https.html [ Failure Pass ]
 
+# Sheriff 2022-08-04
+crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Failure Pass ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
