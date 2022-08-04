@@ -202,8 +202,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
+// TODO(crbug.com/1349592): Flaky on linux-wayland-rel and linux-lacros-rel
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CustomTabBarIsVisibleInFullscreen \
+  DISABLED_CustomTabBarIsVisibleInFullscreen
+#else
+#define MAYBE_CustomTabBarIsVisibleInFullscreen \
+  CustomTabBarIsVisibleInFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       CustomTabBarIsVisibleInFullscreen) {
+                       MAYBE_CustomTabBarIsVisibleInFullscreen) {
   InstallAndLaunchBookmarkApp();
 
   ASSERT_TRUE(
