@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
 namespace chromeos {
 namespace converters {

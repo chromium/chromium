@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_CONVERTERS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_CONVERTERS_H_
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
 namespace chromeos {
 namespace converters {

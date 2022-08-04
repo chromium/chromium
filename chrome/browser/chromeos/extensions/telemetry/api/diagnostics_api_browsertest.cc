@@ -5,9 +5,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
-#include "ash/webui/telemetry_extension_ui/services/fake_diagnostics_service.h"
 #include "base/values.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

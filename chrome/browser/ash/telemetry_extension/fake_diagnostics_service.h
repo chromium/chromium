@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_FAKE_DIAGNOSTICS_SERVICE_H_
-#define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_FAKE_DIAGNOSTICS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
 #include "base/values.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -138,4 +138,4 @@ class FakeDiagnosticsService : public health::mojom::DiagnosticsService {
 };
 }  // namespace ash
 
-#endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_FAKE_DIAGNOSTICS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_

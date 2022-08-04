@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
-#define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_
 
 #include <memory>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -114,4 +114,4 @@ namespace chromeos {
 using ::ash::DiagnosticsService;
 }  // namespace chromeos
 
-#endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_

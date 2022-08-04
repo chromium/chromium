@@ -8,6 +8,10 @@ assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
 source_set("telemetry_extension") {
   sources = [
+    "diagnostics_service.cc",
+    "diagnostics_service.h",
+    "diagnostics_service_converters.cc",
+    "diagnostics_service_converters.h",
     "probe_service_ash.cc",
     "probe_service_ash.h",
     "probe_service_converters.cc",
@@ -16,6 +20,7 @@ source_set("telemetry_extension") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
@@ -24,9 +29,25 @@ source_set("telemetry_extension") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_diagnostics_service.cc",
+    "fake_diagnostics_service.h",
+  ]
+
+  deps = [
+    ":telemetry_extension",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "diagnostics_service_converters_unittest.cc",
     "probe_service_ash_unittest.cc",
     "probe_service_converters_unittest.cc",
   ]
@@ -34,6 +55,7 @@ source_set("unit_tests") {
     ":telemetry_extension",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",

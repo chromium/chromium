@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {

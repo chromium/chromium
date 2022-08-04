@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/fake_diagnostics_service.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

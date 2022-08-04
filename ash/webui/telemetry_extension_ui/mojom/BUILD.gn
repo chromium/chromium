@@ -8,8 +8,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojom") {
-  sources = [
-    "diagnostics_service.mojom",
-    "system_events_service.mojom",
-  ]
+  sources = [ "system_events_service.mojom" ]
 }

@@ -8,12 +8,13 @@
 #include <string>
 #include <utility>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
 namespace chromeos {
 

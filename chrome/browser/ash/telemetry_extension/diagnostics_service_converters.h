@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
-#define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_CONVERTERS_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_CONVERTERS_H_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom-forward.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -78,4 +78,4 @@ auto ConvertDiagnosticsPtr(InputT input) {
 }  // namespace converters
 }  // namespace ash
 
-#endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_CONVERTERS_H_

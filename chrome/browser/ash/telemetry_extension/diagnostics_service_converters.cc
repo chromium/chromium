@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

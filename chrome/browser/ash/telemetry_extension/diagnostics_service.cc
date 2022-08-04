@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
 namespace ash {
 
