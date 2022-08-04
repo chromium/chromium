@@ -14,7 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
 import {FeedbackFlowState} from './feedback_flow.js';
-import {AttachedFile, FeedbackContext, FeedbackServiceProviderInterface, Report} from './feedback_types.js';
+import {AttachedFile, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -114,6 +114,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   handleScreenshotClick_() {
     this.$.screenshotDialog.showModal();
     this.$.closeDialogButton.focus();
+    this.feedbackServiceProvider_.recordPreSubmitAction(
+        FeedbackAppPreSubmitAction.kViewedScreenshot);
   }
 
   /** @protected */

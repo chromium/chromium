@@ -78,6 +78,12 @@ export const HelpContentProvider = ash.osFeedbackUi.mojom.HelpContentProvider;
  */
 export const FeedbackContext = ash.osFeedbackUi.mojom.FeedbackContext;
 
+/**
+ * Type alias for FeedbackAppPreSubmitAction.
+ * @typedef {ash.osFeedbackUi.mojom.FeedbackAppPreSubmitAction}
+ */
+export const FeedbackAppPreSubmitAction =
+    ash.osFeedbackUi.mojom.FeedbackAppPreSubmitAction;
 
 /**
  * Type alias for FeedbackAppPostSubmitAction.

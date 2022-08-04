@@ -39,6 +39,8 @@ class FeedbackServiceProvider
   void OpenSystemInfoDialog() override;
   void RecordPostSubmitAction(
       os_feedback_ui::mojom::FeedbackAppPostSubmitAction) override;
+  void RecordPreSubmitAction(
+      os_feedback_ui::mojom::FeedbackAppPreSubmitAction) override;
 
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>

@@ -73,6 +73,11 @@ void FeedbackServiceProvider::RecordPostSubmitAction(
   os_feedback_ui::metrics::EmitFeedbackAppPostSubmitAction(action);
 }
 
+void FeedbackServiceProvider::RecordPreSubmitAction(
+    os_feedback_ui::mojom::FeedbackAppPreSubmitAction action) {
+  os_feedback_ui::metrics::EmitFeedbackAppPreSubmitAction(action);
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

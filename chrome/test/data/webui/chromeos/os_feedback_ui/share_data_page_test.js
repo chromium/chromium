@@ -8,7 +8,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
+import {FeedbackAppPreSubmitAction, FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
@@ -67,6 +67,17 @@ export function shareDataPageTestSuite() {
     const element = getElement(selector);
     assertTrue(!!element);
     return element.textContent.trim();
+  }
+
+  /**
+   * @param {number} callCounts
+   * @param {FeedbackAppPreSubmitAction} action
+   * @private
+   */
+  function verifyRecordPreSubmitActionCallCount(callCounts, action) {
+    assertEquals(
+        callCounts,
+        feedbackServiceProvider.getRecordPreSubmitActionCallCount(action));
   }
 
   /**
@@ -400,6 +411,8 @@ export function shareDataPageTestSuite() {
   // focus on the close dialog icon button.
   test('screenshotPreview', async () => {
     await initializePage();
+    verifyRecordPreSubmitActionCallCount(
+        0, FeedbackAppPreSubmitAction.kViewedScreenshot);
     page.feedbackContext = fakeFeedbackContext;
     page.screenshotUrl = fakeImageUrl;
     assertEquals(fakeImageUrl, getElement('#screenshotImage').src);
@@ -418,6 +431,8 @@ export function shareDataPageTestSuite() {
     assertTrue(isVisible(closeDialogButton));
     // The preview dialog's close icon button is focused.
     assertEquals(closeDialogButton, getDeepActiveElement());
+    verifyRecordPreSubmitActionCallCount(
+        1, FeedbackAppPreSubmitAction.kViewedScreenshot);
 
     // Press enter should close the preview dialog.
     closeDialogButton.dispatchEvent(

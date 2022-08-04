@@ -18,10 +18,14 @@ constexpr char kFeedbackAppPostSubmitAction[] =
     "Feedback.ChromeOSApp.PostSubmitAction";
 constexpr char kFeedbackAppIncludedScreenshot[] =
     "Feedback.ChromeOSApp.IncludedScreenshot";
+constexpr char kFeedbackAppViewedScreenshot[] =
+    "Feedback.ChromeOSApp.ViewedScreenshot";
 
 void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed);
 
 void EmitFeedbackAppPostSubmitAction(mojom::FeedbackAppPostSubmitAction action);
+
+void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action);
 
 void EmitFeedbackAppIncludedScreenshot(bool included_screenshot);
 

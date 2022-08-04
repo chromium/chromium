@@ -145,6 +145,20 @@ enum FeedbackAppPostSubmitAction {
   // tools/metrics/histograms/enums.xml.
 };
 
+// User actions before sending the feedback.
+enum FeedbackAppPreSubmitAction {
+  // User clicked the help content on search page.
+  kViewedHelpContent,
+  // User viewed the screenshot on share data page.
+  kViewedScreenshot,
+  // User viewed the selected image to be attached on share data page.
+  kViewedImage,
+  // User viewed the system and app info on share data page.
+  kViewedSystemAndAppInfo,
+  // User viewed the metrics on share data page.
+  kViewedMetrics
+};
+
 // Provides services needed by the feedback UI to display data and send reports.
 // Implemented in the browser process and called by the Feedback SWA
 // (a renderer process).
@@ -168,4 +182,6 @@ interface FeedbackServiceProvider {
   OpenSystemInfoDialog();
   // Record the metrics of users' first action on confirmation page.
   RecordPostSubmitAction(FeedbackAppPostSubmitAction action);
+  // Record metrics of users' action before sending the feedback.
+  RecordPreSubmitAction(FeedbackAppPreSubmitAction action);
 };

@@ -16,6 +16,11 @@ void EmitFeedbackAppPostSubmitAction(
   base::UmaHistogramEnumeration(kFeedbackAppPostSubmitAction, action);
 }
 
+void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action) {
+  // TODO(longbowei) Add preSubmit actions and use switch case statement.
+  base::UmaHistogramBoolean(kFeedbackAppViewedScreenshot, true);
+}
+
 void EmitFeedbackAppIncludedScreenshot(bool included_screenshot) {
   base::UmaHistogramBoolean(kFeedbackAppIncludedScreenshot,
                             included_screenshot);

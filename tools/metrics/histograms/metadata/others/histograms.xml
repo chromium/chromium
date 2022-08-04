@@ -5801,6 +5801,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.ViewedScreenshot" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record number of times the user viewed the screenshot. Fires when user
+    clicks the thumbnail on and views the larger screenshot.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.Duration.FetchSystemInformation" units="ms"
     expires_after="2023-03-25">
   <owner>xiangdongkong@google.com</owner>
