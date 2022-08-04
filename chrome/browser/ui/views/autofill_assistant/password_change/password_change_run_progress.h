@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_PROGRESS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_PROGRESS_H_
 
+#include "base/callback_forward.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "ui/views/view.h"
 
@@ -46,6 +47,10 @@ class PasswordChangeRunProgress : public views::View {
 
   // Returns the current progress bar step.
   autofill_assistant::password_change::ProgressStep GetCurrentProgressBarStep();
+
+  // Adds a callback for when the progress bar is complete.
+  // The completion happens after the last step animation is done.
+  void SetAnimationEndedCallback(base::OnceClosure callback);
 
  private:
   // Method ran once the last progress bar animation is completed,

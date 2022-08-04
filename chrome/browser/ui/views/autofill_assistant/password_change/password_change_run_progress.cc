@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill_assistant/password_change/vector_icons/vector_icons.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
@@ -149,6 +150,14 @@ class AnimatedIcon : public gfx::LinearAnimation,
   AnimatedIcon& operator=(const AnimatedIcon&) = delete;
   ~AnimatedIcon() override = default;
 
+  void SetAnimationEndedCallback(base::OnceClosure callback) {
+    animation_ended_callback_ = std::move(callback);
+    // If animation already finished, run callback right away.
+    if (animation_ended_) {
+      std::move(animation_ended_callback_).Run();
+    }
+  }
+
   void StartPulsingAnimation() {
     pulsing_animation_ = true;
     SetDuration(base::Milliseconds(kIconPulseAnimationDurationMilliseconds));
@@ -169,12 +178,24 @@ class AnimatedIcon : public gfx::LinearAnimation,
   };
 
   void AnimationEnded(const gfx::Animation* animation) override {
-    if (pulsing_animation_) {
+    // Add one more cycle after stop animation request to avoid abrupt changes.
+    if (pulsing_animation_ || last_animation_cycle_) {
+      if (!pulsing_animation_)
+        last_animation_cycle_ = false;
       Start();
+    } else {
+      animation_ended_ = true;
+      if (animation_ended_callback_) {
+        std::move(animation_ended_callback_).Run();
+      }
     }
   }
   autofill_assistant::password_change::ProgressStep progress_step_;
   bool pulsing_animation_;
+  bool last_animation_cycle_;
+  bool animation_ended_;
+
+  base::OnceClosure animation_ended_callback_;
 };
 
 PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
@@ -262,6 +283,13 @@ void PasswordChangeRunProgress::SetProgressBarStep(
 autofill_assistant::password_change::ProgressStep
 PasswordChangeRunProgress::GetCurrentProgressBarStep() {
   return current_progress_step_;
+}
+
+void PasswordChangeRunProgress::SetAnimationEndedCallback(
+    base::OnceClosure callback) {
+  progress_step_ui_elements_
+      [autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END]
+          .icon->SetAnimationEndedCallback(std::move(callback));
 }
 
 void PasswordChangeRunProgress::OnLastProgressBarAnimationCompleted() {

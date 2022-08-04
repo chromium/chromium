@@ -8,11 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
-#include "url/gurl.h"
 
 class PasswordChangeRunDisplay;
+class GURL;
 
 // Abstract interface for a controller of an `PasswordChangeRunDisplay`.
 class PasswordChangeRunController {
@@ -64,6 +65,10 @@ class PasswordChangeRunController {
   // Shows the intermediate starting screen until first actions are received
   // from the script controller.
   virtual void ShowStartingScreen(const GURL& url) = 0;
+
+  // Shows the ending screen, displayed after script completion.
+  virtual void ShowCompletionScreen(
+      base::RepeatingClosure done_button_callback) = 0;
 
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;

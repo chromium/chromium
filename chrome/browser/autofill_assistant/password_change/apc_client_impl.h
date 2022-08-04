@@ -79,6 +79,16 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // during script runs.
   virtual std::unique_ptr<ApcScrimManager> CreateApcScrimManager();
 
+  // Creates the external action delegate responsible for receiving and handling
+  // action protos.
+  virtual std::unique_ptr<ApcExternalActionDelegate>
+  CreateApcExternalActionDelegate();
+
+  // Creates the website login manager to handle interactions with the password
+  // manager.
+  virtual std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+  CreateWebsiteLoginManager();
+
   // Get the `PasswordManagerClient` so that we can initialize
   // `website_login_manager_`.
   virtual password_manager::PasswordManagerClient* GetPasswordManagerClient();

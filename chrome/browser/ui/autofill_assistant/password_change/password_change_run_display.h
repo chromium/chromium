@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 
+class GURL;
 class PasswordChangeRunController;
 
 // Abstract interface for the view component of a password change script run.
@@ -63,6 +65,11 @@ class PasswordChangeRunDisplay {
 
   // Clears the area that contains the prompt body.
   virtual void ClearPrompt() = 0;
+
+  // Methods used to render the UI state before and after a script run.
+  virtual void ShowStartingScreen(const GURL& url) = 0;
+  virtual void ShowCompletionScreen(
+      base::RepeatingClosure done_button_callback) = 0;
 
   // Notifies the view that the controller was destroyed so that the view
   // can close itself.

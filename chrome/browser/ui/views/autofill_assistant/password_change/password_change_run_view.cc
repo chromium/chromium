@@ -9,12 +9,16 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_run_progress.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
@@ -22,9 +26,11 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -53,12 +59,13 @@ std::unique_ptr<views::View> CreateButtonContainer() {
 
 // Helper function that creates a button.
 std::unique_ptr<views::MdTextButton> CreateButton(
-    const PasswordChangeRunDisplay::PromptChoice& choice,
+    const std::u16string text,
+    bool highlighted,
     views::Button::PressedCallback callback) {
   return views::Builder<views::MdTextButton>()
       .SetCallback(std::move(callback))
-      .SetText(choice.text)
-      .SetProminent(choice.highlighted)
+      .SetText(text)
+      .SetProminent(highlighted)
       .Build();
 }
 
@@ -173,6 +180,7 @@ void PasswordChangeRunView::SetDescription(const std::u16string& description) {
           .SetID(static_cast<int>(ChildrenViewsIds::kDescription))
           .Build());
 }
+
 void PasswordChangeRunView::SetProgressBarStep(
     autofill_assistant::password_change::ProgressStep progress_step) {
   password_change_run_progress_->SetProgressBarStep(progress_step);
@@ -187,7 +195,7 @@ void PasswordChangeRunView::ShowBasePrompt(
   for (size_t index = 0; index < choices.size(); ++index) {
     if (!choices[index].text.empty()) {
       button_container->AddChildView(CreateButton(
-          choices[index],
+          choices[index].text, choices[index].highlighted,
           base::BindRepeating(
               &PasswordChangeRunController::OnBasePromptChoiceSelected,
               controller_, index)));
@@ -215,15 +223,80 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
   DCHECK(body_);
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
   button_container->AddChildView(CreateButton(
-      manual_password_choice,
+      manual_password_choice.text, false,
       base::BindRepeating(
           &PasswordChangeRunController::OnGeneratedPasswordSelected,
           controller_, false)));
   button_container->AddChildView(CreateButton(
-      generated_password_choice,
+      generated_password_choice.text, true,
       base::BindRepeating(
           &PasswordChangeRunController::OnGeneratedPasswordSelected,
           controller_, true)));
+}
+
+void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
+  SetTopIcon(
+      autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED);
+
+  const std::u16string formatted_url = url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
+      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
+      formatted_url));
+  SetDescription(std::u16string());
+}
+
+void PasswordChangeRunView::ShowCompletionScreen(
+    base::RepeatingClosure done_button_callback) {
+  show_completion_screen_done_button_callback_ =
+      std::move(done_button_callback);
+
+  password_change_run_progress_->SetAnimationEndedCallback(base::BindOnce(
+      &PasswordChangeRunView::OnShowCompletionScreen, base::Unretained(this)));
+}
+
+void PasswordChangeRunView::OnShowCompletionScreen() {
+  SetTopIcon(
+      autofill_assistant::password_change::TopIcon::TOP_ICON_CHANGED_PASSWORD);
+  password_change_run_progress_->SetVisible(false);
+  SetTitle(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_TITLE));
+
+  const std::u16string password_manager_link = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT);
+  size_t offset = 0;
+  std::u16string description = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_DESCRIPTION,
+      password_manager_link, &offset);
+
+  body_->RemoveAllChildViews();
+  body_->AddChildView(std::make_unique<views::Separator>());
+  views::StyledLabel* description_view = body_->AddChildView(
+      views::Builder<views::StyledLabel>()
+          .SetText(description)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+          .SetTextContext(views::style::CONTEXT_LABEL)
+          .SetID(static_cast<int>(ChildrenViewsIds::kDescription))
+          .Build());
+
+  // TODO(crbug.com/1329179): Navidate user to password manager
+  // components/password_manager/core/browser/manage_passwords_referrer.h
+  description_view->AddStyleRange(
+      gfx::Range(offset, offset + password_manager_link.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          static_cast<base::RepeatingClosure>(base::DoNothing())));
+
+  views::View* button_container = body_->AddChildView(CreateButtonContainer());
+  button_container->AddChildView(CreateButton(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_CLOSE_SIDE_PANEL),
+      true, show_completion_screen_done_button_callback_));
 }
 
 void PasswordChangeRunView::ClearPrompt() {

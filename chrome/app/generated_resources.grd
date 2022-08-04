@@ -13444,6 +13444,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE" desc="The title shown on the side panel after an Automated Password Change flow has been started. This message is shown until the first response from a script is received that resets the initial state.">
         Opening <ph name="URL">$1<ex>example.com</ex></ph>...
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_TITLE" desc="The title shown on the side panel after an Automated Password Change flow has been succeeded." translateable="false" >
+        Successfully changed the compromised password
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_DESCRIPTION" desc="The description shown on the side panel after an Automated Password Change flow has been succeeded." translateable="false" >
+        Check your passwords any time in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_CLOSE_SIDE_PANEL" desc="The label of the button shown in the side panel after a sucessfull run. Once a user clicks on it, the side panel will close." translateable="false">
+        Done
+      </message>
     </if>
   </messages>
 </release>

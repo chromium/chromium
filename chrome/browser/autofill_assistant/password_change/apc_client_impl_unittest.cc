@@ -7,11 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
 #include "chrome/browser/autofill_assistant/password_change/mock_apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_apc_scrim_manager.h"
@@ -20,6 +22,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -47,6 +50,22 @@ constexpr char kSourcePasswordChangeSettings[] = "11";
 
 constexpr int kDescriptionId1 = 3;
 constexpr int kDescriptionId2 = 17;
+
+class MockApcExternalActionDelegate : public ApcExternalActionDelegate {
+ public:
+  MockApcExternalActionDelegate(
+      AssistantDisplayDelegate* display_delegate,
+      ApcScrimManager* apc_scrim_manager,
+      autofill_assistant::WebsiteLoginManager* website_login_manager)
+      : ApcExternalActionDelegate(display_delegate,
+                                  apc_scrim_manager,
+                                  website_login_manager) {}
+  ~MockApcExternalActionDelegate() override = default;
+
+  MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));
+  MOCK_METHOD(void, ShowCompletionScreen, (base::RepeatingClosure), (override));
+  MOCK_METHOD(void, SetupDisplay, (), (override));
+};
 
 }  // namespace
 
@@ -83,6 +102,16 @@ class TestApcClientImpl : public ApcClientImpl {
 
   std::unique_ptr<ApcScrimManager> CreateApcScrimManager() override {
     return std::move(scrim_manager_);
+  }
+
+  std::unique_ptr<ApcExternalActionDelegate> CreateApcExternalActionDelegate()
+      override {
+    return std::move(apc_external_action_delegate_);
+  }
+
+  std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+  CreateWebsiteLoginManager() override {
+    return std::move(website_login_manager_);
   }
 
   password_manager::PasswordManagerClient* GetPasswordManagerClient() override {
@@ -122,6 +151,19 @@ class TestApcClientImpl : public ApcClientImpl {
     scrim_manager_ = std::move(scrim_manager);
   }
 
+  // Allows setting a ApcExternalActionDelegate.
+  void InjectApcExternalActionDelegateForTesting(
+      std::unique_ptr<ApcExternalActionDelegate> apc_external_action_delegate) {
+    apc_external_action_delegate_ = std::move(apc_external_action_delegate);
+  }
+
+  // Allows setting a WebsiteLoginManager.
+  void InjectWebsiteLoginManagerForTesting(
+      std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+          website_login_manager) {
+    website_login_manager_ = std::move(website_login_manager);
+  }
+
   // Allows setting an PasswordManagerClient.
   void InjectPasswordManagerClientForTesting(
       std::unique_ptr<password_manager::PasswordManagerClient>
@@ -136,6 +178,9 @@ class TestApcClientImpl : public ApcClientImpl {
       external_script_controller_;
   raw_ptr<autofill_assistant::RuntimeManager> runtime_manager_;
   std::unique_ptr<ApcScrimManager> scrim_manager_;
+  std::unique_ptr<ApcExternalActionDelegate> apc_external_action_delegate_;
+  std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+      website_login_manager_;
   std::unique_ptr<password_manager::PasswordManagerClient>
       password_manager_client_;
 };
@@ -195,14 +240,33 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     // Prepare the PasswordManagerClient.
     auto password_manager_client =
         std::make_unique<password_manager::StubPasswordManagerClient>();
+    password_manager_client_ref_ = password_manager_client.get();
     test_apc_client_->InjectPasswordManagerClientForTesting(
         std::move(password_manager_client));
+
+    // Prepare the WebsiteLoginManager.
+    auto website_login_manager =
+        std::make_unique<autofill_assistant::MockWebsiteLoginManager>();
+    website_login_manager_ref_ = website_login_manager.get();
+    test_apc_client_->InjectWebsiteLoginManagerForTesting(
+        std::move(website_login_manager));
+
+    // Prepare the ApcExternalActionDelegate.
+    auto apc_external_action_delegate =
+        std::make_unique<MockApcExternalActionDelegate>(
+            side_panel_ref_, scrim_manager_ref_, website_login_manager_ref_);
+    apc_external_action_delegate_ref_ = apc_external_action_delegate.get();
+    test_apc_client_->InjectApcExternalActionDelegateForTesting(
+        std::move(apc_external_action_delegate));
   }
 
   TestApcClientImpl* apc_client() { return test_apc_client_; }
   MockApcOnboardingCoordinator* coordinator() { return coordinator_ref_; }
   MockAssistantSidePanelCoordinator* side_panel() { return side_panel_ref_; }
   MockApcScrimManager* scrim_manager() { return scrim_manager_ref_; }
+  MockApcExternalActionDelegate* apc_external_action_delegate() {
+    return apc_external_action_delegate_ref_;
+  }
   AssistantSidePanelCoordinator::Observer* side_panel_observer() {
     return side_panel_observer_;
   }
@@ -224,6 +288,12 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<autofill_assistant::MockHeadlessScriptController>
       external_script_controller_ref_ = nullptr;
   raw_ptr<MockApcScrimManager> scrim_manager_ref_ = nullptr;
+  raw_ptr<MockApcExternalActionDelegate> apc_external_action_delegate_ref_ =
+      nullptr;
+  raw_ptr<password_manager::StubPasswordManagerClient>
+      password_manager_client_ref_ = nullptr;
+  raw_ptr<autofill_assistant::WebsiteLoginManager> website_login_manager_ref_ =
+      nullptr;
 
   // The last registered side panel observer - may be null or dangling.
   raw_ptr<AssistantSidePanelCoordinator::Observer> side_panel_observer_ =
@@ -254,6 +324,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
       .WillOnce(MoveArg<0>(&coordinator_callback));
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kShown));
+  EXPECT_CALL(*apc_external_action_delegate(), ShowStartingScreen(GURL(kUrl1)));
   EXPECT_CALL(*scrim_manager(), Show());
 
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
@@ -281,10 +352,20 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
 
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
       /* success= */ true};
+
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kNotShown));
   EXPECT_CALL(result_callback1, Run(true));
+
+  // Prepare to extract the callback from the completion screen call.
+  base::RepeatingClosure show_completion_screen_callback;
+  EXPECT_CALL(*apc_external_action_delegate(), ShowCompletionScreen(_))
+      .Times(1)
+      .WillOnce(MoveArg<0>(&show_completion_screen_callback));
+
   std::move(external_script_controller_callback).Run(script_result);
+  std::move(show_completion_screen_callback).Run();
+
   EXPECT_FALSE(client->IsRunning());
 }
 

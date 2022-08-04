@@ -22,7 +22,6 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
-#include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -60,6 +59,7 @@ void ApcClientImpl::Start(
     std::move(callback).Run(false);
     return;
   }
+
   // Ensure that only one run is ongoing.
   if (is_running_) {
     std::move(callback).Run(false);
@@ -171,6 +171,13 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
   }
 
   scrim_manager_ = CreateApcScrimManager();
+
+  website_login_manager_ = CreateWebsiteLoginManager();
+
+  apc_external_action_delegate_ = CreateApcExternalActionDelegate();
+  apc_external_action_delegate_->SetupDisplay();
+  apc_external_action_delegate_->ShowStartingScreen(url_);
+
   external_script_controller_ = CreateHeadlessScriptController();
   scrim_manager_->Show();
   external_script_controller_->StartScript(
@@ -180,8 +187,13 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
 
 void ApcClientImpl::OnRunComplete(
     autofill_assistant::HeadlessScriptController::ScriptResult result) {
-  // TODO(crbug.com/1324089): Handle failed result.
-  Stop(result.success);
+  if (result.success) {
+    apc_external_action_delegate_->ShowCompletionScreen(base::BindRepeating(
+        &ApcClientImpl::Stop, base::Unretained(this), result.success));
+  } else {
+    // TODO(crbug.com/1324089): Handle failed result.
+    Stop(result.success);
+  }
 }
 
 void ApcClientImpl::OnHidden() {
@@ -206,16 +218,8 @@ ApcClientImpl::CreateSidePanel() {
 std::unique_ptr<autofill_assistant::HeadlessScriptController>
 ApcClientImpl::CreateHeadlessScriptController() {
   DCHECK(scrim_manager_);
-
-  website_login_manager_ =
-      std::make_unique<autofill_assistant::WebsiteLoginManagerImpl>(
-          GetPasswordManagerClient(), &GetWebContents());
-
-  apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
-      side_panel_coordinator_.get(), scrim_manager_.get(),
-      website_login_manager_.get());
-  apc_external_action_delegate_->SetupDisplay();
-  apc_external_action_delegate_->ShowStartingScreen(url_);
+  DCHECK(apc_external_action_delegate_);
+  DCHECK(website_login_manager_);
 
   std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
@@ -233,6 +237,22 @@ autofill_assistant::RuntimeManager* ApcClientImpl::GetRuntimeManager() {
 
 std::unique_ptr<ApcScrimManager> ApcClientImpl::CreateApcScrimManager() {
   return ApcScrimManager::Create(&GetWebContents());
+}
+
+std::unique_ptr<ApcExternalActionDelegate>
+ApcClientImpl::CreateApcExternalActionDelegate() {
+  DCHECK(scrim_manager_);
+  DCHECK(website_login_manager_);
+
+  return std::make_unique<ApcExternalActionDelegate>(
+      side_panel_coordinator_.get(), scrim_manager_.get(),
+      website_login_manager_.get());
+}
+
+std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+ApcClientImpl::CreateWebsiteLoginManager() {
+  return std::make_unique<autofill_assistant::WebsiteLoginManagerImpl>(
+      GetPasswordManagerClient(), &GetWebContents());
 }
 
 password_manager::PasswordManagerClient*

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -46,6 +47,10 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
                const std::u16string&),
               (override));
   MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));
+  MOCK_METHOD(void,
+              ShowCompletionScreen,
+              (base::RepeatingClosure done_button_callback),
+              (override));
   MOCK_METHOD(void, OnGeneratedPasswordSelected, (bool), (override));
   base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

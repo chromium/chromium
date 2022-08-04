@@ -234,22 +234,13 @@ void ApcExternalActionDelegate::OnGeneratedPasswordSelected(
 }
 
 void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
-  SetTopIcon(
-      autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED);
-  SetProgressBarStep(
-      autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_START);
+  password_change_run_display_->ShowStartingScreen(url);
+}
 
-  const std::u16string formatted_url = url_formatter::FormatUrl(
-      url,
-      url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
-          url_formatter::kFormatUrlOmitTrivialSubdomains |
-          url_formatter::kFormatUrlTrimAfterHost,
-      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
-      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
-  SetTitle(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
-      formatted_url));
-  SetDescription(std::u16string());
+void ApcExternalActionDelegate::ShowCompletionScreen(
+    base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) {
+  password_change_run_display_->ShowCompletionScreen(
+      std::move(onShowCompletionScreenDoneButtonClicked));
 }
 
 void ApcExternalActionDelegate::Show(

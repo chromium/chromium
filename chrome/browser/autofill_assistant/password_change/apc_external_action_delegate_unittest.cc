@@ -237,14 +237,7 @@ TEST_F(ApcExternalActionDelegateTest, OnTouchableAreaChangedShowAndHideScrim) {
 TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
   const GURL url(kUrl);
 
-  EXPECT_CALL(*display(), SetTopIcon(TopIcon::TOP_ICON_UNSPECIFIED));
-  EXPECT_CALL(*display(),
-              SetProgressBarStep(ProgressStep::PROGRESS_STEP_START));
-  EXPECT_CALL(*display(),
-              SetTitle(l10n_util::GetStringFUTF16(
-                  IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
-                  u"example.com")));
-  EXPECT_CALL(*display(), SetDescription(std::u16string()));
+  EXPECT_CALL(*display(), ShowStartingScreen(url));
 
   action_delegate()->ShowStartingScreen(url);
 }

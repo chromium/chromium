@@ -17,6 +17,7 @@
 class PasswordChangeRunDisplay;
 class AssistantDisplayDelegate;
 class ApcScrimManager;
+class GURL;
 
 namespace autofill_assistant {
 struct RectF;
@@ -45,7 +46,7 @@ class ApcExternalActionDelegate
 
   // Sets up the display to render a password change run UI,
   // needs to be called BEFORE starting a script.
-  void SetupDisplay();
+  virtual void SetupDisplay();
 
   // ExternalActionDelegate:
   void OnActionRequested(
@@ -79,6 +80,8 @@ class ApcExternalActionDelegate
       const std::u16string& generated_password) override;
   void OnGeneratedPasswordSelected(bool selected) override;
   void ShowStartingScreen(const GURL& url) override;
+  void ShowCompletionScreen(
+      base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) override;
 
  private:
   friend class ApcExternalActionDelegateTest;

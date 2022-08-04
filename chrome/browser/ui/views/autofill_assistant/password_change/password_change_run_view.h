@@ -69,6 +69,9 @@ class PasswordChangeRunView : public views::View,
       const PromptChoice& manual_password_choice,
       const PromptChoice& generated_password_choice) override;
   void ClearPrompt() override;
+  void ShowStartingScreen(const GURL& url) override;
+  void ShowCompletionScreen(
+      base::RepeatingClosure done_button_callback) override;
   void OnControllerGone() override;
 
   // Returns a weak pointer to itself.
@@ -81,6 +84,12 @@ class PasswordChangeRunView : public views::View,
   // Closes the view by removing itself from the display.
   // This method destroys an instance of this class.
   void Close();
+
+  // Method that updates the UI to render the completion screen. This is called
+  // only AFTER `password_change_run_progress_` is completed, both in terms of
+  // steps and animation. Runs `show_completion_screen_done_button_callback_`
+  // when user clicks on Done.
+  void OnShowCompletionScreen();
 
   // The controller belonging to this view.
   base::WeakPtr<PasswordChangeRunController> controller_;
@@ -96,6 +105,8 @@ class PasswordChangeRunView : public views::View,
   // prompts and descriptions.
   raw_ptr<views::View> body_ = nullptr;
 
+  // Callback run when a user clicks Done after a successful run.
+  base::RepeatingClosure show_completion_screen_done_button_callback_;
   // Factory for weak pointers to this view.
   base::WeakPtrFactory<PasswordChangeRunView> weak_ptr_factory_{this};
 };
