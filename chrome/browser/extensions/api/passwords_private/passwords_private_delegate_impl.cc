@@ -274,10 +274,6 @@ absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     updated_credential.note = password_manager::PasswordNote(
         base::UTF8ToUTF16(*params.note), base::Time::Now());
   }
-  // Collect the credentials that will be edited before executing the edit
-  // process.
-  auto forms_to_edit = saved_passwords_presenter_.GetCorrespondingPasswordForms(
-      *original_credential);
   switch (saved_passwords_presenter_.EditSavedCredentials(*original_credential,
                                                           updated_credential)) {
     case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
