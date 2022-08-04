@@ -166,6 +166,18 @@ void HidDetectionManagerImpl::OnGetDevicesForIsRequired(
       break;
   }
 
+  hid_detection::HidsMissing hids_missing = hid_detection::HidsMissing::kNone;
+  if (!has_pointer) {
+    if (!has_keyboard) {
+      hids_missing = hid_detection::HidsMissing::kPointerAndKeyboard;
+    } else {
+      hids_missing = hid_detection::HidsMissing::kPointer;
+    }
+  } else if (!has_keyboard) {
+    hids_missing = hid_detection::HidsMissing::kKeyboard;
+  }
+  hid_detection::RecordInitialHidsMissing(hids_missing);
+
   HID_LOG(EVENT)
       << "Fetched " << devices.size()
       << " input devices for GetIsHidDetectionRequired(). Pointer detected: "
