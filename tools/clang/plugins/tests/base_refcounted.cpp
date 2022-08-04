@@ -43,7 +43,7 @@ class Foo {
     virtual ~BarInterface() {}
   };
 
-  typedef base::RefCounted<Foo::BarInterface> RefCountedBar; // TODO(crbug.com/1348124): Drop the Foo:: qualifier.
+  typedef base::RefCounted<BarInterface> RefCountedBar;
   typedef RefCountedBar AnotherTypedef;
 };
 
