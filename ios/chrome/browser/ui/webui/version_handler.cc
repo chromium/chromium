@@ -27,8 +27,7 @@ void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(version_ui::kKeyVariationsList,
-                  version_ui::GetVariationsList());
+  base::Value::Dict response;
+  response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id), response);
 }

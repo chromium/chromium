@@ -11,13 +11,12 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"
 
 namespace version_ui {
 
-base::Value GetVariationsList() {
+base::Value::List GetVariationsList() {
   std::vector<std::string> variations;
 #if !defined(NDEBUG)
   base::FieldTrial::ActiveGroups active_groups;
@@ -37,7 +36,7 @@ base::Value GetVariationsList() {
                                                    &variations);
 #endif
 
-  base::Value variations_list(base::Value::Type::LIST);
+  base::Value::List variations_list;
   for (std::string& variation : variations)
     variations_list.Append(std::move(variation));
 

@@ -92,12 +92,11 @@ void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
   const bool include_variations_cmd = args[1].GetBool();
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(version_ui::kKeyVariationsList,
-                  version_ui::GetVariationsList());
+  base::Value::Dict response;
+  response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
   if (include_variations_cmd) {
-    response.SetKey(version_ui::kKeyVariationsCmd,
-                    version_ui::GetVariationsCommandLineAsValue());
+    response.Set(version_ui::kKeyVariationsCmd,
+                 version_ui::GetVariationsCommandLineAsValue());
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -127,8 +126,8 @@ void VersionHandler::OnGotFilePaths(std::string callback_id,
                                     std::u16string* executable_path_data,
                                     std::u16string* profile_path_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(version_ui::kKeyExecPath, base::Value(*executable_path_data));
-  response.SetKey(version_ui::kKeyProfilePath, base::Value(*profile_path_data));
+  base::Value::Dict response;
+  response.Set(version_ui::kKeyExecPath, *executable_path_data);
+  response.Set(version_ui::kKeyProfilePath, *profile_path_data);
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
