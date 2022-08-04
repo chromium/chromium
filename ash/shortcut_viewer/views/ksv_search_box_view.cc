@@ -47,6 +47,24 @@ KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
   search_box()->SetAccessibleName(search_box_name);
   SetSearchIconImage(
       gfx::CreateVectorIcon(ash::kKsvSearchBarIcon, GetPrimaryIconColor()));
+
+  views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
+      &KSVSearchBoxView::CloseButtonPressed, base::Unretained(this)));
+  close_button->SetHasInkDropActionOnClick(true);
+  close_button->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
+  close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  const std::u16string close_button_label(
+      l10n_util::GetStringUTF16(IDS_KSV_CLEAR_SEARCHBOX_ACCESSIBILITY_NAME));
+  close_button->SetAccessibleName(close_button_label);
+  close_button->SetTooltipText(close_button_label);
+}
+
+void KSVSearchBoxView::Initialize() {
+  ash::SearchBoxViewBase::InitParams params;
+  params.show_close_button_when_active = false;
+  params.create_background = true;
+  Init(params);
 }
 
 gfx::Size KSVSearchBoxView::CalculatePreferredSize() const {
@@ -114,22 +132,6 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
   UpdateBackgroundColor(GetBackgroundColor());
 }
 
-void KSVSearchBoxView::SetupCloseButton() {
-  views::ImageButton* close = close_button();
-  close->SetHasInkDropActionOnClick(true);
-  close->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(ash::kKsvSearchCloseIcon, GetCloseButtonColor()));
-  close->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
-  close->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  close->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  const std::u16string close_button_label(
-      l10n_util::GetStringUTF16(IDS_KSV_CLEAR_SEARCHBOX_ACCESSIBILITY_NAME));
-  close->SetAccessibleName(close_button_label);
-  close->SetTooltipText(close_button_label);
-  close->SetVisible(false);
-}
-
 void KSVSearchBoxView::SetupBackButton() {
   views::ImageButton* back = back_button();
   back->SetHasInkDropActionOnClick(true);
@@ -155,6 +157,12 @@ void KSVSearchBoxView::SetPlaceholderTextAttributes() {
   search_box()->set_placeholder_text_draw_flags(
       base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                           : gfx::Canvas::TEXT_ALIGN_LEFT);
+}
+
+void KSVSearchBoxView::CloseButtonPressed() {
+  // After clicking search box close button focus the search box text field.
+  search_box()->RequestFocus();
+  ClearSearch();
 }
 
 SkColor KSVSearchBoxView::GetBackgroundColor() {

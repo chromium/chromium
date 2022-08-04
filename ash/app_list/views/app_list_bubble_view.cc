@@ -246,13 +246,7 @@ void AppListBubbleView::InitContentsView(
 
   search_box_view_ = contents->AddChildView(std::make_unique<SearchBoxView>(
       /*delegate=*/this, view_delegate_, /*app_list_view=*/nullptr));
-  SearchBoxViewBase::InitParams params;
-  // Show the assistant button until the user types text.
-  params.show_close_button_when_active = false;
-  params.create_background = false;
-  params.animate_changing_search_icon = false;
-  params.increase_child_view_padding = true;
-  search_box_view_->Init(params);
+  search_box_view_->InitializeForBubbleLauncher();
 
   // Skip the assistant button on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();

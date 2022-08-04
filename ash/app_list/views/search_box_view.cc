@@ -214,25 +214,56 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       is_tablet_mode_(view_delegate_->IsInTabletMode()) {
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
-  search_box_model_observer_.Observe(
-      model_provider->search_model()->search_box());
+  SearchBoxModel* const search_box_model =
+      model_provider->search_model()->search_box();
+  search_box_model_observer_.Observe(search_box_model);
+
+  views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
+      &SearchBoxView::CloseButtonPressed, base::Unretained(this)));
+  std::u16string close_button_label(
+      l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
+  close_button->SetAccessibleName(close_button_label);
+  close_button->SetTooltipText(close_button_label);
+
+  views::ImageButton* assistant_button =
+      CreateAssistantButton(base::BindRepeating(
+          &SearchBoxView::AssistantButtonPressed, base::Unretained(this)));
+  assistant_button->SetFlipCanvasOnPaintForRTLUI(false);
+  std::u16string assistant_button_label(
+      l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
+  assistant_button->SetAccessibleName(assistant_button_label);
+  assistant_button->SetTooltipText(assistant_button_label);
+  SetShowAssistantButton(search_box_model->show_assistant_button());
 }
 
 SearchBoxView::~SearchBoxView() {
   AppListModelProvider::Get()->RemoveObserver(this);
 }
 
-void SearchBoxView::Init(const InitParams& params) {
+void SearchBoxView::InitializeForBubbleLauncher() {
+  SearchBoxViewBase::InitParams params;
+  params.show_close_button_when_active = false;
+  params.create_background = false;
+  params.animate_changing_search_icon = false;
+  params.increase_child_view_padding = true;
+  // Add margins to the text field because the BoxLayout vertical centering
+  // does not properly align the text baseline with the icons.
+  params.textfield_margins = kTextFieldMarginsForAppListBubble;
+
   SearchBoxViewBase::Init(params);
+
   UpdatePlaceholderTextAndAccessibleName();
-  current_query_ = search_box()->GetText();
-  if (is_app_list_bubble_) {
-    // Add margins to the text field because the BoxLayout vertical centering
-    // does not properly align the text baseline with the icons.
-    search_box()->SetProperty(views::kMarginsKey,
-                              kTextFieldMarginsForAppListBubble);
-  }
-  ShowAssistantChanged();
+}
+
+void SearchBoxView::InitializeForFullscreenLauncher() {
+  SearchBoxViewBase::InitParams params;
+  params.show_close_button_when_active = true;
+  params.create_background = true;
+  params.animate_changing_search_icon = true;
+
+  SearchBoxViewBase::Init(params);
+
+  UpdatePlaceholderTextAndAccessibleName();
 }
 
 void SearchBoxView::SetResultSelectionController(
@@ -373,20 +404,6 @@ void SearchBoxView::UpdateModel(bool initiated_by_user) {
     view_delegate_->StartSearch(new_query);
 }
 
-void SearchBoxView::UpdateSearchIcon() {
-  const bool search_engine_is_google =
-      AppListModelProvider::Get()->search_model()->search_engine_is_google();
-  const gfx::VectorIcon& google_icon = is_search_box_active()
-                                           ? vector_icons::kGoogleColorIcon
-                                           : kGoogleBlackIcon;
-  const gfx::VectorIcon& icon =
-      search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
-  SetSearchIconImage(
-      gfx::CreateVectorIcon(icon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
-}
-
 void SearchBoxView::UpdatePlaceholderTextStyle() {
   if (is_app_list_bubble_) {
     // The bubble launcher text is always side-aligned.
@@ -457,8 +474,16 @@ const char* SearchBoxView::GetClassName() const {
 
 void SearchBoxView::OnThemeChanged() {
   SearchBoxViewBase::OnThemeChanged();
-  SetupAssistantButton();
-  SetupCloseButton();
+  close_button()->SetImage(
+      views::ImageButton::STATE_NORMAL,
+      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
+                            AppListColorProvider::Get()->GetSearchBoxIconColor(
+                                gfx::kGoogleGrey700)));
+  assistant_button()->SetImage(
+      views::ImageButton::STATE_NORMAL,
+      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
+                            AppListColorProvider::Get()->GetSearchBoxIconColor(
+                                gfx::kGoogleGrey700)));
   OnWallpaperColorsChanged();
 }
 
@@ -478,20 +503,6 @@ void SearchBoxView::MaybeCreateFocusRing() {
     layer()->parent()->Add(focus_ring_layer_.get());
     layer()->parent()->StackAtBottom(focus_ring_layer_.get());
   }
-}
-
-void SearchBoxView::SetupCloseButton() {
-  views::ImageButton* close = close_button();
-  close->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700)));
-  close->SetVisible(false);
-  std::u16string close_button_label(
-      l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
-  close->SetAccessibleName(close_button_label);
-  close->SetTooltipText(close_button_label);
 }
 
 void SearchBoxView::SetupBackButton() {
@@ -537,6 +548,11 @@ void SearchBoxView::RecordSearchBoxActivationHistogram(
 }
 
 void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
+  UpdateSearchIcon();
+
+  // Clear ghost text when toggling search box active state.
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+
   if (active) {
     result_selection_controller_->ResetSelection(nullptr,
                                                  true /* default_selection */);
@@ -589,7 +605,7 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
     return;
   }
 
-  SearchBoxViewBase::OnKeyEvent(evt);
+  delegate()->OnSearchBoxKeyEvent(evt);
 }
 
 bool SearchBoxView::OnMouseWheel(const ui::MouseWheelEvent& event) {
@@ -835,6 +851,28 @@ int SearchBoxView::GetSearchBoxButtonSize() {
   if (features::IsProductivityLauncherEnabled())
     return kBubbleLauncherSearchBoxButtonSizeDip;
   return kClassicSearchBoxButtonSizeDip;
+}
+
+void SearchBoxView::CloseButtonPressed() {
+  delegate()->CloseButtonPressed();
+}
+
+void SearchBoxView::AssistantButtonPressed() {
+  delegate()->AssistantButtonPressed();
+}
+
+void SearchBoxView::UpdateSearchIcon() {
+  const bool search_engine_is_google =
+      AppListModelProvider::Get()->search_model()->search_engine_is_google();
+  const gfx::VectorIcon& google_icon = is_search_box_active()
+                                           ? vector_icons::kGoogleColorIcon
+                                           : kGoogleBlackIcon;
+  const gfx::VectorIcon& icon =
+      search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
+  SetSearchIconImage(
+      gfx::CreateVectorIcon(icon, GetSearchBoxIconSize(),
+                            AppListColorProvider::Get()->GetSearchBoxIconColor(
+                                SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
 }
 
 bool SearchBoxView::IsValidAutocompleteText(
@@ -1271,19 +1309,6 @@ void SearchBoxView::ResetHighlightRange() {
   const uint32_t text_length = search_box()->GetText().length();
   highlight_range_.set_start(text_length);
   highlight_range_.set_end(text_length);
-}
-
-void SearchBoxView::SetupAssistantButton() {
-  views::ImageButton* assistant = assistant_button();
-  assistant->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700)));
-  std::u16string assistant_button_label(
-      l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
-  assistant->SetAccessibleName(assistant_button_label);
-  assistant->SetTooltipText(assistant_button_label);
 }
 
 }  // namespace ash

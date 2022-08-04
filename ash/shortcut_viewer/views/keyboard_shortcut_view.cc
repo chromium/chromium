@@ -400,12 +400,6 @@ void KeyboardShortcutView::BackButtonPressed() {
   search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
 }
 
-void KeyboardShortcutView::CloseButtonPressed() {
-  // After clicking search box close button focus the search box text field.
-  search_box_view_->search_box()->RequestFocus();
-  search_box_view_->ClearSearch();
-}
-
 void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   const bool is_search_box_active = sender->is_search_box_active();
   is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();
@@ -434,10 +428,7 @@ void KeyboardShortcutView::InitViews() {
   TRACE_EVENT0("shortcut_viewer", "InitViews");
   // Init search box view.
   auto search_box_view = std::make_unique<KSVSearchBoxView>(this);
-  ash::SearchBoxViewBase::InitParams params;
-  params.show_close_button_when_active = false;
-  params.create_background = true;
-  search_box_view->Init(params);
+  search_box_view->Initialize();
   search_box_view_ = AddChildView(std::move(search_box_view));
 
   // Init no search result illustration view.

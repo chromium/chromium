@@ -26,6 +26,9 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
 
   ~KSVSearchBoxView() override = default;
 
+  // Initializes the search box view style.
+  void Initialize();
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -36,12 +39,14 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
 
   // SearchBoxViewBase:
   void UpdateSearchBoxBorder() override;
-  void SetupCloseButton() override;
   void SetupBackButton() override;
   void UpdatePlaceholderTextStyle() override;
 
  private:
   void SetPlaceholderTextAttributes();
+
+  // Callback for press on the search box close button.
+  void CloseButtonPressed();
 
   SkColor GetBackgroundColor();
   SkColor GetBackButtonColor();

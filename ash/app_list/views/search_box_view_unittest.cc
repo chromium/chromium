@@ -146,10 +146,11 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       view = std::make_unique<SearchBoxView>(this, &view_delegate_,
                                              app_list_view_);
     }
-    SearchBoxViewBase::InitParams params;
-    params.show_close_button_when_active = true;
-    params.create_background = true;
-    view->Init(params);
+
+    if (IsProductivityLauncherEnabled())
+      view->InitializeForBubbleLauncher();
+    else
+      view->InitializeForFullscreenLauncher();
     view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 
     if (IsProductivityLauncherEnabled()) {
@@ -271,6 +272,12 @@ class SearchBoxViewTest : public views::test::WidgetTest,
         ->OnSearchResultContainerResultsChanged();
   }
 
+  void SimulateQuery(const std::u16string& query) {
+    view()->search_box()->InsertText(
+        u"test",
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  }
+
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(SearchBoxViewBase* sender) override {}
   void AssistantButtonPressed() override {}
@@ -314,9 +321,10 @@ TEST_P(SearchBoxViewTest, CloseButtonVisibleAfterTyping) {
 
 // Tests that the close button is still visible after the search box is
 // activated (in zero state).
-TEST_P(SearchBoxViewTest, CloseButtonIVisibleInZeroStateSearchBox) {
+TEST_P(SearchBoxViewTest, CloseButtonVisibleInZeroStateSearchBox) {
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  EXPECT_TRUE(view()->close_button()->GetVisible());
+  EXPECT_EQ(!IsProductivityLauncherEnabled(),
+            view()->close_button()->GetVisible());
 }
 
 // Tests that the search box is inactive by default.
@@ -406,8 +414,7 @@ TEST_P(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
 // Tests that traversing search results is disabled while results are being
 // updated.
 TEST_P(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
-  SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(u"test");
+  SimulateQuery(u"test");
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
                      std::u16string());
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
@@ -452,8 +459,8 @@ TEST_P(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
 // Tests that traversing search results is disabled while the result that would
 // be selected next is being removed from results.
 TEST_P(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
-  SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(u"test");
+  SimulateQuery(u"test");
+
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
                      std::u16string());
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
@@ -494,8 +501,7 @@ TEST_P(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
 }
 
 TEST_P(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
-  SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(u"test");
+  SimulateQuery(u"test");
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
                      std::u16string());
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
@@ -563,8 +569,7 @@ TEST_P(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
 
 TEST_P(SearchBoxViewTest,
        UserSelectionInNonDefaultContainerNotOverridenByNewResults) {
-  SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(u"test");
+  SimulateQuery(u"test");
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
                      std::u16string());
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
@@ -641,8 +646,7 @@ TEST_P(SearchBoxViewTest,
 // Tests that the default selection is reset after resetting and reactivating
 // the search box.
 TEST_P(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
-  SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(u"test");
+  SimulateQuery(u"test");
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"test1",
                      std::u16string());
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"test2",
@@ -926,7 +930,8 @@ TEST_P(SearchBoxViewAssistantButtonTest,
 
   // Assistant button is not showing up under zero state.
   KeyPress(ui::VKEY_BACK);
-  EXPECT_FALSE(view()->assistant_button()->GetVisible());
+  EXPECT_EQ(IsProductivityLauncherEnabled(),
+            view()->assistant_button()->GetVisible());
 }
 
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {

@@ -10,7 +10,9 @@
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/bind.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -29,8 +31,8 @@ class Textfield;
 
 namespace ash {
 
-class SearchBoxViewDelegate;
 class SearchBoxImageButton;
+class SearchBoxViewDelegate;
 class SearchIconImageView;
 
 // These are used in histograms, do not remove/renumber entries. If you're
@@ -57,21 +59,20 @@ class SearchBoxViewBase : public views::View,
 
   ~SearchBoxViewBase() override;
 
-  struct InitParams {
-    // Whether to show close button if the search box is active and empty.
-    bool show_close_button_when_active = false;
+  // Creates the search box close button at the right edge of the search box.
+  // The close button will initially be hidden. The visibility will be updated
+  // appropriatelly when `UpdateButtonsVisibility()` gets called.
+  views::ImageButton* CreateCloseButton(
+      const base::RepeatingClosure& button_callback);
 
-    // Whether to create a rounded-rect background.
-    bool create_background = true;
-
-    // Whether to animate the transition when the search icon is changed.
-    bool animate_changing_search_icon = false;
-
-    // Whether we should increase spacing between `search_icon_', 'search_box_',
-    // and the 'search_box_button_container_'.
-    bool increase_child_view_padding = false;
-  };
-  virtual void Init(const InitParams& params);
+  // Creates the search box assistant button at the right edge of the search
+  // box. Note that the assistant button will only be shown if close button is
+  // hidden, as the buttons have the same expected position within the search
+  // box.
+  // The assistant button will initially be hidden. The visibility will be
+  // updated appropriatelly when `UpdateButtonsVisibility()` gets called.
+  views::ImageButton* CreateAssistantButton(
+      const base::RepeatingClosure& button_callback);
 
   bool HasSearch() const;
 
@@ -106,7 +107,6 @@ class SearchBoxViewBase : public views::View,
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
-  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
@@ -137,6 +137,31 @@ class SearchBoxViewBase : public views::View,
   virtual void UpdateSearchBoxFocusPaint();
 
  protected:
+  struct InitParams {
+    InitParams();
+    ~InitParams();
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
+    // Whether to show close button if the search box is active and empty.
+    bool show_close_button_when_active = false;
+
+    // Whether to create a rounded-rect background.
+    bool create_background = true;
+
+    // Whether to animate the transition when the search icon is changed.
+    bool animate_changing_search_icon = false;
+
+    // Whether we should increase spacing between `search_icon_', 'search_box_',
+    // and the 'search_box_button_container_'.
+    bool increase_child_view_padding = false;
+
+    // If set, the margins that should be used for the search box text field.
+    absl::optional<gfx::Insets> textfield_margins;
+  };
+
+  void Init(const InitParams& params);
+
   // Fires query change notification.
   void NotifyQueryChanged();
 
@@ -164,6 +189,7 @@ class SearchBoxViewBase : public views::View,
                           const ui::GestureEvent& gesture_event) override;
 
   SearchBoxViewDelegate* delegate() { return delegate_; }
+
   views::BoxLayoutView* box_layout_view() { return content_container_; }
 
   void SetSearchBoxBackgroundCornerRadius(int corner_radius);
@@ -185,9 +211,6 @@ class SearchBoxViewBase : public views::View,
   // Updates model text and selection model with current Textfield info.
   virtual void UpdateModel(bool initiated_by_user) {}
 
-  // Updates the search icon.
-  virtual void UpdateSearchIcon() {}
-
   // Updates the color and alignment of the placeholder text.
   virtual void UpdatePlaceholderTextStyle() {}
 
@@ -195,8 +218,6 @@ class SearchBoxViewBase : public views::View,
   virtual void UpdateSearchBoxBorder() {}
 
   // Setup button's image, accessible name, and tooltip text etc.
-  virtual void SetupAssistantButton() {}
-  virtual void SetupCloseButton() {}
   virtual void SetupBackButton() {}
 
   // Records in histograms the activation of the searchbox.

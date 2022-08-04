@@ -58,6 +58,14 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   ~SearchBoxView() override;
 
+  // Initializes the search box style for usage in bubble (clamshell mode)
+  // launcher.
+  void InitializeForBubbleLauncher();
+
+  // Initializes the search box style for usage in fullscreen (tablet mode)
+  // launcher.
+  void InitializeForFullscreenLauncher();
+
   // Must be called before the user interacts with the search box. Cannot be
   // part of Init() because the controller isn't available until after Init()
   // is called.
@@ -76,18 +84,14 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void MaybeCreateFocusRing();
 
   // Overridden from SearchBoxViewBase:
-  void Init(const InitParams& params) override;
   void UpdateSearchTextfieldAccessibleNodeData(
       ui::AXNodeData* node_data) override;
   void ClearSearch() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void UpdateKeyboardVisibility() override;
   void UpdateModel(bool initiated_by_user) override;
-  void UpdateSearchIcon() override;
   void UpdatePlaceholderTextStyle() override;
   void UpdateSearchBoxBorder() override;
-  void SetupAssistantButton() override;
-  void SetupCloseButton() override;
   void SetupBackButton() override;
   void RecordSearchBoxActivationHistogram(ui::EventType event_type) override;
   void OnSearchBoxActiveChanged(bool active) override;
@@ -173,6 +177,15 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
  private:
   class FocusRingLayer;
+
+  // Called when the close button within the search box gets pressed.
+  void CloseButtonPressed();
+
+  // Called when the assistant button within the search box gets pressed.
+  void AssistantButtonPressed();
+
+  // Updates the icon shown left of the search box texfield.
+  void UpdateSearchIcon();
 
   // Whether 'autocomplete_text' is a valid candidate for classic highlighted
   // autocomplete.

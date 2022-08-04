@@ -656,11 +656,7 @@ void AppListView::InitContents() {
   auto app_list_main_view = std::make_unique<AppListMainView>(delegate_, this);
   search_box_view_ =
       new SearchBoxView(app_list_main_view.get(), delegate_, this);
-  SearchBoxViewBase::InitParams params;
-  params.show_close_button_when_active = true;
-  params.create_background = true;
-  params.animate_changing_search_icon = true;
-  search_box_view_->Init(params);
+  search_box_view_->InitializeForFullscreenLauncher();
 
   // Assign |app_list_main_view_| here since it is accessed during Init().
   app_list_main_view_ = app_list_main_view.get();

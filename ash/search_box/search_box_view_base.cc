@@ -39,6 +39,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -365,6 +366,10 @@ class SearchIconImageView : public views::ImageView {
   base::WeakPtrFactory<SearchIconImageView> weak_factory_{this};
 };
 
+SearchBoxViewBase::InitParams::InitParams() = default;
+
+SearchBoxViewBase::InitParams::~InitParams() = default;
+
 SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
     : delegate_(delegate), search_box_(new SearchBoxTextfield(this)) {
   DCHECK(delegate_);
@@ -459,19 +464,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
       content_container_->AddChildView(std::make_unique<views::View>());
   search_box_button_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-
-  assistant_button_ = search_box_button_container_->AddChildView(
-      std::make_unique<SearchBoxImageButton>(
-          base::BindRepeating(&SearchBoxViewDelegate::AssistantButtonPressed,
-                              base::Unretained(delegate_))));
-  assistant_button_->SetFlipCanvasOnPaintForRTLUI(false);
-  // Default hidden, child class should decide if it should shown.
-  assistant_button_->SetVisible(false);
-
-  close_button_ = search_box_button_container_->AddChildView(
-      std::make_unique<SearchBoxImageButton>(
-          base::BindRepeating(&SearchBoxViewDelegate::CloseButtonPressed,
-                              base::Unretained(delegate_))));
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
@@ -487,15 +479,36 @@ void SearchBoxViewBase::Init(const InitParams& params) {
         kSearchBoxBorderCornerRadius,
         AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
   }
+
   if (params.increase_child_view_padding) {
     content_container_->SetBetweenChildSpacing(kInnerPadding);
   }
 
+  if (params.textfield_margins) {
+    search_box()->SetProperty(views::kMarginsKey, *params.textfield_margins);
+  }
+
   UpdateSearchBoxBorder();
   UpdatePlaceholderTextStyle();
-  SetupAssistantButton();
   SetupBackButton();
-  SetupCloseButton();
+}
+
+views::ImageButton* SearchBoxViewBase::CreateCloseButton(
+    const base::RepeatingClosure& button_callback) {
+  DCHECK(!close_button_);
+  close_button_ = search_box_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  close_button_->SetVisible(false);
+  return close_button_;
+}
+
+views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
+    const base::RepeatingClosure& button_callback) {
+  DCHECK(!assistant_button_);
+  assistant_button_ = search_box_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  assistant_button_->SetVisible(false);
+  return assistant_button_;
 }
 
 bool SearchBoxViewBase::HasSearch() const {
@@ -556,12 +569,8 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
     return;
 
   is_search_box_active_ = active;
-  UpdateSearchIcon();
   UpdatePlaceholderTextStyle();
   search_box_->SetCursorEnabled(active);
-
-  // Clear ghost text when toggling search box active state.
-  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 
   if (active) {
     search_box_->RequestFocus();
@@ -607,10 +616,6 @@ void SearchBoxViewBase::OnEnabledChanged() {
 
 const char* SearchBoxViewBase::GetClassName() const {
   return "SearchBoxView";
-}
-
-void SearchBoxViewBase::OnKeyEvent(ui::KeyEvent* event) {
-  delegate_->OnSearchBoxKeyEvent(event);
 }
 
 void SearchBoxViewBase::OnGestureEvent(ui::GestureEvent* event) {
@@ -689,13 +694,11 @@ void SearchBoxViewBase::NotifyActiveChanged() {
 }
 
 void SearchBoxViewBase::UpdateButtonsVisibility() {
-  DCHECK(close_button_ && assistant_button_);
+  DCHECK(close_button_);
 
   const bool should_show_close_button =
       !search_box_->GetText().empty() ||
       (show_close_button_when_active_ && is_search_box_active_);
-  const bool should_show_assistant_button =
-      show_assistant_button_ && !should_show_close_button;
 
   if (should_show_close_button) {
     MaybeFadeButtonIn(close_button_);
@@ -703,10 +706,14 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
     MaybeFadeButtonOut(close_button_);
   }
 
-  if (should_show_assistant_button) {
-    MaybeFadeButtonIn(assistant_button_);
-  } else {
-    MaybeFadeButtonOut(assistant_button_);
+  if (assistant_button_) {
+    const bool should_show_assistant_button =
+        show_assistant_button_ && !should_show_close_button;
+    if (should_show_assistant_button) {
+      MaybeFadeButtonIn(assistant_button_);
+    } else {
+      MaybeFadeButtonOut(assistant_button_);
+    }
   }
 }
 
@@ -787,6 +794,7 @@ void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
 }
 
 void SearchBoxViewBase::SetShowAssistantButton(bool show) {
+  DCHECK(assistant_button_);
   show_assistant_button_ = show;
   UpdateButtonsVisibility();
 }
