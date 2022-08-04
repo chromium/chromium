@@ -38,6 +38,7 @@ if (!is_chromeos_ash) {
     "spell_check_page_tests.ts",
     "languages_page_metrics_test_browser.ts",
     "translate_page_metrics_test_browser.ts",
+    "spell_check_page_metrics_test_browser.ts",
   ]
 }
 

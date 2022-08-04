@@ -61,7 +61,8 @@
         label="$i18n{offerToEnableSpellCheck}"
         sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
         pref="{{prefs.browser.enable_spellchecking}}"
-        disabled="[[!spellCheckLanguages_.length]]">
+        disabled="[[!spellCheckLanguages_.length]]"
+        on-settings-boolean-control-change="onSpellCheckToggleChange_">
     </settings-toggle-button>
 <if expr="_google_chrome or not is_macosx">
     <iron-collapse id="spellCheckCollapse"
@@ -69,7 +70,8 @@
 <if expr="_google_chrome">
       <div class="cr-row continuation spell-check-radio-group">
         <settings-radio-group class="flex"
-            pref="{{prefs.spellcheck.use_spelling_service}}">
+            pref="{{prefs.spellcheck.use_spelling_service}}"
+            on-change="onSelectedSpellingServiceChange_">
           <controlled-radio-button class="spell-check-radio-button"
               id="spellingServiceDisable"
               label="$i18n{spellCheckBasicLabel}" name="false"
