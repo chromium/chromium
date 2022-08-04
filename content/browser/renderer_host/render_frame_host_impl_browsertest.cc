@@ -6948,6 +6948,14 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                        MAYBE_BlockNameUpdateForBackForwardCache) {
+  const bool disable_frame_name_update = base::FeatureList::IsEnabled(
+      features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
+
+  // TODO(1326943): This configuration is flaky.
+  if (!disable_frame_name_update) {
+    GTEST_SKIP();
+  }
+
   // Create the RenderFrameHost and store it in the BackForwardCache.
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -6981,8 +6989,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (base::FeatureList::IsEnabled(
-          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost)) {
+  if (disable_frame_name_update) {
     // Verify that the frame name and unique name haven't been changed, even
     // though a name change was triggered by the Javascript.
     EXPECT_EQ(frame_name, "page_name");
@@ -7008,6 +7015,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                        MAYBE_BlockNameUpdateForPendingDelete) {
+  const bool disable_frame_name_update = base::FeatureList::IsEnabled(
+      features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
+
+  // TODO(1326944): This configuration is flaky.
+  if (!disable_frame_name_update) {
+    GTEST_SKIP();
+  }
+
   // Disable BackForwardCache so that a pending delete state can be forced.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
@@ -7046,8 +7061,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (base::FeatureList::IsEnabled(
-          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost)) {
+  if (disable_frame_name_update) {
     // Verify that the frame name and unique name haven't been changed, even
     // though a name change was triggered by the Javascript.
     EXPECT_EQ(frame_name, "page_name");
