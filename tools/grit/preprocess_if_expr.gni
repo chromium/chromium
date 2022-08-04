@@ -8,6 +8,10 @@ template("preprocess_if_expr") {
   action(target_name) {
     script = "//tools/grit/preprocess_if_expr.py"
 
+    # Declare deps of preprocess_if_expr.py as inputs as well, to re-trigger
+    # preprocess_if_expr() targets whenever those change.
+    inputs = [ "//tools/grit/grit/node/base.py" ]
+
     forward_variables_from(invoker,
                            [
                              "deps",
@@ -15,7 +19,6 @@ template("preprocess_if_expr") {
                              "visibility",
                            ])
 
-    inputs = []
     outputs = []
 
     in_folder = "."
