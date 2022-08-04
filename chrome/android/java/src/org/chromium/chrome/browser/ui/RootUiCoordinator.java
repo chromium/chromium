@@ -1154,6 +1154,13 @@ public class RootUiCoordinator
                 mMicStateObserver = voiceToolbarButtonController::updateMicButtonState;
                 voiceRecognitionHandler.addObserver(mMicStateObserver);
             }
+
+            mSnackbarManagerSupplier.get().isShowingSupplier().addObserver((Boolean isShowing) -> {
+                if (isShowing && mPageZoomCoordinator != null) {
+                    // On show snackbar, hide page zoom dialog
+                    mPageZoomCoordinator.hide();
+                }
+            });
         }
     }
 
@@ -1259,6 +1266,7 @@ public class RootUiCoordinator
                 @Override
                 public void onMenuVisibilityChanged(boolean isVisible) {
                     if (isVisible && mPageZoomCoordinator != null) {
+                        // On show app menu, hide page zoom dialog
                         mPageZoomCoordinator.hide();
                     }
                 }
