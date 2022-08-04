@@ -227,6 +227,7 @@ SkColor AshColorProvider::GetBackgroundColor() const {
 
 SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
                                                    bool use_dark_color) const {
+  auto* color_provider = GetColorProvider();
   switch (type) {
     case ContentLayerType::kSeparatorColor:
     case ContentLayerType::kShelfHandleColor:
@@ -257,15 +258,13 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
       return SkColorSetA(
           use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, 0x4C);
     case ContentLayerType::kSwitchTrackColorActive:
-      return GetSecondToneColor(GetContentLayerColorImpl(
-          ContentLayerType::kSwitchKnobColorActive, use_dark_color));
+      return color_provider->GetColor(kColorAshSwitchTrackColorActive);
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
     case ContentLayerType::kBatteryBadgeColor:
       return use_dark_color ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
     case ContentLayerType::kAppStateIndicatorColorInactive:
-      return GetDisabledColor(GetContentLayerColorImpl(
-          ContentLayerType::kAppStateIndicatorColor, use_dark_color));
+      return color_provider->GetColor(kColorAshAppStateIndicatorColorInactive);
     case ContentLayerType::kCurrentDeskColor:
       return use_dark_color ? SK_ColorWHITE : SK_ColorBLACK;
     case ContentLayerType::kSwitchAccessInnerStrokeColor:
@@ -276,6 +275,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
       return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x0D)
                             : SkColorSetA(SK_ColorBLACK, 0x14);
     case ContentLayerType::kAppStateIndicatorColor:
+      return color_provider->GetColor(kColorAshAppStateIndicatorColor);
     case ContentLayerType::kButtonIconColor:
     case ContentLayerType::kButtonLabelColor:
       return use_dark_color ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;
