@@ -4,128 +4,127 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './cr_fingerprint_icon.js';
+import './cr_fingerprint_icon.html.js';
 import '../cr_lottie/cr_lottie.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert_ts.js';
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrLottieElement} from '../cr_lottie/cr_lottie.m.js';
+
+import {getTemplate} from './cr_fingerprint_progress_arc.html.js';
 
 /**
  * The dark-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
- * @type {string}
  */
-export const FINGERPRINT_SCANNED_ICON_DARK =
+export const FINGERPRINT_SCANNED_ICON_DARK: string =
     'cr-fingerprint-icon:fingerprint-scanned-dark';
 
 /**
  * The light-mode fingerprint icon displayed temporarily each time a user scans
  * their fingerprint and persistently once the enrollment process is complete.
- * @type {string}
  */
-export const FINGERPRINT_SCANNED_ICON_LIGHT =
+export const FINGERPRINT_SCANNED_ICON_LIGHT: string =
     'cr-fingerprint-icon:fingerprint-scanned-light';
 
-/** @type {string} */
-export const FINGERPRINT_CHECK_DARK_URL =
+export const FINGERPRINT_CHECK_DARK_URL: string =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_DARK';
 
-/** @type {string} */
-export const FINGERPRINT_CHECK_LIGHT_URL =
+export const FINGERPRINT_CHECK_LIGHT_URL: string =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT';
 
 /**
  * The dark-mode color of the progress circle background: Google Grey 700.
- * @type {string}
  */
-export const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK = 'rgba(95, 99, 104, 1.0)';
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK: string =
+    'rgba(95, 99, 104, 1.0)';
 
 /**
  * The light-mode color of the progress circle background: Google Grey 200.
- * @type {string}
  */
-export const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT =
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT: string =
     'rgba(232, 234, 237, 1.0)';
 
 /**
  * The dark-mode color of the setup progress arc: Google Blue 400.
- * @type {string}
  */
-export const PROGRESS_CIRCLE_FILL_COLOR_DARK = 'rgba(102, 157, 246, 1.0)';
+export const PROGRESS_CIRCLE_FILL_COLOR_DARK: string =
+    'rgba(102, 157, 246, 1.0)';
 
 /**
  * The light-mode color of the setup progress arc: Google Blue 500.
- * @type {string}
  */
-export const PROGRESS_CIRCLE_FILL_COLOR_LIGHT = 'rgba(66, 133, 244, 1.0)';
+export const PROGRESS_CIRCLE_FILL_COLOR_LIGHT: string =
+    'rgba(66, 133, 244, 1.0)';
 
 /**
  * The time in milliseconds of the animation updates.
- * @type {number}
  */
-const ANIMATE_TICKS_MS = 20;
+const ANIMATE_TICKS_MS: number = 20;
 
 /**
  * The duration in milliseconds of the animation of the progress circle when the
  * user is touching the scanner.
- * @type {number}
  */
-const ANIMATE_DURATION_MS = 200;
+const ANIMATE_DURATION_MS: number = 200;
 
 /**
  * The radius of the add fingerprint progress circle.
- * @type {number}
  */
-const DEFAULT_PROGRESS_CIRCLE_RADIUS = 114;
+const DEFAULT_PROGRESS_CIRCLE_RADIUS: number = 114;
 
 /**
  * The default height of the icon located in the center of the fingerprint
  * progress circle.
- * @type {number}
  */
-const ICON_HEIGHT = 118;
+const ICON_HEIGHT: number = 118;
 
 /**
  * The default width of the icon located in the center of the fingerprint
  * progress circle.
- * @type {number}
  */
-const ICON_WIDTH = 106;
+const ICON_WIDTH: number = 106;
 
 /**
  * The default size of the check mark located in the bottom-right corner of the
  * fingerprint progress circle.
- * @type {number}
  */
-const CHECK_MARK_SIZE = 53;
+const CHECK_MARK_SIZE: number = 53;
 
 /**
  * The time in milliseconds of the fingerprint scan success timeout.
- * @type {number}
  */
-const FINGERPRINT_SCAN_SUCCESS_MS = 500;
+const FINGERPRINT_SCAN_SUCCESS_MS: number = 500;
 
 /**
  * The thickness of the fingerprint progress circle.
- * @type {number}
  */
-const PROGRESS_CIRCLE_STROKE_WIDTH = 4;
+const PROGRESS_CIRCLE_STROKE_WIDTH: number = 4;
 
 
-/** @polymer */
+export interface CrFingerprintProgressArcElement {
+  $: {
+    canvas: HTMLCanvasElement,
+    fingerprintScanned: IronIconElement,
+    scanningAnimation: CrLottieElement,
+  };
+}
+
 export class CrFingerprintProgressArcElement extends PolymerElement {
   static get is() {
     return 'cr-fingerprint-progress-arc';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Radius of the fingerprint progress circle being displayed.
-       * @type {number}
        */
       circleRadius: {
         type: Number,
@@ -134,7 +133,6 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
       /**
        * Whether lottie animation should be autoplayed.
-       * @type {boolean}
        */
       autoplay: {
         type: Boolean,
@@ -145,8 +143,6 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
        * Scale factor based the configured radius (circleRadius) vs the default
        * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
        * This will affect the size of icons and check mark.
-       * @type {number}
-       * @private
        */
       scale_: {
         type: Number,
@@ -155,15 +151,11 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
       /**
        * Whether fingerprint enrollment is complete.
-       * @type {boolean}
-       * @private
        */
       isComplete_: Boolean,
 
       /**
        * Whether the fingerprint progress page is being rendered in dark mode.
-       * @type {boolean}
-       * @private
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -173,41 +165,32 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  circleRadius: number;
+  autoplay: boolean;
+  private scale_: number;
+  private isComplete_: boolean;
+  private isDarkModeActive_: boolean;
 
-    /**
-     * Animation ID for the fingerprint progress circle.
-     * @private {number|undefined}
-     */
-    this.progressAnimationIntervalId_ = undefined;
+  // Animation ID for the fingerprint progress circle.
+  private progressAnimationIntervalId_: number|undefined = undefined;
 
-    /**
-     * Percentage of the enrollment process completed as of the last update.
-     * @private {number}
-     */
-    this.progressPercentDrawn_ = 0;
+  // Percentage of the enrollment process completed as of the last update.
+  private progressPercentDrawn_: number = 0;
 
-    /**
-     * Timer ID for fingerprint scan success update.
-     * @private {number|undefined}
-     */
-    this.updateTimerId_ = undefined;
-  }
+  // Timer ID for fingerprint scan success update.
+  private updateTimerId_: number|undefined = undefined;
 
   /**
    * Updates the current state to account for whether dark mode is enabled.
-   * @private
    */
-  onDarkModeChanged_() {
+  private onDarkModeChanged_() {
     this.clearCanvas_();
     this.drawProgressCircle_(this.progressPercentDrawn_);
     this.updateAnimationAsset_();
     this.updateIconAsset_();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.scale_ = this.circleRadius / DEFAULT_PROGRESS_CIRCLE_RADIUS;
@@ -217,7 +200,6 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Reset the element to initial state, when the enrollment just starts.
-   * @public
    */
   reset() {
     this.cancelAnimations_();
@@ -227,8 +209,7 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
     this.drawProgressCircle_(/** currentPercent = */ 0);
     this.$.fingerprintScanned.hidden = true;
 
-    const scanningAnimation =
-        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
+    const scanningAnimation = this.$.scanningAnimation;
     scanningAnimation.singleLoop = false;
     scanningAnimation.classList.add('translucent');
     this.updateAnimationAsset_();
@@ -240,14 +221,15 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
    * Animates the progress circle. Animates an arc that starts at the top of
    * the circle to prevPercentComplete, to an arc that starts at the top of the
    * circle to currPercentComplete.
-   * @param {number} prevPercentComplete The previous progress indicates the
-   *                 start angle of the arc we want to draw.
-   * @param {number} currPercentComplete The current progress indicates the end
-   *                 angle of the arc we want to draw.
-   * @param {boolean} isComplete Indicate whether enrollment is complete.
-   * @public
+   * @param prevPercentComplete The previous progress indicates the start angle
+   *     of the arc we want to draw.
+   * @param currPercentComplete The current progress indicates the end angle of
+   *    the arc we want to draw.
+   * @param isComplete Indicate whether enrollment is complete.
    */
-  setProgress(prevPercentComplete, currPercentComplete, isComplete) {
+  setProgress(
+      prevPercentComplete: number, currPercentComplete: number,
+      isComplete: boolean) {
     if (this.isComplete_) {
       return;
     }
@@ -294,33 +276,29 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Controls the animation based on the value of |shouldPlay|.
-   * @param {boolean} shouldPlay Will play the animation if true else pauses it.
-   * @public
+   * @param shouldPlay Will play the animation if true else pauses it.
    */
-  setPlay(shouldPlay) {
-    const scanningAnimation =
-        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
-    scanningAnimation.setPlay(shouldPlay);
+  setPlay(shouldPlay: boolean) {
+    this.$.scanningAnimation.setPlay(shouldPlay);
   }
 
-  /** @public */
-  isComplete() {
+  isComplete(): boolean {
     return this.isComplete_;
   }
 
   /**
    * Draws an arc on the canvas element around the center with radius
    * |circleRadius|.
-   * @param {number} startAngle The start angle of the arc we want to draw.
-   * @param {number} endAngle The end angle of the arc we want to draw.
-   * @param {string} color The color of the arc we want to draw. The string is
+   * @param startAngle The start angle of the arc we want to draw.
+   * @param endAngle The end angle of the arc we want to draw.
+   * @param color The color of the arc we want to draw. The string is
    *     in the format rgba(r',g',b',a'). r', g', b' are values from [0-255]
    *     and a' is a value from [0-1].
-   * @private
    */
-  drawArc_(startAngle, endAngle, color) {
+  private drawArc_(startAngle: number, endAngle: number, color: string) {
     const c = this.$.canvas;
     const ctx = c.getContext('2d');
+    assert(!!ctx);
 
     ctx.beginPath();
     ctx.arc(c.width / 2, c.height / 2, this.circleRadius, startAngle, endAngle);
@@ -334,11 +312,10 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
    * |circleRadius|. The first |currentPercent| of the circle, starting at the
    * top, is drawn with |PROGRESS_CIRCLE_FILL_COLOR|; the remainder of the
    * circle is drawn |PROGRESS_CIRCLE_BACKGROUND_COLOR|.
-   * @param {number} currentPercent A value from [0-100] indicating the
+   * @param currentPercent A value from [0-100] indicating the
    *     percentage of progress to display.
-   * @private
    */
-  drawProgressCircle_(currentPercent) {
+  private drawProgressCircle_(currentPercent: number) {
     // Angles on HTML canvases start at 0 radians on the positive x-axis and
     // increase in the clockwise direction. We want to start at the top of the
     // circle, which is 3pi/2.
@@ -364,11 +341,9 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
   /**
    * Updates the lottie animation taking into account the current state and
    * whether dark mode is enabled.
-   * @private
    */
-  updateAnimationAsset_() {
-    const scanningAnimation =
-        /** @type {CrLottieElement} */ (this.$.scanningAnimation);
+  private updateAnimationAsset_() {
+    const scanningAnimation = this.$.scanningAnimation;
     if (this.isComplete_) {
       scanningAnimation.animationUrl = this.isDarkModeActive_ ?
           FINGERPRINT_CHECK_DARK_URL :
@@ -382,21 +357,17 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Updates the fingerprint-scanned icon based on whether dark mode is enabled.
-   * @private
    */
-  updateIconAsset_() {
-    const fingerprintScanned =
-        /** @type {IronIconElement} */ (this.$.fingerprintScanned);
-    fingerprintScanned.icon = this.isDarkModeActive_ ?
+  private updateIconAsset_() {
+    this.$.fingerprintScanned.icon = this.isDarkModeActive_ ?
         FINGERPRINT_SCANNED_ICON_DARK :
         FINGERPRINT_SCANNED_ICON_LIGHT;
   }
 
   /*
    * Cleans up any pending animation update created by setInterval().
-   * @private
    */
-  cancelAnimations_() {
+  private cancelAnimations_() {
     this.progressPercentDrawn_ = 0;
     if (this.progressAnimationIntervalId_) {
       clearInterval(this.progressAnimationIntervalId_);
@@ -410,11 +381,9 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Show animation for enrollment completion.
-   * @private
    */
-  animateScanComplete_() {
-    const scanningAnimation =
-        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
+  private animateScanComplete_() {
+    const scanningAnimation = this.$.scanningAnimation;
     scanningAnimation.singleLoop = true;
     scanningAnimation.autoplay = true;
     scanningAnimation.classList.remove('translucent');
@@ -425,9 +394,8 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Show animation for enrollment in progress.
-   * @private
    */
-  animateScanProgress_() {
+  private animateScanProgress_() {
     this.$.fingerprintScanned.hidden = false;
     this.$.scanningAnimation.hidden = true;
     this.updateTimerId_ = window.setTimeout(() => {
@@ -438,32 +406,27 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
 
   /**
    * Clear the canvas of any renderings.
-   * @private
    */
-  clearCanvas_() {
+  private clearCanvas_() {
     const c = this.$.canvas;
     const ctx = c.getContext('2d');
+    assert(!!ctx);
     ctx.clearRect(0, 0, c.width, c.height);
   }
 
   /**
    * Update the size and position of the animation images.
-   * @private
    */
-  updateImages_() {
-    this.resizeAndCenterIcon_(
-        /** @type {!HTMLElement} */ (this.$.scanningAnimation));
-    this.resizeAndCenterIcon_(
-        /** @type {!HTMLElement} */ (this.$.fingerprintScanned));
+  private updateImages_() {
+    this.resizeAndCenterIcon_(this.$.scanningAnimation);
+    this.resizeAndCenterIcon_(this.$.fingerprintScanned);
   }
 
   /**
    * Resize the icon based on the scale and place it in the center of the
    * fingerprint progress circle.
-   * @param {!HTMLElement} target
-   * @private
    */
-  resizeAndCenterIcon_(target) {
+  private resizeAndCenterIcon_(target: HTMLElement) {
     // Resize icon based on the default width/height and scale.
     target.style.width = ICON_WIDTH * this.scale_ + 'px';
     target.style.height = ICON_HEIGHT * this.scale_ + 'px';
@@ -478,10 +441,8 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
   /**
    * Resize the check mark based on the scale and place it in the bottom-right
    * corner of the fingerprint progress circle.
-   * @param {!HTMLElement} target
-   * @private
    */
-  resizeCheckMark_(target) {
+  private resizeCheckMark_(target: HTMLElement) {
     // Resize check mark based on the default size and scale.
     target.style.width = CHECK_MARK_SIZE * this.scale_ + 'px';
     target.style.height = CHECK_MARK_SIZE * this.scale_ + 'px';
@@ -493,6 +454,12 @@ export class CrFingerprintProgressArcElement extends PolymerElement {
         CHECK_MARK_SIZE * this.scale_;
     target.style.left = left + 'px';
     target.style.top = top + 'px';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-fingerprint-progress-arc': CrFingerprintProgressArcElement;
   }
 }
 

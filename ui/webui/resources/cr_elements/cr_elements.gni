@@ -31,6 +31,7 @@ if (include_polymer) {
     "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_action_menu/cr_action_menu.ts",
     "cr_drawer/cr_drawer.ts",
+    "cr_fingerprint/cr_fingerprint_progress_arc.ts",
     "cr_grid/cr_grid.ts",
     "cr_link_row/cr_link_row.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
@@ -51,7 +52,10 @@ if (include_polymer) {
         [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
   }
 
-  icons_html_files = [ "mwb_shared_icons.html" ]
+  icons_html_files = [
+    "mwb_shared_icons.html",
+    "cr_fingerprint/cr_fingerprint_icon.html",
+  ]
 
   # Polymer HTML files that are passed as input to html_to_wrapper().
   polymer_html_files = []

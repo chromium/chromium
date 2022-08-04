@@ -9,10 +9,12 @@ export const LOTTIE_JS_URL: string;
 interface CrLottieElement extends LegacyElementMixin, HTMLElement {
   animationUrl: string;
   autoplay: boolean;
+  setPlay(shouldPlay: boolean): void;
+  singleLoop: boolean;
+
   $: {
     canvas: HTMLCanvasElement,
   };
-  setPlay(shouldPlay: boolean): void;
 }
 
 export {CrLottieElement};

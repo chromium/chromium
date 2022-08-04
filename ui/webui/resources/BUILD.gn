@@ -169,7 +169,6 @@ checked_in_dts_files = [
   "cr_elements/cr_container_shadow_behavior.m.d.ts",
   "cr_elements/cr_dialog/cr_dialog.m.d.ts",
   "cr_elements/cr_expand_button/cr_expand_button.m.d.ts",
-  "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
   "cr_elements/cr_input/cr_input.m.d.ts",
   "cr_elements/cr_lottie/cr_lottie.m.d.ts",
@@ -267,7 +266,6 @@ if (is_chromeos_ash) {
 if (include_polymer) {
   generate_definitions_js_files += [
     "cr_elements/action_link_css.m.js",
-    "cr_elements/cr_fingerprint/cr_fingerprint_icon.js",
     "cr_elements/cr_actionable_row_style.m.js",
     "cr_elements/cr_icons_css.m.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
