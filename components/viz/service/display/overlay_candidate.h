@@ -162,11 +162,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is the recorded output of rendering the |rpdq|.
   sk_sp<SkDeferredDisplayList> ddl;
 
-  // The bounds in pixels of the rendered |rpdq|.
-  // TODO(petermcneeley) : Refactor the usage of this member to be compatible
-  // with |uv_rect| member in this class.
-  gfx::RectF bounds_rect;
-
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
   // context must support non opaque opacity for these types.
