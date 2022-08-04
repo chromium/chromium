@@ -255,6 +255,8 @@ static_library("browser") {
     "metrics/form_events/form_events.h",
     "metrics/form_interactions_counter.cc",
     "metrics/form_interactions_counter.h",
+    "metrics/payments/local_card_migration_metrics.cc",
+    "metrics/payments/local_card_migration_metrics.h",
     "metrics/payments/manage_cards_prompt_metrics.cc",
     "metrics/payments/manage_cards_prompt_metrics.h",
     "metrics/payments/offers_metrics.cc",

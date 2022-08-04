@@ -834,14 +834,6 @@ void AutofillMetrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
 }
 
 // static
-void AutofillMetrics::LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
-    SaveTypeMetric metric) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes",
-      metric);
-}
-
-// static
 void AutofillMetrics::LogUploadOfferedCardOriginMetric(
     UploadOfferedCardOriginMetric metric) {
   DCHECK_LT(metric, NUM_UPLOAD_OFFERED_CARD_ORIGIN_METRICS);
@@ -1094,108 +1086,6 @@ void AutofillMetrics::LogScanCreditCardCompleted(
 }
 
 // static
-void AutofillMetrics::LogLocalCardMigrationDecisionMetric(
-    LocalCardMigrationDecisionMetric metric) {
-  UMA_HISTOGRAM_ENUMERATION("Autofill.LocalCardMigrationDecision", metric);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationBubbleOfferMetric(
-    LocalCardMigrationBubbleOfferMetric metric,
-    bool is_reshow) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_BUBBLE_OFFER_METRICS);
-  std::string histogram_name = "Autofill.LocalCardMigrationBubbleOffer.";
-  histogram_name += is_reshow ? "Reshows" : "FirstShow";
-  base::UmaHistogramEnumeration(histogram_name, metric,
-                                NUM_LOCAL_CARD_MIGRATION_BUBBLE_OFFER_METRICS);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(
-    LocalCardMigrationBubbleResultMetric metric,
-    bool is_reshow) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_BUBBLE_RESULT_METRICS);
-  std::string suffix = is_reshow ? ".Reshows" : ".FirstShow";
-  base::UmaHistogramEnumeration(
-      "Autofill.LocalCardMigrationBubbleResult" + suffix, metric,
-      NUM_LOCAL_CARD_MIGRATION_BUBBLE_RESULT_METRICS);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationDialogOfferMetric(
-    LocalCardMigrationDialogOfferMetric metric) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_DIALOG_OFFER_METRICS);
-  std::string histogram_name = "Autofill.LocalCardMigrationDialogOffer";
-  base::UmaHistogramEnumeration(histogram_name, metric,
-                                NUM_LOCAL_CARD_MIGRATION_DIALOG_OFFER_METRICS);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationDialogUserInteractionMetric(
-    const base::TimeDelta& duration,
-    LocalCardMigrationDialogUserInteractionMetric metric) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_DIALOG_USER_INTERACTION_METRICS);
-  base::UmaHistogramEnumeration(
-      "Autofill.LocalCardMigrationDialogUserInteraction", metric,
-      NUM_LOCAL_CARD_MIGRATION_DIALOG_USER_INTERACTION_METRICS);
-
-  // Do not log duration metrics for
-  // LOCAL_CARD_MIGRATION_DIALOG_DELETE_CARD_ICON_CLICKED, as it can happen
-  // multiple times in one dialog.
-  std::string suffix;
-  switch (metric) {
-    case LOCAL_CARD_MIGRATION_DIALOG_CLOSED_SAVE_BUTTON_CLICKED:
-      suffix = "Accepted";
-      break;
-    case LOCAL_CARD_MIGRATION_DIALOG_CLOSED_CANCEL_BUTTON_CLICKED:
-      suffix = "Denied";
-      break;
-    case LOCAL_CARD_MIGRATION_DIALOG_CLOSED_VIEW_CARDS_BUTTON_CLICKED:
-    case LOCAL_CARD_MIGRATION_DIALOG_CLOSED_DONE_BUTTON_CLICKED:
-      suffix = "Closed";
-      break;
-    default:
-      return;
-  }
-
-  base::UmaHistogramLongTimes(
-      "Autofill.LocalCardMigrationDialogActiveDuration." + suffix, duration);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationDialogUserSelectionPercentageMetric(
-    int selected,
-    int total) {
-  UMA_HISTOGRAM_PERCENTAGE(
-      "Autofill.LocalCardMigrationDialogUserSelectionPercentage",
-      100 * selected / total);
-}
-
-// static
-void AutofillMetrics::LogLocalCardMigrationPromptMetric(
-    LocalCardMigrationOrigin local_card_migration_origin,
-    LocalCardMigrationPromptMetric metric) {
-  DCHECK_LT(metric, NUM_LOCAL_CARD_MIGRATION_PROMPT_METRICS);
-  std::string histogram_name = "Autofill.LocalCardMigrationOrigin.";
-  // Switch to different sub-histogram depending on local card migration origin.
-  switch (local_card_migration_origin) {
-    case LocalCardMigrationOrigin::UseOfLocalCard:
-      histogram_name += "UseOfLocalCard";
-      break;
-    case LocalCardMigrationOrigin::UseOfServerCard:
-      histogram_name += "UseOfServerCard";
-      break;
-    case LocalCardMigrationOrigin::SettingsPage:
-      histogram_name += "SettingsPage";
-      break;
-    default:
-      NOTREACHED();
-      return;
-  }
-  base::UmaHistogramEnumeration(histogram_name, metric,
-                                NUM_LOCAL_CARD_MIGRATION_PROMPT_METRICS);
-}
-
 void AutofillMetrics::LogProgressDialogResultMetric(
     bool is_canceled_by_user,
     AutofillProgressDialogType autofill_progress_dialog_type) {

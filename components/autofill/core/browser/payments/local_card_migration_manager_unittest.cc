@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -162,7 +163,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   // Verify that the correct histogram entry (and only that) was logged.
   void ExpectUniqueLocalCardMigrationDecision(
       const base::HistogramTester& histogram_tester,
-      AutofillMetrics::LocalCardMigrationDecisionMetric metric) {
+      autofill_metrics::LocalCardMigrationDecisionMetric metric) {
     histogram_tester.ExpectUniqueSample("Autofill.LocalCardMigrationDecision",
                                         metric, 1);
   }
@@ -1139,16 +1140,16 @@ TEST_F(LocalCardMigrationManagerTest,
   // sub-histogram.
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
+      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1);
+      autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      AutofillMetrics::MAIN_DIALOG_SHOWN, 1);
+      autofill_metrics::MAIN_DIALOG_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      AutofillMetrics::MAIN_DIALOG_ACCEPTED, 1);
+      autofill_metrics::MAIN_DIALOG_ACCEPTED, 1);
 }
 
 // Using a server card when any number of local cards are eligible for migration
@@ -1163,16 +1164,16 @@ TEST_F(LocalCardMigrationManagerTest,
   // sub-histogram.
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfServerCard",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
+      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfServerCard",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1);
+      autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfServerCard",
-      AutofillMetrics::MAIN_DIALOG_SHOWN, 1);
+      autofill_metrics::MAIN_DIALOG_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.UseOfServerCard",
-      AutofillMetrics::MAIN_DIALOG_ACCEPTED, 1);
+      autofill_metrics::MAIN_DIALOG_ACCEPTED, 1);
 }
 
 // Using a server card will not trigger migration even if there are other local
@@ -1213,16 +1214,16 @@ TEST_F(LocalCardMigrationManagerTest,
   // Triggering from settings page won't show intermediate bubble.
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.SettingsPage",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_SHOWN, 0);
+      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.SettingsPage",
-      AutofillMetrics::INTERMEDIATE_BUBBLE_ACCEPTED, 0);
+      autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.SettingsPage",
-      AutofillMetrics::MAIN_DIALOG_SHOWN, 1);
+      autofill_metrics::MAIN_DIALOG_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.LocalCardMigrationOrigin.SettingsPage",
-      AutofillMetrics::MAIN_DIALOG_ACCEPTED, 1);
+      autofill_metrics::MAIN_DIALOG_ACCEPTED, 1);
 }
 
 // Use new card when submit so migration was not offered. Verify the migration
@@ -1232,7 +1233,7 @@ TEST_F(LocalCardMigrationManagerTest, LogMigrationDecisionMetric_UseNewCard) {
   UseNewCardWithLocalCardsOnFile();
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_USE_NEW_CARD);
 }
 
@@ -1263,7 +1264,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormSubmitted(credit_card_form);
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_FAILED_PREREQUISITES);
 }
 
@@ -1283,7 +1284,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithOtherLocalCardsOnFile();
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_REACHED_MAX_STRIKE_COUNT);
 }
 
@@ -1296,7 +1297,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithInvalidLocalCardsOnFile();
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_SINGLE_LOCAL_CARD);
 }
 
@@ -1308,7 +1309,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseServerCardWithInvalidLocalCardsOnFile();
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_NO_MIGRATABLE_CARDS);
 }
 
@@ -1324,7 +1325,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithOtherLocalCardsOnFile();
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED);
 }
 
@@ -1366,7 +1367,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormSubmitted(credit_card_form);
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_USE_UNSUPPORTED_LOCAL_CARD);
 }
 
@@ -1410,7 +1411,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormSubmitted(credit_card_form);
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_NO_SUPPORTED_CARDS);
 }
 
@@ -1454,7 +1455,7 @@ TEST_F(LocalCardMigrationManagerTest,
   FormSubmitted(credit_card_form);
 
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_NO_SUPPORTED_CARDS);
 }
 
@@ -1467,7 +1468,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   ExpectUniqueLocalCardMigrationDecision(
       histogram_tester,
-      AutofillMetrics::LocalCardMigrationDecisionMetric::OFFERED);
+      autofill_metrics::LocalCardMigrationDecisionMetric::OFFERED);
 }
 
 // Tests that if payment client returns an invalid legal message migration
@@ -1481,7 +1482,7 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Verify that the correct histogram entries were logged.
   ExpectUniqueLocalCardMigrationDecision(
-      histogram_tester, AutofillMetrics::LocalCardMigrationDecisionMetric::
+      histogram_tester, autofill_metrics::LocalCardMigrationDecisionMetric::
                             NOT_OFFERED_INVALID_LEGAL_MESSAGE);
 }
 

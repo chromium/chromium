@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -249,7 +250,7 @@ class LocalCardMigrationManager {
   bool user_accepted_main_migration_dialog_ = false;
 
   // Record the triggering source of the local card migration.
-  AutofillMetrics::LocalCardMigrationOrigin local_card_migration_origin_;
+  autofill_metrics::LocalCardMigrationOrigin local_card_migration_origin_;
 
   // Initialized only during tests.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
