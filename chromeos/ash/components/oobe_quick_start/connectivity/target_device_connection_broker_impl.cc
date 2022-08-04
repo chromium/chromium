@@ -16,6 +16,27 @@
 
 namespace ash::quick_start {
 
+void TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
+    GetAdapter(device::BluetoothAdapterFactory::AdapterCallback callback) {
+  if (bluetooth_adapter_factory_wrapper_for_testing_) {
+    bluetooth_adapter_factory_wrapper_for_testing_->GetAdapterImpl(
+        std::move(callback));
+    return;
+  }
+
+  device::BluetoothAdapterFactory* adapter_factory =
+      device::BluetoothAdapterFactory::Get();
+
+  // Bluetooth is always supported on the ChromeOS platform.
+  DCHECK(adapter_factory->IsBluetoothSupported());
+
+  adapter_factory->GetAdapter(std::move(callback));
+}
+
+TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
+    TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
+        bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
+
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl() {
   GetBluetoothAdapter();
 }
@@ -24,7 +45,6 @@ TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {}
 
 TargetDeviceConnectionBrokerImpl::FeatureSupportStatus
 TargetDeviceConnectionBrokerImpl::GetFeatureSupportStatus() const {
-  // TODO(b/234848503) Add unit test coverage for the kUndetermined case.
   if (!bluetooth_adapter_)
     return FeatureSupportStatus::kUndetermined;
 
@@ -35,19 +55,13 @@ TargetDeviceConnectionBrokerImpl::GetFeatureSupportStatus() const {
 }
 
 void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
-  auto* adapter_factory = device::BluetoothAdapterFactory::Get();
-
-  // Bluetooth is always supported on the ChromeOS platform.
-  DCHECK(adapter_factory->IsBluetoothSupported());
-
   // Because this will be called from the constructor, GetAdapter() may call
   // OnGetBluetoothAdapter() immediately which can cause problems during tests
   // since the class is not fully constructed yet.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &device::BluetoothAdapterFactory::GetAdapter,
-          base::Unretained(adapter_factory),
+          &BluetoothAdapterFactoryWrapper::GetAdapter,
           base::BindOnce(
               &TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter,
               weak_ptr_factory_.GetWeakPtr())));
@@ -56,6 +70,10 @@ void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
 void TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
+
+  if (deferred_start_advertising_callback_) {
+    std::move(deferred_start_advertising_callback_).Run();
+  }
 }
 
 void TargetDeviceConnectionBrokerImpl::StartAdvertising(
@@ -63,7 +81,23 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     ResultCallback on_start_advertising_callback) {
   // TODO(b/234655072): Notify client about incoming connections on the started
   // advertisement via ConnectionLifecycleListener.
-  CHECK(GetFeatureSupportStatus() == FeatureSupportStatus::kSupported);
+  if (GetFeatureSupportStatus() == FeatureSupportStatus::kUndetermined) {
+    deferred_start_advertising_callback_ =
+        base::BindOnce(&TargetDeviceConnectionBroker::StartAdvertising,
+                       weak_ptr_factory_.GetWeakPtr(), listener,
+                       std::move(on_start_advertising_callback));
+    return;
+  }
+
+  if (GetFeatureSupportStatus() == FeatureSupportStatus::kNotSupported) {
+    LOG(ERROR)
+        << __func__
+        << " failed to start advertising because the feature is not supported.";
+    std::move(on_start_advertising_callback).Run(/*success=*/false);
+    return;
+  }
+
+  DCHECK(GetFeatureSupportStatus() == FeatureSupportStatus::kSupported);
 
   if (!bluetooth_adapter_->IsPowered()) {
     LOG(ERROR) << __func__
@@ -98,6 +132,10 @@ void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError(
 
 void TargetDeviceConnectionBrokerImpl::StopAdvertising(
     base::OnceClosure on_stop_advertising_callback) {
+  if (deferred_start_advertising_callback_) {
+    deferred_start_advertising_callback_.Reset();
+  }
+
   if (!fast_pair_advertiser_) {
     VLOG(1) << __func__ << " Not currently advertising, ignoring.";
     std::move(on_stop_advertising_callback).Run();

@@ -22,6 +22,29 @@ using TargetDeviceConnectionBroker =
 using TargetDeviceConnectionBrokerImpl =
     ash::quick_start::TargetDeviceConnectionBrokerImpl;
 
+// Allows us to delay returning a Bluetooth adapter until after ReturnAdapter()
+// is called. Used for testing how the connection broker behaves before the
+// Bluetooth adapter is finished initializing
+class DeferredBluetoothAdapterFactoryWrapper
+    : public TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper {
+ public:
+  void ReturnAdapter() {
+    if (!adapter_callback_)
+      return;
+
+    device::BluetoothAdapterFactory::Get()->GetAdapter(
+        std::move(adapter_callback_));
+  }
+
+ private:
+  void GetAdapterImpl(
+      device::BluetoothAdapterFactory::AdapterCallback callback) override {
+    adapter_callback_ = std::move(callback);
+  }
+
+  device::BluetoothAdapterFactory::AdapterCallback adapter_callback_;
+};
+
 class FakeFastPairAdvertiser : public FastPairAdvertiser {
  public:
   explicit FakeFastPairAdvertiser(
@@ -136,16 +159,22 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
             this, &TargetDeviceConnectionBrokerImplTest::IsBluetoothPowered));
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
+    TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
+        set_bluetooth_adapter_factory_wrapper_for_testing(
+            &bluetooth_adapter_factory_wrapper_);
 
     CreateConnectionBroker();
     SetFakeFastPairAdvertiserFactory(/*should_succeed_on_start=*/true);
-    // Allow the Bluetooth adapter to be fetched.
-    base::RunLoop().RunUntilIdle();
   }
 
   void CreateConnectionBroker() {
     connection_broker_ =
         ash::quick_start::TargetDeviceConnectionBrokerFactory::Create();
+  }
+
+  void FinishFetchingBluetoothAdapter() {
+    base::RunLoop().RunUntilIdle();
+    bluetooth_adapter_factory_wrapper_.ReturnAdapter();
   }
 
   bool IsBluetoothPowered() { return is_bluetooth_powered_; }
@@ -166,11 +195,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
 
   void StartAdvertisingResultCallback(bool success) {
     start_advertising_callback_called_ = true;
-    if (success) {
-      start_advertising_callback_success_ = true;
-      return;
-    }
-    start_advertising_callback_success_ = false;
+    start_advertising_callback_success_ = success;
   }
 
   void StopAdvertisingCallback() { stop_advertising_callback_called_ = true; }
@@ -184,12 +209,19 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
   std::unique_ptr<FakeFastPairAdvertiserFactory> fast_pair_advertiser_factory_;
+  DeferredBluetoothAdapterFactoryWrapper bluetooth_adapter_factory_wrapper_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImplTest> weak_ptr_factory_{
       this};
 };
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, GetFeatureSupportStatus) {
+  EXPECT_EQ(
+      TargetDeviceConnectionBrokerImpl::FeatureSupportStatus::kUndetermined,
+      connection_broker_->GetFeatureSupportStatus());
+
+  FinishFetchingBluetoothAdapter();
+
   SetBluetoothIsPresent(false);
   EXPECT_EQ(
       TargetDeviceConnectionBrokerImpl::FeatureSupportStatus::kNotSupported,
@@ -201,6 +233,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GetFeatureSupportStatus) {
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, StartFastPairAdvertising) {
+  FinishFetchingBluetoothAdapter();
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
@@ -214,7 +247,42 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, StartFastPairAdvertising) {
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StartFastPairAdvertising_BeforeBTAdapterInitialized) {
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+
+  FinishFetchingBluetoothAdapter();
+
+  EXPECT_EQ(1u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_TRUE(start_advertising_callback_success_);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StartFastPairAdvertisingError_BluetoothNotPresent) {
+  FinishFetchingBluetoothAdapter();
+  SetBluetoothIsPresent(false);
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_FALSE(start_advertising_callback_success_);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
        StartFastPairAdvertisingError_BluetoothNotPowered) {
+  FinishFetchingBluetoothAdapter();
   SetBluetoothIsPowered(false);
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
@@ -230,6 +298,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        StartFastPairAdvertisingError_Unsuccessful) {
+  FinishFetchingBluetoothAdapter();
   SetFakeFastPairAdvertiserFactory(/*should_succeed_on_start=*/false);
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
@@ -245,6 +314,8 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        StopFastPairAdvertising_NeverStarted) {
+  FinishFetchingBluetoothAdapter();
+
   // If StartAdvertising is never called, StopAdvertising should not propagate
   // to the fast pair advertiser.
   connection_broker_->StopAdvertising(base::BindOnce(
@@ -255,7 +326,28 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_FALSE(fast_pair_advertiser_factory_->StopAdvertisingCalled());
 }
 
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StopFastPairAdvertising_BeforeBTAdapterInitialized) {
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  // If the Bluetooth adapter hasn't finished initializing, then
+  // StartAdvertisings never completed, and StopAdvertising should not propagate
+  // to the fast pair advertiser.
+  connection_broker_->StopAdvertising(base::BindOnce(
+      &TargetDeviceConnectionBrokerImplTest::StopAdvertisingCallback,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_TRUE(stop_advertising_callback_called_);
+  EXPECT_FALSE(fast_pair_advertiser_factory_->StopAdvertisingCalled());
+}
+
 TEST_F(TargetDeviceConnectionBrokerImplTest, StopFastPairAdvertising) {
+  FinishFetchingBluetoothAdapter();
+
   connection_broker_->StartAdvertising(
       nullptr,
       base::BindOnce(

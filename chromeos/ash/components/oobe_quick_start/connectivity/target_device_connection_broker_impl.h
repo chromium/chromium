@@ -8,12 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 
 class FastPairAdvertiser;
-
-namespace device {
-class BluetoothAdapter;
-}
 
 namespace ash::quick_start {
 
@@ -22,6 +19,26 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   using FeatureSupportStatus =
       TargetDeviceConnectionBroker::FeatureSupportStatus;
   using ResultCallback = TargetDeviceConnectionBroker::ResultCallback;
+
+  // Thin wrapper around BluetoothAdapterFactory to allow mocking GetAdapter()
+  // for unit tests.
+  class BluetoothAdapterFactoryWrapper {
+   public:
+    static void GetAdapter(
+        device::BluetoothAdapterFactory::AdapterCallback callback);
+
+    static void set_bluetooth_adapter_factory_wrapper_for_testing(
+        BluetoothAdapterFactoryWrapper* wrapper) {
+      bluetooth_adapter_factory_wrapper_for_testing_ = wrapper;
+    }
+
+   private:
+    virtual void GetAdapterImpl(
+        device::BluetoothAdapterFactory::AdapterCallback callback) = 0;
+
+    static BluetoothAdapterFactoryWrapper*
+        bluetooth_adapter_factory_wrapper_for_testing_;
+  };
 
   TargetDeviceConnectionBrokerImpl();
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
@@ -42,6 +59,7 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   void OnStopFastPairAdvertising(base::OnceClosure callback);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  base::OnceClosure deferred_start_advertising_callback_;
 
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   base::UnguessableToken random_session_id_;
