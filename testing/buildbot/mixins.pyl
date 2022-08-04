@@ -1355,42 +1355,25 @@
 
     },
   },
-  # Xcode 13 used on beta bots.
-  'xcode_13_beta_bots': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '13f17a'
-      ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_13f17a',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
-  # Default Xcode 13 on main.
-  'xcode_13_main': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '13c100'
-      ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_13c100',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
   # Default Xcode 14 beta.
   'xcode_14_beta': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '14a5284g'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_14a5284g',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  # Xcode 14 on iOS main.
+  'xcode_14_main': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
