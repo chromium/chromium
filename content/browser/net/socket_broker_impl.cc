@@ -4,11 +4,20 @@
 
 #include "content/browser/net/socket_broker_impl.h"
 
+#include <errno.h>
+
+#include "base/files/file_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/address_family.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/tcp_socket.h"
+
+#if !BUILDFLAG(IS_WIN)
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
 
 namespace content {
 
@@ -22,12 +31,17 @@ void SocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
 #if BUILDFLAG(IS_WIN)
   std::move(callback).Run(mojo::PlatformHandle(), net::ERR_FAILED);
 #else
-  net::SocketDescriptor socket;
-  int rv =
-      net::TCPSocket::OpenAndReleaseSocketDescriptor(address_family, &socket);
-  base::ScopedFD fd(socket);
-
-  std::move(callback).Run(mojo::PlatformHandle(std::move(fd)), rv);
+  base::ScopedFD socket(net::CreatePlatformSocket(
+      net::ConvertAddressFamily(address_family), SOCK_STREAM,
+      address_family == AF_UNIX ? 0 : IPPROTO_TCP));
+  int rv = net::OK;
+  if (!socket.is_valid()) {
+    rv = net::MapSystemError(errno);
+  } else if (!base::SetNonBlocking(socket.get())) {
+    rv = net::MapSystemError(errno);
+    socket.reset();
+  }
+  std::move(callback).Run(mojo::PlatformHandle(std::move(socket)), rv);
 #endif
 }
 

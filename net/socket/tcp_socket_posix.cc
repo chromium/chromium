@@ -499,14 +499,6 @@ void TCPSocketPosix::EndLoggingMultipleConnectAttempts(int net_error) {
   }
 }
 
-int TCPSocketPosix::OpenAndReleaseSocketDescriptor(AddressFamily family,
-                                                   SocketDescriptor* out) {
-  std::unique_ptr<SocketPosix> new_socket = std::make_unique<SocketPosix>();
-  int rv = new_socket->Open(ConvertAddressFamily(family));
-  *out = new_socket->ReleaseConnectedSocket();
-  return rv;
-}
-
 SocketDescriptor TCPSocketPosix::ReleaseSocketDescriptorForTesting() {
   SocketDescriptor socket_descriptor = socket_->ReleaseConnectedSocket();
   socket_.reset();
