@@ -424,8 +424,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(3, 1));
 }
 
+// Flaky on Mac https://crbug.com/1337760.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanvasGetImageScale DISABLED_CanvasGetImageScale
+#else
+#define MAYBE_CanvasGetImageScale CanvasGetImageScale
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
-                       CanvasGetImageScale) {
+                       MAYBE_CanvasGetImageScale) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <body>
       <canvas aria-label="canvas" id="c" width="40" height="20">
