@@ -108,7 +108,7 @@ void Database::DatabaseOpenTask::DoPerformTask() {
   success_ = GetDatabase()->PerformOpenAndVerify(set_version_in_new_database_,
                                                  error_, error_message);
   if (!success_)
-    error_message_ = error_message.IsolatedCopy();
+    error_message_ = error_message;
 }
 
 #if DCHECK_IS_ON()
