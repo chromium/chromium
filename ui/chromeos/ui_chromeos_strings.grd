@@ -1545,7 +1545,7 @@
         Adding Profile...
       </message>
       <message name="IDS_NETWORK_LIST_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked.">
-        SIM card is locked
+        Your SIM is locked
       </message>
       <message name="IDS_WIFI_NETWORK_STATUS_SECURED" desc="a11y label used when a Wi-Fi network is secured.">
         Secured
@@ -1737,13 +1737,13 @@
         Missing SIM card
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CARD_LOCKED" desc="Settings > Internet > Network details > Lock/unlock SIM card: Message when SIM card is locked.">
-        SIM card is locked
+        Your SIM is locked
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for toggle to enable SIM card locking.">
-       Lock SIM card
+        Lock SIM
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE_SUBLABEL" desc="Settings > Internet > Network details > Lock/unlock SIM card: Sublabel for toggle to enable SIM card locking.">
-        PIN is required to use mobile data
+        A PIN is required to use mobile data
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_BUTTON_CHANGE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for dialog button to change a PIN.">
         Change
@@ -1770,19 +1770,19 @@
         Connect to this network to change SIM lock setting
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for SIM locked dialog.">
-        SIM card is locked
+        Your SIM is locked
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_POLICY_ADMIN_SUBTITLE" desc="Settings > Internet > Network details > Unlock SIM card: Title for unlocking SIM locked dialog when restrict SIM PIN lock policy is on.">
-        Your administrator requires you to disable SIM Lock.
+        Your administrator has requested you to turn off the "Lock SIM" setting
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title informing the user to enter a PIN provided by the carrier in order unlock network.">
         An incorrect PIN was entered too many times. To set up a new PIN, enter the 8-digit Personal Unblocking Key (PUK) provided by your carrier.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_MANAGED_SIM_LOCKED_PUK_SUBTITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title informing the user to enter a PIN provided by the carrier in order unlock network if the admin prohibits SIM PIN locking.">
-        An incorrect PIN was entered too many times. Enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier.
+        An incorrect PIN was entered too many times.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_MANAGED_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
-        You won't be able to use this network until you enter the PUK
+        To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier. 
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
         You won't be able to use this network until you set up a new PIN
@@ -1806,7 +1806,7 @@
         If you fail to verify, your network access will be disabled.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for entering a PIN.">
-        Enter PIN
+        Your SIM is locked
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_OLD_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for entering an old (current) PIN.">
         Enter current PIN
