@@ -122,16 +122,14 @@ test("blink_heap_unittests") {
   }
 
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1287051): Requires fuchsia.sys.Launcher.
-    use_cfv2 = false
+    use_cfv1 = false
+
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
 
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
-
-    # Use the following when switching to CFv2:
-    # test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 }
 
@@ -167,12 +165,17 @@ source_set("blink_heap_unittests_sources") {
     "//base/test:test_support",
     "//gin:gin",
     "//mojo/core/embedder:embedder",
-    "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
+
+  if (is_fuchsia) {
+    deps += [ "//skia:test_fonts_cfv2" ]
+  } else {
+    deps += [ "//skia:test_fonts" ]
+  }
 }
 
 test("blink_heap_perftests") {

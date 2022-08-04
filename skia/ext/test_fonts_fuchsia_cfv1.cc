@@ -46,8 +46,11 @@ TestFontsProvider::TestFontsProvider() {
   // fonts, which must be bundled in the calling process' package.
   fuchsia::sys::LaunchInfo launch_info;
   launch_info.url = "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx";
+  // Note: the manifest name here matches the default used by the Fuchsia fonts
+  // component so that the file can be found automagically by the modern (cfv2)
+  // variant.
   launch_info.arguments.emplace(
-      {"--font-manifest", "/test_fonts/fuchsia_test_fonts_manifest.json"});
+      {"--font-manifest", "/test_fonts/all.font_manifest.json"});
   launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
   launch_info.flat_namespace->paths.push_back("/test_fonts");
 

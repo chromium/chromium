@@ -1947,15 +1947,13 @@ test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
   if (is_fuchsia) {
+    use_cfv1 = false
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
+
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
-    # TODO(https://crbug.com/1287051): Requires fuchsia.sys.Launcher.
-    use_cfv2 = false
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
-
-    # Use the following when switching to CFv2:
-    # test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 
   if (is_android) {
@@ -2248,7 +2246,6 @@ source_set("blink_platform_unittests_sources") {
     "//services/viz/public/mojom",
     "//skia",
     "//skia:skcms",
-    "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party:freetype_harfbuzz",
@@ -2284,6 +2281,12 @@ source_set("blink_platform_unittests_sources") {
   defines = [ "INSIDE_BLINK" ]
   if (use_minikin_hyphenation) {
     defines += [ "USE_MINIKIN_HYPHENATION" ]
+  }
+
+  if (is_fuchsia) {
+    deps += [ "//skia:test_fonts_cfv2" ]
+  } else {
+    deps += [ "//skia:test_fonts" ]
   }
 }
 
@@ -2398,7 +2401,6 @@ test("blink_fuzzer_unittests") {
     ":test_support",
     "//base/test:test_support",
     "//mojo/core/embedder:embedder",
-    "//skia:test_fonts",
     "//third_party/blink/public:test_support",
   ]
 
@@ -2411,9 +2413,13 @@ test("blink_fuzzer_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv2 = false
+    use_cfv1 = false
+    deps += [ "//skia:test_fonts_cfv2" ]
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+        [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
+  } else {
+    deps += [ "//skia:test_fonts" ]
   }
 }
 
