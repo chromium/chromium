@@ -82,11 +82,9 @@ void AppListNudgeController::ResetPrefsForNewUserSession(PrefService* prefs) {
 
 // static
 int AppListNudgeController::GetShownCount(PrefService* prefs, NudgeType type) {
-  const base::Value* dictionary = prefs->GetDictionary(GetPrefPath(type));
-  if (!dictionary)
-    return 0;
+  const base::Value::Dict& dictionary = prefs->GetValueDict(GetPrefPath(type));
 
-  return dictionary->FindIntPath(kReorderNudgeShownCount).value_or(0);
+  return dictionary.FindIntByDottedPath(kReorderNudgeShownCount).value_or(0);
 }
 
 // static
@@ -160,12 +158,9 @@ bool AppListNudgeController::IsPrivacyNoticeAccepted() const {
   if (!prefs)
     return false;
 
-  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
-                                  ->FindKey(kPrivacyNoticeAcceptedKey);
-  if (!result || !result->is_bool())
-    return false;
-
-  return result->GetBool();
+  return prefs->GetValueDict(prefs::kLauncherFilesPrivacyNotice)
+      .FindBool(kPrivacyNoticeAcceptedKey)
+      .value_or(false);
 }
 
 bool AppListNudgeController::WasPrivacyNoticeShown() const {
@@ -173,12 +168,9 @@ bool AppListNudgeController::WasPrivacyNoticeShown() const {
   if (!prefs)
     return false;
 
-  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
-                                  ->FindKey(kPrivacyNoticeShownKey);
-  if (!result || !result->is_bool())
-    return false;
-
-  return result->GetBool();
+  return prefs->GetValueDict(prefs::kLauncherFilesPrivacyNotice)
+      .FindBool(kPrivacyNoticeShownKey)
+      .value_or(false);
 }
 
 void AppListNudgeController::SetPrivacyNoticeShown(bool shown) {
