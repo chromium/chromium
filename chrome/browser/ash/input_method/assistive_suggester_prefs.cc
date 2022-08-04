@@ -23,5 +23,17 @@ bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
   return predictive_writing_setting.value_or(true);
 }
 
+bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
+                                        const std::string& engine_id) {
+  const base::Value* input_method_settings = pref_service->GetDictionary(
+      ::prefs::kLanguageInputMethodSpecificSettings);
+  absl::optional<bool> diacritics_on_longpress_setting =
+      input_method_settings->FindBoolPath(
+          engine_id + ".physicalKeyboardEnableDiacriticsOnLongpress");
+  // If no preference has been set yet by the user then we can assume the
+  // default preference as enabled.
+  return diacritics_on_longpress_setting.value_or(false);
+}
+
 }  // namespace input_method
 }  // namespace ash

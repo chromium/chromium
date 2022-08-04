@@ -122,6 +122,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsExpandedMultiWordSuggestEnabled();
 
+  bool IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
+
   // Checks the text before cursor, emits metric if any assistive prefix is
   // matched.
   void RecordAssistiveMatchMetrics(

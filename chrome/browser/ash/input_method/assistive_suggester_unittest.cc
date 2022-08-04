@@ -77,11 +77,17 @@ ui::KeyEvent CreateRepeatKeyEvent(const ui::DomCode& code) {
                           ui::EF_IS_REPEAT);
 }
 
-void SetInputMethodOptions(Profile& profile, bool predictive_writing_enabled) {
+void SetInputMethodOptions(Profile& profile,
+                           bool predictive_writing_enabled,
+                           bool diacritics_on_longpress_enabled) {
   base::Value input_method_setting(base::Value::Type::DICTIONARY);
   input_method_setting.SetPath(std::string(kUsEnglishEngineId) +
                                    ".physicalKeyboardEnablePredictiveWriting",
                                base::Value(predictive_writing_enabled));
+  input_method_setting.SetPath(
+      std::string(kUsEnglishEngineId) +
+          ".physicalKeyboardEnableDiacriticsOnLongpress",
+      base::Value(diacritics_on_longpress_enabled));
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);
 }
@@ -243,7 +249,9 @@ TEST_F(AssistiveSuggesterTest,
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{features::kAssistPersonalInfo});
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -256,7 +264,9 @@ TEST_F(AssistiveSuggesterTest,
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{features::kAssistPersonalInfo});
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -270,19 +280,45 @@ TEST_F(AssistiveSuggesterTest,
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest,
-       AssistiveDiacriticsLongpressFlagEnabled_AssistiveFeatureEnabled) {
+       AssistiveDiacriticsLongpressFlagAndPrefEnabled_AssistiveFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kDiacriticsOnPhysicalKeyboardLongpress);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       AssistiveDiacriticsLongpressFlagDisabled_AssistiveFeatureDisabled) {
+  // Feature flag not enabled by default.
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       AssistiveDiacriticsLongpressPrefDisabled_AssistiveFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDiacriticsOnPhysicalKeyboardLongpress);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
@@ -294,7 +330,8 @@ TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   histogram_tester_.ExpectUniqueSample(
@@ -310,7 +347,9 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -331,7 +370,9 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
       std::make_unique<FakeSuggesterSwitch>(
           EnabledSuggestions{.multi_word_suggestions = true}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -353,7 +394,9 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabledByLacros) {
       std::make_unique<FakeSuggesterSwitch>(
           EnabledSuggestions{.multi_word_suggestions = true}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -375,7 +418,9 @@ TEST_F(AssistiveSuggesterTest,
       std::make_unique<FakeSuggesterSwitch>(
           EnabledSuggestions{.multi_word_suggestions = true}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kSpainSpanishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -396,7 +441,9 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
       std::make_unique<FakeSuggesterSwitch>(
           EnabledSuggestions{.multi_word_suggestions = true}));
 
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                        /*diacritics_on_longpress_enabled=*/false);
+
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -413,6 +460,8 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
       /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -424,11 +473,30 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
+       NoDiacriticsSuggestionOnKeyDownLongpressForUSEnglishOnPrefDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
+TEST_F(AssistiveSuggesterTest,
        NoDiacriticsSuggestionOnKeyDownLongpressForNonUSEnglish) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
       /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kSpainSpanishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -444,6 +512,8 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
       /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -486,11 +556,13 @@ TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionInterruptedDoesNotSuggest) {
 }
 
 TEST_F(AssistiveSuggesterTest,
-       ProcesssAndDoNotPropagateAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
+       DoNotPropagateAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
       /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -502,6 +574,22 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->OnKeyEvent(ReleaseKey(ui::DomCode::US_A)));
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"");
+}
+
+TEST_F(AssistiveSuggesterTest,
+       PropagateAlphaRepeatKeyIfDiacriticsOnLongpressDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  // Returning false tells IME to propagate this event.
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(
+      CreateRepeatKeyEvent(ui::DomCode::US_A)));
 }
 
 TEST_F(AssistiveSuggesterTest,
@@ -808,7 +896,8 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
         /*enabled_features=*/{features::kAssistMultiWord},
         /*disabled_features=*/{});
 
-    SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+    SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
+                          /*diacritics_on_longpress_enabled=*/false);
   }
 
   content::BrowserTaskEnvironment task_environment_;

@@ -193,8 +193,7 @@ AssistiveSuggester::~AssistiveSuggester() = default;
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
          IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled() ||
-         base::FeatureList::IsEnabled(
-             features::kDiacriticsOnPhysicalKeyboardLongpress);
+         IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
@@ -227,6 +226,14 @@ bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
 bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
   return IsMultiWordSuggestEnabled() &&
          base::FeatureList::IsEnabled(features::kAssistMultiWordExpanded);
+}
+
+bool AssistiveSuggester::IsDiacriticsOnPhysicalKeyboardLongpressEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kDiacriticsOnPhysicalKeyboardLongpress) &&
+         IsUsEnglishEngine(active_engine_id_) &&
+         IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(),
+                                            active_engine_id_);
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo(
@@ -391,13 +398,10 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
     }
   }
 
-  // Diacritics is only enabled for US English Engine.
-  if (IsUsEnglishEngine(active_engine_id_)) {
+  if (IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {
     // Longpress diacritics behaviour overrides the longpress to repeat key
     // behaviour for alphabetical keys.
-    if (base::FeatureList::IsEnabled(
-            features::kDiacriticsOnPhysicalKeyboardLongpress) &&
-        event.is_repeat() &&
+    if (event.is_repeat() &&
         kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
       return true;  // Do not propagate this event.
     }
@@ -410,8 +414,7 @@ void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event) {
   if (const char c = event.GetCharacter();
       kDefaultLongpressEnabledKeys.contains(c) &&
-      base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress)) {
+      IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {
     // Process longpress keydown event.
     if (current_longpress_char_ == absl::nullopt &&
         event.type() == ui::EventType::ET_KEY_PRESSED) {
