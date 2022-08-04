@@ -123,6 +123,8 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     const std::string& auth_session_id,
     std::unique_ptr<UserContext> original_context,
     StartAuthSessionCallback callback) {
+  if (auth_session_id.empty())
+    NOTREACHED() << "Auth session should exist";
   LOGIN_LOG(EVENT) << "Deleting stale ephemeral user";
   user_data_auth::RemoveRequest remove_request;
   remove_request.set_auth_session_id(auth_session_id);

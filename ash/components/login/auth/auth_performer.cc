@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -85,6 +86,9 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(context->GetChallengeResponseKeys().empty());
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
+
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
     SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
@@ -142,6 +146,8 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(!context->GetChallengeResponseKeys().empty());
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
   user_data_auth::AuthenticateAuthSessionRequest request;
@@ -164,7 +170,9 @@ void AuthPerformer::AuthenticateWithPassword(
     AuthOperationCallback callback) {
   DCHECK(!password.empty()) << "Caller should check for empty password";
   DCHECK(!key_label.empty()) << "Caller should provide correct label";
-  DCHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
+
   const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
   if (!auth_factors.HasPasswordKey(key_label)) {
     LOGIN_LOG(ERROR) << "User does not have password factor labeled "
@@ -200,7 +208,9 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
                                         AuthOperationCallback callback) {
   DCHECK(!pin.empty()) << "Caller should check for empty PIN";
   DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
-  DCHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
+
   const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
   const cryptohome::KeyDefinition* key_def = auth_factors.FindPinKey();
   if (!key_def) {
@@ -221,6 +231,9 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
 
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
+
   LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
   user_data_auth::AuthenticateAuthSessionRequest request;
   request.set_auth_session_id(context->GetAuthSessionId());
@@ -248,7 +261,8 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                                          AuthSessionStatusCallback callback) {
-  DCHECK(!context->GetAuthSessionId().empty());
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
 
   LOGIN_LOG(EVENT) << "Requesting authsession status";
   user_data_auth::GetAuthSessionStatusRequest request;
