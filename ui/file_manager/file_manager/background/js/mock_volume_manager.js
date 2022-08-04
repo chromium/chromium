@@ -75,17 +75,14 @@ export class MockVolumeManager {
         str('DOWNLOADS_DIRECTORY_LABEL'));
   }
 
-  /** @override */
   getFuseBoxOnlyFilterEnabled() {
     return false;
   }
 
-  /** @override */
   getMediaStoreFilesOnlyFilterEnabled() {
     return false;
   }
 
-  /** @override */
   dispose() {}
 
   /**
@@ -173,7 +170,6 @@ export class MockVolumeManager {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
    * @return {?VolumeInfo} Volume info.
-   * @override
    */
   getCurrentProfileVolumeInfo(volumeType) {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
@@ -281,19 +277,15 @@ export class MockVolumeManager {
 /** @private {?VolumeManager} */
 MockVolumeManager.instance_ = null;
 
-/** @override */
 MockVolumeManager.prototype.getVolumeInfo =
     VolumeManagerImpl.prototype.getVolumeInfo;
 
-/** @override */
 MockVolumeManager.prototype.getDefaultDisplayRoot =
     VolumeManagerImpl.prototype.getDefaultDisplayRoot;
 
-/** @override */
 MockVolumeManager.prototype.findByDevicePath =
     VolumeManagerImpl.prototype.findByDevicePath;
 
-/** @override */
 MockVolumeManager.prototype.whenVolumeInfoReady =
     VolumeManagerImpl.prototype.whenVolumeInfoReady;
 

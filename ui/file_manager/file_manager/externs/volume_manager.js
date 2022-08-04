@@ -135,7 +135,7 @@ export class VolumeManager {
    * Searches the information of the volume that exists on the given device
    * path.
    * @param {string} devicePath Path of the device to search.
-   * @return {VolumeInfo} The volume's information, or null if not found.
+   * @return {?VolumeInfo} The volume's information, or null if not found.
    */
   findByDevicePath(devicePath) {}
 

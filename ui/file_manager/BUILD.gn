@@ -153,6 +153,7 @@ ts_library("build_ts") {
 
   definitions = [
     "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
+    "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
     "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
   ]
 }
@@ -277,6 +278,13 @@ ts_library("test_build_ts") {
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
+  ]
+
+  definitions = [
+    "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
+    "//ui/file_manager/file_manager/definitions/file_error.d.ts",
+    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
+    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
   ]
 
   deps = [ ":build_ts" ]

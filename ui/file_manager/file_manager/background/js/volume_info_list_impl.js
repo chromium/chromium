@@ -26,17 +26,14 @@ export class VolumeInfoListImpl {
     return this.model_.length;
   }
 
-  /** @override */
   addEventListener(type, handler) {
     this.model_.addEventListener(type, handler);
   }
 
-  /** @override */
   removeEventListener(type, handler) {
     this.model_.removeEventListener(type, handler);
   }
 
-  /** @override */
   add(volumeInfo) {
     const index = this.findIndex(volumeInfo.volumeId);
     if (index !== -1) {
@@ -46,7 +43,6 @@ export class VolumeInfoListImpl {
     }
   }
 
-  /** @override */
   remove(volumeId) {
     const index = this.findIndex(volumeId);
     if (index !== -1) {
@@ -54,7 +50,6 @@ export class VolumeInfoListImpl {
     }
   }
 
-  /** @override */
   item(index) {
     return /** @type {!VolumeInfo} */ (this.model_.item(index));
   }

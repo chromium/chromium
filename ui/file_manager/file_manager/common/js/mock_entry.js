@@ -156,7 +156,8 @@ export class MockEntry {
     if (this.filesystem.entries[this.fullPath]) {
       onSuccess(this.metadata);
     } else {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+      onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
     }
   }
 
@@ -187,7 +188,8 @@ export class MockEntry {
     if (this.filesystem.entries[path]) {
       onSuccess(this.filesystem.entries[path]);
     } else {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+      onError(
+          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
     }
   }
 
@@ -198,8 +200,8 @@ export class MockEntry {
    * @param {string=} opt_newName New name.
    * @param {function(!Entry)=} opt_successCallback Callback invoked with the
    *     moved entry.
-   * @param {function(!FileError)=} opt_errorCallback Callback invoked with an
-   *     error object.
+   * @param {function(!FileError)=} opt_errorCallback Callback invoked with
+   *     an error object.
    */
   moveTo(parent, opt_newName, opt_successCallback, opt_errorCallback) {
     Promise.resolve()
@@ -281,7 +283,11 @@ export class MockEntry {
     }
   }
 
-  /** @override */
+  /**
+   * @param {string} fullpath New fullpath.
+   * @param {FileSystem=} opt_filesystem New file system
+   * @return {Entry} Cloned entry.
+   */
   clone(fullpath, opt_filesystem) {
     throw new Error('Not implemented.');
   }

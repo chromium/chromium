@@ -269,7 +269,16 @@ ts_files = [
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [ "file_manager/widgets/xf_breadcrumb.html" ]
 
-ts_test_files = [ "file_manager/widgets/xf_breadcrumb_unittest.ts" ]
+ts_test_files = [
+  # Lib:
+  "file_manager/lib/base_store_unittest.ts",
+
+  # Reducers:
+  "file_manager/state/reducers/all_entries_unittest.ts",
+
+  # Widgets:
+  "file_manager/widgets/xf_breadcrumb_unittest.ts",
+]
 
 ts_generated_templates = []
 foreach(_t, ts_templates) {
@@ -326,6 +335,7 @@ generated_js_files = [
 
 # Test files:
 unittest_files = [
+  # Common:
   "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
@@ -336,6 +346,8 @@ unittest_files = [
   "file_manager/common/js/recent_date_bucket_unittest.js",
   "file_manager/common/js/storage_adapter_unittest.js",
   "file_manager/common/js/volume_manager_types_unittest.js",
+
+  # Background:
   "file_manager/background/js/mount_metrics_unittest.js",
   "file_manager/background/js/drive_sync_handler_unittest.js",
   "file_manager/background/js/media_import_handler_unittest.js",
@@ -350,6 +362,8 @@ unittest_files = [
   "file_manager/background/js/metadata_proxy_unittest.js",
   "file_manager/background/js/crostini_unittest.js",
   "file_manager/background/js/device_handler_unittest.js",
+
+  # Foreground:
   "file_manager/foreground/elements/files_password_dialog_unittest.js",
   "file_manager/foreground/elements/files_xf_elements_unittest.js",
   "file_manager/foreground/elements/files_toast_unittest.js",
@@ -398,6 +412,8 @@ unittest_files = [
   "file_manager/foreground/js/file_tasks_unittest.js",
   "file_manager/foreground/js/file_transfer_controller_unittest.js",
   "file_manager/foreground/js/import_controller_unittest.js",
+
+  # Image Loader:
   "image_loader/scheduler_unittest.js",
   "image_loader/image_loader_unittest.js",
   "image_loader/cache_unittest.js",
