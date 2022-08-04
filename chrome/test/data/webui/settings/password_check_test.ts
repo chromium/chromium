@@ -12,7 +12,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PasswordCheckListItemElement, SettingsPasswordCheckEditDialogElement, SettingsPasswordCheckElement, SettingsPasswordRemoveConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import {PasswordCheckListItemElement, SettingsPasswordCheckElement, SettingsPasswordRemoveConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="chromeos_ash">
@@ -36,17 +36,6 @@ function createCheckPasswordSection(): SettingsPasswordCheckElement {
   document.body.appendChild(passwordsSection);
   flush();
   return passwordsSection;
-}
-
-function createEditDialog(
-    leakedCredential: chrome.passwordsPrivate.PasswordUiEntry):
-    SettingsPasswordCheckEditDialogElement {
-  const editDialog =
-      document.createElement('settings-password-check-edit-dialog');
-  editDialog.item = leakedCredential;
-  document.body.appendChild(editDialog);
-  flush();
-  return editDialog;
 }
 
 /**
@@ -1821,113 +1810,6 @@ suite('PasswordsCheckSection', function() {
         shuffleArray(leakedPasswords));
     flush();
     validateLeakedPasswordsList(checkPasswordSection, leakedPasswords);
-  });
-
-  // Verify that the edit dialog is not shown if a plaintext password could
-  // not be obtained.
-  test('editDialogWithoutPlaintextPassword', async function() {
-    passwordManager.data.leakedCredentials = [
-      makeCompromisedCredential(
-          /*url*/ 'google.com', /*username*/ 'jdoerrie',
-          /*type*/ CompromiseType.LEAKED),
-    ];
-
-    const checkPasswordSection = createCheckPasswordSection();
-    await passwordManager.whenCalled('getCompromisedCredentials');
-    flush();
-    const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[0] as PasswordCheckListItemElement;
-
-    // Open the more actions menu and click 'Edit Password'.
-    node.$.more.click();
-    checkPasswordSection.$.menuEditPassword.click();
-    // Since we did not specify a plaintext password above, this request
-    // should fail.
-    await passwordManager.whenCalled('requestPlaintextPassword');
-    // Verify that the edit dialog has not become visible.
-    await flushTasks();
-    assertFalse(isElementVisible(checkPasswordSection.shadowRoot!.querySelector(
-        'settings-password-check-edit-dialog')!));
-
-    // Verify that the more actions menu is closed.
-    assertFalse(checkPasswordSection.$.moreActionsMenu.open);
-  });
-
-  // Verify edit a password on the edit dialog.
-  test('editDialogWithPlaintextPassword', async function() {
-    passwordManager.data.leakedCredentials = [
-      makeCompromisedCredential(
-          /*url*/ 'google.com', /*username*/ 'jdoerrie',
-          /*type*/ CompromiseType.LEAKED),
-    ];
-
-    passwordManager.setPlaintextPassword('password');
-    const checkPasswordSection = createCheckPasswordSection();
-    await passwordManager.whenCalled('getCompromisedCredentials');
-    flush();
-    const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[0] as PasswordCheckListItemElement;
-
-    // Open the more actions menu and click 'Edit Password'.
-    node.$.more.click();
-    checkPasswordSection.$.menuEditPassword.click();
-    const {id, reason} =
-        await passwordManager.whenCalled('requestPlaintextPassword');
-    await flushTasks();
-    assertEquals(passwordManager.data.leakedCredentials[0]!.id, id);
-    assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
-
-    // Verify that the edit dialog has become visible.
-    assertTrue(isElementVisible(checkPasswordSection.shadowRoot!.querySelector(
-        'settings-password-check-edit-dialog')!));
-
-    // Verify that the more actions menu is closed.
-    assertFalse(checkPasswordSection.$.moreActionsMenu.open);
-  });
-
-  test('editDialogChangePassword', async function() {
-    const leakedPassword = makeCompromisedCredential(
-        /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED);
-    leakedPassword.password = 'mybirthday';
-    const editDialog = createEditDialog(leakedPassword);
-
-    assertEquals(leakedPassword.password, editDialog.$.passwordInput.value);
-
-    // Test that an empty password is considered invalid and disables the change
-    // button.
-    editDialog.$.passwordInput.value = '';
-    assertTrue(editDialog.$.passwordInput.invalid);
-    assertTrue(editDialog.$.save.disabled);
-
-    editDialog.$.passwordInput.value = 'yadhtribym';
-    assertFalse(editDialog.$.passwordInput.invalid);
-    assertFalse(editDialog.$.save.disabled);
-    passwordManager.setChangeSavedPasswordResponse(1);
-    editDialog.$.save.click();
-
-    const interaction =
-        await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    const {id, params} =
-        await passwordManager.whenCalled('changeSavedPassword');
-
-    assertEquals(PasswordCheckInteraction.EDIT_PASSWORD, interaction);
-    assertEquals(leakedPassword.id, id);
-    assertEquals('yadhtribym', params.password);
-  });
-
-  test('editDialogCancel', function() {
-    const leakedPassword = makeCompromisedCredential(
-        /*url*/ 'google.com', /*username*/ 'jdoerrie',
-        /*type*/ CompromiseType.LEAKED);
-    leakedPassword.password = 'mybirthday';
-    const editDialog = createEditDialog(leakedPassword);
-
-    assertEquals(leakedPassword.password, editDialog.$.passwordInput.value);
-    editDialog.$.passwordInput.value = 'yadhtribym';
-    editDialog.$.cancel.click();
-
-    assertEquals(0, passwordManager.getCallCount('changeSavedPassword'));
   });
 
   test('startEqualsTrueSearchParameterStartsCheck', async function() {

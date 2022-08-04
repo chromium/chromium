@@ -1305,6 +1305,8 @@ suite('PasswordsSection', function() {
         const passwordsSection = elementFactory.createPasswordsSection(
             passwordManager, passwordList, []);
         return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
+          simulateSyncStatus(
+              {signedIn: true, statusAction: StatusAction.NO_ACTION});
           flush();
           assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
           assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);
@@ -1496,6 +1498,8 @@ suite('PasswordsSection', function() {
     const passwordsSection = elementFactory.createPasswordsSection(
         passwordManager, passwordList, []);
     return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
+      simulateSyncStatus(
+          {signedIn: true, statusAction: StatusAction.NO_ACTION});
       flush();
       assertFalse(passwordsSection.$.checkPasswordsBannerContainer.hidden);
       assertFalse(passwordsSection.$.checkPasswordsButtonRow.hidden);

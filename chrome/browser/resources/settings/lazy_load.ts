@@ -91,7 +91,6 @@ export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofil
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
 export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
-export {SettingsPasswordCheckEditDialogElement} from './autofill_page/password_check_edit_dialog.js';
 export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';
 export {PasswordCheckListItemElement} from './autofill_page/password_check_list_item.js';
 export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';

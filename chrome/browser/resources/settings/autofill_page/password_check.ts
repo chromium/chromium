@@ -14,7 +14,6 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../i18n_setup.js';
 import '../route.js';
 import '../prefs/prefs.js';
-import './password_check_edit_dialog.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';
 import './password_remove_confirmation_dialog.js';
@@ -38,7 +37,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 // </if>
 
-import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -46,13 +44,13 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 // <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-
+import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {getTemplate} from './password_check.html.js';
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './password_manager_proxy.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
-
+import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -78,12 +76,14 @@ export interface SettingsPasswordCheckElement {
 }
 
 const SettingsPasswordCheckElementBase =
-    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PrefsMixin(
-        PasswordRequestorMixin(PasswordCheckMixin((PolymerElement))))))) as {
+    UserUtilMixin(MergePasswordsStoreCopiesMixin(RouteObserverMixin(
+        WebUIListenerMixin(I18nMixin(PrefsMixin(PasswordRequestorMixin(
+            PasswordCheckMixin((PolymerElement))))))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUIListenerMixinInterface & PrefsMixinInterface &
           PasswordCheckMixinInterface & PasswordRequestorMixinInterface &
-          RouteObserverMixinInterface,
+          RouteObserverMixinInterface &
+          MergePasswordsStoreCopiesMixinInterface & UserUtilMixinInterface,
     };
 
 export class SettingsPasswordCheckElement extends
@@ -98,8 +98,6 @@ export class SettingsPasswordCheckElement extends
 
   static get properties() {
     return {
-      storedAccounts_: Array,
-
       title_: {
         type: String,
         computed: 'computeTitle_(status, canUsePasswordCheckup_)',
@@ -110,26 +108,15 @@ export class SettingsPasswordCheckElement extends
         computed: 'computeMutedLeakedCredentialsTitle_(mutedPasswords)',
       },
 
-      isSignedOut_: {
-        type: Boolean,
-        computed: 'computeIsSignedOut_(syncStatus_, storedAccounts_)',
-      },
-
-      isSyncingPasswords_: {
-        type: Boolean,
-        computed: 'computeIsSyncingPasswords_(syncPrefs_, syncStatus_)',
-      },
-
       canUsePasswordCheckup_: {
         type: Boolean,
-        computed: 'computeCanUsePasswordCheckup_(syncPrefs_,' +
-            'isSyncingPasswords_)',
+        computed: 'computeCanUsePasswordCheckup_(syncPrefs, ' +
+            'isSyncingPasswords)',
       },
 
       isButtonHidden_: {
         type: Boolean,
-        computed:
-            'computeIsButtonHidden_(status, isSignedOut_, isInitialStatus)',
+        computed: 'computeIsButtonHidden_(status, signedIn, isInitialStatus)',
       },
 
       isMutePasswordButtonEnabled_: {
@@ -142,8 +129,6 @@ export class SettingsPasswordCheckElement extends
         computed: 'computeIsUnmutePasswordButtonEnabled_(activePassword_)',
       },
 
-      syncPrefs_: Object,
-      syncStatus_: Object,
       showPasswordEditDialog_: Boolean,
       showPasswordRemoveDialog_: Boolean,
       showPasswordEditDisclaimer_: Boolean,
@@ -156,7 +141,7 @@ export class SettingsPasswordCheckElement extends
       showCompromisedCredentialsBody_: {
         type: Boolean,
         computed: 'computeShowCompromisedCredentialsBody_(' +
-            'isSignedOut_, leakedPasswords, mutedPasswords)',
+            'signedIn, leakedPasswords, mutedPasswords)',
       },
 
       showMutedPasswordsSection_: {
@@ -167,7 +152,7 @@ export class SettingsPasswordCheckElement extends
       showNoCompromisedPasswordsLabel_: {
         type: Boolean,
         computed: 'computeShowNoCompromisedPasswordsLabel_(' +
-            'isSignedOut_, prefs.*, status, leakedPasswords)',
+            'signedIn, prefs.*, status, leakedPasswords)',
       },
 
       showHideMenuTitle_: {
@@ -178,7 +163,7 @@ export class SettingsPasswordCheckElement extends
       iconHaloClass_: {
         type: String,
         computed: 'computeIconHaloClass_(' +
-            'status, isSignedOut_, leakedPasswords, weakPasswords)',
+            'status, signedIn, leakedPasswords, weakPasswords)',
       },
 
       /**
@@ -196,17 +181,12 @@ export class SettingsPasswordCheckElement extends
     };
   }
 
-  private storedAccounts_: StoredAccount[];
   private title_: string;
   private mutedPasswordsTitle_: string;
-  private isSignedOut_: boolean;
-  private isSyncingPasswords_: boolean;
   private canUsePasswordCheckup_: boolean;
   private isButtonHidden_: boolean;
   private isMutePasswordButtonEnabled_: boolean;
   private isUnmutePasswordButtonEnabled_: boolean;
-  private syncPrefs_: SyncPrefs;
-  private syncStatus_: SyncStatus;
   private showPasswordEditDialog_: boolean;
   private showPasswordRemoveDialog_: boolean;
   private showPasswordEditDisclaimer_: boolean;
@@ -275,30 +255,6 @@ export class SettingsPasswordCheckElement extends
     this.setSavedPasswordsListener_ = setSavedPasswordsListener;
     this.passwordManager!.addSavedPasswordListChangedListener(
         setSavedPasswordsListener);
-
-    // Set the manager. These can be overridden by tests.
-    const syncBrowserProxy = SyncBrowserProxyImpl.getInstance();
-
-    const syncStatusChanged = (syncStatus: SyncStatus) => this.syncStatus_ =
-        syncStatus;
-    const syncPrefsChanged = (syncPrefs: SyncPrefs) => this.syncPrefs_ =
-        syncPrefs;
-
-    // Listen for changes.
-    this.addWebUIListener('sync-status-changed', syncStatusChanged);
-    this.addWebUIListener('sync-prefs-changed', syncPrefsChanged);
-
-    // Request initial data.
-    syncBrowserProxy.getSyncStatus().then(syncStatusChanged);
-    syncBrowserProxy.sendSyncPrefsChanged();
-
-    // For non-ChromeOS, also check whether accounts are available.
-    // <if expr="not (chromeos_ash or chromeos_lacros)">
-    const storedAccountsChanged = (accounts: StoredAccount[]) =>
-        this.storedAccounts_ = accounts;
-    syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
-    this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
-    // </if>
   }
 
   override disconnectedCallback() {
@@ -405,8 +361,8 @@ export class SettingsPasswordCheckElement extends
    */
   private getWeakPasswordsHelpText_(): string {
     return this.i18nAdvanced(
-        this.isSyncingPasswords_ ? 'weakPasswordsDescriptionGeneration' :
-                                   'weakPasswordsDescription');
+        this.isSyncingPasswords ? 'weakPasswordsDescriptionGeneration' :
+                                  'weakPasswordsDescription');
   }
 
   private onMoreActionsClick_(
@@ -435,6 +391,8 @@ export class SettingsPasswordCheckElement extends
             password => {
               this.activePassword_!.password = password;
               this.showPasswordEditDialog_ = true;
+              this.passwordManager!.recordPasswordCheckInteraction(
+                  PasswordCheckInteraction.EDIT_PASSWORD);
             },
             _error => {
               // <if expr="not (chromeos_ash or chromeos_lacros)">
@@ -772,7 +730,7 @@ export class SettingsPasswordCheckElement extends
    * exist.
    */
   private getPasswordsCount_(): string {
-    return this.isSignedOut_ && this.leakedPasswords.length === 0 ?
+    return !this.signedIn && this.leakedPasswords.length === 0 ?
         this.weakPasswordsCount :
         this.insecurePasswordsCount;
   }
@@ -799,41 +757,22 @@ export class SettingsPasswordCheckElement extends
   }
 
   /**
-   * @return true iff the user is signed out.
-   */
-  private computeIsSignedOut_(): boolean {
-    if (!this.syncStatus_ || !this.syncStatus_.signedIn) {
-      return !this.storedAccounts_ || this.storedAccounts_.length === 0;
-    }
-    return !!this.syncStatus_.hasError;
-  }
-
-  /**
-   * @return true iff the user is syncing passwords.
-   */
-  private computeIsSyncingPasswords_(): boolean {
-    return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
-        !this.syncStatus_.hasError && !!this.syncPrefs_ &&
-        this.syncPrefs_.passwordsSynced;
-  }
-
-  /**
    * @return whether the user can use the online Password Checkup.
    */
   private computeCanUsePasswordCheckup_(): boolean {
-    return this.isSyncingPasswords_ &&
-        (!this.syncPrefs_ || !this.syncPrefs_.encryptAllData);
+    return this.isSyncingPasswords &&
+        (!this.syncPrefs || !this.syncPrefs.encryptAllData);
   }
 
   private computeShowCompromisedCredentialsBody_(): boolean {
     // Always shows compromised credentials section if user is signed out.
-    return this.isSignedOut_ || this.hasLeakedCredentials_() ||
+    return !this.signedIn || this.hasLeakedCredentials_() ||
         this.computeShowMutedLeakedCredentials_();
   }
 
   private computeShowNoCompromisedPasswordsLabel_(): boolean {
     // Check if user isn't signed in.
-    if (this.isSignedOut_) {
+    if (!this.signedIn) {
       return false;
     }
 
