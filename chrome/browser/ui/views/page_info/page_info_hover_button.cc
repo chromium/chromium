@@ -152,6 +152,12 @@ void PageInfoHoverButton::SetTitleText(const std::u16string& title_text) {
   UpdateAccessibleName();
 }
 
+void PageInfoHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
+  DCHECK(subtitle_);
+  subtitle_->SetText(subtitle_text);
+  UpdateAccessibleName();
+}
+
 void PageInfoHoverButton::SetSubtitleMultiline(bool is_multiline) {
   subtitle()->SetMultiLine(is_multiline);
 }

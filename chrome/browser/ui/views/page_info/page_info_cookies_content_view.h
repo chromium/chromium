@@ -18,6 +18,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   ~PageInfoCookiesContentView() override;
 
+  // PageInfoUI implementations.
+  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
+
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
  private:
@@ -26,6 +29,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void EnsureCookieInfo();
 
   raw_ptr<PageInfo> presenter_;
+
+  // The view that contains the fps_button and cookies_dialog_button.
+  raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;
 
   // The button that opens Cookie Dialog and displays a number of allowed sites.
   raw_ptr<PageInfoHoverButton> cookies_dialog_button_ = nullptr;

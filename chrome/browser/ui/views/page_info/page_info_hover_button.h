@@ -74,6 +74,8 @@ class PageInfoHoverButton : public HoverButton {
 
   void SetTitleText(const std::u16string& title_text);
 
+  void SetSubtitleText(const std::u16string& subtitle_text);
+
   void SetSubtitleMultiline(bool is_multiline);
 
  protected:

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,8 +61,10 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   cookies_description_label->SetText(description_text);
   cookies_description_label->AddStyleRange(link_range, link_style);
 
-  //  TODO(crbug.com/1346305): Remove after implementation of data flow.
-  EnsureCookieInfo();
+  // We need the container to have a placeholder to put the buttons in,
+  // to ensure the views order.
+  cookies_buttons_container_view_ =
+      AddChildView(std::make_unique<PageInfoMainView::ContainerView>());
 
   presenter_->InitializeUiState(this, base::DoNothing());
 }
@@ -79,22 +82,41 @@ void PageInfoCookiesContentView::EnsureCookieInfo() {
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
-    // Create the cookie button, leaving the secondary text blank since the
-    // site count is not yet known.
+    // Create the cookie button, with a temporary value for the subtitle text
+    // since the site count is not yet known.
     // TODO(crbug.com/1346305): Change to correct final string.
-    cookies_dialog_button_ = AddChildView(std::make_unique<PageInfoHoverButton>(
-        base::BindRepeating(
-            [](PageInfoCookiesContentView* view) {
-              view->presenter_->OpenCookiesDialog();
-            },
-            this),
-        icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-        tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+    cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
+        std::make_unique<PageInfoHoverButton>(
+            base::BindRepeating(
+                [](PageInfoCookiesContentView* view) {
+                  view->presenter_->OpenCookiesDialog();
+                },
+                this),
+            icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+            tooltip, /*subtitle_text=*/u" ",
+            PageInfoViewFactory::GetLaunchIcon()));
   }
 }
 
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
     const ui::Event& event) {
   presenter_->OpenCookiesSettingsView();
+}
+
+void PageInfoCookiesContentView::SetCookieInfo(
+    const CookiesNewInfo& cookie_info) {
+  const std::u16string num_sites_text = l10n_util::GetPluralStringFUTF16(
+      IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+      cookie_info.allowed_sites_count);
+
+  // Create the cookie button if it doesn't yet exist. This method gets called
+  // each time site data is updated, so if it *does* already exist, skip this
+  // part and just update the text.
+  EnsureCookieInfo();
+
+  // Update the text displaying the number of allowed sites.
+  cookies_dialog_button_->SetSubtitleText(num_sites_text);
+
+  PreferredSizeChanged();
 }

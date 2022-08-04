@@ -712,6 +712,9 @@
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings." translateable="false">
     Settings
   </message>
+  <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button." translateable="false">
+        {NUM_COOKIES, plural, =1 {1 site allowed} other {# sites allowed}}
+  </message>
 
   <!-- History strings -->
   <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
