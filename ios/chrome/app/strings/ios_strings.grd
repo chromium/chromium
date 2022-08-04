@@ -780,6 +780,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DISCOVER_FEED_HEADER_TURNED_OFF_LABEL" desc="The message that appears in the feed header when the feed is turned off from the header menu. IMPORTANT: The 'Turn On' part of this string should match the content of IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM so that users understand what menu option to select.">
         To see content, select Turn On from the menu
       </message>
+      <message name="IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE" desc="The title in the Discover and Following feed menu if Following is enabled. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Discover &amp; Following
+      </message>
       <message name="IDS_IOS_DISCOVER_FEED_TITLE" desc="The title in the Discover feed menu.">
         Discover
       </message>

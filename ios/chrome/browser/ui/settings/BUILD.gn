@@ -132,6 +132,7 @@ source_set("settings") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/search_engines",

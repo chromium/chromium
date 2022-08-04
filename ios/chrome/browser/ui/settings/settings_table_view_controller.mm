@@ -33,6 +33,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ntp/features.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -1059,10 +1060,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (TableViewSwitchItem*)articlesForYouItem {
   if (!_articlesForYouItem) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(
+            _browser->GetBrowserState());
+    BOOL isSignedIn =
+        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+
     NSString* settingTitle =
-        IsDiscoverFeedEnabled()
-            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-            : l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE);
+        (isSignedIn && IsWebChannelsEnabled())
+            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
+            : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
 
     _articlesForYouItem =
         [self switchItemWithType:SettingsItemTypeArticlesForYou
@@ -1077,10 +1084,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (TableViewInfoButtonItem*)managedArticlesForYouItem {
   if (!_managedArticlesForYouItem) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(
+            _browser->GetBrowserState());
+    BOOL isSignedIn =
+        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+
     NSString* settingTitle =
-        IsDiscoverFeedEnabled()
-            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-            : l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE);
+        (isSignedIn && IsWebChannelsEnabled())
+            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
+            : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
 
     _managedArticlesForYouItem = [[TableViewInfoButtonItem alloc]
         initWithType:SettingsItemTypeManagedArticlesForYou];
