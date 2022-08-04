@@ -107,14 +107,14 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 
 // Checks the "state" string of a NetExportFileWriter state.
 [[nodiscard]] ::testing::AssertionResult VerifyState(
-    std::unique_ptr<base::DictionaryValue> state,
+    base::Value::Dict state,
     const std::string& expected_state_string) {
-  std::string actual_state_string;
-  if (!state->GetString("state", &actual_state_string)) {
+  const std::string* actual_state_string = state.FindString("state");
+  if (!actual_state_string) {
     return ::testing::AssertionFailure()
            << "State is missing \"state\" string.";
   }
-  if (actual_state_string != expected_state_string) {
+  if (*actual_state_string != expected_state_string) {
     return ::testing::AssertionFailure()
            << "\"state\" string of state does not match expected." << std::endl
            << "    Actual: " << actual_state_string << std::endl
@@ -127,25 +127,23 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 // "captureMode" string; that field is only checked if
 // |expected_log_capture_mode_known| is true.
 [[nodiscard]] ::testing::AssertionResult VerifyState(
-    std::unique_ptr<base::DictionaryValue> state,
+    base::Value::Dict state,
     const std::string& expected_state_string,
     bool expected_log_exists,
     bool expected_log_capture_mode_known,
     const std::string& expected_log_capture_mode_string) {
-  base::DictionaryValue expected_state;
-  expected_state.SetStringKey("state", expected_state_string);
-  expected_state.SetBoolKey("logExists", expected_log_exists);
-  expected_state.SetBoolKey("logCaptureModeKnown",
-                            expected_log_capture_mode_known);
+  base::Value::Dict expected_state;
+  expected_state.Set("state", expected_state_string);
+  expected_state.Set("logExists", expected_log_exists);
+  expected_state.Set("logCaptureModeKnown", expected_log_capture_mode_known);
   if (expected_log_capture_mode_known) {
-    expected_state.SetStringKey("captureMode",
-                                expected_log_capture_mode_string);
+    expected_state.Set("captureMode", expected_log_capture_mode_string);
   } else {
-    state->RemoveKey("captureMode");
+    state.Remove("captureMode");
   }
 
   // Remove "file" field which is only added in debug mode.
-  state->RemoveKey("file");
+  state.Remove("file");
 
   std::string expected_state_json_string;
   JSONStringValueSerializer expected_state_serializer(
@@ -154,7 +152,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 
   std::string actual_state_json_string;
   JSONStringValueSerializer actual_state_serializer(&actual_state_json_string);
-  actual_state_serializer.Serialize(*state);
+  actual_state_serializer.Serialize(state);
 
   if (actual_state_json_string != expected_state_json_string) {
     return ::testing::AssertionFailure()
@@ -242,20 +240,19 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 class TestStateObserver : public NetExportFileWriter::StateObserver {
  public:
   // NetExportFileWriter::StateObserver implementation
-  void OnNewState(const base::DictionaryValue& state) override {
+  void OnNewState(const base::Value::Dict& state) override {
     test_closure_.closure().Run();
-    result_state_ = state.CreateDeepCopy();
+    result_state_ = state.Clone();
   }
 
-  std::unique_ptr<base::DictionaryValue> WaitForNewState() {
+  base::Value::Dict WaitForNewState() {
     test_closure_.WaitForResult();
-    DCHECK(result_state_);
     return std::move(result_state_);
   }
 
  private:
   net::TestClosure test_closure_;
-  std::unique_ptr<base::DictionaryValue> result_state_;
+  base::Value::Dict result_state_;
 };
 
 // A class that wraps around TestClosure. Provides the ability to wait on a
@@ -339,8 +336,7 @@ class NetExportFileWriterTest : public ::testing::Test {
       bool expected_initialize_success,
       bool expected_log_exists) {
     file_writer_.Initialize();
-    std::unique_ptr<base::DictionaryValue> state =
-        test_state_observer_.WaitForNewState();
+    base::Value::Dict state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
         VerifyState(std::move(state), kStateInitializingString);
     if (!result) {
@@ -376,8 +372,7 @@ class NetExportFileWriterTest : public ::testing::Test {
     file_writer_.StartNetLog(custom_log_path, capture_mode, kMaxLogSizeBytes,
                              base::CommandLine::StringType(), kChannelString,
                              network_context);
-    std::unique_ptr<base::DictionaryValue> state =
-        test_state_observer_.WaitForNewState();
+    base::Value::Dict state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
         VerifyState(std::move(state), kStateStartingLogString);
     if (!result) {
@@ -415,8 +410,7 @@ class NetExportFileWriterTest : public ::testing::Test {
       base::Value::Dict polled_data,
       const std::string& expected_capture_mode_string) {
     file_writer_.StopNetLog(std::move(polled_data));
-    std::unique_ptr<base::DictionaryValue> state =
-        test_state_observer_.WaitForNewState();
+    base::Value::Dict state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
         VerifyState(std::move(state), kStateStoppingLogString);
     if (!result) {
@@ -831,8 +825,7 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileInitializing) {
   // Now run the main message loop. Make sure StartNetLog() was ignored by
   // checking that the next two states are "initializing" followed by
   // "not-logging".
-  std::unique_ptr<base::DictionaryValue> state =
-      test_state_observer()->WaitForNewState();
+  base::Value::Dict state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(VerifyState(std::move(state), kStateInitializingString));
   state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(
@@ -863,8 +856,7 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileStoppingLog) {
   // ignored by checking that the next two states are "stopping-log" followed by
   // "not-logging". Also make sure the capture mode matches that of the first
   // StartNetLog() call (called by StartThenVerifyState()).
-  std::unique_ptr<base::DictionaryValue> state =
-      test_state_observer()->WaitForNewState();
+  base::Value::Dict state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(VerifyState(std::move(state), kStateStoppingLogString));
   state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(VerifyState(std::move(state), kStateNotLoggingString, true, true,
@@ -882,8 +874,7 @@ TEST_F(NetExportFileWriterTest, HandleCrash) {
   // Break the pipe, as if network service crashed.
   fake_network_context.Disconnect();
 
-  std::unique_ptr<base::DictionaryValue> state =
-      test_state_observer()->WaitForNewState();
+  base::Value::Dict state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(VerifyState(std::move(state), kStateNotLoggingString));
 }
 

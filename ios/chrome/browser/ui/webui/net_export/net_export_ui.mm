@@ -72,14 +72,14 @@ class NetExportMessageHandler
   void OnSendNetLog(const base::Value::List& list);
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::DictionaryValue& state) override;
+  void OnNewState(const base::Value::Dict& state) override;
 
  private:
   // Send NetLog data via email.
   void SendEmail(const base::FilePath& file_to_send);
 
   void NotifyUIWithState(
-      std::unique_ptr<base::DictionaryValue> file_writer_state);
+      const base::Value::Dict& file_writer_state);
 
   // Cache of GetApplicationContext()->GetNetExportFileWriter().
   // This is owned by the ApplicationContext.
@@ -169,8 +169,8 @@ void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
       &NetExportMessageHandler::SendEmail, base::Unretained(this)));
 }
 
-void NetExportMessageHandler::OnNewState(const base::DictionaryValue& state) {
-  NotifyUIWithState(state.CreateDeepCopy());
+void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
+  NotifyUIWithState(state);
 }
 
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
@@ -197,14 +197,12 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
 }
 
 void NetExportMessageHandler::NotifyUIWithState(
-    std::unique_ptr<base::DictionaryValue> file_writer_state) {
+    const base::Value::Dict& file_writer_state) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(web_ui());
 
-  base::Value state = file_writer_state->Clone();
   base::Value event(net_log::kNetLogInfoChangedEvent);
-
-  base::ValueView args[] = {event, state};
+  base::ValueView args[] = {event, file_writer_state};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 

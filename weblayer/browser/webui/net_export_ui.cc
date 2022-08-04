@@ -96,8 +96,8 @@ class NetExportMessageHandler
   }
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::DictionaryValue& state) override {
-    NotifyUIWithState(state.CreateDeepCopy());
+  void OnNewState(const base::Value::Dict& state) override {
+    NotifyUIWithState(state);
   }
 
  private:
@@ -133,8 +133,8 @@ class NetExportMessageHandler
 
   // Fires net-log-info-changed event to update the JavaScript UI in the
   // renderer.
-  void NotifyUIWithState(std::unique_ptr<base::DictionaryValue> state) {
-    FireWebUIListener(net_log::kNetLogInfoChangedEvent, *state);
+  void NotifyUIWithState(const base::Value::Dict& state) {
+    FireWebUIListener(net_log::kNetLogInfoChangedEvent, state);
   }
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.

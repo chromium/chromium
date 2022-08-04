@@ -66,7 +66,7 @@ class NetExportFileWriter {
   // of NetExportFileWriter's state changes.
   class StateObserver {
    public:
-    virtual void OnNewState(const base::DictionaryValue& state) = 0;
+    virtual void OnNewState(const base::Value::Dict& state) = 0;
   };
 
   // Struct used to store the results of setting up the default log directory
@@ -127,7 +127,7 @@ class NetExportFileWriter {
   void StopNetLog(base::Value::Dict polled_data = base::Value::Dict());
 
   // Creates a DictionaryValue summary of the state of the NetExportFileWriter
-  std::unique_ptr<base::DictionaryValue> GetState() const;
+  base::Value::Dict GetState() const;
 
   // Gets the log filepath. |path_callback| will be used to notify the caller
   // when the filepath is retrieved. |path_callback| will be executed with an

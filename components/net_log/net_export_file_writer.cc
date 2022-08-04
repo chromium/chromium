@@ -226,12 +226,11 @@ void NetExportFileWriter::OnConnectionError() {
   ResetExporterThenSetStateNotLogging();
 }
 
-std::unique_ptr<base::DictionaryValue> NetExportFileWriter::GetState() const {
+base::Value::Dict NetExportFileWriter::GetState() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-
-  dict->SetStringKey("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
+  base::Value::Dict dict;
+  dict.Set("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
 
   base::StringPiece state_string;
   switch (state_) {
@@ -254,11 +253,11 @@ std::unique_ptr<base::DictionaryValue> NetExportFileWriter::GetState() const {
       state_string = "STOPPING_LOG";
       break;
   }
-  dict->SetStringKey("state", state_string);
+  dict.Set("state", state_string);
 
-  dict->SetBoolKey("logExists", log_exists_);
-  dict->SetBoolKey("logCaptureModeKnown", log_capture_mode_known_);
-  dict->SetStringKey("captureMode", CaptureModeToString(log_capture_mode_));
+  dict.Set("logExists", log_exists_);
+  dict.Set("logCaptureModeKnown", log_capture_mode_known_);
+  dict.Set("captureMode", CaptureModeToString(log_capture_mode_));
 
   return dict;
 }
@@ -311,9 +310,9 @@ void NetExportFileWriter::SetDefaultLogBaseDirectoryGetterForTest(
 
 void NetExportFileWriter::NotifyStateObservers() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::unique_ptr<base::DictionaryValue> state = GetState();
+  base::Value::Dict state = GetState();
   for (StateObserver& observer : state_observer_list_) {
-    observer.OnNewState(*state);
+    observer.OnNewState(state);
   }
 }
 

@@ -111,7 +111,7 @@ class NetExportMessageHandler
   void FileSelectionCanceled(void* params) override;
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::DictionaryValue& state) override;
+  void OnNewState(const base::Value::Dict& state) override;
 
  private:
   // Send NetLog data via email.
@@ -136,7 +136,7 @@ class NetExportMessageHandler
 
   // Fires net-log-info-changed event to update the JavaScript UI in the
   // renderer.
-  void NotifyUIWithState(std::unique_ptr<base::DictionaryValue> state);
+  void NotifyUIWithState(const base::Value::Dict& state);
 
   // Opens the SelectFileDialog UI with the default path to save a
   // NetLog file.
@@ -292,8 +292,8 @@ void NetExportMessageHandler::FileSelectionCanceled(void* params) {
   select_file_dialog_ = nullptr;
 }
 
-void NetExportMessageHandler::OnNewState(const base::DictionaryValue& state) {
-  NotifyUIWithState(state.CreateDeepCopy());
+void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
+  NotifyUIWithState(state);
 }
 
 // static
@@ -347,10 +347,10 @@ bool NetExportMessageHandler::UsingMobileUI() {
 }
 
 void NetExportMessageHandler::NotifyUIWithState(
-    std::unique_ptr<base::DictionaryValue> state) {
+    const base::Value::Dict& state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_ui());
-  FireWebUIListener(net_log::kNetLogInfoChangedEvent, *state);
+  FireWebUIListener(net_log::kNetLogInfoChangedEvent, state);
 }
 
 void NetExportMessageHandler::ShowSelectFileDialog(
