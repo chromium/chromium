@@ -1403,11 +1403,17 @@ body.check-select #read-only-indicator {
   width: 16px;
 }
 
-body.files-ng .loading-indicator {
+.loading-indicator {
   left: calc(50% - 24px);
   position: absolute;
   right: calc(50% - 24px);
   top: 64px;
+}
+
+.list-view .loading-indicator {
+  /* The list view has a .table-header at the top, the top should also
+  cover that, hence the desired top plus the .table-header height. */
+  top: calc(64px + 57px);
 }
 
 @keyframes heightAnimation {

@@ -749,11 +749,28 @@ export class DirectoryModel extends EventTarget {
     }
 
     // Clear the table, and start scanning.
-    dispatchSimpleEvent(this, 'scan-started');
     fileList.splice(0, fileList.length);
+    dispatchSimpleEvent(this, 'scan-started');
     this.scan_(
         this.currentDirContents_, false, true, onDone, onFailed, onUpdated,
         onCancelled);
+  }
+
+  /**
+   * Similar to clearAndScan_() but instead of passing a `newDirContents`, it
+   * uses the `currentDirContents_`.
+   */
+  clearCurrentDirAndScan() {
+    const sequence = ++this.changeDirectorySequence_;
+    this.directoryChangeQueue_.run(callback => {
+      if (this.changeDirectorySequence_ !== sequence) {
+        callback();
+        return;
+      }
+      const newDirContents = this.createDirectoryContents_(
+          this.currentFileListContext_, assert(this.getCurrentDirEntry()));
+      this.clearAndScan_(newDirContents, callback);
+    });
   }
 
   /**

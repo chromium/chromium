@@ -93,11 +93,11 @@ export function setUp() {
       super();
 
       this.currentDirEntry = null;
-      window.isRescanCalled = false;
+      window.isScanCalled = false;
     }
 
-    rescan(refresh) {
-      window.isRescanCalled = true;
+    clearCurrentDirAndScan() {
+      window.isScanCalled = true;
     }
 
     changeDirectoryEntry(dirEntry) {
@@ -296,40 +296,40 @@ export function testAppliedFilters() {
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.AUDIO);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 
   // Clicking an active button will trigger a scan for "All".
   buttons[1].click();
   assertEquals(
       recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 
   buttons[2].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 
   buttons[3].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.IMAGE);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 
   buttons[4].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.VIDEO);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 
   buttons[0].click();
   assertEquals(
       recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
-  assertTrue(window.isRescanCalled);
-  window.isRescanCalled = false;
+  assertTrue(window.isScanCalled);
+  window.isScanCalled = false;
 }
