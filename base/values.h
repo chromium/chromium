@@ -1383,9 +1383,6 @@ class BASE_EXPORT DictionaryValue : public Value {
 
   // DEPRECATED, use `Value::Dict::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
-  DictionaryValue* DeepCopy() const;
-  // DEPRECATED, use `Value::Dict::Clone()` instead.
-  // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<DictionaryValue> CreateDeepCopy() const;
 };
 
