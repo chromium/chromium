@@ -220,7 +220,7 @@ void CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished(bool success) {
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
   absl::optional<std::string> public_key = util::DecodeFromValueString(
-      pref_service_->Get(prefs::kCryptAuthEnrollmentUserPublicKey));
+      &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPublicKey));
   if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
     return std::string();
@@ -231,7 +231,7 @@ std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPrivateKey() const {
   absl::optional<std::string> private_key = util::DecodeFromValueString(
-      pref_service_->Get(prefs::kCryptAuthEnrollmentUserPrivateKey));
+      &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPrivateKey));
   if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
     return std::string();

@@ -71,14 +71,14 @@ cryptauthv2::ClientDirective CreateDefaultClientDirective() {
 
 cryptauthv2::ClientDirective BuildClientDirective(PrefService* pref_service) {
   DCHECK(pref_service);
-  const base::Value* encoded_client_directive =
-      pref_service->Get(prefs::kCryptAuthSchedulerClientDirective);
-  if (encoded_client_directive->GetString() == kNoClientDirective)
+  const base::Value& encoded_client_directive =
+      pref_service->GetValue(prefs::kCryptAuthSchedulerClientDirective);
+  if (encoded_client_directive.GetString() == kNoClientDirective)
     return CreateDefaultClientDirective();
 
   absl::optional<cryptauthv2::ClientDirective> client_directive_from_pref =
       util::DecodeProtoMessageFromValueString<cryptauthv2::ClientDirective>(
-          encoded_client_directive);
+          &encoded_client_directive);
 
   return client_directive_from_pref.value_or(CreateDefaultClientDirective());
 }
