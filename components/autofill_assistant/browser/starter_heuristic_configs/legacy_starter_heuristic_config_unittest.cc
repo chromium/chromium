@@ -376,4 +376,22 @@ TEST_F(LegacyStarterHeuristicConfigTest, DisabledIfProactiveHelpSettingOff) {
               SizeIs(1));
 }
 
+TEST_F(LegacyStarterHeuristicConfigTest, DisabledIfMsbbOff) {
+  InitDefaultHeuristic();
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeatures(
+      /* enabled_features = */ {features::kAutofillAssistantInTabTriggering,
+                                features::kAutofillAssistantInCCTTriggering},
+      /* disabled_features = */ {});
+  LegacyStarterHeuristicConfig config;
+
+  fake_platform_delegate_.msbb_enabled_ = false;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              IsEmpty());
+
+  fake_platform_delegate_.msbb_enabled_ = true;
+  EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_),
+              SizeIs(1));
+}
+
 }  // namespace autofill_assistant

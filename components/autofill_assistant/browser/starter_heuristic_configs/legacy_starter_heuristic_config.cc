@@ -35,6 +35,10 @@ LegacyStarterHeuristicConfig::GetConditionSetsForClientState(
     return empty_condition_sets_.GetList();
   }
 
+  if (!platform_delegate->GetMakeSearchesAndBrowsingBetterEnabled()) {
+    return empty_condition_sets_.GetList();
+  }
+
   if (platform_delegate->GetIsCustomTab() &&
       !platform_delegate->GetIsTabCreatedByGSA()) {
     return empty_condition_sets_.GetList();
