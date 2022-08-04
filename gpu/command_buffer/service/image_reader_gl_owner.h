@@ -93,7 +93,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   ImageReaderGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
                      Mode secure_mode,
                      scoped_refptr<SharedContextState> context_state,
-                     scoped_refptr<RefCountedLock> drdc_lock = nullptr);
+                     scoped_refptr<RefCountedLock> drdc_lock);
   ~ImageReaderGLOwner() override;
 
   // Registers and releases a ref on the image. Once the ref-count for an image

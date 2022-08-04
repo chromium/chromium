@@ -4,6 +4,9 @@
 
 #include "media/gpu/android/mock_codec_buffer_wait_coordinator.h"
 
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_finch_features.h"
+
 namespace media {
 
 using testing::Invoke;
@@ -11,7 +14,11 @@ using testing::Return;
 
 MockCodecBufferWaitCoordinator::MockCodecBufferWaitCoordinator(
     scoped_refptr<NiceMock<gpu::MockTextureOwner>> texture_owner)
-    : CodecBufferWaitCoordinator(texture_owner, /*lock=*/nullptr),
+    : CodecBufferWaitCoordinator(
+          texture_owner,
+          features::NeedThreadSafeAndroidMedia()
+              ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+              : nullptr),
       mock_texture_owner(std::move(texture_owner)),
       expecting_frame_available(false) {
   ON_CALL(*this, texture_owner()).WillByDefault(Return(mock_texture_owner));

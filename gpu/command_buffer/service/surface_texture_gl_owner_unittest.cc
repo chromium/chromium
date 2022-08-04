@@ -72,7 +72,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
     abstract_texture_ = texture->AsWeakPtr();
     surface_texture_ = SurfaceTextureGLOwner::Create(
         std::move(texture), TextureOwner::Mode::kSurfaceTextureInsecure,
-        std::move(context_state));
+        std::move(context_state), /*drdc_lock=*/nullptr);
     texture_id_ = surface_texture_->GetTextureId();
     EXPECT_TRUE(abstract_texture_);
   }

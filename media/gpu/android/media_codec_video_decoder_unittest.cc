@@ -14,6 +14,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/mock_android_overlay.h"
@@ -153,7 +155,10 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
-        std::move(video_frame_factory), /*lock=*/nullptr);
+        std::move(video_frame_factory),
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
     mcvd_ = std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(
         base::WrapUnique(mcvd));
     mcvd_raw_ = mcvd;

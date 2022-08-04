@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -69,8 +70,11 @@ class ImageReaderGLOwnerTest : public testing::Test {
     std::unique_ptr<MockAbstractTexture> texture =
         std::make_unique<MockAbstractTexture>(texture_id_);
     abstract_texture_ = texture->AsWeakPtr();
-    image_reader_ = TextureOwner::Create(std::move(texture), SecureMode(),
-                                         std::move(context_state));
+    image_reader_ = TextureOwner::Create(
+        std::move(texture), SecureMode(), std::move(context_state),
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
   }
 
   virtual TextureOwner::Mode SecureMode() {

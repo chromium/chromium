@@ -13,7 +13,9 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/test_destruction_observable.h"
 #include "media/base/limits.h"
@@ -69,12 +71,18 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
     impl_ = std::make_unique<VideoFrameFactoryImpl>(
         task_runner_, gpu_preferences_, std::move(image_provider),
-        std::move(mre_manager), std::move(info_helper), /*lock=*/nullptr);
+        std::move(mre_manager), std::move(info_helper),
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
     auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
         0, nullptr, nullptr, true);
     auto codec_buffer_wait_coordinator =
         base::MakeRefCounted<CodecBufferWaitCoordinator>(
-            std::move(texture_owner), /*lock=*/nullptr);
+            std::move(texture_owner),
+            features::NeedThreadSafeAndroidMedia()
+                ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                : nullptr);
 
     // Provide a non-null |codec_buffer_wait_coordinator| to |impl_|.
     impl_->SetCodecBufferWaitCorrdinatorForTesting(
@@ -132,7 +140,10 @@ class VideoFrameFactoryImplTest : public testing::Test {
     auto codec_image =
         base::MakeRefCounted<MockCodecImage>(gfx::Size(100, 100));
     record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
-        task_runner_, codec_image, nullptr);
+        task_runner_, codec_image,
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
     return record;
   }
 
@@ -180,7 +191,9 @@ TEST_F(VideoFrameFactoryImplTest,
       base::MakeRefCounted<CodecSurfaceBundle>(
           base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(0, nullptr,
                                                                 nullptr, true),
-          /*lock=*/nullptr);
+          features::NeedThreadSafeAndroidMedia()
+              ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+              : nullptr);
   EXPECT_CALL(*mre_manager_raw_, SetSurfaceBundle(surface_bundle));
   impl_->SetSurfaceBundle(surface_bundle);
   base::RunLoop().RunUntilIdle();

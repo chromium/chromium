@@ -11,6 +11,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "media/gpu/android/mock_shared_image_video_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +57,9 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
 
     provider_ = base::WrapUnique(new PooledSharedImageVideoProvider(
         std::move(mock_gpu_helper), std::move(mock_provider),
-        /*lock=*/nullptr));
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr));
   }
 
   // Return an ImageReadyCB that saves the ImageRecord in |image_records_|.

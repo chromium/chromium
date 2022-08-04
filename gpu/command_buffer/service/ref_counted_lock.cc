@@ -8,6 +8,18 @@
 
 namespace gpu {
 
+RefCountedLock::RefCountedLock() = default;
+
+RefCountedLock::~RefCountedLock() = default;
+
+base::Lock* RefCountedLock::GetDrDcLockPtr() {
+  return &lock_;
+}
+
+void RefCountedLock::AssertAcquired() {
+  lock_.AssertAcquired();
+}
+
 RefCountedLockHelperDrDc::RefCountedLockHelperDrDc(
     scoped_refptr<RefCountedLock> lock)
     : lock_(std::move(lock)) {

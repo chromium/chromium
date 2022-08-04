@@ -12,7 +12,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_image.h"
@@ -97,10 +99,16 @@ class CodecImageTest : public testing::Test {
     auto codec_buffer_wait_coordinator =
         kind == kTextureOwner ? codec_buffer_wait_coordinator_ : nullptr;
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-        std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
+        std::move(buffer), codec_buffer_wait_coordinator,
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
 
     scoped_refptr<CodecImage> image =
-        new CodecImage(buffer_renderer->size(), /*lock=*/nullptr);
+        new CodecImage(buffer_renderer->size(),
+                       features::NeedThreadSafeAndroidMedia()
+                           ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                           : nullptr);
     image->Initialize(
         std::move(buffer_renderer), kind == kTextureOwner,
         base::BindRepeating(&PromotionHintReceiver::OnPromotionHint,
@@ -343,10 +351,15 @@ TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {
   auto buffer = CodecOutputBuffer::CreateForTesting(
       0, visible_size, gfx::ColorSpace::CreateSRGB());
   auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
-      std::move(buffer), nullptr, /*lock=*/nullptr);
+      std::move(buffer), nullptr,
+      features::NeedThreadSafeAndroidMedia()
+          ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+          : nullptr);
 
-  scoped_refptr<CodecImage> image =
-      new CodecImage(coded_size, /*lock=*/nullptr);
+  scoped_refptr<CodecImage> image = new CodecImage(
+      coded_size, features::NeedThreadSafeAndroidMedia()
+                      ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+                      : nullptr);
   image->Initialize(std::move(buffer_renderer), false,
                     PromotionHintAggregator::NotifyPromotionHintCB());
 

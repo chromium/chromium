@@ -97,7 +97,8 @@ StreamTexture::StreamTexture(
     : texture_owner_(
           TextureOwner::Create(TextureOwner::CreateTexture(context_state),
                                GetTextureOwnerMode(),
-                               context_state)),
+                               context_state,
+                               /*drdc_lock=*/nullptr)),
       has_pending_frame_(false),
       channel_(channel),
       route_id_(route_id),
@@ -282,7 +283,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   auto shared_image = AndroidVideoImageBacking::Create(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
-      /*lock=*/nullptr);
+      /*drdc_lock=*/nullptr);
   channel_->shared_image_stub()->factory()->RegisterBacking(
       std::move(shared_image), /*allow_legacy_mailbox=*/false);
 

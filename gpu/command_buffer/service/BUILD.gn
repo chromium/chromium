@@ -557,6 +557,8 @@ if (is_android) {
       "mock_abstract_texture.h",
       "mock_texture_owner.cc",
       "mock_texture_owner.h",
+      "ref_counted_lock_for_test.cc",
+      "ref_counted_lock_for_test.h",
     ]
     deps = [
       ":gles2",
