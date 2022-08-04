@@ -516,6 +516,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         transition.addTarget(SelectableItemView.class);
         Scene scene = new Scene(mRootView, mContentView);
         TransitionManager.go(scene, transition);
+        mContentView.requestFocus();
     }
 
     /**
