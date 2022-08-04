@@ -49993,6 +49993,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Download message dismissed with gesture"/>
   <int value="3" label="Download message dismissed with timer"/>
   <int value="4" label="Download message dismissed with different reason"/>
+  <int value="5" label="Download message dismissed due to an internal error"/>
 </enum>
 
 <enum name="Inconsistencies">

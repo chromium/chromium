@@ -149,7 +149,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     @IntDef({IncognitoMessageEvent.SHOWN, IncognitoMessageEvent.ACCEPTED,
             IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
             IncognitoMessageEvent.DISMISSED_WITH_TIMER, IncognitoMessageEvent.NUM_ENTRIES,
-            IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON})
+            IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON,
+            IncognitoMessageEvent.DISMISSED_INTERNAL_ERROR})
     @Retention(RetentionPolicy.SOURCE)
     private @interface IncognitoMessageEvent {
         int SHOWN = 0;
@@ -157,8 +158,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int DISMISSED_WITH_GESTURE = 2;
         int DISMISSED_WITH_TIMER = 3;
         int DISMISSED_WITH_DIFFERENT_REASON = 4;
+        int DISMISSED_INTERNAL_ERROR = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**
@@ -368,7 +370,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             }
             callback.onResult(/*accepted=*/false);
         });
-        getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/true);
+
+        MessageDispatcher dispatcher = getMessageDispatcher();
+      
+      	// TODO(https://crbug.com/1350110): Fix the issue with dispatcher 
+      	//                                  being Null and remove the following if clause
+        if (dispatcher == null) {
+            callback.onResult(/*accepted=*/false);
+            recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_INTERNAL_ERROR);
+
+            return;
+        }
+
+        dispatcher.enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/true);
         recordIncognitoDownloadMessage(IncognitoMessageEvent.SHOWN);
     }
 
