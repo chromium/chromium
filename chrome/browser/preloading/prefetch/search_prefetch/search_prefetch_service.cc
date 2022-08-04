@@ -115,8 +115,8 @@ struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
   ~SearchPrefetchServingReasonRecorder() {
     base::UmaHistogramEnumeration(
         for_prerender_
-            ? "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender"
-            : "Omnibox.SearchPrefetch.PrefetchServingReason",
+            ? "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender"
+            : "Omnibox.SearchPrefetch.PrefetchServingReason2",
         reason_);
   }
 
@@ -833,6 +833,23 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     return prefetches_.end();
   }
 
+  std::u16string search_terms;
+  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+      navigation_url, template_url_service->search_terms_data(), &search_terms);
+
+  if (search_terms.length() == 0) {
+    recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
+    return prefetches_.end();
+  }
+
+  const auto& iter = prefetches_.find(search_terms);
+
+  // Check if present is present before checking for other reasons.
+  if (iter == prefetches_.end()) {
+    recorder.reason_ = SearchPrefetchServingReason::kNoPrefetch;
+    return prefetches_.end();
+  }
+
   // The user may have disabled JS since the prefetch occurred.
   if (!profile_->GetPrefs() ||
       !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
@@ -847,22 +864,6 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
                                           ContentSettingsType::JAVASCRIPT) ==
           CONTENT_SETTING_BLOCK) {
     recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
-    return prefetches_.end();
-  }
-
-  std::u16string search_terms;
-  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      navigation_url, template_url_service->search_terms_data(), &search_terms);
-
-  if (search_terms.length() == 0) {
-    recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
-    return prefetches_.end();
-  }
-
-  const auto& iter = prefetches_.find(search_terms);
-
-  if (iter == prefetches_.end()) {
-    recorder.reason_ = SearchPrefetchServingReason::kNoPrefetch;
     return prefetches_.end();
   }
 

@@ -2300,8 +2300,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Omnibox.{SearchPrefetch}.PrefetchServingReason2{PrerenderOrNavigation}"
+    enum="SearchPrefetchServingReason" expires_after="2023-05-02">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    The reason that a navigation request could or could not serve a search
+    prefetch request.
+
+    {PrerenderOrNavigation}
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+  <token key="PrerenderOrNavigation">
+    <variant name="" summary="Recorded for typical navigations."/>
+    <variant name=".Prerender"
+        summary="Recorded for prerender navigations that might consume the
+                 prefetch response."/>
+  </token>
+</histogram>
+
+<histogram
     name="Omnibox.{SearchPrefetch}.PrefetchServingReason{PrerenderOrNavigation}"
     enum="SearchPrefetchServingReason" expires_after="2023-05-02">
+  <obsolete>
+    This is deprecated as of 08/2022. Please use
+    Omnibox.SearchPrefetch.PrefetchServingReason2{PrerenderOrNavigation}.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

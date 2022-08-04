@@ -1193,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kNoPrefetch, 1);
 }
 
@@ -1230,7 +1230,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kNoPrefetch, 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 0);
@@ -2002,7 +2002,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kJavascriptDisabled, 1);
   // The prefetch request and the new non-prefetched served request.
   EXPECT_EQ(2u, search_server_request_count());
@@ -2047,7 +2047,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kJavascriptDisabled, 1);
   // The prefetch request and the new non-prefetched served request.
   EXPECT_EQ(2u, search_server_request_count());
@@ -2091,7 +2091,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_EQ(2u, search_server_request_count());
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kPostReloadFormOrLink, 1);
 }
 
@@ -2134,7 +2134,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, NoServeReload) {
 
   EXPECT_EQ(3u, search_server_request_count());
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kPostReloadFormOrLink, 1);
 }
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
@@ -2173,7 +2173,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, NoServePost) {
 
   EXPECT_EQ(2u, search_server_request_count());
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kPostReloadFormOrLink, 1);
 }
 

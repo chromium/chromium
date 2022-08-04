@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // Snapshot those samples recorded before the main test.
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.PrefetchServingReason", 1);
+      "Omnibox.SearchPrefetch.PrefetchServingReason2", 1);
 
   std::string search_query = "pre";
   std::string prerender_query = "prerender";
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                     expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
       SearchPrefetchServingReason::kPrerendered, 1);
 
   // Prefetch should be triggered as well.
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // On prerender activation, `URLLoaderRequestInterceptor` would not be called,
   // so no more sample should be recorded.
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.PrefetchServingReason", 1);
+      "Omnibox.SearchPrefetch.PrefetchServingReason2", 1);
   {
     // Check that we store one entry corresponding to the prerender prediction
     // and attempt with prefetch hints.
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
       SearchPrefetchServingReason::kPrerendered, 1);
 
   // 3. Type a different query which results in different suggestions.
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
       SearchPrefetchServingReason::kPrerendered, 1);
 
   // 4. Click and activate.
@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender",
+      "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
       SearchPrefetchServingReason::kPrerendered, 1);
 
   // 4. Fail the prerender by navigating it to another page.
