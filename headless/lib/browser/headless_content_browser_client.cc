@@ -149,14 +149,15 @@ void HeadlessContentBrowserClient::
   // TODO(https://crbug.com/1265864): Move the registry logic below to a
   // dedicated file to ensure security review coverage.
 #if BUILDFLAG(ENABLE_PRINTING)
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
-             receiver) {
-        HeadlessPrintManager::BindPrintManagerHost(std::move(receiver),
-                                                   render_frame_host);
-      },
-      &render_frame_host));
+  associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+                 receiver) {
+            HeadlessPrintManager::BindPrintManagerHost(std::move(receiver),
+                                                       render_frame_host);
+          },
+          &render_frame_host));
 #endif
 }
 

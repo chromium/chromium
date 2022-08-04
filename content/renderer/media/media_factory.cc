@@ -355,10 +355,12 @@ void MediaFactory::SetupMojo() {
   cast_streaming_resource_provider_ =
       GetContentClient()->renderer()->CreateCastStreamingResourceProvider();
   if (cast_streaming_resource_provider_) {
-    render_frame_->GetAssociatedInterfaceRegistry()->AddInterface(
-        cast_streaming_resource_provider_->GetRendererControllerBinder());
-    render_frame_->GetAssociatedInterfaceRegistry()->AddInterface(
-        cast_streaming_resource_provider_->GetDemuxerConnectorBinder());
+    render_frame_->GetAssociatedInterfaceRegistry()
+        ->AddInterface<cast_streaming::mojom::RendererController>(
+            cast_streaming_resource_provider_->GetRendererControllerBinder());
+    render_frame_->GetAssociatedInterfaceRegistry()
+        ->AddInterface<cast_streaming::mojom::DemuxerConnector>(
+            cast_streaming_resource_provider_->GetDemuxerConnectorBinder());
   }
 }
 

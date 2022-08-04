@@ -87,8 +87,8 @@ ContentSettingsAgentImpl::ContentSettingsAgentImpl(
   ClearBlockedContentSettings();
   render_frame->GetWebFrame()->SetContentSettingsClient(this);
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::ContentSettingsAgent>(base::BindRepeating(
           &ContentSettingsAgentImpl::OnContentSettingsAgentRequest,
           base::Unretained(this)));
 

@@ -122,9 +122,11 @@ NetErrorHelper::NetErrorHelper(RenderFrame* render_frame)
   // subframes don't need any of the NetErrorHelperCore's extra logic.
   core_ = std::make_unique<NetErrorHelperCore>(this);
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&NetErrorHelper::OnNetworkDiagnosticsClientRequest,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<chrome::mojom::NetworkDiagnosticsClient>(
+          base::BindRepeating(
+              &NetErrorHelper::OnNetworkDiagnosticsClientRequest,
+              base::Unretained(this)));
 }
 
 NetErrorHelper::~NetErrorHelper() = default;

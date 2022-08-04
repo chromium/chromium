@@ -16,7 +16,7 @@ namespace chromecast {
 FeatureManagerOnAssociatedInterface::FeatureManagerOnAssociatedInterface(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame), configured_(false) {
-  registry_.AddInterface(base::BindRepeating(
+  registry_.AddInterface<shell::mojom::FeatureManager>(base::BindRepeating(
       &FeatureManagerOnAssociatedInterface::OnFeatureManagerAssociatedRequest,
       base::Unretained(this)));
 }

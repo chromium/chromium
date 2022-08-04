@@ -139,9 +139,10 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
     new AutomationApiHelper(render_frame);
   }
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&ExtensionFrameHelper::BindLocalFrame,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::LocalFrame>(
+          base::BindRepeating(&ExtensionFrameHelper::BindLocalFrame,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 ExtensionFrameHelper::~ExtensionFrameHelper() {

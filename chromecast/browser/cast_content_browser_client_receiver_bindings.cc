@@ -77,13 +77,13 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  registry->AddInterface(
+  registry->AddInterface<media::mojom::MediaCaps>(
       base::BindRepeating(
           &media::MediaCapsImpl::AddReceiver,
           base::Unretained(cast_browser_main_parts_->media_caps())),
       base::ThreadTaskRunnerHandle::Get());
 
-  registry->AddInterface(
+  registry->AddInterface<metrics::mojom::MetricsHelper>(
       base::BindRepeating(
           &metrics::MetricsHelperImpl::AddReceiver,
           base::Unretained(cast_browser_main_parts_->metrics_helper())),
@@ -94,7 +94,7 @@ void CastContentBrowserClient::ExposeInterfacesToRenderer(
     memory_pressure_controller_.reset(new MemoryPressureControllerImpl());
   }
 
-  registry->AddInterface(
+  registry->AddInterface<mojom::MemoryPressureController>(
       base::BindRepeating(&MemoryPressureControllerImpl::AddReceiver,
                           base::Unretained(memory_pressure_controller_.get())),
       base::ThreadTaskRunnerHandle::Get());

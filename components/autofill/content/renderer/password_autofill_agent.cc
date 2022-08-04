@@ -626,7 +626,7 @@ PasswordAutofillAgent::PasswordAutofillAgent(
       checked_safe_browsing_reputation_(false),
       focus_state_notifier_(this),
       password_generation_agent_(nullptr) {
-  registry->AddInterface(base::BindRepeating(
+  registry->AddInterface<mojom::PasswordAutofillAgent>(base::BindRepeating(
       &PasswordAutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
 

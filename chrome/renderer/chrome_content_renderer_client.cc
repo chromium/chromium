@@ -667,9 +667,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  associated_interfaces->AddInterface(base::BindRepeating(
-      &extensions::MimeHandlerViewContainerManager::BindReceiver,
-      render_frame->GetRoutingID()));
+  associated_interfaces
+      ->AddInterface<extensions::mojom::MimeHandlerViewContainerManager>(
+          base::BindRepeating(
+              &extensions::MimeHandlerViewContainerManager::BindReceiver,
+              render_frame->GetRoutingID()));
 #endif
 
   // Owned by |render_frame|.
@@ -732,8 +734,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
 #if BUILDFLAG(IS_WIN)
   if (render_frame->IsMainFrame()) {
-    associated_interfaces->AddInterface(base::BindRepeating(
-        &RenderFrameFontFamilyAccessor::Bind, render_frame));
+    associated_interfaces
+        ->AddInterface<chrome::mojom::RenderFrameFontFamilyAccessor>(
+            base::BindRepeating(&RenderFrameFontFamilyAccessor::Bind,
+                                render_frame));
   }
 #endif
 }

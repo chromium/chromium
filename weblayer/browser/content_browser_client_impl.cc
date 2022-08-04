@@ -875,23 +875,26 @@ void ContentBrowserClientImpl::
   // TODO(https://crbug.com/1265864): Move the registry logic below to a
   // dedicated file to ensure security review coverage.
   // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-             receiver) {
-        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
-             receiver) {
-        PasswordManagerDriverFactory::BindPasswordManagerDriver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+                 receiver) {
+            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+                std::move(receiver), render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<autofill::mojom::PasswordManagerDriver>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<
+                 autofill::mojom::PasswordManagerDriver> receiver) {
+            PasswordManagerDriverFactory::BindPasswordManagerDriver(
+                std::move(receiver), render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<
+      content_capture::mojom::ContentCaptureReceiver>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<
              content_capture::mojom::ContentCaptureReceiver> receiver) {
@@ -899,15 +902,17 @@ void ContentBrowserClientImpl::
             std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             page_load_metrics::mojom::PageLoadMetrics> receiver) {
-        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<page_load_metrics::mojom::PageLoadMetrics>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<
+                 page_load_metrics::mojom::PageLoadMetrics> receiver) {
+            page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+                std::move(receiver), render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<
+      security_interstitials::mojom::InterstitialCommands>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<
              security_interstitials::mojom::InterstitialCommands> receiver) {
@@ -915,7 +920,8 @@ void ContentBrowserClientImpl::
             BindInterstitialCommands(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<
+      subresource_filter::mojom::SubresourceFilterHost>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<
              subresource_filter::mojom::SubresourceFilterHost> receiver) {
@@ -938,8 +944,9 @@ void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
         mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
                                     std::move(receiver));
       };
-  registry->AddInterface(base::BindRepeating(create_spellcheck_host),
-                         content::GetUIThreadTaskRunner({}));
+  registry->AddInterface<spellcheck::mojom::SpellCheckHost>(
+      base::BindRepeating(create_spellcheck_host),
+      content::GetUIThreadTaskRunner({}));
 
   if (base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing) &&
       IsSafebrowsingSupported()) {

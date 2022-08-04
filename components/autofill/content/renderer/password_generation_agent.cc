@@ -217,7 +217,7 @@ PasswordGenerationAgent::PasswordGenerationAgent(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kShowAutofillSignatures)),
       password_agent_(password_agent) {
-  registry->AddInterface(base::BindRepeating(
+  registry->AddInterface<mojom::PasswordGenerationAgent>(base::BindRepeating(
       &PasswordGenerationAgent::BindPendingReceiver, base::Unretained(this)));
   password_agent_->SetPasswordGenerationAgent(this);
 }

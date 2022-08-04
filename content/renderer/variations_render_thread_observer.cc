@@ -69,7 +69,8 @@ void VariationsRenderThreadObserver::AppendThrottleIfNeeded(
 
 void VariationsRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(base::BindRepeating(
+  associated_interfaces->AddInterface<
+      mojom::RendererVariationsConfiguration>(base::BindRepeating(
       &VariationsRenderThreadObserver::OnRendererConfigurationAssociatedRequest,
       base::Unretained(this)));
 }

@@ -608,8 +608,9 @@ void RenderThreadImpl::Init() {
       GetContentClient()->renderer()->CreateURLLoaderThrottleProvider(
           blink::URLLoaderThrottleProviderType::kFrame);
 
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderThreadImpl::OnRendererInterfaceReceiver, base::Unretained(this)));
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::Renderer>(
+      base::BindRepeating(&RenderThreadImpl::OnRendererInterfaceReceiver,
+                          base::Unretained(this)));
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

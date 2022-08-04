@@ -179,8 +179,8 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
       translate_agent_(nullptr),
       page_text_agent_(new optimization_guide::PageTextAgent(render_frame)),
       web_cache_impl_(web_cache_impl) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<chrome::mojom::ChromeRenderFrame>(base::BindRepeating(
           &ChromeRenderFrameObserver::OnRenderFrameObserverRequest,
           base::Unretained(this)));
 

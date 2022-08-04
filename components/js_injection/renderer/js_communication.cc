@@ -31,9 +31,9 @@ struct JsCommunication::DocumentStartJavaScript {
 JsCommunication::JsCommunication(content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame),
       RenderFrameObserverTracker<JsCommunication>(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&JsCommunication::BindPendingReceiver,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::JsCommunication>(base::BindRepeating(
+          &JsCommunication::BindPendingReceiver, base::Unretained(this)));
 }
 
 JsCommunication::~JsCommunication() = default;

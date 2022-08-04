@@ -205,9 +205,10 @@ PaintPreviewRecorderImpl::PaintPreviewRecorderImpl(
       is_painting_preview_(false),
       is_main_frame_(render_frame->IsMainFrame() &&
                      !render_frame->IsInFencedFrameTree()) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&PaintPreviewRecorderImpl::BindPaintPreviewRecorder,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::PaintPreviewRecorder>(base::BindRepeating(
+          &PaintPreviewRecorderImpl::BindPaintPreviewRecorder,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PaintPreviewRecorderImpl::~PaintPreviewRecorderImpl() = default;

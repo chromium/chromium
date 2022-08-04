@@ -1191,9 +1191,10 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
   if (!delegate_->IsPrintPreviewEnabled())
     DisablePreview();
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&PrintRenderFrameHelper::BindPrintRenderFrameReceiver,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::PrintRenderFrame>(base::BindRepeating(
+          &PrintRenderFrameHelper::BindPrintRenderFrameReceiver,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PrintRenderFrameHelper::~PrintRenderFrameHelper() {}

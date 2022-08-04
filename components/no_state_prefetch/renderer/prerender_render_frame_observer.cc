@@ -14,8 +14,8 @@ namespace prerender {
 PrerenderRenderFrameObserver::PrerenderRenderFrameObserver(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<prerender::mojom::PrerenderMessages>(base::BindRepeating(
           &PrerenderRenderFrameObserver::OnRenderFrameObserverRequest,
           base::Unretained(this)));
 }

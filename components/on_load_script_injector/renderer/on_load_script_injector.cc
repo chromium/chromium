@@ -16,9 +16,11 @@ namespace on_load_script_injector {
 
 OnLoadScriptInjector::OnLoadScriptInjector(content::RenderFrame* frame)
     : RenderFrameObserver(frame), weak_ptr_factory_(this) {
-  render_frame()->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&OnLoadScriptInjector::BindToReceiver,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame()
+      ->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::OnLoadScriptInjector>(
+          base::BindRepeating(&OnLoadScriptInjector::BindToReceiver,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnLoadScriptInjector::~OnLoadScriptInjector() {}

@@ -14,7 +14,8 @@ WebLayerRenderThreadObserver::~WebLayerRenderThreadObserver() = default;
 
 void WebLayerRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(base::BindRepeating(
+  associated_interfaces->AddInterface<
+      mojom::RendererConfiguration>(base::BindRepeating(
       &WebLayerRenderThreadObserver::OnRendererConfigurationAssociatedRequest,
       base::Unretained(this)));
 }

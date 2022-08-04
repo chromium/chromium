@@ -164,7 +164,7 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
 
   // If we are the main frame register an additional mojo interface.
   if (render_frame->IsMainFrame()) {
-    registry_.AddInterface(base::BindRepeating(
+    registry_.AddInterface<mojom::LocalMainFrame>(base::BindRepeating(
         &AwRenderFrameExt::BindLocalMainFrame, base::Unretained(this)));
   }
 

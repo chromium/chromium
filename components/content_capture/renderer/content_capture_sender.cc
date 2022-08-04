@@ -22,7 +22,7 @@ ContentCaptureSender::ContentCaptureSender(
     content::RenderFrame* render_frame,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame) {
-  registry->AddInterface(base::BindRepeating(
+  registry->AddInterface<mojom::ContentCaptureSender>(base::BindRepeating(
       &ContentCaptureSender::BindPendingReceiver, base::Unretained(this)));
 }
 

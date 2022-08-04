@@ -31,9 +31,10 @@ SandboxStatusExtension::SandboxStatusExtension(content::RenderFrame* frame)
   // Don't do anything else for subframes.
   if (!frame->IsMainFrame())
     return;
-  frame->GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &SandboxStatusExtension::OnSandboxStatusExtensionRequest,
-      base::RetainedRef(this)));
+  frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<chrome::mojom::SandboxStatusExtension>(base::BindRepeating(
+          &SandboxStatusExtension::OnSandboxStatusExtensionRequest,
+          base::RetainedRef(this)));
 }
 
 SandboxStatusExtension::~SandboxStatusExtension() {}

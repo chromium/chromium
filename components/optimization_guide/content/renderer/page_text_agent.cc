@@ -39,7 +39,7 @@ PageTextAgent::PageTextAgent(content::RenderFrame* frame)
     // For unittesting.
     return;
   }
-  frame->GetAssociatedInterfaceRegistry()->AddInterface(
+  frame->GetAssociatedInterfaceRegistry()->AddInterface<mojom::PageTextService>(
       base::BindRepeating(&PageTextAgent::Bind, weak_factory_.GetWeakPtr()));
 }
 PageTextAgent::~PageTextAgent() = default;

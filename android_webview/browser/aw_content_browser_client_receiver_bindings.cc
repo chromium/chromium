@@ -108,15 +108,17 @@ void AwContentBrowserClient::
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
   // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-             receiver) {
-        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+                 receiver) {
+            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+                std::move(receiver), render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<
+      content_capture::mojom::ContentCaptureReceiver>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<
              content_capture::mojom::ContentCaptureReceiver> receiver) {
@@ -124,30 +126,33 @@ void AwContentBrowserClient::
             std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<mojom::FrameHost>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver) {
         AwRenderViewHostExt::BindFrameHost(std::move(receiver),
                                            render_frame_host);
       },
       &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             page_load_metrics::mojom::PageLoadMetrics> receiver) {
-        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
-             receiver) {
-        AwPrintManager::BindPrintManagerHost(std::move(receiver),
-                                             render_frame_host);
-      },
-      &render_frame_host));
-  associated_registry.AddInterface(base::BindRepeating(
+  associated_registry.AddInterface<page_load_metrics::mojom::PageLoadMetrics>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<
+                 page_load_metrics::mojom::PageLoadMetrics> receiver) {
+            page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+                std::move(receiver), render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+                 receiver) {
+            AwPrintManager::BindPrintManagerHost(std::move(receiver),
+                                                 render_frame_host);
+          },
+          &render_frame_host));
+  associated_registry.AddInterface<
+      security_interstitials::mojom::InterstitialCommands>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<
              security_interstitials::mojom::InterstitialCommands> receiver) {
@@ -163,7 +168,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   content::ResourceContext* resource_context =
       render_process_host->GetBrowserContext()->GetResourceContext();
-  registry->AddInterface(
+  registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
           &MaybeCreateSafeBrowsing, render_process_host->GetID(),
           resource_context,
@@ -178,8 +183,9 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
         mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
                                     std::move(receiver));
       };
-  registry->AddInterface(base::BindRepeating(create_spellcheck_host),
-                         content::GetUIThreadTaskRunner({}));
+  registry->AddInterface<spellcheck::mojom::SpellCheckHost>(
+      base::BindRepeating(create_spellcheck_host),
+      content::GetUIThreadTaskRunner({}));
 #endif
 }
 

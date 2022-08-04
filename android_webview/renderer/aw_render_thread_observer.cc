@@ -21,7 +21,7 @@ void AwRenderThreadObserver::RegisterMojoInterfaces(
   // base::Unretained can be used here because the associated_interfaces
   // is owned by the RenderThread and will live for the duration of the
   // RenderThread.
-  associated_interfaces->AddInterface(
+  associated_interfaces->AddInterface<mojom::Renderer>(
       base::BindRepeating(&AwRenderThreadObserver::OnRendererAssociatedRequest,
                           base::Unretained(this)));
 }

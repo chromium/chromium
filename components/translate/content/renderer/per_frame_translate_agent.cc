@@ -73,7 +73,7 @@ PerFrameTranslateAgent::PerFrameTranslateAgent(
     int world_id,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame), world_id_(world_id) {
-  registry->AddInterface(base::BindRepeating(
+  registry->AddInterface<mojom::TranslateAgent>(base::BindRepeating(
       &PerFrameTranslateAgent::BindReceiver, base::Unretained(this)));
 }
 

@@ -105,7 +105,7 @@ AutofillAssistantAgent::AutofillAssistantAgent(
     content::RenderFrame* render_frame,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame) {
-  registry->AddInterface(base::BindRepeating(
+  registry->AddInterface<mojom::AutofillAssistantAgent>(base::BindRepeating(
       &AutofillAssistantAgent::BindPendingReceiver, base::Unretained(this)));
 }
 

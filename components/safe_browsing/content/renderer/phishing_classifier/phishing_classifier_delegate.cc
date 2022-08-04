@@ -57,9 +57,10 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
 
   classifier_.reset(classifier);
 
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&PhishingClassifierDelegate::PhishingDetectorReceiver,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::PhishingDetector>(base::BindRepeating(
+          &PhishingClassifierDelegate::PhishingDetectorReceiver,
+          base::Unretained(this)));
 
   model_change_observation_.Observe(ScorerStorage::GetInstance());
 }

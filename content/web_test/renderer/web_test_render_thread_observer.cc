@@ -41,9 +41,10 @@ WebTestRenderThreadObserver::~WebTestRenderThreadObserver() {
 
 void WebTestRenderThreadObserver::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(base::BindRepeating(
-      &WebTestRenderThreadObserver::OnWebTestRenderThreadAssociatedRequest,
-      base::Unretained(this)));
+  associated_interfaces->AddInterface<mojom::WebTestRenderThread>(
+      base::BindRepeating(
+          &WebTestRenderThreadObserver::OnWebTestRenderThreadAssociatedRequest,
+          base::Unretained(this)));
 }
 
 void WebTestRenderThreadObserver::UnregisterMojoInterfaces(

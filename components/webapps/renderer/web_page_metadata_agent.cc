@@ -21,9 +21,10 @@ namespace webapps {
 
 WebPageMetadataAgent::WebPageMetadataAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&WebPageMetadataAgent::OnRenderFrameObserverRequest,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::WebPageMetadataAgent>(base::BindRepeating(
+          &WebPageMetadataAgent::OnRenderFrameObserverRequest,
+          base::Unretained(this)));
 }
 
 WebPageMetadataAgent::~WebPageMetadataAgent() = default;

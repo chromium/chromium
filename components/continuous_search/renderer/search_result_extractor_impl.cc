@@ -211,9 +211,10 @@ SearchResultExtractorImpl* SearchResultExtractorImpl::Create(
 SearchResultExtractorImpl::SearchResultExtractorImpl(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&SearchResultExtractorImpl::BindSearchResultExtractor,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::SearchResultExtractor>(base::BindRepeating(
+          &SearchResultExtractorImpl::BindSearchResultExtractor,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SearchResultExtractorImpl::~SearchResultExtractorImpl() = default;

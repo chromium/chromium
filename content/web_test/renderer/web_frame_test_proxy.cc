@@ -251,7 +251,7 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
   spell_check_ = std::make_unique<SpellCheckClient>(GetWebFrame());
   GetWebFrame()->SetTextCheckClient(spell_check_.get());
 
-  GetAssociatedInterfaceRegistry()->AddInterface(
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::WebTestRenderFrame>(
       base::BindRepeating(&WebFrameTestProxy::BindReceiver,
                           // The registry goes away and stops using this
                           // callback when RenderFrameImpl (which is this class)

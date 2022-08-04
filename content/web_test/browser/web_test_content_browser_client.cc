@@ -310,9 +310,10 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
           base::Unretained(this)),
       ui_task_runner);
 
-  associated_registry->AddInterface(base::BindRepeating(
-      &WebTestContentBrowserClient::BindWebTestControlHost,
-      base::Unretained(this), render_process_host->GetID()));
+  associated_registry->AddInterface<mojom::WebTestControlHost>(
+      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
+                          base::Unretained(this),
+                          render_process_host->GetID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(

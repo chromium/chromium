@@ -17,8 +17,8 @@ UrlRequestRulesReceiver::UrlRequestRulesReceiver(
   // It is fine to use an unretained pointer to |this| here as the
   // AssociatedInterfaceRegistry, owned by |render_frame| will be torn-down at
   // the same time as |this|.
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::UrlRequestRulesReceiver>(base::BindRepeating(
           &UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver,
           base::Unretained(this)));
 }

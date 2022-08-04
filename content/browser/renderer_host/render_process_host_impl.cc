@@ -2368,7 +2368,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   // This base::Unretained() usage is safe since the associated_registry is
   // owned by this RPHI.
-  associated_registry->AddInterface(base::BindRepeating(
+  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
   registry->AddInterface(

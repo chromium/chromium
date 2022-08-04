@@ -5785,22 +5785,28 @@ media::MediaPermission* RenderFrameImpl::GetMediaPermission() {
 
 void RenderFrameImpl::RegisterMojoInterfaces() {
   // TODO(dcheng): Fold this interface into mojom::Frame.
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderFrameImpl::BindAutoplayConfiguration, weak_factory_.GetWeakPtr()));
+  GetAssociatedInterfaceRegistry()
+      ->AddInterface<blink::mojom::AutoplayConfigurationClient>(
+          base::BindRepeating(&RenderFrameImpl::BindAutoplayConfiguration,
+                              weak_factory_.GetWeakPtr()));
 
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderFrameImpl::BindFrameBindingsControl, weak_factory_.GetWeakPtr()));
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::FrameBindingsControl>(
+      base::BindRepeating(&RenderFrameImpl::BindFrameBindingsControl,
+                          weak_factory_.GetWeakPtr()));
 
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderFrameImpl::BindNavigationClient, weak_factory_.GetWeakPtr()));
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::NavigationClient>(
+      base::BindRepeating(&RenderFrameImpl::BindNavigationClient,
+                          weak_factory_.GetWeakPtr()));
 
   // TODO(dcheng): Fold this interface into mojom::Frame.
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderFrameImpl::BindMhtmlFileWriter, base::Unretained(this)));
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::MhtmlFileWriter>(
+      base::BindRepeating(&RenderFrameImpl::BindMhtmlFileWriter,
+                          base::Unretained(this)));
 
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderAccessibilityManager::BindReceiver,
-      base::Unretained(render_accessibility_manager_.get())));
+  GetAssociatedInterfaceRegistry()
+      ->AddInterface<blink::mojom::RenderAccessibility>(base::BindRepeating(
+          &RenderAccessibilityManager::BindReceiver,
+          base::Unretained(render_accessibility_manager_.get())));
 }
 
 void RenderFrameImpl::BindMhtmlFileWriter(

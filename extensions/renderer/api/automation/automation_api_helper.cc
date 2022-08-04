@@ -17,9 +17,10 @@ namespace extensions {
 AutomationApiHelper::AutomationApiHelper(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
   DCHECK(render_frame->GetWebFrame()->IsOutermostMainFrame());
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&AutomationApiHelper::BindAutomationQueryReceiver,
-                          base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::AutomationQuery>(
+          base::BindRepeating(&AutomationApiHelper::BindAutomationQueryReceiver,
+                              base::Unretained(this)));
 }
 
 AutomationApiHelper::~AutomationApiHelper() = default;

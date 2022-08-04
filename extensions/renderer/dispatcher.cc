@@ -990,10 +990,11 @@ void Dispatcher::RegisterMojoInterfaces(
   // As well the Dispatcher is owned by the
   // ExtensionsRendererClient, which in turn is a leaky LazyInstance (and thus
   // never deleted).
-  associated_interfaces->AddInterface(base::BindRepeating(
+  associated_interfaces->AddInterface<mojom::Renderer>(base::BindRepeating(
       &Dispatcher::OnRendererAssociatedRequest, base::Unretained(this)));
-  associated_interfaces->AddInterface(base::BindRepeating(
-      &Dispatcher::OnEventDispatcherRequest, base::Unretained(this)));
+  associated_interfaces->AddInterface<mojom::EventDispatcher>(
+      base::BindRepeating(&Dispatcher::OnEventDispatcherRequest,
+                          base::Unretained(this)));
 }
 
 void Dispatcher::UnregisterMojoInterfaces(

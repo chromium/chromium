@@ -130,7 +130,7 @@ void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
-  associated_registry->AddInterface(
+  associated_registry->AddInterface<chrome::mojom::PluginInfoHost>(
       base::BindRepeating(&BindPluginInfoHost, host->GetID()));
 }
 

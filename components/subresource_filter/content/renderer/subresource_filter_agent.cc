@@ -98,8 +98,9 @@ void SubresourceFilterAgent::Initialize() {
 
   // `render_frame()` can be null in unit tests.
   if (render_frame()) {
-    render_frame()->GetAssociatedInterfaceRegistry()->AddInterface(
-        base::BindRepeating(
+    render_frame()
+        ->GetAssociatedInterfaceRegistry()
+        ->AddInterface<mojom::SubresourceFilterAgent>(base::BindRepeating(
             &SubresourceFilterAgent::OnSubresourceFilterAgentRequest,
             base::Unretained(this)));
 

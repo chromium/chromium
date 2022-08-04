@@ -16,7 +16,7 @@ PhishingModelSetterImpl::~PhishingModelSetterImpl() = default;
 
 void PhishingModelSetterImpl::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
-  associated_interfaces->AddInterface(
+  associated_interfaces->AddInterface<mojom::PhishingModelSetter>(
       base::BindRepeating(&PhishingModelSetterImpl::OnRendererAssociatedRequest,
                           base::Unretained(this)));
 }
