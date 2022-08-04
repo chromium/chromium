@@ -215,6 +215,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // one doesn't exist.
   QuotaError RazeAndReopen();
 
+  // Flushes previously scheduled commits.
+  void CommitNow();
+
   // Testing support for database corruption handling.
   //
   // Runs `corrupter` on the same sequence used to do database I/O,

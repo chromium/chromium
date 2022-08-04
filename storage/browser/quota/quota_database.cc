@@ -856,6 +856,10 @@ void QuotaDatabase::SetClockForTesting(base::Clock* clock) {
   g_clock_for_testing = clock;
 }
 
+void QuotaDatabase::CommitNow() {
+  Commit();
+}
+
 void QuotaDatabase::Commit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_)
