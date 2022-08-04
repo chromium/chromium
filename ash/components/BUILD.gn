@@ -33,6 +33,7 @@ test("ash_components_unittests") {
     "//ash/components/geolocation:unit_tests",
     "//ash/components/hid_detection:unit_tests",
     "//ash/components/login/auth:unit_tests",
+    "//ash/components/login/hibernate:unit_tests",
     "//ash/components/login/session:unit_tests",
     "//ash/components/multidevice:unit_tests",
     "//ash/components/peripheral_notification:unit_tests",

@@ -14,6 +14,7 @@
 #include "ash/components/login/auth/mount_performer.h"
 #include "ash/components/login/auth/public/cryptohome_error.h"
 #include "ash/components/login/auth/safe_mode_delegate.h"
+#include "ash/components/login/hibernate/hibernate_manager.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -196,6 +197,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;
+  std::unique_ptr<HibernateManager> hibernate_manager_;
   std::unique_ptr<MountPerformer> mount_performer_;
 
   base::WeakPtrFactory<AuthSessionAuthenticator> weak_factory_{this};

@@ -16,6 +16,7 @@ component("auth") {
   ]
   deps = [
     "//ash/components/cryptohome",
+    "//ash/components/login/hibernate:hibernate_manager",
     "//ash/constants",
     "//base",
     "//base:i18n",
