@@ -67,8 +67,6 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
                      phase == TRACE_EVENT_PHASE_ASYNC_STEP_INTO ||
                      phase == TRACE_EVENT_PHASE_ASYNC_STEP_PAST ||
                      phase == TRACE_EVENT_PHASE_MEMORY_DUMP ||
-                     phase == TRACE_EVENT_PHASE_ENTER_CONTEXT ||
-                     phase == TRACE_EVENT_PHASE_LEAVE_CONTEXT ||
                      phase == TRACE_EVENT_PHASE_CREATE_OBJECT ||
                      phase == TRACE_EVENT_PHASE_DELETE_OBJECT ||
                      phase == TRACE_EVENT_PHASE_SNAPSHOT_OBJECT ||

@@ -478,13 +478,6 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
     TRACE_EVENT1(kControlCharacters, kControlCharacters,
                  kControlCharacters, kControlCharacters);
 
-    uint64_t context_id = 0x20151021;
-
-    TRACE_EVENT_ENTER_CONTEXT("test_all", "TRACE_EVENT_ENTER_CONTEXT call",
-                              TRACE_ID_WITH_SCOPE("scope", context_id));
-    TRACE_EVENT_LEAVE_CONTEXT("test_all", "TRACE_EVENT_LEAVE_CONTEXT call",
-                              TRACE_ID_WITH_SCOPE("scope", context_id));
-
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async default process scope", 0x1000);
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async local id",
                              TRACE_ID_LOCAL(0x2000));
@@ -760,27 +753,6 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
 
   EXPECT_FIND_(kControlCharacters);
   EXPECT_SUB_FIND_(kControlCharacters);
-  {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    auto* id_hash = "0xbbd2598e28c3b487";
-#else
-    auto* id_hash = "0x20151021";
-#endif
-    EXPECT_FIND_("TRACE_EVENT_ENTER_CONTEXT call");
-    {
-      EXPECT_EQ(*item->FindStringKey("ph"), "(");
-      EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-      EXPECT_EQ(*item->FindStringKey("id"), id_hash);
-    }
-
-    EXPECT_FIND_("TRACE_EVENT_LEAVE_CONTEXT call");
-    {
-      EXPECT_EQ(*item->FindStringKey("ph"), ")");
-
-      EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-      EXPECT_EQ(*item->FindStringKey("id"), id_hash);
-    }
-  }
 
   EXPECT_FIND_("async default process scope");
   {

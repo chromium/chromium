@@ -1024,18 +1024,6 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
       TRACE_EVENT_PHASE_DELETE_OBJECT, category_group, name, id,     \
       TRACE_EVENT_FLAG_NONE)
 
-// Records entering and leaving trace event contexts. |category_group| and
-// |name| specify the context category and type. |context| is a
-// snapshotted context object id.
-#define TRACE_EVENT_ENTER_CONTEXT(category_group, name, context)      \
-  INTERNAL_TRACE_EVENT_ADD_WITH_ID(                                   \
-      TRACE_EVENT_PHASE_ENTER_CONTEXT, category_group, name, context, \
-      TRACE_EVENT_FLAG_NONE)
-#define TRACE_EVENT_LEAVE_CONTEXT(category_group, name, context)      \
-  INTERNAL_TRACE_EVENT_ADD_WITH_ID(                                   \
-      TRACE_EVENT_PHASE_LEAVE_CONTEXT, category_group, name, context, \
-      TRACE_EVENT_FLAG_NONE)
-
 // Macro to efficiently determine if a given category group is enabled.
 #define TRACE_EVENT_CATEGORY_GROUP_ENABLED(category_group, ret)             \
   do {                                                                      \
@@ -1099,8 +1087,6 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 #define TRACE_EVENT_PHASE_MEMORY_DUMP ('v')
 #define TRACE_EVENT_PHASE_MARK ('R')
 #define TRACE_EVENT_PHASE_CLOCK_SYNC ('c')
-#define TRACE_EVENT_PHASE_ENTER_CONTEXT ('(')
-#define TRACE_EVENT_PHASE_LEAVE_CONTEXT (')')
 
 // Flags for changing the behavior of TRACE_EVENT_API_ADD_TRACE_EVENT.
 #define TRACE_EVENT_FLAG_NONE (static_cast<unsigned int>(0))
