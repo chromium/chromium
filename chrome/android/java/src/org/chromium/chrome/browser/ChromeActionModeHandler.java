@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.Consumer;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -65,13 +64,12 @@ public class ChromeActionModeHandler {
      * @param canDrawOutsideScreen Whether floating action bar can be drawn outside the screen.
      */
     public ChromeActionModeHandler(ActivityTabProvider activityTabProvider,
-            Consumer<Boolean> actionBarObserver, Callback<String> searchCallback,
-            Supplier<ShareDelegate> shareDelegateSupplier, boolean canDrawOutsideScreen) {
+            Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier,
+            boolean canDrawOutsideScreen) {
         mInitWebContentsObserver = (webContents) -> {
             SelectionPopupController.fromWebContents(webContents)
-                    .setActionModeCallback(
-                            new ActionModeCallback(mActiveTab, webContents, actionBarObserver,
-                                    searchCallback, shareDelegateSupplier, canDrawOutsideScreen));
+                    .setActionModeCallback(new ActionModeCallback(mActiveTab, webContents,
+                            searchCallback, shareDelegateSupplier, canDrawOutsideScreen));
         };
 
         mActivityTabTabObserver =
@@ -105,7 +103,6 @@ public class ChromeActionModeHandler {
 
         private final Tab mTab;
         private final ActionModeCallbackHelper mHelper;
-        private final Consumer<Boolean> mActionBarObserver;
         private final Callback<String> mSearchCallback;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
         private final boolean mCanDrawOutsideScreen;
@@ -113,12 +110,10 @@ public class ChromeActionModeHandler {
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
 
-        ActionModeCallback(Tab tab, WebContents webContents, Consumer<Boolean> observer,
-                Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier,
-                boolean canDrawOutsideScreen) {
+        ActionModeCallback(Tab tab, WebContents webContents, Callback<String> searchCallback,
+                Supplier<ShareDelegate> shareDelegateSupplier, boolean canDrawOutsideScreen) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
-            mActionBarObserver = observer;
             mSearchCallback = searchCallback;
             mShareDelegateSupplier = shareDelegateSupplier;
             mCanDrawOutsideScreen = canDrawOutsideScreen;
@@ -133,7 +128,6 @@ public class ChromeActionModeHandler {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mContextMenuStartTime = System.currentTimeMillis();
-            notifyContextualActionBarVisibilityChanged(true);
 
             int allowedActionModes = ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
                     | ActionModeCallbackHelper.MENU_ITEM_SHARE;
@@ -151,7 +145,6 @@ public class ChromeActionModeHandler {
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             recordUserAction();
-            notifyContextualActionBarVisibilityChanged(true);
             boolean res = mHelper.onPrepareActionMode(mode, menu);
             Set<String> browsers = getPackageNames(PackageManagerUtils.queryAllWebBrowsersInfo());
             Set<String> launchers = getPackageNames(PackageManagerUtils.queryAllLaunchersInfo());
@@ -233,7 +226,6 @@ public class ChromeActionModeHandler {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             mHelper.onDestroyActionMode();
-            notifyContextualActionBarVisibilityChanged(false);
         }
 
         @Override
@@ -250,10 +242,6 @@ public class ChromeActionModeHandler {
                     outRect.offset(-xoffset, 0);
                 }
             }
-        }
-
-        private void notifyContextualActionBarVisibilityChanged(boolean show) {
-            mActionBarObserver.accept(show);
         }
 
         private Set<String> getPackageNames(List<ResolveInfo> list) {

@@ -678,8 +678,8 @@ public class RootUiCoordinator
             };
             mModalDialogManagerSupplier.get().addObserver(mModalDialogManagerObserver);
         }
-        mChromeActionModeHandler = new ChromeActionModeHandler(mActivityTabProvider,
-                mToolbarManager::onActionBarVisibilityChanged, (searchText) -> {
+        mChromeActionModeHandler =
+                new ChromeActionModeHandler(mActivityTabProvider, (searchText) -> {
                     if (mTabModelSelectorSupplier.get() == null) return;
 
                     String query = ActionModeCallbackHelper.sanitizeQuery(
