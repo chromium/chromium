@@ -196,37 +196,7 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
 }
 
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
-  return GetContentLayerColorImpl(type, IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetActiveDialogTitleBarColor() const {
-  return cros_styles::ResolveColor(cros_styles::ColorName::kDialogTitleBarColor,
-                                   IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetInactiveDialogTitleBarColor() const {
-  // TODO(wenbojie): Use a different inactive color in future.
-  return GetActiveDialogTitleBarColor();
-}
-
-std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
-    SkColor background_color) const {
-  if (background_color == gfx::kPlaceholderColor)
-    background_color = GetBackgroundColor();
-
-  const bool is_dark = color_utils::IsDark(background_color);
-  const SkColor base_color = is_dark ? SK_ColorWHITE : SK_ColorBLACK;
-  const float opacity = is_dark ? kLightInkDropOpacity : kDarkInkDropOpacity;
-  return std::make_pair(base_color, opacity);
-}
-
-SkColor AshColorProvider::GetBackgroundColor() const {
-  return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
-                                      IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
-                                                   bool use_dark_color) const {
+  bool use_dark_color = IsDarkModeEnabled();
   auto* color_provider = GetColorProvider();
   switch (type) {
     case ContentLayerType::kSeparatorColor:
@@ -290,6 +260,32 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     default:
       return ResolveColor(type, use_dark_color);
   }
+}
+
+SkColor AshColorProvider::GetActiveDialogTitleBarColor() const {
+  return cros_styles::ResolveColor(cros_styles::ColorName::kDialogTitleBarColor,
+                                   IsDarkModeEnabled());
+}
+
+SkColor AshColorProvider::GetInactiveDialogTitleBarColor() const {
+  // TODO(wenbojie): Use a different inactive color in future.
+  return GetActiveDialogTitleBarColor();
+}
+
+std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
+    SkColor background_color) const {
+  if (background_color == gfx::kPlaceholderColor)
+    background_color = GetBackgroundColor();
+
+  const bool is_dark = color_utils::IsDark(background_color);
+  const SkColor base_color = is_dark ? SK_ColorWHITE : SK_ColorBLACK;
+  const float opacity = is_dark ? kLightInkDropOpacity : kDarkInkDropOpacity;
+  return std::make_pair(base_color, opacity);
+}
+
+SkColor AshColorProvider::GetBackgroundColor() const {
+  return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
+                                      IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetBackgroundDefaultColor() const {

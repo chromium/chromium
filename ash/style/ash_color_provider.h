@@ -61,11 +61,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   SkColor GetBackgroundColor() const;
 
  private:
-  // Gets the color of |type| of the corresponding layer. Returns the color on
-  // dark mode if |use_dark_color| is true.
-  SkColor GetContentLayerColorImpl(ContentLayerType type,
-                                   bool use_dark_color) const;
-
   // Gets the background default color based on the current color mode.
   SkColor GetBackgroundDefaultColor() const;
 
