@@ -48,11 +48,6 @@ bool IsWebChannelsEnabled();
 // buildflag is not defined.
 bool IsFeedBackgroundRefreshEnabled();
 
-// Whether feed background refresh is attempted, if background refresh is
-// enabled. Disabling this value allows for testing the background fetch
-// capability independent of the feed background refresh codepaths.
-bool IsAttemptFeedBackgroundRefreshEnabled();
-
 // Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();

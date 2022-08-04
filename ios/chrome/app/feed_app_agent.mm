@@ -157,16 +157,11 @@
     [self feedService]->HandleBackgroundRefreshTaskExpiration();
     [self maybeNotifyRefreshSuccess:NO];
   };
-  if (IsAttemptFeedBackgroundRefreshEnabled()) {
-    // This is expected to crash if FeedService is not available.
-    [self feedService]->PerformBackgroundRefreshes(^(BOOL success) {
-      [self maybeNotifyRefreshSuccess:success];
-      [task setTaskCompletedWithSuccess:success];
-    });
-  } else {
-    [self maybeNotifyFetchTriggered];
-    [task setTaskCompletedWithSuccess:YES];
-  }
+  // This is expected to crash if FeedService is not available.
+  [self feedService]->PerformBackgroundRefreshes(^(BOOL success) {
+    [self maybeNotifyRefreshSuccess:success];
+    [task setTaskCompletedWithSuccess:success];
+  });
 }
 
 #pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)
@@ -209,17 +204,6 @@
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
   [center addNotificationRequest:request withCompletionHandler:nil];
-}
-
-// Requests OS to send a local user notification when a background fetch is
-// triggered, but an actual feed refresh is not attempted.
-- (void)maybeNotifyFetchTriggered {
-  // Disable triggering notification if actual refresh attempt is enabled so
-  // that user doesn't get unnecessary notifications.
-  if (IsAttemptFeedBackgroundRefreshEnabled()) {
-    return;
-  }
-  [self maybeRequestNotification:@"Background Fetch Triggered"];
 }
 
 // Requests OS to send a local user notification that a feed refresh has been

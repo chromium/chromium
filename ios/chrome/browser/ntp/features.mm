@@ -35,8 +35,6 @@ NSString* const kEnableFeedBackgroundRefreshForNextColdStart =
 
 const char kEnableFollowingFeedBackgroundRefresh[] =
     "EnableFollowingFeedBackgroundRefresh";
-const char kEnableAttemptFeedBackgroundRefresh[] =
-    "EnableAttemptFeedBackgroundRefresh";
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
@@ -59,15 +57,6 @@ bool IsFeedBackgroundRefreshEnabled() {
           boolForKey:kEnableFeedBackgroundRefreshForNextColdStart];
   return feedBackgroundRefreshEnabled;
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
-}
-
-bool IsAttemptFeedBackgroundRefreshEnabled() {
-  if (!IsFeedBackgroundRefreshEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedBackgroundRefresh, kEnableAttemptFeedBackgroundRefresh,
-      /*default=*/false);
 }
 
 void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
