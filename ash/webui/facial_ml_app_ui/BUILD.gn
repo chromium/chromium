@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_official_build,
+       "Facial ML App is only built for unofficial builds for now")
+assert(is_chromeos_ash, "Facial ML App is ash-chrome only")
+
+static_library("facial_ml_app_ui") {
+  sources = [
+    "facial_ml_app_ui.cc",
+    "facial_ml_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/resources:facial_ml_app_resources",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

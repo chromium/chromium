@@ -1,0 +1,91 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/web_applications/facial_ml_system_web_app_info.h"
+
+#include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "ash/webui/facial_ml_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_facial_ml_app_resources.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/display/screen.h"
+
+namespace {
+constexpr gfx::Size DEFAULT_SIZE(800, 600);
+}  // namespace
+
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFacialMLApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL(ash::kChromeUIFacialMLAppURL);
+  info->scope = GURL(ash::kChromeUIFacialMLAppURL);
+  // TODO(b/239374316): Convert the title to a localized string
+  info->title = u"Facial ML";
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url,
+      {
+          {"app_icon_192.png", 192, IDR_ASH_FACIAL_ML_APP_APP_ICON_192_PNG},
+          {"app_icon_512.png", 512, IDR_ASH_FACIAL_ML_APP_APP_ICON_512_PNG},
+      },
+      *info);
+
+  // Support Dark/Light mode.
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    info->theme_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+    info->dark_mode_theme_color =
+        cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                  /*is_dark_mode=*/true);
+    info->background_color = info->theme_color;
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  } else {
+    info->theme_color = 0xffffffff;
+    info->background_color = 0xffffffff;
+  }
+
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+  return info;
+}
+
+FacialMLSystemAppDelegate::FacialMLSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(
+          ash::SystemWebAppType::FACIAL_ML,
+          "FacialML",
+          GURL(ash::kChromeUIFacialMLAppURL),
+          profile,
+          ash::OriginTrialsMap({{ash::GetOrigin(ash::kChromeUIFacialMLAppURL),
+                                 {"FileHandling"}}})) {}
+
+std::unique_ptr<WebAppInstallInfo> FacialMLSystemAppDelegate::GetWebAppInfo()
+    const {
+  return CreateWebAppInfoForFacialMLApp();
+}
+
+gfx::Rect FacialMLSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(DEFAULT_SIZE);
+  return bounds;
+}
+
+bool FacialMLSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool FacialMLSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return false;
+}
+
+bool FacialMLSystemAppDelegate::ShouldReuseExistingWindow() const {
+  return true;
+}

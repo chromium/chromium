@@ -34,6 +34,7 @@ message SystemWebAppDataProto {
     OS_URL_HANDLER = 21;
     FIRMWARE_UPDATE = 22;
     OS_FLAGS = 23;
+    FACIAL_ML = 24;
   };
 
   optional SystemWebAppType system_app_type = 1;

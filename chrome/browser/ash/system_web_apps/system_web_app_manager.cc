@@ -94,6 +94,7 @@
 #include "url/origin.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
+#include "chrome/browser/ash/web_applications/facial_ml_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
@@ -139,6 +140,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<FacialMLSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 

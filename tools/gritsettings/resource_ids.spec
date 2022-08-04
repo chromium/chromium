@@ -633,6 +633,10 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [3420],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/facial_ml_app_ui/resources/trusted/ash_facial_ml_app_resources.grd": {
+    "META": {"join": 2, "sizes": {"includes": [50],}},
+    "includes": [3440],
+  },
   # END chromeos/ section.
 
   # START components/ section.
@@ -640,7 +644,7 @@
   # thus not rushing to update it for now.
   "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
-    "META": {"join": 2, "align": 1000},
+    "META": {"align": 1000},
     "includes": [3500],
   },
   # Chromium strings and Google Chrome strings must start at the same id.

@@ -319,6 +319,12 @@ grit("projector_app_bundle_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
+# Resources used by chrome://facial-ml
+ash_generated_grit("facial_ml_app_resources") {
+  source = "$root_gen_dir/ash/webui/facial_ml_app_ui/resources/trusted/ash_facial_ml_app_resources.grd"
+  deps = [ "//ash/webui/facial_ml_app_ui/resources/trusted:trusted_grd" ]
+}
+
 # Resources used by chrome://eche-app
 ash_generated_grit("eche_app_resources") {
   source = "$root_gen_dir/ash/webui/eche_app_ui/ash_eche_app_resources.grd"

@@ -47,6 +47,7 @@ source_set("system_web_apps") {
   ]
 
   if (!is_official_build) {
+    deps += [ "//ash/webui/facial_ml_app_ui" ]
     deps += [ "//ash/webui/sample_system_web_app_ui" ]
   }
 }

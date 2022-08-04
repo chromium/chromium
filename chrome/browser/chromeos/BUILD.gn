@@ -2336,7 +2336,9 @@ source_set("chromeos") {
   if (!is_official_build) {
     deps += [
       "//ash/webui/demo_mode_app_ui",
+      "//ash/webui/facial_ml_app_ui",
       "//ash/webui/resources:demo_mode_app_resources_grit",
+      "//ash/webui/resources:facial_ml_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_untrusted_resources_grit",
       "//ash/webui/sample_system_web_app_ui",
@@ -2344,6 +2346,8 @@ source_set("chromeos") {
     sources += [
       "../ash/web_applications/demo_mode_web_app_info.cc",
       "../ash/web_applications/demo_mode_web_app_info.h",
+      "../ash/web_applications/facial_ml_system_web_app_info.cc",
+      "../ash/web_applications/facial_ml_system_web_app_info.h",
       "../ash/web_applications/sample_system_web_app_info.cc",
       "../ash/web_applications/sample_system_web_app_info.h",
     ]

@@ -334,11 +334,13 @@ template("chrome_extra_paks") {
       if (!is_official_build) {
         sources += [
           "$root_gen_dir/ash/webui/ash_demo_mode_app_resources.pak",
+          "$root_gen_dir/ash/webui/ash_facial_ml_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_untrusted_resources.pak",
         ]
         deps += [
           "//ash/webui/resources:demo_mode_app_resources",
+          "//ash/webui/resources:facial_ml_app_resources",
           "//ash/webui/resources:sample_system_web_app_resources",
           "//ash/webui/resources:sample_system_web_app_untrusted_resources",
         ]

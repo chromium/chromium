@@ -5289,6 +5289,7 @@ static_library("browser") {
       deps += [
         "//ash/webui/demo_mode_app_ui",
         "//ash/webui/demo_mode_app_ui/mojom",
+        "//ash/webui/facial_ml_app_ui",
         "//ash/webui/sample_system_web_app_ui",
         "//ash/webui/sample_system_web_app_ui/mojom:shared",
         "//ash/webui/sample_system_web_app_ui/mojom:trusted",

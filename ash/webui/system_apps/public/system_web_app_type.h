@@ -102,6 +102,14 @@ enum class SystemWebAppType {
   // contact: skuhne@google.com
   OS_FLAGS = 23,
 
+  // Facial ML app aims to provide UI interactions to help Facial ML team
+  // train their models on CrOS. This is an internal app that is only enabled
+  // on pre-released Chromebooks with appropriate hardware.
+  //
+  // Source: //ash/webui/facial_ml_app_ui/
+  // contact: googleo@google.com
+  FACIAL_ML = 24,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -137,7 +145,7 @@ enum class SystemWebAppType {
   //
   // 7. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = OS_FLAGS,
+  kMaxValue = FACIAL_ML,
 };
 
 }  // namespace ash
