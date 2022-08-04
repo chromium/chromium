@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_CONSTANTS_H_
 #define CHROME_UPDATER_CONSTANTS_H_
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client_errors.h"
 
@@ -200,11 +201,11 @@ extern const char kDevOverrideKeyOverinstallTimeout[];
 extern const char kDevOverrideFileName[];
 
 // Timing constants.
-#if BUILDFLAG(IS_WIN)
-// How long to wait for an application installer (such as
-// chrome_installer.exe) to complete.
-constexpr int kWaitForAppInstallerSec = 60;
+// How long to wait for an application installer (such as chrome_installer.exe)
+// to complete.
+constexpr base::TimeDelta kWaitForAppInstaller = base::Minutes(15);
 
+#if BUILDFLAG(IS_WIN)
 // How often the installer progress from registry is sampled. This value may
 // be changed to provide a smoother progress experience (crbug.com/1067475).
 constexpr int kWaitForInstallerProgressSec = 1;

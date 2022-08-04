@@ -370,7 +370,10 @@ if (is_win || is_mac || is_linux) {
   source_set("constants_header") {
     sources = [ "constants.h" ]
 
-    deps = [ "//components/update_client" ]
+    deps = [
+      "//base",
+      "//components/update_client",
+    ]
   }
 
   source_set("constants_prod") {

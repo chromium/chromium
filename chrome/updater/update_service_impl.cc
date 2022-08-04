@@ -537,6 +537,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             return RunApplicationInstaller(
                 app_info, installer_path, install_args,
                 WriteInstallerDataToTempFile(temp_dir.GetPath(), install_data),
+                kWaitForAppInstaller,
                 base::BindRepeating(
                     [](StateChangeCallback state_update,
                        const std::string& app_id, int progress) {

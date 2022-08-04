@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
@@ -179,7 +180,7 @@ Installer::Result Installer::InstallHelper(
       application_installer, install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    install_params->server_install_data),
-      std::move(progress_callback));
+      kWaitForAppInstaller, std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
@@ -249,6 +250,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& /*app_installer*/,
     const std::string& /*arguments*/,
     const absl::optional<base::FilePath>& /*install_data_file*/,
+    const base::TimeDelta& timeout,
     InstallProgressCallback /*progress_callback*/) {
   NOTIMPLEMENTED();
   return AppInstallerResult(-1);

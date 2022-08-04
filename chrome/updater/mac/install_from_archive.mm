@@ -25,6 +25,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/mac_util.h"
@@ -126,6 +127,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
                   const absl::optional<base::FilePath>& installer_data_file,
                   const UpdaterScope& scope,
                   const base::Version& pv,
+                  const base::TimeDelta& timeout,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
@@ -181,7 +183,8 @@ int RunExecutable(const base::FilePath& existence_checker_path,
 
     int exit_code = 0;
     VLOG(1) << "Running " << command.GetCommandLineString();
-    if (!base::LaunchProcess(command, options).WaitForExit(&exit_code))
+    if (!base::LaunchProcess(command, options)
+             .WaitForExitWithTimeout(timeout, &exit_code))
       return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
     if (exit_code != 0)
       return exit_code;
@@ -319,7 +322,8 @@ int InstallFromArchive(
     const UpdaterScope& scope,
     const base::Version& pv,
     const std::string& arguments,
-    const absl::optional<base::FilePath>& installer_data_file) {
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::TimeDelta& timeout) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
                          base::OnceCallback<int(const base::FilePath&)>)>
@@ -332,8 +336,9 @@ int InstallFromArchive(
     base::FilePath new_path = AlterFileExtension(file_path, entry.first);
     if (base::PathExists(new_path)) {
       return entry.second(
-          new_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,
-                                   arguments, installer_data_file, scope, pv));
+          new_path,
+          base::BindOnce(&RunExecutable, existence_checker_path, ap, arguments,
+                         installer_data_file, scope, pv, timeout));
     }
   }
 

@@ -21,6 +21,10 @@
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace updater {
 
 struct AppInfo {
@@ -52,6 +56,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& installer_path,
     const std::string& install_args,
     const absl::optional<base::FilePath>& server_install_data,
+    const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback);
 
 // Manages the install of one application. Some of the functions of this

@@ -349,6 +349,10 @@ As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
 specific.
 
+Application installers are run with a 15-minute timeout. If the installer runs
+for longer than this, the updater assumes failure and continues operation.
+However, the updater does not kill the installer process.
+
 The macOS API is [defined here](installer_api_mac.md).
 
 TODO(crbug.com/1035895): Document Windows installer APIs

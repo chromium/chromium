@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
@@ -319,6 +320,7 @@ AppInstallerResult RunApplicationInstaller(
     const base::FilePath& app_installer,
     const std::string& arguments,
     const absl::optional<base::FilePath>& installer_data_file,
+    const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback) {
   if (!base::PathExists(app_installer))
     return AppInstallerResult(kErrorMissingRunableFile);
@@ -351,7 +353,7 @@ AppInstallerResult RunApplicationInstaller(
   }
 
   int exit_code = -1;
-  const auto time_begin = base::Time::NowFromSystemTime();
+  const base::ElapsedTimer timer;
   do {
     bool wait_result = process.WaitForExitWithTimeout(
         base::Seconds(kWaitForInstallerProgressSec), &exit_code);
@@ -362,8 +364,7 @@ AppInstallerResult RunApplicationInstaller(
       VLOG(1) << "Installer exit code " << exit_code;
       break;
     }
-  } while (base::Time::NowFromSystemTime() - time_begin <=
-           base::Seconds(kWaitForAppInstallerSec));
+  } while (timer.Elapsed() < timeout);
 
   return MakeInstallerResult(
       GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
