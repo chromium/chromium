@@ -14,9 +14,11 @@
 #include "base/containers/span.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -106,6 +108,46 @@ class TestAggregationServiceStorageContext
 
  private:
   base::SequenceBound<content::AggregationServiceStorage> storage_;
+};
+
+class MockAggregationService : public AggregationService {
+ public:
+  MockAggregationService();
+  ~MockAggregationService() override;
+
+  // AggregationService:
+  MOCK_METHOD(void,
+              AssembleReport,
+              (AggregatableReportRequest request,
+               AggregationService::AssemblyCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              SendReport,
+              (const GURL& url,
+               const AggregatableReport& report,
+               AggregationService::SendCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              SendReport,
+              (const GURL& url,
+               const base::Value& value,
+               AggregationService::SendCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               StoragePartition::StorageKeyMatcherFunction filter,
+               base::OnceClosure done),
+              (override));
+
+  MOCK_METHOD(void,
+              ScheduleReport,
+              (AggregatableReportRequest report_request),
+              (override));
 };
 
 // Only used for logging in tests.

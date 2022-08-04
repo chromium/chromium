@@ -70,35 +70,6 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               (override));
 };
 
-class MockAggregationService : public AggregationService {
- public:
-  MOCK_METHOD(void,
-              AssembleReport,
-              (AggregatableReportRequest report_request,
-               AssemblyCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SendReport,
-              (const GURL& url,
-               const AggregatableReport& report,
-               SendCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SendReport,
-              (const GURL& url,
-               const base::Value& contents,
-               SendCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              ClearData,
-              (base::Time delete_begin,
-               base::Time delete_end,
-               StoragePartition::StorageKeyMatcherFunction filter,
-               base::OnceClosure done),
-              (override));
-  MOCK_METHOD(void, ScheduleReport, (AggregatableReportRequest), (override));
-};
-
 class PrivateAggregationManagerImplUnderTest
     : public PrivateAggregationManagerImpl {
  public:

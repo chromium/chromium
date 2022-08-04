@@ -25,7 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -209,39 +209,6 @@ class MockCookieChecker : public AttributionCookieChecker {
   base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
 };
 
-class MockAggregationService : public AggregationServiceImpl {
- public:
-  explicit MockAggregationService(StoragePartitionImpl* partition)
-      : AggregationServiceImpl(/*run_in_memory=*/true,
-                               /*user_data_directory=*/base::FilePath(),
-                               partition) {}
-
-  void AssembleReport(AggregatableReportRequest report_request,
-                      AssemblyCallback callback) override {
-    calls_.push_back(std::move(report_request));
-    callbacks_.push_back(std::move(callback));
-  }
-
-  using AssembleReportCalls = std::vector<AggregatableReportRequest>;
-
-  const AssembleReportCalls& calls() const { return calls_; }
-
-  void RunCallback(size_t index,
-                   absl::optional<AggregatableReport> report,
-                   AssemblyStatus status) {
-    std::move(callbacks_[index]).Run(std::move(report), status);
-  }
-
-  void Reset() {
-    calls_.clear();
-    callbacks_.clear();
-  }
-
- private:
-  AssembleReportCalls calls_;
-  std::vector<AssemblyCallback> callbacks_;
-};
-
 }  // namespace
 
 class AttributionManagerImplTest : public testing::Test {
@@ -300,8 +267,7 @@ class AttributionManagerImplTest : public testing::Test {
   void CreateAggregationService() {
     auto* partition = static_cast<StoragePartitionImpl*>(
         browser_context_->GetDefaultStoragePartition());
-    auto aggregation_service =
-        std::make_unique<MockAggregationService>(partition);
+    auto aggregation_service = std::make_unique<MockAggregationService>();
     aggregation_service_ = aggregation_service.get();
     partition->OverrideAggregationServiceForTesting(
         std::move(aggregation_service));
@@ -1193,12 +1159,16 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
   checkpoint.Call(2);
 
   // Simulate the reports being sent and removed from storage.
+  EXPECT_CALL(*aggregation_service_, AssembleReport)
+      .Times(3)
+      .WillRepeatedly([](AggregatableReportRequest request,
+                         AggregationService::AssemblyCallback callback) {
+        std::move(callback).Run(CreateExampleAggregatableReport(),
+                                AggregationService::AssemblyStatus::kOk);
+      });
+
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(aggregation_service_->calls(), SizeIs(3));
-  for (size_t i = 0; i < 3; i++) {
-    aggregation_service_->RunCallback(i, CreateExampleAggregatableReport(),
-                                      AggregationService::AssemblyStatus::kOk);
-  }
+
   EXPECT_THAT(report_sender_->calls(), SizeIs(6));
   report_sender_->RunCallbacksAndReset(
       {SendResult::Status::kSent, SendResult::Status::kSent,
@@ -1722,6 +1692,17 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
 
     EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
 
+    if (test_case.send_expected) {
+      EXPECT_CALL(*aggregation_service_, AssembleReport)
+          .WillOnce([](AggregatableReportRequest request,
+                       AggregationService::AssemblyCallback callback) {
+            std::move(callback).Run(CreateExampleAggregatableReport(),
+                                    AggregationService::AssemblyStatus::kOk);
+          });
+    } else {
+      EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+    }
+
     attribution_manager_->HandleTrigger(
         DefaultAggregatableTriggerBuilder()
             .SetReportingOrigin(reporting_origin)
@@ -1733,10 +1714,6 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
     EXPECT_THAT(report_sender_->calls(), IsEmpty()) << test_case.name;
 
     if (test_case.send_expected) {
-      aggregation_service_->RunCallback(
-          0, CreateExampleAggregatableReport(),
-          AggregationService::AssemblyStatus::kOk);
-
       EXPECT_THAT(
           report_sender_->debug_calls(),
           ElementsAre(AllOf(ReportSourceIs(
@@ -1805,16 +1782,27 @@ TEST_F(AttributionManagerImplTest,
           /*is_debug_report=*/false,
           Field(&SendResult::status, SendResult::Status::kSent)));
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(CreateExampleAggregatableReport(),
+                                  AggregationService::AssemblyStatus::kOk);
+        });
+  }
+
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(aggregation_service_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(aggregation_service_->calls(), SizeIs(1));
 
-  aggregation_service_->RunCallback(0, CreateExampleAggregatableReport(),
-                                    AggregationService::AssemblyStatus::kOk);
   // One event-level report, one aggregatable report.
   EXPECT_THAT(report_sender_->calls(), SizeIs(2));
   report_sender_->RunCallbacksAndReset(
@@ -1852,16 +1840,28 @@ TEST_F(AttributionManagerImplTest,
           /*is_debug_report=*/false,
           Field(&SendResult::status, SendResult::Status::kFailedToAssemble)));
 
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(
+              absl::nullopt,
+              AggregationService::AssemblyStatus::kAssemblyFailed);
+        });
+  }
+
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(aggregation_service_->calls(), IsEmpty());
+
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(aggregation_service_->calls(), SizeIs(1));
 
-  aggregation_service_->RunCallback(
-      0, absl::nullopt, AggregationService::AssemblyStatus::kAssemblyFailed);
   // Event-level report was sent.
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 

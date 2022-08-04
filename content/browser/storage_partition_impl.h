@@ -64,7 +64,7 @@ class SharedStorageManager;
 
 namespace content {
 
-class AggregationServiceImpl;
+class AggregationService;
 class AttributionManager;
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
@@ -141,7 +141,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       std::unique_ptr<SharedStorageWorkletHostManager>
           shared_storage_worklet_host_manager);
   void OverrideAggregationServiceForTesting(
-      std::unique_ptr<AggregationServiceImpl> aggregation_service);
+      std::unique_ptr<AggregationService> aggregation_service);
   void OverrideAttributionManagerForTesting(
       std::unique_ptr<AttributionManager> attribution_manager);
 
@@ -253,7 +253,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);
   std::string GetPartitionDomain();
-  AggregationServiceImpl* GetAggregationService();
+  AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   MediaLicenseManager* GetMediaLicenseManager();
@@ -652,7 +652,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
   std::unique_ptr<BrowsingTopicsSiteDataManager>
       browsing_topics_site_data_manager_;
-  std::unique_ptr<AggregationServiceImpl> aggregation_service_;
+  std::unique_ptr<AggregationService> aggregation_service_;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   std::unique_ptr<MediaLicenseManager> media_license_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

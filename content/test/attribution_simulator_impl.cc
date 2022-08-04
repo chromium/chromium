@@ -660,11 +660,13 @@ base::Value RunAttributionSimulation(
       manager.get(), storage_partition, json_converter, rejected_sources,
       rejected_triggers, replaced_event_level_reports);
 
-  storage_partition->GetAggregationService()->SetPublicKeysForTesting(
-      GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),
-      PublicKeyset({aggregation_service::GenerateKey().public_key},
-                   /*fetch_time=*/base::Time::Now(),
-                   /*expiry_time=*/base::Time::Max()));
+  static_cast<AggregationServiceImpl*>(
+      storage_partition->GetAggregationService())
+      ->SetPublicKeysForTesting(
+          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),
+          PublicKeyset({aggregation_service::GenerateKey().public_key},
+                       /*fetch_time=*/base::Time::Now(),
+                       /*expiry_time=*/base::Time::Max()));
 
   base::Time last_event_time = GetEventTime(events->back());
 

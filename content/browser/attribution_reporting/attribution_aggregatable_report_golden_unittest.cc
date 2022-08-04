@@ -142,9 +142,10 @@ class AttributionAggregatableReportGoldenLatestVersionTest
 
  private:
   AggregationServiceImpl& aggregation_service() {
-    return *(static_cast<StoragePartitionImpl*>(
-                 browser_context_.GetDefaultStoragePartition())
-                 ->GetAggregationService());
+    return *static_cast<AggregationServiceImpl*>(
+        static_cast<StoragePartitionImpl*>(
+            browser_context_.GetDefaultStoragePartition())
+            ->GetAggregationService());
   }
 
   testing::AssertionResult VerifyReport(

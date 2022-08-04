@@ -374,6 +374,10 @@ TestAggregationServiceStorageContext::GetStorage() {
   return storage_;
 }
 
+MockAggregationService::MockAggregationService() = default;
+
+MockAggregationService::~MockAggregationService() = default;
+
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation) {

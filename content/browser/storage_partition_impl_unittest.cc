@@ -48,7 +48,7 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/storage_service_impl.h"
-#include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -537,22 +537,6 @@ class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
   base::ScopedObservation<StoragePartition,
                           StoragePartition::DataRemovalObserver>
       observation_{this};
-};
-
-class MockAggregationService : public AggregationServiceImpl {
- public:
-  explicit MockAggregationService(StoragePartitionImpl* partition)
-      : AggregationServiceImpl(/*run_in_memory=*/true,
-                               /*user_data_directory=*/base::FilePath(),
-                               partition) {}
-
-  MOCK_METHOD(void,
-              ClearData,
-              (base::Time delete_begin,
-               base::Time delete_end,
-               StoragePartition::StorageKeyMatcherFunction filter,
-               base::OnceClosure done),
-              (override));
 };
 
 bool IsWebSafeSchemeForTest(const std::string& scheme) {
@@ -2064,8 +2048,7 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  auto aggregation_service =
-      std::make_unique<MockAggregationService>(partition);
+  auto aggregation_service = std::make_unique<MockAggregationService>();
   auto* aggregation_service_ptr = aggregation_service.get();
   partition->OverrideAggregationServiceForTesting(
       std::move(aggregation_service));

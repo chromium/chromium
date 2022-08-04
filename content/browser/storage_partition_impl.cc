@@ -44,6 +44,7 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -969,7 +970,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManagerImpl* interest_group_manager,
       AttributionManager* attribution_manager,
-      AggregationServiceImpl* aggregation_service,
+      AggregationService* aggregation_service,
       storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
@@ -1692,7 +1693,7 @@ NativeIOContext* StoragePartitionImpl::GetNativeIOContext() {
   return native_io_context_.get();
 }
 
-AggregationServiceImpl* StoragePartitionImpl::GetAggregationService() {
+AggregationService* StoragePartitionImpl::GetAggregationService() {
   DCHECK(initialized_);
   return aggregation_service_.get();
 }
@@ -2401,7 +2402,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManagerImpl* interest_group_manager,
     AttributionManager* attribution_manager,
-    AggregationServiceImpl* aggregation_service,
+    AggregationService* aggregation_service,
     storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
@@ -2811,7 +2812,7 @@ void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
 }
 
 void StoragePartitionImpl::OverrideAggregationServiceForTesting(
-    std::unique_ptr<AggregationServiceImpl> aggregation_service) {
+    std::unique_ptr<AggregationService> aggregation_service) {
   DCHECK(initialized_);
   aggregation_service_ = std::move(aggregation_service);
 }
