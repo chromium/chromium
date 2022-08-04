@@ -178,9 +178,14 @@ bool DownloadUIModel::HasSupportedImageMimeType() const {
 }
 
 std::u16string DownloadUIModel::GetProgressSizesString() const {
+  return status_text_builder_->GetProgressSizesString();
+}
+
+std::u16string DownloadUIModel::StatusTextBuilder::GetProgressSizesString()
+    const {
   std::u16string size_ratio;
-  int64_t size = GetCompletedBytes();
-  int64_t total = GetTotalBytes();
+  int64_t size = model_->GetCompletedBytes();
+  int64_t total = model_->GetTotalBytes();
   if (total > 0) {
     ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
     std::u16string simple_size =
@@ -199,6 +204,33 @@ std::u16string DownloadUIModel::GetProgressSizesString() const {
   } else {
     size_ratio = ui::FormatBytes(size);
   }
+  return size_ratio;
+}
+
+std::u16string
+DownloadUIModel::BubbleStatusTextBuilder::GetProgressSizesString() const {
+  std::u16string size_ratio;
+  int64_t size = model_->GetCompletedBytes();
+  int64_t total = model_->GetTotalBytes();
+  if (total > 0) {
+    ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
+    std::u16string simple_size =
+        ui::FormatBytesWithUnits(size, amount_units, false);
+    std::u16string simple_total =
+        ui::FormatBytesWithUnits(total, amount_units, true);
+
+    // Linux prepends an RLM (right-to-left mark) in the FormatBytesWithUnits
+    // call when showing units if the string has strong RTL characters. This is
+    // problematic for this fraction use case because it ends up moving it
+    // around so that the numerator is in the wrong place. Therefore, we remove
+    // that extra marker before proceeding.
+    base::i18n::UnadjustStringForLocaleDirection(&simple_total);
+    size_ratio = l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_SIZES,
+                                            simple_size, simple_total);
+  } else {
+    size_ratio = ui::FormatBytes(size);
+  }
+
   return size_ratio;
 }
 
@@ -1173,7 +1205,7 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
        web_drive.empty());
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
-  std::u16string size_ratio = model_->GetProgressSizesString();
+  std::u16string size_ratio = GetProgressSizesString();
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
   // and validated.
@@ -1224,6 +1256,43 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
   } else {
     return std::u16string();
   }
+}
+
+// static
+std::u16string
+DownloadUIModel::BubbleStatusTextBuilder::GetBubbleStatusMessageWithBytes(
+    const std::u16string& bytes_substring,
+    const std::u16string& detail_message,
+    bool is_active) {
+  // For some RTL languages (e.g. Hebrew), the translated form of 123/456 MB
+  // still uses the English characters "MB" rather than RTL characters. We
+  // specifically mark this as LTR because it should be displayed as "123/456
+  // MB" (not "MB 123/456"). Conversely, some other RTL languages (e.g. Arabic)
+  // do translate "MB" to RTL characters. For these, we do nothing, that way the
+  // phrase is correctly displayed as RTL, with the translated "MB" to the left
+  // of the fraction.
+  std::u16string final_bytes_substring =
+      base::i18n::GetStringDirection(bytes_substring) ==
+              base::i18n::TextDirection::LEFT_TO_RIGHT
+          ? base::i18n::GetDisplayStringInLTRDirectionality(bytes_substring)
+          : bytes_substring;
+
+  std::u16string download_progress =
+      is_active ? l10n_util::GetStringFUTF16(
+                      IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_WITH_SYMBOL,
+                      final_bytes_substring)
+                : final_bytes_substring;
+
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+      download_progress, detail_message);
+
+  // Some RTL languages like Hebrew still display "MB" in English
+  // characters, which are the first strongly directional characters in
+  // the full string. We mark the full string as RTL to ensure it doesn't get
+  // displayed as LTR in spite of the first characters ("MB") being LTR.
+  base::i18n::AdjustStringForLocaleDirection(&text);
+  return text;
 }
 
 std::u16string
@@ -1343,35 +1412,30 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
        web_drive.empty());
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
-  std::u16string size_ratio = model_->GetProgressSizesString();
+  std::u16string size_ratio = GetProgressSizesString();
 
   // If the detail message is "Paused" and the size_ratio is "100/120 MB", then
   // this returns "100/120 MB • Paused".
   auto get_size_ratio_string = [size_ratio](std::u16string detail_message) {
-    return l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR, size_ratio,
-        detail_message);
+    return GetBubbleStatusMessageWithBytes(size_ratio, detail_message,
+                                           /*is_active=*/false);
   };
   // If the detail message is "Opening in 10 seconds..." and the size_ratio is
   // "100/120 MB", then this returns "↓ 100/120 MB • Opening in 10 seconds...".
   auto get_active_download_size_ratio_string =
       [size_ratio](std::u16string detail_message) {
-        return l10n_util::GetStringFUTF16(
-            IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
-            l10n_util::GetStringFUTF16(
-                IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_WITH_SYMBOL, size_ratio),
-            detail_message);
+        return GetBubbleStatusMessageWithBytes(size_ratio, detail_message,
+                                               /*is_active=*/true);
       };
 
   const auto completed_bytes = model_->GetCompletedBytes();
   const auto total_bytes = model_->GetTotalBytes();
 
-  // If the detail message is "Done" and the total_byes is "120 MB", then
+  // If the detail message is "Done" and the total_bytes is "120 MB", then
   // this returns "120 MB • Done".
   auto get_total_string = [total_bytes](std::u16string detail_message) {
-    return l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
-        ui::FormatBytes(total_bytes), detail_message);
+    return GetBubbleStatusMessageWithBytes(ui::FormatBytes(total_bytes),
+                                           detail_message, /*is_active=*/false);
   };
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
@@ -1464,7 +1528,6 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
     // Offline items have these null.
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE);
   } else {
-    std::u16string size_text = ui::FormatBytes(model_->GetTotalBytes());
     std::u16string delta_str;
     if (model_->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
@@ -1482,9 +1545,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
                                        ui::TimeFormat::LENGTH_LONG,
                                        time_elapsed);
     }
-    return l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR, size_text,
-        delta_str);
+    return GetBubbleStatusMessageWithBytes(
+        ui::FormatBytes(model_->GetTotalBytes()), delta_str,
+        /*is_active=*/false);
   }
 }
 

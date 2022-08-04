@@ -887,6 +887,58 @@ TEST_F(DownloadItemModelTest, ShouldShowInBubble) {
     EXPECT_EQ(test_case.expected_should_show, model().ShouldShowInBubble());
   }
 }
+
+TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
+  auto compare_results = [](std::u16string actual, std::vector<int> expected) {
+    EXPECT_EQ(actual.length(), expected.size());
+    for (auto it = expected.begin(); it < expected.end(); it++) {
+      int index = std::distance(expected.begin(), it);
+      EXPECT_EQ(actual[index], expected[index]);
+    }
+  };
+
+  base::i18n::SetRTLForTesting(true);
+
+  // Arabic
+  auto* arabic_bytes = L"5 \x062A";
+  auto* arabic_status = L"\x0645";
+  std::u16string arabic =
+      DownloadUIModel::BubbleStatusTextBuilder::GetBubbleStatusMessageWithBytes(
+          base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status),
+          false);
+  std::vector<int> expected_arabic =
+#if BUILDFLAG(IS_MAC)
+      {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
+#elif BUILDFLAG(IS_POSIX)
+      {8207, 8235, 8207, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
+#else
+      {8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236};
+#endif
+  compare_results(arabic, expected_arabic);
+
+  // Hebrew
+  auto* hebrew_status = L"\x05D0";
+  std::u16string hebrew = DownloadUIModel::BubbleStatusTextBuilder ::
+      GetBubbleStatusMessageWithBytes(u"5 MB", base::WideToUTF16(hebrew_status),
+                                      false);
+  std::vector<int> expected_hebrew =
+#if BUILDFLAG(IS_MAC)
+      {8207, 8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236, 8207};
+#elif BUILDFLAG(IS_POSIX)
+      {8207, 8235, 8207, 8234, 53,   32,   77,  66,
+       8236, 32,   8226, 32,   1488, 8236, 8207};
+#else
+      {8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236};
+#endif
+  compare_results(hebrew, expected_hebrew);
+
+  // English
+  base::i18n::SetRTLForTesting(false);
+  std::u16string english = DownloadUIModel::BubbleStatusTextBuilder ::
+      GetBubbleStatusMessageWithBytes(u"5 MB", u"A", false);
+  std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
+  compare_results(english, expected_english);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {

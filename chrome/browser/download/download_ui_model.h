@@ -55,6 +55,13 @@ class DownloadUIModel {
     // Returns a string indicating the status of a completed download.
     virtual std::u16string GetCompletedStatusText() const = 0;
 
+    // Returns a string representation of the current download progress sizes.
+    // If the total size of the download is known, this string looks like:
+    // "100/200 MB" where the numerator is the transferred size and the
+    // denominator is the total size. If the total isn't known, returns the
+    // transferred size as a string (e.g.: "100 MB").
+    virtual std::u16string GetProgressSizesString() const = 0;
+
     // Returns a string indicating the status of an interrupted download.
     virtual std::u16string GetInterruptedStatusText(
         offline_items_collection::FailState fail_state) const;
@@ -72,6 +79,7 @@ class DownloadUIModel {
    public:
     std::u16string GetInProgressStatusText() const override;
     std::u16string GetCompletedStatusText() const override;
+    std::u16string GetProgressSizesString() const override;
   };
 
   // Used in Download bubble.
@@ -81,8 +89,16 @@ class DownloadUIModel {
     std::u16string GetCompletedStatusText() const override;
     std::u16string GetInterruptedStatusText(
         offline_items_collection::FailState fail_state) const override;
+    std::u16string GetProgressSizesString() const override;
 
    private:
+    FRIEND_TEST_ALL_PREFIXES(DownloadItemModelTest,
+                             GetBubbleStatusMessageWithBytes);
+
+    static std::u16string GetBubbleStatusMessageWithBytes(
+        const std::u16string& bytes_substring,
+        const std::u16string& detail_message,
+        bool is_active);
     std::u16string GetBubbleWarningStatusText() const;
   };
 
