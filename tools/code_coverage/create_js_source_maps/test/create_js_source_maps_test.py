@@ -97,7 +97,8 @@ class CreateSourceMapsTest(unittest.TestCase):
 
     if inline_sourcemap:
       with open(output_file_name, 'rb') as output_file:
-        output = output_file.read()
+        # Strip the \r characters which are generated on Windows.
+        output = output_file.read().replace(b'\r', b'')
       output_lines = output.splitlines()
 
       # Check source map was appended properly.
