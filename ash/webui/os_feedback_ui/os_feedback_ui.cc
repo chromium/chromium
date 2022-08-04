@@ -57,6 +57,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_MESSAGE},
       {"helpContentOfflineAltText",
        IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_ALT_TEXT},
+      {"helpContentLabelTooltip", IDS_FEEDBACK_TOOL_HELP_CONTENT_LABEL_TOOLTIP},
       {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
       {"attachFilesLabel", IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL},
       {"attachScreenshotLabel", IDS_FEEDBACK_TOOL_SCREENSHOT_LABEL},

@@ -142,7 +142,8 @@ export function helpContentTestSuite() {
     assertEquals('Suggested help content', title.textContent);
 
     // The help content icon is visible.
-    assertTrue(isVisible(getElement('#helpContentIcon')));
+    const helpContentIcon = getElement('#helpContentIcon');
+    assertTrue(isVisible(helpContentIcon));
 
     // Verify the help content is populated with correct number of items.
     assertEquals(5, getElement('dom-repeat').items.length);

@@ -3421,6 +3421,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_ALT_TEXT" desc="The alt text for the illustration shown when the suggested help content is unavailable because the user is offline.">
         Device is offline
       </message>
+      <message name="IDS_FEEDBACK_TOOL_HELP_CONTENT_LABEL_TOOLTIP" desc="The tooltip text shown next to the suggested help content label.">
+        Suggestions are based on your description
+      </message>
       <!-- Share Data Page -->
       <message name="IDS_FEEDBACK_TOOL_BACK_BUTTON_LABEL" desc="label for the back button to return to a prior page">
         Back
