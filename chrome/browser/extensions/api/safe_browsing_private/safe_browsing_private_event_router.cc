@@ -867,7 +867,7 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
 
     base::Value::Dict identity;
     identity.Set(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
-    identity.Set(kKeyPasswordBreachIdentitiesUsername, i.second);
+    identity.Set(kKeyPasswordBreachIdentitiesUsername, MaskUsername(i.second));
     identities_list.Append(std::move(identity));
   }
 
