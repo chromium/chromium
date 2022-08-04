@@ -14,7 +14,14 @@ AXVirtualObject::AXVirtualObject(AXObjectCacheImpl& axObjectCache,
                                  AccessibleNode* accessible_node)
     : AXObject(axObjectCache),
       accessible_node_(accessible_node),
-      aria_role_(ax::mojom::blink::Role::kUnknown) {}
+      aria_role_(ax::mojom::blink::Role::kUnknown) {
+  DCHECK(accessible_node_);
+  DCHECK(!accessible_node_->element())
+      << "The accessible node directly attached to an element should not "
+         "have its own AXObject, since the AXObject will be keyed off of "
+         "the element instead: "
+      << accessible_node_->element();
+}
 
 AXVirtualObject::~AXVirtualObject() = default;
 

@@ -397,7 +397,7 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
       relation_list_properties_;
 
   // This object's owner Element, if it corresponds to an Element.
-  Member<Element> element_;
+  const Member<Element> element_;
 
   // The object's owner Document. Only set if |element_| is nullptr.
   Member<Document> document_;

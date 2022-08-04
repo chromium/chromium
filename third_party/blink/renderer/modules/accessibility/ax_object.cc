@@ -897,13 +897,6 @@ AXObject* AXObject::ComputeAccessibleNodeParent(
     if (AXObject* parent = cache.Get(parent_accessible_node))
       return parent;
 
-    // If |accessible_node|'s parent is attached to a DOM element, we return the
-    // AXObject of the DOM element as the parent AXObject of |accessible_node|,
-    // since the accessible node directly attached to an element should not have
-    // its own AXObject.
-    if (Element* element = parent_accessible_node->element())
-      return cache.GetOrCreate(element);
-
     // Compute grandparent first, since constructing parent AXObject for
     // |accessible_node| requires grandparent to be provided.
     AXObject* grandparent_object =

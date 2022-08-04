@@ -198,10 +198,14 @@ AccessibleNode* AccessibleNode::Create(Document& document) {
 }
 
 Document* AccessibleNode::GetDocument() const {
-  if (document_)
+  if (document_) {
+    DCHECK(!element_);
     return document_;
-  if (element_)
+  }
+  if (element_) {
+    DCHECK(!document_);
     return &element_->GetDocument();
+  }
 
   return nullptr;
 }

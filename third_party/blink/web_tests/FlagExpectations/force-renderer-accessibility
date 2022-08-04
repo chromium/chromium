@@ -4,7 +4,6 @@
 # crbug.com/1138028 tracks the removal of these failure expectations
 
 # Unintentional failure
-accessibility/aom-click-action.html [ Skip ]
 external/wpt/accessibility/crashtests/serialize-with-no-document.html [ Skip ]
 external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Skip ]

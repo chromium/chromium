@@ -48,6 +48,13 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
   ax::mojom::blink::Role aria_role_;
 };
 
+template <>
+struct DowncastTraits<AXVirtualObject> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsVirtualObject();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_VIRTUAL_OBJECT_H_

@@ -229,6 +229,8 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   AXID GetExistingAXID(Node*) override;
 
+  // Return an AXObject for the AccessibleNode. If the AccessibleNode is
+  // attached to an element, will return the AXObject for that element instead.
   AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
 
