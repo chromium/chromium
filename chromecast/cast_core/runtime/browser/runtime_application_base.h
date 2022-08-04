@@ -99,6 +99,9 @@ class RuntimeApplicationBase : public RuntimeApplication,
   std::vector<int> GetFeaturePermissions() const;
   // Returns additional feature permission origins.
   std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
+  // Returns if current session is enabled for dev.
+  bool GetEnabledForDev() const;
+
   // Loads the page at the given |url| in the CastWebContents.
   void LoadPage(const GURL& url);
   // Notifies the application has launched.

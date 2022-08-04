@@ -287,6 +287,19 @@ RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
   return feature_permission_origins;
 }
 
+bool RuntimeApplicationBase::GetEnabledForDev() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto* entry = FindEntry(feature::kCastCoreRendererFeatures,
+                                GetAppConfig().extra_features());
+  if (!entry) {
+    return false;
+  }
+  DCHECK(entry->value().has_dictionary());
+
+  return FindEntry(chromecast::feature::kEnableDevMode,
+                   entry->value().dictionary()) != nullptr;
+}
+
 void RuntimeApplicationBase::LoadPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -399,13 +412,8 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   params->activity_id = params->is_remote_control_mode
                             ? params->session_id
                             : GetAppConfig().app_id();
-#if DCHECK_IS_ON()
-  params->enabled_for_dev = true;
-#endif
-  CastWebView::Scoped cast_web_view =
-      web_service_->CreateWebViewInternal(std::move(params));
-  DCHECK(cast_web_view);
-  return cast_web_view;
+  params->enabled_for_dev = GetEnabledForDev();
+  return web_service_->CreateWebViewInternal(std::move(params));
 }
 
 void RuntimeApplicationBase::SetMediaState(
