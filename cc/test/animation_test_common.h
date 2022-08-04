@@ -90,7 +90,8 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
                                     float start_opacity,
                                     float end_opacity,
-                                    bool use_timing_function);
+                                    bool use_timing_function,
+                                    absl::optional<int> id = absl::nullopt);
 
 int AddAnimatedFilterToAnimation(Animation* animation,
                                  double duration,

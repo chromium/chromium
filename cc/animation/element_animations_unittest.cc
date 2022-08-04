@@ -1151,9 +1151,11 @@ TEST_F(ElementAnimationsTest, ScrollOffsetRemovalClearsScrollDelta) {
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
 
-  int keyframe_model_id = 1;
+  int keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
+  int group_id = AnimationIdProvider::NextGroupId();
+
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), keyframe_model_id, 0,
+      std::move(curve), keyframe_model_id, group_id,
       KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
@@ -1178,11 +1180,14 @@ TEST_F(ElementAnimationsTest, ScrollOffsetRemovalClearsScrollDelta) {
   EXPECT_FALSE(animation_impl_->keyframe_effect()
                    ->scroll_offset_animation_was_interrupted());
 
+  keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
+  group_id = AnimationIdProvider::NextGroupId();
+
   // Now, test the 2-argument version of RemoveKeyframeModel.
   curve = ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
       target_value);
   keyframe_model = KeyframeModel::Create(
-      std::move(curve), keyframe_model_id, 0,
+      std::move(curve), keyframe_model_id, group_id,
       KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET));
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
@@ -468,6 +469,28 @@ TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
                                          TargetProperty::FILTER));
   EXPECT_FALSE(client_impl_.IsPropertyMutated(
       element_id_, ElementListType::ACTIVE, TargetProperty::FILTER));
+}
+
+using AnimationDeathTest = AnimationTest;
+
+TEST_F(AnimationDeathTest, RemoveAddInSameFrame) {
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  host_->AddAnimationTimeline(timeline_);
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachElement(element_id_);
+
+  EXPECT_TRUE(client_.mutators_need_commit());
+  client_.set_mutators_need_commit(false);
+
+  const int keyframe_model_id =
+      AddOpacityTransitionToAnimation(animation_.get(), 1., .7f, .3f, false);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
+
+  animation_->RemoveKeyframeModel(keyframe_model_id);
+  AddOpacityTransitionToAnimation(animation_.get(), 1., .7f, .3f, false,
+                                  keyframe_model_id);
+  EXPECT_DCHECK_DEATH(
+      host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees()));
 }
 
 TEST_F(AnimationTest, AddRemoveAnimationCausesSetNeedsCommit) {

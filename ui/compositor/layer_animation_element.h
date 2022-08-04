@@ -229,6 +229,7 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   std::string ToString() const;
 
  protected:
+  void UpdateKeyframeModelId();
   virtual std::string DebugName() const;
 
   // Called once each time the animation element is run before any call to
@@ -258,7 +259,7 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   const base::TimeDelta duration_;
   gfx::Tween::Type tween_type_;
 
-  const int keyframe_model_id_;
+  int keyframe_model_id_;
   int animation_group_id_;
 
   double last_progressed_fraction_;

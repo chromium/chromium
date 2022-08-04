@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
@@ -155,6 +156,11 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
   // If specified, overrides the ElementId to apply this KeyframeModel's effect
   // value on.
   ElementId element_id_;
+
+#if DCHECK_IS_ON()
+  // This id is unique, modulo overflow. Permits quick instance equality checks.
+  int debug_id_ = 0;
+#endif
 
   bool needs_synchronized_start_time_;
   bool received_finished_event_;

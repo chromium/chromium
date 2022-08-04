@@ -521,6 +521,9 @@ class ThreadedOpacityTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
+    // Ensures that we don't remove and add a model with the same id in a single
+    // frame.
+    UpdateKeyframeModelId();
     std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new FloatAnimationCurveAdapter(tween_type(), start_, target_,
                                        duration()));
@@ -594,6 +597,9 @@ class ThreadedTransformTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
+    // Ensures that we don't remove and add a model with the same id in a single
+    // frame.
+    UpdateKeyframeModelId();
     std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new TransformAnimationCurveAdapter(tween_type(), start_, target_,
                                            duration()));
@@ -764,6 +770,10 @@ std::string LayerAnimationElement::ToString() const {
       "last_progressed_fraction=%0.2f}",
       DebugName().c_str(), keyframe_model_id_, animation_group_id_,
       last_progressed_fraction_);
+}
+
+void LayerAnimationElement::UpdateKeyframeModelId() {
+  keyframe_model_id_ = cc::AnimationIdProvider::NextKeyframeModelId();
 }
 
 std::string LayerAnimationElement::DebugName() const {

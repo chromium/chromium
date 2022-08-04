@@ -29,7 +29,8 @@ int AddOpacityTransition(Animation* target,
                          double duration,
                          float start_opacity,
                          float end_opacity,
-                         bool use_timing_function) {
+                         bool use_timing_function,
+                         int id) {
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
       gfx::KeyframedFloatAnimationCurve::Create());
 
@@ -42,8 +43,6 @@ int AddOpacityTransition(Animation* target,
         base::TimeDelta(), start_opacity, std::move(func)));
   curve->AddKeyframe(gfx::FloatKeyframe::Create(base::Seconds(duration),
                                                 end_opacity, nullptr));
-
-  int id = AnimationIdProvider::NextKeyframeModelId();
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
@@ -291,9 +290,11 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
                                     float start_opacity,
                                     float end_opacity,
-                                    bool use_timing_function) {
-  return AddOpacityTransition(animation, duration, start_opacity, end_opacity,
-                              use_timing_function);
+                                    bool use_timing_function,
+                                    absl::optional<int> id) {
+  return AddOpacityTransition(
+      animation, duration, start_opacity, end_opacity, use_timing_function,
+      id ? *id : AnimationIdProvider::NextKeyframeModelId());
 }
 
 int AddAnimatedFilterToAnimation(Animation* animation,
