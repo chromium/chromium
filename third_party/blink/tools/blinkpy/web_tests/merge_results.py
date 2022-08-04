@@ -729,13 +729,16 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
         return
 
     layout_test_results = fs.join(directory, 'layout-test-results')
-    merged_output_json = fs.join(directory, 'output.json')
     if (fs.exists(layout_test_results)
             and not fs.remove_contents(layout_test_results)):
         raise IOError(('Unable to remove output directory %s contents!\n'
                        'See log output for errors.') % layout_test_results)
-    if fs.exists(merged_output_json):
-        fs.remove(merged_output_json)
+
+    merged_output_jsons = ['output.json', 'run_histories.json']
+    for output_json in merged_output_jsons:
+        output_json_fullpath = fs.join(directory, output_json)
+        if fs.exists(output_json_fullpath):
+            fs.remove(output_json_fullpath)
 
     # Fuchsia specific additional logs to be cleaned. Check if 'ffx_log' exists
     # or not first, otherwise webgpu_blink_web_tests will hang forever.
