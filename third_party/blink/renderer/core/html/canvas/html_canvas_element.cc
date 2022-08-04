@@ -721,6 +721,11 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
         WebGraphicsContext3DVideoFramePool::
             IsGpuMemoryBufferReadbackFromTextureEnabled());
   }
+
+  const bool context_color_is_opaque =
+      context_ ? context_->CanvasRenderingContextSkColorInfo().isOpaque()
+               : false;
+
   for (CanvasDrawListener* listener : listeners_) {
     if (!listener->NeedsNewFrame())
       continue;
@@ -734,7 +739,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
     // First attempt to copy directly from the rendering context to a video
     // frame. Not all rendering contexts need to support this (for contexts
     // where GetSourceImageForCanvasInternal is zero-copy, this is superfluous).
-    if (context_ && can_discard_alpha &&
+    if (context_ && (context_color_is_opaque || can_discard_alpha) &&
         base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
       if (context_->CopyRenderingResultsToVideoFrame(
               copier_->GetAcceleratedVideoFramePool(
