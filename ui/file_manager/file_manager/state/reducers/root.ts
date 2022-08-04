@@ -5,7 +5,7 @@
 import {State} from '../../externs/ts/state.js';
 import {Action, Actions, ChangeDirectoryAction} from '../actions.js';
 
-import {cacheEntries} from './all_entries.js';
+import {cacheEntries, clearCachedEntries} from './all_entries.js';
 import {changeDirectory} from './current_directory.js';
 
 /**
@@ -23,6 +23,9 @@ export function rootReducer(currentState: State, action: Action): State {
         currentDirectory:
             changeDirectory(state, action as ChangeDirectoryAction),
       });
+
+    case Actions.CLEAR_STALE_CACHED_ENTRIES:
+      return clearCachedEntries(state, action);
 
     default:
       console.error(`invalid action: ${action.type}`);

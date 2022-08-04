@@ -8,22 +8,27 @@ import {ChangeDirectoryAction} from '../actions.js';
 
 /** Reducer that updates the `currentDirectory` attributes. */
 export function changeDirectory(
-    currentState: State, action: ChangeDirectoryAction): CurrentDirectory|null {
+    currentState: State, action: ChangeDirectoryAction): CurrentDirectory {
   const fileData = currentState.allEntries[action.key];
+  const emptyDir = {
+    key: action.key,
+    status: action.status,
+    pathComponents: [],
+  };
+
   if (!fileData) {
-    // The new directory might not be in the allEntries yet.
-    return {
-      key: action.key,
-      status: action.status,
-      pathComponents: [],
-    };
+    // The new directory might not be in the allEntries yet, this might happen
+    // when starting to change the directory for a entry that isn't cached.
+    // At the end of the change directory, DirectoryContents will send an Action
+    // with the Entry to be cached.
+    return emptyDir;
   }
 
   // TODO(lucmult): Find a correct way to grab the VolumeManager.
   const volumeManager = window.fileManager.volumeManager;
   if (!volumeManager) {
     console.debug(`VolumeManager not available yet.`);
-    return currentState.currentDirectory || null;
+    return currentState.currentDirectory || emptyDir;
   }
 
   const components =

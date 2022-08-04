@@ -19,6 +19,7 @@ export interface Action extends BaseAction {
 /** Enum to identify every Action in Files app. */
 export const enum Actions {
   CHANGE_DIRECTORY = 'change-directory',
+  CLEAR_STALE_CACHED_ENTRIES = 'clear-stale-cached-entries',
 }
 
 /** Action to request to change the Current Directory. */
