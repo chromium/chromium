@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -1204,16 +1205,27 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
 
-  // When the match comes from the Open Tab Provider while in keyword mode,
-  // the disposition should be set to SWITCH_TO_TAB.
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    model()->client()->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+
+  // When the match comes from the Open Tab Provider while in tabs search
+  // keyword mode, the disposition should be set to SWITCH_TO_TAB.
   AutocompleteMatch match(
       model()->autocomplete_controller()->open_tab_provider(), 0, false,
       AutocompleteMatchType::OPEN_TAB);
   match.destination_url = GURL("https://foo/");
   match.from_keyword = true;
 
-  model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
-  model()->SetUserText(u"http://abcd");
+  // Set the keyword to "@tabs" to put us in tab search mode.
+  model()->OnPopupDataChanged(std::u16string(), false, std::u16string(),
+                              std::u16string(), /* keyword = */ u"@tabs", false,
+                              std::u16string());
+
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                      std::u16string(), 0);
   EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::SWITCH_TO_TAB);
@@ -1227,6 +1239,16 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 
   match.provider = model()->autocomplete_controller()->search_provider();
   match.from_keyword = true;
+  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                     std::u16string(), 0);
+  EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);
+
+  // Suggestions in keyword mode but NOT in tab search should NOT change the
+  // disposition.
+  model()->OnPopupDataChanged(std::u16string(), false, std::u16string(),
+                              std::u16string(), /* keyword = */ u"@history",
+                              false, std::u16string());
+  match.provider = model()->autocomplete_controller()->open_tab_provider();
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
                      std::u16string(), 0);
   EXPECT_EQ(controller_->disposition(), WindowOpenDisposition::CURRENT_TAB);

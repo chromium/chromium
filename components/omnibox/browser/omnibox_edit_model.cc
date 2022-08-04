@@ -62,6 +62,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
@@ -803,15 +804,24 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                  const std::u16string& pasted_text,
                                  size_t index,
                                  base::TimeTicks match_selection_timestamp) {
-  // Switch the window disposition to SWITCH_TO_TAB for open tab matches that
-  // originated while in keyword mode.  This is to support the keyword mode
-  // starter pack's tab search (@tabs) feature, which should open all
-  // suggestions in the existing open tab.
-  bool is_open_tab_match =
+  TemplateURLService* service = client_->GetTemplateURLService();
+  bool is_tab_search_mode =
       OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
       match.from_keyword &&
-      match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
-  if (is_open_tab_match) {
+      service->IsKeywordFromStarterPackTabSearch(keyword_);
+  if (is_tab_search_mode) {
+    // The starter pack's tab search feature uses the omnibox's OpenTabProvider
+    // to search through a user's open tabs and does not have a proper landing
+    // page for substituting URL searches. To support this, only allow the user
+    // to open matches from the OpenTabProvider, effectively disabling the 
+    // search-other-engine suggestion that is usually the default suggestion in
+    // keyword mode.
+    if (match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
+      return;
+    }
+
+    // All suggestions in tab search mode that ARE from the open tab provider
+    // should open in the existing open tab (switch to open tab).
     disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   }
 
@@ -920,7 +930,6 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                now - last_omnibox_focus_);
   }
 
-  TemplateURLService* service = client_->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
     if (ui::PageTransitionTypeIncludingQualifiersIs(

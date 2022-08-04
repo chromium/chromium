@@ -351,6 +351,12 @@ class TemplateURLService : public WebDataServiceConsumer,
   // the default search engine entry.
   void RepairStarterPackEngines();
 
+  // Looks up `keyword` and determines whether the best TemplateURL for it is
+  // associated with the starter pack tab search engine.  Returns false if there
+  // is no matching TURL for the given keyword or if it is associated with
+  // another search engine.
+  bool IsKeywordFromStarterPackTabSearch(const std::u16string& keyword);
+
   // Observers used to listen for changes to the model.
   // TemplateURLService does NOT delete the observers when deleted.
   void AddObserver(TemplateURLServiceObserver* observer);
