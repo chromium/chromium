@@ -170,21 +170,20 @@ void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
 }
 
 void AsyncSharedStorageDatabaseImpl::PurgeStaleOrigins(
-    base::TimeDelta window_to_be_deemed_active,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::PurgeStaleOrigins)
-      .WithArgs(window_to_be_deemed_active)
       .Then(std::move(callback));
 }
 
 void AsyncSharedStorageDatabaseImpl::FetchOrigins(
-    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
-        callback) {
+    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+    bool exclude_empty_origins) {
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::FetchOrigins)
+      .WithArgs(exclude_empty_origins)
       .Then(std::move(callback));
 }
 
@@ -205,6 +204,16 @@ void AsyncSharedStorageDatabaseImpl::GetRemainingBudget(
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::GetRemainingBudget)
+      .WithArgs(std::move(context_origin))
+      .Then(std::move(callback));
+}
+
+void AsyncSharedStorageDatabaseImpl::GetCreationTime(
+    url::Origin context_origin,
+    base::OnceCallback<void(TimeResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::GetCreationTime)
       .WithArgs(std::move(context_origin))
       .Then(std::move(callback));
 }
@@ -230,14 +239,14 @@ void AsyncSharedStorageDatabaseImpl::DBStatusForTesting(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabaseImpl::OverrideLastUsedTimeForTesting(
+void AsyncSharedStorageDatabaseImpl::OverrideCreationTimeForTesting(
     url::Origin context_origin,
-    base::Time new_last_used_time,
+    base::Time new_creation_time,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(callback);
   DCHECK(database_);
-  database_.AsyncCall(&SharedStorageDatabase::OverrideLastUsedTimeForTesting)
-      .WithArgs(std::move(context_origin), new_last_used_time)
+  database_.AsyncCall(&SharedStorageDatabase::OverrideCreationTimeForTesting)
+      .WithArgs(std::move(context_origin), new_creation_time)
       .Then(std::move(callback));
 }
 

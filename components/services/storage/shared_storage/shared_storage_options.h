@@ -71,8 +71,8 @@ struct SharedStorageOptions {
   // the initial interval.
   const base::TimeDelta stale_origin_purge_recurring_interval;
 
-  // Amount of time that an origin needs to be inactive in order for it to
-  // be deemed stale.
+  // Length of time between origin creation and origin expiration. When an
+  // origin's data is older than this threshold, it will be auto-purged.
   const base::TimeDelta origin_staleness_threshold;
 };
 
@@ -91,7 +91,8 @@ struct SharedStorageDatabaseOptions {
                                int max_init_tries,
                                int max_iterator_batch_size,
                                int bit_budget,
-                               base::TimeDelta budget_interval);
+                               base::TimeDelta budget_interval,
+                               base::TimeDelta origin_staleness_threshold);
 
   // Maximum size of a database page, in bytes. Must be a power of 2 between
   // 512 and 65536 inclusive.
@@ -120,6 +121,10 @@ struct SharedStorageDatabaseOptions {
 
   // Interval over which `bit_budget` is defined.
   const base::TimeDelta budget_interval;
+
+  // Length of time between origin creation and origin expiration. When an
+  // origin's data is older than this threshold, it will be auto-purged.
+  const base::TimeDelta origin_staleness_threshold;
 };
 
 }  // namespace storage

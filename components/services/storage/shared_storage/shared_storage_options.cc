@@ -75,7 +75,8 @@ std::unique_ptr<SharedStorageDatabaseOptions>
 SharedStorageOptions::GetDatabaseOptions() {
   return std::make_unique<SharedStorageDatabaseOptions>(
       max_page_size, max_cache_size, max_entries_per_origin, max_string_length,
-      max_init_tries, max_iterator_batch_size, bit_budget, budget_interval);
+      max_init_tries, max_iterator_batch_size, bit_budget, budget_interval,
+      origin_staleness_threshold);
 }
 
 SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
@@ -86,7 +87,8 @@ SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
     int max_init_tries,
     int max_iterator_batch_size,
     int bit_budget,
-    base::TimeDelta budget_interval)
+    base::TimeDelta budget_interval,
+    base::TimeDelta origin_staleness_threshold)
     : max_page_size(max_page_size),
       max_cache_size(max_cache_size),
       max_entries_per_origin(max_entries_per_origin),
@@ -94,7 +96,8 @@ SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
       max_init_tries(max_init_tries),
       max_iterator_batch_size(max_iterator_batch_size),
       bit_budget(bit_budget),
-      budget_interval(budget_interval) {
+      budget_interval(budget_interval),
+      origin_staleness_threshold(origin_staleness_threshold) {
   DCHECK(IsValidPageSize(max_page_size));
   DCHECK_GT(max_entries_per_origin, 0);
   DCHECK_GT(max_string_length, 0);
@@ -102,6 +105,7 @@ SharedStorageDatabaseOptions::SharedStorageDatabaseOptions(
   DCHECK_GT(max_iterator_batch_size, 0);
   DCHECK_GT(bit_budget, 0);
   DCHECK(budget_interval.is_positive());
+  DCHECK(origin_staleness_threshold.is_positive());
 }
 
 }  // namespace storage
