@@ -38,7 +38,7 @@ bool ParamTraits<mojo::MessagePipeHandle>::Read(const base::Pickle* m,
 void ParamTraits<mojo::MessagePipeHandle>::Log(const param_type& p,
                                                std::string* l) {
   l->append("mojo::MessagePipeHandle(");
-  LogParam(p.value(), l);
+  LogParam(static_cast<uint64_t>(p.value()), l);
   l->append(")");
 }
 
@@ -88,7 +88,7 @@ bool ParamTraits<mojo::DataPipeConsumerHandle>::Read(const base::Pickle* m,
 void ParamTraits<mojo::DataPipeConsumerHandle>::Log(const param_type& p,
                                                     std::string* l) {
   l->append("mojo::DataPipeConsumerHandle(");
-  LogParam(p.value(), l);
+  LogParam(static_cast<uint64_t>(p.value()), l);
   l->append(")");
 }
 

@@ -22,7 +22,7 @@ typedef int64_t MojoTimeTicks;
 // |MojoHandle|: Handles to Mojo objects.
 //   |MOJO_HANDLE_INVALID| - A value that is never a valid handle.
 
-typedef uint64_t MojoHandle;
+typedef uintptr_t MojoHandle;
 
 #ifdef __cplusplus
 const MojoHandle MOJO_HANDLE_INVALID = 0;

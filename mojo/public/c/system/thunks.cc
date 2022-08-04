@@ -34,9 +34,9 @@
 
 namespace {
 
-typedef void (*MojoGetSystemThunksFunction)(MojoSystemThunks64* thunks);
+typedef void (*MojoGetSystemThunksFunction)(MojoSystemThunks2* thunks);
 
-MojoSystemThunks64 g_thunks;
+MojoSystemThunks2 g_thunks;
 
 MojoResult NotImplemented(const char* name) {
   if (g_thunks.size > 0) {
@@ -54,9 +54,9 @@ MojoResult NotImplemented(const char* name) {
 
 }  // namespace
 
-#define INVOKE_THUNK(name, ...)                      \
-  offsetof(MojoSystemThunks64, name) < g_thunks.size \
-      ? g_thunks.name(__VA_ARGS__)                   \
+#define INVOKE_THUNK(name, ...)                     \
+  offsetof(MojoSystemThunks2, name) < g_thunks.size \
+      ? g_thunks.name(__VA_ARGS__)                  \
       : NotImplemented(#name)
 
 namespace mojo {
@@ -863,7 +863,7 @@ MojoSystemThunks32 g_thunks_32 = {
 
 }  // extern "C"
 
-const MojoSystemThunks64* MojoEmbedderGetSystemThunks64() {
+const MojoSystemThunks2* MojoEmbedderGetSystemThunks2() {
   return &g_thunks;
 }
 
@@ -871,7 +871,7 @@ const MojoSystemThunks32* MojoEmbedderGetSystemThunks32() {
   return &g_thunks_32;
 }
 
-void MojoEmbedderSetSystemThunks(const MojoSystemThunks64* thunks) {
+void MojoEmbedderSetSystemThunks(const MojoSystemThunks2* thunks) {
   // Assume embedders will always use matching versions of the Mojo Core and
   // public APIs.
   DCHECK_EQ(thunks->size, sizeof(g_thunks));

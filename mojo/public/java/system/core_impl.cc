@@ -120,18 +120,22 @@ static jint JNI_CoreImpl_WriteMessage(
     DCHECK(env->GetDirectBufferCapacity(bytes) >= num_bytes);
     buffer_size = num_bytes;
   }
-  const MojoHandle* handles = 0;
+  const jlong* java_handles = nullptr;
   uint32_t num_handles = 0;
   if (handles_buffer) {
-    handles =
-        static_cast<MojoHandle*>(env->GetDirectBufferAddress(handles_buffer));
-    num_handles =
-        env->GetDirectBufferCapacity(handles_buffer) / sizeof(MojoHandle);
+    java_handles =
+        static_cast<jlong*>(env->GetDirectBufferAddress(handles_buffer));
+    num_handles = env->GetDirectBufferCapacity(handles_buffer) / sizeof(jlong);
   }
+
+  // Truncate handle values if necessary.
+  std::vector<MojoHandle> handles(num_handles);
+  std::copy(java_handles, java_handles + num_handles, handles.begin());
+
   // Java code will handle invalidating handles if the write succeeded.
   return WriteMessageRaw(
       MessagePipeHandle(static_cast<MojoHandle>(mojo_handle)), buffer_start,
-      buffer_size, handles, num_handles, flags);
+      buffer_size, handles.data(), num_handles, flags);
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(
@@ -167,12 +171,14 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(
   if (result != MOJO_RESULT_OK)
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
 
+  // Extend handles to 64-bit values if necessary.
+  std::vector<jlong> java_handles(handles.size());
+  std::copy(handles.begin(), handles.end(), java_handles.begin());
   return Java_CoreImpl_newReadMessageResult(
       env, result,
       base::android::ToJavaByteArray(env, static_cast<uint8_t*>(buffer),
                                      num_bytes),
-      base::android::ToJavaLongArray(
-          env, reinterpret_cast<jlong*>(handles.data()), num_handles));
+      base::android::ToJavaLongArray(env, java_handles.data(), num_handles));
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(
