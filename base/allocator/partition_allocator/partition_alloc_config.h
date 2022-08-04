@@ -30,13 +30,20 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_STARSCAN_NEON_SUPPORTED
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if defined(PA_HAS_64_BITS_POINTERS) && (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
 // Use dynamically sized GigaCage. This allows to query the size at run-time,
-// before initialization, instead of using a hardcoded constexpr. This is needed
-// on iOS because iOS test processes can't handle a large cage (see
-// crbug.com/1250788).
+// before initialization, instead of using a hardcoded constexpr.
+//
+// This is needed on iOS because iOS test processes can't handle a large cage
+// (see crbug.com/1250788).
+//
+// This is needed on Windows, because OS versions <8.1 incur commit charge even
+// on reserved address space, thus don't handle large cage well (see
+// crbug.com/1101421 and crbug.com/1217759).
+//
+// This setting is specific to 64-bit, as 32-bit has a different implementation.
 #define PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE
-#endif
+#endif  // defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(IS_WIN)
 
 #if defined(PA_HAS_64_BITS_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))

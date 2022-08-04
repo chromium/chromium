@@ -25,7 +25,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#include <VersionHelpers.h>  // For IsWindows8Point1OrGreater().
 #endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace partition_alloc::internal {
 
@@ -117,10 +120,12 @@ PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
 }
 #else
 PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
-  return kRegularPoolSize;
+  return IsWindows8Point1OrGreater() ? kRegularPoolSize
+                                     : kRegularPoolSizeForLegacyWindows;
 }
 PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
-  return kBRPPoolSize;
+  return IsWindows8Point1OrGreater() ? kBRPPoolSize
+                                     : kBRPPoolSizeForLegacyWindows;
 }
 #endif  // BUILDFLAG(IS_IOS)
 #endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
