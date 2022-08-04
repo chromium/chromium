@@ -135,7 +135,6 @@ class WorkerSchedulerProxyTest : public testing::Test {
                 nullptr)),
         frame_scheduler_(page_scheduler_->CreateFrameScheduler(
             nullptr,
-            nullptr,
             /*is_in_embedded_frame_tree=*/false,
             FrameScheduler::FrameType::kMainFrame)) {}
 

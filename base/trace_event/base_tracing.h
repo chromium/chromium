@@ -15,7 +15,6 @@
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 // Update the check in //base/PRESUBMIT.py when adding new headers here.
 // TODO(crbug/1006541): Switch to perfetto for trace event implementation.
-#include "base/trace_event/blame_context.h"               // nogncheck
 #include "base/trace_event/heap_profiler.h"               // nogncheck
 #include "base/trace_event/interned_args_helper.h"        // nogncheck
 #include "base/trace_event/memory_allocator_dump_guid.h"  // nogncheck

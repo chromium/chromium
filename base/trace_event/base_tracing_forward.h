@@ -37,7 +37,6 @@ struct check_traced_value_support {
 namespace base {
 namespace trace_event {
 
-class BlameContext;
 class ConvertableToTraceFormat;
 class TracedValue;
 

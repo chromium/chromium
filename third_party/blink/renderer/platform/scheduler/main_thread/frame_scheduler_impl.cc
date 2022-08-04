@@ -14,13 +14,11 @@
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
-#include "base/trace_event/blame_context.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
-#include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -99,16 +97,13 @@ FrameSchedulerImpl::PauseSubresourceLoadingHandleImpl::
     frame_scheduler_->RemovePauseSubresourceLoadingHandle();
 }
 
-FrameSchedulerImpl::FrameSchedulerImpl(
-    PageSchedulerImpl* parent_page_scheduler,
-    FrameScheduler::Delegate* delegate,
-    base::trace_event::BlameContext* blame_context,
-    bool is_in_embedded_frame_tree,
-    FrameScheduler::FrameType frame_type)
+FrameSchedulerImpl::FrameSchedulerImpl(PageSchedulerImpl* parent_page_scheduler,
+                                       FrameScheduler::Delegate* delegate,
+                                       bool is_in_embedded_frame_tree,
+                                       FrameScheduler::FrameType frame_type)
     : FrameSchedulerImpl(parent_page_scheduler->GetMainThreadScheduler(),
                          parent_page_scheduler,
                          delegate,
-                         blame_context,
                          is_in_embedded_frame_tree,
                          frame_type) {}
 
@@ -116,7 +111,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler,
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
-    base::trace_event::BlameContext* blame_context,
     bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : frame_type_(frame_type),
@@ -124,7 +118,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
-      blame_context_(blame_context),
       throttling_state_(SchedulingLifecycleState::kNotThrottled),
       frame_visible_(true,
                      "FrameScheduler.FrameVisible",
@@ -204,7 +197,6 @@ FrameSchedulerImpl::FrameSchedulerImpl()
     : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                          /*parent_page_scheduler=*/nullptr,
                          /*delegate=*/nullptr,
-                         /*blame_context=*/nullptr,
                          /*is_in_embedded_frame_tree=*/false,
                          FrameType::kSubframe) {}
 
@@ -215,7 +207,6 @@ void CleanUpQueue(MainThreadTaskQueue* queue) {
 
   queue->DetachFromMainThreadScheduler();
   DCHECK(!queue->GetFrameScheduler());
-  queue->SetBlameContext(nullptr);
 }
 
 }  // namespace
@@ -754,9 +745,6 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
            !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
 
   dict.Add("frame_task_queue_controller", frame_task_queue_controller_);
-
-  if (blame_context_)
-    dict.Add("blame_context", blame_context_);
 }
 
 void FrameSchedulerImpl::WriteIntoTrace(
@@ -1197,7 +1185,6 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {
   DCHECK(parent_page_scheduler_);
 
-  task_queue->SetBlameContext(blame_context_);
   UpdateQueuePolicy(task_queue, voter);
 
   if (task_queue->CanBeThrottled()) {

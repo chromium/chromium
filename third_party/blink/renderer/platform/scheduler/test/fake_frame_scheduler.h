@@ -59,14 +59,14 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                            /*parent_page_scheduler=*/nullptr,
                            /*delegate=*/delegate,
-                           /*blame_context=*/nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            /*frame_type=*/frame_type),
         page_scheduler_(page_scheduler),
         is_page_visible_(is_page_visible),
         is_frame_visible_(is_frame_visible),
         frame_type_(frame_type),
-        is_cross_origin_to_nearest_main_frame_(is_cross_origin_to_nearest_main_frame),
+        is_cross_origin_to_nearest_main_frame_(
+            is_cross_origin_to_nearest_main_frame),
         is_exempt_from_throttling_(is_exempt_from_throttling) {
     DCHECK(frame_type_ != FrameType::kMainFrame ||
            !is_cross_origin_to_nearest_main_frame);

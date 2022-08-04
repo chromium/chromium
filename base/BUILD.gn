@@ -2366,8 +2366,6 @@ mixed_component("base") {
   if (enable_base_tracing) {
     sources += [
       "trace_event/auto_open_close_event.h",
-      "trace_event/blame_context.cc",
-      "trace_event/blame_context.h",
       "trace_event/builtin_categories.cc",
       "trace_event/builtin_categories.h",
       "trace_event/category_registry.cc",
@@ -3886,7 +3884,6 @@ test("base_unittests") {
   if (enable_base_tracing) {
     sources += [
       "test/trace_event_analyzer_unittest.cc",
-      "trace_event/blame_context_unittest.cc",
       "trace_event/event_name_filter_unittest.cc",
       "trace_event/heap_profiler_allocation_context_tracker_unittest.cc",
       "trace_event/memory_allocator_dump_unittest.cc",

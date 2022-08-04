@@ -1562,8 +1562,6 @@ void RenderFrameImpl::CreateFrame(
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
         std::move(browser_interface_broker), devtools_frame_token);
-    // Since `parent_web_frame` is remote we do not provide a parent_frame
-    // for initializing the BlameContext.
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state->unique_name);
     WebFrame* opener = nullptr;

@@ -492,10 +492,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return task_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask();
   }
 
-  void SetBlameContext(base::trace_event::BlameContext* blame_context) {
-    task_queue_->SetBlameContext(blame_context);
-  }
-
   void SetShouldReportPostedTasksWhenDisabled(bool should_report) {
     task_queue_->SetShouldReportPostedTasksWhenDisabled(should_report);
   }

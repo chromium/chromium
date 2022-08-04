@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 
+#include <inttypes.h>
+
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_audio_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"

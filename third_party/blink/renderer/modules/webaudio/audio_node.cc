@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
+#include <inttypes.h>
+
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"

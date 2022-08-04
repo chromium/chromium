@@ -66,10 +66,6 @@ class SkBitmap;
 
 namespace base {
 class SingleThreadTaskRunner;
-
-namespace trace_event {
-class BlameContext;
-}  // namespace trace_event
 }  // namespace base
 
 namespace gfx {
@@ -134,7 +130,6 @@ class WebThemeEngine;
 class WebURLLoaderFactory;
 class WebVideoCaptureImplManager;
 struct WebContentSecurityPolicyHeader;
-using BlameContext = base::trace_event::BlameContext;
 
 namespace scheduler {
 class WebThreadScheduler;

@@ -936,9 +936,6 @@ void TaskQueueImpl::NotifyWillProcessTask(const Task& task,
                                           bool was_blocked_or_low_priority) {
   DCHECK(should_notify_observers_);
 
-  if (main_thread_only().blame_context)
-    main_thread_only().blame_context->Enter();
-
   for (auto& observer : main_thread_only().task_observers)
     observer.WillProcessTask(task, was_blocked_or_low_priority);
 }
@@ -947,12 +944,6 @@ void TaskQueueImpl::NotifyDidProcessTask(const Task& task) {
   DCHECK(should_notify_observers_);
   for (auto& observer : main_thread_only().task_observers)
     observer.DidProcessTask(task);
-  if (main_thread_only().blame_context)
-    main_thread_only().blame_context->Leave();
-}
-
-void TaskQueueImpl::SetBlameContext(trace_event::BlameContext* blame_context) {
-  main_thread_only().blame_context = blame_context;
 }
 
 void TaskQueueImpl::InsertFence(TaskQueue::InsertFencePosition position) {

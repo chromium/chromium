@@ -135,27 +135,6 @@ class BASE_EXPORT TracedValueJSON : public TracedValue {
   std::string ToFormattedJSON() const { return ""; }
 };
 
-class BASE_EXPORT BlameContext {
- public:
-  BlameContext(const char* category,
-               const char* name,
-               const char* type,
-               const char* scope,
-               int64_t id,
-               const BlameContext* parent_context) {}
-
-  void Initialize() {}
-  void Enter() {}
-  void Leave() {}
-  void TakeSnapshot() {}
-
-  const char* category() const { return nullptr; }
-  const char* name() const { return nullptr; }
-  const char* type() const { return nullptr; }
-  const char* scope() const { return nullptr; }
-  int64_t id() const { return 0; }
-};
-
 struct MemoryDumpArgs;
 class ProcessMemoryDump;
 

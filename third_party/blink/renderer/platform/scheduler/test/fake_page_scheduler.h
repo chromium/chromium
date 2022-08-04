@@ -62,7 +62,6 @@ class FakePageScheduler : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
-      BlameContext* blame_context,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType frame_type) override {
     return nullptr;

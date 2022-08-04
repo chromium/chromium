@@ -180,7 +180,6 @@ void TaskQueue::ShutdownTaskQueue() {
     TakeTaskQueueImpl().reset();
     return;
   }
-  impl_->SetBlameContext(nullptr);
   sequence_manager_->UnregisterTaskQueueImpl(TakeTaskQueueImpl());
 }
 
@@ -270,13 +269,6 @@ void TaskQueue::RemoveTaskObserver(TaskObserver* task_observer) {
   if (!impl_)
     return;
   impl_->RemoveTaskObserver(task_observer);
-}
-
-void TaskQueue::SetBlameContext(trace_event::BlameContext* blame_context) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!impl_)
-    return;
-  impl_->SetBlameContext(blame_context);
 }
 
 void TaskQueue::InsertFence(InsertFencePosition position) {

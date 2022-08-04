@@ -38,9 +38,6 @@ namespace base {
 namespace sequence_manager {
 class TaskQueue;
 }  // namespace sequence_manager
-namespace trace_event {
-class BlameContext;
-}  // namespace trace_event
 }  // namespace base
 
 namespace ukm {
@@ -76,7 +73,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
  public:
   FrameSchedulerImpl(PageSchedulerImpl* page_scheduler,
                      FrameScheduler::Delegate* delegate,
-                     base::trace_event::BlameContext* blame_context,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
@@ -208,7 +204,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
                      PageSchedulerImpl* parent_page_scheduler,
                      FrameScheduler::Delegate* delegate,
-                     base::trace_event::BlameContext* blame_context,
                      bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
 
@@ -334,7 +329,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
   PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
   FrameScheduler::Delegate* delegate_;                    // NOT OWNED
-  base::trace_event::BlameContext* blame_context_;        // NOT OWNED
   SchedulingLifecycleState throttling_state_;
   TraceableState<bool, TracingCategory::kInfo> frame_visible_;
   TraceableState<bool, TracingCategory::kInfo> frame_paused_;

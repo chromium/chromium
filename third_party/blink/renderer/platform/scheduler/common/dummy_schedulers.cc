@@ -156,7 +156,6 @@ class DummyPageScheduler : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
-      BlameContext*,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
     return CreateDummyFrameScheduler();

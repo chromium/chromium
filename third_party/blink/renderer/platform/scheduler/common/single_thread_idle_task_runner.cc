@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/blame_context.h"
 #include "base/trace_event/trace_event.h"
 
 namespace blink {
@@ -18,8 +17,7 @@ SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     Delegate* delegate)
     : idle_priority_task_runner_(std::move(idle_priority_task_runner)),
       control_task_runner_(std::move(control_task_runner)),
-      delegate_(delegate),
-      blame_context_(nullptr) {
+      delegate_(delegate) {
   weak_scheduler_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -99,17 +97,8 @@ void SingleThreadIdleTaskRunner::RunTask(IdleTask idle_task) {
   TRACE_EVENT1("renderer.scheduler", "SingleThreadIdleTaskRunner::RunTask",
                "allotted_time_ms",
                (deadline - base::TimeTicks::Now()).InMillisecondsF());
-  if (blame_context_)
-    blame_context_->Enter();
   std::move(idle_task).Run(deadline);
-  if (blame_context_)
-    blame_context_->Leave();
   delegate_->DidProcessIdleTask();
-}
-
-void SingleThreadIdleTaskRunner::SetBlameContext(
-    base::trace_event::BlameContext* blame_context) {
-  blame_context_ = blame_context;
 }
 
 }  // namespace scheduler

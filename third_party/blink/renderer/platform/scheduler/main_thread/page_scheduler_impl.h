@@ -27,12 +27,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-namespace base {
-namespace trace_event {
-class BlameContext;
-}  // namespace trace_event
-}  // namespace base
-
 namespace blink {
 namespace scheduler {
 namespace page_scheduler_impl_unittest {
@@ -81,7 +75,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
-      BlameContext*,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override;
   void AudioStateChanged(bool is_audio_playing) override;

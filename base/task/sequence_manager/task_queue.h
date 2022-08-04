@@ -28,10 +28,6 @@ namespace base {
 
 class TaskObserver;
 
-namespace trace_event {
-class BlameContext;
-}
-
 namespace sequence_manager {
 
 namespace internal {
@@ -301,11 +297,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // manager executes its tasks on.
   void AddTaskObserver(TaskObserver* task_observer);
   void RemoveTaskObserver(TaskObserver* task_observer);
-
-  // Set the blame context which is entered and left while executing tasks from
-  // this task queue. |blame_context| must be null or outlive this task queue.
-  // Must be called on the thread this TaskQueue was created by.
-  void SetBlameContext(trace_event::BlameContext* blame_context);
 
   enum class InsertFencePosition {
     kNow,  // Tasks posted on the queue up till this point further may run.
