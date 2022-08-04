@@ -613,6 +613,16 @@ int32_t ToAXHighlightType(const AtomicString& highlight_type) {
   return static_cast<int32_t>(result);
 }
 
+const AXObject* FindAncestorWithAriaHidden(const AXObject* start) {
+  for (const AXObject* object = start; object;
+       object = object->ParentObject()) {
+    if (object->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden))
+      return object;
+  }
+
+  return nullptr;
+}
+
 // static
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 
@@ -1221,6 +1231,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   bool is_visible = IsVisible();
   if (!is_visible)
     node_data->AddState(ax::mojom::blink::State::kInvisible);
+  SANITIZER_CHECK_EQ(cached_is_aria_hidden_, !!FindAncestorWithAriaHidden(this))
+      << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
+      << ToString(true);
 
   if (is_visible || is_focusable) {
     // If the author applied the ARIA "textbox" role on something that is not
@@ -2929,14 +2942,7 @@ bool AXObject::IsVisible() const {
 }
 
 const AXObject* AXObject::AriaHiddenRoot() const {
-  if (!IsAriaHidden())
-    return nullptr;
-  for (const AXObject* object = this; object; object = object->ParentObject()) {
-    if (object->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden))
-      return object;
-  }
-
-  return nullptr;
+  return IsAriaHidden() ? FindAncestorWithAriaHidden(this) : nullptr;
 }
 
 const AXObject* AXObject::InertRoot() const {
