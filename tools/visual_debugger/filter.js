@@ -21,16 +21,79 @@ class Source {
   get anno() { return this.anno_; }
 };
 
+// Represents a thread making a debug call to
+// the visual debugger.
+//
+class Thread {
+  // Keeps track of all threads that debug calls came in from
+  // while the app is running.
+  static registered_threads = {};
+
+  constructor(json) {
+    this.threadName_ = json.thread_name;
+    // Calls from each thread is enabled by default.
+    this.enabled_ = true;
+
+    // Add new thread to a pool of thread objects.
+    Thread.registered_threads[this.threadName_] = this;
+
+    // Create thread filter chip.
+    this.createThreadFilterChip()
+  }
+
+  static isThreadRegistered(threadName) {
+    // If thread already registered, return true.
+    return (threadName in Thread.registered_threads);
+  }
+
+  createThreadFilterChip() {
+    const threadFilters = document.querySelector('#threads');
+    const threadChip = document.createElement('div');
+
+    threadChip.style = 'display:inline-block; margin-right: 10px';
+
+    // Create checkbox for each thread chip.
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = this.threadName_;
+    checkbox.name = this.threadName_;
+    // Check off checkbox by default as calls from each thread
+    // are enabled by default.
+    checkbox.checked = true;
+
+    checkbox.addEventListener('click', () => {
+      Thread.registered_threads[this.threadName_].toggleEnableThread();
+      Player.instance.refresh();
+    });
+
+    // Add label to checkbox with the name of the thread.
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.for = this.threadName_;
+    checkboxLabel.innerHTML = this.threadName_;
+
+    threadChip.appendChild(checkbox);
+    threadChip.appendChild(checkboxLabel);
+    // Add to DOM list of thread checkbox filters.
+    threadFilters.appendChild(threadChip);
+  }
+
+  toggleEnableThread() {
+    this.enabled_ = !this.enabled_;
+  }
+}
+
 // Represents a draw call.
 // This is currently only used for drawing rect. But this (or something like
 // this) could potentially be also used for drawing logs etc.
 //
 class DrawCall {
   constructor(json) {
-    // e.g. {"drawindex":"44","option":{"alpha":"1.000000","color":"#ffffff"}
-    // ,"pos":"0.000000,763.000000","size":"255x5","source_index":"0"}
+    // e.g. {"drawindex":"44", option":{"alpha":"1.000000","color":"#ffffff"}
+    // ,"pos":"0.000000,763.000000","size":"255x5","source_index":"0",
+    // "thread_id":"123456"}
     this.sourceIndex_ = parseInt(json.source_index);
     this.drawIndex_ = parseInt(json.drawindex);
+    this.threadId_ = parseInt(json.thread_id);
     this.size_ = {
       width: json.size[0],
       height: json.size[1],

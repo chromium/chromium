@@ -39,7 +39,8 @@ class CircularBuffer {
 // Represents a single frame, and contains all associated data.
 //
 class DrawFrame {
-  static maxBufferNumFrames = 10000;
+  // Circular buffer supports 2^14 frames.
+  static maxBufferNumFrames = 16384;
   static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
   static buffer_map = new Object();
   static count() { return DrawFrame.frameBuffer.instances.length; }
@@ -58,6 +59,19 @@ class DrawFrame {
     this.drawTexts_ = json.text;
     this.drawCalls_ = json.drawcalls.map(c => new DrawCall(c));
     this.buffer_map = json.buff_map;
+
+    this.thread_mapping_ = {}
+
+    json.threads.forEach(t => {
+      // If new thread has not been registered yet, then register it.
+      if (!(Thread.isThreadRegistered(t.thread_name))) {
+        new Thread(t);
+      };
+      // Map thread id's to thread name and enabled state.
+      this.thread_mapping_[t.thread_id] = {threadName: t.thread_name,
+                                           threadEnabled: true}
+    });
+
     this.submissionFreezeIndex_ = -1;
     if (json.new_sources) {
       for (const s of json.new_sources) {
@@ -156,11 +170,24 @@ class DrawFrame {
   }
 
   draw(canvas, context, scale, orientationDeg, transformMatrix) {
+    // Look at global state of which threads have been enabled/disabled and
+    // map the states to the current frame's threads.
+    for (const threadId of Object.keys(this.thread_mapping_)) {
+      const mappedThread = this.thread_mapping_[threadId];
+      mappedThread.threadEnabled =
+              Thread.registered_threads[mappedThread.threadName].enabled_;
+    }
+
     for (const call of this.drawCalls_) {
-      if (call.drawIndex_ > this.submissionFreezeIndex())
-        break;
+      if (call.drawIndex_ > this.submissionFreezeIndex()) break;
+
+      // If thread not enabled, then skip draw call from this thread.
+      if (!this.thread_mapping_[call.threadId_].threadEnabled) {
+        continue;
+      }
+
       call.draw(canvas, context, scale, orientationDeg,
-                transformMatrix, DrawFrame.buffer_map);
+        transformMatrix, DrawFrame.buffer_map);
     }
 
     context.fillStyle = 'black';
@@ -174,6 +201,11 @@ class DrawFrame {
     context.fillText(this.num_, newFrameNumPos[0], newFrameNumPos[1]);
 
     for (const text of this.drawTexts_) {
+      // If thread not enabled, then skip text calls from this thread.
+      if (!this.thread_mapping_[text.thread_id].threadEnabled) {
+        continue;
+      }
+
       const textPosX = text.pos[0];
       const textPosY = text.pos[1];
 

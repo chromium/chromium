@@ -16,6 +16,8 @@ config("viz_service_implementation") {
 
 viz_component("service") {
   sources = [
+    "debugger/rwlock.cc",
+    "debugger/rwlock.h",
     "debugger/viz_debugger.cc",
     "debugger/viz_debugger.h",
     "display/aggregated_frame.cc",
@@ -448,7 +450,13 @@ viz_component("service") {
 viz_source_set("unit_tests") {
   testonly = true
   sources = [
-    "debugger/viz_debugger_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_internal.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_internal.h",
+    "debugger/viz_debugger_unittests/viz_debugger_multithread_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_rwlock_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest_base.cc",
+    "debugger/viz_debugger_unittests/viz_debugger_unittest_base.h",
     "display/bsp_tree_unittest.cc",
     "display/copy_output_scaling_pixeltest.cc",
     "display/delegated_ink_point_pixel_test_helper.cc",
