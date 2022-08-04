@@ -224,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MAYBE_MultipleWheelScroll) {
   RunMultipleWheelScroll();
 }
 
-// Disabled due to flakiness https://crbug.com/1163246.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// Disabled due to flakiness https://crbug.com/1163246 and https://crbug.com/1349901
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleWheelScrollOnMain DISABLED_MultipleWheelScrollOnMain
 #else
 #define MAYBE_MultipleWheelScrollOnMain MultipleWheelScrollOnMain
