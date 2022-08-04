@@ -12,12 +12,17 @@ namespace fusebox {
 // static
 MonikerMap::ExtractTokenResult MonikerMap::ExtractToken(
     const std::string& fs_url_as_string) {
-  if (!base::StartsWith(fs_url_as_string, fusebox::kMonikerFileSystemURL)) {
+  size_t n = 0;
+  if (base::StartsWith(fs_url_as_string, fusebox::kMonikerSubdir)) {
+    n = strlen(fusebox::kMonikerSubdir);
+  } else if (base::StartsWith(fs_url_as_string,
+                              fusebox::kMonikerFileSystemURL)) {
+    n = strlen(fusebox::kMonikerFileSystemURL);
+  } else {
     ExtractTokenResult result;
     result.result_type = ExtractTokenResult::ResultType::NOT_A_MONIKER_FS_URL;
     return result;
   }
-  const size_t n = strlen(fusebox::kMonikerFileSystemURL);
   if (fs_url_as_string.size() <= n) {
     ExtractTokenResult result;
     result.result_type =
