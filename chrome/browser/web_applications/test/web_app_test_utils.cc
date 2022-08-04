@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -594,6 +595,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
 
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
+
+  if (random.next_bool()) {
+    proto::WebAppOsIntegrationState state;
+    app->SetCurrentOsIntegrationStates(state);
+  }
 
   return app;
 }
