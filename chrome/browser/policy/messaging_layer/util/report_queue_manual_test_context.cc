@@ -67,7 +67,7 @@ void ReportQueueManualTestContext::BuildReportQueue() {
   CheckOnValidSequence();
   ReportQueueConfiguration::PolicyCheckCallback policy_check_cb =
       base::BindRepeating([]() -> Status { return Status::StatusOK(); });
-  auto config_result = reporting::ReportQueueConfiguration::Create(
+  auto config_result = ReportQueueConfiguration::Create(
       // using an empty DM token cause device DM tokens are appended by default
       // during event uploads
       /*dm_token=*/"", destination_, std::move(policy_check_cb));
@@ -85,9 +85,8 @@ void ReportQueueManualTestContext::BuildReportQueue() {
     return;
   }
 
-  auto report_queue_result =
-      reporting::ReportQueueProvider::CreateSpeculativeQueue(
-          std::move(config_result.ValueOrDie()));
+  auto report_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
+      std::move(config_result.ValueOrDie()));
   Schedule(&ReportQueueManualTestContext::OnReportQueueResponse,
            base::Unretained(this), std::move(report_queue_result));
 }

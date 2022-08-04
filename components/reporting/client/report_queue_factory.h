@@ -51,7 +51,7 @@ class ReportQueueFactory {
  private:
   static void TrySetReportQueue(
       SuccessCallback success_cb,
-      StatusOr<std::unique_ptr<reporting::ReportQueue>> report_queue_result);
+      StatusOr<std::unique_ptr<ReportQueue>> report_queue_result);
 
   static TrySetReportQueueCallback CreateTrySetCallback(
       Destination destination,

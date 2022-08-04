@@ -50,10 +50,9 @@ class HealthModuleFilesTest : public ::testing::Test {
       for (int k = 0; k < kIntialRecordsPerFile; k++) {
         auto call = AddEnqueueRecordCall();
         *initial_health_data_.add_history() = call;
-        ASSERT_TRUE(
-            ::reporting::AppendLine(directory_.GetPath().AppendASCII(file_name),
-                                    BytesToHexString(call.SerializeAsString()))
-                .ok());
+        ASSERT_TRUE(AppendLine(directory_.GetPath().AppendASCII(file_name),
+                               BytesToHexString(call.SerializeAsString()))
+                        .ok());
       }
     }
   }

@@ -127,7 +127,8 @@ EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
           [](base::WeakPtr<MissiveClient> missive_client,
              ::reporting::SignedEncryptionInfo signed_encryption_info) {
             if (missive_client) {
-              missive_client->UpdateEncryptionKey(signed_encryption_info);
+              missive_client->UpdateEncryptionKey(
+                  std::move(signed_encryption_info));
             }
           },
           missive_client->GetWeakPtr()));

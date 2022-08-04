@@ -132,7 +132,7 @@ Status HealthModuleFiles::Write(base::StringPiece data) {
 
   // +1 for newline char.
   storage_used_ += data.size() + 1;
-  return ::reporting::AppendLine(files_.rbegin()->second, data);
+  return AppendLine(files_.rbegin()->second, data);
 }
 
 Status HealthModuleFiles::FreeStorage(uint32_t storage) {
@@ -151,7 +151,7 @@ Status HealthModuleFiles::FreeStorage(uint32_t storage) {
       storage_removed += file_size;
     } else {
       ASSIGN_OR_RETURN(uint32_t remove_result,
-                       ::reporting::RemoveAndTruncateLine(
+                       RemoveAndTruncateLine(
                            file_path, storage_to_remove - storage_removed - 1));
       storage_removed += remove_result;
     }

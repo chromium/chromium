@@ -77,11 +77,8 @@ class TestEncryptedReportingServiceProvider
             report_successful_upload_cb,
             encrypted_key_cb,
             /*upload_client_builder_cb=*/
-            base::BindRepeating([](::reporting::UploadClient::CreatedCallback
-                                       update_upload_client_cb) {
-              ::reporting::FakeUploadClient::Create(
-                  std::move(update_upload_client_cb));
-            }))) {}
+            base::BindRepeating(&::reporting::FakeUploadClient::Create))) {}
+
   TestEncryptedReportingServiceProvider(
       const TestEncryptedReportingServiceProvider& other) = delete;
   TestEncryptedReportingServiceProvider& operator=(

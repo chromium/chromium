@@ -62,23 +62,13 @@ class TestEncryptedReportingUploadProvider
             report_successful_upload_cb,
             encryption_key_attached_cb,
             /*upload_client_builder_cb=*/
-            base::BindRepeating([](reporting::UploadClient::CreatedCallback
-                                       update_upload_client_cb) {
-              reporting::FakeUploadClient::Create(
-                  std::move(update_upload_client_cb));
-            })) {}
+            base::BindRepeating(&FakeUploadClient::Create)) {}
 };
 
 class EncryptedReportingUploadProviderTest : public ::testing::Test {
  public:
-  MOCK_METHOD(void,
-              ReportSuccessfulUpload,
-              (reporting::SequenceInformation, bool),
-              ());
-  MOCK_METHOD(void,
-              EncryptionKeyCallback,
-              (reporting::SignedEncryptionInfo),
-              ());
+  MOCK_METHOD(void, ReportSuccessfulUpload, (SequenceInformation, bool), ());
+  MOCK_METHOD(void, EncryptionKeyCallback, (SignedEncryptionInfo), ());
 
  protected:
   void SetUp() override {
@@ -99,7 +89,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
     auto* sequence_information = record_.mutable_sequence_information();
     sequence_information->set_sequencing_id(42);
     sequence_information->set_generation_id(1701);
-    sequence_information->set_priority(reporting::Priority::SLOW_BATCH);
+    sequence_information->set_priority(Priority::SLOW_BATCH);
   }
 
   void TearDown() override {
@@ -122,7 +112,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   ReportingServerConnector::TestEnvironment test_env_{&cloud_policy_client_};
-  reporting::EncryptedRecord record_;
+  EncryptedRecord record_;
 
   scoped_refptr<ResourceInterface> memory_resource_;
 

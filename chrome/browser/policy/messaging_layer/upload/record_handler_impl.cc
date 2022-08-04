@@ -194,7 +194,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
              ReportingServerConnector::ResponseCallback response_cb) {
             ReportingServerConnector::UploadEncryptedReport(
                 std::move(request),
-                reporting::GetContext(ProfileManager::GetPrimaryUserProfile()),
+                GetContext(ProfileManager::GetPrimaryUserProfile()),
                 std::move(response_cb));
           },
           std::move(request_result.value()), std::move(response_cb)));

@@ -31,8 +31,7 @@ void DisconnectableClient::MaybeMakeCall(std::unique_ptr<Delegate> delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Bail out, if missive daemon is not available over dBus.
   if (!is_available_) {
-    delegate->Respond(
-        Status(reporting::error::UNAVAILABLE, "Service is unavailable"));
+    delegate->Respond(Status(error::UNAVAILABLE, "Service is unavailable"));
     return;
   }
   // Add the delegate to the map.
@@ -69,8 +68,7 @@ void DisconnectableClient::SetAvailability(bool is_available) {
       const auto delegate = std::move(outstanding_delegates_.begin()->second);
       outstanding_delegates_.erase(outstanding_delegates_.begin());
       // Respond through the |delegate|.
-      delegate->Respond(
-          Status(reporting::error::UNAVAILABLE, "Service is unavailable"));
+      delegate->Respond(Status(error::UNAVAILABLE, "Service is unavailable"));
     }
   }
 }

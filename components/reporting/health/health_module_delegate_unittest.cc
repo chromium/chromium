@@ -61,10 +61,9 @@ TEST_F(HealthModuleDelegateTest, TestInit) {
   const std::string file_name = base::StrCat({kBaseFileOne, "0"});
   auto call = AddEnqueueRecordCall();
   *ref_data.add_history() = call;
-  ASSERT_TRUE(
-      ::reporting::AppendLine(temp_dir_.GetPath().AppendASCII(file_name),
-                              BytesToHexString(call.SerializeAsString()))
-          .ok());
+  ASSERT_TRUE(AppendLine(temp_dir_.GetPath().AppendASCII(file_name),
+                         BytesToHexString(call.SerializeAsString()))
+                  .ok());
 
   HealthModuleDelegate delegate(temp_dir_.GetPath(), kBaseFileOne, kMaxStorage);
   ASSERT_FALSE(delegate.IsInitialized());

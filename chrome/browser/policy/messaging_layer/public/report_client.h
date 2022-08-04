@@ -84,7 +84,7 @@ class ReportingClient : public ReportQueueProvider {
   // retrieval for downstream processing, and triggers the corresponding
   // completion callback with the updated config.
   void ConfigureReportQueue(
-      std::unique_ptr<reporting::ReportQueueConfiguration> report_queue_config,
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
       ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
       override;
 
