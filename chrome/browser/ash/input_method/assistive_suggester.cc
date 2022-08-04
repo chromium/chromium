@@ -370,7 +370,15 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
     SuggestionStatus status = current_suggester_->HandleKeyEvent(event);
     switch (status) {
       case SuggestionStatus::kAccept:
-        RecordAssistiveSuccess(current_suggester_->GetProposeActionType());
+        // Handle a race condition where the current suggester_ is set to
+        // nullptr by a simultaneous event (such as a key event causing a
+        // onBlur() event).
+        // TODO(b/240534923): Figure out how to record metrics when
+        // current_suggester_ is set to nullptr prematurely by a different
+        // event.
+        if (current_suggester_) {
+          RecordAssistiveSuccess(current_suggester_->GetProposeActionType());
+        }
         current_suggester_ = nullptr;
         return true;
       case SuggestionStatus::kDismiss:
