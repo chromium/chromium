@@ -22,11 +22,7 @@ import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppFactoryInterface;
-import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentRequestService;
@@ -124,23 +120,6 @@ public class ChromePaymentRequestService
         @Nullable
         default Activity getActivity(WebContents webContents) {
             return ChromeActivity.fromWebContents(webContents);
-        }
-
-        /**
-         * Creates an instance of Autofill payment app factory.
-         * @return The instance, can be null for testing.
-         */
-        @Nullable
-        default PaymentAppFactoryInterface createAutofillPaymentAppFactory() {
-            return new AutofillPaymentAppFactory();
-        }
-
-        /**
-         * Whether an autofill transaction is allowed to be made.
-         * @return The instance, can be null for testing.
-         */
-        default boolean canMakeAutofillPayment(Map<String, PaymentMethodData> methodData) {
-            return AutofillPaymentAppFactory.canMakePayments(methodData);
         }
 
         /**
@@ -263,24 +242,6 @@ public class ChromePaymentRequestService
             return true;
         }
         return false;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void addPaymentAppFactories(
-            PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
-            String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
-            if (!service.containsFactory(autofillFactoryId)) {
-                service.addUniqueFactory(
-                        mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
-            }
-            if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
-                mPaymentUiService.setAutofillPaymentAppCreator(
-                        AutofillPaymentAppFactory.createAppCreator(
-                                /*delegate=*/delegate));
-            }
-        }
     }
 
     // Implements BrowserPaymentRequest:

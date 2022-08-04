@@ -583,7 +583,6 @@ public class PaymentRequestService
 
     private void startPaymentAppService() {
         PaymentAppService service = mDelegate.getPaymentAppService();
-        mBrowserPaymentRequest.addPaymentAppFactories(service, /*delegate=*/this);
 
         String paymentAppServiceBridgeId = PaymentAppServiceBridge.class.getName();
         if (!service.containsFactory(paymentAppServiceBridgeId)) {

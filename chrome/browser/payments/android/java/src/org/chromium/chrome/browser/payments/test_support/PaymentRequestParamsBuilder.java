@@ -240,16 +240,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public PaymentAppFactoryInterface createAutofillPaymentAppFactory() {
-        return null;
-    }
-
-    @Override
-    public boolean canMakeAutofillPayment(Map<String, PaymentMethodData> methodData) {
-        return false;
-    }
-
-    @Override
     public boolean isWebContentsActive(RenderFrameHost renderFrameHost) {
         return true;
     }

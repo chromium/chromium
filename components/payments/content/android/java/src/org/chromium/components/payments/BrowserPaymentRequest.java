@@ -88,13 +88,6 @@ public interface BrowserPaymentRequest {
     void onSpecValidated(PaymentRequestSpec spec);
 
     /**
-     * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
-     * @param service The PaymentAppService to be added with the factories.
-     * @param delegate The delegate of payment app factory.
-     */
-    void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
-
-    /**
      * @return Whether at least one payment app (including basic-card payment app) is available
      *         (excluding the pending apps).
      */

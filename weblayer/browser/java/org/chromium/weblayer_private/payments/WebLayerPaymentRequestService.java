@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
@@ -103,13 +101,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void addPaymentAppFactories(
-            PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        // There's no WebLayer specific factories.
     }
 
     // Implements BrowserPaymentRequest:
