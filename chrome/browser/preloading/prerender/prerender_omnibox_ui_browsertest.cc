@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
-      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 1, 0);
+      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 16, 0);
 
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
 
