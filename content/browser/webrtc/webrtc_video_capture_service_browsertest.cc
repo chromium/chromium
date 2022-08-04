@@ -543,7 +543,8 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(https://crbug.com/1318247): Fix and enable on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 #else
