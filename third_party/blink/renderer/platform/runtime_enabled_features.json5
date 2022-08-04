@@ -1828,6 +1828,12 @@
       name: "PrefersReducedData",
       status: "experimental",
     },
+    // TODO(crbug/695586): This flag is being used to deprecate support for
+    // legacy quota API window.webkitStorageInfo.
+    {
+      name: "PrefixedStorageInfo",
+      status: "stable",
+    },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
     {
