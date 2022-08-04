@@ -119,11 +119,12 @@ public class PictureInPictureActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testStartActivity() throws Throwable {
-        startPictureInPictureActivity();
+        PictureInPictureActivity activity = startPictureInPictureActivity();
 
         // The LaunchIntoPipHelper should have been called.
         Assert.assertTrue(mBounds != null);
         Criteria.checkThat(mBounds, Matchers.is(mSourceRectHint));
+        testExitOn(activity, () -> activity.close());
     }
 
     @Test
@@ -148,9 +149,10 @@ public class PictureInPictureActivityTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMakeEnterPictureInPictureWithBadSourceRect() throws Throwable {
         mSourceRectHint.left = -1;
-        startPictureInPictureActivity();
+        PictureInPictureActivity activity = startPictureInPictureActivity();
         // The pip helper should not be called with trivially bad bounds.
         Assert.assertTrue(mBounds == null);
+        testExitOn(activity, () -> activity.close());
     }
 
     @Test
@@ -185,6 +187,7 @@ public class PictureInPictureActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> view.layout(0, 0, unreasonableSize, unreasonableSize));
         verify(mNativeMock, times(0)).onViewSizeChanged(anyInt(), anyInt(), anyInt());
+        testExitOn(activity, () -> activity.close());
     }
 
     @Test
