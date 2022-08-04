@@ -36,6 +36,8 @@ void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
 void WaitForConsolidatedConsentScreen();
 void TapConsolidatedConsentAccept();
+void WaitForGuestTosScreen();
+void TapGuestTosAccept();
 
 void ClickSignInFatalScreenActionButton();
 

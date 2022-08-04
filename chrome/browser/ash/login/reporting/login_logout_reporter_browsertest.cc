@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -232,6 +233,9 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, PRE_GuestLogin) {
 
   ASSERT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
+
+  test::WaitForGuestTosScreen();
+  test::TapGuestTosAccept();
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());

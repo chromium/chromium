@@ -54,13 +54,12 @@ std::string CreateFreshTrial(base::FeatureList* feature_list) {
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      enabled_percent = 50;
-      disabled_percent = 50;
+      enabled_percent = 100;
+      disabled_percent = 0;
       break;
     case version_info::Channel::STABLE:
-      // Disabled on stable until green signals seen in experiment.
-      enabled_percent = 0;
-      disabled_percent = 100;
+      enabled_percent = 100;
+      disabled_percent = 0;
       break;
   }
   DCHECK_EQ(kTotalProbability, enabled_percent + disabled_percent);
@@ -87,9 +86,10 @@ void CreateSubsequentRunTrial(base::FeatureList* feature_list,
 
 }  // namespace
 
-// Experiment is enabled on all channels except STABLE.
+// Field trial override should not be used since feature is now enabled by
+// default.
 bool ShouldEnableTrial(version_info::Channel channel) {
-  return channel != version_info::Channel::STABLE;
+  return false;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

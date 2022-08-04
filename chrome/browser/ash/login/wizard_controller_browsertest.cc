@@ -2548,6 +2548,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
     // If OobeConsolidatedConsent is enabled, the flow will be updated to:
     // Network -> Update -> Consolidated Consent -> Auto Enrollment.
+    EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     mock_demo_preferences_screen_->ExitScreen(
         DemoPreferencesScreen::Result::COMPLETED_CONSOLIDATED_CONSENT);
 
@@ -2820,12 +2821,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
 
   mock_consolidated_consent_screen_->ExitScreen(
       ConsolidatedConsentScreen::Result::BACK_DEMO);
 
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 

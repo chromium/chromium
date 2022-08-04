@@ -10,6 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
+// TODO(crbug/1349811): Delete this file once feature is fully launched.
 namespace ash::consolidated_consent_field_trial {
 
 // String local state preference with the name of the assigned trial group.

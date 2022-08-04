@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
@@ -200,6 +201,14 @@ void TapConsolidatedConsentAccept() {
   if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
     return;
   OobeJS().TapOnPath({"consolidated-consent", "acceptButton"});
+}
+
+void WaitForGuestTosScreen() {
+  WaitFor(GuestTosScreenView::kScreenId);
+}
+
+void TapGuestTosAccept() {
+  OobeJS().TapOnPath({"guest-tos", "acceptButton"});
 }
 
 void ClickSignInFatalScreenActionButton() {

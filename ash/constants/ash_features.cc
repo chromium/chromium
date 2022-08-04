@@ -1126,7 +1126,7 @@ const base::Feature kOnDeviceSpeechRecognition{
 // If enabled, EULA and ARC Terms of Service screens are skipped and merged
 // into Consolidated Consent Screen.
 const base::Feature kOobeConsolidatedConsent{"OobeConsolidatedConsent",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
 // the OOBE HID detection screen UI and related infrastructure. See
@@ -1675,7 +1675,7 @@ const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 const base::Feature kPerUserMetrics{"PerUserMetricsConsent",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allows Files App to find and execute tasks using App Service for Arc and
 // Guest OS apps.
