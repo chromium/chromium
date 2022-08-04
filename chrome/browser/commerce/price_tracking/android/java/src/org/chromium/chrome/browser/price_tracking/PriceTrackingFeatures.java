@@ -26,6 +26,7 @@ public class PriceTrackingFeatures {
             "allow_disable_price_annotations";
     @VisibleForTesting
     public static final String PRICE_DROP_IPH_ENABLED_PARAM = "enable_price_drop_iph";
+    private static final String PRICE_DROP_BADGE_ENABLED_PARAM = "enable_price_drop_badge";
     private static final String PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM =
             "price_annotations_enabled_metrics_window_duration_ms";
 
@@ -128,6 +129,16 @@ public class PriceTrackingFeatures {
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_DROP_IPH_ENABLED_PARAM,
                             false);
+        }
+        return isPriceTrackingEligible();
+    }
+
+    public static boolean isPriceDropBadgeEnabled() {
+        if (FeatureList.isInitialized()) {
+            return isPriceTrackingEligible()
+                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                            PRICE_DROP_BADGE_ENABLED_PARAM, false);
         }
         return isPriceTrackingEligible();
     }
