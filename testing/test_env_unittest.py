@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -19,8 +19,6 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEST_SCRIPT = os.path.join(HERE, 'test_env_user_script.py')
-
-# pylint: disable=super-with-arguments
 
 
 def launch_process_windows(args):
@@ -53,7 +51,7 @@ def read_subprocess_message(proc, starts_with):
 # pylint: enable=inconsistent-return-statements
 
 
-def send_and_wait(proc, sig, sleep_time=0.3):
+def send_and_wait(proc, sig, sleep_time=0.6):
   """Sends a signal to subprocess."""
   time.sleep(sleep_time)  # gives process time to launch.
   os.kill(proc.pid, sig)
@@ -63,7 +61,7 @@ def send_and_wait(proc, sig, sleep_time=0.3):
 class SignalingWindowsTest(unittest.TestCase):
 
   def setUp(self):
-    super(SignalingWindowsTest, self).setUp()
+    super().setUp()
     if sys.platform != 'win32':
       self.skipTest('test only runs on Windows')
 
@@ -71,13 +69,17 @@ class SignalingWindowsTest(unittest.TestCase):
     proc = launch_process_windows([])
     send_and_wait(proc, signal.CTRL_BREAK_EVENT) # pylint: disable=no-member
     sig = read_subprocess_message(proc, 'Signal :')
+    # This test is flaky because it relies on the child process starting quickly
+    # "enough", which it fails to do sometimes. This is tracked by
+    # https://crbug.com/1335123 and it is hoped that increasing the timeout will
+    # reduce the flakiness.
     self.assertEqual(sig, str(int(signal.SIGBREAK))) # pylint: disable=no-member
 
 
 class SignalingNonWindowsTest(unittest.TestCase):
 
   def setUp(self):
-    super(SignalingNonWindowsTest, self).setUp()
+    super().setUp()
     if sys.platform == 'win32':
       self.skipTest('test does not run on Windows')
 
