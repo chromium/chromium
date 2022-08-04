@@ -47,11 +47,10 @@
   }
 
   #helpContentIcon {
-    display: inline-block;
-    height: 20px;
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
     margin-inline-start: 6px;
-    width: 20px;
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
@@ -60,12 +59,13 @@
 <div id="helpContentContainer">
   <div id="helpContentLabelContainer">
     <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
-    <iron-icon icon="help-content:info" id="helpContentIcon">
+    <iron-icon icon="help-content:info" id="helpContentIcon"
+        hidden$="[[!hasSuggestedHelpContent_(searchResult, isOnline_)]]">
     </iron-icon>
   </div>
   <template is="dom-if" if="[[!isOnline_]]">
     <div class="help-content-offline-details">
-      <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]" 
+      <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
            alt="[[i18n('helpContentOfflineAltText')]]">
       <div class="help-content-offline-text">
         [[i18n('helpContentOfflineMessage')]]
@@ -77,9 +77,9 @@
       <template>
         <div class="help-item">
           <a href="[[getUrl_(item)]]" target="_blank">
-            <iron-icon 
-              icon="[[getIcon_(item.contentType)]]" 
-              class="help-item-icon"></iron-icon>
+            <iron-icon icon="[[getIcon_(item.contentType)]]"
+                class="help-item-icon">
+            </iron-icon>
             <span>[[getTitle_(item)]]</span>
           </a>
         </div>

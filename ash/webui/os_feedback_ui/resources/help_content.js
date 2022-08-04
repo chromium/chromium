@@ -93,21 +93,29 @@ export class HelpContentElement extends HelpContentElementBase {
 
   /**
    * Compute the label to use.
-   * @param {!SearchResult} searchResult
-   * @returns {string}
+   * @return {string}
    * @protected
    */
-  getLabel_(searchResult) {
+  getLabel_() {
     if (!this.isOnline_) {
       return this.i18n('popularHelpContent');
     }
-    if (!searchResult.isPopularContent) {
+    if (!this.searchResult.isPopularContent) {
       return this.i18n('suggestedHelpContent');
     }
-    if (searchResult.isQueryEmpty) {
+    if (this.searchResult.isQueryEmpty) {
       return this.i18n('popularHelpContent');
     }
     return this.i18n('noMatchedResults');
+  }
+
+  /**
+   * Returns true if there are suggested help content displayed.
+   * @return {boolean}
+   * @protected
+   */
+  hasSuggestedHelpContent_() {
+    return (this.isOnline_ && !this.searchResult.isPopularContent);
   }
 
   /**

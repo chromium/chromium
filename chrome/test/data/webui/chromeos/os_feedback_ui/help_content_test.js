@@ -118,9 +118,11 @@ export function helpContentTestSuite() {
     assertTrue(!!title);
     assertEquals('Top help content', title.textContent);
 
-    // Vierfy the description Icon is in the page.
-    const descriptionIcon = getElement('#helpContentIcon');
-    assertTrue(!!descriptionIcon);
+    // Verify the help content Icon is in the page.
+    const helpContentIcon = getElement('#helpContentIcon');
+    assertTrue(!!helpContentIcon);
+    // The help content icon is not visible.
+    assertFalse(isVisible(helpContentIcon));
 
     verifyPopularHelpContent();
   });
@@ -138,6 +140,9 @@ export function helpContentTestSuite() {
     const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals('Suggested help content', title.textContent);
+
+    // The help content icon is visible.
+    assertTrue(isVisible(getElement('#helpContentIcon')));
 
     // Verify the help content is populated with correct number of items.
     assertEquals(5, getElement('dom-repeat').items.length);
@@ -195,6 +200,9 @@ export function helpContentTestSuite() {
     assertTrue(!!title);
     assertEquals(
         'No suggested content. See top help content.', title.textContent);
+
+    // The help content icon is not visible.
+    assertFalse(isVisible(getElement('#helpContentIcon')));
 
     verifyPopularHelpContent();
   });
