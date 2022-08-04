@@ -527,6 +527,7 @@ crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gl
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/texstorage2d_format_cube_01.html [ RetryOnFailure ]
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ RetryOnFailure ]
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/textureformat/sized_color_cube_npot_01.html [ RetryOnFailure ]
+crbug.com/1350287 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
