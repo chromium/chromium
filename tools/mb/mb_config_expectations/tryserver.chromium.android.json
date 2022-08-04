@@ -779,6 +779,23 @@
       "use_goma": true
     }
   },
+  "android-pie-x86-fyi-rel-reviver": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 0,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
   "android-pie-x86-rel": {
     "gn_args": {
       "dcheck_always_on": true,
