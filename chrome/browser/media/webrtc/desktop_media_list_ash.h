@@ -33,15 +33,15 @@ class DesktopMediaListAsh : public DesktopMediaListBase {
 
  private:
   // Override from DesktopMediaListBase.
-  void Refresh(bool update_thumnails) override;
+  void Refresh(bool update_thumbnails) override;
   void EnumerateWindowsForRoot(
       std::vector<DesktopMediaListAsh::SourceDescription>* windows,
-      bool update_thumnails,
+      bool update_thumbnails,
       aura::Window* root_window,
       int container_id);
   void EnumerateSources(
       std::vector<DesktopMediaListAsh::SourceDescription>* windows,
-      bool update_thumnails);
+      bool update_thumbnails);
   void CaptureThumbnail(content::DesktopMediaID id, aura::Window* window);
   void OnThumbnailCaptured(content::DesktopMediaID id, gfx::Image image);
   void OnRefreshMaybeComplete();
