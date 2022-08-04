@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {calculateSplices} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {calculateSplices} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview |ListPropertyUpdateBehavior| is used to update an existing
@@ -12,7 +12,7 @@
  * re-rendered from scratch.
  *
  * The minimal splices needed to transform the original list to the edited list
- * are calculated using |Polymer.ArraySplice.calculateSplices|. All the edits
+ * are calculated using |calculateSplices|. All the edits
  * are then applied to the original list. Once completed, a single notification
  * containing information about all the edits is sent to the polyer object.
  *
@@ -21,7 +21,7 @@
  */
 
 /** @polymerBehavior */
-/* #export */ const ListPropertyUpdateBehavior = {
+export const ListPropertyUpdateBehavior = {
   /**
    * @param {string} propertyPath
    * @param {function(!Object): (!Object|string)} identityGetter
@@ -32,7 +32,7 @@
   updateList(
       propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {
     const list = this.get(propertyPath);
-    const splices = Polymer.ArraySplice.calculateSplices(
+    const splices = calculateSplices(
         updatedList.map(identityGetter), list.map(identityGetter));
 
     splices.forEach(splice => {
@@ -67,7 +67,7 @@
   },
 };
 
-/* #export */ class ListPropertyUpdateBehaviorInterface {
+export class ListPropertyUpdateBehaviorInterface {
   /**
    * @param {string} propertyPath
    * @param {function(!Object): (!Object|string)} identityGetter
@@ -78,5 +78,3 @@
   updateList(
       propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {}
 }
-
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

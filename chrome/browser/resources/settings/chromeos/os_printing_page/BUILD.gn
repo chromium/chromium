@@ -145,7 +145,7 @@ js_library("cups_saved_printers") {
   deps = [
     ":cups_printer_types",
     ":cups_printers_browser_proxy",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
+    "//ui/webui/resources/js:list_property_update_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 

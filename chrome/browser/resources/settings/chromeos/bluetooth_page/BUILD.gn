@@ -63,7 +63,7 @@ js_library("bluetooth_subpage") {
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
+    "//ui/webui/resources/js:list_property_update_behavior",
   ]
   externs_list = [
     "$externs_path/bluetooth.js",

@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -23,6 +24,7 @@ var WebUIResourcesBrowserTest = class extends PolymerTest {
   }
 };
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var WebUIResourcesListPropertyUpdateBehaviorTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
@@ -34,6 +36,7 @@ var WebUIResourcesListPropertyUpdateBehaviorTest =
 TEST_F('WebUIResourcesListPropertyUpdateBehaviorTest', 'All', function() {
   mocha.run();
 });
+GEN('#endif');
 
 var WebUIResourcesListPropertyUpdateMixinTest =
     class extends WebUIResourcesBrowserTest {

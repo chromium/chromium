@@ -434,11 +434,15 @@ ts_library("build_ts") {
     "color_provider_css_colors_test.ts",
     "color_provider_css_colors_test_chromeos.ts",
     "cr_focus_row_behavior_test.ts",
-    "resources/list_property_update_behavior_tests.ts",
     "resources/list_property_update_mixin_tests.ts",
     "text_defaults_test.ts",
     "test_store_ts.ts",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [ "resources/list_property_update_behavior_tests.ts" ]
+  }
+
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":generate_definitions" ]
   definitions = [

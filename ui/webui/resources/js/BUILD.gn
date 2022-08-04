@@ -136,7 +136,6 @@ preprocess_if_expr("preprocess_generated") {
   if (include_polymer) {
     in_files += [
       "i18n_behavior.m.js",
-      "list_property_update_behavior.m.js",
       "web_ui_listener_behavior.m.js",
     ]
   }
@@ -182,7 +181,6 @@ js_type_check("js_resources") {
       ":event_tracker",
       ":i18n_behavior",
       ":i18n_template_no_process",
-      ":list_property_update_behavior",
       ":parse_html_subset",
       ":web_ui_listener_behavior",
     ]
@@ -218,9 +216,6 @@ if (is_chromeos_ash) {
       ":load_time_data",
       ":parse_html_subset",
     ]
-  }
-
-  js_library("list_property_update_behavior") {
   }
 }
 
@@ -270,7 +265,6 @@ js_modulizer("modulize_local") {
     "assert.js",
     "event_tracker.js",
     "i18n_behavior.js",
-    "list_property_update_behavior.js",
     "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
@@ -309,7 +303,7 @@ js_type_check("js_resources_modules") {
     ":event_tracker.m",
     ":i18n_behavior.m",
     ":icon",
-    ":list_property_update_behavior.m",
+    ":list_property_update_behavior",
     ":load_time_data.m",
     ":parse_html_subset.m",
     ":plural_string_proxy",
@@ -359,14 +353,10 @@ js_library("i18n_behavior.m") {
   extra_deps = [ ":modulize_local" ]
 }
 
-js_library("list_property_update_behavior.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/js/list_property_update_behavior.m.js",
-  ]
+js_library("list_property_update_behavior") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("load_time_data.m") {

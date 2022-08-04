@@ -46,7 +46,6 @@ generate_grd("build_grdp") {
         "cr/ui/focus_without_ink.html",
         "cr/ui/focus_row_behavior.html",
         "i18n_behavior.html",
-        "list_property_update_behavior.html",
         "web_ui_listener_behavior.html",
       ]
     }

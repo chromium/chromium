@@ -70,3 +70,6 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
   "ui/webui/resources/html/polymer.html|Polymer,flush,html,afterNextRender",
 ]
+
+cr_components_migrated_imports =
+    [ "ui/webui/resources/html/list_property_update_behavior.html" ]

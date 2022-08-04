@@ -24,7 +24,6 @@ js_type_check("closure_compile") {
     ":network_config_toggle",
     ":network_icon",
     ":network_ip_config",
-    ":network_list",
     ":network_list_types",
     ":network_listener_behavior",
     ":network_nameservers",
@@ -207,14 +206,6 @@ js_library("network_icon") {
     ":onc_mojo",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("network_list") {
-  deps = [
-    ":network_list_types",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
   ]
 }
 
@@ -477,7 +468,7 @@ js_library("network_list.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
+    "//ui/webui/resources/js:list_property_update_behavior",
   ]
   extra_deps = [ ":network_list_module" ]
 }
@@ -790,6 +781,7 @@ polymer_modulizer("network_list") {
   html_file = "network_list.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_list_item") {

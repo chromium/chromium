@@ -185,7 +185,6 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_tooltip_icon.m.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
   "js/i18n_behavior.m.d.ts",
-  "js/list_property_update_behavior.m.d.ts",
   "js/parse_html_subset.m.d.ts",
   "js/promise_resolver.m.d.ts",
   "js/static_types.d.ts",
@@ -215,6 +214,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/smb_shares/smb_browser_proxy.d.ts",
     "js/cr/ui/grid.m.d.ts",
     "js/cr/ui/list.m.d.ts",
+    "js/list_property_update_behavior.d.ts",
   ]
 }
 
