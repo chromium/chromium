@@ -11206,6 +11206,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable trust in certificates issued by Symantec Corporation Legacy PKI',
+        },
+        {
+          'value': False,
+          'caption': 'Disable trust in certificates issued by Symantec Corporation Legacy PKI',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 413,
@@ -11229,6 +11239,21 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use the built-in certificate verifier',
+        },
+        {
+          'value': False,
+          'caption': 'Use the legacy platform certificate verifier',
+        },
+        {
+          'value': None,
+          'caption': 'Use any certificate verifier',
+        },
+      ],
+      'default': None,
       'example_value': False,
       'id': 575,
       'caption': '''Determines whether the built-in certificate verifier will be used to verify server certificates''',
@@ -11287,6 +11312,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Clear profile data on disk when user session ends',
+        },
+        {
+          'value': False,
+          'caption': 'Persist profile data on disk when user session ends',
+        },
+      ],
       'example_value': True,
       'id': 245,
       'caption': '''Ephemeral profile''',
@@ -11495,6 +11530,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device version info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device version info reporting',
+        },
+      ],
       'example_value': False,
       'id': 119,
       'caption': '''Report OS and firmware version''',
@@ -11515,6 +11560,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device activity time reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device activity time reporting',
+        },
+      ],
       'example_value': False,
       'id': 120,
       'caption': '''Report device activity times''',
@@ -11590,6 +11645,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device boot mode reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device boot mode reporting',
+        },
+      ],
       'example_value': False,
       'id': 121,
       'caption': '''Report device boot mode''',
@@ -11610,13 +11675,25 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device location reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device location reporting',
+        },
+      ],
       'example_value': False,
       'id': 143,
       'caption': '''Report device location''',
       'tags': ['admin-sharing'],
       'desc': '''Report the geographic location of the device.
 
-      If the policy is not set, or set to false, the location will not be reported.''',
+      Setting the policy to Enabled has enrolled devices periodically report their location.
+
+      Setting the policy to Disabled or leaving it unset means enrolled devices don't report their location.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
