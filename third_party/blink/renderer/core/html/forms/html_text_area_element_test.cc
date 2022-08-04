@@ -112,4 +112,23 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
 #undef RTO
 }
 
+TEST_P(HTMLTextAreaElementTest, DefaultToolTip) {
+  LoadAhem();
+
+  SetBodyContent(R"HTML(
+    <textarea id=test></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+
+  textarea.SetBooleanAttribute(html_names::kRequiredAttr, true);
+  EXPECT_EQ("<<ValidationValueMissing>>", textarea.DefaultToolTip());
+
+  textarea.SetBooleanAttribute(html_names::kNovalidateAttr, true);
+  EXPECT_EQ(String(), textarea.DefaultToolTip());
+
+  textarea.removeAttribute(html_names::kNovalidateAttr);
+  textarea.SetValue("1234567890\n");
+  EXPECT_EQ(String(), textarea.DefaultToolTip());
+}
+
 }  // namespace blink

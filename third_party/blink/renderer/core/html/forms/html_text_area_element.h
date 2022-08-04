@@ -72,6 +72,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void setCols(unsigned);
   void setRows(unsigned);
 
+  String DefaultToolTip() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, SanitizeUserInputValue);
 

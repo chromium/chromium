@@ -736,4 +736,10 @@ void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
   TextControlElement::CloneNonAttributePropertiesFrom(source, flag);
 }
 
+String HTMLTextAreaElement::DefaultToolTip() const {
+  if (FastHasAttribute(html_names::kNovalidateAttr))
+    return String();
+  return validationMessage();
+}
+
 }  // namespace blink
