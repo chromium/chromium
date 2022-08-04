@@ -345,7 +345,7 @@ are declared in tools/grit/grit_rule.gni.
       <if expr="enable_supervised_users">
         <part file="supervised_user_error_page_strings.grdp" />
       </if>
-      
+
       <!-- TODO add all of your "string table" messages here.  Remember to
       change nontranslateable parts of the messages into placeholders (using the
       <ph> element).  You can also use the 'grit add' tool to help you identify
@@ -12122,9 +12122,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UTILITY_PROCESS_QUARANTINE_SERVICE_NAME" desc="The name of the utility process used to handle file quarantine.">
         Quarantine Service
     </message>
-      <message name="IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME" desc="The name of the utility process used to collect system signals. Only spawned on Windows.">
-        System Signals Utilities
-      </message>
     </if>
 
     <!-- Framebust / Blocked Redirection intervention message -->
@@ -12144,6 +12141,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OPEN_REDIRECT" desc="Dropdown menu button that allows a user to go to the redirected page once, but continue blocking subsequent attempts on the site.">
       Open Anyway
     </message>
+
+    <if expr="is_win or is_macosx or is_linux">
+      <message name="IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME" desc="The name of the utility process used to collect system signals. Only spawned on Windows, Mac or Linux.">
+        System Signals Utilities
+      </message>
+    </if>
 
     <!-- Windows 10 toast strings -->
     <if expr="is_win">

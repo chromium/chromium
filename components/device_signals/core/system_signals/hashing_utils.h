@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_HASHING_UTILS_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_HASHING_UTILS_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_HASHING_UTILS_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_HASHING_UTILS_H_
 
 #include <string>
 
@@ -21,4 +21,4 @@ absl::optional<std::string> HashFile(const base::FilePath& file_path);
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_HASHING_UTILS_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_HASHING_UTILS_H_

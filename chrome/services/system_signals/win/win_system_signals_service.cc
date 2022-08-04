@@ -7,8 +7,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/services/system_signals/win/metrics_utils.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "components/device_signals/core/common/file_system_service.h"
-#include "components/device_signals/core/common/platform_delegate.h"
+#include "components/device_signals/core/system_signals/file_system_service.h"
+#include "components/device_signals/core/system_signals/platform_delegate.h"
 #include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 #include "components/device_signals/core/system_signals/win/wmi_client.h"
 #include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
@@ -31,18 +31,12 @@ WinSystemSignalsService::WinSystemSignalsService(
     std::unique_ptr<device_signals::FileSystemService> file_system_service,
     std::unique_ptr<device_signals::WmiClient> wmi_client,
     std::unique_ptr<device_signals::WscClient> wsc_client)
-    : receiver_(this, std::move(receiver)),
-      file_system_service_(std::move(file_system_service)),
+    : BaseSystemSignalsService(std::move(receiver),
+                               std::move(file_system_service)),
       wmi_client_(std::move(wmi_client)),
       wsc_client_(std::move(wsc_client)) {}
 
 WinSystemSignalsService::~WinSystemSignalsService() = default;
-
-void WinSystemSignalsService::GetFileSystemSignals(
-    const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
-    GetFileSystemSignalsCallback callback) {
-  std::move(callback).Run(file_system_service_->GetSignals(requests));
-}
 
 void WinSystemSignalsService::GetAntiVirusSignals(
     GetAntiVirusSignalsCallback callback) {

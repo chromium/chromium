@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/linux/linux_platform_delegate.h"
+#include "components/device_signals/core/system_signals/mac/mac_platform_delegate.h"
 
 #include "base/files/file_path.h"
 #include "components/device_signals/core/common/common_types.h"
 
 namespace device_signals {
 
-LinuxPlatformDelegate::LinuxPlatformDelegate() = default;
+MacPlatformDelegate::MacPlatformDelegate() = default;
 
-LinuxPlatformDelegate::~LinuxPlatformDelegate() = default;
+MacPlatformDelegate::~MacPlatformDelegate() = default;
 
-FilePathMap<ExecutableMetadata> LinuxPlatformDelegate::GetAllExecutableMetadata(
+FilePathMap<ExecutableMetadata> MacPlatformDelegate::GetAllExecutableMetadata(
     const FilePathSet& file_paths) {
-  // TODO(b:231326345): Implement.
+  // TODO(b:231326198): Implement.
   return FilePathMap<ExecutableMetadata>();
 }
 

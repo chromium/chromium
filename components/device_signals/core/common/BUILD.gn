@@ -4,29 +4,18 @@
 
 static_library("common") {
   public = [
-    "base_platform_delegate.h",
     "common_types.h",
-    "file_system_service.h",
-    "platform_delegate.h",
     "signals_constants.h",
   ]
 
   sources = [
-    "base_platform_delegate.cc",
     "common_types.cc",
-    "file_system_service.cc",
-    "hashing_utils.cc",
-    "hashing_utils.h",
-    "platform_delegate.cc",
     "signals_constants.cc",
   ]
 
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 
-  deps = [
-    "//base",
-    "//crypto",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("features") {
@@ -37,34 +26,13 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "mock_file_system_service.cc",
-    "mock_file_system_service.h",
-    "mock_platform_delegate.cc",
-    "mock_platform_delegate.h",
-  ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//testing/gmock",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "base_platform_delegate_unittest.cc",
-    "file_system_service_unittest.cc",
-    "signals_features_unittest.cc",
-  ]
+  sources = [ "signals_features_unittest.cc" ]
 
   deps = [
     ":common",
     ":features",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",

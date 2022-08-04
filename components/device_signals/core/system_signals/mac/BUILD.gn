@@ -1,0 +1,17 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mac") {
+  public = [ "mac_platform_delegate.h" ]
+
+  sources = [ "mac_platform_delegate.mm" ]
+
+  public_deps = [
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals/posix",
+  ]
+
+  deps = [ "//base" ]
+}

@@ -15,20 +15,9 @@ source_set("browser") {
     "//mojo/public/mojom/base",
   ]
 
-  deps = [ "//base" ]
-
-  if (is_win) {
-    deps += [
-      "//chrome:strings",
-      "//content/public/browser",
-    ]
-  }
-
-  if (is_mac) {
-    deps += [ "//chrome/services/system_signals/mac" ]
-  }
-
-  if (is_linux) {
-    deps += [ "//chrome/services/system_signals/linux" ]
-  }
+  deps = [
+    "//base",
+    "//chrome:strings",
+    "//content/public/browser",
+  ]
 }

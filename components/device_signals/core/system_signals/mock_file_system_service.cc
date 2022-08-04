@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/mock_platform_delegate.h"
+#include "components/device_signals/core/system_signals/mock_file_system_service.h"
 
 namespace device_signals {
 
-MockPlatformDelegate::MockPlatformDelegate() = default;
-MockPlatformDelegate::~MockPlatformDelegate() = default;
+MockFileSystemService::MockFileSystemService() = default;
+MockFileSystemService::~MockFileSystemService() = default;
 
 }  // namespace device_signals

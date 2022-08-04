@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/file_system_service.h"
+#include "components/device_signals/core/system_signals/file_system_service.h"
 
 #include <array>
 #include <vector>
@@ -13,8 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "components/device_signals/core/common/mock_platform_delegate.h"
-#include "components/device_signals/core/common/platform_delegate.h"
+#include "components/device_signals/core/system_signals/mock_platform_delegate.h"
+#include "components/device_signals/core/system_signals/platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

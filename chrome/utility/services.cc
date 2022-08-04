@@ -53,7 +53,12 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
+#include "chrome/services/system_signals/mac/mac_system_signals_service.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/services/system_signals/linux/linux_system_signals_service.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
@@ -191,13 +196,6 @@ auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
   return std::make_unique<UtilWinImpl>(std::move(receiver));
 }
 
-auto RunSystemSignalsService(
-    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
-        receiver) {
-  return std::make_unique<system_signals::WinSystemSignalsService>(
-      std::move(receiver));
-}
-
 auto RunWindowsIconReader(
     mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver) {
   return std::make_unique<UtilReadIcon>(std::move(receiver));
@@ -219,6 +217,23 @@ auto RunMacNotificationService(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+auto RunSystemSignalsService(
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
+        receiver) {
+#if BUILDFLAG(IS_WIN)
+  return std::make_unique<system_signals::WinSystemSignalsService>(
+      std::move(receiver));
+#elif BUILDFLAG(IS_MAC)
+  return std::make_unique<system_signals::MacSystemSignalsService>(
+      std::move(receiver));
+#else
+  return std::make_unique<system_signals::LinuxSystemSignalsService>(
+      std::move(receiver));
+#endif  // BUILDFLAG(IS_WIN)
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
 auto RunProxyResolver(
@@ -453,9 +468,12 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunProcessorMetrics);
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
-  services.Add(RunSystemSignalsService);
   services.Add(RunWindowsIconReader);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  services.Add(RunSystemSignalsService);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunCupsIppParser);

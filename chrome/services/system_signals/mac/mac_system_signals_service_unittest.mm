@@ -11,8 +11,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "components/device_signals/core/common/file_system_service.h"
-#include "components/device_signals/core/common/mock_file_system_service.h"
+#include "components/device_signals/core/system_signals/file_system_service.h"
+#include "components/device_signals/core/system_signals/mock_file_system_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +28,14 @@ class MacSystemSignalsServiceTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockFileSystemService>>();
     file_system_service_ = file_system_service.get();
 
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
+        fake_receiver;
+
     // Have to use "new" since make_unique doesn't have access to friend private
     // constructor.
-    mac_system_signals_service_ = std::unique_ptr<MacSystemSignalsService>(
-        new MacSystemSignalsService(std::move(file_system_service)));
+    mac_system_signals_service_ =
+        std::unique_ptr<MacSystemSignalsService>(new MacSystemSignalsService(
+            std::move(fake_receiver), std::move(file_system_service)));
   }
 
   base::test::TaskEnvironment task_environment_;

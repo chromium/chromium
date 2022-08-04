@@ -7,26 +7,25 @@
 #include <utility>
 
 #include "components/device_signals/core/common/common_types.h"
-#include "components/device_signals/core/common/file_system_service.h"
-#include "components/device_signals/core/common/mac/mac_platform_delegate.h"
-#include "components/device_signals/core/common/platform_delegate.h"
+#include "components/device_signals/core/system_signals/file_system_service.h"
+#include "components/device_signals/core/system_signals/mac/mac_platform_delegate.h"
+#include "components/device_signals/core/system_signals/platform_delegate.h"
 
 namespace system_signals {
 
-MacSystemSignalsService::MacSystemSignalsService()
-    : MacSystemSignalsService(device_signals::FileSystemService::Create(
-          std::make_unique<device_signals::MacPlatformDelegate>())) {}
+MacSystemSignalsService::MacSystemSignalsService(
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver)
+    : MacSystemSignalsService(
+          std::move(receiver),
+          device_signals::FileSystemService::Create(
+              std::make_unique<device_signals::MacPlatformDelegate>())) {}
 
 MacSystemSignalsService::MacSystemSignalsService(
+    mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver,
     std::unique_ptr<device_signals::FileSystemService> file_system_service)
-    : file_system_service_(std::move(file_system_service)) {}
+    : BaseSystemSignalsService(std::move(receiver),
+                               std::move(file_system_service)) {}
 
 MacSystemSignalsService::~MacSystemSignalsService() = default;
-
-void MacSystemSignalsService::GetFileSystemSignals(
-    const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
-    GetFileSystemSignalsCallback callback) {
-  std::move(callback).Run(file_system_service_->GetSignals(requests));
-}
 
 }  // namespace system_signals

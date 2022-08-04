@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_POSIX_POSIX_PLATFORM_DELEGATE_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_POSIX_POSIX_PLATFORM_DELEGATE_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_POSIX_POSIX_PLATFORM_DELEGATE_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_POSIX_POSIX_PLATFORM_DELEGATE_H_
 
-#include "components/device_signals/core/common/base_platform_delegate.h"
+#include "components/device_signals/core/system_signals/base_platform_delegate.h"
 
 namespace device_signals {
 
@@ -23,4 +23,4 @@ class PosixPlatformDelegate : public BasePlatformDelegate {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_POSIX_POSIX_PLATFORM_DELEGATE_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_POSIX_POSIX_PLATFORM_DELEGATE_H_

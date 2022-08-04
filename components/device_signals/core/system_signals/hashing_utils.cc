@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/hashing_utils.h"
+#include "components/device_signals/core/system_signals/hashing_utils.h"
 
 #include <array>
 #include <string>

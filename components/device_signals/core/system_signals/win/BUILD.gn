@@ -23,6 +23,7 @@ static_library("win") {
     "//base",
     "//components/device_signals/core/common",
     "//components/device_signals/core/common/win",
+    "//components/device_signals/core/system_signals",
     "//third_party/abseil-cpp:absl",
   ]
 }
