@@ -70,6 +70,10 @@ class ZeroStateFileProvider : public SearchProvider,
   // paths are removed from the model.
   void SetSearchResults(ValidAndInvalidResults results);
 
+  // TODO(crbug.com/1349618): Remove this once the Continue tast test does not
+  // rely on it.
+  void AppendFakeSearchResults(Results* results);
+
   void OnProtoInitialized(ReadStatus status);
 
   // The reference to profile to get ZeroStateFileProvider service.

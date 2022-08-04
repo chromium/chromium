@@ -201,6 +201,9 @@ void ZeroStateFileProvider::SetSearchResults(ValidAndInvalidResults results) {
     new_results.push_back(std::move(result));
   }
 
+  if (app_list_features::IsForceShowContinueSectionEnabled())
+    AppendFakeSearchResults(&new_results);
+
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",
                       base::TimeTicks::Now() - query_start_time_);
   SwapResults(&new_results);
@@ -228,6 +231,19 @@ void ZeroStateFileProvider::OnFilesOpened(
     }
 
     files_ranker_->Use(file_open.path.value());
+  }
+}
+
+void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
+  constexpr int kTotalFakeFiles = 3;
+  for (int i = 0; i < kTotalFakeFiles; ++i) {
+    results->emplace_back(std::make_unique<FileResult>(
+        kSchema,
+        base::FilePath(FILE_PATH_LITERAL(
+            base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
+        u"-", ash::AppListSearchResultType::kZeroStateFile,
+        ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
+        FileResult::Type::kFile, profile_));
   }
 }
 
