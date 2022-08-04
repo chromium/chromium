@@ -8,9 +8,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ImportDialogState} from 'chrome://settings/lazy_load.js';
+import {ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -18,6 +18,18 @@ import {PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
+
+async function triggerImportHelper(
+    importDialog: PasswordsImportDialogElement,
+    passwordManager: TestPasswordManagerProxy) {
+  const chooseFile =
+      importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
+  assertTrue(!!chooseFile);
+  assertTrue(isVisible(chooseFile));
+  chooseFile.click();
+  // Import flow should have been triggered.
+  await passwordManager.whenCalled('importPasswords');
+}
 
 suite('PasswordsImportDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -70,18 +82,11 @@ suite('PasswordsImportDialog', function() {
       fileName: 'test.csv',
     });
 
-    const chooseFile =
-        importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
-    assertTrue(!!chooseFile);
-    assertTrue(isVisible(chooseFile));
-    chooseFile.click();
-    // Import flow should have been triggered.
-    await passwordManager.whenCalled('importPasswords');
+    await triggerImportHelper(importDialog, passwordManager);
     await pluralString.whenCalled('getPluralString');
     flush();
     // After the import, the dialog should switch to SUCCESS state.
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
-    assertFalse(isVisible(chooseFile));
 
     const successTip =
         importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip');
@@ -95,6 +100,60 @@ suite('PasswordsImportDialog', function() {
     assertEquals(importDialog.i18n('done'), done.textContent!.trim());
     assertTrue(isVisible(done));
     done.click();
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectFileErrorState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT,
+      numberImported: 0,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    flush();
+    // After the import, the dialog should switch to ERROR state.
+    assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
+
+    assertEquals(
+        importDialog.i18n('importPasswordsBadFormatError', 'test.csv'),
+        importDialog.$.descriptionText.textContent!.trim());
+
+    const close = importDialog.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!close);
+    assertEquals(importDialog.i18n('close'), close.textContent!.trim());
+    assertTrue(isVisible(close));
+    close.click();
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectUnknownErrorState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR,
+      numberImported: 0,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    flush();
+    // After the import, the dialog should switch to ERROR state.
+    assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
+
+    assertEquals(
+        importDialog.i18n('importPasswordsUnknownError'),
+        importDialog.$.descriptionText.textContent!.trim());
+
+    const close = importDialog.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!close);
+    assertEquals(importDialog.i18n('close'), close.textContent!.trim());
+    assertTrue(isVisible(close));
+    close.click();
     await eventToPromise('close', importDialog);
   });
 });

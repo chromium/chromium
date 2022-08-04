@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,6 +32,7 @@ const PasswordsImportDialogElementBase = I18nMixin(PolymerElement);
 
 export enum ImportDialogState {
   START,
+  ERROR,
   SUCCESS,
 }
 
@@ -74,12 +76,40 @@ export class PasswordsImportDialogElement extends
     return this.dialogState === state;
   }
 
+  private showChooseFileButton_(): boolean {
+    return this.isState_(ImportDialogState.START) ||
+        this.isState_(ImportDialogState.ERROR);
+  }
+
   /**
    * Handler for clicking the 'chooseFile' button. It triggers import flow.
    */
   private async onChooseFileClick_() {
     this.results_ = await this.passwordManager_.importPasswords(
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
+    switch (this.results_.status) {
+      case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
+        this.handleSuccess_();
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
+        this.descriptionText_ = this.i18n('importPasswordsUnknownError');
+        this.dialogState = ImportDialogState.ERROR;
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
+        this.descriptionText_ =
+            this.i18n('importPasswordsBadFormatError', this.results_.fileName);
+        this.dialogState = ImportDialogState.ERROR;
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
+        // Dialog state should not change if a system file picker was dismissed.
+        return;
+      default:
+        assertNotReached();
+    }
+  }
+
+  private async handleSuccess_() {
+    assert(this.results_);
     this.descriptionText_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'importPasswordsSuccessSummaryDevice',
