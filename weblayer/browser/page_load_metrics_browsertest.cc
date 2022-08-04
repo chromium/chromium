@@ -26,10 +26,22 @@ class PageLoadMetricsObserver
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
 
-  // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override {
+    // This class is only interested in events for outer-most frame that are
+    // forwarded by PageLoadTracker. So, this class doesn't need observer-level
+    // forwarding.
+    return STOP_OBSERVING;
+  }
+
+  PageLoadMetricsObserver::ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override {
+    // Currently, prerendering is not enabled for WebLayer.
+    //
+    // TODO(https://crbug.com/1267224): If support prerendering, add callbacks
+    // and tests.
     return STOP_OBSERVING;
   }
 
