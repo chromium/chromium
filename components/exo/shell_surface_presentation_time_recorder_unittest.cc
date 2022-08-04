@@ -110,6 +110,8 @@ class ShellSurfacePresentationTimeRecorderTest : public test::ExoTestBase {
         /*flags=*/0);
     recorder_->set_fake_feedback(feedback);
 
+    // Fake damage to ensure that Commit() generates a compositor frame.
+    root_surface()->Damage(gfx::Rect(0, 0, 32, 32));
     root_surface()->Commit();
     recorder_->WaitForFramePresented();
   }
@@ -134,9 +136,7 @@ TEST_F(ShellSurfacePresentationTimeRecorderTest, Request) {
   EXPECT_TRUE(recorder_->RequestNext());
 }
 
-// TODO(crbug.com/1349591): Revive this test.
-TEST_F(ShellSurfacePresentationTimeRecorderTest,
-       DISABLED_AckSkippedOrOutOfOrder) {
+TEST_F(ShellSurfacePresentationTimeRecorderTest, AckSkippedOrOutOfOrder) {
   // Issue 4 requests with configure serial 1-5.
   for (size_t i = 1u; i <= 5u; ++i) {
     recorder_->PrepareToRecord();
