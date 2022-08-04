@@ -385,6 +385,18 @@ void BrowserNonClientFrameViewMac::AddedToWidget() {
   }
 }
 
+void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
+  // In immersive fullscreen, the browser view's top container relies on the
+  // non-client frame view to paint the frame (see comment in
+  // TopContainerView::PaintChildren). We want the frame view to paint *only*
+  // the frame but not its child (i.e. the BrowserView).
+  // TODO(kerenzhu): we need this workaround due to the design of NonClientView,
+  // that the frame part is not an independent child view. If it is an
+  // independent view, overriding PaintChildren() will not be necessary.
+  if (!browser_view()->immersive_mode_controller()->IsRevealed())
+    BrowserNonClientFrameView::PaintChildren(info);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, protected:
 

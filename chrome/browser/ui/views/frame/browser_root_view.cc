@@ -340,7 +340,14 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
       Tab* active_tab = tabstrip()->tab_at(active_tab_index);
       if (active_tab && active_tab->GetVisible()) {
         gfx::RectF bounds(active_tab->GetMirroredBounds());
-        ConvertRectToTarget(tabstrip(), this, &bounds);
+        views::View* tabstrip_root = this;
+#if BUILDFLAG(IS_MAC)
+        // In immersive fullscreen, the top container is hosted in
+        // `overlay_widget`, which has its own root view.
+        if (browser_view_->immersive_mode_controller()->IsRevealed())
+          tabstrip_root = browser_view_->overlay_widget()->GetRootView();
+#endif
+        ConvertRectToTarget(tabstrip(), tabstrip_root, &bounds);
         canvas->ClipRect(bounds, SkClipOp::kDifference);
       }
     }

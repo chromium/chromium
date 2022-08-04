@@ -66,6 +66,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // views::View:
   gfx::Size GetMinimumSize() const override;
   void AddedToWidget() override;
+  void PaintChildren(const views::PaintInfo& info) override;
 
   // web_app::AppRegistrarObserver
   void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
