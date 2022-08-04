@@ -50,14 +50,14 @@
 
     <!-- Manage search engines -->
     <cr-link-row class="hr" id="enginesSubpageTrigger"
-        label="[[searchEnginesPageTitle_]]"
+        label="$i18n{searchEnginesManageSiteSearch}"
         on-click="onManageSearchEnginesTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
   </div>
   <template is="dom-if" route-path="/searchEngines">
     <settings-subpage
         associated-control="[[$$('#enginesSubpageTrigger')]]"
-        page-title="[[searchEnginesPageTitle_]]"
+        page-title="$i18n{searchEnginesManageSiteSearch}"
         search-label="$i18n{searchEnginesSearch}"
         search-term="{{searchEnginesFilter_}}">
       <settings-search-engines-page prefs="{{prefs}}"

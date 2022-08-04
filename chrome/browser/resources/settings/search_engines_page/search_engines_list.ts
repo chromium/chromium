@@ -29,11 +29,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     return {
       engines: Array,
 
-      /**
-       * Whether the active search engines feature flag is enabled.
-       */
-      isActiveSearchEnginesFlagEnabled: Boolean,
-
       showShortcut: {
         type: Boolean,
         value: false,

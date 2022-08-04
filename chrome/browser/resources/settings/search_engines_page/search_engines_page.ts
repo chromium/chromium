@@ -27,7 +27,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
@@ -140,12 +139,6 @@ export class SettingsSearchEnginesPageElement extends
         type: Boolean,
         value: false,
       },
-
-      isActiveSearchEnginesFlagEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
-      },
     };
   }
 
@@ -169,7 +162,6 @@ export class SettingsSearchEnginesPageElement extends
   private dialogAnchorElement_: HTMLElement|null;
   private showEditDialog_: boolean;
   private showDeleteConfirmationDialog_: boolean;
-  private isActiveSearchEnginesFlagEnabled_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 

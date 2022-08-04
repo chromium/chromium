@@ -45,18 +45,11 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
 
       showQueryUrl: {type: Boolean, value: false, reflectToAttribute: true},
 
-      isActiveSearchEnginesFlagEnabled: Boolean,
 
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsDefault_(engine)',
-      },
-
-      disableMenuButton: {
-        reflectToAttribute: true,
-        type: Boolean,
-        computed: 'computeDisableMenuButton_(engine)',
       },
 
     };
@@ -65,9 +58,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   engine: SearchEngine;
   showShortcut: boolean;
   showQueryUrl: boolean;
-  isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
-  disableMenuButton: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -77,10 +68,6 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
 
   private computeIsDefault_(): boolean {
     return this.engine.default;
-  }
-
-  private computeDisableMenuButton_(): boolean {
-    return this.isActiveSearchEnginesFlagEnabled && this.engine.default;
   }
 
   private onDeleteTap_(e: Event) {

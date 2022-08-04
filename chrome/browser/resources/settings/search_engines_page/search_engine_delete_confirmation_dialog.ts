@@ -14,8 +14,6 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {getTemplate} from './search_engine_delete_confirmation_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
@@ -43,12 +41,6 @@ export class SettingsSearchEngineDeleteConfirmationDialogElement extends
   static get properties() {
     return {
       model: Object,
-
-      isActiveSearchEnginesFlagEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
-      },
     };
   }
 

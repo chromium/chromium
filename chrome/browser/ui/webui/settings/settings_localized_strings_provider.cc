@@ -2022,7 +2022,6 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SHORTCUTS},
       {"searchEnginesNoInactiveShortcuts",
        IDS_SETTINGS_SEARCH_ENGINES_NO_INACTIVE_SHORTCUTS},
-      {"searchEnginesOther", IDS_SETTINGS_SEARCH_ENGINES_OTHER_ENGINES},
       {"searchEnginesNoOtherEngines",
        IDS_SETTINGS_SEARCH_ENGINES_NO_OTHER_ENGINES},
       {"searchEnginesExtension", IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES},
@@ -2032,7 +2031,6 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
       {"searchEnginesSearchEngine", IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINE},
       {"searchEnginesSiteOrPage", IDS_SETTINGS_SEARCH_ENGINES_SITE_OR_PAGE},
       {"searchEnginesInactiveSite", IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SITE},
-      {"searchEnginesKeyword", IDS_SETTINGS_SEARCH_ENGINES_KEYWORD},
       {"searchEnginesShortcut", IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT},
       {"searchEnginesQueryURL", IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL},
       {"searchEnginesQueryURLExplanation",
@@ -2060,8 +2058,6 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_EXTENSIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  // TODO(crbug.com/1340259): Remove this and cleanup front-end code.
-  html_source->AddBoolean("isActiveSearchEnginesFlagEnabled", true);
 }
 
 void AddSiteSettingsStrings(content::WebUIDataSource* html_source,

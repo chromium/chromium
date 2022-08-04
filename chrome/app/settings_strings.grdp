@@ -2237,9 +2237,6 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_INACTIVE_SHORTCUTS" desc="Text shown when the 'Inactive Shortcuts' section is empty">
     No inactive shortcuts
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_OTHER_ENGINES" desc="Label for 'other' Search Engines section">
-    Other search engines
-  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_OTHER_ENGINES" desc="Label shown when the 'other' Search engines section is empty">
     Other saved search engines will appear here
   </message>
@@ -2257,9 +2254,6 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SITE" desc="Label for a table column that holds the name of a site or page in the 'Inactive shortcuts' section">
     Inactive sites
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYWORD" desc="Label for Keyword column header for a search engine">
-    Keyword
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT" desc="Label for Shortcut column header for a search engine or site search entry">
     Shortcut

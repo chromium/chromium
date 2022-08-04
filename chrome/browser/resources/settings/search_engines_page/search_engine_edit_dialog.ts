@@ -64,14 +64,7 @@ export class SettingsSearchEngineEditDialogElement extends
       keyword_: String,
       queryUrl_: String,
       dialogTitle_: String,
-      keywordFieldLabel_: String,
       actionButtonText_: String,
-
-      isActiveSearchEnginesFlagEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
-      },
     };
   }
 
@@ -80,11 +73,9 @@ export class SettingsSearchEngineEditDialogElement extends
   private keyword_: string;
   private queryUrl_: string;
   private dialogTitle_: string;
-  private keywordFieldLabel_: string;
   private actionButtonText_: string;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
-  private isActiveSearchEnginesFlagEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -103,10 +94,6 @@ export class SettingsSearchEngineEditDialogElement extends
           loadTimeData.getString('searchEnginesAddSearchEngine');
       this.actionButtonText_ = loadTimeData.getString('add');
     }
-
-    this.keywordFieldLabel_ = this.isActiveSearchEnginesFlagEnabled_ ?
-        loadTimeData.getString('searchEnginesShortcut') :
-        loadTimeData.getString('searchEnginesKeyword');
 
     this.addEventListener('cancel', () => {
       this.browserProxy_.searchEngineEditCancelled();
