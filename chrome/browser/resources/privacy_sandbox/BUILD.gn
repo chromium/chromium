@@ -2,78 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("privacy_sandbox.gni")
 
 assert(!is_android, "!is_android check failed")
 
-preprocess_folder = "preprocessed"
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/privacy_sandbox_resources.h",
-    "grit/privacy_sandbox_resources_map.cc",
-    "grit/privacy_sandbox_resources_map.h",
-    "privacy_sandbox_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-  ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "privacy_sandbox"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+
+  static_files = [
     "privacy_sandbox_dialog.html",
     "images/privacy_sandbox_confirmation_banner.svg",
     "images/privacy_sandbox_confirmation_banner_dark.svg",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+
+  web_component_files = [ "privacy_sandbox_dialog_app.ts" ]
+
+  non_web_component_files = [ "privacy_sandbox_dialog_browser_proxy.ts" ]
+
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
 }
