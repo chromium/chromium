@@ -80,7 +80,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   ~VizDebugger();
 
-  struct BufferInfo {
+  struct VIZ_SERVICE_EXPORT BufferInfo {
     BufferInfo();
     ~BufferInfo();
     BufferInfo(const BufferInfo& a);

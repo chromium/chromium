@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include <stddef.h>
 
+#include <cstddef>
 #include <cstdio>
 #include <unordered_map>
 #include <utility>
@@ -43,7 +44,9 @@ class VizDebuggerInternal : public VizDebugger {
 
 bool VizDebuggerInternal::Reset() {
   submission_count_ = 0;
+  buffer_id = 0;
   draw_rect_calls_.clear();
+  buffers_.clear();
   draw_text_calls_.clear();
   logs_.clear();
   last_sent_source_count_ = 0;
@@ -112,6 +115,7 @@ class VisualDebuggerTest : public testing::Test {
   void GetFrameData() {
     sources_.clear();
     draw_calls_.clear();
+    buffers_.clear();
     log_calls_.clear();
     draw_text_calls_.clear();
     GetInternal()->common_lock_.Acquire();
@@ -193,11 +197,44 @@ class VisualDebuggerTest : public testing::Test {
       float pos_y =
           list_pos->GetListDeprecated()[1].GetIfDouble().value_or(kNoVal);
 
-      VizDebuggerInternal::DrawCall draw_call(draw_index, source_index, option,
-                                              gfx::Size(size_x, size_y),
-                                              gfx::Vector2dF(pos_x, pos_y), -1);
+      const base::Value* buffer_id = local_dict.FindKey("buff_id");
+
+      VizDebuggerInternal::DrawCall draw_call(
+          draw_index, source_index, option, gfx::Size(size_x, size_y),
+          gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id->GetInt() : -1);
 
       draw_calls_.push_back(draw_call);
+    }
+
+    base::Value* buffer_map_dict = global_dict->FindKey("buff_map");
+    if (buffer_map_dict) {
+      for (base::Value::Dict::iterator itr = buffer_map_dict->GetDict().begin();
+           itr != buffer_map_dict->GetDict().end(); itr++) {
+        base::Value* buffer_dict = buffer_map_dict->FindKey(itr->first);
+        EXPECT_TRUE(buffer_dict);
+        int width = buffer_dict->FindKey("width")->GetIfInt().value_or(kNoVal);
+        int height =
+            buffer_dict->FindKey("height")->GetIfInt().value_or(kNoVal);
+        base::Value* buffer_info = buffer_dict->FindKey("buffer");
+        EXPECT_TRUE(buffer_info->is_list());
+        VizDebuggerInternal::BufferInfo buff;
+        buff.width = width;
+        buff.height = height;
+        buff.buffer.resize(width * height);
+        for (size_t i = 0; i < buffer_info->GetList().size() / 4; i++) {
+          uint8_t temp1 = buffer_info->GetList()[i * 4].GetInt();
+          uint8_t temp2 = buffer_info->GetList()[i * 4 + 1].GetInt();
+          uint8_t temp3 = buffer_info->GetList()[i * 4 + 2].GetInt();
+          uint8_t temp4 = buffer_info->GetList()[i * 4 + 3].GetInt();
+          buff.buffer[i] = {temp1, temp2, temp3, temp4};
+        }
+        int id;
+        base::StringToInt(itr->first, &id);
+        VizDebuggerInternal::Buffer buffer;
+        buffer.id = id;
+        buffer.buffer_info = buff;
+        buffers_.push_back(buffer);
+      }
     }
 
     base::Value* text_call_list = global_dict->FindListKey("text");
@@ -251,6 +288,7 @@ class VisualDebuggerTest : public testing::Test {
   int window_y_ = 256;
   std::vector<StaticSource> sources_;
   std::vector<VizDebuggerInternal::DrawCall> draw_calls_;
+  std::vector<VizDebuggerInternal::Buffer> buffers_;
   std::vector<VizDebuggerInternal::LogCall> log_calls_;
   std::vector<VizDebuggerInternal::DrawTextCall> draw_text_calls_;
 };
@@ -434,6 +472,302 @@ TEST_F(VisualDebuggerTest, NonFilterActiveNoCost) {
   DBG_DRAW_TEXT(kStrB, gfx::Point(), get_b_string());
   EXPECT_EQ(1, count_a);
   EXPECT_EQ(1, count_b);
+}
+
+// This tests passing a single buffer synchronously into the visual debuggeer
+TEST_F(VisualDebuggerTest, SingleBufferSync) {
+  const char kAnnoRect[] = "annorect";
+  const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
+  static const int kNumFrames = 1;
+  GetInternal()->ForceEnabled();
+  VizDebuggerInternal::BufferInfo buffer_info;
+  buffer_info.width = 4;
+  buffer_info.height = 4;
+  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
+  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
+    // Random numbers between 0-255 for RGBA values
+    uint8_t temp1 = 123;
+    uint8_t temp2 = 140;
+    uint8_t temp3 = 203;
+    uint8_t temp4 = 255;
+    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
+  }
+  VizDebuggerInternal::Buffer buffer;
+  buffer.id = 0;
+  buffer.buffer_info = buffer_info;
+  for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
+    SetFilter({TestFilter({""})});
+
+    static const int kNumSubmission = 1;
+    int id = 0;
+    DBG_COMPLETE_BUFFERS(id, buffer.buffer_info);
+    DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
+
+    GetFrameData();
+
+    EXPECT_EQ(counter_, frame_idx);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(draw_calls_.size(), static_cast<size_t>(kNumSubmission));
+    EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
+
+    if (frame_idx == 0) {
+      EXPECT_EQ(sources_.size(), 1u);
+      EXPECT_EQ(sources_[0].func, "TestBody");
+      EXPECT_EQ(sources_[0].file, __FILE__);
+      EXPECT_EQ(sources_[0].anno, kAnnoRect);
+    } else {
+      // After the first frame there are no new sources in the loop.
+      EXPECT_EQ(sources_.size(), 0u);
+    }
+
+    EXPECT_EQ(draw_calls_[0].buff_id, 0);
+
+    EXPECT_EQ(buffers_[0].buffer_info.width, buffer.buffer_info.width);
+    EXPECT_EQ(buffers_[0].buffer_info.height, buffer.buffer_info.height);
+    for (int j = 0;
+         j < buffers_[0].buffer_info.width * buffers_[0].buffer_info.height;
+         j++) {
+      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_r),
+                static_cast<int>(buffer.buffer_info.buffer[j].color_r));
+      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_g),
+                static_cast<int>(buffer.buffer_info.buffer[j].color_g));
+      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_b),
+                static_cast<int>(buffer.buffer_info.buffer[j].color_b));
+      EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_a),
+                static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+    }
+  }
+}
+
+// This tests passing multiple buffers into the visual debugger synchronously
+TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
+  const char kAnnoRect[] = "annorect";
+  const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
+  static const int kNumFrames = 1;
+  GetInternal()->ForceEnabled();
+  GetInternal()->Reset();
+  VizDebuggerInternal::BufferInfo buffer_info;
+  buffer_info.width = 4;
+  buffer_info.height = 4;
+  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
+  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
+    // Random numbers between 0-255 for RGBA values
+    uint8_t temp1 = 123;
+    uint8_t temp2 = 140;
+    uint8_t temp3 = 203;
+    uint8_t temp4 = 255;
+    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
+  }
+  VizDebuggerInternal::Buffer buffer;
+  buffer.id = 0;
+  buffer.buffer_info = buffer_info;
+  for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
+    SetFilter({TestFilter({""})});
+
+    static const int kNumSubmission = 8;
+    for (int i = 0; i < kNumSubmission; i++) {
+      int id = i;
+      DBG_COMPLETE_BUFFERS(id, buffer.buffer_info);
+      DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
+    }
+
+    GetFrameData();
+
+    EXPECT_EQ(counter_, frame_idx);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(draw_calls_.size(), static_cast<size_t>(kNumSubmission));
+    EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
+
+    if (frame_idx == 0) {
+      EXPECT_EQ(sources_.size(), 1u);
+      EXPECT_EQ(sources_[0].func, "TestBody");
+      EXPECT_EQ(sources_[0].file, __FILE__);
+      EXPECT_EQ(sources_[0].anno, kAnnoRect);
+    } else {
+      // After the first frame there are no new sources in the loop.
+      EXPECT_EQ(sources_.size(), 0u);
+    }
+
+    for (int i = 0; i < kNumSubmission; i++) {
+      EXPECT_EQ(draw_calls_[i].buff_id, i);
+
+      EXPECT_EQ(buffers_[i].buffer_info.width, buffer.buffer_info.width);
+      EXPECT_EQ(buffers_[i].buffer_info.height, buffer.buffer_info.height);
+      for (int j = 0;
+           j < buffers_[i].buffer_info.width * buffers_[i].buffer_info.height;
+           j++) {
+        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_r),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_r));
+        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_g),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_g));
+        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_b),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_b));
+        EXPECT_EQ(static_cast<int>(buffers_[i].buffer_info.buffer[j].color_a),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+      }
+    }
+  }
+}
+
+// This tests passing a single buffer into the visual debugger asynchronously
+TEST_F(VisualDebuggerTest, SingleBufferAsync) {
+  const char kAnnoRect[] = "annorect";
+  const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
+  static const int kNumFrames = 2;
+  GetInternal()->ForceEnabled();
+  GetInternal()->Reset();
+  VizDebuggerInternal::BufferInfo buffer_info;
+  buffer_info.width = 4;
+  buffer_info.height = 4;
+  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
+  for (int i = 0; i < buffer_info.height * buffer_info.width; i++) {
+    // Random numbers between 0-255 for RGBA values
+    uint8_t temp1 = 123;
+    uint8_t temp2 = 140;
+    uint8_t temp3 = 203;
+    uint8_t temp4 = 255;
+    buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
+  }
+  VizDebuggerInternal::Buffer buffer;
+  buffer.id = 0;
+  buffer.buffer_info = buffer_info;
+  for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
+    SetFilter({TestFilter({""})});
+
+    static const int kNumSubmission = 1;
+    static std::vector<VizDebuggerInternal::Buffer> previous_textures;
+    for (auto&& each : previous_textures) {
+      DBG_COMPLETE_BUFFERS(each.id, each.buffer_info)
+    }
+
+    int id = 0;
+    DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
+    buffer.id = id;
+    previous_textures.emplace_back(buffer);
+
+    GetFrameData();
+
+    EXPECT_EQ(counter_, frame_idx);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(draw_calls_.size(), static_cast<size_t>(kNumSubmission));
+
+    if (frame_idx == 0) {
+      EXPECT_EQ(sources_.size(), 1u);
+      EXPECT_EQ(sources_[0].func, "TestBody");
+      EXPECT_EQ(sources_[0].file, __FILE__);
+      EXPECT_EQ(sources_[0].anno, kAnnoRect);
+      EXPECT_EQ(buffers_.size(), static_cast<size_t>(0));
+    } else {
+      // After the first frame there are no new sources in the loop.
+      EXPECT_EQ(sources_.size(), 0u);
+      EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
+      EXPECT_EQ(draw_calls_[0].buff_id, 1);
+      EXPECT_EQ(buffers_[0].buffer_info.width, buffer.buffer_info.width);
+      EXPECT_EQ(buffers_[0].buffer_info.height, buffer.buffer_info.height);
+      for (int j = 0;
+           j < buffers_[0].buffer_info.width * buffers_[0].buffer_info.height;
+           j++) {
+        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_r),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_r));
+        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_g),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_g));
+        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_b),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_b));
+        EXPECT_EQ(static_cast<int>(buffers_[0].buffer_info.buffer[j].color_a),
+                  static_cast<int>(buffer.buffer_info.buffer[j].color_a));
+      }
+    }
+  }
+}
+
+// This tests passing multiple buffers into the visual debugger asynchronously
+TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
+  const char kAnnoRect[] = "annorect";
+  const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
+  static const int kNumFrames = 2;
+  GetInternal()->ForceEnabled();
+  GetInternal()->Reset();
+  VizDebuggerInternal::BufferInfo buffer_info;
+  buffer_info.width = 4;
+  buffer_info.height = 4;
+  buffer_info.buffer.resize(buffer_info.width * buffer_info.height);
+  VizDebuggerInternal::Buffer buffer;
+  buffer.id = 0;
+  for (uint64_t frame_idx = 0; frame_idx < kNumFrames; frame_idx++) {
+    SetFilter({TestFilter({""})});
+
+    static const int kNumSubmission = 8;
+    static std::vector<VizDebuggerInternal::Buffer> previous_textures;
+    static std::vector<VizDebuggerInternal::Buffer> test_buffers;
+    for (auto&& each : previous_textures) {
+      for (int i = 0; i < buffer_info.width * buffer_info.height; i++) {
+        // Random numbers between 0-255 for RGBA values
+        uint8_t temp1 = (each.id + 15) * 11231;
+        uint8_t temp2 = (each.id + 24) * 32461231;
+        uint8_t temp3 = (each.id + 523) * 72321231;
+        uint8_t temp4 = (each.id + 52) * 321231;
+        buffer_info.buffer[i] = {temp1, temp2, temp3, temp4};
+      }
+      buffer.id = each.id;
+      buffer.buffer_info = buffer_info;
+      test_buffers.emplace(test_buffers.begin(), buffer);
+      DBG_COMPLETE_BUFFERS(buffer.id, buffer.buffer_info);
+    }
+    previous_textures.resize(kNumSubmission);
+    previous_textures.clear();
+    for (int i = 0; i < kNumSubmission; i++) {
+      int id = i;
+      buffer.id = id;
+      DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
+      buffer.buffer_info = buffer_info;
+      previous_textures.emplace(previous_textures.end() - i, buffer);
+    }
+
+    GetFrameData();
+
+    EXPECT_EQ(counter_, frame_idx);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(window_x_, 256);
+    EXPECT_EQ(draw_calls_.size(), static_cast<size_t>(kNumSubmission));
+
+    if (frame_idx == 0) {
+      EXPECT_EQ(sources_.size(), 1u);
+      EXPECT_EQ(sources_[0].func, "TestBody");
+      EXPECT_EQ(sources_[0].file, __FILE__);
+      EXPECT_EQ(sources_[0].anno, kAnnoRect);
+      EXPECT_EQ(buffers_.size(), static_cast<size_t>(0));
+    } else {
+      // After the first frame there are no new sources in the loop
+      EXPECT_EQ(sources_.size(), 0u);
+      EXPECT_EQ(buffers_.size(), static_cast<size_t>(kNumSubmission));
+      for (int i = 0; i < kNumSubmission; i++) {
+        EXPECT_EQ(draw_calls_[i].buff_id, i + 8);
+        EXPECT_EQ(buffers_[i].buffer_info.width,
+                  test_buffers[i].buffer_info.width);
+        EXPECT_EQ(buffers_[i].buffer_info.height,
+                  test_buffers[i].buffer_info.height);
+        for (int j = 0;
+             j < buffers_[i].buffer_info.width * buffers_[i].buffer_info.height;
+             j++) {
+          EXPECT_EQ(
+              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_r),
+              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_r));
+          EXPECT_EQ(
+              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_g),
+              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_g));
+          EXPECT_EQ(
+              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_b),
+              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_b));
+          EXPECT_EQ(
+              static_cast<int>(buffers_[i].buffer_info.buffer[j].color_a),
+              static_cast<int>(test_buffers[i].buffer_info.buffer[j].color_a));
+        }
+      }
+    }
+  }
 }
 
 }  // namespace
