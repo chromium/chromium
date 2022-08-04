@@ -538,6 +538,10 @@ class ExtensionWebRequestEventRouter {
   // Called when a BrowserContext is being destroyed.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
 
+  // Get the number of listeners - for testing only.
+  size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
+                                    const std::string& event_name);
+
  private:
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
@@ -764,10 +768,6 @@ class ExtensionWebRequestEventRouter {
 
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
-
-  // Get the number of listeners - for testing only.
-  size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
-                                    const std::string& event_name);
 
   // A map of data associated with given BrowserContexts.
   DataMap data_;

@@ -4990,4 +4990,266 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebRequestApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
 
+class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
+ public:
+  ManifestV3WebRequestApiTest() = default;
+  ~ManifestV3WebRequestApiTest() override = default;
+
+  // Loads an extension contained within `test_dir` as a policy-installed
+  // extension. This is useful because webRequestBlocking is restricted to
+  // policy-installed extensions in Manifest V3.
+  // This assumes the extension script will send a "ready" message once it's
+  // done setting up.
+  const Extension* LoadPolicyExtension(TestExtensionDir& test_dir) {
+    // We need a "ready"-style listener here because `InstallExtension()`
+    // doesn't automagically wait for the extension to finish setting up.
+    ExtensionTestMessageListener listener("ready");
+    // Since we may programmatically stop the worker, we also need to wait for
+    // the registration to be fully stored.
+    service_worker_test_utils::TestRegistrationObserver registration_observer(
+        profile());
+    base::FilePath packed_path = test_dir.Pack();
+    const Extension* extension = InstallExtension(
+        packed_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);
+    EXPECT_TRUE(extension);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    registration_observer.WaitForRegistrationStored();
+
+    return extension;
+  }
+
+  ExtensionWebRequestEventRouter* web_request_router() {
+    return ExtensionWebRequestEventRouter::GetInstance();
+  }
+};
+
+// Tests a service worker-based extension intercepting requests with
+// webRequestBlocking.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://block.example/*",
+             "http://allow.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that cancels any requests that include
+  // block.example.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               if (details.url.includes('block.example')) {
+                 return {cancel: true}
+               }
+               return {};
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to allow.example. This should succeed.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("allow.example", "/simple.html")));
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+
+  // Now, navigate to block.example. This navigation should be blocked.
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("block.example", "/simple.html")));
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  }
+}
+
+// Tests that a service worker-based extension with webRequestBlocking can
+// intercept requests after the service worker stops.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlocking_AfterWorkerShutdown) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://block.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension with a listener that cancels any requests that include
+  // block.example.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               if (details.url.includes('block.example')) {
+                 return {cancel: true}
+               }
+               return {};
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  // A single webRequest listener should be registered.
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  // Note: the task to remove listeners from ExtensionWebRequestEventRouter
+  // is async; run to flush the posted task.
+  base::RunLoop().RunUntilIdle();
+
+  // The listener should still be registered.
+  // TODO(https://crbug.com/1024211): This currently fails.
+  // EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+  //     profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Navigate to block.example. The request should be blocked by the extension.
+  {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("block.example", "/simple.html")));
+    // TODO(https://crbug.com/1024211): This currently fails.
+    // EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+    //           nav_observer.last_net_error_code());
+    EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
+  }
+}
+
+// Tests a service worker-based extension using webRequest for observational
+// purposes receives events after the worker stops.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestObservation_AfterWorkerShutdown) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "storage"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // An extension that stores the number of matched requests in a count in
+  // extension storage.
+  // This is very similar to the test extension at
+  // chrome/test/data/extensions/api_test/webrequest_persistent, but is
+  // manifest V3. There's enough changes that our loading auto-conversion code
+  // won't quite work (mostly around permissions vs host_permissions), so we
+  // need a bit of a duplication here.
+  static constexpr char kBackgroundJs[] =
+      R"(let storageComplete = undefined;
+         let isUsingStorage = false;
+
+         // Waits for any pending load to complete to avoid raciness in the
+         // test.
+         async function flushStorage() {
+           console.assert(!storageComplete);
+           if (!isUsingStorage)
+             return;
+           await new Promise((resolve) => {
+             storageComplete = resolve;
+           });
+           storageComplete = undefined;
+         }
+
+         chrome.webRequest.onBeforeRequest.addListener(
+             async (details) => {
+               isUsingStorage = true;
+               let {requestCount} =
+                   await chrome.storage.local.get({requestCount: 0});
+               requestCount++;
+               await chrome.storage.local.set({requestCount});
+               isUsingStorage = false;
+               if (storageComplete)
+                 storageComplete();
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']});)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+
+  // A single listener should be registered.
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Navigate to a URL. The request should be seen by the extension.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  auto get_request_count = [this, extension]() {
+    base::Value request_count = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), kGetNumRequests,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    return request_count.GetInt();
+  };
+
+  EXPECT_EQ(1, get_request_count());
+
+  // Stop the extension's service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  // Note: the task to remove listeners from ExtensionWebRequestEventRouter
+  // is async; run to flush the posted task.
+  base::RunLoop().RunUntilIdle();
+
+  // The listener should still be registered.
+  // TODO(https://crbug.com/1024211): This currently fails.
+  // EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+  //     profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Navigate again. The request should again be seen by the extension.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // TODO(https://crbug.com/1024211): This currently fails. Additionally,
+  // BackgroundScriptExecutor won't wake up a passive service worker, so
+  // we can't even call `get_request_count()`.
+  // EXPECT_EQ(2, get_request_count());
+}
+
 }  // namespace extensions

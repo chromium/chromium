@@ -1732,12 +1732,6 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
   return true;
 }
 
-size_t ExtensionWebRequestEventRouter::GetListenerCountForTesting(
-    content::BrowserContext* browser_context,
-    const std::string& event_name) {
-  return data_[browser_context].active_listeners[event_name].size();
-}
-
 ExtensionWebRequestEventRouter::EventListener*
 ExtensionWebRequestEventRouter::FindEventListener(const EventListener::ID& id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1894,6 +1888,12 @@ void ExtensionWebRequestEventRouter::DecrementExtraHeadersListenerCount(
 void ExtensionWebRequestEventRouter::OnBrowserContextShutdown(
     content::BrowserContext* browser_context) {
   data_.erase(browser_context);
+}
+
+size_t ExtensionWebRequestEventRouter::GetListenerCountForTesting(
+    content::BrowserContext* browser_context,
+    const std::string& event_name) {
+  return data_[browser_context].active_listeners[event_name].size();
 }
 
 bool ExtensionWebRequestEventRouter::HasAnyExtraHeadersListenerImpl(
