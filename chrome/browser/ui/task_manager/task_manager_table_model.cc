@@ -893,14 +893,14 @@ void TaskManagerTableModel::ToggleColumnVisibility(int column_id) {
   UpdateRefreshTypes(column_id, new_visibility);
 }
 
-int TaskManagerTableModel::GetRowForWebContents(
+absl::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
   auto index = std::find(tasks_.begin(), tasks_.end(), task_id);
   if (index == tasks_.end())
-    return -1;
-  return static_cast<int>(index - tasks_.begin());
+    return absl::nullopt;
+  return static_cast<size_t>(index - tasks_.begin());
 }
 
 void TaskManagerTableModel::StartUpdating() {
