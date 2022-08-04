@@ -8,6 +8,7 @@ import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/zip.gni")
 import("//chrome/version.gni")
 
 group("mac") {
@@ -17,6 +18,7 @@ group("mac") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
+    ":updater_zip",
     "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
   ]
@@ -382,4 +384,52 @@ if (!is_component_build && enable_dsyms) {
                        ],
                        root_out_dir)
   }
+}
+
+# The contents of this zip are uploaded by archivers (//infra/archive_config).
+artifact_zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs = [
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/MacOS/${updater_product_full_name}",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/${updater_product_full_name}_test",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/PkgInfo",
+    "$root_build_dir/Updater Packaging/signing/signing.py",
+    "$root_build_dir/Updater Packaging/signing/config.py",
+    "$root_build_dir/Updater Packaging/signing/modification.py",
+    "$root_build_dir/Updater Packaging/signing/notarize.py",
+    "$root_build_dir/Updater Packaging/signing/pkg-dmg",
+    "$root_build_dir/Updater Packaging/signing/__init__.py",
+    "$root_build_dir/Updater Packaging/signing/model.py",
+    "$root_build_dir/Updater Packaging/signing/unbranded_config.py",
+    "$root_build_dir/Updater Packaging/signing/pipeline.py",
+    "$root_build_dir/Updater Packaging/signing/parts.py",
+    "$root_build_dir/Updater Packaging/signing/config_factory.py",
+    "$root_build_dir/Updater Packaging/signing/build_props_config.py",
+    "$root_build_dir/Updater Packaging/signing/commands.py",
+    "$root_build_dir/Updater Packaging/sign_updater.py",
+    "$root_build_dir/chrome/updater/.install",
+    "$root_build_dir/UpdaterSetup",
+  ]
+  deps = [
+    ":updater_bundle",
+    ":updater_bundle_test",
+    ":updater_install_script",
+    "//chrome/updater/mac/installer:metainstaller",
+    "//chrome/updater/mac/signing",
+  ]
 }

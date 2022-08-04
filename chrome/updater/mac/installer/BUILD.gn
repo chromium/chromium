@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/zip.gni")
 import("//chrome/updater/branding.gni")
-import("//chrome/updater/zip.gni")
 
-artifact_zip("updater_zip") {
+# This zip is a resource for the macOS metainstaller.
+zip("updater_zip") {
   output = "$target_gen_dir/updater.zip"
   inputs = [
     "$root_build_dir/${updater_product_full_name}.app/Contents/Info.plist",
