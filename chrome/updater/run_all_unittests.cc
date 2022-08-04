@@ -16,9 +16,12 @@
 #include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include <memory>
 
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/installer/util/scoped_token_privilege.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace {
@@ -88,6 +91,13 @@ int main(int argc, char** argv) {
     // Failing to disable COM exception handling is a critical error.
     CHECK(false) << "Failed to disable COM exception handling.";
   }
+
+  installer::ScopedTokenPrivilege token_se_debug(SE_DEBUG_NAME);
+  if (::IsUserAnAdmin() && !token_se_debug.is_enabled()) {
+    std::cerr << "Running as administrator but can't enable SE_DEBUG_NAME."
+              << std::endl;
+  }
+
 #endif
 
   base::TestSuite test_suite(argc, argv);

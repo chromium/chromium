@@ -18,7 +18,11 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include "base/file_version_info_win.h"
+#include "base/win/access_token.h"
+#include "base/win/windows_types.h"
 #endif
 
 namespace updater {
@@ -61,6 +65,26 @@ TEST(UpdaterTest, UpdaterTestVersionResource) {
 
   EXPECT_EQ(version_info->original_filename(), executable_test.AsUTF16Unsafe());
 }
-#endif
+
+// Checks that the unit test has the SE_DEBUG_NAME privilege when the process is
+// running as Administrator.
+TEST(UpdaterTest, UpdaterTestDebugPrivilege) {
+  if (!::IsUserAnAdmin())
+    return;
+
+  LUID luid = {0};
+  ASSERT_TRUE(::LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &luid));
+
+  CHROME_LUID chrome_luid = {0};
+  chrome_luid.LowPart = luid.LowPart;
+  chrome_luid.HighPart = luid.HighPart;
+  const base::win::AccessToken::Privilege priv(chrome_luid,
+                                               SE_PRIVILEGE_ENABLED);
+
+  EXPECT_EQ(priv.GetName(), SE_DEBUG_NAME);
+  EXPECT_EQ(priv.GetAttributes(), DWORD{SE_PRIVILEGE_ENABLED});
+  EXPECT_TRUE(priv.IsEnabled());
+}
+#endif  // IS_WIN
 
 }  // namespace updater
