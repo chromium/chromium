@@ -113,15 +113,19 @@ void CallReverseReplyToReadDir(uint64_t cookie,
 void ReplyToStat(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
                  base::File::Error error_code,
-                 const base::File::Info& info) {
+                 const base::File::Info& info,
+                 bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
+  int32_t mode_bits = info.is_directory ? S_IFDIR : S_IFREG;
+  mode_bits |= read_only ? 0550 : 0770;  // "r-xr-x---" versus "rwxrwx---".
+
   writer.AppendInt32(static_cast<int32_t>(error_code));
-  writer.AppendInt32(info.is_directory ? S_IFDIR : S_IFREG);
+  writer.AppendInt32(mode_bits);
   writer.AppendInt64(info.size);
   writer.AppendDouble(info.last_accessed.ToDoubleT());
   writer.AppendDouble(info.last_modified.ToDoubleT());
@@ -249,7 +253,7 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
   if (!reader.PopString(&fs_url_as_string)) {
     ReplyToStat(method_call, std::move(sender),
                 base::File::Error::FILE_ERROR_INVALID_OPERATION,
-                base::File::Info());
+                base::File::Info(), false);
     return;
   }
 

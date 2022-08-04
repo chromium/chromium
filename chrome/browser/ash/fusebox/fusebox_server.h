@@ -78,7 +78,8 @@ class Server {
 
   // Stat returns the file or directory's metadata.
   using StatCallback = base::OnceCallback<void(base::File::Error error_code,
-                                               const base::File::Info& info)>;
+                                               const base::File::Info& info,
+                                               bool read_only)>;
   void Stat(std::string fs_url_as_string, StatCallback callback);
 
   struct PrefixMapEntry {

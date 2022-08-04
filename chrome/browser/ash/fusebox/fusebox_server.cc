@@ -239,11 +239,12 @@ void RunReadDirCallback(
 void RunStatCallback(
     Server::StatCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    bool read_only,
     base::File::Error error_code,
     const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::move(callback).Run(error_code, info);
+  std::move(callback).Run(error_code, info, read_only);
 }
 
 }  // namespace
@@ -386,7 +387,7 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(common.error_code, base::File::Info());
+    std::move(callback).Run(common.error_code, base::File::Info(), false);
     return;
   }
 
@@ -395,9 +396,10 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
       storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
-  auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&RunStatCallback, std::move(callback), common.fs_context));
+  auto outer_callback =
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         base::BindOnce(&RunStatCallback, std::move(callback),
+                                        common.fs_context, common.read_only));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
