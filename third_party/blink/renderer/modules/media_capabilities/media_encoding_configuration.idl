@@ -6,7 +6,6 @@
 
 enum MediaEncodingType {
     "record",
-    "transmission",
     "webrtc",
 };
 

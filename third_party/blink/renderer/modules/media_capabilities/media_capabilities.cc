@@ -1006,6 +1006,15 @@ ScriptPromise MediaCapabilities::encodingInfo(
     ScriptState* script_state,
     const MediaEncodingConfiguration* config,
     ExceptionState& exception_state) {
+  if (config->type() == "record" &&
+      !RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled()) {
+    exception_state.ThrowTypeError(
+        "The provided value 'record' is not a valid enum value of type "
+        "MediaEncodingType.");
+    return ScriptPromise();
+    ;
+  }
+
   const base::TimeTicks request_time = base::TimeTicks::Now();
 
   const bool is_webrtc = config->type() == "webrtc";
@@ -1087,31 +1096,21 @@ ScriptPromise MediaCapabilities::encodingInfo(
     return promise;
   }
 
-  if (config->type() == "record") {
-    if (!RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled()) {
-      exception_state.ThrowTypeError(
-          "The provided value 'record' is not a valid enum value of type "
-          "MediaEncodingType.");
-      return promise;
-    }
+  DCHECK_EQ(config->type(), "record");
+  DCHECK(RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled());
 
-    if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
-            ExecutionContext::From(script_state)
-                ->GetTaskRunner(TaskType::kInternalMediaRealTime))) {
-      handler->EncodingInfo(ToWebMediaConfiguration(config),
-                            WTF::Bind(&OnMediaCapabilitiesEncodingInfo,
-                                      WrapPersistent(resolver)));
-      return promise;
-    }
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "Platform error: could not create MediaRecorderHandler."));
+  if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
+          ExecutionContext::From(script_state)
+              ->GetTaskRunner(TaskType::kInternalMediaRealTime))) {
+    handler->EncodingInfo(
+        ToWebMediaConfiguration(config),
+        WTF::Bind(&OnMediaCapabilitiesEncodingInfo, WrapPersistent(resolver)));
     return promise;
   }
 
-  exception_state.ThrowTypeError(
-      "The provided value is not a valid enum value of type "
-      "MediaEncodingType.");
+  DVLOG(2) << __func__ << " Could not get MediaRecorderHandler.";
+  MediaCapabilitiesInfo* info = CreateEncodingInfoWith(false);
+  resolver->Resolve(info);
   return promise;
 }
 
