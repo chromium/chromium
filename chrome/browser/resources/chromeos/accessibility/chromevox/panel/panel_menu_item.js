@@ -14,8 +14,7 @@ export class PanelMenuItem {
    * @param {string} menuItemShortcut The keystrokes to select this item.
    * @param {string} menuItemBraille The braille keystrokes to select this item.
    * @param {string} gesture The gesture to select this item.
-   * @param {function() : !Promise} callback The function to call if this item
-   *     is selected.
+   * @param {Function} callback The function to call if this item is selected.
    * @param {string=} opt_id An optional id for the menu item element.
    */
   constructor(
@@ -29,7 +28,7 @@ export class PanelMenuItem {
     this.menuItemBraille = menuItemBraille;
     /** @type {string} */
     this.gesture = gesture;
-    /** @type {function() : !Promise} */
+    /** @type {Function} */
     this.callback = callback;
 
     /** @type {Element} */

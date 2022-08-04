@@ -30,7 +30,7 @@ import {PanelMode, PanelModeInfo} from './panel_mode.js';
 export class Panel extends PanelInterface {
   /** @override */
   setPendingCallback(callback) {
-    /** @type {?function() : !Promise} @private */
+    /** @type {?Function} @private */
     Panel.pendingCallback_ = callback;
   }
 
@@ -342,7 +342,7 @@ export class Panel extends PanelInterface {
       }
       chromevoxMenu.addMenuItem(
           Msgs.getMsg('open_keyboard_shortcuts_menu'),
-          `Ctrl+Alt+${localizedSlash}`, '', '', async function() {
+          `Ctrl+Alt+${localizedSlash}`, '', '', function() {
             EventGenerator.sendKeyPress(
                 KeyCode.OEM_2 /* forward slash */, {'ctrl': true, 'alt': true});
           });
@@ -466,7 +466,7 @@ export class Panel extends PanelInterface {
       // Add all open tabs to the Tabs menu.
       const data = await BackgroundBridge.PanelBackground.getTabMenuData();
       for (const menuInfo of data) {
-        tabsMenu.addMenuItem(menuInfo.title, '', '', '', async function() {
+        tabsMenu.addMenuItem(menuInfo.title, '', '', '', () => {
           BackgroundBridge.PanelBackground.focusTab(
               menuInfo.windowId, menuInfo.tabId);
         });
@@ -488,8 +488,7 @@ export class Panel extends PanelInterface {
 
       // Add a menu item that disables / closes ChromeVox.
       chromevoxMenu.addMenuItem(
-          Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
-          async function() {
+          Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '', function() {
             Panel.onClose();
           });
 
@@ -1046,6 +1045,7 @@ export class Panel extends PanelInterface {
 
     // Make sure all menus are cleared to avoid bogus output when we re-open.
     Panel.clearMenus();
+    BackgroundBridge.PanelBackground.clearSavedNode();
 
     // Make sure we're not in full-screen mode.
     Panel.setMode(PanelMode.COLLAPSED);
@@ -1055,10 +1055,8 @@ export class Panel extends PanelInterface {
     await BackgroundBridge.PanelBackground.waitForPanelCollapse();
 
     if (pendingCallback) {
-      await pendingCallback();
+      pendingCallback();
     }
-
-    BackgroundBridge.PanelBackground.clearSavedNode();
   }
 
   /** Open the tutorial. */
