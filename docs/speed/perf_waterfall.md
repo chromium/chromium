@@ -7,7 +7,7 @@ continuously builds and runs our performance tests on real Android, Windows,
 Mac, and Linux hardware; see [list of platforms](perf_lab_platforms.md).
 Results are reported to the
 [Performance Dashboard](https://chromeperf.appspot.com/) for analysis. The
-[Perfbot Health Sheriffing Rotation](bot_health_sheriffing/main.md) ensures that the benchmarks stay green. The [Perf Sheriff Rotation](perf_regression_sheriffing.md) ensures that any regressions detected by those benchmarks are addressed quickly. Together, these rotations maintain
+[Perfbot Health Sheriffing Rotation](http://goto.google.com/perf-bot-health-sheriffs) ensures that the benchmarks stay green. The [Perf Sheriff Rotation](perf_regression_sheriffing.md) ensures that any regressions detected by those benchmarks are addressed quickly. Together, these rotations maintain
 [Chrome's Core Principles](https://www.chromium.org/developers/core-principles)
 of speed:
 
@@ -52,7 +52,7 @@ For some jobs, this work is executed by the tester instead.
 ## Links
 
   * [Perf Sheriff Rotation](perf_regression_sheriffing.md)
-  * [Perfbot Health Sheriffing Rotation](bot_health_sheriffing/main.md)
+  * [Perfbot Health Sheriffing Rotation](http://goto.google.com/perf-bot-health-sheriffs)
   * [How to SSH to Bots in Lab](https://chrome-internal.googlesource.com/infra/infra_internal/+/main/doc/ssh.md)
     (googlers only!)
   * TODO: Page on how to repro failures locally

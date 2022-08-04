@@ -2,7 +2,7 @@
 
 The perf regression sheriff tracks performance regressions in Chrome's
 continuous integration tests. Note that a [different
-rotation](perf_bot_sheriffing.md) has been created to ensure the builds and
+rotation](http://goto.google.com/perf-bot-health-sheriffs) has been created to ensure the builds and
 tests stay green, so the perf regression sheriff role is now entirely focused
 on performance.
 
