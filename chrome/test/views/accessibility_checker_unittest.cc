@@ -44,4 +44,14 @@ TEST_F(AccessibilityCheckerTest, VerifyAccessibilityCheckerFailAndPass) {
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   EXPECT_NONFATAL_FAILURE(AddFailureOnWidgetAccessibilityError(&widget),
                           "Accessibility");
+
+  // Restore the name of the button so that it is not the source of failure.
+  button->SetAccessibleName(u"Some name");
+
+  // Accessibility test should fail if the focusable view lacks a valid role.
+  auto* generic_view =
+      widget.GetContentsView()->AddChildView(std::make_unique<views::View>());
+  generic_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  EXPECT_NONFATAL_FAILURE(AddFailureOnWidgetAccessibilityError(&widget),
+                          "Accessibility");
 }

@@ -370,6 +370,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
               },
               base::Unretained(this))) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+
+  // Focusable nodes must have an accessible name and valid role.
+  // TODO(crbug.com/1348930): Review the accessible name and role.
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
   GetViewAccessibility().OverrideName(GetClassName());
 
   // Since there's no separator in the `CalendarView`, first sets
@@ -458,7 +462,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   content_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kContentVerticalPadding, kWeekRowHorizontalPadding,
                         kContentVerticalPadding, kWeekRowHorizontalPadding)));
-  // Focusable nodes must have an accessible name.
+
+  // Focusable nodes must have an accessible name and valid role.
+  // TODO(crbug.com/1348930): Review the accessible name and role.
+  content_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
   content_view_->GetViewAccessibility().OverrideName(GetClassName());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
 

@@ -32,6 +32,9 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetModalType(ui::MODAL_TYPE_CHILD);
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
 

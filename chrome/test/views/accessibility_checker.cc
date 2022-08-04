@@ -76,8 +76,13 @@ bool DoesViewHaveAccessibilityErrors(views::View* view,
     if (DoesViewHaveAccessibleNameOrLabelError(&node_data)) {
       violations +=
           "\n- Focusable View has no accessible name or placeholder, and the "
-          "name attribute does not use kAttributeExplicitlyEmpty.";
+          "name attribute does not use kAttributeExplicitlyEmpty. "
+          "The accessible name is spoken by screen readers to end users. Thus "
+          "if this is production code, the accessible name should be "
+          "localized.";
     }
+    if (node_data.role == Role::kNone || node_data.role == Role::kUnknown)
+      violations += "\n- Focusable View needs a valid role.";
     if (node_data.HasState(State::kIgnored))
       violations += "\n- Focusable View should not be ignored.";
     if (node_data.IsInvisible())

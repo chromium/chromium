@@ -36,7 +36,9 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
     DCHECK(owned_by_widget());
     SetModalType(ui::MODAL_TYPE_CHILD);
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    // Dialogs that take focus must have a name to pass accessibility checks.
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ChildModalDialogDelegate(const ChildModalDialogDelegate&) = delete;

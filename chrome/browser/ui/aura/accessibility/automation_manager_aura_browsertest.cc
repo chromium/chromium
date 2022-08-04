@@ -250,17 +250,20 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   cache_ptr->set_focused_widget_for_testing(widget);
 
   views::View* view1 = new views::View();
+  view1->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
   view1->GetViewAccessibility().OverrideName("view1");
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view1);
   views::AXAuraObjWrapper* wrapper1 = cache_ptr->GetOrCreate(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  view2->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
   view2->GetViewAccessibility().OverrideName("view2");
   widget->GetRootView()->AddChildView(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
   views::View* view3 = new views::View();
   view3->GetViewAccessibility().OverrideName("view3");
+  view3->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
   view3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view3);
   views::AXAuraObjWrapper* wrapper3 = cache_ptr->GetOrCreate(view3);
@@ -525,11 +528,13 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   cache_ptr->set_focused_widget_for_testing(widget);
 
   views::View* view1 = new views::View();
+  view1->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
   view1->GetViewAccessibility().OverrideName("view1");
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  view2->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
   view2->GetViewAccessibility().OverrideName("view2");
   widget->GetRootView()->AddChildView(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);

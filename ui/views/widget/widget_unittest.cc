@@ -1742,6 +1742,8 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
   class ContentsView : public View {
     void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
       node_data->SetNameExplicitlyEmpty();
+      // Focusable Views need a valid role.
+      node_data->role = ax::mojom::Role::kDialog;
     }
   };
 
