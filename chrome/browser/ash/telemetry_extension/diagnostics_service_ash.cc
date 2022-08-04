@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 
 #include <memory>
 #include <utility>
@@ -19,50 +19,50 @@
 namespace ash {
 
 // static
-DiagnosticsService::Factory* DiagnosticsService::Factory::test_factory_ =
+DiagnosticsServiceAsh::Factory* DiagnosticsServiceAsh::Factory::test_factory_ =
     nullptr;
 
 // static
 std::unique_ptr<crosapi::mojom::DiagnosticsService>
-DiagnosticsService::Factory::Create(
+DiagnosticsServiceAsh::Factory::Create(
     mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver) {
   if (test_factory_) {
     return test_factory_->CreateInstance(std::move(receiver));
   }
 
-  return base::WrapUnique<DiagnosticsService>(
-      new DiagnosticsService(std::move(receiver)));
+  return base::WrapUnique<DiagnosticsServiceAsh>(
+      new DiagnosticsServiceAsh(std::move(receiver)));
 }
 
 // static
-void DiagnosticsService::Factory::SetForTesting(Factory* test_factory) {
+void DiagnosticsServiceAsh::Factory::SetForTesting(Factory* test_factory) {
   test_factory_ = test_factory;
 }
 
-DiagnosticsService::Factory::~Factory() = default;
+DiagnosticsServiceAsh::Factory::~Factory() = default;
 
-DiagnosticsService::DiagnosticsService(
+DiagnosticsServiceAsh::DiagnosticsServiceAsh(
     mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-DiagnosticsService::~DiagnosticsService() = default;
+DiagnosticsServiceAsh::~DiagnosticsServiceAsh() = default;
 
 cros_healthd::mojom::CrosHealthdDiagnosticsService*
-DiagnosticsService::GetService() {
+DiagnosticsServiceAsh::GetService() {
   if (!service_ || !service_.is_connected()) {
     cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
         service_.BindNewPipeAndPassReceiver());
     service_.set_disconnect_handler(base::BindOnce(
-        &DiagnosticsService::OnDisconnect, base::Unretained(this)));
+        &DiagnosticsServiceAsh::OnDisconnect, base::Unretained(this)));
   }
   return service_.get();
 }
 
-void DiagnosticsService::OnDisconnect() {
+void DiagnosticsServiceAsh::OnDisconnect() {
   service_.reset();
 }
 
-void DiagnosticsService::GetAvailableRoutines(
+void DiagnosticsServiceAsh::GetAvailableRoutines(
     GetAvailableRoutinesCallback callback) {
   GetService()->GetAvailableRoutines(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::GetAvailableRoutinesCallback
@@ -74,7 +74,7 @@ void DiagnosticsService::GetAvailableRoutines(
       std::move(callback)));
 }
 
-void DiagnosticsService::GetRoutineUpdate(
+void DiagnosticsServiceAsh::GetRoutineUpdate(
     int32_t id,
     crosapi::mojom::DiagnosticsRoutineCommandEnum command,
     bool include_output,
@@ -91,7 +91,7 @@ void DiagnosticsService::GetRoutineUpdate(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunBatteryCapacityRoutine(
+void DiagnosticsServiceAsh::RunBatteryCapacityRoutine(
     RunBatteryCapacityRoutineCallback callback) {
   GetService()->RunBatteryCapacityRoutine(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::RunBatteryCapacityRoutineCallback
@@ -103,7 +103,7 @@ void DiagnosticsService::RunBatteryCapacityRoutine(
       std::move(callback)));
 }
 
-void DiagnosticsService::RunBatteryHealthRoutine(
+void DiagnosticsServiceAsh::RunBatteryHealthRoutine(
     RunBatteryHealthRoutineCallback callback) {
   GetService()->RunBatteryHealthRoutine(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
@@ -115,7 +115,7 @@ void DiagnosticsService::RunBatteryHealthRoutine(
       std::move(callback)));
 }
 
-void DiagnosticsService::RunSmartctlCheckRoutine(
+void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
     RunSmartctlCheckRoutineCallback callback) {
   GetService()->RunSmartctlCheckRoutine(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
@@ -127,7 +127,7 @@ void DiagnosticsService::RunSmartctlCheckRoutine(
       std::move(callback)));
 }
 
-void DiagnosticsService::RunAcPowerRoutine(
+void DiagnosticsServiceAsh::RunAcPowerRoutine(
     crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
     const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
@@ -143,7 +143,7 @@ void DiagnosticsService::RunAcPowerRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunCpuCacheRoutine(
+void DiagnosticsServiceAsh::RunCpuCacheRoutine(
     uint32_t length_seconds,
     RunCpuCacheRoutineCallback callback) {
   GetService()->RunCpuCacheRoutine(
@@ -158,7 +158,7 @@ void DiagnosticsService::RunCpuCacheRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunCpuStressRoutine(
+void DiagnosticsServiceAsh::RunCpuStressRoutine(
     uint32_t length_seconds,
     RunCpuStressRoutineCallback callback) {
   GetService()->RunCpuStressRoutine(
@@ -173,7 +173,7 @@ void DiagnosticsService::RunCpuStressRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunFloatingPointAccuracyRoutine(
+void DiagnosticsServiceAsh::RunFloatingPointAccuracyRoutine(
     uint32_t length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
   GetService()->RunFloatingPointAccuracyRoutine(
@@ -188,7 +188,7 @@ void DiagnosticsService::RunFloatingPointAccuracyRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunNvmeWearLevelRoutine(
+void DiagnosticsServiceAsh::RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
   GetService()->RunNvmeWearLevelRoutine(
@@ -203,7 +203,7 @@ void DiagnosticsService::RunNvmeWearLevelRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunNvmeSelfTestRoutine(
+void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(
     crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
     RunNvmeSelfTestRoutineCallback callback) {
   GetService()->RunNvmeSelfTestRoutine(
@@ -218,7 +218,7 @@ void DiagnosticsService::RunNvmeSelfTestRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunDiskReadRoutine(
+void DiagnosticsServiceAsh::RunDiskReadRoutine(
     crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
     uint32_t length_seconds,
     uint32_t file_size_mb,
@@ -235,7 +235,7 @@ void DiagnosticsService::RunDiskReadRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunPrimeSearchRoutine(
+void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
     uint32_t length_seconds,
     RunPrimeSearchRoutineCallback callback) {
   GetService()->RunPrimeSearchRoutine(
@@ -250,7 +250,7 @@ void DiagnosticsService::RunPrimeSearchRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunBatteryDischargeRoutine(
+void DiagnosticsServiceAsh::RunBatteryDischargeRoutine(
     uint32_t length_seconds,
     uint32_t maximum_discharge_percent_allowed,
     RunBatteryDischargeRoutineCallback callback) {
@@ -266,7 +266,7 @@ void DiagnosticsService::RunBatteryDischargeRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunBatteryChargeRoutine(
+void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
     uint32_t length_seconds,
     uint32_t minimum_charge_percent_required,
     RunBatteryChargeRoutineCallback callback) {
@@ -282,7 +282,8 @@ void DiagnosticsService::RunBatteryChargeRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsService::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
+void DiagnosticsServiceAsh::RunMemoryRoutine(
+    RunMemoryRoutineCallback callback) {
   GetService()->RunMemoryRoutine(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback callback,
          cros_healthd::mojom::RunRoutineResponsePtr ptr) {
@@ -292,7 +293,7 @@ void DiagnosticsService::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
       std::move(callback)));
 }
 
-void DiagnosticsService::RunLanConnectivityRoutine(
+void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
     RunLanConnectivityRoutineCallback callback) {
   GetService()->RunLanConnectivityRoutine(base::BindOnce(
       [](crosapi::mojom::DiagnosticsService::RunLanConnectivityRoutineCallback

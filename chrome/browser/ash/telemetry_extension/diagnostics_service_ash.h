@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_ASH_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_ASH_H_
 
 #include <memory>
 
@@ -20,7 +20,7 @@ namespace cros_healthd {
 namespace mojom = ::chromeos::cros_healthd::mojom;
 }  // namespace cros_healthd
 
-class DiagnosticsService : public crosapi::mojom::DiagnosticsService {
+class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
  public:
   class Factory {
    public:
@@ -39,12 +39,12 @@ class DiagnosticsService : public crosapi::mojom::DiagnosticsService {
     static Factory* test_factory_;
   };
 
-  DiagnosticsService(const DiagnosticsService&) = delete;
-  DiagnosticsService& operator=(const DiagnosticsService&) = delete;
-  ~DiagnosticsService() override;
+  DiagnosticsServiceAsh(const DiagnosticsServiceAsh&) = delete;
+  DiagnosticsServiceAsh& operator=(const DiagnosticsServiceAsh&) = delete;
+  ~DiagnosticsServiceAsh() override;
 
  private:
-  explicit DiagnosticsService(
+  explicit DiagnosticsServiceAsh(
       mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
   // Ensures that |service_| created and connected to the
   // CrosHealthdDiagnosticsService.
@@ -113,7 +113,7 @@ class DiagnosticsService : public crosapi::mojom::DiagnosticsService {
 
 // TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
 namespace chromeos {
-using ::ash::DiagnosticsService;
+using ::ash::DiagnosticsServiceAsh;
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_ASH_H_

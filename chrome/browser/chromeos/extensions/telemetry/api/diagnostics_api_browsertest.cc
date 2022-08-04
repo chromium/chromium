@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -18,7 +18,7 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionDiagnosticsApiBrowserTest() {
-    ash::DiagnosticsService::Factory::SetForTesting(
+    ash::DiagnosticsServiceAsh::Factory::SetForTesting(
         &fake_diagnostics_service_factory_);
   }
 

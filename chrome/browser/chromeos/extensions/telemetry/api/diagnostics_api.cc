@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
@@ -23,6 +23,7 @@ namespace chromeos {
 DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
     : remote_diagnostics_service_strategy_(
           RemoteDiagnosticsServiceStrategy::Create()) {}
+
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
 mojo::Remote<crosapi::mojom::DiagnosticsService>&

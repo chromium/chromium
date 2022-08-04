@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -18,7 +18,7 @@ class RemoteDiagnosticsServiceStrategyAsh
     : public RemoteDiagnosticsServiceStrategy {
  public:
   RemoteDiagnosticsServiceStrategyAsh()
-      : diagnostics_service_(ash::DiagnosticsService::Factory::Create(
+      : diagnostics_service_(ash::DiagnosticsServiceAsh::Factory::Create(
             remote_diagnostics_service_.BindNewPipeAndPassReceiver())) {}
 
   ~RemoteDiagnosticsServiceStrategyAsh() override = default;

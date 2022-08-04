@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics_service.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,7 +19,7 @@ namespace ash {
 
 class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
  public:
-  class Factory : public ash::DiagnosticsService::Factory {
+  class Factory : public ash::DiagnosticsServiceAsh::Factory {
    public:
     Factory();
     ~Factory() override;
