@@ -3182,6 +3182,13 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     offset += To<LayoutInline>(o)->OffsetForInFlowPositionedInline(*this);
   }
 
+  if (AnchorScrollObject()) {
+    LayoutBox::AnchorScrollData data =
+        To<LayoutBox>(this)->ComputeAnchorScrollData();
+    offset -=
+        PhysicalOffset::FromVector2dFFloor(data.accumulated_scroll_offset);
+  }
+
   return offset;
 }
 
@@ -8123,6 +8130,30 @@ const LayoutBox* LayoutBox::AnchorScrollContainer() const {
       return scroller;
   }
   return nullptr;
+}
+
+LayoutBox::AnchorScrollData LayoutBox::ComputeAnchorScrollData() const {
+  if (!AnchorScrollContainer())
+    return AnchorScrollData();
+
+  const PaintLayer* inner_most_scroll_container_layer =
+      AnchorScrollContainer()->Layer();
+  const PaintLayer* outer_most_scroll_container_layer =
+      inner_most_scroll_container_layer;
+  gfx::Vector2dF accumulated_scroll_offset(0, 0);
+  gfx::Vector2d accumulated_scroll_origin(0, 0);
+  for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
+       layer = layer->ContainingScrollContainerLayer()) {
+    if (layer == Layer()->ContainingScrollContainerLayer())
+      break;
+    accumulated_scroll_offset += layer->GetScrollableArea()->GetScrollOffset();
+    accumulated_scroll_origin +=
+        layer->GetScrollableArea()->ScrollOrigin().OffsetFromOrigin();
+    outer_most_scroll_container_layer = layer;
+  }
+
+  return {inner_most_scroll_container_layer, outer_most_scroll_container_layer,
+          accumulated_scroll_offset, accumulated_scroll_origin};
 }
 
 }  // namespace blink

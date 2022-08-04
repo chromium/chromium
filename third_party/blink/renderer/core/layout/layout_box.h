@@ -2137,6 +2137,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns nullptr otherwise.
   const LayoutBox* AnchorScrollContainer() const;
 
+  struct AnchorScrollData {
+    const PaintLayer* inner_most_scroll_container_layer = nullptr;
+    const PaintLayer* outer_most_scroll_container_layer = nullptr;
+    gfx::Vector2dF accumulated_scroll_offset;
+    gfx::Vector2d accumulated_scroll_origin;
+
+    STACK_ALLOCATED();
+  };
+  AnchorScrollData ComputeAnchorScrollData() const;
+
  protected:
   ~LayoutBox() override;
 

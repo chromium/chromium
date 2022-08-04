@@ -764,24 +764,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsAnchorScrollTranslation(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      const PaintLayer* inner_most_scroll_container_layer =
-          box.AnchorScrollContainer()->Layer();
-      const PaintLayer* outer_most_scroll_container_layer =
-          inner_most_scroll_container_layer;
-      gfx::Vector2dF accumulated_scroll_offset(0, 0);
-      gfx::Vector2d accumulated_scroll_origin(0, 0);
-      for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
-           layer = layer->ContainingScrollContainerLayer()) {
-        if (layer == box.Layer()->ContainingScrollContainerLayer())
-          break;
-        accumulated_scroll_offset +=
-            layer->GetScrollableArea()->GetScrollOffset();
-        accumulated_scroll_origin +=
-            layer->GetScrollableArea()->ScrollOrigin().OffsetFromOrigin();
-        outer_most_scroll_container_layer = layer;
-      }
-
-      gfx::Vector2dF translation_offset = -accumulated_scroll_offset;
+      LayoutBox::AnchorScrollData anchor_scroll_data =
+          box.ComputeAnchorScrollData();
+      gfx::Vector2dF translation_offset =
+          -anchor_scroll_data.accumulated_scroll_offset;
       TransformPaintPropertyNode::State state{translation_offset};
 
       DCHECK(full_context_.direct_compositing_reasons &
@@ -802,20 +788,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
 
       scoped_refptr<const TransformPaintPropertyNode>
           inner_most_scroll_container =
-              inner_most_scroll_container_layer->GetLayoutObject()
+              anchor_scroll_data.inner_most_scroll_container_layer
+                  ->GetLayoutObject()
                   .FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation();
       scoped_refptr<const TransformPaintPropertyNode>
           outer_most_scroll_container =
-              outer_most_scroll_container_layer->GetLayoutObject()
+              anchor_scroll_data.outer_most_scroll_container_layer
+                  ->GetLayoutObject()
                   .FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation();
       state.anchor_scroll_containers_data = std::make_unique<
           TransformPaintPropertyNode::AnchorScrollContainersData>(
           std::move(inner_most_scroll_container),
-          std::move(outer_most_scroll_container), accumulated_scroll_origin);
+          std::move(outer_most_scroll_container),
+          anchor_scroll_data.accumulated_scroll_origin);
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));
