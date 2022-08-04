@@ -3,17 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
-
-polymer_element_files = [
-  "consumer_auto_update_toggle_dialog.js",
-  "channel_switcher_dialog.js",
-  "detailed_build_info.js",
-  "edit_hostname_dialog.js",
-  "os_about_page.js",
-  "update_warning_dialog.js",
-]
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
@@ -113,8 +103,4 @@ js_library("update_warning_dialog") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-}
-
-html_to_js("web_components") {
-  js_files = polymer_element_files
 }

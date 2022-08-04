@@ -4,7 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './consumer_auto_update_toggle_dialog.html.js';
 
 /** @polymer */
 class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
@@ -13,11 +15,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
-  }
-
-  constructor() {
-    super();
+    return getTemplate();
   }
 
   /** @override */

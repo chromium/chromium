@@ -12,9 +12,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo} from './about_page_browser_proxy.js';
+import {getTemplate} from './update_warning_dialog.html.js';
 
 /**
  * @constructor
@@ -32,7 +33,7 @@ class SettingsUpdateWarningDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

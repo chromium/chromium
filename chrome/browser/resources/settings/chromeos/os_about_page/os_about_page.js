@@ -30,7 +30,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement, TemplateInstanceBase, Templatizer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
@@ -43,6 +43,7 @@ import {MainPageBehavior, MainPageBehaviorInterface} from '../os_settings_page/m
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {getTemplate} from './os_about_page.html.js';
 
 /**
  * @constructor
@@ -70,7 +71,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

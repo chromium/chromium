@@ -15,10 +15,11 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
 import {SetDeviceNameResult} from './device_name_util.js';
+import {getTemplate} from './edit_hostname_dialog.html.js';
 
 /** @type {number} */
 const MAX_INPUT_LENGTH = 15;
@@ -47,7 +48,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

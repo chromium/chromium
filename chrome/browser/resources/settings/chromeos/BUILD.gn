@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
@@ -132,10 +133,19 @@ preprocess_if_expr("preprocess_src_ts_files") {
 
 preprocess_if_expr("preprocess_gen_ts_files") {
   defines = chrome_grit_defines
-  deps = [ ":generate_web_components" ]
+  deps = [
+    ":generate_web_component_html_wrapper_files",
+    ":generate_web_components",
+  ]
   in_folder = get_path_info("../", "gen_dir")
   in_files = gen_ts_files
   out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_folder = "../"
+  in_files = web_component_html_files
+  out_folder = get_path_info("../", "gen_dir")
 }
 
 # TODO(crbug/1315757) Transfer these JS files into ts_library() when
@@ -454,7 +464,6 @@ group("generate_web_components") {
     "multidevice_page:web_components",
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
-    "os_about_page:web_components",
     "os_apps_page:web_components",
     "os_apps_page/app_management_page:web_components",
     "os_apps_page/app_management_page/borealis_page:web_components",
