@@ -238,16 +238,10 @@ void SimpleFontData::PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph) {
       platform_data.GetHarfBuzzFace()->UnitsPerEmFromHeadTable();
   const float size_per_unit =
       platform_data.size() / (units_per_em ? units_per_em : 1);
-  // Use a value for |height_fallback| that can detect the "fallback" case.
-  constexpr int height_fallback = 0;
   vertical_data->SetScaleAndFallbackMetrics(
-      size_per_unit, metrics.FloatAscent(), height_fallback);
-  const float cjk_water_height = vertical_data->AdvanceHeight(cjk_water_glyph);
-  if (cjk_water_height == height_fallback) {
-    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
-    return;
-  }
-  font_metrics_.SetIdeographicFullWidth(cjk_water_height);
+      size_per_unit, metrics.FloatAscent(), metrics.Height());
+  font_metrics_.SetIdeographicFullWidth(
+      vertical_data->AdvanceHeight(cjk_water_glyph));
 }
 
 const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {

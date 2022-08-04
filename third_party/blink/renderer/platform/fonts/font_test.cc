@@ -102,7 +102,10 @@ TEST_F(FontTest, IdeographicFullWidthUprightCjkNoVmtx) {
       blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"), 16);
   const SimpleFontData* font_data = font.PrimaryFont();
   ASSERT_TRUE(font_data);
-  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  // If the `vmtx` table is missing, the vertical advance should be synthesized.
+  ASSERT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(),
+            font_data->GetFontMetrics().Height());
 }
 
 // A Japanese font, with the "water" glyph, with the `vmtx` table.
