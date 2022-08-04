@@ -2054,7 +2054,6 @@
           'shards': 40,
         },
       },
-      'cast_runner_integration_tests': {},
       'content_browsertests': {
         'args': [
           '--',
@@ -4857,6 +4856,7 @@
 
     'web_engine_gtests': {
       'cast_runner_browsertests': {},
+      'cast_runner_integration_tests': {},
       'cast_runner_integration_tests_cfv1': {},
       'cast_runner_unittests': {},
       'web_engine_browsertests': {},
