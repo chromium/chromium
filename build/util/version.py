@@ -26,9 +26,10 @@ def FetchValuesFromFile(values_dict, file_name):
 
   The file must exist, otherwise you get the Python exception from open().
   """
-  for line in open(file_name, 'r').readlines():
-    key, val = line.rstrip('\r\n').split('=', 1)
-    values_dict[key] = val
+  with open(file_name, 'r') as f:
+    for line in f.readlines():
+      key, val = line.rstrip('\r\n').split('=', 1)
+      values_dict[key] = val
 
 
 def FetchValues(file_list, is_official_build=None):
