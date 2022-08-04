@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -82,6 +83,12 @@ public class ToolbarSwipeLayout extends Layout {
     private ToolbarSwipeSceneLayer mSceneLayer;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+
+    // This is a work around for crbug.com/1348624. We need to call switch to tab after
+    // ToolbarSwipeLayout is shown when it's switching to a tab.
+    private boolean mIsSwitchToStaticTab;
+    private int mToTabId;
+    private int mFromTabId;
 
     /**
      * @param context             The current Android's context.
@@ -157,10 +164,30 @@ public class ToolbarSwipeLayout extends Layout {
 
         TabModel model = mTabModelSelector.getCurrentModel();
         if (model == null) return;
+
         int fromTabId = mTabModelSelector.getCurrentTabId();
         if (fromTabId == TabModel.INVALID_TAB_INDEX) return;
         mFromTab = createLayoutTab(fromTabId, model.isIncognito());
         prepareLayoutTabForSwipe(mFromTab, false);
+
+        if (mIsSwitchToStaticTab) {
+            switchToTab(mToTabId, mFromTabId);
+
+            // Close the previous tab if the previous tab is a NTP.
+            // TODO(crbug.com/1348624): Move this piece logic to use a LayoutStateObserver instead
+            // - let the caller of the LayoutManager#switchToTab observe the LayoutState and close
+            // the ntp tab in the #doneShowing event.
+            Tab lastTab = mTabModelSelector.getTabById(mFromTabId);
+            if (UrlUtilities.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
+                    && !lastTab.canGoForward()) {
+                mTabModelSelector.getModel(lastTab.isIncognito())
+                        .closeTab(lastTab, tab, false, false, false);
+            }
+
+            mIsSwitchToStaticTab = false;
+            mToTabId = TabModel.INVALID_TAB_INDEX;
+            mFromTabId = TabModel.INVALID_TAB_INDEX;
+        }
     }
 
     public void swipeStarted(long time, @ScrollDirection int direction, float x, float y) {
@@ -489,5 +516,18 @@ public class ToolbarSwipeLayout extends Layout {
         float end = fromTabIndex < toTabIndex ? -getWidth() : getWidth();
         startHiding(toTabId, false);
         doTabSwitchAnimation(toTabId, 0f, end, SWITCH_TO_TAB_DURATION_MS);
+    }
+
+    /**
+     * Set it's switching to a tab. With |mIsSwitchToStaticTab| as true, we need to call
+     * switchToTab() after this layout is shown. What is set here only applies to the next showing
+     * of the layout, after that it is reset.
+     * @param toTabId The id of the next tab which will be switched to.
+     * @param fromTabId The id of the previous tab which will be switched out.
+     */
+    public void setSwitchToTab(int toTabId, int fromTabId) {
+        mIsSwitchToStaticTab = true;
+        mToTabId = toTabId;
+        mFromTabId = fromTabId;
     }
 }

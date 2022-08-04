@@ -44,7 +44,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -543,16 +542,8 @@ public class LayoutManagerChrome
             super.switchToTab(tab, lastTabId);
             return;
         }
-        startShowing(mToolbarSwipeLayout, false);
-        mToolbarSwipeLayout.switchToTab(tab.getId(), lastTabId);
 
-        // Close the previous tab if the previous tab is a NTP.
-        Tab lastTab = getTabById(lastTabId);
-        if (UrlUtilities.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
-                && !lastTab.canGoForward()) {
-            getTabModelSelector()
-                    .getModel(lastTab.isIncognito())
-                    .closeTab(lastTab, tab, false, false, false);
-        }
+        mToolbarSwipeLayout.setSwitchToTab(tab.getId(), lastTabId);
+        showLayout(LayoutType.TOOLBAR_SWIPE, false);
     }
 }
