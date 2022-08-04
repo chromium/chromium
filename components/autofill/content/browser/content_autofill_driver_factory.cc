@@ -160,8 +160,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   ContentAutofillDriver* driver = it->second.get();
   DCHECK(driver);
 
-  if (render_frame_host->GetLifecycleState() !=
-          content::RenderFrameHost::LifecycleState::kPrerendering &&
+  if (!render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering) &&
       driver->autofill_manager()) {
     driver->autofill_manager()->ReportAutofillWebOTPMetrics(
         render_frame_host->DocumentUsedWebOTP());
@@ -174,8 +174,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   // and therefore won't close the popup.
   bool is_iframe = !driver->IsInAnyMainFrame();
   if (is_iframe && router_.last_queried_source() == driver) {
-    DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
-              render_frame_host->GetLifecycleState());
+    DCHECK(!render_frame_host->IsInLifecycleState(
+        content::RenderFrameHost::LifecycleState::kPrerendering));
     router_.HidePopup(driver);
   }
 
