@@ -470,9 +470,41 @@ void FakeUserDataAuthClient::Mount(
 void FakeUserDataAuthClient::Remove(
     const ::user_data_auth::RemoveRequest& request,
     RemoveCallback callback) {
-  ReturnProtobufMethodCallback(::user_data_auth::RemoveReply(),
-                               std::move(callback));
+  ::user_data_auth::RemoveReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  cryptohome::AccountIdentifier account_id;
+  if (request.has_identifier()) {
+    account_id = request.identifier();
+  } else {
+    auto auth_session = auth_sessions_.find(request.auth_session_id());
+    CHECK(auth_session != std::end(auth_sessions_)) << "Invalid auth session";
+    account_id = auth_session->second.account;
+  }
+
+  const auto user_it = users_.find(account_id);
+  if (user_it == users_.end()) {
+    reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    return;
+  }
+
+  const absl::optional<base::FilePath> profile_dir =
+      GetUserProfileDir(account_id);
+  if (profile_dir) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(base::DeletePathRecursively(*profile_dir));
+  } else {
+    LOG(WARNING) << "User data directory has not been set, will not delete "
+                    "user profile directory";
+  }
+
+  users_.erase(user_it);
+  if (!request.auth_session_id().empty()) {
+    // Removing the user also invalidates the AuthSession.
+    auth_sessions_.erase(request.auth_session_id());
+  }
 }
+
 void FakeUserDataAuthClient::GetKeyData(
     const ::user_data_auth::GetKeyDataRequest& request,
     GetKeyDataCallback callback) {
