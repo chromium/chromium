@@ -146,9 +146,7 @@ void SyncConsentScreenHandler::Bind(SyncConsentScreen* screen) {
 }
 
 void SyncConsentScreenHandler::Show(bool is_arc_restricted) {
-  auto* user_manager = user_manager::UserManager::Get();
   base::Value::Dict data;
-  data.Set("isChildAccount", user_manager->IsLoggedInAsChildUser());
   data.Set("isArcRestricted", is_arc_restricted);
   ShowInWebUI(std::move(data));
 }
