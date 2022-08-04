@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/filename_util.h"
@@ -420,5 +421,95 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   type_observer_none.Wait();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// This class observes TextInputManager for changes in `active_view_`.
+class TextInputManagerStateObserver : public TextInputManagerObserverBase {
+ public:
+  explicit TextInputManagerStateObserver(WebContents* web_contents)
+      : TextInputManagerObserverBase(web_contents) {
+    tester()->SetUpdateTextInputStateCalledCallback(base::BindRepeating(
+        &TextInputManagerStateObserver::VerifyActiveViewOnStateUpdate,
+        base::Unretained(this)));
+  }
+  ~TextInputManagerStateObserver() override = default;
+
+  void WaitUntilActiveViewIsUpdated() {
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  RenderWidgetHostView* last_updated_active_view() {
+    return last_updated_active_view_;
+  }
+
+ private:
+  void VerifyActiveViewOnStateUpdate() {
+    RenderWidgetHostView* active_view =
+        const_cast<RenderWidgetHostView*>(tester()->GetActiveView());
+    EXPECT_TRUE(active_view);
+    last_updated_active_view_ = active_view;
+    RenderWidgetHostImpl* widget_host =
+        static_cast<RenderWidgetHostImpl*>(active_view->GetRenderWidgetHost());
+    EXPECT_EQ(widget_host->frame_tree()->type(), FrameTree::Type::kPrimary);
+    OnSuccess();
+    if (quit_callback_)
+      std::move(quit_callback_).Run();
+  }
+
+  RenderWidgetHostView* last_updated_active_view_ = nullptr;
+  base::OnceClosure quit_callback_;
+};
+
+class RenderWidgetHostViewAuraPrerenderingBrowserTest
+    : public ContentBrowserTest {
+ public:
+  RenderWidgetHostViewAuraPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &RenderWidgetHostViewAuraPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~RenderWidgetHostViewAuraPrerenderingBrowserTest() override = default;
+
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(test_server_handle_ =
+                    embedded_test_server()->StartAndReturnHandle());
+  }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+};
+
+// Tests that `active_view_` from TextInputManager is not set for prerendering.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraPrerenderingBrowserTest,
+                       TextInputManagerActiveView) {
+  const GURL kVirtualKeyboardUrl =
+      embedded_test_server()->GetURL("/virtual-keyboard.html");
+  const GURL kEmptyUrl = embedded_test_server()->GetURL("/empty.html");
+
+  auto* web_contents = GetWebContents();
+  TextInputManagerStateObserver type_observer_show(web_contents);
+  // Navigate to a simple page.
+  ASSERT_TRUE(NavigateToURL(shell(), kEmptyUrl));
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kEmptyUrl);
+  EXPECT_EQ(type_observer_show.last_updated_active_view(), nullptr);
+
+  // Start prerendering `kVirtualKeyboardUrl`.
+  prerender_helper().AddPrerender(kVirtualKeyboardUrl);
+  // Prerendering shouldn't update `active_view_` from TextInputManager.
+  EXPECT_EQ(type_observer_show.last_updated_active_view(), nullptr);
+
+  prerender_helper().NavigatePrimaryPage(kVirtualKeyboardUrl);
+  type_observer_show.WaitUntilActiveViewIsUpdated();
+  // If the page is activated, it updates `active_view_` from TextInputManager.
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kVirtualKeyboardUrl);
+  EXPECT_EQ(type_observer_show.last_updated_active_view(),
+            web_contents->GetPrimaryMainFrame()->GetView());
+}
 
 }  // namespace content
