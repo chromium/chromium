@@ -226,6 +226,9 @@ class TabSlotController {
 
   // Returns the |group| collapsed state. Returns false if the group does not
   // exist or is not collapsed.
+  // NOTE: This method signature is duplicated in TabContainerController; the
+  // methods are intended to have equivalent semantics so they can share an
+  // implementation.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the actual painted color of the given |group|, which depends on the

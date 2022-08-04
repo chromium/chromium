@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "tab_container_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -38,7 +39,7 @@ class TabContainerImpl : public TabContainer,
  public:
   METADATA_HEADER(TabContainerImpl);
 
-  TabContainerImpl(TabStripController* controller,
+  TabContainerImpl(TabContainerController* controller,
                    TabHoverCardController* hover_card_controller,
                    TabDragContextBase* drag_context,
                    TabSlotController* tab_slot_controller,
@@ -304,7 +305,7 @@ class TabContainerImpl : public TabContainer,
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
 
-  raw_ptr<TabStripController> controller_;
+  raw_ptr<TabContainerController> controller_;
 
   raw_ptr<TabHoverCardController> hover_card_controller_;
 

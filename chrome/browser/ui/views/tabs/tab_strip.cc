@@ -889,7 +889,7 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(AddChildView(std::make_unique<TabDragContextImpl>(this))),
       tab_container_(AddChildViewAt(
-          std::make_unique<TabContainerImpl>(controller_.get(),
+          std::make_unique<TabContainerImpl>(this,
                                              hover_card_controller_.get(),
                                              drag_context_.get(),
                                              this,
@@ -1306,10 +1306,6 @@ void TabStrip::SetTabNeedsAttention(int model_index, bool attention) {
   tab_at(model_index)->SetTabNeedsAttention(attention);
 }
 
-int TabStrip::GetActiveIndex() const {
-  return controller_->GetActiveIndex();
-}
-
 int TabStrip::GetModelIndexOf(const TabSlotView* view) const {
   return tab_container_->GetModelIndexOf(view);
 }
@@ -1320,10 +1316,6 @@ int TabStrip::GetTabCount() const {
 
 int TabStrip::GetModelCount() const {
   return controller_->GetCount();
-}
-
-bool TabStrip::IsValidModelIndex(int model_index) const {
-  return controller_->IsValidIndex(model_index);
 }
 
 TabDragContext* TabStrip::GetDragContext() {
@@ -1365,6 +1357,37 @@ views::View* TabStrip::GetDefaultFocusableChild() {
 
 bool TabStrip::WantsToReceiveAllDragEvents() const {
   return TabDragController::IsSystemDragAndDropSessionRunning();
+}
+
+bool TabStrip::IsValidModelIndex(int index) const {
+  return controller_->IsValidIndex(index);
+}
+
+int TabStrip::GetActiveIndex() const {
+  return controller_->GetActiveIndex();
+}
+
+void TabStrip::OnDropIndexUpdate(int index, bool drop_before) {
+  controller_->OnDropIndexUpdate(index, drop_before);
+}
+
+absl::optional<int> TabStrip::GetFirstTabInGroup(
+    const tab_groups::TabGroupId& group) const {
+  return controller_->GetFirstTabInGroup(group);
+}
+
+gfx::Range TabStrip::ListTabsInGroup(
+    const tab_groups::TabGroupId& group) const {
+  return controller_->ListTabsInGroup(group);
+}
+
+bool TabStrip::CanExtendDragHandle() const {
+  return !controller_->IsFrameCondensed() &&
+         !controller_->EverHasVisibleBackgroundTabShapes();
+}
+
+bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {
+  return controller_->IsGroupCollapsed(group);
 }
 
 const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {
@@ -1760,10 +1783,6 @@ std::u16string TabStrip::GetGroupContentString(
 tab_groups::TabGroupColorId TabStrip::GetGroupColorId(
     const tab_groups::TabGroupId& group) const {
   return controller_->GetGroupColorId(group);
-}
-
-bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {
-  return controller_->IsGroupCollapsed(group);
 }
 
 SkColor TabStrip::GetPaintedGroupColor(

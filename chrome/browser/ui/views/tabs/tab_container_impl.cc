@@ -166,7 +166,7 @@ void TabContainerImpl::RemoveTabDelegate::AnimationCanceled(
 }
 
 TabContainerImpl::TabContainerImpl(
-    TabStripController* controller,
+    TabContainerController* controller,
     TabHoverCardController* hover_card_controller,
     TabDragContextBase* drag_context,
     TabSlotController* tab_slot_controller,
@@ -382,7 +382,7 @@ void TabContainerImpl::OnGroupEditorOpened(
     const tab_groups::TabGroupId& group) {
   // The context menu relies on a Browser object which is not provided in
   // TabStripTest.
-  if (controller_->GetBrowser()) {
+  if (tab_slot_controller_->GetBrowser()) {
     group_views_[group]->header()->ShowContextMenuForViewImpl(
         this, gfx::Point(), ui::MENU_SOURCE_NONE);
   }
@@ -475,7 +475,8 @@ void TabContainerImpl::HandleLongTap(ui::GestureEvent* event) {
   Tab* tab = FindTabHitByPoint(local_point);
   if (tab) {
     ConvertPointToScreen(this, &local_point);
-    controller_->ShowContextMenuForTab(tab, local_point, ui::MENU_SOURCE_TOUCH);
+    tab_slot_controller_->ShowContextMenuForTab(tab, local_point,
+                                                ui::MENU_SOURCE_TOUCH);
   }
 }
 
@@ -485,25 +486,23 @@ bool TabContainerImpl::IsRectInWindowCaption(const gfx::Rect& rect) {
   if (v == this)
     return true;
 
-  // When the window has a top drag handle, a thin strip at the top of inactive
-  // tabs and the new tab button is treated as part of the window drag handle,
-  // to increase draggability.  This region starts 1 DIP above the top of the
-  // separator.
-  const int drag_handle_extension = TabStyle::GetDragHandleExtension(height());
+  if (controller_->CanExtendDragHandle()) {
+    // When the window has a top drag handle, a thin strip at the top of
+    // inactive tabs and the new tab button can be treated as part of the window
+    // drag handle, to increase draggability.  This region starts 1 DIP above
+    // the top of the separator.
+    const int drag_handle_extension =
+        TabStyle::GetDragHandleExtension(height());
 
-  // Disable drag handle extension when tab shapes are visible.
-  bool extend_drag_handle = !controller_->IsFrameCondensed() &&
-                            !controller_->EverHasVisibleBackgroundTabShapes();
-
-  // A hit on the tab is not in the caption unless it is in the thin strip
-  // mentioned above.
-  const absl::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
-  if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
-    Tab* tab = GetTabAtModelIndex(tab_index.value());
-    gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
-    tab_drag_handle.set_height(drag_handle_extension);
-    return extend_drag_handle && !tab->IsActive() &&
-           tab_drag_handle.Intersects(rect);
+    // A hit on the tab is not in the caption unless it is in the thin strip
+    // mentioned above.
+    const absl::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
+    if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
+      Tab* tab = GetTabAtModelIndex(tab_index.value());
+      gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
+      tab_drag_handle.set_height(drag_handle_extension);
+      return !tab->IsActive() && tab_drag_handle.Intersects(rect);
+    }
   }
 
   // |v| is some other view (e.g. a close button in a tab) and therefore |rect|
@@ -1418,7 +1417,7 @@ void TabContainerImpl::UpdateAccessibleTabIndices() {
 }
 
 bool TabContainerImpl::IsValidModelIndex(int model_index) const {
-  return controller_->IsValidIndex(model_index);
+  return controller_->IsValidModelIndex(model_index);
 }
 
 BEGIN_METADATA(TabContainerImpl, views::View)

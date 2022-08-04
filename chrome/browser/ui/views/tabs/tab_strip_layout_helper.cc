@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"
 
@@ -65,8 +65,9 @@ struct TabStripLayoutHelper::TabSlot {
   TabLayoutState state;
 };
 
-TabStripLayoutHelper::TabStripLayoutHelper(const TabStripController* controller,
-                                           GetTabsCallback get_tabs_callback)
+TabStripLayoutHelper::TabStripLayoutHelper(
+    const TabContainerController* controller,
+    GetTabsCallback get_tabs_callback)
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
       active_tab_width_(TabStyle::GetStandardWidth()),
@@ -217,7 +218,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();
   const int active_tab_model_index = controller_->GetActiveIndex();
   const int active_tab_slot_index =
-      controller_->IsValidIndex(active_tab_model_index)
+      controller_->IsValidModelIndex(active_tab_model_index)
           ? GetSlotIndexForExistingTab(active_tab_model_index)
           : TabStripModel::kNoTab;
 
@@ -248,7 +249,7 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
 
   const int active_tab_model_index = controller_->GetActiveIndex();
   const int active_tab_slot_index =
-      controller_->IsValidIndex(active_tab_model_index)
+      controller_->IsValidModelIndex(active_tab_model_index)
           ? GetSlotIndexForExistingTab(active_tab_model_index)
           : TabStripModel::kNoTab;
   const int pinned_tab_count = GetPinnedTabCount();

@@ -45,6 +45,47 @@ class FakeTabDragContext : public TabDragContextBase {
   void FinishEndingDrag() override {}
   int GetTabDragAreaWidth() const override { return width(); }
 };
+
+class FakeTabContainerController final : public TabContainerController {
+ public:
+  explicit FakeTabContainerController(TabStripController* tab_strip_controller)
+      : tab_strip_controller_(tab_strip_controller) {}
+  ~FakeTabContainerController() override = default;
+
+  bool IsValidModelIndex(int index) const override {
+    return tab_strip_controller_->IsValidIndex(index);
+  }
+
+  int GetActiveIndex() const override {
+    return tab_strip_controller_->GetActiveIndex();
+  }
+
+  void OnDropIndexUpdate(int index, bool drop_before) override {
+    tab_strip_controller_->OnDropIndexUpdate(index, drop_before);
+  }
+
+  bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override {
+    return tab_strip_controller_->IsGroupCollapsed(group);
+  }
+
+  absl::optional<int> GetFirstTabInGroup(
+      const tab_groups::TabGroupId& group) const override {
+    return tab_strip_controller_->GetFirstTabInGroup(group);
+  }
+
+  gfx::Range ListTabsInGroup(
+      const tab_groups::TabGroupId& group) const override {
+    return tab_strip_controller_->ListTabsInGroup(group);
+  }
+
+  bool CanExtendDragHandle() const override {
+    return !tab_strip_controller_->IsFrameCondensed() &&
+           !tab_strip_controller_->EverHasVisibleBackgroundTabShapes();
+  }
+
+ private:
+  raw_ptr<TabStripController> tab_strip_controller_;
+};
 }  // namespace
 
 class TabContainerTest : public ChromeViewsTestBase {
@@ -58,6 +99,8 @@ class TabContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
+    tab_container_controller_ = std::make_unique<FakeTabContainerController>(
+        tab_strip_controller_.get());
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
@@ -65,7 +108,7 @@ class TabContainerTest : public ChromeViewsTestBase {
         std::make_unique<FakeTabDragContext>();
     std::unique_ptr<TabContainer> tab_container =
         std::make_unique<TabContainerImpl>(
-            tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
+            tab_container_controller_.get(), nullptr /*hover_card_controller*/,
             drag_context.get(), tab_slot_controller_.get(),
             nullptr /*scroll_contents_view*/);
     tab_container->SetAvailableWidthCallback(base::BindRepeating(
@@ -87,6 +130,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_container_ = nullptr;
     widget_.reset();
     tab_slot_controller_.reset();
+    tab_container_controller_.reset();
     tab_strip_controller_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -245,6 +289,7 @@ class TabContainerTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
+  std::unique_ptr<FakeTabContainerController> tab_container_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
   raw_ptr<TabDragContextBase> drag_context_;
   raw_ptr<TabContainer> tab_container_;

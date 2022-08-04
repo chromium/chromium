@@ -21,7 +21,7 @@
 
 class Tab;
 class TabGroupHeader;
-class TabStripController;
+class TabContainerController;
 
 namespace tab_groups {
 class TabGroupId;
@@ -34,7 +34,7 @@ class TabStripLayoutHelper {
  public:
   using GetTabsCallback = base::RepeatingCallback<views::ViewModelT<Tab>*()>;
 
-  TabStripLayoutHelper(const TabStripController* controller,
+  TabStripLayoutHelper(const TabContainerController* controller,
                        GetTabsCallback get_tabs_callback);
   TabStripLayoutHelper(const TabStripLayoutHelper&) = delete;
   TabStripLayoutHelper& operator=(const TabStripLayoutHelper&) = delete;
@@ -153,8 +153,8 @@ class TabStripLayoutHelper {
   // True iff the slot at index |i| is a tab that is in a collapsed group.
   bool SlotIsCollapsedTab(int i) const;
 
-  // The owning tabstrip's controller.
-  const raw_ptr<const TabStripController> controller_;
+  // The owning TabContainer's controller.
+  const raw_ptr<const TabContainerController> controller_;
 
   // Callback to get the necessary View objects from the owning tabstrip.
   GetTabsCallback get_tabs_callback_;
