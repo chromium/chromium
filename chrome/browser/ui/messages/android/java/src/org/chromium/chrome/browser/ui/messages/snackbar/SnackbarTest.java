@@ -297,6 +297,40 @@ public class SnackbarTest {
                         && mManager.getCurrentSnackbarViewForTesting().mParent == sMainParent);
     }
 
+    @Test
+    @SmallTest
+    public void testSupplier_BeforeShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        pollSnackbarCondition(
+                "Snackbar isShowing() and isShowingSupplier().get() values are not both false before showing snackbar.",
+                () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testSupplier_WhileShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> mManager.showSnackbar(snackbar));
+        pollSnackbarCondition(
+                "Snackbar isShowing() and isShowingSupplier().get() values are not both true while snackbar is showing.",
+                () -> mManager.isShowing() && mManager.isShowingSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testSupplier_AfterShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> mManager.showSnackbar(snackbar));
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> mManager.dismissSnackbars(mDismissController));
+        pollSnackbarCondition(
+                "Snackbar isShowing() and isShowingSupplier().get() values are not both false after dismissing snackbar.",
+                () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
+    }
+
     void pollSnackbarCondition(String message, Supplier<Boolean> condition) {
         CriteriaHelper.pollUiThread(condition::get, message);
     }
