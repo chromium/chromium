@@ -143,9 +143,10 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
     return false;
   }
   *entry =
-      MountEntry(CrosDisksMountErrorToChromeMountError(
+      MountEntry{CrosDisksMountErrorToChromeMountError(
                      static_cast<cros_disks::MountErrorType>(error_code)),
-                 source_path, static_cast<MountType>(mount_type), mount_path);
+                 std::move(source_path), static_cast<MountType>(mount_type),
+                 std::move(mount_path)};
   return true;
 }
 
@@ -447,7 +448,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
         std::move(error_callback).Run();
         return;
       }
-      entries.push_back(entry);
+      entries.push_back(std::move(entry));
     }
     std::move(callback).Run(entries);
   }
@@ -489,15 +490,15 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     UMA_HISTOGRAM_ENUMERATION("CrosDisksClient.MountCompletedError",
-                              entry.error_code(), MountError::kCount);
+                              entry.error_code, MountError::kCount);
     // Flatten MountType and MountError into a single dimension.
     constexpr int kMaxMountErrors = 100;
     static_assert(static_cast<int>(MountError::kCount) <= kMaxMountErrors,
                   "CrosDisksClient.MountErrorMountType histogram must be "
                   "updated.");
     const int type_and_error =
-        (static_cast<int>(entry.mount_type()) * kMaxMountErrors) +
-        static_cast<int>(entry.error_code());
+        (static_cast<int>(entry.mount_type) * kMaxMountErrors) +
+        static_cast<int>(entry.error_code);
     base::UmaHistogramSparse("CrosDisksClient.MountErrorMountType",
                              type_and_error);
     for (auto& observer : observer_list_)

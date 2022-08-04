@@ -277,30 +277,11 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
-struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
- public:
-  MountEntry()
-      : error_code_(MountError::kUnknown), mount_type_(MountType::kInvalid) {}
-
-  MountEntry(MountError error_code,
-             const std::string& source_path,
-             MountType mount_type,
-             const std::string& mount_path)
-      : error_code_(error_code),
-        source_path_(source_path),
-        mount_type_(mount_type),
-        mount_path_(mount_path) {}
-
-  MountError error_code() const { return error_code_; }
-  const std::string& source_path() const { return source_path_; }
-  MountType mount_type() const { return mount_type_; }
-  const std::string& mount_path() const { return mount_path_; }
-
- private:
-  MountError error_code_;
-  std::string source_path_;
-  MountType mount_type_;
-  std::string mount_path_;
+struct MountEntry {
+  MountError error_code = MountError::kUnknown;
+  std::string source_path;
+  MountType mount_type = MountType::kInvalid;
+  std::string mount_path;
 };
 
 // A class to make the actual DBus calls for cros-disks service.
