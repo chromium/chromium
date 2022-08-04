@@ -282,9 +282,10 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, RetryOnWrongPassword) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SkipDataRecovery) {
+IN_PROC_BROWSER_TEST_P(PasswordChangeTest, SkipDataRecovery) {
+  AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
-  SetUpStubAuthenticatorAndAttemptLogin("old user password");
+  SetGaiaScreenCredentials(test_account_id_, "new password");
   WaitForPasswordChangeScreen();
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
@@ -299,10 +300,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SkipDataRecovery) {
   // Click "Proceed anyway".
   test::OobeJS().ClickOnPath(kProceedAnyway);
 
-  // User session should start, and whole OOBE screen is expected to be hidden,
+  // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
-  EXPECT_EQ(StubAuthenticator::DataRecoveryStatus::kResynced,
-            data_recovery_status_);
 
   login_mixin_.WaitForActiveSession();
 }
