@@ -95,10 +95,18 @@ void LongpressDiacriticsSuggester::OnExternalSuggestionsUpdated(
 SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
     const ui::KeyEvent& event) {
   ui::DomCode code = event.code();
+  // The diacritic suggester is not set up.
   if (focused_context_id_ == absl::nullopt ||
       displayed_window_base_character_ == absl::nullopt ||
-      !GetCurrentShownDiacritics().size())
+      !GetCurrentShownDiacritics().size()) {
     return SuggestionStatus::kNotHandled;
+  }
+  // The diacritic suggester is displaying, but its just the repeat key of the
+  // base character (probably because user is still holding down the key).
+  if (*displayed_window_base_character_ == event.GetCharacter() &&
+      event.is_repeat()) {
+    return SuggestionStatus::kNotHandled;
+  }
 
   size_t new_index = 0;
 
@@ -149,6 +157,11 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
           }
         }
       }
+
+      // Dismiss on any unexpected key events.
+      DismissSuggestion();
+      // NotHandled is passed so that the IME will let the key event pass
+      // through.
       return SuggestionStatus::kNotHandled;
   }
 }
