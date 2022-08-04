@@ -1665,4 +1665,63 @@ TEST_F(AnimationTest, StartsAtArbitraryInitialTimestamp) {
                   (kStartTime + base::Milliseconds(400)) / kAnimationDuration);
 }
 
+TEST_F(AnimationTest, GetCurrentCycleBoundaries) {
+  constexpr auto kStartTime1 = base::Milliseconds(400);
+  constexpr auto kEndTime1 = base::Milliseconds(800);
+  constexpr auto kDuration1 = kEndTime1 - kStartTime1;
+
+  constexpr auto kStartTime2 = base::Milliseconds(100);
+  constexpr auto kEndTime2 = base::Milliseconds(500);
+  constexpr auto kDuration2 = kEndTime2 - kStartTime2;
+
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  EXPECT_FALSE(animation_->GetCurrentCycleBoundaries());
+  animation_->Start(Animation::PlaybackConfig(
+      {{kStartTime1, kEndTime1}, {kStartTime2, kEndTime2}},
+      /*initial_offset=*/kStartTime1,
+      /*initial_completed_cycles=*/0, Animation::Style::kLoop));
+
+  // No frames have been painted yet.
+  EXPECT_FALSE(animation_->GetCurrentCycleBoundaries());
+
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentCycleBoundaries());
+  EXPECT_THAT(*animation_->GetCurrentCycleBoundaries(),
+              FieldsAre(kStartTime1, kEndTime1));
+
+  // T: 1/2 of first cycle
+  AdvanceClock(kDuration1 / 2);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_THAT(*animation_->GetCurrentCycleBoundaries(),
+              FieldsAre(kStartTime1, kEndTime1));
+
+  // T: Start of first cycle
+  AdvanceClock(kDuration1 / 2);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_THAT(*animation_->GetCurrentCycleBoundaries(),
+              FieldsAre(kStartTime2, kEndTime2));
+
+  // T: Middle of second cycle
+  AdvanceClock(kDuration2 / 2);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_THAT(*animation_->GetCurrentCycleBoundaries(),
+              FieldsAre(kStartTime2, kEndTime2));
+
+  // T: Middle of second cycle (again)
+  AdvanceClock(kDuration2);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_THAT(*animation_->GetCurrentCycleBoundaries(),
+              FieldsAre(kStartTime2, kEndTime2));
+
+  animation_->Stop();
+  EXPECT_FALSE(animation_->GetCurrentCycleBoundaries());
+}
+
 }  // namespace lottie

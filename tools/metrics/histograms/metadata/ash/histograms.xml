@@ -235,6 +235,23 @@ chromium-metrics-reviews@google.com.
   <token key="Theme" variants="AmbientModeThemes"/>
 </histogram>
 
+<histogram name="Ash.AmbientMode.MultiScreenOffset.{Theme}" units="ms"
+    expires_after="2022-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Only applies to multi-screen use cases in ambient mode. Records the offset
+    observed between {Theme} animations' timestamps when rendering on multiple
+    screens. Ideally, this would be 0, but small imperceptible offsets are
+    acceptable (under .1 seconds). The offset recorded here is the absolute
+    difference in milliseconds between the animation with the smallest and
+    largest timestamp. The metric is emitted after every single animation frame
+    in ambient mode (there is a high volume). For single-screen use cases, this
+    metric is inactive.
+  </summary>
+  <token key="Theme" variants="AmbientModeThemes"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.PhotoOrientationMatch.{Theme}" units="%"
     expires_after="2022-12-01">
   <owner>esum@google.com</owner>
@@ -259,6 +276,18 @@ chromium-metrics-reviews@google.com.
     Among eligible users with ambient mode enabled, records the source of
     ambient mode photos. Recorded once for every UMA upload.
   </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.ScreenCount.{Theme}" units="int"
+    expires_after="2022-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the number of
+    screens present during a {Theme} ambient mode session. Emitted each time
+    ambient mode exits.
+  </summary>
+  <token key="Theme" variants="AmbientModeThemes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.SelectedNumberOfAlbums" units="int"

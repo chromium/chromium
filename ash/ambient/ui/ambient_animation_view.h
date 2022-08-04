@@ -32,6 +32,7 @@ class AmbientAnimationAttributionProvider;
 class AmbientAnimationPlayer;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
+class AmbientMultiScreenMetricsRecorder;
 class AmbientViewDelegateImpl;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
@@ -42,13 +43,14 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   AmbientAnimationView(
       AmbientViewDelegateImpl* view_delegate,
-      std::unique_ptr<const AmbientAnimationStaticResources> static_resources);
+      std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
+      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
   ~AmbientAnimationView() override;
 
  private:
-  void Init();
+  void Init(AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
 
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 

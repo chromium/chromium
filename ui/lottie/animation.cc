@@ -305,6 +305,15 @@ absl::optional<Animation::PlaybackConfig> Animation::GetPlaybackConfig() const {
   }
 }
 
+absl::optional<Animation::CycleBoundaries>
+Animation::GetCurrentCycleBoundaries() const {
+  if (state_ == PlayState::kStopped || !timer_control_) {
+    return absl::nullopt;
+  } else {
+    return timer_control_->current_cycle();
+  }
+}
+
 void Animation::Paint(gfx::Canvas* canvas,
                       const base::TimeTicks& timestamp,
                       const gfx::Size& size) {

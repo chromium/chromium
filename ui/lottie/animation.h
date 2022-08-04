@@ -209,6 +209,11 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   //   yet.
   absl::optional<float> GetCurrentProgress() const;
 
+  // Returns the currently playing cycle within the PlaybackConfig's
+  // |scheduled_cycles|. Returns nullopt under the same circumstances as
+  // GetCurrentProgress().
+  absl::optional<CycleBoundaries> GetCurrentCycleBoundaries() const;
+
   // Returns the number of animation cycles that have been completed since
   // Play() was called, or nullopt if the animation is currently Stop()ed.
   absl::optional<int> GetNumCompletedCycles() const;
@@ -288,6 +293,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     double GetNormalizedStartOffset() const;
     double GetNormalizedEndOffset() const;
     int completed_cycles() const { return completed_cycles_; }
+    CycleBoundaries current_cycle() const { return current_cycle_; }
 
    private:
     friend class AnimationTest;

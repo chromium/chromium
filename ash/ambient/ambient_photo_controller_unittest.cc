@@ -93,8 +93,8 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
     return result;
   }
 
-  const ambient::PhotoCacheEntry* GetCacheEntryAtIndex(int cache_index,
-                                                       bool backup = false) {
+  const ::ambient::PhotoCacheEntry* GetCacheEntryAtIndex(int cache_index,
+                                                         bool backup = false) {
     const auto& files = backup ? GetBackupCachedFiles() : GetCachedFiles();
     auto it = files.find(cache_index);
     if (it == files.end())
@@ -109,7 +109,7 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
                               const std::string* related_image = nullptr,
                               const std::string* related_details = nullptr,
                               bool is_portrait = false) {
-    ambient::PhotoCacheEntry cache_entry;
+    ::ambient::PhotoCacheEntry cache_entry;
     cache_entry.mutable_primary_photo()->set_image(*image);
 
     if (details)

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/ambient/ambient_view_delegate_impl.h"
+#include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
@@ -174,7 +175,8 @@ std::unique_ptr<views::Border> CreateMediaStringBorder(
 
 AmbientAnimationView::AmbientAnimationView(
     AmbientViewDelegateImpl* view_delegate,
-    std::unique_ptr<const AmbientAnimationStaticResources> static_resources)
+    std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
+    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder)
     : view_delegate_(view_delegate),
       static_resources_(std::move(static_resources)),
       animation_photo_provider_(static_resources_.get(),
@@ -182,12 +184,13 @@ AmbientAnimationView::AmbientAnimationView(
       animation_jitter_calculator_(kAnimationJitterConfig) {
   DCHECK(view_delegate_);
   SetID(AmbientViewID::kAmbientAnimationView);
-  Init();
+  Init(multi_screen_metrics_recorder);
 }
 
 AmbientAnimationView::~AmbientAnimationView() = default;
 
-void AmbientAnimationView::Init() {
+void AmbientAnimationView::Init(
+    AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder) {
   SetUseDefaultFillLayout(true);
 
   views::View* animation_container_view =
@@ -210,6 +213,8 @@ void AmbientAnimationView::Init() {
       static_resources_->GetSkottieWrapper(), cc::SkottieColorMap(),
       &animation_photo_provider_);
   animation_observer_.Observe(animation.get());
+  DCHECK(multi_screen_metrics_recorder);
+  multi_screen_metrics_recorder->RegisterScreen(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
   animation_attribution_provider_ =

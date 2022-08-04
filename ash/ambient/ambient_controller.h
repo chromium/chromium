@@ -46,6 +46,7 @@ namespace ash {
 
 class AmbientBackendController;
 class AmbientContainerView;
+class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
 class AmbientWeatherController;
 
@@ -247,6 +248,9 @@ class ASH_EXPORT AmbientController
   // Not set until the AmbientAnimationTheme is initially read from pref
   // storage when ambient mode is enabled.
   absl::optional<AmbientAnimationTheme> current_theme_from_pref_;
+
+  std::unique_ptr<AmbientMultiScreenMetricsRecorder>
+      multi_screen_metrics_recorder_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };
