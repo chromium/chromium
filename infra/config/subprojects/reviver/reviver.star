@@ -48,7 +48,7 @@ def target_builder(*, name, dimensions):
 
 builder(
     name = "coordinator",
-    executable = "recipe:reviver/chromium/coordinator",
+    executable = "recipe:chromium_polymorphic/launcher",
     # TODO(crbug/1346396) Figure out what machines the coordinator should run on
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
@@ -59,9 +59,6 @@ builder(
             "builder": "runner",
         },
         # TODO(crbug/1346396) Figure out what machines the runnner should run on
-        "default_dimensions": {
-            "pool": ci.DEFAULT_POOL,
-        },
         "target_builders": [
             target_builder(
                 name = "android-marshmallow-x86-rel",
@@ -83,4 +80,6 @@ builder(
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
+    # TODO(crbug/1346396) Figure out what machines the runnner should run on
+    pool = ci.DEFAULT_POOL,
 )
