@@ -11740,13 +11740,25 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device network interface reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device network interface reporting',
+        },
+      ],
       'example_value': False,
       'id': 224,
       'caption': '''Report device network interfaces''',
       'tags': ['admin-sharing'],
       'desc': '''This policy is deprecated in M96. Please use <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION">ReportDeviceNetworkConfiguration</ph> and <ph name="REPORT_DEVICE_NETWORK_STATUS">ReportDeviceNetworkStatus</ph> instead.
 
-      Setting the policy to Enabled or leaving it unset has enrolled devices report the list of network interfaces with their types and hardware addresses. Setting the policy to Disabled means enrolled devices don't report the network interface.''',
+      Setting the policy to Enabled or leaving it unset has enrolled devices report the list of network interfaces with their types and hardware addresses.
+
+      Setting the policy to Disabled means enrolled devices don't report the network interface.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -11838,6 +11850,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device users reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device users reporting',
+        },
+      ],
       'example_value': False,
       'id': 248,
       'caption': '''Report device users''',
@@ -11859,13 +11881,25 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device hardware status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device hardware status reporting',
+        },
+      ],
       'example_value': False,
       'id': 290,
       'caption': '''Report hardware status''',
       'tags': ['admin-sharing'],
       'desc': '''This policy is deprecated as of M96. Please use <ph name="REPORT_DEVICE_CPU_INFO">ReportDeviceCpuInfo</ph>, <ph name="REPORT_DEVICE_MEMORY_INFO">ReportDeviceMemoryInfo</ph>, <ph name="REPORT_DEVICE_STORAGE_STATUS">ReportDeviceStorageStatus</ph>, <ph name="REPORT_DEVICE_SECURITY_STATUS">ReportDeviceSecurityStatus</ph>, and <ph name="REPORT_DEVICE_AUDIO_STATUS">ReportDeviceAudioStatus</ph> instead.
 
-      Setting the policy to Enabled or leaving it unset has enrolled devices report hardware statistics such as CPU/RAM usage. Setting the policy to Disabled means enrolled devices don't report the hardware statistics.''',
+      Setting the policy to Enabled or leaving it unset has enrolled devices report hardware statistics such as CPU/RAM usage.
+
+      Setting the policy to Disabled means enrolled devices don't report the hardware statistics.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -11879,6 +11913,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device kiosk session reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device kiosk session reporting',
+        },
+      ],
       'example_value': False,
       'id': 291,
       'caption': '''Report information about active kiosk sessions''',
@@ -11931,6 +11975,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device graphics status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device graphics status reporting',
+        },
+      ],
       'example_value': False,
       'id': 660,
       'caption': '''Report display and graphics statuses''',
@@ -11954,6 +12008,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device crash report information reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device crash report information reporting',
+        },
+      ],
       'example_value': False,
       'id': 665,
       'caption': '''Report information about crash reports.''',
@@ -11977,6 +12041,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device OS update status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device OS update status reporting',
+        },
+      ],
       'example_value': False,
       'id': 602,
       'caption': '''Report OS update status''',
