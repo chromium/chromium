@@ -30,6 +30,7 @@ extern const base::Feature kGameModeFeature;
 extern const base::Feature kGmsCoreLowMemoryKillerProtection;
 extern const base::Feature kGuestZram;
 extern const base::FeatureParam<int> kGuestZramSize;
+extern const base::FeatureParam<int> kGuestZramSwappiness;
 extern const base::Feature kLockGuestMemory;
 extern const base::Feature kLogdConfig;
 extern const base::FeatureParam<int> kLogdConfigSize;

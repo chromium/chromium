@@ -90,6 +90,10 @@ const base::Feature kGuestZram{"ArcGuestZram",
 // Controls the size of the guest zram.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 
+// Controls swappiness for the ARCVM guest.
+const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
+                                                   0};
+
 // Enables/disables mlock() of guest memory for ARCVM.
 // Often used in combination with kGuestZram.
 const base::Feature kLockGuestMemory{"ArcLockGuestMemory",

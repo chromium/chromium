@@ -2457,6 +2457,33 @@ TEST_F(ArcVmClientAdapterTest, ArcVmLogdSizeEnabledValid3) {
       base::Contains(request.params(), "androidboot.arcvm.logd.size=1M"));
 }
 
+// Test that the value of swappiness is default value when kGuestZram is
+// disabled.
+TEST_F(ArcVmClientAdapterTest, ArcGuestZramDisabledSwappiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kGuestZram);
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(0, request.guest_swappiness());
+}
+
+// Test that StartArcVmRequest has correct swappiness value.
+TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["swappiness"] = "90";
+  feature_list.InitAndEnableFeatureWithParameters(kGuestZram, params);
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(90, request.guest_swappiness());
+}
+
 // Test that StartArcVmRequest has no matching command line flag
 // when kVmMemoryPSIReports is enabled.
 TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsDisabled) {
