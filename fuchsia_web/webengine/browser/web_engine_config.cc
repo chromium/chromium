@@ -94,27 +94,34 @@ bool AddCommandLineArgsFromConfig(const base::Value& config,
       continue;
     }
 
-    if (arg.second.is_none()) {
-      DCHECK(!command_line->HasSwitch(arg.first));
-      command_line->AppendSwitch(arg.first);
-    } else if (arg.second.is_string()) {
-      if (arg.first == switches::kEnableFeatures ||
-          arg.first == switches::kDisableFeatures) {
-        AppendToSwitch(arg.first, arg.second.GetString(), command_line);
-      } else {
-        DCHECK(!command_line->HasSwitch(arg.first)) << " " << arg.first;
-        command_line->AppendSwitchNative(arg.first, arg.second.GetString());
+    if (arg.first == switches::kEnableFeatures ||
+        arg.first == switches::kDisableFeatures) {
+      if (!arg.second.is_string()) {
+        LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
+        return false;
       }
-    } else {
-      LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
-      return false;
+      // Merge the features.
+      AppendToSwitch(arg.first, arg.second.GetString(), command_line);
+      continue;
     }
 
-    // TODO(https://crbug.com/1023012): enable-low-end-device-mode currently
-    // fakes 512MB total physical memory, which triggers RGB4444 textures,
-    // which we don't yet support.
-    if (arg.first == switches::kEnableLowEndDeviceMode)
-      command_line->AppendSwitch(blink::switches::kDisableRGBA4444Textures);
+    if (command_line->HasSwitch(arg.first)) {
+      // Use the existing command line value rather than override it.
+      continue;
+    }
+
+    if (arg.second.is_none()) {
+      command_line->AppendSwitch(arg.first);
+      continue;
+    }
+
+    if (arg.second.is_string()) {
+      command_line->AppendSwitchNative(arg.first, arg.second.GetString());
+      continue;
+    }
+
+    LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
+    return false;
   }
 
   return true;
@@ -125,7 +132,7 @@ bool AddCommandLineArgsFromConfig(const base::Value& config,
 bool UpdateCommandLineFromConfigFile(const base::Value& config,
                                      base::CommandLine* command_line) {
   // The FieldTrialList should be initialized only after config is loaded.
-  DCHECK(base::FieldTrialList::GetInstance());
+  CHECK(!base::FieldTrialList::GetInstance());
 
   if (!AddCommandLineArgsFromConfig(config, command_line))
     return false;
