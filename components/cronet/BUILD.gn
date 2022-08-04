@@ -59,7 +59,6 @@ source_set("cronet_common") {
     "//base",
     "//components/prefs:prefs",
     "//net",
-    "//third_party/metrics_proto",
   ]
 
   if (!disable_histogram_support) {

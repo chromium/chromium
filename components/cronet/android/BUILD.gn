@@ -147,7 +147,6 @@ source_set("cronet_static") {
     "//components/cronet:cronet_version_header",
     "//components/cronet:metrics_util",
     "//components/cronet/native:cronet_native_impl",
-    "//components/metrics",
     "//components/prefs",
     "//net",
     "//third_party/zlib:zlib",
@@ -358,22 +357,6 @@ android_library("cronet_impl_fake_base_java") {
   ]
 }
 
-cronet_impl_native_java_srcjar_deps = [
-  ":net_idempotency_java",
-  ":net_request_priority_java",
-  ":network_quality_observation_source_java",
-  ":url_request_error_java",
-]
-
-cronet_impl_native_java_deps_to_package = [
-  ":cronet_urlconnection_impl_java",
-  "//base:base_java",
-  "//base:jni_java",
-  "//build/android:build_java",
-  "//net/android:net_java",
-  "//url:url_java",
-]
-
 android_library("cronet_urlconnection_impl_java") {
   sources = [
     "java/src/org/chromium/net/urlconnection/CronetBufferedOutputStream.java",
@@ -391,6 +374,22 @@ android_library("cronet_urlconnection_impl_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
+
+cronet_impl_native_java_srcjar_deps = [
+  ":net_idempotency_java",
+  ":net_request_priority_java",
+  ":network_quality_observation_source_java",
+  ":url_request_error_java",
+]
+
+cronet_impl_native_java_deps_to_package = [
+  ":cronet_urlconnection_impl_java",
+  "//base:base_java",
+  "//base:jni_java",
+  "//build/android:build_java",
+  "//net/android:net_java",
+  "//url:url_java",
+]
 
 # cronet_impl_native_base_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_base_java") {
@@ -1244,7 +1243,6 @@ if (!is_component_build) {
       "//base/test:test_support",
       "//components/cronet:cronet_common_unittests",
       "//components/cronet/native:cronet_native_unittests",
-      "//components/metrics",
       "//components/prefs:test_support",
       "//net",
       "//net:test_support",
@@ -1268,7 +1266,6 @@ if (!is_component_build) {
       "//base",
       "//base/test:test_support",
       "//components/cronet/native/test:cronet_native_tests",
-      "//components/metrics",
       "//components/prefs:test_support",
       "//net",
       "//net:test_support",
