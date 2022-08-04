@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ആപ്പിനെ AR ഉപയോഗിക്കാൻ അനുവദിക്കുന്നതിന് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ക്യാമറ ഓണാക്കുക.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="1887786770086287077">ഈ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ആക്‌സസ് ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
+<translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
 <translation id="1919950603503897840">കോൺടാക്റ്റുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2687403674020088961">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
+<translation id="2713106313042589954">ക്യാമറ ഓഫാക്കുക</translation>
 <translation id="2717722538473713889">ഇമെയിൽ വിലാസങ്ങൾ</translation>
 <translation id="2750481671343847896">ഐഡന്റിറ്റി സേവനങ്ങളിൽ നിന്നുള്ള സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കാൻ സൈറ്റുകൾക്ക് കഴിയും.</translation>
 <translation id="2785051990912111074">ഇത് തിരഞ്ഞെടുക്കുന്നതിലൂടെ <ph name="WEBSITE" /> എന്നതിനുള്ള കുക്കികൾ മായ്ക്കും</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ആദ്യം ചോദിക്കുക (ശുപാർശചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="4505788138578415521">URL വികസിപ്പിച്ചു</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ആപ്പിനെ നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> മൈക്രോഫോൺ ഓണാക്കുക.</translation>
+<translation id="4566417217121906555">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="4570913071927164677">വിശദാംശങ്ങൾ</translation>
 <translation id="4645575059429386691">നിങ്ങളുടെ രക്ഷിതാവ് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4670064810192446073">വെർച്വൽ റിയാലിറ്റി</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">സ്‌ക്രീനിന്റെ മുകളിൽ ഓപ്‌ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5197729504361054390">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന കോൺടാക്‌റ്റുകൾ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5216942107514965959">അവസാനം സന്ദർശിച്ചത് ഇന്നാണ്</translation>
+<translation id="5225463052809312700">ക്യാമറ ഓണാക്കുക</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' നീക്കംചെയ്യുക</translation>
 <translation id="528192093759286357">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട് ബാക്ക് ബട്ടണിൽ സ്‌പർശിക്കുക.</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
@@ -236,8 +240,10 @@
 <translation id="6367753977865761591">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ ബ്ലോക്ക് ചെയ്യുക.</translation>
 <translation id="6388207532828177975">മായ്‌ച്ച് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6398765197997659313">പൂര്‍ണ്ണ സ്ക്രീനില്‍ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണവും ഡാറ്റയും ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="6447842834002726250">കുക്കികള്‍</translation>
+<translation id="6467852467360539617">ഡാറ്റ മായ്ക്കുക, അനുമതികൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6545864417968258051">Bluetooth സ്‌കാനിംഗ്</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും ബ്ലോക്ക് ചെയ്‌തു}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും ബ്ലോക്ക് ചെയ്‌തു}}</translation>
@@ -277,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവ അനുവദിച്ചു</translation>
 <translation id="7302486331832100261">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്യാറുണ്ട്. അനുവദിക്കാൻ, വിശദാംശങ്ങൾ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> -ന്റെ ക്രമീകരണം</translation>
 <translation id="7423098979219808738">ആദ്യതവണ ചോദിക്കുക</translation>
 <translation id="7423538860840206698">ക്ലിപ്പ്ബോർഡ് റീഡ് ചെയ്യുന്നതിൽ നിന്ന് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7425915948813553151">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം</translation>
@@ -336,6 +343,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ഒരു കുക്കി ഉപയോഗത്തിലാണ്}other{# കുക്കികൾ ഉപയോഗത്തിലാണ്}}</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>
 <translation id="848952951823693243">എല്ലായ്‌പ്പോഴും മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
+<translation id="8499083585497694743">മൈക്രോഫോൺ അൺമ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="851751545965956758">ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="857943718398505171">അനുവദിച്ചിരിക്കുന്നു (ശുപാർശചെയ്‌തത്)</translation>

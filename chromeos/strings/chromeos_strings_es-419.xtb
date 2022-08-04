@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactivar manualmente</translation>
+<translation id="248546197012830854">El dispositivo está sin conexión. Conéctate a una red Wi-Fi para ver el contenido de ayuda.</translation>
 <translation id="2491955442992294626">Cuando usas otra ventana no se prueban las teclas.</translation>
 <translation id="2493126929778606526">Tus mejores fotos seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -519,7 +520,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">El dispositivo cambiará de organización o usuario</translation>
-<translation id="5389159777326897627">Estilo y fondo de pantalla</translation>
+<translation id="5389159777326897627">Fondo de pantalla y estilo</translation>
 <translation id="5389224261615877010">Arcoíris</translation>
 <translation id="5395600419410242651">Borrar todos los datos</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
@@ -661,6 +662,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6611280807952151149">Salir de la reparación de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En ejecución</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
+<translation id="6624819909909965616">No se puede subir un archivo de más de 10 MB</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6644568396961840069">No se pudo guardar el archivo. Intenta conectar otro almacenamiento externo o vuelve a intentarlo más tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
@@ -696,6 +698,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
 <translation id="6995564396478647735">Asegúrate de que la protección de escritura esté activada</translation>
+<translation id="7005833343836210400">Dispositivo sin conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
@@ -809,6 +812,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="8094062939584182041">Permitir que Google te envíe un correo electrónico sobre este problema</translation>
 <translation id="8104083085214006426">Estás usando una red abierta y no segura</translation>
 <translation id="8109786307828817014">¿Deseas continuar con las calibraciones erróneas?</translation>
 <translation id="811820734797650957">(Android) se puede hacer ping a la puerta de enlace</translation>

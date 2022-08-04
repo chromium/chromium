@@ -1070,6 +1070,7 @@
 <translation id="3835233591525155343">Выкарыстанне вамі прылады</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы дакумент Google, націсніце Tab, затым Enter</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3853684360927654006">Калькулятар надзейнасці пароля</translation>
 <translation id="3858027520442213535">Абнавіць дату і час</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3872834068356954457">Навука</translation>
@@ -1680,6 +1681,7 @@
 <translation id="5518670652865028077">Мастацтва і забавы</translation>
 <translation id="5519516356611866228">З унесенымі вамі змяненнямі</translation>
 <translation id="5523118979700054094">Назва палітыкі</translation>
+<translation id="5525755241743357906">Файл капіруецца або перамяшчаецца</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты даступнасці ў наладах Chrome OS, націсніце Tab, затым Увод</translation>
 <translation id="5528532273234423708">Аўтаматызацыя дома</translation>
 <translation id="55293785478302737">Сшыванне па краі</translation>
@@ -2933,6 +2935,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS, націсніце Tab, затым Увод</translation>
 <translation id="9096679202588811390">Тэлеперадачы і праграмы</translation>
 <translation id="9101630580131696064">Латок 1</translation>
+<translation id="9102081333385212048">Скапіраваныя або перамешчаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам (напрыклад, для праверкі на наяўнасць канфідэнцыяльных даных або шкодных праграм).</translation>
 <translation id="9103537084693478942">Праграмнае забеспячэнне для работы з відэа</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> звычайна выкарыстоўвае шыфраванне для абароны вашай інфармацыі. Пры спробе Chromium падключыцца да <ph name="SITE" />, вэб-сайт адправіў незнаёмыя і няправільныя ўліковыя даныя. Гэта можа адбывацца, калі зламыснік спрабуе выдаць сябе за <ph name="SITE" />, або экран уваходу ў сетцы Wi-Fi перарваў падключэнне. Ваша інфармацыя ўсё роўна абаронена, паколькі Chromium перарваў падключэнне да абмену данымі.</translation>
 <translation id="9106062320799175032">Дадаць адрас для выстаўлення рахункаў</translation>

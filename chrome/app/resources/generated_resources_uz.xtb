@@ -4826,7 +4826,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5601503069213153581">PIN kod</translation>
 <translation id="5601823921345337195">MIDI qurilmalarga ulanishga ruxsat berilmagan</translation>
 <translation id="5602765853043467355">Qurilmadagi xatcho‘plar, tarix, parollar va boshqa ma’lumotlarni tozalash</translation>
-<translation id="5605623530403479164">Boshqa qidiruv tizimlari</translation>
 <translation id="5605758115928394442">Telefoningizga bildirishnoma yuborildi. Shaxsingizni tasdiqlang.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu kengaytma bloklandi}other{Bu kengaytmalar bloklandi}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Batafsil</translation>
@@ -5127,6 +5126,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5909379458939060601">Bu profil va brauzerning ishlashi haqida axborot oʻchirib tashlansinmi?</translation>
 <translation id="5910363049092958439">&amp;Rasmni saqlab olish...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> oflayn</translation>
+<translation id="5911030830365207728">Google Tarjimon</translation>
 <translation id="5911533659001334206">Tezkor tugmalar</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bit):
 <ph name="MODULUS_HEX_DUMP" />
@@ -7963,6 +7963,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8666759526542103597">Reklamalarni brauzer asosida moslashtirish haqida</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> to‘liq ekranda ochilib, sichqon kursorini yashirdi.</translation>
 <translation id="8667760277771450375">Biz saytlarda spam va firibgarlik reklamalaridan himoyani yoqish orqali kuzatuv mexanizmlarini taqiqlash yoʻllarini oʻrganib chiqmoqdamiz.</translation>
+<translation id="8668378421690365723">Endi qurilmangiz ishlashi, xavfsizlik va unumdorlikda muammolar yuz berishi mumkin.</translation>
 <translation id="8669284339312441707">Iliqroq</translation>
 <translation id="8670537393737592796">Buni tezroq ochish uchun <ph name="APP_NAME" /> ilovasini oʻrnatish tugmasini bosing</translation>
 <translation id="867085395664725367">Serverda xatolik yuz berdi.</translation>
@@ -8446,6 +8447,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Toʻliq foydalanish uchun <ph name="DEVICE_OS" /> tizimini tashqi diskka oʻrnating. Uni keyinroq kirish ekranidan oʻrnatish ham mumkin.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish uchun tayyor boʻlmasangiz, uni USB orqali ishga tushirib, sinab koʻrishingiz mumkin. Mavjud operatsion tizim va maʼlumotlaringiz saqlanib qoladi, lekin xotira va unumdorlik cheklovlari oshishi mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Qadalgan ichki oyna sifatida ochish</translation>
+<translation id="9123287046453017203">Qurilmangiz dasturi eskirdi</translation>
 <translation id="9124003689441359348">Saqlangan parollar shu yerda turadi</translation>
 <translation id="9126149354162942022">Kursor rangi</translation>
 <translation id="9128317794749765148">Oxirigacha sozlanmadi</translation>

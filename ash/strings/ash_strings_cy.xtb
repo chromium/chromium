@@ -897,6 +897,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="619279033188484792">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Gwefru'n llawn nawr</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Cysylltu <ph name="NAME" /> a gadwyd yn flaenorol i <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
 <translation id="622484624075952240">I lawr</translation>
 <translation id="6231419273573514727">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig</translation>
@@ -1398,7 +1399,6 @@ Gosodiad newydd</translation>
 <translation id="9168436347345867845">Gwneud e'n nes ymlaen</translation>
 <translation id="9178475906033259337">Wrthi'n dangos 1 canlyniad am <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Mae'r nodwedd hon yn caniatáu i chi gyrchu unrhyw ddefnyddiwr sydd wedi mewngofnodi yn gyflym heb fod angen cyfrinair. Defnyddiwch y nodwedd hon gyda'r cyfrifon rydych yn ymddiried ynddynt yn unig.</translation>
-<translation id="9180906851711123156">Pwyswch Ctrl+W i gau</translation>
 <translation id="9183456764293710005">Chwyddwr sgrîn lawn</translation>
 <translation id="9193626018745640770">Wrthi'n castio i dderbynnydd anhysbys</translation>
 <translation id="9194617393863864469">Mewngofnodi defnyddiwr arall...</translation>

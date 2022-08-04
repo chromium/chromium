@@ -906,6 +906,7 @@
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片、媒體和通知</translation>
 <translation id="619335566042889110">現已完全充滿</translation>
 <translation id="6193431488227440296">開發發佈途徑</translation>
+<translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
@@ -1406,7 +1407,6 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9178475906033259337">顯示緊 1 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="9179259655489829027">這項功能讓您可快速登入任何已登入的使用者帳戶，無需使用密碼。建議您只讓信任的帳戶使用此功能。</translation>
-<translation id="9180906851711123156">㩒一下 Ctrl+W 就可以閂咗佢</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
 <translation id="9193626018745640770">正在投放到不明接收器</translation>
 <translation id="9194617393863864469">登入其他使用者…</translation>

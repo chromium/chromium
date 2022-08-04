@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2480034874476596812">כיבוי ידני</translation>
+<translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
 <translation id="2491955442992294626">המקשים לא נבדקים כשמשתמשים בחלון אחר</translation>
 <translation id="2493126929778606526">התמונות הטובות ביותר שלך שנבחרו באופן אוטומטי</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">יציאה מתהליך התיקון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
+<translation id="6624819909909965616">‏אי אפשר להעלות קובץ שגדול מ-10MB</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6644568396961840069">לא ניתן היה לשמור את הקובץ. אפשר לחבר התקן אחסון חיצוני אחר או לנסות שוב מאוחר יותר.</translation>
 <translation id="6647510110698214773">האלגוריתם להצפנה</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="6995564396478647735">צריך לוודא שהתכונה 'הגנה מכתיבה' פועלת</translation>
+<translation id="7005833343836210400">המכשיר במצב אופליין</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7041549558901442110">המכשיר לא מחובר.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
+<translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
 <translation id="8109786307828817014">להמשיך עם הכיול שנכשל?</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>

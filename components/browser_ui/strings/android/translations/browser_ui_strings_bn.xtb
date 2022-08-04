@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">তাছাড়া, যাতে <ph name="APP_NAME" /> এ আর (AR) ব্যবহার করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> থেকে</translation>
 <translation id="1887786770086287077">এই ডিভাইসে লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
+<translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1919345977826869612">বিজ্ঞাপন</translation>
 <translation id="1919950603503897840">পরিচিতিগুলি বেছে নিন</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
+<translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2717722538473713889">ইমেল আইডি</translation>
 <translation id="2750481671343847896">সাইটগুলি পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট দেখাতে পারে।</translation>
 <translation id="2785051990912111074">এটি পছন্দ করলে <ph name="WEBSITE" /> থেকে সব কুকি সাফ হয়ে যাবে</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">সাইটগুলিকে আপনার ক্যামেরা ব্যবহার করতে দিতে মঞ্জুরি দেওয়ার আগে প্রথমে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="4505788138578415521">ইউআরএল বড় করা হয়েছে</translation>
 <translation id="4534723447064627427">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার মাইক্রোফোন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও মাইক্রোফোন চালু করে দিন।</translation>
+<translation id="4566417217121906555">মাইক্রোফোন মিউট করুন</translation>
 <translation id="4570913071927164677">বিবরণ</translation>
 <translation id="4645575059429386691">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">স্ক্রিনের উপরের দিকে বিকল্পগুলি দেখানো হয়েছে</translation>
 <translation id="5197729504361054390">আপনার বেছে নেওয়া পরিচিতি <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এর সাথে শেয়ার করা হবে।</translation>
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>
+<translation id="5225463052809312700">ক্যামেরা চালু করুন</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' সরান</translation>
 <translation id="528192093759286357">উপর থেকে টেনে আনুন এবং পূর্ণ স্ক্রিন থেকে বেরিয়ে যেতে পিছনে ফেরার বোতাম স্পর্শ করুন।</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইন ব্লক করুন।</translation>
 <translation id="6388207532828177975">পরিষ্কার এবং রিসেট করুন</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১টি কুকি ব্যবহার করা হচ্ছে}one{#টি কুকি ব্যবহার করা হচ্ছে}other{#টি কুকি ব্যবহার করা হচ্ছে}}</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="848952951823693243">সবসময় মোবাইল সাইটের অনুরোধ করুন</translation>
+<translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>
 <translation id="851751545965956758">সাইটকে ডিভাইসের সাথে কানেক্ট করা থেকে ব্লক করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>

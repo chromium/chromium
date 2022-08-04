@@ -4832,7 +4832,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Ni dovoljena povezava z napravami MIDI</translation>
 <translation id="5602765853043467355">Počistite zaznamke, zgodovino, gesla in drugo v tej napravi</translation>
-<translation id="5605623530403479164">Drugi iskalniki</translation>
 <translation id="5605758115928394442">V vaš telefon smo poslali obvestilo, da potrdite, da ste to res vi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ta razširitev je blokirana}one{Te razširitve so blokirane}two{Te razširitve so blokirane}few{Te razširitve so blokirane}other{Te razširitve so blokirane}}</translation>
 <translation id="560834977503641186">Sinhronizacija poverilnic za Wi-Fi, več o tem</translation>
@@ -5132,6 +5131,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5909379458939060601">Želite izbrisati ta profil in podatke o brskanju?</translation>
 <translation id="5910363049092958439">Sh&amp;rani sliko kot ...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> nima vzpostavljene povezave</translation>
+<translation id="5911030830365207728">Google Prevajalnik</translation>
 <translation id="5911533659001334206">Pregledovalnik bližnjic</translation>
 <translation id="5914724413750400082">Modul (št. bitov: <ph name="MODULUS_NUM_BITS" />):
   <ph name="MODULUS_HEX_DUMP" />

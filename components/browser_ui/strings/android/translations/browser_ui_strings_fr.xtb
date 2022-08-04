@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Source : <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1919345977826869612">Annonces</translation>
 <translation id="1919950603503897840">Sélectionner des contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2704606927547763573">Copié</translation>
+<translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses e-mail</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher les invites de connexion des services d'identité.</translation>
 <translation id="2785051990912111074">Cette action supprimera les cookies de <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser ma caméra (recommandé)</translation>
 <translation id="4505788138578415521">URL étendue</translation>
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder au micro, activez également celui-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Désactiver le micro</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4645575059429386691">Géré par ton papa/ta maman</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Cette option est disponible en haut de l'écran</translation>
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
+<translation id="5225463052809312700">Activer la caméra</translation>
 <translation id="5264323282659631142">Supprimer "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pour quitter le mode plein écran, faites glisser un doigt du haut vers le bas, puis appuyez sur le bouton Retour.</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie est actuellement utilisé}one{# cookie est actuellement utilisé}other{# cookies sont actuellement utilisés}}</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
 <translation id="848952951823693243">Toujours demander la version mobile du site</translation>
+<translation id="8499083585497694743">Réactiver le micro</translation>
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>

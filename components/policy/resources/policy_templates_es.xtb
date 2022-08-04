@@ -100,6 +100,7 @@
 <translation id="1095209545735032039">Bloquear la API Serial en estos sitios web</translation>
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
+<translation id="1100840127293327071">No marcar la opción de conservar los datos de navegación previos de forma predeterminada</translation>
 <translation id="1105572260329131950">Usar iconos predeterminados en el caso de las conexiones seguras</translation>
 <translation id="1107538157073168076">Inhabilitar extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -747,6 +748,14 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para Desarrolladores de Android. Si se asigna el valor true a esta política, los usuarios no podrán acceder a las Opciones para Desarrolladores. Si se le asigna el valor false o no se configura, los usuarios podrán tocar siete veces el número de compilación en la aplicación Ajustes de Android para acceder a esas opciones.</translation>
 <translation id="1787790976045065845">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y si un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor cero a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
 <translation id="1793346220873697538">Inhabilitar la impresión con PIN de forma predeterminada</translation>
+<translation id="1794457906032475749">Si se habilita esta política, la opción de conservar los datos de navegación previos al crear un perfil de empresa estará marcada de forma predeterminada.
+
+Si esta política se inhabilita o no se establece, la opción de conservar los datos de navegación previos al crear un perfil de empresa no estará marcada de forma predeterminada.
+
+Independientemente del valor que se asigne, el usuario podrá decidir si quiere conservar o no los datos de navegación previos al crear un perfil de empresa.
+
+Esta política no tendrá efecto si la opción de conservar los datos de navegación no está disponible. Esto ocurre si la separación de perfiles de empresa es estrictamente obligatoria o si los datos proceden de un perfil que ya está gestionado.
+</translation>
 <translation id="179694024208061102">Si se asigna el valor "Habilitada" a esta política, <ph name="PRODUCT_NAME" /> intentará abrir algunas URL en un navegador alternativo, como <ph name="IE_PRODUCT_NAME" />. Esta función se configura a través de las políticas del grupo de <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> no intentará abrir las URL designadas en un navegador alternativo.</translation>
@@ -1644,6 +1653,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en Gestión en la nube del navegador Chrome. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
+<translation id="2625026032335150744">Marcar la opción de conservar los datos de navegación previos de forma predeterminada</translation>
 <translation id="2625398797484317969">Controla los ajustes de Respuestas rápidas.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar mensajes de voz</translation>
@@ -2067,6 +2077,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo usen la instalación de fuente desconocida adb</translation>
 <translation id="3070119171976169951">Evitar que las imágenes de terceros muestren una solicitud de autenticación</translation>
@@ -2284,6 +2295,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3255762580838224124">Si se asigna un valor a esta política, cada pantalla rotará después de cada reinicio según la orientación especificada y también rotará la primera vez que se conecte después de que cambies el valor de la política. Los usuarios podrán cambiar la rotación de la pantalla a través de la página de configuración después de iniciar sesión, pero, en el siguiente reinicio, se volverá a establecer el valor definido en la política. Esta política se aplica a las pantallas principales y secundarias.
 
       Si no se le asigna ningún valor, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. En este caso, no se volverá a aplicar el valor predeterminado tras reiniciar.</translation>
+<translation id="3257786863492892609">Controla las políticas de Grabación de pantalla.</translation>
 <translation id="3258380413685430793">Ejecutar todo el contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Si se define esta política, se configura la lista de las URL de acceso empresarial (únicamente con protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hashes con salt de las contraseñas en estas URL y las usará para detectar si la contraseña se reutiliza. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hashes con salt de las contraseñas, tus páginas de inicio de sesión deben seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -3265,6 +3277,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="441686537793821907">Bloquear la instalación de extensiones externas</translation>
 <translation id="4423597592074154136">Especificar configuración de proxy manualmente</translation>
 <translation id="4424004842303301809">Inhabilitar informes de eventos de prevención de filtración de datos</translation>
+<translation id="4426601693403743089">Inhabilitar dogfood de Grabación de pantalla para usuarios de Family Link</translation>
 <translation id="4427173305799125784">El visor de PDF no puede anotar PDFs</translation>
 <translation id="4432762137771104529">Habilita los informes ampliados de Navegación segura</translation>
 <translation id="443454694385851356">Antiguos (no seguro)</translation>
@@ -4877,6 +4890,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Cada elemento de la lista de la política es una cadena que contiene un ID de extensión y, opcionalmente, una URL de "actualización" separados por punto y coma (<ph name="SEMICOLON" />). El ID de extensión es la cadena de 32 letras que aparece, por ejemplo, en <ph name="CHROME_EXTENSIONS_LINK" /> cuando está habilitado el modo desarrollador. La URL de "actualización", si se especifica, debe dirigir a un documento XML de un archivo de manifiesto de actualización, como se describe en <ph name="LINK_TO_EXTENSION_DOC1" />. De forma predeterminada, se utiliza la URL de "actualización" de Chrome Web Store, que actualmente es "https://clients2.google.com/service/update2/crx". Ten en cuenta que la URL de "actualización" definida en esta política solo se usa en la instalación inicial. Las actualizaciones posteriores de la extensión usarán la URL de "actualización" indicada en el archivo de manifiesto de la extensión.
 
       Por ejemplo, <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> instala la aplicación <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> desde la URL de "actualización" estándar de Chrome Web Store. Para obtener más información sobre cómo alojar extensiones, consulta <ph name="LINK_TO_EXTENSION_DOC2" />.</translation>
+<translation id="6274202259872570803">Grabación de pantalla</translation>
 <translation id="6275497712828649588">Ocultar las advertencias de seguridad si se utilizan instrucciones de línea de comandos potencialmente peligrosas</translation>
 <translation id="6275833043726517413">Permite usar la implementación antigua de <ph name="CORS" /> en vez de la nueva implementación de <ph name="CORS" />.
 
@@ -4910,7 +4924,15 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Definir <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor "False" a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="6305373713165475629">Si se establece esta política, se anula el modo predeterminado de impresión en color. Si el modo no está disponible, se ignorará esta política.</translation>
+<translation id="6308109234708949641">Esta política habilita la función Grabación de pantalla para usuarios de Family Link y le da permiso para crear y transcribir grabaciones de pantalla, así como para subir archivos a Drive.
+      Esta política no afecta a otros tipos de usuarios.
+      Esta política no afecta a la política <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> para usuarios de empresa.
+
+      Si se habilita esta política, la versión dogfood de Grabación de pantalla se habilitará para usuarios de Family Link.
+      Si se inhabilita esta política, la versión dogfood de Grabación de pantalla se inhabilitará para usuarios de Family Link.
+      Si no se establece esta política, la versión dogfood de Grabación de pantalla se inhabilitará de forma predeterminada para usuarios de Family Link.</translation>
 <translation id="6310223829319187614">Habilitar la opción de autocompletar nombre de dominio durante el inicio de sesión del usuario</translation>
+<translation id="6310756730808079944">Habilitar Grabación de pantalla</translation>
 <translation id="631081324835911099">Forzar el cierre de la sesión del usuario si el token de autenticación de su cuenta principal deja de ser válido.
         Esta política puede proteger al usuario frente al acceso a contenido restringido en propiedades web de Google.
         Si se asigna el valor "true" a esta política, se cerrará la sesión del usuario en cuanto su token de autenticación deje de ser válido e intente restaurar este error de token.
@@ -5298,6 +5320,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si se establece el valor "false" o no se configura la política, se inhabilitarán el inicio de sesión y la creación de usuarios supervisados y se ocultarán todos los usuarios supervisados creados anteriormente.
 
           NOTA: El comportamiento predeterminado es diferente según el dispositivo: en los dispositivos de clientes particulares, los usuarios supervisados están habilitados de forma predeterminada, mientras que en los dispositivos de empresa, están inhabilitados de forma predeterminada.</translation>
+<translation id="6648746349186337075">Esta política concede permiso a Grabación de pantalla para crear y transcribir grabaciones de pantalla y subirlas a Drive para los usuarios de empresa.
+      Esta política no afecta a los usuarios de Family Link.
+      Esta política no afecta a la política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para usuarios de Family Link.
+
+      Si esta política se habilita o no se establece, se habilitará Grabación de pantalla.
+      Si se inhabilita esta política, se inhabilitará Grabación de pantalla.</translation>
 <translation id="665023848306499203">Permitir que los dispositivos seleccionen una versión concreta a la que actualizarse</translation>
 <translation id="6652197835259177259">Configuración de usuarios administrados de forma local</translation>
 <translation id="6653897159826215341">Si se habilita la política, <ph name="PRODUCT_NAME" /> abre el cuadro de diálogo de impresión del sistema en lugar de la vista previa de impresión integrada cuando los usuarios solicitan que se imprima.
@@ -6203,6 +6231,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si se habilita esta política o no se establece, se activará la conversión de unidades de Respuestas rápidas.
       Si se inhabilita esta política, no se activará la conversión de unidades de Respuestas rápidas.</translation>
 <translation id="7587345076013230465">Pedir al usuario que seleccione el certificado de cliente cuando la política de selección automática encuentre coincidencias con varios certificados en la pantalla de inicio de sesión</translation>
+<translation id="7587921466180902617">Habilitar dogfood de Grabación de pantalla para usuarios de Family Link</translation>
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7604169113182304895">Las aplicaciones para Android pueden aceptar esta lista voluntariamente. No se les puede forzar a que lo hagan.</translation>
 <translation id="7612157962821894603">Opciones que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
@@ -6451,6 +6480,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Recomendación: Bloquea la pantalla en modo de inactividad activando el bloqueo de pantalla en el modo de suspensión y configurando <ph name="PRODUCT_OS_NAME" /> para que realice la suspensión después del periodo de inactividad indicado. Utiliza esta política únicamente si el bloqueo de la pantalla debería producirse mucho antes que la suspensión, o cuando no quieras que se produzca la suspensión en modo de inactividad.</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
+<translation id="7900469325540540107">Conservar datos de navegación de forma predeterminada al crear un perfil de empresa</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para introducir la contraseña</translation>
 <translation id="7904177352786629708">Si se asigna el valor "Enabled" a esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
 

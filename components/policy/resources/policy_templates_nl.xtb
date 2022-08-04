@@ -258,6 +258,7 @@
       Als je het beleid niet instelt of als de waarde na vervanging geen geldige hostnaam is, wordt er geen hostnaam ingesteld in het DHCP-verzoek.</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
+<translation id="1271811620059192171">Atomische beleidsgroepen aanzetten</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
@@ -2840,6 +2841,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid niet toepast of niet instelt, wordt de gebruiker misschien alleen gevraagd een clientcertificaat te selecteren als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3950110092991281616">Ambient-verificatie alleen in normale sessies aanzetten.</translation>
 <translation id="3950239119790560549">Tijdsbeperkingen voor updates</translation>
+<translation id="3956243291190637924">Kop- en voetteksten verbergen in afdrukvoorbeeld</translation>
 <translation id="3956573780915784996">Toestaan dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="3956686688560604829">Gebruik het SiteList-beleid van Internet Explorer voor ondersteuning voor oudere browsers.</translation>
 <translation id="3958586912393694012">Toestaan dat Smart Lock wordt gebruikt</translation>
@@ -3076,6 +3078,16 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden overzetten naar Drive via een mobiele verbinding.</translation>
 <translation id="4248277954659222481">Automatisch afspelen van media toestaan op een toelatingslijst met URL-patronen</translation>
 <translation id="4250680216510889253">Nee</translation>
+<translation id="4259636715493757956">Hiermee kun je instellingen voor verificatie-URL's opgeven in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Deze verificatie-URL's worden speciaal behandeld door <ph name="WEBVIEW_PRODUCT_NAME" />. Als je tijdens de verificatie een webpagina in <ph name="WEBVIEW_PRODUCT_NAME" /> bezoekt via verificatie-URL's, wordt bijvoorbeeld de authenticator-app van de overeenkomende identiteitsprovider gelanceerd die deze verificatie-URL kan verwerken.
+
+      Het proces voor de lancering van de authenticator-app van de identiteitsprovider wordt door identiteitsproviders gebruikt om toepassingen mogelijk te maken zoals SSO in apps bieden of betere beveiliging leveren door signalen van veilige apparaten te verzamelen voor meer inzicht in de toestand van het apparaat tijdens verificatie.
+
+      Als er geen geldige app voor de verwerking van verificatie-URL's is geïnstalleerd op het apparaat, gaat de navigatie verder in <ph name="WEBVIEW_PRODUCT_NAME" />.
+
+      Het patroon voor verificatie-URL's moet worden opgemaakt volgens https://www.chromium.org/administrators/url-blocklist-filter-format.
+      </translation>
 <translation id="4260027436474745627">Als je dit beleid toepast, wordt elk van de benoemde herkomsten in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Elk proces van een benoemde herkomst mag alleen documenten bevatten van de betreffende herkomst en de subdomeinen daarvan. Als je bijvoorbeeld https://a1.example.com/ opgeeft, valt https://a2.a1.example.com/ onder hetzelfde proces, maar https://example.com of https://b.example.com niet.
 
 Sinds <ph name="PRODUCT_NAME" /> 77 kun je met een jokerteken een herkomstbereik opgeven om te isoleren. Als je bijvoorbeeld https://[*.]corp.example.com opgeeft, wordt elke herkomst onder https://corp.example.com uitgevoerd in een eigen proces, waaronder https://corp.example.com zelf, https://a1.corp.example.com en https://a2.a1.corp.example.com.
@@ -3216,6 +3228,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
 <translation id="443665821428652897">Sitegegevens wissen als de browser wordt gesloten (verouderd)</translation>
+<translation id="4436941175475497595">Afdrukvoorbeeld uitzetten</translation>
 <translation id="4439336120285389675">Geef een lijst met verouderde webplatformfuncties op die tijdelijk kunnen worden aangezet.
 
       Met dit beleid kunnen beheerders verouderde webplatformfuncties tijdelijk opnieuw aanzetten. De functies worden geïdentificeerd door een stringtag. De functies die horen bij de tags die zijn opgenomen in de lijst die dit beleid heeft aangegeven, worden opnieuw aangezet.
@@ -4257,6 +4270,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="5645779841392247734">Cookies toestaan op deze sites</translation>
 <translation id="5646234199535103501">Configuratiebeleid voor de Chrome Enterprise Connector OnBulkDataEntry</translation>
+<translation id="5648016151508002741">Voorkomen dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="5649046890958064703">Als <ph name="PRINTERS_BLACKLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor gebruikers, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -4501,6 +4515,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5893303508158298667">Als je <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> hebt toegepast en <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> toepast of niet instelt, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken als er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld vanwege firewallbeperkingen).
 
       Als je het beleid niet toepast, wordt externe toegang niet uitgezet, maar zijn alleen verbindingen vanuit hetzelfde netwerk toegestaan (geen NAT-traversal of -relay).</translation>
+<translation id="5897234314586602143">Kop- en voetteksten tonen in afdrukvoorbeeld</translation>
 <translation id="5897913798715600338">Batterij snel opladen.</translation>
 <translation id="5898486742390981550">Wanneer meerdere gebruikers zijn ingelogd, kunnen Android-apps alleen worden gebruikt door de primaire gebruiker.</translation>
 <translation id="5899751601113377553">Voorkomen dat gebruikers <ph name="LACROS_NAME" /> gebruiken</translation>
@@ -5003,6 +5018,13 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6478258366184919502">Herkomsten van login en scherm</translation>
 <translation id="6478261301433199402">Als je het beleid instelt, wordt de <ph name="PLUGIN_VM_NAME" />-image voor een gebruiker opgegeven. Geef dit beleid op als een tekenreeks met json-indeling, waarbij <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> aangeeft waar de image kan worden gedownload en <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als een SHA-256-hash die wordt gebruikt om de integriteit van de download te verifiëren.</translation>
 <translation id="6481245670325946423">Gebruik van de stand zonder interface toestaan</translation>
+<translation id="648158446793103284">Als je het beleid instelt, kunnen gebruikers een van de invoermethoden voor <ph name="PRODUCT_OS_NAME" />-sessies kiezen die je opgeeft.
+
+       Als je het beleid niet instelt of instelt op een lege lijst, kunnen gebruikers alle ondersteunde invoermethoden selecteren.
+
+       Vanaf versie M106 worden toegestane invoermethoden automatisch aangezet in kiosksessies.
+
+      Opmerking: Als de huidige invoermethode niet wordt ondersteund, wordt de invoermethode overgeschakeld naar het hardwaretoetsenbord (indien toegestaan) of het eerste geldige item in deze lijst. Ongeldige of niet-ondersteunde methoden worden genegeerd.</translation>
 <translation id="6489084406497912050">Bepaalt of gebruikers Kerberos-accounts mogen toevoegen.
 
           Als je dit beleid toepast of niet instelt, mogen gebruikers Kerberos-accounts toevoegen via de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen. Gebruikers hebben het volledige beheer over accounts die ze hebben toegevoegd en kunnen deze aanpassen of verwijderen.
@@ -5230,6 +5252,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je dit beleid instelt op True, is de volledige URL zichtbaar in de adresbalk, inclusief schema's en subdomeinen.
       Als je dit beleid instelt op False, wordt de standaard URL-weergave toegepast.
       Als je dit beleid niet instelt, wordt de standaard URL-weergave toegepast. Via een optie in het contextmenu kan de gebruiker schakelen tussen de standaard en volledige URL-weergave.</translation>
+<translation id="6670794785040100077">Indienen van documenten bij <ph name="CLOUD_PRINT_NAME" /> uitzetten</translation>
 <translation id="6672070613706645316">Gebruikers toestaan de achtergrond van de pagina 'Nieuw tabblad' aan te passen</translation>
 <translation id="6672630473862787247">Ambient-verificatie in normale, incognito- en gastsessies aanzetten.</translation>
 <translation id="6685903773201985073">Ambient-verificatie in normale en gastsessies aanzetten.</translation>
@@ -5317,6 +5340,7 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden zoekopdrachten gestuurd met de GET-methode.</translation>
 <translation id="6757613329154374267">Back-up en herstel is aangezet</translation>
 <translation id="6758659208493449452">Met dit beleid wordt bepaald of gebruikers die bij 'Geavanceerde beveiliging' zijn ingeschreven, extra beveiligingsmaatregelen ontvangen. Voor sommige van deze functies kunnen gegevens worden gedeeld met Google (gebruikers van 'Geavanceerde beveiliging' kunnen bijvoorbeeld hun downloads naar Google sturen om ze te scannen op malware). Als dit beleid is ingesteld op True of niet is ingesteld, ontvangen ingeschreven gebruikers extra beveiligingsmaatregelen. Als dit beleid is ingesteld op False, ontvangen gebruikers van 'Geavanceerde beveiliging' alleen de standaardfuncties voor consumenten.</translation>
+<translation id="6763023079133439068">Certificaten zonder de extensie subjectAlternativeName toestaan als deze worden uitgegeven door lokale vertrouwensankers</translation>
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
 <translation id="6782977971207381602">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
@@ -5938,6 +5962,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7458437477941640506">Herstel de doelversie niet als de OS-versie nieuwer is dan de doelversie. Updates zijn ook uitgezet.</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
+<translation id="7464058117970792805">Afdrukvoorbeeld aanzetten</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
 <translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
 
@@ -6314,6 +6339,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7823902813460802031">Als je dit beleid toepast, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
 
        Als je het beleid niet toepast of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>
+<translation id="7824000841504721945">Atomische beleidsgroepen uitzetten</translation>
 <translation id="782661371433719637">Geen sites toestemming geven om leestoegang tot bestanden of directory's te vragen via de File System API</translation>
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
@@ -6399,6 +6425,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="793473937901685727">Certificaatbeschikbaarheid instellen voor ARC-apps</translation>
 <translation id="7936302526928951356">De tekenreeks voor User-agent zet de hoofdversie niet vast.</translation>
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
+<translation id="7941528208359969119">Toestaan dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
 <translation id="7946350455013548764">Als je het beleid instelt op 3, kunnen websites toegang vragen tot HID-apparaten. Als je het beleid instelt op 2, wordt toegang tot HID-apparaten geweigerd.
 
@@ -6780,6 +6807,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> niet instelt, worden afbeeldingszoekopdrachten gestuurd met de GET-methode.</translation>
 <translation id="8314214821702356835">Hiermee kunnen gebruikers media afspelen wanneer het apparaat vergrendeld is</translation>
+<translation id="8316940611391250886">Certificaten zonder de extensie subjectAlternativeName niet toestaan</translation>
 <translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
 <translation id="8327651196906278510">Tabbladopname door deze oorsprongen toestaan</translation>
@@ -7521,6 +7549,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="9135033364005346124">Proxy voor <ph name="CLOUD_PRINT_NAME" /> gebruiken</translation>
 <translation id="9136212796239682721">Ballon-UI voor downloaden uitzetten</translation>
 <translation id="9136399279941091445">Intervallen buiten gebruikstijd wanneer het gespecificeerde apparaatbeleid wordt vrijgegeven</translation>
+<translation id="9148720248753722892">SHA-1-ondertekende certificaten niet toestaan</translation>
 <translation id="9150416707757015439">Dit beleid is verouderd. Gebruik in plaats hiervan IncognitoModeAvailability.
       Zet de incognitomodus in <ph name="PRODUCT_NAME" /> aan.
 

@@ -759,6 +759,16 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5393156353051693207">Toque em qualquer lugar na tela e a mantenha pressionada para reordenar os apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar pasta.</translation>
 <translation id="5397578532367286026">O uso e o histórico deste usuário podem ser analisados pelo administrador (<ph name="MANAGER_EMAIL" />) em chrome.com.</translation>
+<translation id="5399673806694250334">Bandeja de status: horário <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Configurações rápidas, pressione "Pesquisa" + seta para a esquerda para acessar a central de notificações.</translation>
 <translation id="5426063383988017631">Menu de configurações fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
@@ -897,6 +907,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="619279033188484792">Veja as fotos, mídias e notificações recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Agora é possível gravar você e a tela ao mesmo tempo</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
@@ -1398,7 +1409,6 @@ Nova instalação</translation>
 <translation id="9168436347345867845">Mais tarde</translation>
 <translation id="9178475906033259337">Exibindo 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Este recurso permite acessar rapidamente qualquer usuário conectado sem a necessidade de uma senha. Use esse recurso somente com contas em que você confia.</translation>
-<translation id="9180906851711123156">Pressione Ctrl+W para fechar</translation>
 <translation id="9183456764293710005">Lupa de tela cheia</translation>
 <translation id="9193626018745640770">Transmitindo para um destinatário desconhecido</translation>
 <translation id="9194617393863864469">Fazer login com outro usuário...</translation>

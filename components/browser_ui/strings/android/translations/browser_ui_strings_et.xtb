@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Selleks et rakendus <ph name="APP_NAME" /> saaks AR-i kasutada, lülitage sisse kaamera ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Allikast <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1919345977826869612">Reklaamid</translation>
 <translation id="1919950603503897840">Kontaktide valimine</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
+<translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2717722538473713889">E-posti aadressid</translation>
 <translation id="2750481671343847896">Saidid saavad teile kuvada sisselogimisviipasid isikut tuvastavatest teenusest.</translation>
 <translation id="2785051990912111074">Jätkamisel kustutatakse kõik veebisaidi <ph name="WEBSITE" /> küpsised</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Küsi enne saitidele minu kaamera kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="4505788138578415521">Laiendatud URL</translation>
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Valik on saadaval ekraanikuva ülaosas</translation>
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Viimati külastati täna</translation>
+<translation id="5225463052809312700">Lülita kaamera sisse</translation>
 <translation id="5264323282659631142">Eemalda „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Täisekraanilt väljumiseks lohistage ülaservast alla ja puudutage tagasinuppu.</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Konkreetse saidi jaoks kolmanda osapoole sisselogimise blokeerimine.</translation>
 <translation id="6388207532828177975">Kustuta ja lähtesta</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokeeri saitidel virtuaalreaalsuse seadme ja andmete kasutamine</translation>
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6527303717912515753">Jaga</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 küpsisefail on kasutuses}other{# küpsisefaili on kasutuses}}</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
+<translation id="8499083585497694743">Tühista mikrofoni vaigistus</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>

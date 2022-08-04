@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />-მა AR რომ გამოიყენოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">წყარო: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვის. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1919345977826869612">რეკლამა</translation>
 <translation id="1919950603503897840">კონტაქტების არჩევა</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" />დან</translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="2704606927547763573">დაკოპირდა</translation>
+<translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2717722538473713889">ელფოსტის მისამართები</translation>
 <translation id="2750481671343847896">საიტებს შეუძლია სისტემაში შესვლის მოთხოვნების ჩვენება პირადობის მონაცემების სერვისებიდან.</translation>
 <translation id="2785051990912111074">ეს არჩევანი გაასუფთავებს ქუქი-ჩანაწერებს <ph name="WEBSITE" />-ისთვის</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">შეკითხვა საიტებისთვის თქვენი კამერის გამოყენების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4505788138578415521">URL გაშლილია</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />-მა მიკროფონით რომ ისარგებლოს, გაააქტიურეთ მიკროფონზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">მიკროფონის დადუმება</translation>
 <translation id="4570913071927164677">დეტალები</translation>
 <translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4670064810192446073">ვირტუალური რეალობა</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5197729504361054390">თქვენ მიერ არჩეული კონტაქტები გაზიარდება <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-თან.</translation>
 <translation id="5216942107514965959">ბოლო ვიზიტი იყო დღეს</translation>
+<translation id="5225463052809312700">კამერის ჩართვა</translation>
 <translation id="5264323282659631142">„<ph name="CHIP_LABEL" />“-ის ამოშლა</translation>
 <translation id="528192093759286357">სრულეკრანიანი რეჟიმიდან გამოსასვლელად, გაუსვით ეკრანს თითი ზემოდან ქვემოთ და შეეხეთ ღილაკს „უკან“.</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
@@ -337,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{გამოიყენება 1 ქუქი-ჩანაწერი}other{გამოიყენება # ქუქი-ჩანაწერი}}</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
 <translation id="848952951823693243">საიტის მობილურის ვერსიის ყოველთვის მოთხოვნა</translation>
+<translation id="8499083585497694743">მიკროფონის დადუმების მოხსნა</translation>
 <translation id="851751545965956758">საიტებისთვის მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
 <translation id="857943718398505171">დაშვებული (რეკომენდებულია)</translation>

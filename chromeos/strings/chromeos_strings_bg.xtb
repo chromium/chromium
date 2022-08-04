@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2480034874476596812">Ръчно изключване</translation>
+<translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
 <translation id="2491955442992294626">Клавишите не се тестват, когато използвате друг прозорец</translation>
 <translation id="2493126929778606526">Автоматично избиране на най-добрите ви снимки</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">Изход от ремонта на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
+<translation id="6624819909909965616">Не е възможно качването на файл, по-голям от 10 МБ</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6644568396961840069">Файлът не бе запазен. Включете друго външно хранилище или опитайте отново по-късно.</translation>
 <translation id="6647510110698214773">Алгоритъм за шифроване</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="6995564396478647735">Защитата срещу записване трябва да е включена</translation>
+<translation id="7005833343836210400">Устройството е офлайн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройството не е свързано.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
+<translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
 <translation id="8109786307828817014">Искате ли да продължите с неуспешно калибриране?</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>

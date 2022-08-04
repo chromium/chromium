@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2480034874476596812">Անջատել ձեռքով</translation>
+<translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
 <translation id="2491955442992294626">Ստեղները չեն փորձարկվում, երբ օգտագործում եք մեկ այլ պատուհան։</translation>
 <translation id="2493126929778606526">Ավտոմատ ընտրված լավագույն լուսանկարները</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">Դուրս գալ <ph name="DEVICE_TYPE" /> սարքի նորոգման էջից</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
+<translation id="6624819909909965616">Հնարավոր չէ վերբեռնել 10 ՄԲ-ից մեծ ֆայլ։</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6644568396961840069">Չհաջողվեց պահել ֆայլը։ Փորձեք այլ արտաքին հիշողություն միացնել կամ կրկնեք ավելի ուշ։</translation>
 <translation id="6647510110698214773">Գաղտնագրման ալգորիթմ</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="6995564396478647735">Համոզվեք, որ Write Protect-ը միացված է</translation>
+<translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
 <translation id="7041549558901442110">Սարքը միացված չէ։</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
+<translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
 <translation id="8109786307828817014">Շարունակե՞լ՝ չնայած որոշ չափաբերումների ձախողմանը</translation>
 <translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>

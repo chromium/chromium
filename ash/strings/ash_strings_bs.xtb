@@ -759,7 +759,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5393156353051693207">Dodirnite i zadržite bilo gdje da promijenite redoslijed aplikacija</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> prekriva aplikaciju <ph name="IN_PLACE_APP" />. Pustite da kreirate folder.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
-<translation id="5399673806694250334">Traka statusa, vrijeme <ph name="TIME" />,
+<translation id="5399673806694250334">Statusna ladica, vrijeme <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />,
@@ -1409,7 +1409,6 @@ Nova instalacija</translation>
 <translation id="9168436347345867845">Uradit ću to kasnije</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite prijavljenim korisnicima bez lozinke. Ovu funkciju koristite samo s računima kojima vjerujete.</translation>
-<translation id="9180906851711123156">Pritisnite Ctrl + W da zatvorite</translation>
 <translation id="9183456764293710005">Povećalo za cijeli ekran</translation>
 <translation id="9193626018745640770">Emitiranje na nepoznatom prijemniku</translation>
 <translation id="9194617393863864469">Prijavite još jednog korisnika...</translation>

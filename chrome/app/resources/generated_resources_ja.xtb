@@ -4651,6 +4651,7 @@
 <translation id="5470735824776589490">デバイスを Powerwash でリセットするにはまず再起動が必要です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">こんにちは。テキスト読み上げの音声です。</translation>
 <translation id="5472627187093107397">このサイトのパスワードを保存する</translation>
+<translation id="5473062644742711742">Chrome ウェブストアで他のユーザー補助ツールを探す</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">続行すると、Google、お子様がご利用の携帯通信会社、デバイス メーカーからアップデートやアプリをこのデバイスが自動的に（場合によってはモバイルデータ接続を使用して）ダウンロードし、インストールする場合があることに同意したことになります。一部のアプリでは、アプリ内購入をご利用いただけます。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN は 1 文字以上で入力してください}other{PIN は # 文字以上で入力してください}}</translation>
@@ -4798,7 +4799,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
 <translation id="5602765853043467355">ブックマーク、履歴、パスワード、その他の設定情報をこのデバイスから削除する</translation>
-<translation id="5605623530403479164">その他の検索エンジン</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{この拡張機能はブロックされています}other{これらの拡張機能はブロックされています}}</translation>
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
@@ -5097,6 +5097,7 @@
 <translation id="5909379458939060601">このプロフィールと閲覧データを削除しますか？</translation>
 <translation id="5910363049092958439">名前を付けて画像を保存(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> はオフラインです</translation>
+<translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5911533659001334206">ショートカット ビューア</translation>
 <translation id="5914724413750400082">モジュール（<ph name="MODULUS_NUM_BITS" /> ビット）:
   <ph name="MODULUS_HEX_DUMP" />

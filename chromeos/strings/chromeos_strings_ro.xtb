@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Dezactivează manual</translation>
+<translation id="248546197012830854">Dispozitivul este offline. Conectează-te la rețeaua Wi-Fi pentru a vedea conținutul de ajutor.</translation>
 <translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6611280807952151149">Ieși din repararea dispozitivului <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
+<translation id="6624819909909965616">Nu se poate încărca un fișier mai mare de 10 MB</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6644568396961840069">Fișierul nu a putut fi salvat. Conectează-te la altă stocare externă sau încearcă din nou mai târziu.</translation>
 <translation id="6647510110698214773">Algoritm de criptare</translation>
@@ -696,6 +698,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
 <translation id="6995564396478647735">Asigură-te că protecția la scriere este activată</translation>
+<translation id="7005833343836210400">Dispozitivul este offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Dispozitivul nu este conectat.</translation>
@@ -809,6 +812,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
+<translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="8109786307828817014">Continui cu calibrările nereușite?</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>

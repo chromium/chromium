@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Щоб дозволити додатку <ph name="APP_NAME" /> використовувати доповнену реальність, увімкніть камеру в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Джерело: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">На цьому пристрої вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Закрити</translation>
 <translation id="1919345977826869612">Оголошення</translation>
 <translation id="1919950603503897840">Виберіть контакти</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2704606927547763573">Скопійов.</translation>
+<translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2717722538473713889">Електронні адреси</translation>
 <translation id="2750481671343847896">Сайти можуть показувати підказки щодо входу від сервісів ідентифікації</translation>
 <translation id="2785051990912111074">Буде видалено файли cookie для веб-сайту <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Запитувати, перш ніж дозволити сайтам використовувати камеру (рекомендується)</translation>
 <translation id="4505788138578415521">URL-адресу розгорнуто</translation>
 <translation id="4534723447064627427">Щоб надати додатку <ph name="APP_NAME" /> доступ до мікрофона, також увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Вимкнути мікрофон</translation>
 <translation id="4570913071927164677">Деталі</translation>
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Для цього натисніть відповідну кнопку вгорі екрана</translation>
 <translation id="5197729504361054390">Веб-сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> отримає доступ до вибраних контактів.</translation>
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
+<translation id="5225463052809312700">Увімкнути камеру</translation>
 <translation id="5264323282659631142">Видалити запит "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Щоб вийти з повноекранного режиму, проведіть пальцем по екрану згори вниз і торкніться кнопки "Назад".</translation>
 <translation id="5300589172476337783">Показати</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Використовується 1 файл cookie}one{Використовується # файл cookie}few{Використовуються # файли cookie}many{Використовуються # файлів cookie}other{Використовуються # файлу cookie}}</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
 <translation id="848952951823693243">Завжди запитувати мобільний сайт</translation>
+<translation id="8499083585497694743">Увімкнути мікрофон</translation>
 <translation id="851751545965956758">Заборонити сайтам підключатися до пристроїв</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>

@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="1864927262126810325">Mənbə: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
+<translation id="1915307458270490472">Dəstəyi qoyun</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919950603503897840">Kontaktları seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
+<translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2785051990912111074">Bu seçim <ph name="WEBSITE" /> üçün kukiləri siləcək</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Saytlara kameranızı istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="4505788138578415521">URL genişləndirilib</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
+<translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5216942107514965959">Son ziyarət bu gün olub</translation>
+<translation id="5225463052809312700">Kameranı aktiv edin</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" daxiletməsini silin</translation>
 <translation id="528192093759286357">Yuxarıdan sürüşdürün və tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
 <translation id="5300589172476337783">Göstərin</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Müəyyən bir sayt üçün üçüncü tərəfin girişini bloklayın.</translation>
 <translation id="6388207532828177975">Təmizləyin və sıfırlayın</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytların virtual reallıq cihazınızı və datanızı istifadə etməsinin qarşısını alın</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki istifadə olunur}other{# kuki istifadə olunur}}</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
+<translation id="8499083585497694743">Mikrofonu səssiz rejimdən çıxarın</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactivar manualmente</translation>
+<translation id="248546197012830854">El dispositivo no tiene conexión. Conéctate a una red Wi‑Fi para ver contenido de ayuda.</translation>
 <translation id="2491955442992294626">Las teclas no se prueban mientras usas otra ventana</translation>
 <translation id="2493126929778606526">Tus mejores fotos, seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -660,6 +661,7 @@
 <translation id="6611280807952151149">Salir de la reparación de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En curso</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
+<translation id="6624819909909965616">No se pueden subir archivos de más de 10 MB</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6644568396961840069">No se ha podido guardar el archivo. Prueba a conectar otra memoria externa o vuelve a intentarlo más tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de cifrado</translation>
@@ -695,6 +697,7 @@
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión del firmware</translation>
 <translation id="6995564396478647735">Asegúrate de que la protección contra escritura esté activada</translation>
+<translation id="7005833343836210400">El dispositivo no tiene conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
@@ -808,6 +811,7 @@
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde aplicaciones Android</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="8094062939584182041">Permitir que Google te envíe correos electrónicos sobre este problema</translation>
 <translation id="8104083085214006426">Estás usando una red abierta que no es segura</translation>
 <translation id="8109786307828817014">¿Continuar con las calibraciones fallidas?</translation>
 <translation id="811820734797650957">(Android) Se puede hacer ping a la pasarela</translation>

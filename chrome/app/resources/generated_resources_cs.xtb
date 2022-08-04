@@ -4813,7 +4813,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Zákaz připojovat se k zařízením MIDI</translation>
 <translation id="5602765853043467355">Vymazat z tohoto zařízení záložky, historii, hesla a další údaje</translation>
-<translation id="5605623530403479164">Jiné vyhledávače</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšíření je blokováno}few{Tato rozšíření jsou blokována}many{Tato rozšíření jsou blokována}other{Tato rozšíření jsou blokována}}</translation>
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
@@ -5110,6 +5109,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5909379458939060601">Smazat tento profil a údaje o prohlížení?</translation>
 <translation id="5910363049092958439">Uložit o&amp;brázek jako...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> je offline</translation>
+<translation id="5911030830365207728">Překladač Google</translation>
 <translation id="5911533659001334206">Prohlížeč klávesových zkratek</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bitů):
   <ph name="MODULUS_HEX_DUMP" />

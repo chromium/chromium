@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">类型</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="2480034874476596812">手动关闭</translation>
+<translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
 <translation id="2491955442992294626">不再测试按键，因为您正在使用另一个窗口</translation>
 <translation id="2493126929778606526">您的最佳照片，由系统自动挑选</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">退出 <ph name="DEVICE_TYPE" /> 修复流程</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
+<translation id="6624819909909965616">无法上传大于 10 MB 的文件</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6644568396961840069">无法保存文件。请尝试插接一部不同的外部存储设备，或稍后重试。</translation>
 <translation id="6647510110698214773">加密算法</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">确定</translation>
 <translation id="6977381486153291903">固件版本</translation>
 <translation id="6995564396478647735">请确保已开启写保护</translation>
+<translation id="7005833343836210400">设备处于离线状态</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>
+<translation id="8094062939584182041">允许 Google 就此问题向您发送电子邮件</translation>
 <translation id="8104083085214006426">您正在使用不安全的开放网络</translation>
 <translation id="8109786307828817014">继续处理未能成功校准的组件？</translation>
 <translation id="811820734797650957">(Android) 可对网关执行 ping 操作</translation>

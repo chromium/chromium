@@ -1071,6 +1071,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Dokument të Google"</translation>
 <translation id="385051799172605136">Prapa</translation>
+<translation id="3853684360927654006">Llogaritësi i fortësisë së fjalëkalimit</translation>
 <translation id="3858027520442213535">Përditëso datën dhe kohën</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3872834068356954457">Shkenca</translation>
@@ -1681,6 +1682,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5518670652865028077">Artet dhe zbavitja</translation>
 <translation id="5519516356611866228">Me ndryshimet e tua</translation>
 <translation id="5523118979700054094">Emri i politikës</translation>
+<translation id="5525755241743357906">Skedari u kopjua ose u zhvendos</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS.</translation>
 <translation id="5528532273234423708">Automatizimi i shtëpisë</translation>
 <translation id="55293785478302737">Qepje anësore</translation>
@@ -2932,6 +2934,7 @@ Detaje shtesë:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; shtyp "Tab" dhe më pas "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="9096679202588811390">Shfaqjet dhe programet televizive</translation>
 <translation id="9101630580131696064">Tabakaja 1</translation>
+<translation id="9102081333385212048">Skedarët që kopjon ose zhvendos dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, mund të skanohen për të dhëna delikate ose softuerë keqdashës.</translation>
 <translation id="9103537084693478942">Softuerët e videove</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
 <translation id="9106062320799175032">Shto adresë faturimi</translation>

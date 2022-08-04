@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="1864927262126810325">จาก <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
+<translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1919345977826869612">โฆษณา</translation>
 <translation id="1919950603503897840">เลือกรายชื่อติดต่อ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2704606927547763573">คัดลอกแล้ว</translation>
+<translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2717722538473713889">อีเมล</translation>
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
 <translation id="2785051990912111074">ตัวเลือกนี้จะล้างคุกกี้ของ <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้กล้องถ่ายรูปของคุณ (แนะนำ)</translation>
 <translation id="4505788138578415521">ขยาย URL แล้ว</translation>
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
 <translation id="4570913071927164677">รายละเอียด</translation>
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
+<translation id="5225463052809312700">เปิดกล้อง</translation>
 <translation id="5264323282659631142">นำ "<ph name="CHIP_LABEL" />" ออก</translation>
 <translation id="528192093759286357">ลากจากด้านบน แล้วแตะปุ่มกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="5300589172476337783">แสดง</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ใช้คุกกี้อยู่ 1 รายการ}other{ใช้คุกกี้อยู่ # รายการ}}</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="848952951823693243">ขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่เสมอ</translation>
+<translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>
 <translation id="851751545965956758">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>

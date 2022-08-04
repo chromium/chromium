@@ -4659,6 +4659,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5470735824776589490">Für das Zurücksetzen deines Geräts mit Powerwash ist ein Neustart erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hallo! Ich bin die Stimme deiner Sprachausgabe.</translation>
 <translation id="5472627187093107397">Passwörter für diese Website speichern</translation>
+<translation id="5473062644742711742">Weitere Bedienungshilfen findest du im Chrome Web Store</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, vom Mobilfunkanbieter deines Kindes und vom Hersteller dieses Geräts abgerufen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Die PIN muss aus mindestens 1 Zeichen bestehen}other{Die PIN muss aus mindestens # Zeichen bestehen}}</translation>
@@ -4806,7 +4807,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="5602765853043467355">Lesezeichen, Verlauf, Passwörter und weitere Daten von diesem Gerät löschen</translation>
-<translation id="5605623530403479164">Andere Suchmaschinen</translation>
 <translation id="5605758115928394442">An dein Smartphone wurde eine Benachrichtigung gesendet, um deine Identität zu bestätigen.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist blockiert}other{Diese Erweiterungen sind blockiert}}</translation>
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
@@ -5103,6 +5103,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5909379458939060601">Dieses Profil und diese Browserdaten löschen?</translation>
 <translation id="5910363049092958439">Bi&amp;ld speichern unter...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ist offline</translation>
+<translation id="5911030830365207728">Google Übersetzer</translation>
 <translation id="5911533659001334206">Tastenkombinationsanzeige</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> Bits):
   <ph name="MODULUS_HEX_DUMP" />

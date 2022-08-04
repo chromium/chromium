@@ -894,6 +894,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1829129547161959350">Pingüín</translation>
 <translation id="1829192082282182671">A&amp;fastar</translation>
 <translation id="1830550083491357902">Sesión non iniciada</translation>
+<translation id="1831848493690504725">Non se puido acceder a Google a través da rede conectada. Proba a escoller unha rede diferente ou a comprobar a súa configuración ou a do proxy (se é que estás utilizando un).</translation>
 <translation id="1832459821645506983">Si, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
@@ -2192,6 +2193,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3021065318976393105">Durante o uso da batería</translation>
 <translation id="3021066826692793094">Bolboreta</translation>
 <translation id="3021678814754966447">&amp;Ver fonte do marco</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> quitarase deste Chromebook e non se gardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Non se entendeu a mensaxe.</translation>
 <translation id="3023464535986383522">Escoitar selección</translation>
 <translation id="3024374909719388945">Utilizar reloxo de 24 horas</translation>
@@ -3730,6 +3732,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4535127706710932914">Perfil predeterminado</translation>
 <translation id="4535767533210902251">O sensor de impresión dixital está na tecla situada na parte superior dereita do teclado. Tócaa suavemente con calquera dedo.</translation>
 <translation id="4536140153723794651">Sitios que sempre poden utilizar cookies</translation>
+<translation id="4536769240747010177">Funcións de conexión compartida:</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada pola política de empresa.</translation>
 <translation id="4541123282641193691">Non se puido verificar a túa conta. Téntao de novo ou reinicia o Chromebook.</translation>
@@ -3757,6 +3760,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4561893854334016293">Non cambiaches ningún permiso recentemente</translation>
 <translation id="4562155214028662640">Engadir impresión dixital</translation>
 <translation id="4563210852471260509">O idioma inicial de introdución de texto é o chinés</translation>
+<translation id="4563382028841851106">Eliminar da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4564245002465020751">Finalizar a configuración no teléfono</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
@@ -4733,6 +4737,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quere:</translation>
 <translation id="5534304873398226603">Descartar foto ou vídeo</translation>
 <translation id="5537725057119320332">Emitir</translation>
+<translation id="5539070192556911367">Non se puido acceder a Google</translation>
 <translation id="5539221284352502426">O servidor rexeitou o contrasinal que introduciches. Pode deberse a algunha destas causas: o contrasinal é demasiado curto, debe incluír números ou símbolos, ou non é diferente dos contrasinais anteriores.</translation>
 <translation id="5541694225089836610">O teu administrador desactivou esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4796,6 +4801,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5585912436068747822">Erro de formato</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Cargando aplicacións...</translation>
+<translation id="5590418976913374224">Reproducir son ao iniciar o dispositivo</translation>
 <translation id="5592595402373377407">Aínda non hai datos suficientes dispoñibles.</translation>
 <translation id="5595307023264033512">Almacenamento total usado polos sitios: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
@@ -4805,7 +4811,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Sitios que non poden conectarse a dispositivos MIDI</translation>
 <translation id="5602765853043467355">Borrar marcadores, historial, contrasinais etc., deste dispositivo</translation>
-<translation id="5605623530403479164">Outros motores de busca</translation>
 <translation id="5605758115928394442">Enviouse unha notificación ao teu teléfono para confirmar a túa identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensións están bloqueadas}}</translation>
 <translation id="560834977503641186">Sincronización wifi; máis información</translation>
@@ -5102,6 +5107,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5909379458939060601">Queres eliminar este perfil e os datos de navegación?</translation>
 <translation id="5910363049092958439">Gar&amp;dar imaxe como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sen conexión</translation>
+<translation id="5911030830365207728">Tradutor de Google</translation>
 <translation id="5911533659001334206">Visor de atallos</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6170,6 +6176,10 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6943939122536910181">Desconectado de: <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Bloqueouse a redirección nesta páxina.</translation>
+<translation id="6947015141909171112">Estás vendo receitas baseadas na túa actividade recente na Busca en relación con este tema.
+        <ph name="BREAK" />
+<ph name="BREAK" />
+Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="6949434160682548041">Contrasinal (opcional)</translation>
 <translation id="6950627417367801484">Restaurar aplicacións</translation>
 <translation id="6952242901357037157">Tamén podes mostrar aquí os contrasinais da túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
@@ -6337,6 +6347,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7102687220333134671">As actualizacións automáticas están activadas</translation>
 <translation id="7102832101143475489">Esgotouse o tempo de espera da solicitude</translation>
 <translation id="710640343305609397">Abrir configuración de rede</translation>
+<translation id="7107609441453408294">Reproduce o mesmo audio por todos os altofalantes</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108668606237948702">intro</translation>
 <translation id="7108933416628942903">Bloquear agora</translation>
@@ -6567,6 +6578,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7364745943115323529">Emitir...</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
 <translation id="7365076891350562061">Tamaño do monitor</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> (pestana fixada)</translation>
 <translation id="7366316827772164604">Buscando dispositivos próximos...</translation>
 <translation id="7366415735885268578">Engade un sitio</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -6963,6 +6975,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7737115349420013392">Vinculando co dispositivo (<ph name="DEVICE_NAME" />)...</translation>
 <translation id="7737846262459425222">Podes cambiar esta opción cando queiras en Configuración &gt; Asistente de Google &gt; Contexto da pantalla.</translation>
 <translation id="7737948071472253612">Sitios que non poden usar a cámara</translation>
+<translation id="77381465218432215">Mostrar acentos e caracteres especiais</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7741307896921365578">Activa un útil panel lateral que che permite ter sempre á man a túa lista de lectura e os marcadores.</translation>
 <translation id="7742558784808143689">Queres borrar os datos dos sitios e os permisos de <ph name="SITE_NAME" />, todos os sitios que inclúa e tamén as aplicacións que ten instaladas?</translation>
@@ -7751,6 +7764,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8486666913807228950">Razón: atopouse a regra invertida <ph name="REVERT_RULE" /> na lista "Forzar a apertura en".</translation>
 <translation id="848666842773560761">Hai unha aplicación que está tentando acceder á cámara. Para darlle acceso, desactiva o interruptor de privacidade da cámara.</translation>
 <translation id="8487678622945914333">Achegar o zoom</translation>
+<translation id="8487699605742506766">Zona wifi</translation>
 <translation id="8489156414266187072">As suxestións persoais só se mostran na túa conta</translation>
 <translation id="8490896350101740396">Actualizáronse as seguintes aplicacións de quiosco: "<ph name="UPDATED_APPS" />". Reinicia o dispositivo para completar o proceso de actualización.</translation>
 <translation id="8492685019009920170">Toca o sensor de impresión dixital co dedo. Os teus datos almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
@@ -8244,6 +8258,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
 <translation id="8977811652087512276">O contrasinal é incorrecto ou o ficheiro está danado</translation>
 <translation id="8978154919215542464">Activado: sincronizar todo</translation>
+<translation id="8978670037548431647">Actualizar funcións de conexión compartida</translation>
 <translation id="897939795688207351">En <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Informes de comentarios</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: produciuse un fallo</translation>
@@ -8508,6 +8523,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="935854577147268200">Modificouse o teléfono que ten activada a función Smart Lock. Introduce o teu contrasinal para actualizar a función. A próxima vez, o teléfono desbloqueará o dispositivo <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración</translation>
 <translation id="936646668635477464">Cámara e micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico do sistema</translation>
+<translation id="937053962468712792">Queres quitar <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938568644810664664">Tenta dicir: “Hey Google, que canción é esta?” ou “Hey Google, que hai na miña pantalla?”</translation>
 <translation id="938623846785894166">O ficheiro non é habitual</translation>

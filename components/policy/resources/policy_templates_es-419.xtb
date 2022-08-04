@@ -100,6 +100,7 @@
 <translation id="1095209545735032039">Bloquea la API de Serial en estos sitios</translation>
 <translation id="1096105751829466145">Proveedor de búsqueda predeterminado</translation>
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
+<translation id="1100840127293327071">No marcar la opción para conservar los datos de navegación existentes de forma predeterminada</translation>
 <translation id="1105572260329131950">Usar los íconos predeterminados para conexiones seguras</translation>
 <translation id="1107538157073168076">Inhabilitar la extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
@@ -748,6 +749,14 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para programador de Android. Si habilitas esta política, los usuarios no podrán acceder a las Opciones para programador. Si estableces esta política como falsa o no la estableces, los usuarios podrán acceder a las Opciones para programador al presionar siete veces el número de compilación en la app de Configuración de Android.</translation>
 <translation id="1787790976045065845">Esta política solo tiene efecto cuando se establece la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> como <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, y un usuario que se autentica mediante una tarjeta inteligente quita esa tarjeta. Luego, esta política especifica el tiempo (expresado en segundos) durante el cual se muestra una notificación con la que se informa al usuario sobre la acción inminente. Esta notificación bloquea la pantalla. La acción ocurrirá solo cuando caduque esta notificación. El usuario puede impedir que ocurra la acción reinsertando la tarjeta inteligente antes de que caduque la notificación. Si estableces esta política en cero, no se mostrará ninguna notificación y la acción ocurrirá de forma inmediata.</translation>
 <translation id="1793346220873697538">Desactiva la impresión con PIN de forma predeterminada</translation>
+<translation id="1794457906032475749">Si habilitas esta política, la opción para conservar los datos de navegación existentes cuando se cree un perfil empresarial estará marcada de forma predeterminada.
+
+Si no la estableces o la inhabilitas, la opción para conservar los datos de navegación existentes cuando se cree un perfil empresarial no estará marcada de forma predeterminada.
+
+Más allá del valor, el usuario podrá decidir si desea conservar o no los datos de navegación existentes cuando cree un perfil empresarial.
+
+Esta política no tiene efecto si la opción para conservar los datos de navegación existentes no está disponible. Esto sucede si la separación del perfil empresarial se aplica de manera forzosa o si los datos provienen de un perfil ya administrado.
+</translation>
 <translation id="179694024208061102">Si habilitas esta política, <ph name="PRODUCT_NAME" /> intentará ejecutar algunas URL en un navegador alternativo, como <ph name="IE_PRODUCT_NAME" />. Esta función está configurada conforme a las políticas del grupo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Si inhabilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> no intentará ejecutar las URL designadas en un navegador alternativo.</translation>
@@ -1641,6 +1650,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la Administración en la nube para el navegador Chrome. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
+<translation id="2625026032335150744">Marcar la opción para conservar los datos de navegación existentes de forma predeterminada</translation>
 <translation id="2625398797484317969">Configuración de los controles de Respuestas rápidas.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar los comentarios de voz</translation>
@@ -2061,6 +2071,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo apliquen la transferencia de ADB</translation>
 <translation id="3070119171976169951">Impedir que las imágenes de terceros muestren una solicitud de autenticación</translation>
@@ -2279,6 +2290,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3255762580838224124">Si estableces la política, las pantallas rotarán a la orientación especificada cada vez que se reinicie el dispositivo y la primera vez que se conecten después de cambiar el valor de la política. Después de acceder, los usuarios podrán cambiar la rotación de las pantallas en la página de configuración, pero volverá a cambiar la próxima vez que se reinicie el dispositivo. Esta política se aplica a la pantalla principal y a la secundaria.
 
       Si no la estableces, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. Si deciden hacerlo, no se volverá a aplicar el valor predeterminado cuando se reinicie el dispositivo.</translation>
+<translation id="3257786863492892609">Controla las políticas para Screencast.</translation>
 <translation id="3258380413685430793">Ejecutar todo el contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Si estableces la política, se especificará la lista de URL de acceso empresarial (solo protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hash con sal de las contraseñas de estas URL y los usará para detectar la reutilización de contraseñas. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hash con sal de las contraseñas, asegúrate de que tus páginas de acceso cumplan con los lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
@@ -3255,6 +3267,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="441686537793821907">Bloquear la instalación de extensiones externas</translation>
 <translation id="4423597592074154136">Especificar manualmente la configuración del proxy</translation>
 <translation id="4424004842303301809">Inhabilitar la generación de informes para los eventos de prevención de filtración de datos</translation>
+<translation id="4426601693403743089">Inhabilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="4427173305799125784">El visor de PDF no puede agregar anotaciones en archivos PDF</translation>
 <translation id="4432762137771104529">Habilitar el informe extendido de Navegación segura</translation>
 <translation id="443454694385851356">Heredados (inseguro)</translation>
@@ -4869,6 +4882,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Cada elemento de la lista de la política es un string que contiene un ID de extensión y, de forma opcional, una URL de actualización separada por un punto y coma (<ph name="SEMICOLON" />). El ID de extensión es la string de 32 letras que se encuentra, p. ej., en <ph name="CHROME_EXTENSIONS_LINK" />, en el modo de desarrollador. Si se especifica, la URL de actualización debe direccionarte a un documento XML del manifiesto de actualización, como se describe en <ph name="LINK_TO_EXTENSION_DOC1" />. De forma predeterminada, se usa la URL de actualización de Chrome Web Store (actualmente es "https://clients2.google.com/service/update2/crx"). Ten en cuenta que la URL de actualización que se establece en esta política solo se usa para la instalación inicial; las actualizaciones posteriores de la extensión utilizan la URL de actualización que se indica en el manifiesto de la extensión.
 
       Por ejemplo, <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> instala la app de <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> desde la dirección URL de actualización estándar de Chrome Web Store. Para obtener más información sobre las extensiones de host, consulta: <ph name="LINK_TO_EXTENSION_DOC2" />.</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6275497712828649588">Oculta las advertencias de seguridad cuando se utilizan marcas de la línea de comandos potencialmente peligrosas</translation>
 <translation id="6275833043726517413">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" />.
 
@@ -4902,7 +4916,15 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="6305373713165475629">Si estableces la política, se anulará el modo predeterminado de impresión a color. Si el modo no está disponible, se ignorará esta política.</translation>
+<translation id="6308109234708949641">Esta política habilita la función Screencast para los usuarios de Family Link y le permite crear y transcribir grabaciones de pantalla para luego subirlas a Drive.
+      Esta política no afecta a otros tipos de usuarios.
+      Esta política no afecta la política <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> para los usuarios empresariales.
+
+      Si habilitas la política, se habilitará la prueba interna de Screencast para los usuarios de Family Link.
+      Si inhabilitas la política, se inhabilitará la prueba interna de Screencast para los usuarios de Family Link.
+      Si no estableces la política, se inhabilitará la prueba interna de Screencast para los usuarios de Family Link de forma predeterminada.</translation>
 <translation id="6310223829319187614">Habilitar la opción de autocompletar el nombre de dominio durante el accceso del usuario</translation>
+<translation id="6310756730808079944">Habilitar Screencast</translation>
 <translation id="631081324835911099">Fuerza el cierre de sesión del usuario cuando el token de autenticación de la cuenta principal deja de ser válido.
         Esta política puede proteger al usuario del acceso a contenido restringido en propiedades web de Google.
         Si se establece esta política como verdadera, se cerrará la sesión del usuario cuando el token de autenticación deje de ser válido y fallen los intentos para restablecerlo.
@@ -5290,6 +5312,12 @@ principal del string usuario-agente en 99.
           Si está configurada en falso o si no está configurada, la creación y el acceso de usuarios supervisados estarán inhabilitados. Todos los usuarios supervisados existentes estarán ocultos.
 
           NOTA: El comportamiento predeterminado en dispositivos para consumidores y empresas difiere: en los dispositivos para consumidores, los usuarios supervisados están habilitados de forma predeterminada; en cambio, en los dispositivos para empresas, los usuarios supervisados están inhabilitados de forma predeterminada.</translation>
+<translation id="6648746349186337075">Esta política le da a Screencast permiso para crear y transcribir grabaciones de pantalla y subirlas a Drive para usuarios empresariales.
+      Esta política no afecta a los usuarios de Family Link.
+      Esta política no afecta la política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para los usuarios de Family Link.
+
+      Si no estableces ni habilitas la política, se habilitará Screencast.
+      Si inhabilitas la política, se inhabilitará Screencast.</translation>
 <translation id="665023848306499203">Permitir que los dispositivos seleccionen una versión específica para realizar la actualización</translation>
 <translation id="6652197835259177259">Configuración de los usuarios administrados localmente</translation>
 <translation id="6653897159826215341">Si habilitas la política, <ph name="PRODUCT_NAME" /> abrirá el diálogo de impresión del sistema en lugar de la vista previa de impresión integrada cuando los usuarios soliciten realizar una impresión.
@@ -6190,6 +6218,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si habilitas la política o no la estableces, se habilitará la conversión de unidades de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitará la conversión de unidades de Respuestas rápidas.</translation>
 <translation id="7587345076013230465">Notificar al usuario que debe seleccionar el certificado de cliente cada vez que la política de selección automática coincida con varios certificados en la pantalla de acceso</translation>
+<translation id="7587921466180902617">Habilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7604169113182304895">Las apps de Android pueden respetar esta lista de forma voluntaria, pero no puedes forzarlas a que lo hagan.</translation>
 <translation id="7612157962821894603">Marcas que se deben aplicar al iniciar <ph name="PRODUCT_NAME" /> en todo el sistema</translation>
@@ -6437,6 +6466,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Recomendación: Para bloquear la pantalla cuando está inactiva, activa el bloqueo de pantalla en el modo de suspensión y que se suspenda <ph name="PRODUCT_OS_NAME" /> después del tiempo de espera de inactividad. Esta política solo debe usarse si el bloqueo de pantalla ocurre mucho antes que la suspensión o si no se desea la suspensión por inactividad.</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
+<translation id="7900469325540540107">Conservar los datos de navegación de forma predeterminada cuando se cree un perfil empresarial</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para la contraseña</translation>
 <translation id="7904177352786629708">Si habilitas la política, se omitirá la búsqueda de CNAME. Se usará el nombre del servidor tal como se haya introducido al generar el SPN de Kerberos.
 

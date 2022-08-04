@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> က AR အသုံးပြုနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> မှ</translation>
 <translation id="1887786770086287077">ဤစက်ပစ္စည်းအတွက် တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
+<translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1919345977826869612">ကြော်ငြာများ</translation>
 <translation id="1919950603503897840">အဆက်အသွယ်များ ရွေးရန်</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2687403674020088961">ကွတ်ကီးများအားလုံးကို ပိတ်ရန် (အကြံမပြုပါ)</translation>
 <translation id="2704606927547763573">ကူးယူပြီးပါပြီ</translation>
+<translation id="2713106313042589954">ကင်မရာပိတ်ရန်</translation>
 <translation id="2717722538473713889">အီးမေးလ်လိပ်စာများ</translation>
 <translation id="2750481671343847896">ဝဘ်ဆိုက်များက အထောက်အထားဆိုင်ရာ ဝန်ဆောင်မှုများမှ လက်မှတ်ထိုးဝင်မှုဆိုင်ရာ အတည်ပြုစနစ်ကို ပြနိုင်သည်။</translation>
 <translation id="2785051990912111074">ဤရွေးချယ်မှုက <ph name="WEBSITE" /> ၏ ကွတ်ကီးများကို ဖျက်လိုက်ပါလိမ့်မည်</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">သင့်ကမရာကို ဆိုက်များအား အသုံးပြုခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4505788138578415521">URL ကို ချဲ့လိုက်သည်</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> က သင့်မိုက်ခရိုဖုန်းကို သုံးနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း မိုက်ခရိုဖုန်း ဖွင့်ပါ။</translation>
+<translation id="4566417217121906555">မိုက်ခရိုဖုန်းကို အသံပိတ်ရန်</translation>
 <translation id="4570913071927164677">အသေးစိတ်</translation>
 <translation id="4645575059429386691">သင့်မိဘမှ စီမံသည်</translation>
 <translation id="4670064810192446073">ပကတိအသွင်</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">ဖန်သားပြင်၏ထိပ်နားတွင် ရွေးချယ်နိုင်သည်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
+<translation id="5225463052809312700">ကင်မရာဖွင့်ရန်</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' ဖယ်ရှားရန်</translation>
 <translation id="528192093759286357">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် ထိပ်ဆုံးမှဆွဲချကာ နောက်ဆုတ်ရန်ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
@@ -337,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ကွတ်ကီးတစ်ခုကို သုံးနေသည်}other{အသုံးပြုနေသော ကွတ်ကီး # ခု}}</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
 <translation id="848952951823693243">မိုဘိုင်းဝဘ်ဆိုက် အမြဲတောင်းဆိုပါ</translation>
+<translation id="8499083585497694743">မိုက်ခရိုဖုန်း ပြန်ဖွင့်ရန်</translation>
 <translation id="851751545965956758">စက်သို့ ဝဘ်ဆိုက်များ ချိတ်ဆက်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="857943718398505171">ခွင့်ပြု၏ (အကြံပြုထား)</translation>

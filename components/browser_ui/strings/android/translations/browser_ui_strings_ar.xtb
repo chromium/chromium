@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">من <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1919345977826869612">الإعلانات</translation>
 <translation id="1919950603503897840">اختيار جهات الاتصال</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
+<translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2717722538473713889">عنوان البريد الإلكتروني</translation>
 <translation id="2750481671343847896">بإمكان المواقع الإلكترونية حظر رسائل المطالبة بتسجيل الدخول من خدمات تقديم الهويات.</translation>
 <translation id="2785051990912111074">سيؤدي هذا الخيار إلى محو ملفات تعريف الارتباط للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">السؤال أولاً قبل السماح للمواقع الإلكترونية باستخدام الكاميرا (موصى به)</translation>
 <translation id="4505788138578415521">‏تم توسيع عنوان URL.</translation>
 <translation id="4534723447064627427">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الميكروفون، يُرجى أيضًا تفعيل الميكروفون في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">كتم صوت الميكروفون</translation>
 <translation id="4570913071927164677">التفاصيل</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">يمكنك العثور على خيار حفظ كلمة المرور بالقرب من أعلى الشاشة.</translation>
 <translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم.</translation>
+<translation id="5225463052809312700">تفعيل الكاميرا</translation>
 <translation id="5264323282659631142">إزالة شريحة "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">اسحب من الجزء العلوي والمس زر الرجوع للخروج من وضع ملء الشاشة.</translation>
 <translation id="5300589172476337783">عرض</translation>
@@ -337,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ملف تعريف ارتباط واحد قيد الاستخدام}zero{# ملف تعريف ارتباط قيد الاستخدام}two{ملفا تعريف ارتباط قيد الاستخدام}few{# ملفات تعريف ارتباط قيد الاستخدام}many{# ملف تعريف ارتباط قيد الاستخدام}other{# ملف تعريف ارتباط قيد الاستخدام}}</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="848952951823693243">طلب موقع إلكتروني متوافق مع الأجهزة الجوّالة دومًا</translation>
+<translation id="8499083585497694743">إعادة صوت الميكروفون</translation>
 <translation id="851751545965956758">حظر المواقع الإلكترونية من الاتصال بأجهزة</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
 <translation id="857943718398505171">مسموح بها (موصى بها)</translation>

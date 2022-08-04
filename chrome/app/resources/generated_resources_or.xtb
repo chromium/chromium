@@ -4810,7 +4810,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5602765853043467355">ଏହି ଡିଭାଇସ୍‌ରୁ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖାଲି କରନ୍ତୁ</translation>
-<translation id="5605623530403479164">ଅନ୍ୟ ସନ୍ଧାନ ଇଞ୍ଜିନସମୂହ</translation>
 <translation id="5605758115928394442">ଏହା ଆପଣ ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନ୍‌କୁ ଗୋଟିଏ ବିଜ୍ଞପ୍ତି ପଠାଯାଇଥିଲା।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ଏହି ଏକ୍ସଟେନସନକୁ ବ୍ଲକ୍ କରାଯାଇଛି}other{ଏହି ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="560834977503641186">ୱାଇ-ଫାଇ ସିଙ୍କ୍, ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -5107,6 +5106,7 @@
 <translation id="5909379458939060601">ଏହି ପ୍ରୋଫାଇଲ ଏବଂ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="5910363049092958439">ଛବି ଏପରି ଭାବେ &amp;ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ଅଫଲାଇନ୍ ଅଛି</translation>
+<translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">ସର୍ଟ୍‍କର୍ଟ ଭ୍ୟୁଅର୍</translation>
 <translation id="5914724413750400082">ମୋଡ୍ୟୁଲସ୍‌ (<ph name="MODULUS_NUM_BITS" /> ବିଟସ୍‍):
   <ph name="MODULUS_HEX_DUMP" />

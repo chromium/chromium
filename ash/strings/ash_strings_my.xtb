@@ -759,6 +759,16 @@
 <translation id="5393156353051693207">နှစ်သက်ရာနေရာတွင် တို့ထိ၍ ဖိထားပြီး သင့်အက်ပ်များကို ပြန်စီနိုင်သည်</translation>
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
 <translation id="5397578532367286026">ဒီ အသုံးပြုသူ၏ သုံးစွဲမှု နှင့် မှတ်တမ်းကို chrome.com ရှိ (<ph name="MANAGER_EMAIL" />)၏ မန်နေဂျာက ဆန်းစစ် ကြည့်ရှု နိုင်သည်။</translation>
+<translation id="5399673806694250334">အခြေအနေပြ ဗန်း၊ အချိန် <ph name="TIME" />၊
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />၊
+        <ph name="MIC" />၊
+        <ph name="CAMERA" />၊
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />၊
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">အမြန် ဆက်တင်များ၊ အကြောင်းကြားချက်စင်တာကို ဝင်ကြည့်ရန် 'ရှာဖွေရန် + ဘယ်ဘက်' ကို နှိပ်ပါ။</translation>
 <translation id="5426063383988017631">ဆက်တင်များမီနူး ပိတ်ထားသည်</translation>
 <translation id="5428899915242071344">ရွေးချယ်ခြင်းကို စတင်ရန်</translation>
@@ -1399,7 +1409,6 @@
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> အတွက် ရလဒ် ၁ ခုကို ပြနေသည်</translation>
 <translation id="9179259655489829027">ဤဝန်ဆောင်မှုက လက်မှတ်ထိုးဝင်ထားသူ မည်သူမဆိုအား စကားဝှက်မလိုအပ်ဘဲ အသုံးပြုခွင့်ပေးပါသည်။ သင်ယုံကြည်စိတ်ချရသည့် အကောင့်များဖြင့်သာ ဤဝန်ဆောင်မှုကို အသုံးပြုပါ။</translation>
-<translation id="9180906851711123156">ပိတ်ရန် Ctrl+W နှိပ်ပါ</translation>
 <translation id="9183456764293710005">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="9193626018745640770">အမည်မသိလက်ခံစက်တွင် ကာ့စ်လုပ်နေသည်</translation>
 <translation id="9194617393863864469">အခြားသူ အနေဖြင့် လက်မှတ်ထိုးဝင်ပါ...</translation>

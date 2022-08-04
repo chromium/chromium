@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
+<translation id="1207734034680156868">ການແນະນຳອ້າງອີງມາຈາກຄຳອະທິບາຍຂອງທ່ານ</translation>
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
 <translation id="1236400083787698183">ກ່ອນການຣີສະຕາດ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
@@ -197,6 +198,7 @@
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2480034874476596812">ປິດໄວ້ດ້ວຍຕົວເອງ</translation>
+<translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
 <translation id="2491955442992294626">ປຸ່ມຕ່າງໆຈະບໍ່ໄດ້ຮັບການທົດສອບເມື່ອໃຊ້ໜ້າຈໍອື່ນ</translation>
 <translation id="2493126929778606526">ຮູບພາບທີ່ດີສຸດຂອງທ່ານ, ເລືອກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -662,6 +664,7 @@
 <translation id="6611280807952151149">ອອກຈາກການສ້ອມແປງ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6620487321149975369">ວຽກພິມຈະປາກົດໃນປະຫວັດ ເວັ້ນເສຍແຕ່ຜູ້ໃຊ້ຈະລຶບພວກມັນອອກດ້ວຍຕົນເອງ</translation>
+<translation id="6624819909909965616">ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ທີ່ໃຫຍ່ກວ່າ 10 MB ໄດ້</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6644568396961840069">ບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້. ລອງປລັກອິນບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກອື່ນ ຫຼື ລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="6647510110698214773">ອະກໍຣິທຶມການເຂົ້າລະຫັດ</translation>
@@ -697,6 +700,7 @@
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
 <translation id="6995564396478647735">ກວດສອບວ່າເປີດໃຊ້ Write Protect ແລ້ວ</translation>
+<translation id="7005833343836210400">ອຸປະກອນອອບລາຍຢູ່</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7041549558901442110">ອຸປະກອນບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
@@ -811,6 +815,7 @@
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
+<translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
 <translation id="8109786307828817014">ສືບຕໍ່ໂດຍມີການປັບທຽບທີ່ບໍ່ສຳເລັດບໍ?</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>

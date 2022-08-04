@@ -759,6 +759,16 @@
 <translation id="5393156353051693207">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
+<translation id="5399673806694250334">صورتحال کی ٹرے، وقت <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />،
+        <ph name="MIC" />,
+        <ph name="CAMERA" />،
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />،
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">فوری ترتیبات، اطلاع کے مرکز تک رسائی حاصل کرنے کے لیے تلاش + بائیں تیر والے بٹن کو دبائيں۔</translation>
 <translation id="5426063383988017631">ترتیبات کا مینو بند کیا گیا</translation>
 <translation id="5428899915242071344">منتخب کرنا شروع کریں</translation>
@@ -897,6 +907,7 @@
 <translation id="619279033188484792">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
 <translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400"><ph name="EMAIL" /> میں پہلے سے محفوظ کردہ <ph name="NAME" /> سے منسلک ہوں</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
@@ -1397,7 +1408,6 @@
 <translation id="9168436347345867845">اسے بعد میں کریں</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> کا 1 نتیجہ دکھایا جا رہا ہے</translation>
 <translation id="9179259655489829027">یہ خصوصیت آپ کو کسی بھی سائن ان کردہ صارف تک پاس ورڈ کا تقاضہ کیے بغیر تیزی سے رسائی حاصل کرنے کی اجازت دیتی ہے۔ یہ خصوصیت صرف اپنے معتبر اکاؤنٹس کے ساتھ استعمال کریں۔</translation>
-<translation id="9180906851711123156">‏بند کرنے کے لیے Ctrl + W‎ دبائیں</translation>
 <translation id="9183456764293710005">فُل اسکرین میگنیفائر</translation>
 <translation id="9193626018745640770">کسی نامعلوم موصول کنندہ پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="9194617393863864469">کسی دوسرے صارف کے بطور سائن ان کریں…</translation>

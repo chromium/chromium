@@ -929,7 +929,7 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="6137022273846704445">Idioma de l'aplicació <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Canvia la configuració del teu lloc web aquí</translation>
 <translation id="6140709049082532940">Protecció millorada:</translation>
-<translation id="6140912465461743537">País/regió</translation>
+<translation id="6140912465461743537">País/Regió</translation>
 <translation id="614940544461990577">Prova el següent:</translation>
 <translation id="6150320133806434356">Adreça d'interès desada</translation>
 <translation id="6154478581116148741">Activa el bloqueig de pantalla a Configuració per exportar les teves contrasenyes d'aquest dispositiu</translation>
@@ -1049,6 +1049,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6674571176963658787">Per iniciar la sincronització, introdueix la frase de contrasenya</translation>
 <translation id="6676840375528380067">Vols esborrar les dades de Chrome del dispositiu?</translation>
+<translation id="6676927815633975364">Inicia la sessió en aquest lloc web i a Chrome</translation>
 <translation id="6684809838922667136">Millora Chrome</translation>
 <translation id="670498945988402717">Es va comprovar ahir</translation>
 <translation id="6710213216561001401">Anterior</translation>

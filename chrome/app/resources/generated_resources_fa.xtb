@@ -4825,7 +4825,6 @@
 <translation id="5601503069213153581">پین</translation>
 <translation id="5601823921345337195">‏اجازه ندارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
-<translation id="5605623530403479164">موتورهای جستجوی دیگر</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
@@ -5124,6 +5123,7 @@
 <translation id="5909379458939060601">این نمایه و داده‌های مرور حذف شود؟</translation>
 <translation id="5910363049092958439">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آفلاین است</translation>
+<translation id="5911030830365207728">‏ترجمه Google</translation>
 <translation id="5911533659001334206">نمایشگر میان‌بر</translation>
 <translation id="5914724413750400082">مدول (<ph name="MODULUS_NUM_BITS" /> بیت):
   <ph name="MODULUS_HEX_DUMP" />

@@ -1070,6 +1070,7 @@
 <translation id="3835233591525155343">Использование устройства</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать документ Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3853684360927654006">Определитель надежности пароля</translation>
 <translation id="3858027520442213535">Обновить дату и время</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3872834068356954457">Наука</translation>
@@ -1680,6 +1681,7 @@
 <translation id="5518670652865028077">Искусство и развлечения</translation>
 <translation id="5519516356611866228">С вашими изменениями</translation>
 <translation id="5523118979700054094">Название правила</translation>
+<translation id="5525755241743357906">Файл скопирован или перемещен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome OS.</translation>
 <translation id="5528532273234423708">Автоматизация дома</translation>
 <translation id="55293785478302737">Скобы по краю</translation>
@@ -2932,6 +2934,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы сделать Chrome браузером по умолчанию в настройках iOS.</translation>
 <translation id="9096679202588811390">Телевизионные шоу и программы</translation>
 <translation id="9101630580131696064">Лоток 1</translation>
+<translation id="9102081333385212048">Файлы, которые вы копируете или перемещаете, передаются на проверку в Google Cloud или сторонние сервисы. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО.</translation>
 <translation id="9103537084693478942">ПО для работы с видео</translation>
 <translation id="9103872766612412690">На сайте <ph name="SITE" /> для защиты ваших данных обычно используется шифрование. Однако учетные данные, которые мы получили от сайта <ph name="SITE" /> сейчас, отличаются от тех, которые он отправляет обычно. Вероятно, вредоносный сайт пытается выдать себя за <ph name="SITE" />, либо страница подключения к сети Wi-Fi прервала соединение. Ваша информация по-прежнему в безопасности, так как браузер Chromium разорвал соединение до того, как произошел обмен данными.</translation>
 <translation id="9106062320799175032">Добавьте платежный адрес</translation>

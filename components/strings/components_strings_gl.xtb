@@ -1071,6 +1071,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un novo documento de Google</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3853684360927654006">Calculadora de seguranza do contrasinal</translation>
 <translation id="3858027520442213535">Actualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3872834068356954457">Ciencia</translation>
@@ -1681,6 +1682,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5518670652865028077">Arte e entretemento</translation>
 <translation id="5519516356611866228">Cos teus cambios</translation>
 <translation id="5523118979700054094">Nome da política</translation>
+<translation id="5525755241743357906">Cópiase ou móvese un ficheiro</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome OS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="5528532273234423708">Domótica</translation>
 <translation id="55293785478302737">Grampa no bordo</translation>
@@ -2933,6 +2935,7 @@ Detalles adicionais:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="9096679202588811390">Programas de televisión</translation>
 <translation id="9101630580131696064">Bandexa 1</translation>
+<translation id="9102081333385212048">Os ficheiros que copies ou movas envíanselle a Google Cloud ou a terceiros para analizalos. Por exemplo, poderíase comprobar se conteñen datos confidenciais ou software malicioso.</translation>
 <translation id="9103537084693478942">Software de vídeo</translation>
 <translation id="9103872766612412690">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chromium tentou conectar con <ph name="SITE" />, o sitio web devolveu credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión de wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chromium detivo a conexión antes de intercambiar datos.</translation>
 <translation id="9106062320799175032">Engade un enderezo de facturación</translation>

@@ -2181,6 +2181,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3021065318976393105">Na baterii</translation>
 <translation id="3021066826692793094">Motyl</translation>
 <translation id="3021678814754966447">&amp;Wyświetl źródło ramki</translation>
+<translation id="3022361196600037287">Urządzenie <ph name="DEVICE" /> zostanie usunięte z tego Chromebooka i nie zostanie zapisane na koncie <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Nie rozumiem.</translation>
 <translation id="3023464535986383522">Przeczytaj na głos</translation>
 <translation id="3024374909719388945">Zegar 24-godzinny</translation>
@@ -3719,6 +3720,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4535127706710932914">Profil domyślny</translation>
 <translation id="4535767533210902251">Czytnik linii papilarnych to klawisz w prawym górnym rogu klawiatury. Dotknij go delikatnie dowolnym palcem.</translation>
 <translation id="4536140153723794651">Witryny, które zawsze mogą używać plików cookie</translation>
+<translation id="4536769240747010177">Funkcje tetheringu:</translation>
 <translation id="4538417792467843292">Usuń słowo</translation>
 <translation id="4538792345715658285">Zainstalowane na podstawie zasad przedsiębiorstwa.</translation>
 <translation id="4541123282641193691">Nie udało się zweryfikować Twojego konta. Spróbuj jeszcze raz lub ponownie uruchom Chromebooka.</translation>
@@ -3746,6 +3748,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4561893854334016293">Brak zmienianych ostatnio ustawień</translation>
 <translation id="4562155214028662640">Dodaj odcisk palca</translation>
 <translation id="4563210852471260509">Początkowy język wprowadzania: chiński</translation>
+<translation id="4563382028841851106">Usuń z konta</translation>
 <translation id="4563880231729913339">Palec 3</translation>
 <translation id="4564245002465020751">Zakończ konfigurację na telefonie</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
@@ -4795,7 +4798,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nie zezwolono na łączenie się z urządzeniami MIDI</translation>
 <translation id="5602765853043467355">Usuń z tego urządzenia zakładki, historię, hasła i inne informacje</translation>
-<translation id="5605623530403479164">Inne wyszukiwarki</translation>
 <translation id="5605758115928394442">Wysłaliśmy powiadomienie na Twój telefon, by potwierdzić, że to Ty.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{To rozszerzenie jest zablokowane}few{Te rozszerzenia są zablokowane}many{Te rozszerzenia są zablokowane}other{Te rozszerzenia są zablokowane}}</translation>
 <translation id="560834977503641186">Synchronizacja Wi-Fi, więcej informacji</translation>
@@ -5094,6 +5096,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5909379458939060601">Usunąć ten profil i dane przeglądania?</translation>
 <translation id="5910363049092958439">Zapisz gra&amp;fikę jako...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> jest offline</translation>
+<translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5911533659001334206">Przeglądarka skrótów</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> b):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6167,6 +6170,8 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6943939122536910181">Rozłączono z: <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="694592694773692225">Przekierowanie zostało zablokowane na tej stronie.</translation>
+<translation id="6947015141909171112">Widzisz przepisy wybrane na podstawie Twojej ostatniej aktywności związanej z ich wyszukiwaniem.
+        <ph name="BREAK" /><ph name="BREAK" />Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="6949434160682548041">Hasło (opcjonalnie)</translation>
 <translation id="6950627417367801484">Przywróć aplikacje</translation>
 <translation id="6952242901357037157">Możesz tu też wyświetlać hasła zapisane na <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
@@ -6962,6 +6967,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7737115349420013392">Paruję z urządzeniem „<ph name="DEVICE_NAME" />”…</translation>
 <translation id="7737846262459425222">W dowolnej chwili możesz to zmienić, klikając Ustawienia &gt; Asystent Google &gt; Kontekst z ekranu.</translation>
 <translation id="7737948071472253612">Nie zezwolono na używanie kamery</translation>
+<translation id="77381465218432215">Pokazuj znaki akcentu i znaki specjalne</translation>
 <translation id="7740996059027112821">Standardowa</translation>
 <translation id="7741307896921365578">Włącza panel boczny na poziomie przeglądarki, zapewniający stały i praktyczny dostęp do listy Do przeczytania i zakładek.</translation>
 <translation id="7742558784808143689">Czy chcesz wyczyścić dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanych z niej aplikacji?</translation>
@@ -7752,6 +7758,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8486666913807228950">Przyczyna: na liście „Wymuszaj otwieranie w” znaleziono odwróconą regułę <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">Aplikacja próbuje uzyskać dostęp do kamery. Aby na to zezwolić, wyłącz przełącznik prywatności kamery.</translation>
 <translation id="8487678622945914333">Powiększ</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Spersonalizowane sugestie są pokazywane tylko na Twoim koncie</translation>
 <translation id="8490896350101740396">Zaktualizowano aplikacje kiosku: „<ph name="UPDATED_APPS" />”. Uruchom ponownie urządzenie, by zakończyć proces aktualizacji.</translation>
 <translation id="8492685019009920170">Przyłóż palec do czytnika linii papilarnych. Odciski palców są przechowywane w bezpieczny sposób i wyłącznie na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
@@ -8247,6 +8254,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” i jeszcze jedna karta}few{„<ph name="TAB_TITLE" />” i # inne karty}many{„<ph name="TAB_TITLE" />” i # innych kart}other{„<ph name="TAB_TITLE" />” i # innej karty}}</translation>
 <translation id="8977811652087512276">Nieprawidłowe hasło lub uszkodzony plik</translation>
 <translation id="8978154919215542464">Włączono synchronizację wszystkich danych</translation>
+<translation id="8978670037548431647">Odśwież funkcje tetheringu</translation>
 <translation id="897939795688207351">Na <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Przesyłanie opinii</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – awaria</translation>
@@ -8508,6 +8516,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="935854577147268200">Telefon z funkcją Smart Lock został zmieniony. Wpisz hasło, by zaktualizować Smart Lock. Następnym razem Twój telefon odblokuje urządzenie <ph name="DEVICE_TYPE" />. Smart Lock możesz wyłączyć w Ustawieniach.</translation>
 <translation id="936646668635477464">Kamera i mikrofon</translation>
 <translation id="936801553271523408">Systemowe dane diagnostyczne</translation>
+<translation id="937053962468712792">Usunąć urządzenie <ph name="DEVICE" /> z konta <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Napraw rozszerzenie</translation>
 <translation id="938568644810664664">Zapytaj „OK Google, co to za piosenka?” lub „OK Google, co widać na moim ekranie?”</translation>
 <translation id="938623846785894166">Nietypowy plik</translation>

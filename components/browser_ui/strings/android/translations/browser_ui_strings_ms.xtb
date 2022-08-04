@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Daripada <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1919345977826869612">Iklan</translation>
 <translation id="1919950603503897840">Pilih kenalan</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
+<translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="2785051990912111074">Pilihan ini akan mengosongkan kuki untuk <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Tanya dahulu sebelum membenarkan tapak menggunakan kamera anda (disyorkan)</translation>
 <translation id="4505788138578415521">URL dikembangkan</translation>
 <translation id="4534723447064627427">Untuk membolehkan <ph name="APP_NAME" /> mengakses mikrofon anda, hidupkan juga mikrofon dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Redamkan mikrofon</translation>
 <translation id="4570913071927164677">Butiran</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5197729504361054390">Kenalan yang anda pilih akan dikongsi dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dilawati hari ini</translation>
+<translation id="5225463052809312700">Hidupkan kamera</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
 <translation id="5300589172476337783">Paparkan</translation>
@@ -337,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki sedang digunakan}other{# kuki sedang digunakan}}</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="848952951823693243">Sentiasa minta laman mudah alih</translation>
+<translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>

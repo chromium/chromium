@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2461822463642141190">Núna</translation>
 <translation id="2480034874476596812">Slökkva handvirkt</translation>
+<translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
 <translation id="2491955442992294626">Lyklar eru ekki prófaðir þegar þú notar annan glugga</translation>
 <translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6611280807952151149">Hætta viðgerð á <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
+<translation id="6624819909909965616">Ekki hægt að hlaða upp skrá sem er stærri en 10 MB</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6644568396961840069">Ekki var hægt að vista skrána. Prófaðu að tengjast við aðra ytri geymslu eða reyndu aftur síðar.</translation>
 <translation id="6647510110698214773">Dulkóðunarreiknirit</translation>
@@ -696,6 +698,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
 <translation id="6995564396478647735">Gakktu úr skugga um að kveikt sé á skrifvörn</translation>
+<translation id="7005833343836210400">Tækið er án nettengingar</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="7040230719604914234">Símafyrirtæki</translation>
 <translation id="7041549558901442110">Tækið er ekki tengt.</translation>
@@ -809,6 +812,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
+<translation id="8094062939584182041">Leyfa Google að senda þér tölvupóst vegna vandamálsins</translation>
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
 <translation id="8109786307828817014">Halda áfram þrátt fyrir að kvörðun vanti?</translation>
 <translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>

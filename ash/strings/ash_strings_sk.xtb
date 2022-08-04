@@ -897,6 +897,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="619279033188484792">V zariadení <ph name="DEVICE_TYPE" /> si môžete pozrieť najnovšie fotky, médiá a upozornenia zo svojho telefónu</translation>
 <translation id="619335566042889110">Úplne nabiť</translation>
 <translation id="6193431488227440296">Vývoj.</translation>
+<translation id="6210042900243040400">Pripojte zariadenie <ph name="NAME" />, ktoré bolo v minulosti uložené v účte <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
@@ -1398,7 +1399,6 @@ Nová inštalácia</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Táto funkcia vám umožní rýchly prístup k ľubovoľnému prihlásenému používateľovi bez hesla. Používajte ju iba s dôveryhodnými účtami.</translation>
-<translation id="9180906851711123156">Zavrite stlačením klávesov Ctrl + W</translation>
 <translation id="9183456764293710005">Lupa na celú obrazovku</translation>
 <translation id="9193626018745640770">Prebieha prenášanie do neznámeho prijímača</translation>
 <translation id="9194617393863864469">Prihlásiť ďalšieho používateľa...</translation>

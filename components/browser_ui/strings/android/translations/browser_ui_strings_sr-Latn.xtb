@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919950603503897840">Izaberite kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2704606927547763573">Kopirano</translation>
+<translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Imejl adrese</translation>
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
 <translation id="2785051990912111074">Ovaj izbor će obrisati kolačiće za <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Pitaj pre nego što dozvoliš sajtovima da koriste kameru (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Opcija je dostupna u vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Poslednji posećen danas</translation>
+<translation id="5225463052809312700">Uključi kameru</translation>
 <translation id="5264323282659631142">Uklonite „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Prevucite od vrha ekrana i dodirnite dugme Nazad da biste izašli iz režima celog ekrana.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="6388207532828177975">Obriši i resetuj</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6527303717912515753">Deli</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Koristi se 1 kolačić}one{Koristi se # kolačić}few{Koriste se # kolačića}other{Koristi se # kolačića}}</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
+<translation id="8499083585497694743">Uključi zvuk mikrofona</translation>
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>

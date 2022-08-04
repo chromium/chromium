@@ -100,6 +100,7 @@
 <translation id="1095209545735032039">Bloquer l'API Serial sur ces sites</translation>
 <translation id="1096105751829466145">Moteur de recherche par défaut</translation>
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
+<translation id="1100840127293327071">Ne pas cocher l'option permettant de conserver les données de navigation existantes par défaut</translation>
 <translation id="1105572260329131950">Utiliser les icônes par défaut pour les connexions sécurisées</translation>
 <translation id="1107538157073168076">Désactiver l'extension des insights</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -744,6 +745,14 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1781356041596378058">Cette règle permet également de contrôler l'accès aux options pour les développeurs Android. Si vous définissez cette règle sur "True", les utilisateurs ne pourront pas accéder aux options pour les développeurs. Si vous la définissez sur "False" ou si vous ne la modifiez pas, les utilisateurs pourront accéder aux options pour les développeurs en appuyant sept fois sur le numéro de version dans l'application des paramètres Android.</translation>
 <translation id="1787790976045065845">Cette règle ne prend effet que si la règle <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> est définie sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, et si un utilisateur qui s'authentifie au moyen d'une carte à puce retire celle-ci. Elle indique alors la durée d'affichage, en secondes, d'une notification informant l'utilisateur de l'action qui va être exécutée. Cette notification bloque l'écran. L'action ne s'exécute que lorsque la notification disparaît. L'utilisateur peut empêcher l'action de s'exécuter en réinsérant la carte à puce avant que la notification disparaisse. Si cette règle est définie sur zéro, aucune notification ne s'affiche, et l'action s'exécute immédiatement.</translation>
 <translation id="1793346220873697538">Désactiver l'impression par code définie par défaut</translation>
+<translation id="1794457906032475749">Si cette règle est activée, l'option permettant de conserver les données de navigation existantes lors de la création d'un profil d'entreprise sera cochée par défaut.
+
+Si cette règle n'est pas définie ou est désactivée, l'option permettant de conserver les données de navigation existantes lors de la création d'un profil d'entreprise ne sera pas cochée par défaut.
+
+Quelle que soit la valeur, l'utilisateur pourra décider de conserver ou non les données de navigation existantes lors de la création d'un profil d'entreprise.
+
+Cette règle n'a aucun effet si l'option permettant de conserver les données de navigation existantes n'est pas disponible. Cela se produit si la séparation des profils d'entreprise est strictement appliquée, ou si les données proviennent d'un profil déjà géré.
+</translation>
 <translation id="179694024208061102">Si cette règle est activée, <ph name="PRODUCT_NAME" /> tente d'ouvrir certaines URL dans un autre navigateur (par exemple, <ph name="IE_PRODUCT_NAME" />). Cette fonctionnalité est configurée à l'aide des règles du groupe <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> ne tente pas d'ouvrir les URL indiquées dans un autre navigateur.</translation>
@@ -1637,6 +1646,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="2623014935069176671">Attendre l'activité utilisateur initiale</translation>
+<translation id="2625026032335150744">Cocher l'option permettant de conserver les données de navigation existantes par défaut</translation>
 <translation id="2625398797484317969">Contrôle les paramètres de Réponses rapides.</translation>
 <translation id="262740370354162807">Activer l'envoi de documents à <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Activer les commentaires audio</translation>
@@ -2059,6 +2069,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les tests en conditions réelles ni la phase d'évaluation.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
 <translation id="3066446511111537292">Permet aux utilisateurs affiliés de cet appareil d'utiliser le téléchargement indépendant adb</translation>
 <translation id="3070119171976169951">Empêcher les images tierces d'afficher une commande d'authentification</translation>
@@ -2276,6 +2287,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3255762580838224124">Si cette règle est configurée, chaque écran pivote en fonction de l'orientation spécifiée, à chaque redémarrage ainsi que la première fois qu'il est affiché après une modification de la valeur de cette règle. Une fois connectés, les utilisateurs peuvent modifier le paramètre de rotation d'écran. Toutefois, le paramètre initial sera rétabli au redémarrage suivant. Cette règle s'applique à l'écran principal, ainsi qu'aux écrans secondaires.
 
       Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, et les utilisateurs sont libres de la modifier. Dans ce cas, la valeur par défaut n'est pas rétablie au redémarrage.</translation>
+<translation id="3257786863492892609">Contrôle les règles pour l'enregistreur d'écran.</translation>
 <translation id="3258380413685430793">Exécuter tout le contenu <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Permet de dresser la liste des URL de connexion d'entreprise (protocoles HTTP et HTTPS uniquement). Le service de protection par mot de passe enregistre des copies hachées et après salage des mots de passe au niveau de ces URL afin de détecter les mots de passe réutilisés. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement ces copies, vérifiez que vos pages de connexion respectent bien les consignes détaillées sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -3238,6 +3250,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="441686537793821907">Bloquer l'installation d'extensions externes</translation>
 <translation id="4423597592074154136">Spécifier manuellement les paramètres de proxy</translation>
 <translation id="4424004842303301809">Désactiver la création de rapports sur les événements de prévention des fuites de données</translation>
+<translation id="4426601693403743089">Désactiver la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="4427173305799125784">La visionneuse de PDF ne peut pas annoter les PDF</translation>
 <translation id="4432762137771104529">Autoriser la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
 <translation id="443454694385851356">Anciens types de chiffrement (option non sécurisée)</translation>
@@ -4834,6 +4847,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Chaque élément de la règle correspond à une chaîne constituée d'un ID d'extension et éventuellement d'une URL de mise à jour séparés par un point-virgule (<ph name="SEMICOLON" />). L'ID d'extension est la chaîne de 32 lettres qui se trouve, par exemple, dans <ph name="CHROME_EXTENSIONS_LINK" /> en mode développeur. Lorsqu'elle est indiquée, l'URL de mise à jour doit renvoyer à un fichier manifeste au format XML, comme décrit sur la page <ph name="LINK_TO_EXTENSION_DOC1" />. Par défaut, l'URL de mise à jour du Chrome Web Store est utilisée (il s'agit actuellement de "https://clients2.google.com/service/update2/crx"). Sachez que l'URL de mise à jour spécifiée dans cette règle n'est utilisée que pour l'installation initiale. Toute mise à jour ultérieure de l'extension est effectuée avec l'URL indiquée dans le fichier manifeste de l'extension.
 
       Par exemple, <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> installe l'application <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> à partir de l'URL de mise à jour standard du Chrome Web Store. Pour en savoir plus sur l'hébergement des extensions, consultez la page <ph name="LINK_TO_EXTENSION_DOC2" />.</translation>
+<translation id="6274202259872570803">Enregistreur d'écran</translation>
 <translation id="6275497712828649588">Masquer les avertissements de sécurité lorsque des indicateurs de ligne de commande potentiellement dangereux sont utilisés</translation>
 <translation id="6275833043726517413">Permet d'utiliser l'ancienne mise en œuvre de <ph name="CORS" /> au lieu de la nouvelle mise en œuvre de <ph name="CORS" />.
 
@@ -4867,7 +4881,15 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="6305373713165475629">Lorsque cette règle est définie, le mode d'impression couleur par défaut est ignoré. Si le mode est indisponible, cette règle est ignorée.</translation>
+<translation id="6308109234708949641">Cette règle active l'enregistreur d'écran pour les utilisateurs de Family Link et lui permet de créer et transcrire un enregistrement d'écran, puis de l'importer dans Drive.
+      Cette règle n'affecte pas les autres types d'utilisateurs.
+      Cette règle n'affecte pas la règle <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> pour les utilisateurs de la version Entreprise.
+
+      Si cette règle est activée, la version dogfood de l'enregistreur d'écran sera activée pour les utilisateurs de Family Link.
+      Si cette règle est désactivée, la version dogfood de l'enregistreur d'écran sera désactivée pour les utilisateurs de Family Link.
+      Si cette règle n'est pas définie, la version dogfood de l'enregistreur d'écran sera désactivée par défaut pour les utilisateurs de Family Link.</translation>
 <translation id="6310223829319187614">Activer la saisie automatique du nom de domaine lors de la connexion de l'utilisateur</translation>
+<translation id="6310756730808079944">Activer l'enregistreur d'écran</translation>
 <translation id="631081324835911099">Forcer la déconnexion de l'utilisateur lorsque le jeton d'authentification de son compte principal n'est plus valide.
         Cette règle peut empêcher l'utilisateur d'accéder à un contenu soumis à des restrictions sur les propriétés Web Google.
         Si cette règle est définie sur "True", l'utilisateur est déconnecté dès que son jeton d'authentification n'est plus valide et que les tentatives de restauration de ce jeton échouent.
@@ -5242,6 +5264,12 @@ Si vous sélectionnez les options suivantes :
           Si elle est associée à la valeur "false" ou si elle n'est pas configurée, la création et la connexion des comptes utilisateur supervisés sont désactivées. Tous les utilisateurs supervisés existants sont alors masqués.
 
           REMARQUE : Le comportement par défaut des appareils grand public diffère de celui des appareils professionnels : sur les appareils grand public, les comptes utilisateur supervisés sont autorisés par défaut, contrairement aux appareils professionnels.</translation>
+<translation id="6648746349186337075">Cette règle autorise l'enregistreur d'écran à créer et transcrire un enregistrement d'écran et à l'importer dans Drive pour les utilisateurs de la version Entreprise.
+      Cette règle n'affecte pas les utilisateurs de Family Link.
+      Cette règle n'affecte pas la règle <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> pour les utilisateurs de Family Link.
+
+      Si elle n'est pas configurée ou si elle est activée, l'enregistreur d'écran sera activé.
+      Si elle est désactivée, l'enregistreur d'écran sera désactivé.</translation>
 <translation id="665023848306499203">Autorisez les appareils à sélectionner une version de mise à jour</translation>
 <translation id="6652197835259177259">Paramètres des utilisateurs gérés en local</translation>
 <translation id="6653897159826215341">Lorsque cette règle est activée, <ph name="PRODUCT_NAME" /> ouvre la boîte de dialogue d'impression du système au lieu de l'aperçu avant impression intégré lorsqu'un utilisateur souhaite imprimer une page.
@@ -6146,6 +6174,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si elle est activée ou si elle n'est pas configurée, la conversion d'unités pour Réponses rapides est activée.
       Si elle est désactivée, la conversion d'unités pour Réponses rapides est désactivée.</translation>
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
+<translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="759957074386651883">Paramètres de navigation sécurisée</translation>
 <translation id="7604169113182304895">Les applications Android peuvent avoir été volontairement conçues pour respecter cette liste, mais vous ne pouvez pas les forcer à effectuer cette opération.</translation>
 <translation id="7612157962821894603">Options système à appliquer au démarrage de <ph name="PRODUCT_NAME" /></translation>
@@ -6394,6 +6423,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 
       Recommandation : Pour verrouiller l'écran en cas d'inactivité, activez le verrouillage de l'écran lors de l'arrêt temporaire, et configurez l'arrêt temporaire de <ph name="PRODUCT_OS_NAME" /> au terme du délai d'inactivité. N'utilisez cette règle que lorsque le verrouillage de l'écran doit intervenir bien avant l'arrêt temporaire de l'appareil ou lorsque vous ne voulez pas que l'appareil soit arrêté temporairement en cas d'inactivité.</translation>
 <translation id="7895553628261067384">Accès à distance</translation>
+<translation id="7900469325540540107">Conserver les données de navigation lors de la création d'un profil d'entreprise par défaut</translation>
 <translation id="7902040092815978832">Afficher le clavier numérique pour la saisie du mot de passe</translation>
 <translation id="7904177352786629708">Si cette règle est activée, la recherche du CNAME est ignorée. Le nom du serveur est utilisé tel qu'il a été saisi lors de la génération du SPN Kerberos.
 

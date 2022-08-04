@@ -898,6 +898,7 @@
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="1829192082282182671">Паменшыць &amp;маштаб</translation>
 <translation id="1830550083491357902">Уваход не выкананы</translation>
+<translation id="1831848493690504725">Нам не ўдаецца звязацца з Google праз падключаную сетку. Паспрабуйце выбраць іншую сетку або праверце налады сеткі і проксі-сервера (калі вы яго выкарыстоўваеце).</translation>
 <translation id="1832459821645506983">Так, згаджаюся</translation>
 <translation id="1832511806131704864">Спалучэнне тэлефона зменена</translation>
 <translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
@@ -2196,6 +2197,7 @@
 <translation id="3021065318976393105">Пры працы ад акумулятара</translation>
 <translation id="3021066826692793094">Матылёк</translation>
 <translation id="3021678814754966447">&amp;Прагляд крыніцы фрэйма</translation>
+<translation id="3022361196600037287">Прылада "<ph name="DEVICE" />" будзе выдалена з гэтага Chromebook і не захаваецца ва ўліковым запісе <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Незразумела.</translation>
 <translation id="3023464535986383522">Чытаць уголас</translation>
 <translation id="3024374909719388945">Выкарыстоўваць 24-гадзінны фармат</translation>
@@ -3734,6 +3736,7 @@
 <translation id="4535127706710932914">Стандартны профіль</translation>
 <translation id="4535767533210902251">Сканер адбіткаў пальцаў – гэта верхняя кнопка справа на клавіятуры. Злёгку дакраніцеся да яе любым пальцам.</translation>
 <translation id="4536140153723794651">Сайты, якім заўсёды дазволена выкарыстоўваць файлы cookie</translation>
+<translation id="4536769240747010177">Магчымасці рэжыму мадэма:</translation>
 <translation id="4538417792467843292">Выдаліць слова</translation>
 <translation id="4538792345715658285">Усталявана карпаратыўнай палітыкай.</translation>
 <translation id="4541123282641193691">Не ўдалося спраўдзіць уліковы запіс. Паўтарыце спробу або перазапусціце Chromebook.</translation>
@@ -3761,6 +3764,7 @@
 <translation id="4561893854334016293">Нядаўна змененых дазволаў няма</translation>
 <translation id="4562155214028662640">Дадаць адбітак пальца</translation>
 <translation id="4563210852471260509">Пачатковая мова ўводу – кітайская</translation>
+<translation id="4563382028841851106">Выдаліць з уліковага запісу</translation>
 <translation id="4563880231729913339">Палец 3</translation>
 <translation id="4564245002465020751">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="4565377596337484307">Схаваць пароль</translation>
@@ -4737,6 +4741,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запытвае наступныя дазволы</translation>
 <translation id="5534304873398226603">Адхіліць фота ці відэа</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
+<translation id="5539070192556911367">Не ўдаецца звязацца з Google</translation>
 <translation id="5539221284352502426">Уведзены пароль адхілены серверам. У ліку магчымых прычын: Пароль занадта кароткі. Пароль павінен змяшчаць лічбы або сімвалы. Пароль павінен адрознівацца ад папярэдніх пароляў.</translation>
 <translation id="5541694225089836610">Дзеянне адключана адміністратарам</translation>
 <translation id="5542132724887566711">Профіль</translation>
@@ -4800,6 +4805,7 @@
 <translation id="5585912436068747822">Не ўдалося адфармаціраваць</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Загрузка праграм...</translation>
+<translation id="5590418976913374224">Прайграваць гук пры запуску прылады</translation>
 <translation id="5592595402373377407">Пакуль што недастаткова даных.</translation>
 <translation id="5595307023264033512">Агульны аб'ём сховішча, які выкарыстоўваецца сайтамі: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
@@ -4809,7 +4815,6 @@
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601823921345337195">Не дазволена падключацца да прылад MIDI</translation>
 <translation id="5602765853043467355">Выдаліць закладкі, гісторыю, паролі і іншае з гэтай прылады</translation>
-<translation id="5605623530403479164">Іншыя пошукавыя сістэмы</translation>
 <translation id="5605758115928394442">Вам на тэлефон для пацвярджэння вашай асобы адпраўлена апавяшчэнне.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне заблакіравана}one{Гэтыя пашырэнні заблакіраваны}few{Гэтыя пашырэнні заблакіраваны}many{Гэтыя пашырэнні заблакіраваны}other{Гэтыя пашырэнні заблакіраваны}}</translation>
 <translation id="560834977503641186">Сінхранізацыя параметраў Wi-Fi, даведацца больш</translation>
@@ -5108,6 +5113,7 @@
 <translation id="5909379458939060601">Выдаліць гэты профіль і даныя прагляду старонак у інтэрнэце?</translation>
 <translation id="5910363049092958439">За&amp;хаваць відарыс як...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> па-за сеткай</translation>
+<translation id="5911030830365207728">Перакладчык Google</translation>
 <translation id="5911533659001334206">Прагляд спалучэнняў клавіш</translation>
 <translation id="5914724413750400082">Модуль (бітаў – <ph name="MODULUS_NUM_BITS" />):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6183,6 +6189,10 @@
 <translation id="6943939122536910181">Адключана ад прылады "<ph name="DEVICE" />"</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="694592694773692225">Заблакіравана перанакіраванне на гэтай старонцы.</translation>
+<translation id="6947015141909171112">Вы бачыце рэцэпты, падабраныя на аснове вашай нядаўняй гісторыі пошуку рэцэптаў.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        У вас ёсць магчымасць кіраваць наладамі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="6949434160682548041">Пароль (неабавязкова)</translation>
 <translation id="6950627417367801484">Аднавіць праграмы</translation>
 <translation id="6952242901357037157">Тут таксама могуць паказвацца паролі, захаваныя ва <ph name="BEGIN_LINK" />Уліковым запісе Google<ph name="END_LINK" /></translation>
@@ -6350,6 +6360,7 @@
 <translation id="7102687220333134671">Аўтаматычныя абнаўленні ўключаны</translation>
 <translation id="7102832101143475489">Запыт пратэрмінаваны</translation>
 <translation id="710640343305609397">Адкрыць налады сеткі</translation>
+<translation id="7107609441453408294">Прайграваць адзін аўдыяканал праз усе дынамікі</translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7108933416628942903">Заблакіраваць</translation>
@@ -6580,6 +6591,7 @@
 <translation id="7364745943115323529">Трансліраваць...</translation>
 <translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="7365076891350562061">Памер манітора</translation>
+<translation id="7365995455115045224">Укладка "<ph name="WINDOW_TITLE" />" замацавана</translation>
 <translation id="7366316827772164604">Ідзе пошук прылад паблізу…</translation>
 <translation id="7366415735885268578">Дадаванне сайта</translation>
 <translation id="7366909168761621528">Даныя прагляду</translation>
@@ -6976,6 +6988,7 @@
 <translation id="7737115349420013392">Ідзе спалучэнне з прыладай "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737846262459425222">Вы можаце выключыць гэту функцыю ў любы час у раздзеле "Налады &gt; Памочнік Google &gt; Кантэкст экрана".</translation>
 <translation id="7737948071472253612">Не дазволена выкарыстоўваць камеру</translation>
+<translation id="77381465218432215">Паказваць дыякрытычныя знакі і спецыяльныя сімвалы</translation>
 <translation id="7740996059027112821">Стандартны</translation>
 <translation id="7741307896921365578">Уключае бакавую панэль на ўзроўні браўзера для пастаяннага зручнага доступу да спіса на прагляд і закладак.</translation>
 <translation id="7742558784808143689">Выдаліць дазволы і даныя сайта <ph name="SITE_NAME" /> і ўсіх сайтаў ніжэйшых узроўняў, а таксама ўсталяваныя праграмы?</translation>
@@ -7764,6 +7777,7 @@
 <translation id="8486666913807228950">Прычына: у спісе "Прымусова адкрыць у:" знойдзена інвертаванае правіла <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">Праграма спрабуе атрымаць доступ да камеры. Каб дазволіць такі доступ, перавядзіце пераключальнік, які рэгулюе налады прыватнасці камеры, у становішча "выключана".</translation>
 <translation id="8487678622945914333">Павялічыць</translation>
+<translation id="8487699605742506766">Хот-спот</translation>
 <translation id="8489156414266187072">Персанальныя прапановы паказваюцца толькі ў вашым уліковым запісе</translation>
 <translation id="8490896350101740396">Наступныя праграмы-кіёскі былі абноўлены: <ph name="UPDATED_APPS" />. Каб завяршыць працэс абнаўлення, перазагрузіце прыладу.</translation>
 <translation id="8492685019009920170">Дакраніцеся пальцам да сканера адбіткаў пальцаў. Вашы даныя надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
@@ -8260,6 +8274,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і яшчэ 1 укладка}one{"<ph name="TAB_TITLE" />" і яшчэ # укладка}few{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}many{"<ph name="TAB_TITLE" />" і яшчэ # укладак}other{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}}</translation>
 <translation id="8977811652087512276">Няправільны пароль, або файл пашкоджаны</translation>
 <translation id="8978154919215542464">Уключана. Сінхранізуецца ўсё</translation>
+<translation id="8978670037548431647">Абнавіць магчымасці рэжыму мадэма</translation>
 <translation id="897939795688207351">На старонцы <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Адпраўка справаздач</translation>
 <translation id="8980951173413349704">Збой <ph name="WINDOW_TITLE" /></translation>
@@ -8521,6 +8536,7 @@
 <translation id="935854577147268200">Тэлефон са Smart Lock зменены. Каб абнавіць Smart Lock, увядзіце пароль. Наступны раз прылада <ph name="DEVICE_TYPE" /> будзе разблакіравана з дапамогай вашага тэлефона. Вы можаце выключыць Smart Lock у Наладах</translation>
 <translation id="936646668635477464">Камера і мікрафон</translation>
 <translation id="936801553271523408">Даныя дыягностыкі сістэмы</translation>
+<translation id="937053962468712792">Выдаліць прыладу "<ph name="DEVICE" />" з уліковага запісу <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Выправіць пашырэнне</translation>
 <translation id="938568644810664664">Спытайце: "Ok Google, што гэта за песня?" або "Ok Google, што на маім экране?"</translation>
 <translation id="938623846785894166">Незвычайны файл</translation>

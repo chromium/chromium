@@ -896,6 +896,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
 <translation id="1830550083491357902">Non connecté</translation>
+<translation id="1831848493690504725">Impossible de joindre Google via le réseau connecté. Choisissez un autre réseau ou vérifiez vos paramètres réseau ou vos paramètres proxy (si vous utilisez un proxy).</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1832511806131704864">Changement de téléphone mis à jour</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
@@ -2194,6 +2195,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3021065318976393105">Lorsque l'appareil est sur batterie</translation>
 <translation id="3021066826692793094">Papillon</translation>
 <translation id="3021678814754966447">&amp;Afficher le code source du cadre</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> sera supprimé de ce Chromebook et ne sera pas enregistré dans <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Je n'ai pas compris.</translation>
 <translation id="3023464535986383522">Sélectionner pour prononcer</translation>
 <translation id="3024374909719388945">Utiliser l'horloge au format 24 heures</translation>
@@ -3732,6 +3734,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4535127706710932914">Profil par défaut</translation>
 <translation id="4535767533210902251">Le lecteur d'empreinte digitale est la touche située en haut à droite de votre clavier. Appuyez dessus légèrement avec n'importe quel doigt.</translation>
 <translation id="4536140153723794651">Sites autorisés à utiliser des cookies</translation>
+<translation id="4536769240747010177">Fonctionnalités de partage de connexion :</translation>
 <translation id="4538417792467843292">Supprimer le mot</translation>
 <translation id="4538792345715658285">Installée conformément à une règle d'entreprise</translation>
 <translation id="4541123282641193691">Impossible de valider votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
@@ -3759,6 +3762,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4561893854334016293">Aucune autorisation modifiée récemment</translation>
 <translation id="4562155214028662640">Ajouter empreinte digitale</translation>
 <translation id="4563210852471260509">Le chinois est la langue de saisie initiale</translation>
+<translation id="4563382028841851106">Supprimer du compte</translation>
 <translation id="4563880231729913339">Doigt 3</translation>
 <translation id="4564245002465020751">Terminer la configuration sur votre téléphone</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
@@ -4735,6 +4739,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
 <translation id="5534304873398226603">Supprimer la photo ou la vidéo</translation>
 <translation id="5537725057119320332">Caster</translation>
+<translation id="5539070192556911367">Impossible de joindre Google</translation>
 <translation id="5539221284352502426">Le serveur a refusé le mot de passe que vous avez saisi. Voici plusieurs raisons possibles : le mot de passe est trop court. Il ne contient pas de chiffres ni de symboles. Il est identique aux précédents mots de passe.</translation>
 <translation id="5541694225089836610">Votre administrateur a désactivé cette action</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4798,6 +4803,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5585912436068747822">Échec du formatage</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Chargement des applications…</translation>
+<translation id="5590418976913374224">Émettre un son au démarrage de l'appareil</translation>
 <translation id="5592595402373377407">Les données disponibles sont insuffisantes pour le moment.</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
@@ -4807,7 +4813,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5601823921345337195">Non autorisé à se connecter à des appareils MIDI</translation>
 <translation id="5602765853043467355">Effacer les favoris, l'historique, les mots de passe et autres paramètres de cet appareil</translation>
-<translation id="5605623530403479164">Autres moteurs de recherche</translation>
 <translation id="5605758115928394442">Une notification a été envoyée à votre téléphone pour que vous puissiez confirmer votre identité.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
 <translation id="560834977503641186">Sync Wi-Fi (en savoir plus)</translation>
@@ -5107,6 +5112,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5909379458939060601">Supprimer ce profil et les données de connexion ?</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors connexion</translation>
+<translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5911533659001334206">Visionneuse de raccourcis</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
   <ph name="MODULUS_HEX_DUMP" />
@@ -6178,6 +6184,10 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6943939122536910181">Déconnecté de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="694592694773692225">Redirection bloquée sur cette page.</translation>
+<translation id="6947015141909171112">Des recettes vous sont suggérées en fonction de vos recherches récentes de recettes.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Vous pouvez gérer les paramètres dans le menu de la carte ou voir plus d'options dans "Personnaliser Chrome".</translation>
 <translation id="6949434160682548041">Mot de passe (facultatif)</translation>
 <translation id="6950627417367801484">Restaurer les applications</translation>
 <translation id="6952242901357037157">Vous pouvez également afficher les mots de passe de votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> ici</translation>
@@ -6345,6 +6355,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7102687220333134671">Les mises à jour automatiques sont activées</translation>
 <translation id="7102832101143475489">Le délai imparti à la demande est dépassé</translation>
 <translation id="710640343305609397">Ouvrir les paramètres réseau</translation>
+<translation id="7107609441453408294">Lire le même contenu audio sur toutes les enceintes</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108668606237948702">saisir la clé</translation>
 <translation id="7108933416628942903">Verrouiller maintenant</translation>
@@ -6575,6 +6586,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7364745943115323529">Caster…</translation>
 <translation id="7364796246159120393">Choisir un fichier</translation>
 <translation id="7365076891350562061">Taille du moniteur</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Épinglée</translation>
 <translation id="7366316827772164604">Recherche d'appareils à proximité…</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
@@ -6971,6 +6983,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7737115349420013392">Association avec "<ph name="DEVICE_NAME" />" en cours…</translation>
 <translation id="7737846262459425222">Vous pouvez modifier cette option à tout moment dans Paramètres &gt; Assistant Google &gt; Contexte de l'écran.</translation>
 <translation id="7737948071472253612">Non autorisé à utiliser votre caméra</translation>
+<translation id="77381465218432215">Afficher les accents et les caractères spéciaux</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Activer un panneau latéral dans le navigateur pour accéder facilement et en permanence à votre liste de lecture et à vos favoris.</translation>
 <translation id="7742558784808143689">Effacer les données et autorisations de "<ph name="SITE_NAME" />", de tous les sites qui en dépendent et des applis installées ?</translation>
@@ -7761,6 +7774,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8486666913807228950">Motif : la règle inversée <ph name="REVERT_RULE" /> a été trouvée dans la liste "Forcer l'ouverture dans".</translation>
 <translation id="848666842773560761">Une appli tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="8487678622945914333">Zoom avant</translation>
+<translation id="8487699605742506766">Point d'accès</translation>
 <translation id="8489156414266187072">Les suggestions personnelles ne sont affichées que sur votre compte</translation>
 <translation id="8490896350101740396">Les applications kiosque "<ph name="UPDATED_APPS" />" ont bien été mises à jour. Veuillez redémarrer l'appareil afin de terminer la procédure.</translation>
 <translation id="8492685019009920170">Appuyez sur le lecteur d'empreinte. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
@@ -8255,6 +8269,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" et 1 autre onglet}one{"<ph name="TAB_TITLE" />" et # autre onglet}other{"<ph name="TAB_TITLE" />" et # autres onglets}}</translation>
 <translation id="8977811652087512276">Mot de passe incorrect ou fichier corrompu</translation>
 <translation id="8978154919215542464">Activée – Tout synchroniser</translation>
+<translation id="8978670037548431647">Actualiser les fonctionnalités de partage de connexion</translation>
 <translation id="897939795688207351">Sur <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Rapports de commentaires</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Plantage</translation>
@@ -8519,6 +8534,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="935854577147268200">Le téléphone Smart Lock a changé. Saisissez votre mot de passe pour activer Smart Lock. La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans les paramètres.</translation>
 <translation id="936646668635477464">Caméra et micro</translation>
 <translation id="936801553271523408">Données de diagnostic système</translation>
+<translation id="937053962468712792">Supprimer <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" /> ?</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>
 <translation id="938568644810664664">Essayez "Hey Google, quelle est cette chanson ?" ou "Hey Google, qu'est-ce qu'il y a à l'écran ?"</translation>
 <translation id="938623846785894166">Fichier inhabituel</translation>

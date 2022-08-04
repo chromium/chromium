@@ -897,6 +897,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">&amp;Уменьшить</translation>
 <translation id="1830550083491357902">Вход не выполнен</translation>
+<translation id="1831848493690504725">Не удается подключиться к серверам Google. Выберите другую сеть или проверьте настройки сети и прокси-сервера (если он используется).</translation>
 <translation id="1832459821645506983">ОК</translation>
 <translation id="1832511806131704864">Сведения о телефоне обновлены</translation>
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
@@ -2195,6 +2196,7 @@
 <translation id="3021065318976393105">Если устройство работает от батареи</translation>
 <translation id="3021066826692793094">Бабочка</translation>
 <translation id="3021678814754966447">Просмотр кода фрейма</translation>
+<translation id="3022361196600037287">Устройство "<ph name="DEVICE" />" будет удалено с этого Chromebook и не сохранится в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Повторите ещё раз.</translation>
 <translation id="3023464535986383522">Озвучивание при нажатии</translation>
 <translation id="3024374909719388945">Использовать 24-часовой формат</translation>
@@ -3733,6 +3735,7 @@
 <translation id="4535127706710932914">Профиль по умолчанию</translation>
 <translation id="4535767533210902251">Сканер отпечатков пальцев – это клавиша в правом верхнем углу клавиатуры. Слегка коснитесь ее любым пальцем.</translation>
 <translation id="4536140153723794651">Сайты, которые всегда могут использовать файлы cookie</translation>
+<translation id="4536769240747010177">Возможности режима модема:</translation>
 <translation id="4538417792467843292">Удалить слово</translation>
 <translation id="4538792345715658285">Установлено в соответствии с корпоративным правилом.</translation>
 <translation id="4541123282641193691">Не удалось подтвердить аккаунт. Повторите попытку или перезагрузите устройство Chromebook.</translation>
@@ -3760,6 +3763,7 @@
 <translation id="4561893854334016293">Недавних изменений в разрешениях не найдено.</translation>
 <translation id="4562155214028662640">Добавить отпечаток пальца</translation>
 <translation id="4563210852471260509">Первоначальный язык ввода – китайский</translation>
+<translation id="4563382028841851106">Удалить из аккаунта</translation>
 <translation id="4563880231729913339">3-й палец</translation>
 <translation id="4564245002465020751">Завершите настройку на телефоне</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
@@ -4736,6 +4740,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запрашивает разрешение на:</translation>
 <translation id="5534304873398226603">Удалить фото или видео</translation>
 <translation id="5537725057119320332">Трансляция</translation>
+<translation id="5539070192556911367">Сервер Google недоступен</translation>
 <translation id="5539221284352502426">Сервер отклонил введенный пароль. Помните, что пароль должен отличаться от предыдущих паролей и содержать необходимое количество цифр и символов.</translation>
 <translation id="5541694225089836610">Действие отключено администратором.</translation>
 <translation id="5542132724887566711">Профиль</translation>
@@ -4799,6 +4804,7 @@
 <translation id="5585912436068747822">Ошибка форматирования</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Загрузка...</translation>
+<translation id="5590418976913374224">Воспроизводить звук при запуске устройства</translation>
 <translation id="5592595402373377407">Недостаточно данных.</translation>
 <translation id="5595307023264033512">Объем хранилища, занятый сайтами: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Изменить адрес</translation>
@@ -4808,7 +4814,6 @@
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601823921345337195">Запретить сайтам подключаться к MIDI-устройствам</translation>
 <translation id="5602765853043467355">Удалить с устройства закладки, пароли, данные о работе в браузере и т. д.</translation>
-<translation id="5605623530403479164">Другие поисковые системы</translation>
 <translation id="5605758115928394442">На ваш телефон отправлено уведомление для подтверждения личности.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
@@ -5107,6 +5112,7 @@
 <translation id="5909379458939060601">Удалить этот профиль и данные о работе в браузере?</translation>
 <translation id="5910363049092958439">Сохранить изображение как...</translation>
 <translation id="5910726859585389579">Устройство <ph name="DEVICE_TYPE" /> не подключено к Интернету</translation>
+<translation id="5911030830365207728">Google Переводчик</translation>
 <translation id="5911533659001334206">Просмотр ярлыков</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> бит):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6182,6 +6188,10 @@
 <translation id="6943939122536910181">Отключено устройство "<ph name="DEVICE" />"</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="694592694773692225">Попытка переадресации на этой странице заблокирована</translation>
+<translation id="6947015141909171112">Эти рецепты показаны с учетом вашей истории поиска.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6949434160682548041">Пароль (необязательно)</translation>
 <translation id="6950627417367801484">Восстановить приложения</translation>
 <translation id="6952242901357037157">Вы можете добавить в этот список пароли из вашего <ph name="BEGIN_LINK" />аккаунта Google<ph name="END_LINK" /></translation>
@@ -6349,6 +6359,7 @@
 <translation id="7102687220333134671">Автоматическое обновление включено</translation>
 <translation id="7102832101143475489">Время, отведенное на обработку запроса, истекло.</translation>
 <translation id="710640343305609397">Открыть настройки сети</translation>
+<translation id="7107609441453408294">Воспроизводить одинаковый звук через все динамики</translation>
 <translation id="7108338896283013870">Скрыть</translation>
 <translation id="7108668606237948702">Войти</translation>
 <translation id="7108933416628942903">Заблокировать</translation>
@@ -6579,6 +6590,7 @@
 <translation id="7364745943115323529">Транслировать...</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
 <translation id="7365076891350562061">Масштаб изображения на мониторе</translation>
+<translation id="7365995455115045224">Вкладка "<ph name="WINDOW_TITLE" />" закреплена</translation>
 <translation id="7366316827772164604">Поиск устройств поблизости…</translation>
 <translation id="7366415735885268578">Добавление сайта</translation>
 <translation id="7366909168761621528">Данные о работе в браузере</translation>
@@ -6975,6 +6987,7 @@
 <translation id="7737115349420013392">Подключение к устройству "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737846262459425222">Этот параметр можно изменить в любой момент. Выберите "Настройки &gt; Google Ассистент &gt; Содержимое экрана".</translation>
 <translation id="7737948071472253612">Запретить сайтам использовать камеру</translation>
+<translation id="77381465218432215">Показывать диакритические знаки и специальные символы</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="7741307896921365578">В браузере появляется удобная боковая панель, с помощью которой можно быстро получать доступ к списку для чтения и закладкам.</translation>
 <translation id="7742558784808143689">Удалить данные и разрешения сайта <ph name="SITE_NAME" />, всех связанных с ним сайтов и установленных приложений?</translation>
@@ -7764,6 +7777,7 @@
 <translation id="8486666913807228950">Причина: в списке "Принудительное открытие" обнаружено инвертированное правило <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">Приложение пытается получить доступ к камере. Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности камеры.</translation>
 <translation id="8487678622945914333">Увеличить</translation>
+<translation id="8487699605742506766">Точка доступа</translation>
 <translation id="8489156414266187072">Персональные подсказки показываются только в вашем аккаунте</translation>
 <translation id="8490896350101740396">Были обновлены следующие киоск-приложения: <ph name="UPDATED_APPS" />. Чтобы завершить установку обновлений, перезагрузите устройство.</translation>
 <translation id="8492685019009920170">Коснитесь сканера отпечатков пальцев. Биометрические данные хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
@@ -8260,6 +8274,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" и ещё 1 вкладка}one{"<ph name="TAB_TITLE" />" и ещё # вкладка}few{"<ph name="TAB_TITLE" />" и ещё # вкладки}many{"<ph name="TAB_TITLE" />" и ещё # вкладок}other{"<ph name="TAB_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="8977811652087512276">Пароль указан неверно или поврежден файл</translation>
 <translation id="8978154919215542464">Включено (синхронизировать все)</translation>
+<translation id="8978670037548431647">Обновить возможности режима модема</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />: вкл.</translation>
 <translation id="8980345560318123814">Отчеты</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: произошел сбой</translation>
@@ -8524,6 +8539,7 @@
 <translation id="935854577147268200">Телефон для снятия блокировки был изменен. Чтобы обновить параметры Smart Lock, введите пароль. После этого вы сможете снимать блокировку устройства <ph name="DEVICE_TYPE" /> с помощью телефона. Чтобы выключить Smart Lock, перейдите в настройки.</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностические данные системы</translation>
+<translation id="937053962468712792">Удалить устройство "<ph name="DEVICE" />" из аккаунта <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>
 <translation id="938568644810664664">Спросите "Окей, Google, что это за трек?" или "Окей, Google, что у меня на экране?".</translation>
 <translation id="938623846785894166">Необычный файл</translation>

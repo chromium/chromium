@@ -311,6 +311,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3529024052484145543">안전하지 않음</translation>
 <translation id="3533202363250687977">모든 시크릿 탭 닫기</translation>
 <translation id="3533436815740441613">새 탭</translation>
+<translation id="3547799431091898961">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />합니다.</translation>
 <translation id="3551320343578183772">탭 닫기</translation>
 <translation id="3581564640715911333">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="3588820906588687999">새 탭에서 이미지 열기</translation>
@@ -645,6 +646,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6377118281273296434">사이트 보안</translation>
 <translation id="6380866119319257197">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
+<translation id="6387994324662817823">비밀번호가 이 기기의 Google 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="6389470377220713856">카드 명의</translation>
 <translation id="6406506848690869874">동기화</translation>
 <translation id="6410390304316730527">세이프 브라우징을 사용하면 악성 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드 정보)를 공개하는 등의 위험한 행동을 하도록 사용자를 속이는 공격자를 차단합니다. 이 기능을 사용 중지하는 경우 익숙하지 않거나 평판이 좋지 않은 사이트를 탐색할 때 주의하시기 바랍니다.</translation>
@@ -680,6 +682,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6561262006871132942">확대</translation>
 <translation id="6583087784430677195">사용 중지하려면 <ph name="BEGIN_LINK" />Settings(설정)<ph name="END_LINK" />를 열고 AutoFill Passwords(비밀번호 자동 완성)로 이동합니다.</translation>
 <translation id="6585618849026997638">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
+<translation id="6596481460663245319">Google로 이미지 검색</translation>
 <translation id="6598875554591387303">게시자순 정렬</translation>
 <translation id="6603393121510733479">조직에서 시크릿 브라우징을 사용 중지했습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

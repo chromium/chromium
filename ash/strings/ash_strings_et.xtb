@@ -898,6 +898,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="619279033188484792">Seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutiste fotode, meedia ja märguannete vaatamine</translation>
 <translation id="619335566042889110">Laadi nüüd täielikult täis</translation>
 <translation id="6193431488227440296">Arendaja</translation>
+<translation id="6210042900243040400">Ühendage <ph name="NAME" />, mis oli varem salvestatud kontole <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
 <translation id="622484624075952240">Alla</translation>
 <translation id="6231419273573514727">Välisseadme toimivus võib olla piiratud</translation>
@@ -1399,7 +1400,6 @@ Uus installimine</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>
 <translation id="9178475906033259337">Kuvatud on 1 tulemus päringule <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">See funktsioon võimaldab teil parooli sisestamata pääseda kiirelt juurde kõigile sisselogitud kasutajatele. Kasutage seda funktsiooni vaid kontode puhul, mida usaldate.</translation>
-<translation id="9180906851711123156">Sulgemiseks vajutage klahve Ctrl + W</translation>
 <translation id="9183456764293710005">Täisekraani suurendus</translation>
 <translation id="9193626018745640770">Ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="9194617393863864469">Logi sisse teine kasutaja ...</translation>

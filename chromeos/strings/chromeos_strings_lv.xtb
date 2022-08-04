@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2480034874476596812">Manuāla izslēgšana</translation>
+<translation id="248546197012830854">Ierīce ir bezsaistē. Izveidojiet savienojumu ar Wi-Fi tīklu, lai skatītu palīdzības saturu.</translation>
 <translation id="2491955442992294626">Taustiņi netiek pārbaudīti, ja ir fokusēts cits logs.</translation>
 <translation id="2493126929778606526">Jūsu labākie fotoattēli (atlasīti automātiski)</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6611280807952151149">Iziet no ierīces (<ph name="DEVICE_TYPE" />) labošanas plūsmas</translation>
 <translation id="6618744767048954150">Notiek pārbaude</translation>
 <translation id="6620487321149975369">Drukas uzdevumi būs redzami vēsturē, ja vien tie netiks noņemti manuāli</translation>
+<translation id="6624819909909965616">Nevar augšupielādēt failu, kura lielums pārsniedz 10 MB.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6644568396961840069">Nevarēja saglabāt failu. Pievienojiet citu ārējo atmiņu vai vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6647510110698214773">Šifrēšanas algoritms</translation>
@@ -696,6 +698,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
 <translation id="6995564396478647735">Ieslēdziet aizsardzību pret rakstīšanu</translation>
+<translation id="7005833343836210400">Ierīce ir bezsaistē</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
 <translation id="7041549558901442110">Ierīce nav pievienota.</translation>
@@ -809,6 +812,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
+<translation id="8094062939584182041">Atļaut Google nosūtīt jums e-pasta ziņojumu par šo problēmu</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="8109786307828817014">Vai turpināt, neņemot vērā kalibrēšanas kļūmes?</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>

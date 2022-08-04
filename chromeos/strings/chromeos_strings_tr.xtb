@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tür</translation>
 <translation id="2461822463642141190">Mevcut güç tüketimi</translation>
 <translation id="2480034874476596812">Manuel olarak devre dışı bırakın</translation>
+<translation id="248546197012830854">Cihaz internete bağlı değil. Yardım içeriğini görmek için kablosuz ağa bağlanın.</translation>
 <translation id="2491955442992294626">Başka bir pencere kullanılırken tuşlar test edilmez</translation>
 <translation id="2493126929778606526">Otomatik olarak seçilen en iyi fotoğraflarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> onarımından çık</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
+<translation id="6624819909909965616">10 MB'tan büyük dosyalar yüklenemez</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6644568396961840069">Dosya kaydedilemedi. Farklı bir harici depolama cihazı takmayı deneyin veya daha sonra tekrar deneyin.</translation>
 <translation id="6647510110698214773">Şifreleme algoritması</translation>
@@ -696,6 +698,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
 <translation id="6995564396478647735">Yazma korumasının etkin olduğundan emin olun</translation>
+<translation id="7005833343836210400">Cihaz çevrimdışı</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
@@ -809,6 +812,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
+<translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
 <translation id="8109786307828817014">Başarısız kalibrasyonlarla devam edilsin mi?</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>

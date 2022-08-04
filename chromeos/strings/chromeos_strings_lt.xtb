@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2480034874476596812">Išjungti neautomatiškai</translation>
+<translation id="248546197012830854">Įrenginys neprijungtas prie interneto. Prisijunkite prie „Wi-Fi“ tinklo, kad galėtumėte peržiūrėti pagalbos turinį.</translation>
 <translation id="2491955442992294626">Klavišai nėra testuojami, kai naudojate kitą langą</translation>
 <translation id="2493126929778606526">Geriausios nuotraukos, parinktos automatiškai</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6611280807952151149">Nutraukti „<ph name="DEVICE_TYPE" />“ taisymą</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
+<translation id="6624819909909965616">Negalima įkelti didesnio nei dešimties megabaitų failo</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6644568396961840069">Failo nepavyko išsaugoti. Pabandykite prijungti kitą išorinę saugyklą arba vėliau bandykite dar kartą.</translation>
 <translation id="6647510110698214773">Šifruotės algoritmas</translation>
@@ -696,6 +698,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
 <translation id="6995564396478647735">Įsitikinkite, kad įjungta įrašymo apsauga</translation>
+<translation id="7005833343836210400">Įrenginys neprijungtas prie interneto</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7040230719604914234">Operatorius</translation>
 <translation id="7041549558901442110">Įrenginys neprijungtas.</translation>
@@ -809,6 +812,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
+<translation id="8094062939584182041">Leisti „Google“ siųsti jums el. laišką apie šią problemą</translation>
 <translation id="8104083085214006426">Naudojate atvirąjį ir nesaugų tinklą</translation>
 <translation id="8109786307828817014">Tęsti naudojant nesukalibruotus komponentus?</translation>
 <translation id="811820734797650957">(„Android“) Galima patikrinti tinklų sietuvo ryšį</translation>

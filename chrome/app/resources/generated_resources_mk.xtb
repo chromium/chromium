@@ -4840,7 +4840,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Не им е дозволено да се поврзуваат со MIDI-уредите</translation>
 <translation id="5602765853043467355">Исчисти обележувачи, историја, лозинки и друго од уредов</translation>
-<translation id="5605623530403479164">Други пребарувачи</translation>
 <translation id="5605758115928394442">Испратено ви е известување на телефонот за потврда на вашиот идентитет.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Екстензијава е блокирана}one{Екстензииве се блокирани}other{Екстензииве се блокирани}}</translation>
 <translation id="560834977503641186">Синхронизирање на Wi-Fi, дознајте повеќе</translation>
@@ -5141,6 +5140,7 @@
 <translation id="5909379458939060601">Да се избрише профилов и податоците од прелистувањето?</translation>
 <translation id="5910363049092958439">Сни&amp;ми слика како…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлајн</translation>
+<translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">Прикажувач на кратенки</translation>
 <translation id="5914724413750400082">Модул (бита: <ph name="MODULUS_NUM_BITS" />):
   <ph name="MODULUS_HEX_DUMP" />

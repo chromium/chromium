@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">ARని వినియోగించడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> నుండి</translation>
 <translation id="1887786770086287077">ఈ పరికరానికి స్థానం యాక్సెస్ ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
+<translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919950603503897840">కాంటాక్ట్‌లను ఎంచుకోండి</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
 <translation id="2687403674020088961">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
+<translation id="2713106313042589954">కెమెరాను ఆఫ్ చేయి</translation>
 <translation id="2717722538473713889">ఈమెయిల్‌ అడ్రస్‌లు</translation>
 <translation id="2750481671343847896">గుర్తింపు సర్వీస్‌ల నుండి సైన్-ఇన్ ప్రాంప్ట్‌లను సైట్‌లు చూపగలవు.</translation>
 <translation id="2785051990912111074">దీనిని ఎంచుకోవడం ద్వారా <ph name="WEBSITE" />కు సంబంధించిన కుక్కీలు క్లియర్ చేయబడతాయి</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">మీ కెమెరాను ఏవైనా సైట్‌లు ఉపయోగించగలిగేలా వాటిని అనుమతించే ముందు, మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="4505788138578415521">URL విస్తరించబడింది</translation>
 <translation id="4534723447064627427">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా మైక్రోఫోన్‌ను ఆన్ చేయండి.</translation>
+<translation id="4566417217121906555">మైక్రోఫోన్‌ను మ్యూట్ చేయి</translation>
 <translation id="4570913071927164677">వివరాలు</translation>
 <translation id="4645575059429386691">మీ తల్లి/తండ్రి ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4670064810192446073">వర్చువల్ రియాలిటీ</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">ఆప్షన్ స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉంటుంది</translation>
 <translation id="5197729504361054390">మీరు ఎంచుకున్న కాంటాక్ట్‌లు <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />తో షేర్ చేయబడతాయి.</translation>
 <translation id="5216942107514965959">చివరిగా ఈరోజు సందర్శించారు</translation>
+<translation id="5225463052809312700">కెమెరాను ఆన్ చేయి</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'ను తీసివేయండి</translation>
 <translation id="528192093759286357">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించడానికి పైనుండి లాగి, వెనుకకు బటన్‌ను తాకండి.</translation>
 <translation id="5300589172476337783">చూపించు</translation>
@@ -337,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 కుక్కీ ఉపయోగంలో ఉంది}other{# కుక్కీలు ఉపయోగంలో ఉన్నాయి}}</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="848952951823693243">ఎల్లప్పుడూ మొబైల్ సైట్ కోసం రిక్వెస్ట్ చేయండి</translation>
+<translation id="8499083585497694743">మైక్రోఫోన్‌ను అన్‌మ్యూట్ చేయి</translation>
 <translation id="851751545965956758">పరికరాలకు కనెక్ట్ కాకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="857943718398505171">అనుమతించబడింది (సిఫార్సు చేయబడింది)</translation>

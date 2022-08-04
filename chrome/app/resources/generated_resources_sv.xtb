@@ -906,6 +906,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="1829192082282182671">Zooma ut</translation>
 <translation id="1830550083491357902">Inte inloggad</translation>
+<translation id="1831848493690504725">Det går inte att nå Google via det anslutna nätverket. Testa att välja ett annat nätverk eller kontrollera nätverks- eller proxyinställningarna (om du använder en proxy).</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1832511806131704864">Mobiländringen har uppdaterats</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
@@ -2208,6 +2209,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3021065318976393105">Vid batteridrift</translation>
 <translation id="3021066826692793094">Fjäril</translation>
 <translation id="3021678814754966447">&amp;Visa ramkälla</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> tas bort från denna Chromebook och sparas inte i <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Jag hörde inte.</translation>
 <translation id="3023464535986383522">Textuppläsning</translation>
 <translation id="3024374909719388945">Använd 24-timmars klocka</translation>
@@ -3747,6 +3749,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4535127706710932914">Standardprofil</translation>
 <translation id="4535767533210902251">Fingeravtryckssensorn är tangenten högst upp till höger på tangentbordet. Tryck lätt på den med valfritt finger.</translation>
 <translation id="4536140153723794651">Webbplatser som alltid kan använda cookies</translation>
+<translation id="4536769240747010177">Internetdelningfunktioner:</translation>
 <translation id="4538417792467843292">Ta bort ord</translation>
 <translation id="4538792345715658285">Installerad på grund av företagets principer.</translation>
 <translation id="4541123282641193691">Det gick inte att verifiera kontot. Försök igen eller starta om Chromebook.</translation>
@@ -3774,6 +3777,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4561893854334016293">Inga behörigheter har ändrats nyligen</translation>
 <translation id="4562155214028662640">Lägg till fingeravtryck</translation>
 <translation id="4563210852471260509">Det ursprungliga inmatningsspråket är kinesiska</translation>
+<translation id="4563382028841851106">Ta bort från konto</translation>
 <translation id="4563880231729913339">Finger 3</translation>
 <translation id="4564245002465020751">Slutför konfigureringen på telefonen</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
@@ -4750,6 +4754,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
 <translation id="5534304873398226603">Släng fotot eller videon</translation>
 <translation id="5537725057119320332">Casta</translation>
+<translation id="5539070192556911367">Det går inte att nå Google</translation>
 <translation id="5539221284352502426">Det angivna lösenordet avvisades av servern. Möjliga orsaker: Lösenordet är för kort. Lösenordet måste innehålla siffror eller symboler. Det får inte vara ett återanvänt lösenord.</translation>
 <translation id="5541694225089836610">Åtgärden har inaktiverats av administratören</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4813,6 +4818,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5585912436068747822">Formateringen misslyckades</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Läser in appar …</translation>
+<translation id="5590418976913374224">Spela upp ljud vid start av enheten</translation>
 <translation id="5592595402373377407">Det finns inte tillräckligt mycket data ännu.</translation>
 <translation id="5595307023264033512">Totalt lagringsutrymme som används av webbplatser: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Redigera adress</translation>
@@ -4822,7 +4828,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5601503069213153581">Pinkod</translation>
 <translation id="5601823921345337195">Får inte ansluta till MIDI-enheter</translation>
 <translation id="5602765853043467355">Rensa bokmärken, historik , lösenord med mera från den här enheten</translation>
-<translation id="5605623530403479164">Andra sökmotorer</translation>
 <translation id="5605758115928394442">En avisering har skickats till din mobil för att bekräfta att det är du.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Detta tillägg har blockerats}other{Dessa tillägg har blockerats}}</translation>
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
@@ -5121,6 +5126,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5909379458939060601">Vill du radera den här profilen och tillhörande webbinformation?</translation>
 <translation id="5910363049092958439">S&amp;para bild som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> är offline</translation>
+<translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5911533659001334206">Kortkommandovisare</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bitar):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6190,6 +6196,10 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6943939122536910181">Frånkopplad från <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="694592694773692225">Omdirigering blockerad på den här sidan.</translation>
+<translation id="6947015141909171112">Receptförslag visas utifrån dina senaste receptsökningar på Sök.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="6949434160682548041">Lösenord (valfritt)</translation>
 <translation id="6950627417367801484">Återställ appar</translation>
 <translation id="6952242901357037157">Du kan även visa lösenord från <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> här</translation>
@@ -6357,6 +6367,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7102687220333134671">Automatiska uppdateringar har aktiverats</translation>
 <translation id="7102832101143475489">Begäran tog för lång tid</translation>
 <translation id="710640343305609397">Öppna nätverksinställningar</translation>
+<translation id="7107609441453408294">Spela upp samma ljud i alla högtalare</translation>
 <translation id="7108338896283013870">Dölj</translation>
 <translation id="7108668606237948702">retur</translation>
 <translation id="7108933416628942903">Lås nu</translation>
@@ -6587,6 +6598,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7364745943115323529">Casta …</translation>
 <translation id="7364796246159120393">Välj fil</translation>
 <translation id="7365076891350562061">Skärmstorlek</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – fäst</translation>
 <translation id="7366316827772164604">Söker efter enheter i närheten …</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7366909168761621528">Webbinformation</translation>
@@ -6983,6 +6995,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7737115349420013392">Parkopplas med <ph name="DEVICE_NAME" /> …</translation>
 <translation id="7737846262459425222">Du kan när som helst ändra detta i Inställningar &gt; Google Assistent &gt; Innehållet på skärmen.</translation>
 <translation id="7737948071472253612">Får inte använda kameran</translation>
+<translation id="77381465218432215">Visa accenttecken och specialtecken</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Aktiverar en sidopanel på webbläsarnivå för ett användbart och beständigt sätt att få åtkomst till läslistan och bokmärken.</translation>
 <translation id="7742558784808143689">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" />, alla underordnade webbplatser och installerade appar?</translation>
@@ -7773,6 +7786,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8486666913807228950">Orsak: Den inverterade regeln <ph name="REVERT_RULE" /> hittades i listan Tvinga att öppna i.</translation>
 <translation id="848666842773560761">En app försöker använda kameran. Om du vill låta den göra detta måste du inaktivera integritetsinställningen som blockerar kameran.</translation>
 <translation id="8487678622945914333">Zooma in</translation>
+<translation id="8487699605742506766">Surfzon</translation>
 <translation id="8489156414266187072">Personliga förslag visas bara i ditt konto</translation>
 <translation id="8490896350101740396">Följande kioskappar <ph name="UPDATED_APPS" /> har uppdaterats. Starta om enheten för att slutföra uppdateringen.</translation>
 <translation id="8492685019009920170">Tryck på fingeravtryckssensorn med fingret. Data lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
@@ -8266,6 +8280,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> och 1 flik till}other{<ph name="TAB_TITLE" /> och # flikar till}}</translation>
 <translation id="8977811652087512276">Felaktigt lösenord eller skadad fil</translation>
 <translation id="8978154919215542464">På – synkronisera allt</translation>
+<translation id="8978670037548431647">Uppdatera internetdelningsfunktioner</translation>
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Feedbackrapporter</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – kraschat</translation>
@@ -8530,6 +8545,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="935854577147268200">Smart Lock används med en annan mobil än tidigare. Ange lösenordet och uppdatera Smart Lock. Nästa gång låser mobilen upp denna <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna</translation>
 <translation id="936646668635477464">Kamera och mikrofon</translation>
 <translation id="936801553271523408">Systemets diagnostikresultat</translation>
+<translation id="937053962468712792">Vill du ta bort <ph name="DEVICE" /> från <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparera tillägg</translation>
 <translation id="938568644810664664">Testa att säga ”Hey Google, vad är det här för låt?” eller ”Hey Google, vad visas på skärmen?”</translation>
 <translation id="938623846785894166">Ovanlig fil</translation>

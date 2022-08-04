@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">Кабель нь гүйцэтгэлд нөлөөлж магадгүй</translation>
 <translation id="2903844815300039659"><ph name="NAME" />, <ph name="STRENGTH" />-д холбогдсон</translation>
 <translation id="2914580577416829331">Дэлгэцийн зураг</translation>
+<translation id="2925246975070834767">Өөрийгөө дэлгэцийн голд байрлуулахын тулд автомат томруулалтыг ашиглаж үзнэ үү. Үүнийг Шуурхай тохиргоо хэсэгт асаана.</translation>
 <translation id="2941112035454246133">Бага</translation>
 <translation id="2942350706960889382">Суурилуулсан томруулагч</translation>
 <translation id="2942516765047364088">Шельфийн байрлал</translation>
@@ -635,6 +636,7 @@
 <translation id="4628757576491864469">Төхөөрөмжүүд</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> одтой үнэлгээ</translation>
 <translation id="4633185660152240791">{0,plural, =1{Төхөөрөмжийг 1 хоногийн дотор өмнөх хувилбар луу нь өөрчилнө үү}other{Төхөөрөмжийг # хоногийн дотор өмнөх хувилбар луу нь өөрчилнө үү}}</translation>
+<translation id="4633636853437260449">Устгахын тулд Ctrl + W дээр дарна уу</translation>
 <translation id="4642092649622328492">Дэлгэцийн зургийг хэсэгчлэн дарах</translation>
 <translation id="4644727592819780893">Бүс нь камерыг багтаахад хэт жижиг байна</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, аппын зөвлөмж</translation>
@@ -760,6 +762,16 @@
 <translation id="5393156353051693207">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа удаан дарна уу</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
 <translation id="5397578532367286026">chrome.com дээр (<ph name="MANAGER_EMAIL" />) удирдагч энэ хэрэглэгчийн хэрэглээ болон түүхийг үзэх боломжтой.</translation>
+<translation id="5399673806694250334">Төлөвийн мэдээллийн хэсэг, хугацаа <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Шуурхай тохиргоо. Мэдэгдлийн төвд хандахын тулд хайх + зүүн сумыг дарна уу.</translation>
 <translation id="5426063383988017631">Тохиргооны цэсийг хаасан</translation>
 <translation id="5428899915242071344">Сонгож эхлэх</translation>
@@ -1401,7 +1413,6 @@
 <translation id="9168436347345867845">Үүнийг дараа хийх</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />-н 1 илэрцийг үзүүлж байна</translation>
 <translation id="9179259655489829027">Тус онцлог нь танаас нууц үг шаардахгүйгээр таныг түргэн хугацаанд хэрэглэгчид хандах боломжийг олгоно. Энэ онцлогийг зөвхөн итгэдэг бүртгэлд ашиглана уу.</translation>
-<translation id="9180906851711123156">Хаахын тулд Ctrl+W дээр дарна уу</translation>
 <translation id="9183456764293710005">Бүтэн дэлгэц томруулагч</translation>
 <translation id="9193626018745640770">Үл мэдэгдэх хүлээн авагчид дамжуулж байна</translation>
 <translation id="9194617393863864469">Өөр дансаар нэвтрэх...</translation>

@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Источник: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Для устройства отключено определение местоположения. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Закрыть</translation>
 <translation id="1919345977826869612">Реклама</translation>
 <translation id="1919950603503897840">Выбрать контакты</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> из <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2704606927547763573">Скопировано</translation>
+<translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
 <translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="2785051990912111074">Будут удалены файлы cookie для <ph name="WEBSITE" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Запрашивать разрешение на доступ к камере (рекомендуется)</translation>
 <translation id="4505788138578415521">URL развернут</translation>
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
+<translation id="5225463052809312700">Включить камеру</translation>
 <translation id="5264323282659631142">Удалить элемент "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используются # файла cookie}many{Используются # файлов cookie}other{Используется # файла cookie}}</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="848952951823693243">Всегда запрашивать мобильный сайт</translation>
+<translation id="8499083585497694743">Включить микрофон</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>

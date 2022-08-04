@@ -278,7 +278,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2598725286293895280">Applis non compatibles dans le bureau</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
-<translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
+<translation id="2620016719323068571">Rechercher dans vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">"Tout sélectionner"</translation>
@@ -1398,7 +1398,6 @@ Nouvelle installation</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9178475906033259337">1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans avoir à indiquer le mot de passe. N'utilisez cette fonctionnalité que pour les comptes auxquels vous pouvez faire confiance.</translation>
-<translation id="9180906851711123156">Appuyez sur Ctrl+W pour fermer</translation>
 <translation id="9183456764293710005">Loupe plein écran</translation>
 <translation id="9193626018745640770">Destinataire de la diffusion inconnu</translation>
 <translation id="9194617393863864469">Se connecter avec un autre compte utilisateur…</translation>

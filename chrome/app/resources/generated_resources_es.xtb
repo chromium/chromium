@@ -2195,6 +2195,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3021065318976393105">Con batería</translation>
 <translation id="3021066826692793094">Mariposa</translation>
 <translation id="3021678814754966447">&amp;Ver fuente del marco</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> se quitará de este Chromebook y no se guardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">No te he entendido.</translation>
 <translation id="3023464535986383522">Enunciar selección</translation>
 <translation id="3024374909719388945">Usar reloj de 24 horas</translation>
@@ -3732,6 +3733,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4535127706710932914">Perfil predeterminado</translation>
 <translation id="4535767533210902251">El sensor de huellas digitales está en la tecla de arriba a la derecha de tu teclado. Tócalo ligeramente con un dedo.</translation>
 <translation id="4536140153723794651">Sitios que pueden usar cookies siempre</translation>
+<translation id="4536769240747010177">Funciones de conexión compartida:</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
@@ -3759,6 +3761,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4561893854334016293">No se ha cambiado ningún permiso recientemente</translation>
 <translation id="4562155214028662640">Añadir huella digital</translation>
 <translation id="4563210852471260509">El lenguaje de entrada inicial es el chino.</translation>
+<translation id="4563382028841851106">Quitar de la cuenta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4564245002465020751">Termina la configuración en tu teléfono</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -4809,7 +4812,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">No puede conectarse a dispositivos MIDI</translation>
 <translation id="5602765853043467355">Borrar marcadores, historial, contraseñas, etc. de este dispositivo</translation>
-<translation id="5605623530403479164">Otros buscadores</translation>
 <translation id="5605758115928394442">Se ha enviado una notificación a tu teléfono para confirmar que eres tú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensiones están bloqueadas}}</translation>
 <translation id="560834977503641186">Más información sobre Sincronización Wi‑Fi</translation>
@@ -5108,6 +5110,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5909379458939060601">¿Eliminar este perfil y los datos de navegación?</translation>
 <translation id="5910363049092958439">Guar&amp;dar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> no tiene conexión</translation>
+<translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5911533659001334206">Visor de combinaciones de teclas</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
 <ph name="MODULUS_HEX_DUMP" />
@@ -6177,6 +6180,10 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se ha bloqueado la redirección bloqueada en esta página.</translation>
+<translation id="6947015141909171112">Estás viendo recetas basadas en tu reciente actividad de búsqueda de recetas.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes gestionar los ajustes en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950627417367801484">Restaurar aplicaciones</translation>
 <translation id="6952242901357037157">También puedes mostrar contraseñas de tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> aquí</translation>
@@ -6972,6 +6979,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Puedes cambiar esta opción en cualquier momento en Configuración &gt; Asistente de Google &gt; Contexto de la pantalla.</translation>
 <translation id="7737948071472253612">No puede usar tu cámara</translation>
+<translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7741307896921365578">Habilita un panel lateral en el navegador para acceder a tu lista de lectura y a tus marcadores fácilmente siempre que quieras.</translation>
 <translation id="7742558784808143689">¿Borrar datos del sitio y permisos de <ph name="SITE_NAME" />, todos los sitios que incluya y sus aplicaciones instaladas?</translation>
@@ -7762,6 +7770,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8486666913807228950">Motivo: la regla invertida <ph name="REVERT_RULE" /> se ha encontrado en la lista "Forzar apertura".</translation>
 <translation id="848666842773560761">Una aplicación está intentando acceder a la cámara. Desactiva el interruptor de privacidad de la cámara para darle acceso.</translation>
 <translation id="8487678622945914333">Acercar</translation>
+<translation id="8487699605742506766">Compartir Internet</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Las siguientes aplicaciones de kiosco (<ph name="UPDATED_APPS" />) se han actualizado. Reinicia el dispositivo para completar el proceso de actualización.</translation>
 <translation id="8492685019009920170">Toca el sensor de huellas digitales con el dedo. Tus datos se almacenan de forma segura y nunca abandonan tu <ph name="DEVICE_TYPE" />.</translation>
@@ -8255,6 +8264,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="8977811652087512276">La contraseña es incorrecta o el archivo está dañado</translation>
 <translation id="8978154919215542464">Activada: sincronizar todo</translation>
+<translation id="8978670037548431647">Actualizar funciones de conexión compartida</translation>
 <translation id="897939795688207351">En <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Informes de comentarios</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: ha fallado</translation>
@@ -8519,6 +8529,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="935854577147268200">El teléfono de Smart Lock ha cambiado. Introduce tu contraseña para actualizar Smart Lock. La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
+<translation id="937053962468712792">¿Quitar <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938568644810664664">Prueba a decir "Hey Google, ¿qué canción es esta?" o "Hey Google, ¿qué aparece en la pantalla?"</translation>
 <translation id="938623846785894166">Archivo poco común</translation>

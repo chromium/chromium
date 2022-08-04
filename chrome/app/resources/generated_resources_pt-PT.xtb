@@ -4824,7 +4824,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Sem autorização para estabelecer ligação a dispositivos MIDI</translation>
 <translation id="5602765853043467355">Limpar os marcadores, o histórico, as palavras-passe e mais dados deste dispositivo</translation>
-<translation id="5605623530403479164">Outros motores de pesquisa</translation>
 <translation id="5605758115928394442">Foi enviada uma notificação para o seu telemóvel para confirmar a sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensão está bloqueada}other{Estas extensões estão bloqueadas}}</translation>
 <translation id="560834977503641186">Sync Wi-Fi, saiba mais</translation>
@@ -5126,6 +5125,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5909379458939060601">Eliminar este perfil e os dados de navegação?</translation>
 <translation id="5910363049092958439">Guard&amp;ar Imagem Como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está offline.</translation>
+<translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5911533659001334206">Visualizador de atalhos</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
@@ -8443,7 +8443,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9115675100829699941">&amp;Marcadores</translation>
 <translation id="9116465289595958864">Última modificação</translation>
 <translation id="9116799625073598554">Aplicação para tirar notas</translation>
-<translation id="9117030152748022724">Efetue a gestão das suas aplicações</translation>
+<translation id="9117030152748022724">Gerir as suas apps</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para obter a melhor experiência, instale o <ph name="DEVICE_OS" /> no seu disco interno. Também pode instalá-lo mais tarde a partir do ecrã de início de sessão.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se não tiver tudo pronto para instalar, pode executar a partir de uma unidade USB para o experimentar. Deste modo, mantém o seu SO e dados existentes, mas pode verificar limites ao nível do armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como separador fixo</translation>

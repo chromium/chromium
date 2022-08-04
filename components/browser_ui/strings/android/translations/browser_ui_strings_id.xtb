@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Dari <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Akhiri</translation>
 <translation id="1919345977826869612">Iklan</translation>
 <translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
+<translation id="2713106313042589954">Nonaktifkan kamera</translation>
 <translation id="2717722538473713889">Alamat email</translation>
 <translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
 <translation id="2785051990912111074">Pilihan ini akan menghapus cookie untuk <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
 <translation id="4570913071927164677">Detail</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
+<translation id="5225463052809312700">Aktifkan kamera</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Blokir login pihak ketiga untuk situs tertentu.</translation>
 <translation id="6388207532828177975">Hapus &amp; reset</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokir situs agar tidak menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Bagikan</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie sedang digunakan}other{# cookie sedang digunakan}}</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="848952951823693243">Selalu minta situs seluler</translation>
+<translation id="8499083585497694743">Aktifkan mikrofon</translation>
 <translation id="851751545965956758">Blokir situs agar tidak terhubung ke perangkat</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>

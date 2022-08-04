@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> браузеріне AR режимін пайдалануға рұқсат ету үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> камераны да қосыңыз.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
 <translation id="1887786770086287077">Бұл құрылғыда орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
+<translation id="1915307458270490472">Жабу</translation>
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919950603503897840">Контактілерді таңдау</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2687403674020088961">Барлық cookie файлын бөгеу (ұсынылмайды)</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
+<translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2717722538473713889">электрондық пошта мекенжайлары</translation>
 <translation id="2750481671343847896">Сайттар идентификация қызметтері жіберген аккаунтқа кіру хабарларын көрсетуі мүмкін.</translation>
 <translation id="2785051990912111074"><ph name="WEBSITE" /> веб-сайтының cookie файлдары жойылады.</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Сайттар камераңызды пайдалану үшін рұқсат сұрайды (ұсынылады)</translation>
 <translation id="4505788138578415521">URL жайылды</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> браузері микрофонды пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
+<translation id="4566417217121906555">Микрофон дыбысын өшіру</translation>
 <translation id="4570913071927164677">Мәліметтер</translation>
 <translation id="4645575059429386691">Ата-ана басқарады</translation>
 <translation id="4670064810192446073">Виртуалдық шындық</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Опциялар экранның жоғарғы жағында тұрады</translation>
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
+<translation id="5225463052809312700">Камераны қосу</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" өшіру</translation>
 <translation id="528192093759286357">Толық экраннан шығу үшін үстіңгі жақтан сүйреп, "Артқа" түймесін түртіңіз.</translation>
 <translation id="5300589172476337783">Көрсету</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie файлы қолданылып жатыр}other{# cookie файлы қолданылып жатыр}}</translation>
 <translation id="8487700953926739672">Желіден тыс істейді</translation>
 <translation id="848952951823693243">Әрдайым сайттың мобильдік нұсқасын сұрау</translation>
+<translation id="8499083585497694743">Микрофон дыбысын қосу</translation>
 <translation id="851751545965956758">Сайттардың құрылғыға жалғануына тыйым салу</translation>
 <translation id="8525306231823319788">Толық экран</translation>
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>

@@ -4831,7 +4831,6 @@
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5601823921345337195">Заборонено підключатися до пристроїв MIDI</translation>
 <translation id="5602765853043467355">Видалити закладки, історію, паролі тощо з цього пристрою</translation>
-<translation id="5605623530403479164">Інші пошукові системи</translation>
 <translation id="5605758115928394442">Ми надіслали сповіщення на ваш телефон, щоб підтвердити вашу особу.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Це розширення заблоковано}one{Ці розширення заблоковано}few{Ці розширення заблоковано}many{Ці розширення заблоковано}other{Ці розширення заблоковано}}</translation>
 <translation id="560834977503641186">Докладніше про синхронізацію Wi-Fi</translation>
@@ -5128,6 +5127,7 @@
 <translation id="5909379458939060601">Видалити цей профіль і дані веб-перегляду?</translation>
 <translation id="5910363049092958439">Збер&amp;егти зображення як...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> у режимі офлайн</translation>
+<translation id="5911030830365207728">Google Перекладач</translation>
 <translation id="5911533659001334206">Засіб перегляду комбінацій клавіш</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> біт.):
   <ph name="MODULUS_HEX_DUMP" />

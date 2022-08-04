@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactivar manualmente</translation>
+<translation id="248546197012830854">O dispositivo non ten conexión. Conéctao á rede wifi para ver o contido de axuda.</translation>
 <translation id="2491955442992294626">As teclas non se someten a probas se estás usando outra ventá</translation>
 <translation id="2493126929778606526">As túas mellores fotos, seleccionadas automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6611280807952151149">Saír da reparación do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
+<translation id="6624819909909965616">Non se poden subir ficheiros cun tamaño superior a 10 MB</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6644568396961840069">Non se puido gardar o ficheiro. Proba a enchufar outro dispositivo de almacenamento externo ou téntao de novo máis tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
@@ -696,6 +698,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6995564396478647735">Asegúrate de que a protección contra a escritura estea activada</translation>
+<translation id="7005833343836210400">O dispositivo non ten conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">O dispositivo non está conectado.</translation>
@@ -809,6 +812,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
+<translation id="8094062939584182041">Permitir que Google che envíe correos electrónicos sobre este tema</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
 <translation id="8109786307828817014">Queres continuar a pesar dos erros de calibración?</translation>
 <translation id="811820734797650957">(Android) pódeselle facer ping á pasarela</translation>

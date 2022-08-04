@@ -4690,7 +4690,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5470735824776589490">Prije vraćanja na zadane vrijednosti pomoću Powerwasha potrebno je ponovo pokrenuti uređaj. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Zdravo! Ja sam vaš glas za pretvaranje teksta u govor.</translation>
 <translation id="5472627187093107397">Sačuvaj lozinke za ovu web lokaciju</translation>
-<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome web-trgovini</translation>
+<translation id="5473062644742711742">Pronađite više alata za pristupačnost u Chrome Web trgovini</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Ako nastavite, slažete se da ovaj uređaj može također automatski preuzimati i instalirati ažuriranja i aplikacije od Googlea, mobilnog operatera vašeg djeteta i proizvođača ovog uređaja, uz mogući prijenos podataka na mobilnoj mreži. Moguće je da neke od tih aplikacija nude kupovinu unutar aplikacija.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora sadržavati najmanje jedan znak.}one{PIN mora sadržavati najmanje # znak.}few{PIN mora sadržavati najmanje # znaka.}other{PIN mora sadržavati najmanje # znakova.}}</translation>
@@ -4838,7 +4838,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nije dozvoljeno povezivanje na MIDI uređaje</translation>
 <translation id="5602765853043467355">Obriši oznake, historiju, lozinke i drugo s ovog uređaja</translation>
-<translation id="5605623530403479164">Ostali pretraživači</translation>
 <translation id="5605758115928394442">Na vaš telefon je poslano obavještenje da potvrdimo vaš identitet.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija je blokirana}one{Ove ekstenzije su blokirane}few{Ove ekstenzije su blokirane}other{Ove ekstenzije su blokirane}}</translation>
 <translation id="560834977503641186">WiFi sinhronizacija, saznajte više</translation>
@@ -5139,6 +5138,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5909379458939060601">Izbrisati ovaj profil i podatke o pregledanju?</translation>
 <translation id="5910363049092958439">Sa&amp;čuvaj sliku kao…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> je van mreže</translation>
+<translation id="5911030830365207728">Google Prevodilac</translation>
 <translation id="5911533659001334206">Pregled prečaca</translation>
 <translation id="5914724413750400082">Moduli (<ph name="MODULUS_NUM_BITS" /> bitova):
   <ph name="MODULUS_HEX_DUMP" />

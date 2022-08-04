@@ -759,6 +759,16 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5393156353051693207">Maintenez le doigt n'importe où pour réorganiser vos applications</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> par-dessus <ph name="IN_PLACE_APP" />, puis relâchez-la pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut examiner les actions effectuées par cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
+<translation id="5399673806694250334">Barre d'état, heure <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Paramètres rapides, appuyez sur la touche de recherche et la flèche de gauche pour accéder au centre de notifications.</translation>
 <translation id="5426063383988017631">Menu Paramètres fermé</translation>
 <translation id="5428899915242071344">Commencer la sélection</translation>
@@ -1399,7 +1409,6 @@ Nouvelle installation</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9178475906033259337">Affichage de 1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans mot de passe. N'utilisez cette fonctionnalité que lorsqu'il s'agit de comptes fiables.</translation>
-<translation id="9180906851711123156">Appuyez sur Ctrl+W pour fermer</translation>
 <translation id="9183456764293710005">Loupe en mode plein écran</translation>
 <translation id="9193626018745640770">Diffusion sur un récepteur inconnu en cours…</translation>
 <translation id="9194617393863864469">Ouvrir une session avec un autre compte d'utilisateur...</translation>

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tyyppi</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="2480034874476596812">Laita pois päältä manuaalisesti</translation>
+<translation id="248546197012830854">Laite on offline-tilassa. Muodosta yhteys Wi-Fi-verkkoon, niin näet ohjesisältöä.</translation>
 <translation id="2491955442992294626">Näppäimiä ei testata, kun käytät toista ikkunaa</translation>
 <translation id="2493126929778606526">Parhaat kuvasi, valittu automaattisesti</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6611280807952151149">Poistu <ph name="DEVICE_TYPE" />-korjauksesta</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
+<translation id="6624819909909965616">Ladattavan tiedoston koko voi olla enintään 10 Mt.</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6644568396961840069">Tiedostoa ei voitu tallentaa. Yritä liittää toinen ulkoinen tallennustila tai yritä myöhemmin uudelleen.</translation>
 <translation id="6647510110698214773">Salausalgoritmi</translation>
@@ -696,6 +698,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
 <translation id="6995564396478647735">Varmista, että Write Protect on päällä.</translation>
+<translation id="7005833343836210400">Laite on offline-tilassa</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
 <translation id="7041549558901442110">Laitetta ei ole yhdistetty.</translation>
@@ -809,6 +812,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8075838845814659848">Virtaa jäljellä</translation>
 <translation id="8082366717211101304">DNS:n selvitys ei onnistu Android-sovelluksilla</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
+<translation id="8094062939584182041">Salli Googlen lähettää sinulle sähköpostia tästä ongelmasta</translation>
 <translation id="8104083085214006426">Käytät avointa ja suojaamatonta verkkoa</translation>
 <translation id="8109786307828817014">Jatketaanko epäonnistuneella kalibroinnilla?</translation>
 <translation id="811820734797650957">(Android) Yhdyskäytävää voidaan pingata</translation>

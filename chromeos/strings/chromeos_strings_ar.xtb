@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="2480034874476596812">الإيقاف يدويًا</translation>
+<translation id="248546197012830854">‏الجهاز غير متصل بالإنترنت. عليك الاتصال بشبكة Wi-Fi للاطّلاع على محتوى المساعدة.</translation>
 <translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى.</translation>
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">إغلاق صفحة إصلاح <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">قيد التشغيل</translation>
 <translation id="6620487321149975369">ستظهر طلبات الطباعة في السجلّ إلّا إذا تمت إزالتها يدويًا.</translation>
+<translation id="6624819909909965616">لا يمكن تحميل ملف أكبر من 10 ميغابايت.</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6644568396961840069">تعذَّر حفظ الملف. يُرجى محاولة توصيل وحدة تخزين خارجية مختلفة أو إعادة المحاولة لاحقًا.</translation>
 <translation id="6647510110698214773">خوارزمية التشفير</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
 <translation id="6995564396478647735">التأكد من تفعيل ميزة "وضع القراءة فقط"</translation>
+<translation id="7005833343836210400">الجهاز غير متصل بالإنترنت.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
 <translation id="7041549558901442110">الجهاز غير متصل.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
+<translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
 <translation id="8109786307828817014">هل تريد المتابعة رغم تعذّر معايرة المكوّنات؟</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>

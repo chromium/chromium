@@ -7,6 +7,7 @@
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
 <translation id="1276998909102132017">Gallery images</translation>
 <translation id="1300209025925956156">Scan your document</translation>
+<translation id="1309250603447638106">Downloading updates for document scanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
 <translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Print</translation>
@@ -47,6 +48,7 @@
 <translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Mirror preview</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
+<translation id="2904654629665923749">Document scan available</translation>
 <translation id="2968794441791257519">Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
 
         Apps with storage permissions will have access to your photos and videos.</translation>

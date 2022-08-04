@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید از AR استفاده کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="1864927262126810325">از <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">‏دسترسی به مکان برای این دستگاه خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
+<translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1919345977826869612">آگهی‌ها</translation>
 <translation id="1919950603503897840">انتخاب مخاطبین</translation>
 <translation id="1923695749281512248">‎<ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" />‎</translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2687403674020088961">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
 <translation id="2704606927547763573">کپی شد</translation>
+<translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2717722538473713889">آدرس‌های ایمیل</translation>
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
 <translation id="2785051990912111074">این گزینه کوکی‌ها را برای <ph name="WEBSITE" /> پاک خواهد کرد</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">قبل از اجازه به سایت‌ها برای استفاده از دوربین، ابتدا سؤال شود (توصیه می‌شود)</translation>
 <translation id="4505788138578415521">نشانی وب گسترده شد</translation>
 <translation id="4534723447064627427">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به میکروفون دسترسی پیدا کند، میکروفون را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="4566417217121906555">بی‌صدا کردن میکروفون</translation>
 <translation id="4570913071927164677">جزئیات</translation>
 <translation id="4645575059429386691">مدیریت شده توسط والدین شما</translation>
 <translation id="4670064810192446073">واقعیت مجازی</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">گزینه مربوطه در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
+<translation id="5225463052809312700">روشن کردن دوربین</translation>
 <translation id="5264323282659631142">برداشتن «<ph name="CHIP_LABEL" />»</translation>
 <translation id="528192093759286357">برای خروج از حالت تمام صفحه، از بالا صفحه را بکشید و دکمه برگشت را لمس کنید.</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{۱ کوکی درحال استفاده است}one{# کوکی درحال استفاده است}other{# کوکی درحال استفاده است}}</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="848952951823693243">همیشه سایت ویژه تلفن همراه درخواست شود</translation>
+<translation id="8499083585497694743">باصدا کردن میکروفون</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="857943718398505171">مجاز (توصیه می‌شود)</translation>

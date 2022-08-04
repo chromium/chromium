@@ -4809,7 +4809,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI құрылғыларына қосылуға рұқсаты жоқтар</translation>
 <translation id="5602765853043467355">Осы құрылғыдан алынған бетбелгілерді, тарихты, құпия сөздерді, т.б. өшіру</translation>
-<translation id="5605623530403479164">Басқа іздеу жүйелері</translation>
 <translation id="5605758115928394442">Жеке басыңызды растау үшін телефоныңызға хабарландыру жіберілді.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім бөгелді}other{Бұл кеңейтімдер бөгелді}}</translation>
 <translation id="560834977503641186">Wi-Fi деректерін синхрондау, толығырақ</translation>
@@ -5106,6 +5105,7 @@
 <translation id="5909379458939060601">Осы профиль және браузерді пайдалану деректері жойылсын ба?</translation>
 <translation id="5910363049092958439">Кескінді басқаша са&amp;қтау…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн режимде.</translation>
+<translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">Жылдам пернелерді көру құралы</translation>
 <translation id="5914724413750400082">Модуль (<ph name="MODULUS_NUM_BITS" /> бит):
   <ph name="MODULUS_HEX_DUMP" />

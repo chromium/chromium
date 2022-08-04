@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Ukuze uvumele i-<ph name="APP_NAME" /> isebenzise i-AR, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Kusuka ku-<ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Ukufinyelela kwendawo kuvalelwe le divayisi. Kuvule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Vala ikholi</translation>
 <translation id="1919345977826869612">Izikhangiso</translation>
 <translation id="1919950603503897840">Khetha oxhumana nabo</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Hamba</translation>
 <translation id="2687403674020088961">Vimbela wonke amakhukhi (akunconywa)</translation>
 <translation id="2704606927547763573">Kukopishiwe</translation>
+<translation id="2713106313042589954">Vala ikhamera</translation>
 <translation id="2717722538473713889">Amakheli we-imeyili</translation>
 <translation id="2750481671343847896">Amasayithi angabonisa imiyalo yokungena ngemvume kusukela kumasevisi kamazisi.</translation>
 <translation id="2785051990912111074">Le nketho izusula amakhukhi we-<ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Buza kuqala ngaphambi kokuvumela amasayithi ukuthi asebenzise ikhamera yakho (kunconyiwe)</translation>
 <translation id="4505788138578415521">I-URL inwetshiwe</translation>
 <translation id="4534723447064627427">Ukuze uvumele i-<ph name="APP_NAME" /> ifinyelele imakrofoni yakho, vula nemakrofoni <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Thulisa imakrofoni</translation>
 <translation id="4570913071927164677">Imininingwane</translation>
 <translation id="4645575059429386691">Kuphethwe umzali wakho</translation>
 <translation id="4670064810192446073">Into engekho ngokoqobo</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Inketho iyatholakala eduze kwaphezulu kwesikrini</translation>
 <translation id="5197729504361054390">Oxhumana nabo obakhethayo bazokwabiwa no-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Kugcine ukuvakashelwa namuhla</translation>
+<translation id="5225463052809312700">Vula ikhamera</translation>
 <translation id="5264323282659631142">Susa i-'<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Hudula kusukela phezulu uphinde uthinte inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
 <translation id="5300589172476337783">Bonisa</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Vimba ukungena ngemvume kwenkampani engahlangene ngqo kusayithi elithile.</translation>
 <translation id="6388207532828177975">Sula futhi usethe kabusha</translation>
 <translation id="6398765197997659313">Phuma kusikrini esigcwele</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Vimbela amasayithi ukuthi angasebenzisi idivayisi yakho yento engekho ngokoqobo nedatha</translation>
 <translation id="6447842834002726250">Amakhukhi</translation>
 <translation id="6527303717912515753">Yabelana</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Ikhukhi e-1 iyasebenza}one{Amakhukhi angu-# asebenzayo}other{Amakhukhi angu-# asebenzayo}}</translation>
 <translation id="8487700953926739672">Itholakala kokungaxhunyiwe ku-inthanethi</translation>
 <translation id="848952951823693243">Njalo cela isayithi leselula</translation>
+<translation id="8499083585497694743">Vula imakrofoni</translation>
 <translation id="851751545965956758">Vimbela amasayithi kusukela ekuxhumekeni kumadivayisi</translation>
 <translation id="8525306231823319788">Isikrini esigcwele</translation>
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>

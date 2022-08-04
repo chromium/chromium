@@ -759,6 +759,16 @@ Koble enheten til strøm.</translation>
 <translation id="5393156353051693207">Trykk og hold hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oppå <ph name="IN_PLACE_APP" /> – slipp for å opprette en mappe.</translation>
 <translation id="5397578532367286026">Bruken og loggen for denne brukeren kan gjennomgås av administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com</translation>
+<translation id="5399673806694250334">Statusfelt, kl. <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Hurtiginnstillinger – trykk på søk + venstre for å åpne varselsenteret.</translation>
 <translation id="5426063383988017631">Innstillinger-menyen er lukket</translation>
 <translation id="5428899915242071344">Begynn å merke</translation>
@@ -897,6 +907,7 @@ Koble enheten til strøm.</translation>
 <translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Lad helt nå</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
@@ -1398,7 +1409,6 @@ Nylig installert</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9178475906033259337">Viser 1 resultat for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med denne funksjonen får du rask tilgang til påloggede brukere uten å måtte skrive inn passord. Du bør bare bruke denne funksjonen med kontoer du stoler på.</translation>
-<translation id="9180906851711123156">Trykk på Ctrl + W for å lukke</translation>
 <translation id="9183456764293710005">Lupe for hele skjermen</translation>
 <translation id="9193626018745640770">Caster på en ukjent mottaker</translation>
 <translation id="9194617393863864469">Logg på en annen bruker</translation>

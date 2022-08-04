@@ -1072,6 +1072,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3835233591525155343">Įrenginio naudojimas</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite greitai sukurti naują „Google“ dokumentą</translation>
 <translation id="385051799172605136">Atgal</translation>
+<translation id="3853684360927654006">Slaptažodžio patikimumo skaičiuotuvas</translation>
 <translation id="3858027520442213535">Atnaujinti datą ir laiką</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3872834068356954457">Mokslas</translation>
@@ -1682,6 +1683,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5518670652865028077">Menas ir pramogos</translation>
 <translation id="5519516356611866228">Su jūsų pakeitimais</translation>
 <translation id="5523118979700054094">Politikos pavadinimas</translation>
+<translation id="5525755241743357906">Failas nukopijuotas arba perkeltas</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada „Enter“, jei norite suasmeninti pritaikomumo įrankius „Chrome“ OS nustatymuose</translation>
 <translation id="5528532273234423708">Namų įrenginių automatizavimas</translation>
 <translation id="55293785478302737">Kraštų sukabinimas</translation>
@@ -2935,6 +2937,7 @@ Papildoma išsami informacija:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, kad nustatytumėte „Chrome“ kaip numatytąją sistemos naršyklę „iOS“ nustatymuose</translation>
 <translation id="9096679202588811390">TV laidos ir programos</translation>
 <translation id="9101630580131696064">1 dėklas</translation>
+<translation id="9102081333385212048">Failai, kuriuos nukopijuojate ar perkeliate, siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, failai gali būti nuskaityti, ar juose nėra neskelbtinų duomenų ar kenkėjiškų programų.</translation>
 <translation id="9103537084693478942">Vaizdo įrašų programinė įranga</translation>
 <translation id="9103872766612412690">Svetainėje <ph name="SITE" /> įprastai naudojama šifruotė informacijai apsaugoti. Šį kartą „Chromium“ bandant prisijungti prie <ph name="SITE" />, ji pateikė neįprastus ir netinkamus prisijungimo duomenis. Gali būti, kad užpuolėjas bando apsimesti svetaine <ph name="SITE" /> arba „Wi-Fi“ prisijungimo ekrane nutrūko ryšys. Jūsų informacija vis tiek liko apsaugota, nes „Chromium“ sustabdė prisijungimą prieš apsikeitimą bet kokiais duomenimis.</translation>
 <translation id="9106062320799175032">Atsiskaitymo adreso pridėjimas</translation>

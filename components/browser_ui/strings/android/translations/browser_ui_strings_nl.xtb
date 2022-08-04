@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Van <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Ophangen</translation>
 <translation id="1919345977826869612">Advertenties</translation>
 <translation id="1919950603503897840">Contacten selecteren</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
+<translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2785051990912111074">Met deze keuze wis je de cookies voor <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4505788138578415521">URL uitgevouwen</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laatst bezocht: vandaag</translation>
+<translation id="5225463052809312700">Camera aanzetten</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' verwijderen</translation>
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
 <translation id="6388207532828177975">Wissen en opnieuw instellen</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Delen</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in gebruik}other{# cookies in gebruik}}</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="848952951823693243">Altijd mobiele site aanvragen</translation>
+<translation id="8499083585497694743">Microfoon aanzetten</translation>
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>

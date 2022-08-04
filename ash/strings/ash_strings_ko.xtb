@@ -897,6 +897,7 @@
 <translation id="619279033188484792">휴대전화의 최근 사진, 미디어, 알림을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="619335566042889110">지금 완전히 충전하기</translation>
 <translation id="6193431488227440296">개발</translation>
+<translation id="6210042900243040400">이전에 <ph name="EMAIL" />에 저장된 <ph name="NAME" /> 연결</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
@@ -1398,7 +1399,6 @@
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> 검색결과 1개 표시 중</translation>
 <translation id="9179259655489829027">이 기능을 사용하면 로그인한 모든 사용자에게 비밀번호 없이 액세스할 수 있습니다. 이 기능은 신뢰할 수 있는 계정에만 사용하시기 바랍니다.</translation>
-<translation id="9180906851711123156">닫으려면 Ctrl + W를 누릅니다</translation>
 <translation id="9183456764293710005">전체 화면 돋보기</translation>
 <translation id="9193626018745640770">알 수 없는 수신기에 전송 중</translation>
 <translation id="9194617393863864469">다른 사용자 추가...</translation>

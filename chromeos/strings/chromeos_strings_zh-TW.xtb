@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2480034874476596812">手動關閉</translation>
+<translation id="248546197012830854">裝置處於離線狀態。連線至 Wi-Fi 網路即可查看說明內容。</translation>
 <translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動精選最佳相片</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">結束 <ph name="DEVICE_TYPE" /> 維修程序</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6620487321149975369">除非手動移除列印工作，否則這項資料會顯示在歷史記錄中</translation>
+<translation id="6624819909909965616">無法上傳超過 10 MB 的檔案</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6644568396961840069">無法儲存檔案，請接上其他外部儲存裝置，或稍後再試。</translation>
 <translation id="6647510110698214773">加密演算法</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6977381486153291903">韌體版本</translation>
 <translation id="6995564396478647735">確認已開啟寫入保護功能</translation>
+<translation id="7005833343836210400">裝置處於離線狀態</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 管理這個裝置，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
 <translation id="7040230719604914234">電信業者</translation>
 <translation id="7041549558901442110">未連接裝置。</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="808894953321890993">變更密碼</translation>
+<translation id="8094062939584182041">允許 Google 透過電子郵件通知你這個問題的相關資訊</translation>
 <translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
 <translation id="8109786307828817014">要繼續使用無法校正的元件執行作業嗎？</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>

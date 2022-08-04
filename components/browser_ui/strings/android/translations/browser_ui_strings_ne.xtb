@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> बाट प्राप्त जानकारी</translation>
 <translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
+<translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
 <translation id="1919950603503897840">सम्पर्कहरू चयन गर्नुहोस्</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
+<translation id="2713106313042589954">क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
 <translation id="2750481671343847896">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन गर्ने प्रम्प्टहरू देखाउन सक्छन्।</translation>
 <translation id="2785051990912111074">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> का कुकीहरू मेटाइने छन्</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">साइटहरूलाई तपाईँको क्यामेरा प्रयोग गर्न अनुमति दिनुभन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
 <translation id="4505788138578415521">URL विस्तृत गरियो</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> लाई आफ्नो माइक्रोफोन प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई माइक्रोफोन पनि अन गर्नुहोस्।</translation>
+<translation id="4566417217121906555">माइक्रोफोन म्युट गर्नुहोस्</translation>
 <translation id="4570913071927164677">विवरणहरू</translation>
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">यो विकल्प स्क्रिनको सिरान छेउमा उपलब्ध छ</translation>
 <translation id="5197729504361054390">तपाईंले चयन गर्ने सम्पर्कहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> सँग आदान प्रदान गरिने छन्।</translation>
 <translation id="5216942107514965959">पछिल्लो पटक आज खोलिएको</translation>
+<translation id="5225463052809312700">क्यामेरा अन गर्नुहोस्</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' हटाउनुहोस्</translation>
 <translation id="528192093759286357">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि शीर्षबाट तानेर पछाडि बटनलाई छुनुहोस्।</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">निश्चित साइटमा तेस्रो पक्षको खातामार्फत साइन इन गर्न रोक लगाउनुहोस्।</translation>
 <translation id="6388207532828177975">खाली गरेर रिसेट गर्नुहोस्</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एउटा कुकी प्रयोग भइरहेको छ}other{# वटा कुकी प्रयोग भइरहेका छन्}}</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
 <translation id="848952951823693243">सधैँ साइटको मोबाइल भ्यू देखाइयोस्</translation>
+<translation id="8499083585497694743">माइक्रोफोन अनम्युट गर्नुहोस्</translation>
 <translation id="851751545965956758">साइटहरूलाई यन्त्रमा जडान गर्नबाट रोक लगाउनुहोस्</translation>
 <translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
 <translation id="857943718398505171">(सिफारिस गरिएको) अनुमति दिएको</translation>

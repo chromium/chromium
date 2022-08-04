@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919950603503897840">Selectează persoane de contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2687403674020088961">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="2704606927547763573">Copiat</translation>
+<translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2717722538473713889">Adrese de e-mail</translation>
 <translation id="2750481671343847896">Site-urile pot afișa solicitări de conectare de la servicii de identitate.</translation>
 <translation id="2785051990912111074">Astfel, se vor șterge cookie-urile pentru <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Întreabă înainte de a permite site-urilor să folosească camera foto (recomandat)</translation>
 <translation id="4505788138578415521">Adresă URL extinsă</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
+<translation id="5225463052809312700">Activează camera foto</translation>
 <translation id="5264323282659631142">Elimină „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Blochează conectarea terță parte pentru un anumit site.</translation>
 <translation id="6388207532828177975">Șterge și resetează</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6527303717912515753">Trimite</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Un cookie folosit}few{# cookie-uri folosite}other{# de cookie-uri folosite}}</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="848952951823693243">Solicită întotdeauna site-ul mobil</translation>
+<translation id="8499083585497694743">Activează sunetul microfonului</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="857943718398505171">Acordată (recomandat)</translation>

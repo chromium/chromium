@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2461822463642141190">Rryma</translation>
 <translation id="2480034874476596812">Çaktivizo manualisht</translation>
+<translation id="248546197012830854">Pajisja është jashtë linje. Lidhu me rrjetin Wi-Fi për të parë përmbajtjen ndihmëse.</translation>
 <translation id="2491955442992294626">Çelësat nuk testohen kur ti je duke përdorur një dritare tjetër</translation>
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -660,6 +661,7 @@
 <translation id="6611280807952151149">Dil nga riparimi i pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
+<translation id="6624819909909965616">Nuk mund të ngarkohen skedarë më të mëdhenj se 10 MB</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6644568396961840069">Skedari nuk mund të ruhej. Provo të lidhësh një tjetër hapësirë ruajtëse të jashtme ose provo përsëri më vonë.</translation>
 <translation id="6647510110698214773">Algoritmi i enkriptimit</translation>
@@ -695,6 +697,7 @@
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6995564396478647735">Sigurohu që "Mbrojtja nga shkrimi" është aktive</translation>
+<translation id="7005833343836210400">Pajisja është jashtë linje</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>
@@ -808,6 +811,7 @@
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
+<translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
 <translation id="8109786307828817014">Të vazhdohet me kalibrimet e dështuara?</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>

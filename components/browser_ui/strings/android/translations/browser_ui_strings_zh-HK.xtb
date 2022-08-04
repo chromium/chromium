@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="1864927262126810325">來自「<ph name="SOURCE_NAME" />」</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
+<translation id="1915307458270490472">結束通話</translation>
 <translation id="1919345977826869612">廣告</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2704606927547763573">已複製</translation>
+<translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2717722538473713889">電郵地址</translation>
 <translation id="2750481671343847896">網站可顯示來自身分服務的登入提示。</translation>
 <translation id="2785051990912111074">此選項將會清除 <ph name="WEBSITE" /> 的 Cookie</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">允許網站使用相機前先詢問您 (建議)</translation>
 <translation id="4505788138578415521">展開咗網址</translation>
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
+<translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
+<translation id="5225463052809312700">開啟攝錄機</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
 <translation id="6388207532828177975">清除並重設</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止網站使用您的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 個 Cookie 正在使用中}other{# 個 Cookie 正在使用中}}</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求流動網站</translation>
+<translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="857943718398505171">允許 (建議)</translation>

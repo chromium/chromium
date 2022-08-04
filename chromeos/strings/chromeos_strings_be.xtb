@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Тып</translation>
 <translation id="2461822463642141190">Цяпер</translation>
 <translation id="2480034874476596812">Выключыць уручную</translation>
+<translation id="248546197012830854">Прылада па-за сеткай. Каб праглядзець даведачнае змесціва, падключыцеся да сеткі Wi-Fi.</translation>
 <translation id="2491955442992294626">Клавішы не правяраюцца, калі вы выкарыстоўваеце іншае акно</translation>
 <translation id="2493126929778606526">Найлепшыя фота, выбраныя аўтаматычна</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />: скасаваць рамонт прылады</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
+<translation id="6624819909909965616">Нельга запампаваць файл, большы за 10 МБ</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6644568396961840069">Не ўдалося захаваць файл. Паспрабуйце падключыць іншае знешняе сховішча або паўтарыце спробу пазней.</translation>
 <translation id="6647510110698214773">Алгарытм шыфравання</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
 <translation id="6995564396478647735">Упэўніцеся, што абарона ад запісу ўключана</translation>
+<translation id="7005833343836210400">Прылада па-за сеткай</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7041549558901442110">Прылада не падключана.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
+<translation id="8094062939584182041">Дазволіць Google апавяшчаць вас па электроннай пошце пра гэту праблему</translation>
 <translation id="8104083085214006426">Вы карыстаецеся адкрытай небяспечнай сеткай</translation>
 <translation id="8109786307828817014">Працягнуць нягледзячы на збой каліброўкі?</translation>
 <translation id="811820734797650957">(Android) Можна выканаць праверку ping для шлюза</translation>

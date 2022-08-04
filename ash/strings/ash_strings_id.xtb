@@ -533,7 +533,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">jendela</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook, pastikan Bluetooth ponsel Anda aktif</translation>
-<translation id="4125970834901680537">Tidak dapat menstreaming aplikasi dalam mode tablet. Coba lagi dalam mode laptop.</translation>
+<translation id="4125970834901680537">Mode tablet tidak mendukung streaming aplikasi. Coba lagi dengan mode laptop.</translation>
 <translation id="4129129681837227511">Untuk melihat notifikasi di layar kunci, buka kunci untuk mengubah setelan</translation>
 <translation id="4136724716305260864">Aktif sampai matahari terbit</translation>
 <translation id="4146833061457621061">Putar musik</translation>
@@ -897,6 +897,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="619279033188484792">Lihat foto terbaru, media, dan notifikasi dari ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Diisi penuh sekarang</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Hubungkan <ph name="NAME" /> yang sebelumnya disimpan ke <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
@@ -1398,7 +1399,6 @@ Baru diinstal</translation>
 <translation id="9168436347345867845">Nanti saja</translation>
 <translation id="9178475906033259337">Menampilkan 1 hasil untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Dengan fitur ini, Anda dapat dengan cepat mengakses setiap pengguna yang sudah login, tanpa perlu menggunakan sandi. Hanya gunakan fitur ini dengan akun yang Anda percayai.</translation>
-<translation id="9180906851711123156">Tekan Ctrl+W untuk menutup</translation>
 <translation id="9183456764293710005">Kaca Pembesar Layar</translation>
 <translation id="9193626018745640770">Mentransmisi pada penerima yang tidak dikenal</translation>
 <translation id="9194617393863864469">Login pengguna lain...</translation>

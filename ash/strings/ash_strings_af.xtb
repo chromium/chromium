@@ -327,6 +327,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2894949423239620203">Kabel kan werkverrigting beïnvloed</translation>
 <translation id="2903844815300039659">Gekoppel aan <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Skermkiekies</translation>
+<translation id="2925246975070834767">Probeer outozoem sodat jy in die middel van skerm is. Skakel dit aan in Kitsinstellings.</translation>
 <translation id="2941112035454246133">Laag</translation>
 <translation id="2942350706960889382">Gedokte vergrootglas</translation>
 <translation id="2942516765047364088">Rakposisie</translation>
@@ -635,6 +636,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4628757576491864469">Toestelle</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, stergradering <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Verander toestel binne 'n dag na vorige weergawe}other{Verander toestel binne # dae na vorige weergawe}}</translation>
+<translation id="4633636853437260449">Druk Ctrl+W om uit te vee</translation>
 <translation id="4642092649622328492">Neem gedeeltelike skermkiekie</translation>
 <translation id="4644727592819780893">Streek is te klein om kameravoorskou te wys</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, programaanbeveling</translation>
@@ -898,6 +900,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="619279033188484792">Bekyk jou foon se onlangse foto's, media en kennisgewings op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Laai nou ten volle</translation>
 <translation id="6193431488227440296">Ontwikkeling</translation>
+<translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6231419273573514727">Randtoestelwerkverrigting kan beperk wees</translation>
@@ -1399,7 +1402,6 @@ Nuwe installasie</translation>
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9178475906033259337">Wys tans 1 resultaat vir <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met hierdie kenmerk kan jy vinnig toegang tot enige aangemelde gebruiker kry sonder dat 'n wagwoord nodig is. Gebruik hierdie kenmerk net met rekeninge wat jy vertrou.</translation>
-<translation id="9180906851711123156">Druk Ctrl+W om toe te maak</translation>
 <translation id="9183456764293710005">Volskermvergrootglas</translation>
 <translation id="9193626018745640770">Saai tans op 'n onbekende ontvanger uit</translation>
 <translation id="9194617393863864469">Meld 'n ander gebruiker aan …</translation>

@@ -1071,6 +1071,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3835233591525155343">Cihaz kullanımınız</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hızlıca yeni bir Google Dokümanı oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="3853684360927654006">Şifre Gücü Hesaplayıcı</translation>
 <translation id="3858027520442213535">Tarih ve saati güncelle</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3872834068356954457">Bilim</translation>
@@ -1681,6 +1682,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5518670652865028077">Sanat ve eğlence</translation>
 <translation id="5519516356611866228">Yaptığınız değişiklikler dahil</translation>
 <translation id="5523118979700054094">Politika adı</translation>
+<translation id="5525755241743357906">Dosya kopyalandı veya taşındı</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="5528532273234423708">Ev otomasyonu</translation>
 <translation id="55293785478302737">Kenar dikişi</translation>
@@ -2934,6 +2936,7 @@ Ek ayrıntılar:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için sekmeye, ardından Enter'a basın</translation>
 <translation id="9096679202588811390">TV şovları ve programları</translation>
 <translation id="9101630580131696064">Tepsi 1</translation>
+<translation id="9102081333385212048">Kopyaladığınız veya taşıdığınız dosyalar analiz amacıyla Google Cloud'a ya da üçüncü taraflara gönderilir. Dosyalarınızın hassas veriler veya kötü amaçlı yazılım içerip içermediği kontrol edilir.</translation>
 <translation id="9103537084693478942">Video yazılımları</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9106062320799175032">Fatura Adresi Ekleyin</translation>

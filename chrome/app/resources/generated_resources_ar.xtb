@@ -2198,6 +2198,7 @@
 <translation id="3021065318976393105">أثناء التشغيل على البطارية</translation>
 <translation id="3021066826692793094">فراشة</translation>
 <translation id="3021678814754966447">عرض م&amp;صدر الإطار</translation>
+<translation id="3022361196600037287">‏ستتم إزالة <ph name="DEVICE" /> من جهاز Chromebook هذا ولن يتم حفظه في حساب <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">لم يتم استيعاب هذا.</translation>
 <translation id="3023464535986383522">الاستماع والاختيار</translation>
 <translation id="3024374909719388945">استخدام تنسيق 24 ساعة</translation>
@@ -3735,6 +3736,7 @@
 <translation id="4535127706710932914">الملف الشخصي التلقائي</translation>
 <translation id="4535767533210902251">يتوفَّر مستشعر بصمات الإصبع في الزر في أعلى يمين لوحة المفاتيح. يمكنك لمسه برفقٍ بأي إصبع.</translation>
 <translation id="4536140153723794651">المواقع الإلكترونية التي يمكنها استخدام ملفات تعريف الارتباط دائمًا</translation>
+<translation id="4536769240747010177">إمكانيات التوصيل:</translation>
 <translation id="4538417792467843292">حذف كلمة</translation>
 <translation id="4538792345715658285">تمّ التثبيت بموجب سياسة المؤسسة.</translation>
 <translation id="4541123282641193691">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
@@ -3762,6 +3764,7 @@
 <translation id="4561893854334016293">لم يتم تغيير أذونات مؤخرًا.</translation>
 <translation id="4562155214028662640">إضافة بصمة إصبع</translation>
 <translation id="4563210852471260509">لغة الإدخال الأولية هي الصينية</translation>
+<translation id="4563382028841851106">الإزالة من الحساب</translation>
 <translation id="4563880231729913339">إصبع 3</translation>
 <translation id="4564245002465020751">إنهاء عملية الإعداد على هاتفك</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
@@ -4665,6 +4668,7 @@
 <translation id="5470735824776589490">‏يلزم إعادة تشغيل الجهاز حتى يتسنى لك إعادة ضبطه باستخدام Powerwash. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">مرحبًا! هذا صوت ميزة تحويل النص إلى كلام.</translation>
 <translation id="5472627187093107397">حفظ كلمات المرور لهذا الموقع الإلكتروني</translation>
+<translation id="5473062644742711742">‏العثور على المزيد من أدوات تسهيل الاستخدام في "سوق Chrome الإلكتروني"</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">‏تعني المتابعة أنّك تسمح لهذا الجهاز أيضًا بأن ينزِّل التحديثات والتطبيقات ويثبتها تلقائيًا من Google ومشغِّل شبكة جوّال طفلك والشركة المصنِّعة لهذا الجهاز مع احتمالية استخدام بيانات شبكة الجوّال. قد تتيح بعض هذه التطبيقات عمليات شراء داخل التطبيق.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{يجب ألا يقلّ رقم التعريف الشخصي عن حرف واحد.}zero{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}two{يجب ألا يقلّ رقم التعريف الشخصي عن حرفَين.}few{يجب ألا يقلّ رقم التعريف الشخصي عن # أحرف.}many{يجب ألا يقلّ رقم التعريف الشخصي عن # حرفًا.}other{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}}</translation>
@@ -4812,7 +4816,6 @@
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
 <translation id="5601823921345337195">‏المواقع الإلكترونية التي لا يُسمح لها بالاتصال بأجهزة MIDI</translation>
 <translation id="5602765853043467355">محو الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من البيانات على هذا الجهاز</translation>
-<translation id="5605623530403479164">محرّكات البحث الأخرى</translation>
 <translation id="5605758115928394442">تم إرسال إشعار إلى هاتفك لتأكيد هويتك.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{تم حظر هذه الإضافة}zero{تم حظر هذه الإضافات}two{تم حظر هاتين الإضافتين}few{تم حظر هذه الإضافات}many{تم حظر هذه الإضافات}other{تم حظر هذه الإضافات}}</translation>
 <translation id="560834977503641186">مزيد من المعلومات عن ميزة "مزامنة الواي فاي"</translation>
@@ -5111,6 +5114,7 @@
 <translation id="5909379458939060601">هل تريد حذف هذا الملف الشخصي وبيانات التصفّح؟</translation>
 <translation id="5910363049092958439">حفظ ال&amp;صورة باسم...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
+<translation id="5911030830365207728">‏الترجمة من Google</translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6188,6 +6192,10 @@
 <translation id="6943939122536910181">تم قطع الاتصال بجهاز <ph name="DEVICE" />.</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="694592694773692225">تم حظر إعادة التوجيه في هذه الصفحة.</translation>
+<translation id="6947015141909171112">‏تظهر لك وصفات طعام استنادًا إلى آخر عمليات بحث أجريتها عن وصفات الطعام على محرك بحث Google.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        يمكنك إدارة الإعدادات من قائمة البطاقات أو الاطّلاع على المزيد من الخيارات في قسم "تخصيص Chrome".</translation>
 <translation id="6949434160682548041">كلمة المرور (اختياريّة)</translation>
 <translation id="6950627417367801484">استعادة التطبيقات</translation>
 <translation id="6952242901357037157">‏يمكنك أيضًا عرض كلمات المرور من <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /> هنا.</translation>
@@ -6984,6 +6992,7 @@
 <translation id="7737115349420013392">جارٍ الإقران مع "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7737846262459425222">‏يمكنك تغيير هذا الإعداد متى شئت من خلال الانتقال إلى الإعدادات &gt; مساعد Google &gt; سياق الشاشة.</translation>
 <translation id="7737948071472253612">المواقع الإلكترونية التي لا يُسمح لها باستخدام الكاميرا</translation>
+<translation id="77381465218432215">عرض علامات التشكيل والرموز الخاصة</translation>
 <translation id="7740996059027112821">عادي</translation>
 <translation id="7741307896921365578">يتم تفعيل لوحة جانبية على مستوى المتصفِّح للحصول على طريقة مفيدة ودائمة للوصول إلى "قائمة القراءة" و"الإشارات المرجعية".</translation>
 <translation id="7742558784808143689">هل تريد محو البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وأي مواقع إلكترونية ضمن النطاق، والتطبيقات المثبَّتة؟</translation>
@@ -7775,6 +7784,7 @@
 <translation id="8486666913807228950">السبب: تم العثور على القاعدة المعكوسة <ph name="REVERT_RULE" /> في القائمة "فرض الفتح في".</translation>
 <translation id="848666842773560761">هناك تطبيق يحاول الوصول إلى الكاميرا. عليك إيقاف مفتاح خصوصية الكاميرا للسماح بوصول هذا التطبيق إليها.</translation>
 <translation id="8487678622945914333">تكبير</translation>
+<translation id="8487699605742506766">نقطة الاتصال</translation>
 <translation id="8489156414266187072">لا يتم عرض الاقتراحات الشخصية إلّا على حسابك.</translation>
 <translation id="8490896350101740396">‏تم تحديث تطبيقات kiosk التالية "<ph name="UPDATED_APPS" />". يُرجى إعادة تشغيل الجهاز لإكمال عملية الإعادة تحميل.</translation>
 <translation id="8492685019009920170">يُرجى لمس مستشعر بصمات الإصبع بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن وستبقى محفوظة على جهاز <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
@@ -8272,6 +8282,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى}two{"<ph name="TAB_TITLE" />" وعلامتا تبويب أخريان}few{"<ph name="TAB_TITLE" />" و# علامات تبويب أخرى}many{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}other{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}}</translation>
 <translation id="8977811652087512276">كلمة مرور غير صالحة أو ملف تالف</translation>
 <translation id="8978154919215542464">تشغيل - مزامنة كل شيء</translation>
+<translation id="8978670037548431647">إعادة تحميل إمكانيات التوصيل</translation>
 <translation id="897939795688207351">على <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">تقارير التعليقات</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - تعطُّل</translation>
@@ -8536,6 +8547,7 @@
 <translation id="935854577147268200">‏تم تعديل إعدادات Smart Lock على هاتفك. يمكنك إدخال كلمة مرورك لتحديث هذه الإعدادات. وفي المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" />. ويمكنك إيقاف Smart Lock في "الإعدادات".</translation>
 <translation id="936646668635477464">الكاميرا والميكروفون</translation>
 <translation id="936801553271523408">بيانات تشخيص النظام</translation>
+<translation id="937053962468712792">هل تريد إزالة <ph name="DEVICE" /> من حساب <ph name="PRIMARY_EMAIL" />؟</translation>
 <translation id="93766956588638423">إصلاح الإضافة</translation>
 <translation id="938568644810664664">‏جرِّب قول "Ok Google، ما هذه الأغنية؟" أو "Ok Google، ما الذي تعرضه شاشتي؟"</translation>
 <translation id="938623846785894166">هذا الملف غير شائع.</translation>

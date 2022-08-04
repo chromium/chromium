@@ -892,6 +892,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="1829192082282182671">Alejar</translation>
 <translation id="1830550083491357902">No has accedido.</translation>
+<translation id="1831848493690504725">No podemos comunicarnos con Google a través de la red conectada. Prueba elegir otra red o revisa tu configuración de red o proxy (si usas un proxy).</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
@@ -2190,6 +2191,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3021065318976393105">Mientras se usa la batería</translation>
 <translation id="3021066826692793094">Mariposa</translation>
 <translation id="3021678814754966447">&amp;Ver fuente del marco</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> se quitará de esta Chromebook y no se guardará en <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">No entendí.</translation>
 <translation id="3023464535986383522">Seleccionar para pronunciar</translation>
 <translation id="3024374909719388945">Utilizar reloj de 24 horas</translation>
@@ -3728,6 +3730,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4535127706710932914">Perfil predeterminado</translation>
 <translation id="4535767533210902251">El sensor de huellas dactilares es la opción de la parte superior derecha del teclado. Tócalo suavemente con un dedo.</translation>
 <translation id="4536140153723794651">Sitios que siempre pueden usar cookies</translation>
+<translation id="4536769240747010177">Funciones de conexión mediante dispositivo móvil:</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4541123282641193691">No se pudo verificar la cuenta. Vuelve a intentarlo o reinicia la Chromebook.</translation>
@@ -3755,6 +3758,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4561893854334016293">No se cambió ningún permiso recientemente</translation>
 <translation id="4562155214028662640">Agregar huella dactilar</translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
+<translation id="4563382028841851106">Quitar de la cuenta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4564245002465020751">Termina la configuración en el teléfono.</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -4731,6 +4735,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5534304873398226603">Descartar foto o video</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="5539070192556911367">No se puede acceder a Google</translation>
 <translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4794,6 +4799,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5585912436068747822">Error al dar formato</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Cargando apps…</translation>
+<translation id="5590418976913374224">Reproducir un sonido al iniciar el dispositivo</translation>
 <translation id="5592595402373377407">Aún no hay suficientes datos disponibles.</translation>
 <translation id="5595307023264033512">Almacenamiento total que usan los sitios: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editar dirección</translation>
@@ -4803,7 +4809,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">No puede conectarse con dispositivos MIDI</translation>
 <translation id="5602765853043467355">Borrar favoritos, historial, contraseñas y otras opciones de configuración de este dispositivo</translation>
-<translation id="5605623530403479164">Otros motores de búsqueda</translation>
 <translation id="5605758115928394442">Se envió una notificación a tu teléfono para confirmar que eres tú</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Se bloqueó esta extensión}other{Se bloquearon estas extensiones}}</translation>
 <translation id="560834977503641186">Sincronización Wi-Fi, Más información</translation>
@@ -5102,6 +5107,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5909379458939060601">¿Quieres borrar este perfil y los datos de navegación?</translation>
 <translation id="5910363049092958439">Gu&amp;ardar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sin conexión</translation>
+<translation id="5911030830365207728">Google Traductor</translation>
 <translation id="5911533659001334206">Visualizador de combinaciones de teclas</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
@@ -6171,6 +6177,10 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se bloqueó el redireccionamiento en esta página.</translation>
+<translation id="6947015141909171112">Estás viendo recetas según tu actividad de búsqueda reciente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950627417367801484">Restablecer apps</translation>
 <translation id="6952242901357037157">También puedes mostrar las contraseñas de tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /> aquí</translation>
@@ -6338,6 +6348,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7102687220333134671">Las actualizaciones automáticas están activadas</translation>
 <translation id="7102832101143475489">Se agotó el tiempo de espera de la solicitud</translation>
 <translation id="710640343305609397">Abrir la configuración de red</translation>
+<translation id="7107609441453408294">Reproducir el mismo audio en todas las bocinas</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108668606237948702">ingresar</translation>
 <translation id="7108933416628942903">Bloquear ahora</translation>
@@ -6568,6 +6579,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7364745943115323529">Transmitir...</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="7365076891350562061">Tamaño de la pantalla</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" />: Fijada</translation>
 <translation id="7366316827772164604">Buscando dispositivos cercanos…</translation>
 <translation id="7366415735885268578">Agregar un sitio</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -6964,6 +6976,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Puedes cambiar esta opción cuando quieras en Configuración &gt; Asistente de Google &gt; Contexto de pantalla.</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
+<translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7741307896921365578">Habilita un panel lateral en el navegador para tener un acceso útil y siempre disponible a tu Lista de lectura y Favoritos.</translation>
 <translation id="7742558784808143689">¿Deseas borrar los datos y permisos de <ph name="SITE_NAME" />, de todos sus sitios secundarios y de las apps instaladas?</translation>
@@ -7754,6 +7767,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8486666913807228950">Motivo: Se encontró la regla invertida <ph name="REVERT_RULE" /> en la lista "Forzar la apertura en".</translation>
 <translation id="848666842773560761">Una app intenta acceder a la cámara. Para permitir el acceso, desactiva el interruptor de privacidad de la cámara.</translation>
 <translation id="8487678622945914333">Acercar</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Se actualizaron las siguientes aplicaciones de kiosco "<ph name="UPDATED_APPS" />". Reinicia el dispositivo para completar el proceso de actualización.</translation>
 <translation id="8492685019009920170">Toca el sensor de huellas dactilares con el dedo. Tus datos se almacenan de forma segura y no salen de tu <ph name="DEVICE_TYPE" />.</translation>
@@ -8247,6 +8261,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="8977811652087512276">Contraseña incorrecta o archivo dañado</translation>
 <translation id="8978154919215542464">Activada: sincronizar todo</translation>
+<translation id="8978670037548431647">Actualizar funciones de conexión mediante dispositivo móvil</translation>
 <translation id="897939795688207351">En <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Informes de comentarios</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: Falló</translation>
@@ -8511,6 +8526,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="935854577147268200">Se cambió el número de Smart Lock. Ingresa tu contraseña para actualizar Smart Lock. La próxima vez, tu teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
+<translation id="937053962468712792">¿Deseas quitar tu <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
 <translation id="938568644810664664">Puedes preguntar "Hey Google, ¿qué canción es esta?" o "Hey Google, ¿qué hay en la pantalla?"</translation>
 <translation id="938623846785894166">Archivo desconocido.</translation>

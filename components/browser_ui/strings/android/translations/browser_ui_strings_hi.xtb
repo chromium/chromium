@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> को एआर (ऑगमेंटेड रिएलिटी) का इस्तेमाल करने देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> से</translation>
 <translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
+<translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1919345977826869612">विज्ञापन</translation>
 <translation id="1919950603503897840">संपर्कों को चुनें</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2687403674020088961">सभी कुकी ब्लॉक करें (हम ऐसा करने का सुझाव नहीं देते)</translation>
 <translation id="2704606927547763573">कॉपी किया गया</translation>
+<translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2717722538473713889">ईमेल पते</translation>
 <translation id="2750481671343847896">साइटें, पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं.</translation>
 <translation id="2785051990912111074">यह विकल्प <ph name="WEBSITE" /> के लिए कुकी मिटाएगा</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">साइटों को अपने कैमरे का इस्तेमाल करने देने से पहले अनुमति लेना ज़रूरी बनाएं (सुझाया गया )</translation>
 <translation id="4505788138578415521">यूआरएल बड़ा हो गया</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> को माइक्रोफ़ोन का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी माइक्रोफ़ोन चालू करें.</translation>
+<translation id="4566417217121906555">माइक्रोफ़ोन को म्यूट करें</translation>
 <translation id="4570913071927164677">विवरण</translation>
 <translation id="4645575059429386691">आपके अभिभावक द्वारा प्रबंधित</translation>
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">यह विकल्प, स्क्रीन के सबसे ऊपरी हिस्से में उपलब्ध है</translation>
 <translation id="5197729504361054390">आप जो संपर्क चुनेंगे उन्हें <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> के साथ शेयर किया जाएगा.</translation>
 <translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>
+<translation id="5225463052809312700">कैमरा चालू करें</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' हटाएं</translation>
 <translation id="528192093759286357">फ़ुल स्क्रीन से बाहर निकलने के लिए ऊपर से खींचें और वापस जाएं स्पर्श करें.</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 कुकी इस्तेमाल की जा रही है}one{# कुकी इस्तेमाल की जा रही है}other{# कुकी इस्तेमाल की जा रही हैं}}</translation>
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
 <translation id="848952951823693243">हमेशा साइट के मोबाइल व्यू का अनुरोध करें</translation>
+<translation id="8499083585497694743">माइक्रोफ़ोन को अनम्यूट करें</translation>
 <translation id="851751545965956758">साइटों को डिवाइस से कनेक्ट होने से रोकें</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>

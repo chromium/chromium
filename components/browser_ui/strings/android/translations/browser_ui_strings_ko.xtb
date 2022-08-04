@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
+<translation id="1915307458270490472">종료</translation>
 <translation id="1919345977826869612">광고</translation>
 <translation id="1919950603503897840">연락처 선택</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2687403674020088961">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="2704606927547763573">복사됨</translation>
+<translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2717722538473713889">이메일 주소</translation>
 <translation id="2750481671343847896">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있습니다.</translation>
 <translation id="2785051990912111074"><ph name="WEBSITE" />의 쿠키가 삭제됩니다.</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">사이트에서 카메라를 사용하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4505788138578415521">URL 펼쳐짐</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />에서 마이크에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 마이크를 사용 설정하세요.</translation>
+<translation id="4566417217121906555">마이크 음소거</translation>
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
+<translation id="5225463052809312700">카메라 켜기</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
 <translation id="5300589172476337783">표시</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>
 <translation id="6388207532828177975">삭제 및 재설정</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6527303717912515753">공유</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{쿠키 1개 사용 중}other{쿠키 #개 사용 중}}</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="848952951823693243">항상 모바일 사이트 요청</translation>
+<translation id="8499083585497694743">마이크 음소거 해제</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="857943718398505171">허용(권장)</translation>

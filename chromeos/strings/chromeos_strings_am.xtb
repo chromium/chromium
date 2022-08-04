@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2480034874476596812">ራስዎ ያጥፉ</translation>
+<translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="2491955442992294626">ሌላ መስኮት ሲጠቀሙ ቁልፎች አይሞከሩም</translation>
 <translation id="2493126929778606526">የእርስዎ ምርጥ ፎቶዎች፣ በራስ-ሰር የተመረጡ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149">ከ<ph name="DEVICE_TYPE" /> ጥገና ውጣ</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
 <translation id="6620487321149975369">የህትመት ስራዎች በሰው ካልተወገዱ በቀር በታሪክ ውስጥ ይታያሉ</translation>
+<translation id="6624819909909965616">ከ10 ሜባ በላይ ፋይል መስቀል አይቻልም</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6644568396961840069">ፋይሉን ማስቀመጥ አልቻለም። የተለየ ውጫዊ ማከማቻ ለመሰካት ይሞክሩ ወይም በኋላ ላይ በድጋሚ ይሞክሩ።</translation>
 <translation id="6647510110698214773">የምስጠራ ስልተ-ቀመር</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
 <translation id="6995564396478647735">ከማየት ውጪ የማይፈቅድ ሁነታ መብራቱን ያረጋግጡ</translation>
+<translation id="7005833343836210400">መሣሪያ ከመስመር ውጭ ነው</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7040230719604914234">ከዋኝ</translation>
 <translation id="7041549558901442110">መሣሪያ አልተገናኘም።</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
+<translation id="8094062939584182041">Google ስለዚህ ችግር ኢሜይል እንዲልክልዎ ይፍቀዱለት</translation>
 <translation id="8104083085214006426">ክፍት እና ደህንነቱ ያልተጠበቀ አውታረ መረብ እየተጠቀሙ ነው</translation>
 <translation id="8109786307828817014">ካልተሳኩ ማስተካከሎች ጋር ይቀጥል?</translation>
 <translation id="811820734797650957">(Android) አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>

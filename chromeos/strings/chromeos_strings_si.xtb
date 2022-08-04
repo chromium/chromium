@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">වර්ගය</translation>
 <translation id="2461822463642141190">වත්මන්</translation>
 <translation id="2480034874476596812">හස්තීයව ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="248546197012830854">උපාංගය නොබැඳි වේ. උදවු අන්තර්ගතය බැලීමට Wi-Fi ජාලයට සම්බන්ධ වන්න.</translation>
 <translation id="2491955442992294626">ඔබ වෙනත් කවුළුවක් භාවිත කරන විට යතුරු පරීක්ෂා නොකෙරේ</translation>
 <translation id="2493126929778606526">ස්වයංක්‍රියව තෝරන ලද, ඔබගේ හොඳම ඡායාරූප</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> අලුත්වැඩියාවෙන් ඉවත් වන්න</translation>
 <translation id="6618744767048954150">ධාවන වේ</translation>
 <translation id="6620487321149975369">මුද්‍රණ කාර්ය අතින් ඉවත් නොකළහොත් ඉතිහාසයේ දිස්වනු ඇත</translation>
+<translation id="6624819909909965616">10 MBට වඩා විශාල ගොනු උඩුගත කළ නොහැක</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6644568396961840069">ගොනුව සුරැකිය නොහැකි විය. වෙනත් බාහිර ආචයනයක් පේනුගත කිරීමට උත්සාහ කරන්න, නැතහොත් පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="6647510110698214773">සංකේතන ඇල්ගොරිතමය</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
 <translation id="6995564396478647735">ලිවීම් ආරක්ෂාව ක්‍රියාත්මක බව සහතික කර ගන්න</translation>
+<translation id="7005833343836210400">උපාංගය නොබැඳි වේ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර, එයට පිවිසි වෙබ් පිටු, මුරපද සහ ඉ-තැපෑල ඇතුළුව සියලු පරිශීලක ක්‍රියාකාරකම් වෙත ප්‍රවේශය තිබේ.</translation>
 <translation id="7040230719604914234">මෙහෙයවනය</translation>
 <translation id="7041549558901442110">උපාංගය සම්බන්ධ කර නැත.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
 <translation id="8082366717211101304">Android යෙදුම් වෙතින් DNS විසඳිය නොහැකිය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
+<translation id="8094062939584182041">මෙම ගැටලුව පිළිබඳව ඔබට ඉ-තැපැල් කිරීමට Google හට ඉඩ දෙන්න</translation>
 <translation id="8104083085214006426">ඔබ විවෘත සහ අනාරක්ෂිත ජාලයක් භාවිත කරමින් සිටියි</translation>
 <translation id="8109786307828817014">අසාර්ථක ක්‍රමාංකන සමඟ ඉදිරියට යන්නද?</translation>
 <translation id="811820734797650957">(Android) වාහල පින් කළ හැකිය</translation>

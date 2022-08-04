@@ -533,7 +533,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">finestra</translation>
 <translation id="4123259114412175274">Per desbloquejar el Chromebook, comprova que el Bluetooth del telèfon estigui activat</translation>
-<translation id="4125970834901680537">En mode de tauleta, no es poden reproduir en continu aplicacions. Torna-ho a provar en mode de portàtil.</translation>
+<translation id="4125970834901680537">No es poden reproduir aplicacions en continu en mode de tauleta. Torna-ho a provar en mode de portàtil.</translation>
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4136724716305260864">Activada fins a l'alba</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
@@ -907,6 +907,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="619279033188484792">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Carrega completament ara</translation>
 <translation id="6193431488227440296">Desenvolupament</translation>
+<translation id="6210042900243040400">Connecta <ph name="NAME" />, desat anteriorment a <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Ara pots gravar-te a tu i gravar la teva pantalla alhora</translation>
 <translation id="622484624075952240">Avall</translation>
 <translation id="6231419273573514727">És possible que el rendiment dels perifèrics sigui limitat</translation>
@@ -1405,7 +1406,6 @@ Instal·lació nova</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9178475906033259337">S'està mostrant 1 resultat per a "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
-<translation id="9180906851711123156">Prem Ctrl+W per tancar</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>

@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Да бисте дозволили да <ph name="APP_NAME" /> користи ПР, укључите и камеру у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Извор: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Приступ локацији је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1919345977826869612">Огласи</translation>
 <translation id="1919950603503897840">Изаберите контакте</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="2704606927547763573">Копирано</translation>
+<translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2717722538473713889">Имејл адресе</translation>
 <translation id="2750481671343847896">Сајтови могу да приказују упите за пријављивање из услуга за идентитет.</translation>
 <translation id="2785051990912111074">Овај избор ће обрисати колачиће за <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Питај пре него што дозволиш сајтовима да користе камеру (препоручено)</translation>
 <translation id="4505788138578415521">URL је проширен</translation>
 <translation id="4534723447064627427">Да бисте дозволили да <ph name="APP_NAME" /> приступа микрофону, укључите микрофон и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Искључи звук микрофона</translation>
 <translation id="4570913071927164677">Детаљи</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Опција је доступна у врху екрана</translation>
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последњи посећен данас</translation>
+<translation id="5225463052809312700">Укључи камеру</translation>
 <translation id="5264323282659631142">Уклоните „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Превуците од врха екрана и додирните дугме Назад да бисте изашли из режима целог екрана.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -236,6 +240,7 @@
 <translation id="6367753977865761591">Блокирајте пријављивање трећих страна за одређени сајт.</translation>
 <translation id="6388207532828177975">Обриши и ресетуј</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Не дозвољава сајтовима да користе уређај и податке виртуелне реалности</translation>
 <translation id="6447842834002726250">Колачићи</translation>
 <translation id="6527303717912515753">Дели</translation>
@@ -336,6 +341,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Користи се 1 колачић}one{Користи се # колачић}few{Користе се # колачића}other{Користи се # колачића}}</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="848952951823693243">Увек се захтева мобилни сајт</translation>
+<translation id="8499083585497694743">Укључи звук микрофона</translation>
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>

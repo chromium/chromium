@@ -32,6 +32,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />-ին AR ռեժիմն օգտագործելու թույլտվություն տալու համար միացրեք նաև տեսախցիկը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="1864927262126810325">Աղբյուրը՝ <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Սարքի տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
+<translation id="1915307458270490472">Փակել</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
 <translation id="1919950603503897840">Ընտրեք կոնտակտներ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
 <translation id="2687403674020088961">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
+<translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2717722538473713889">Էլ․ հասցեներ</translation>
 <translation id="2750481671343847896">Կայքերը կարող են ցույց տալ նույնականացման ծառայությունների մուտքի հարցումներ։</translation>
 <translation id="2785051990912111074">Այս կայքի (<ph name="WEBSITE" />) քուքիները կջնջվեն</translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Հարցնել նախքան ձեր տեսախցիկը կայքերին հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
 <translation id="4505788138578415521">URL-ը ծավալվել է</translation>
 <translation id="4534723447064627427">Որպեսզի խոսափողը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="4566417217121906555">Անջատել խոսափողը</translation>
 <translation id="4570913071927164677">Մանրամասներ</translation>
 <translation id="4645575059429386691">Կառավարվում է ձեր ծնողի կողմից</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="5216942107514965959">Վերջին այցելությունը՝ այսօր</translation>
+<translation id="5225463052809312700">Միացնել տեսախցիկը</translation>
 <translation id="5264323282659631142">Հեռացնել «<ph name="CHIP_LABEL" />» չիպը</translation>
 <translation id="528192093759286357">Լիաէկրան ռեժիմից դուրս գալու համար քաշեք վերևից և հպեք «Հետ» կոճակին:</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 օգտագործվող քուքի}one{# օգտագործվող քուքի}other{# օգտագործվող քուքի}}</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="848952951823693243">Միշտ պահանջել կայքի բջջային տարբերակը</translation>
+<translation id="8499083585497694743">Միացնել խոսափողը</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>

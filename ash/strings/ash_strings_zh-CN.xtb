@@ -759,6 +759,16 @@
 <translation id="5393156353051693207">若要将您的应用重新排序，请轻触并按住任意位置</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5397578532367286026">管理员 (<ph name="MANAGER_EMAIL" />) 可在 chrome.com 上查看该用户的使用情况和历史记录。</translation>
+<translation id="5399673806694250334">状态栏，时间为 <ph name="TIME" />，
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />，
+        <ph name="MIC" />，
+        <ph name="CAMERA" />，
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />，
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">快捷设置，按搜索键 + 向左箭头键可访问通知中心。</translation>
 <translation id="5426063383988017631">已关闭“设置”菜单</translation>
 <translation id="5428899915242071344">开始选择</translation>
@@ -897,6 +907,7 @@
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体和收到的通知</translation>
 <translation id="619335566042889110">立即充满电</translation>
 <translation id="6193431488227440296">开发者</translation>
+<translation id="6210042900243040400">关联已保存到 <ph name="EMAIL" /> 的“<ph name="NAME" />”</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
@@ -1395,7 +1406,6 @@
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>
-<translation id="9180906851711123156">按 Ctrl+W 即可关闭</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>

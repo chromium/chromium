@@ -32,6 +32,7 @@
 <translation id="1818308510395330587">Til að leyfa <ph name="APP_NAME" /> að nota AR þarftu einnig að kveikja á myndavél í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Frá <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Slökkt er á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Leggja á</translation>
 <translation id="1919345977826869612">Auglýsingar</translation>
 <translation id="1919950603503897840">Velja tengiliði</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -78,6 +79,7 @@
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2687403674020088961">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="2704606927547763573">Afritað</translation>
+<translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2717722538473713889">Netföng</translation>
 <translation id="2750481671343847896">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum.</translation>
 <translation id="2785051990912111074">Þetta val hreinsar fótspor fyrir <ph name="WEBSITE" /></translation>
@@ -154,6 +156,7 @@
 <translation id="4479647676395637221">Spyrja áður en vefsvæðum er veitt heimild til að nota myndavélina þína (ráðlagt)</translation>
 <translation id="4505788138578415521">Öll vefslóðin</translation>
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
@@ -178,6 +181,7 @@
 <translation id="5186036860380548585">Valkosturinn er við efri brún skjásins</translation>
 <translation id="5197729504361054390">Tengiliðunum sem þú valdir verður deilt með <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
+<translation id="5225463052809312700">Kveikja á myndavél</translation>
 <translation id="5264323282659631142">Fjarlægja „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Dragðu ofan frá og snertu bakkhnappinn til að hætta birtingu á öllum skjánum.</translation>
 <translation id="5300589172476337783">Sýna</translation>
@@ -336,6 +340,7 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 fótspor í notkun}one{# fótspor í notkun}other{# fótspor í notkun}}</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="848952951823693243">Biðja alltaf um símaútgáfu vefsvæða</translation>
+<translation id="8499083585497694743">Kveikja á hljóðnema</translation>
 <translation id="851751545965956758">Ekki leyfa vefsvæðum að tengjast tækjum</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>

@@ -4828,7 +4828,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI சாதனங்களுடன் இணைப்பதற்கு அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5602765853043467355">இந்தச் சாதனத்திலிருந்து புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பலவற்றை அழிக்கவும்</translation>
-<translation id="5605623530403479164">பிற தேடல் இன்ஜின்கள்</translation>
 <translation id="5605758115928394442">அது நீங்கள்தான் என்பதை உறுதிப்படுத்த உங்கள் ஃபோனுக்கு ஓர் அறிவிப்பு அனுப்பப்பட்டுள்ளது.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பு தடுக்கப்பட்டுள்ளது}other{இந்த நீட்டிப்புகள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="560834977503641186">வைஃபை ஒத்திசைவு, மேலும் அறிக</translation>
@@ -5128,6 +5127,7 @@
 <translation id="5909379458939060601">இந்தச் சுயவிவரத்தையும் உலாவிய தரவையும் நீக்கவா?</translation>
 <translation id="5910363049092958439">படத்தை இவ்வாறு சே&amp;மி...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ஆஃப்லைனில் உள்ளது</translation>
+<translation id="5911030830365207728">Google Translate</translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5914724413750400082">தனிமதிப்பு (<ph name="MODULUS_NUM_BITS" /> பிட்கள்):
   <ph name="MODULUS_HEX_DUMP" />

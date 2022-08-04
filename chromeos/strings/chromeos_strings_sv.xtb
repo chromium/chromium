@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2480034874476596812">Stäng av manuellt</translation>
+<translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
 <translation id="2491955442992294626">Inga tangenter testas när du använder ett annat fönster</translation>
 <translation id="2493126929778606526">Dina bästa bilder, utvalda automatiskt</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6611280807952151149">Avsluta reparationen av <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Körs</translation>
 <translation id="6620487321149975369">Utskriftsjobb visas i historiken såvida de inte tas bort manuellt</translation>
+<translation id="6624819909909965616">Det går inte att ladda upp en fil som är större än 10 MB</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6644568396961840069">Det gick inte att spara filen. Testa att ansluta ett annat externt lagringsutrymme eller försök igen senare.</translation>
 <translation id="6647510110698214773">Krypteringsalgoritm</translation>
@@ -696,6 +698,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
 <translation id="6995564396478647735">Kontrollera att skrivskyddet är aktiverat</translation>
+<translation id="7005833343836210400">Enheten är offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Enheten är inte ansluten.</translation>
@@ -809,6 +812,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
+<translation id="8094062939584182041">Tillåt att Google skickar e-post till dig om det här problemet</translation>
 <translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
 <translation id="8109786307828817014">Vill du fortsätta med misslyckade kalibreringar?</translation>
 <translation id="811820734797650957">(Android) Gateway går att pinga</translation>

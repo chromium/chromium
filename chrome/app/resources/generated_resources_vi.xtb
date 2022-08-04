@@ -4691,6 +4691,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5470735824776589490">Bạn cần khởi động lại trước khi có thể đặt lại thiết bị của mình bằng Powerwash. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Chào bạn! Đây là giọng nói của tính năng chuyển văn bản sang lời nói.</translation>
 <translation id="5472627187093107397">Lưu mật khẩu cho trang web này</translation>
+<translation id="5473062644742711742">Tìm thêm công cụ hỗ trợ tiếp cận trong Cửa hàng Chrome trực tuyến</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của con bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp các lựa chọn mua hàng trong ứng dụng.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Mã PIN phải có ít nhất 1 ký tự}other{Mã PIN phải có ít nhất # ký tự}}</translation>
@@ -4838,7 +4839,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5601823921345337195">Không được phép kết nối với các thiết bị MIDI</translation>
 <translation id="5602765853043467355">Xóa dấu trang, lịch sử, mật khẩu và nhiều nội dung khác từ thiết bị này</translation>
-<translation id="5605623530403479164">Công cụ tìm kiếm khác</translation>
 <translation id="5605758115928394442">Chúng tôi đã gửi một thông báo đến điện thoại của bạn để xác nhận đó là bạn.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tiện ích này đã bị chặn}other{Các tiện ích này đã bị chặn}}</translation>
 <translation id="560834977503641186">Đồng bộ hóa Wi-Fi, Tìm hiểu thêm</translation>
@@ -5139,6 +5139,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5909379458939060601">Xoá hồ sơ và dữ liệu duyệt web này?</translation>
 <translation id="5910363049092958439">Lưu &amp;Hình ảnh Dưới dạng...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> hiện không có kết nối mạng</translation>
+<translation id="5911030830365207728">Google Dịch</translation>
 <translation id="5911533659001334206">Trình xem phím tắt</translation>
 <translation id="5914724413750400082">Mô-đun (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />
@@ -8456,7 +8457,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9115675100829699941">&amp;Dấu trang</translation>
 <translation id="9116465289595958864">Sửa đổi lần cuối</translation>
 <translation id="9116799625073598554">Ứng dụng ghi chú</translation>
-<translation id="9117030152748022724">Quản lý các ứng dụng</translation>
+<translation id="9117030152748022724">Quản lý ứng dụng</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Để có trải nghiệm tốt nhất, hãy cài đặt <ph name="DEVICE_OS" /> vào ổ đĩa trong của bạn. Bạn cũng có thể cài đặt ứng dụng vào lúc khác trên màn hình đăng nhập.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nếu chưa sẵn sàng cài đặt, bạn có thể chạy ứng dụng từ USB để dùng thử trước. Thao tác này sẽ giữ lại hệ điều hành và dữ liệu hiện có, nhưng bạn có thể gặp phải các giới hạn về dung lượng lưu trữ và hiệu suất.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Mở dưới dạng thẻ được ghim</translation>

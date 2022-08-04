@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2480034874476596812">Désactiver manuellement</translation>
+<translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos meilleures photos, sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6611280807952151149">Quitter la réparation de l'appareil <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
+<translation id="6624819909909965616">Impossible de télécharger un fichier de plus de 10 Mo</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6644568396961840069">Impossible d'enregistrer le fichier. Essayez d'utiliser un autre appareil de stockage externe ou réessayez plus tard.</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
@@ -696,6 +698,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6995564396478647735">Assurez-vous que la protection en écriture est activée</translation>
+<translation id="7005833343836210400">L'appareil est hors ligne</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
@@ -809,6 +812,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS à partir d'applications Android</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="8094062939584182041">Autoriser Google à vous envoyer un courriel à propos de ce problème</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
 <translation id="8109786307828817014">Continuer malgré l'échec des calibrations?</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>

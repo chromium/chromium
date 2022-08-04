@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">לא מאובטח</translation>
 <translation id="3533202363250687977">סגירה של כל כרטיסיות מצב אנונימי</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
+<translation id="3547799431091898961">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
@@ -645,6 +646,7 @@
 <translation id="6374469231428023295">ניסיון נוסף</translation>
 <translation id="6377118281273296434">אבטחת האתר</translation>
 <translation id="6380866119319257197">אם שוכחים את ביטוי הסיסמה או שרוצים לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" /></translation>
+<translation id="6387994324662817823">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה בלבד.</translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>
 <translation id="6406506848690869874">סנכרון</translation>
 <translation id="6410390304316730527">גלישה בטוחה מגינה עליך מפני תוקפים שעשויים להטעות אותך כדי לגרום לך לבצע פעולה מסוכנת. למשל, התקנה של תוכנה זדונית או חשיפת מידע אישי, כמו סיסמאות, מספרי טלפון או כרטיסי אשראי. אם תשביתו את הגלישה הבטוחה, יש לנקוט זהירות בעת הגלישה באתרים לא מוכרים או בעלי מוניטין בעייתי.</translation>
@@ -680,6 +682,7 @@
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
 <translation id="6583087784430677195">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'מילוי אוטומטי של סיסמאות'.</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
+<translation id="6596481460663245319">‏חיפוש התמונה באמצעות Google</translation>
 <translation id="6598875554591387303">מיון לפי 'בעל האפליקציה'</translation>
 <translation id="6603393121510733479">הארגון שלך כיבה את אפשרות הגלישה הפרטית.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

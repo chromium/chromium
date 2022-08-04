@@ -4839,7 +4839,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5601823921345337195">Har ikke tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="5602765853043467355">Ryd bogmærker, historik, adgangskoder osv. fra denne enhed</translation>
-<translation id="5605623530403479164">Andre søgemaskiner</translation>
 <translation id="5605758115928394442">Der blev sendt en notifikation til din telefon til bekræftelse af din identitet.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er blokeret}one{Denne udvidelse er blokeret}other{Disse udvidelser er blokeret}}</translation>
 <translation id="560834977503641186">Wi-Fi-synkronisering, Få flere oplysninger</translation>
@@ -5140,6 +5139,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5909379458939060601">Vil du slette denne profil og de tilhørende browserdata?</translation>
 <translation id="5910363049092958439">Ge&amp;m billede som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er offline</translation>
+<translation id="5911030830365207728">Google Oversæt</translation>
 <translation id="5911533659001334206">Genvejsviser</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />
