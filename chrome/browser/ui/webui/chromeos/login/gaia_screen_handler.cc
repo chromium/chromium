@@ -314,6 +314,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       ash::ReauthReason::INVALID_TOKEN_HANDLE,
       ash::ReauthReason::SYNC_FAILED,
       ash::ReauthReason::PASSWORD_UPDATE_SKIPPED,
+      ash::ReauthReason::FORGOT_PASSWORD,
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);

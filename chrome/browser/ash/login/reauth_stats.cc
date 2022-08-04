@@ -15,8 +15,6 @@ void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
   if (reason == ReauthReason::NONE)
     return;
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  // We record only the first value, skipping everything else, except "none"
-  // value, which is used to reset the current state.
   if (known_user.FindReauthReason(account_id).value_or(ReauthReason::NONE) ==
       reason) {
     return;

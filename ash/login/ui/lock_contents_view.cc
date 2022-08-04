@@ -38,6 +38,7 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/reauth_reason.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -2266,15 +2267,15 @@ void LockContentsView::ShowAuthErrorMessage() {
   // Show gaia signin if this is login and the user has failed too many times.
   // Do not show on secondary login screen – even though it has type kLogin – as
   // there is no OOBE there.
-  if (screen_type_ == LockScreen::ScreenType::kLogin &&
-      unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog &&
-      Shell::Get()->session_controller()->GetSessionState() !=
-          session_manager::SessionState::LOGIN_SECONDARY) {
-    // TODO(crbug.com/1335222): Once implemented, we should show the recovery
-    // flow here instead of just gaia signin.
-    Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-        big_view->auth_user()->current_user().basic_user_info.account_id);
-    return;
+  if (!ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+    if (screen_type_ == LockScreen::ScreenType::kLogin &&
+        unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog &&
+        Shell::Get()->session_controller()->GetSessionState() !=
+            session_manager::SessionState::LOGIN_SECONDARY) {
+      Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+          big_view->auth_user()->current_user().basic_user_info.account_id);
+      return;
+    }
   }
 
   std::u16string error_text = l10n_util::GetStringUTF16(
@@ -2443,10 +2444,15 @@ void LockContentsView::ForgotPasswordButtonPressed() {
     return;
   }
 
-  // TODO(crbug.com/1335222): Initiate recovery flow instead of blanked gaia
-  // sign in.
-  Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-      big_view->auth_user()->current_user().basic_user_info.account_id);
+  const AccountId account_id =
+      big_view->auth_user()->current_user().basic_user_info.account_id;
+  // TODO(b/240283185): check whether recovery key is configured.
+  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
+    user_manager::KnownUser(Shell::Get()->local_state())
+        .UpdateReauthReason(account_id,
+                            static_cast<int>(ReauthReason::FORGOT_PASSWORD));
+  }
+  Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
   HideAuthErrorMessage();
 }
 

@@ -249,6 +249,7 @@ component("cpp") {
     "projector/projector_new_screencast_precondition.h",
     "projector/projector_session.cc",
     "projector/projector_session.h",
+    "reauth_reason.h",
     "resize_shadow_type.h",
     "rounded_corner_utils.cc",
     "rounded_corner_utils.h",
