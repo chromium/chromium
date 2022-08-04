@@ -110,11 +110,13 @@
     </template>
 
     <template is="dom-if" if="[[shouldShowAutofillAssistant_]]" restamp>
-      <settings-toggle-button id="enableAssistantFlows"
+      <settings-toggle-button id="enableAutofillAssistantToggle"
           class="hr"
           label="$i18n{autofillAssistantPref}"
           sub-label="$i18n{autofillAssistantPrefDesc}"
-          pref="{{prefs.autofill_assistant.enabled}}">
+          pref="{{prefs.autofill_assistant.enabled}}"
+          on-settings-boolean-control-change="onEnableAutofillAssistantChange_"
+          no-set-pref>
       </settings-toggle-button>
     </template>
 

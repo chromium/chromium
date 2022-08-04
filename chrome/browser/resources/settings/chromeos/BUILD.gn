@@ -412,6 +412,7 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
     "prefs/prefs_mixin.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
+    "privacy_page/autofill_assistant_browser_proxy.js",
     "privacy_page/privacy_page_browser_proxy.js",
     "relaunch_mixin.js",
     "setting_id_param_util.js",

@@ -151,6 +151,7 @@ export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcu
 export {SettingsSyncControlsElement} from './people_page/sync_controls.js';
 export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryption_options.js';
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
+export {AutofillAssistantBrowserProxy, AutofillAssistantBrowserProxyImpl} from './privacy_page/autofill_assistant_browser_proxy.js';
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';

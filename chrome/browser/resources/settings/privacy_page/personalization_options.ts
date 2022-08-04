@@ -22,6 +22,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 // </if>
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,6 +34,7 @@ import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
+import {AutofillAssistantBrowserProxyImpl} from './autofill_assistant_browser_proxy.js';
 import {getTemplate} from './personalization_options.html.js';
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
@@ -106,8 +108,8 @@ export class SettingsPersonalizationOptionsElement extends
 
       shouldShowAutofillAssistant_: {
         type: Boolean,
-        value: () => loadTimeData.valueExists('enableAutofillAssistant') &&
-            loadTimeData.getBoolean('enableAutofillAssistant'),
+        value: false,
+        computed: 'computeShouldShowAutofillAssistant_(syncStatus.signedIn)',
       },
 
     };
@@ -129,12 +131,29 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   private shouldShowAutofillAssistant_: boolean;
+  private autofillAssistantProxy_ =
+      AutofillAssistantBrowserProxyImpl.getInstance();
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
 
   private computeSyncFirstSetupInProgress_(): boolean {
     return !!this.syncStatus && !!this.syncStatus.firstSetupInProgress;
+  }
+
+  private computeShouldShowAutofillAssistant_(): boolean {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      return false;
+    }
+    // </if>
+
+    // Currently, only automated password change uses Autofill Assistant. Only
+    // show the toggle if at least one entry point is enabled.
+    // Additional, the user must be signed in since the consent dialog uses the
+    // sync bridge for consent recording.
+    return loadTimeData.getBoolean('isAutomatedPasswordChangeEnabled') &&
+        !!this.syncStatus && !!this.syncStatus.signedIn;
   }
 
   override ready() {
@@ -323,6 +342,26 @@ export class SettingsPersonalizationOptionsElement extends
   private onRestartTap_(e: Event) {
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);
+  }
+
+  private async onEnableAutofillAssistantChange_() {
+    const toggle = this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#enableAutofillAssistantToggle');
+    assert(!!toggle);
+    if (toggle.checked) {
+      // Temporarily set the toggle to off again until the user has actually
+      // accepted the consent dialog.
+      toggle.checked = false;
+      const success = await this.autofillAssistantProxy_.promptForConsent();
+      if (success) {
+        toggle.checked = true;
+        toggle.sendPrefChange();
+      }
+    } else {
+      this.autofillAssistantProxy_.revokeConsent(
+          [toggle.label, toggle.subLabel]);
+      toggle.sendPrefChange();
+    }
   }
 }
 

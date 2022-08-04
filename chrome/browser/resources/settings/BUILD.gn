@@ -330,6 +330,7 @@ build_webui("build") {
     "prefs/prefs.ts",
     "prefs/prefs_types.ts",
     "prefs/pref_util.ts",
+    "privacy_page/autofill_assistant_browser_proxy.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
     "privacy_page/privacy_page_browser_proxy.ts",

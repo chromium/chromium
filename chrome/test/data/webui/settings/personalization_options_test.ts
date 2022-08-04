@@ -6,30 +6,33 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
+import {AutofillAssistantBrowserProxyImpl, SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyPageVisibility} from 'chrome://settings/page_visibility.js';
-import {loadTimeData, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, PrivacyPageBrowserProxyImpl, SettingsToggleButtonElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not chromeos_ash and not chromeos_lacros">
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // </if>
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import {TestAutofillAssistantBrowserProxy} from './test_autofill_assistant_browser_proxy.js';
 
 // clang-format on
 
 suite('PersonalizationOptionsTests_AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
+  let autofillAssistantBrowserProxy: TestAutofillAssistantBrowserProxy;
   let customPageVisibility: PrivacyPageVisibility;
   let testElement: SettingsPersonalizationOptionsElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       driveSuggestAvailable: true,
-      enableAutofillAssistant: true,
+      isAutomatedPasswordChangeEnabled: true,
       signinAvailable: true,
     });
   });
@@ -57,6 +60,9 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    autofillAssistantBrowserProxy = new TestAutofillAssistantBrowserProxy();
+    AutofillAssistantBrowserProxyImpl.setInstance(
+        autofillAssistantBrowserProxy);
     buildTestElement();
   });
 
@@ -229,15 +235,58 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   // </if>
 
   test('autofillAssistantAvailable', function() {
-    assertTrue(
-        !!testElement.shadowRoot!.querySelector('#enableAssistantFlows'));
+    // If the user is not logged in, the element is hidden.
+    testElement.syncStatus = {
+      signedIn: false,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertFalse(isVisible(testElement.shadowRoot!.querySelector(
+        '#enableAutofillAssistantToggle')));
+
+    // For logged in users, the toggle appears.
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(isVisible(testElement.shadowRoot!.querySelector(
+        '#enableAutofillAssistantToggle')));
+  });
+
+  test('autofillAssistant toggle', async function() {
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+
+    // Initially, the toggle is off.
+    const toggle =
+        testElement.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableAutofillAssistantToggle');
+    assertTrue(!!toggle);
+    assertFalse(toggle.checked);
+
+    // Clicking it leads to a consent prompt.
+    toggle.click();
+    await (autofillAssistantBrowserProxy.whenCalled('promptForConsent'));
+    // The TestAutofillAssistantBrowserProxy simulates accepting the prompt.
+    assertTrue(toggle.checked);
+    assertTrue(testElement.prefs.autofill_assistant.enabled.value);
+
+    // Clicking it again turns it off and logs that consent was revoked.
+    toggle.click();
+    await (autofillAssistantBrowserProxy.whenCalled('revokeConsent'));
+    assertFalse(toggle.checked);
+    assertFalse(testElement.prefs.autofill_assistant.enabled.value);
   });
 
   test('autofillAssistantUnavailable', function() {
-    loadTimeData.overrideValues({'enableAutofillAssistant': false});
+    loadTimeData.overrideValues({'isAutomatedPasswordChangeEnabled': false});
     buildTestElement();  // Rebuild the element after modifying loadTimeData.
-    assertFalse(
-        !!testElement.shadowRoot!.querySelector('#enableAssistantFlows'));
+    assertFalse(isVisible(testElement.shadowRoot!.querySelector(
+        '#enableAutofillAssistantToggle')));
   });
 });
 
