@@ -89,6 +89,8 @@ CanvasFormattedTextRun* CanvasFormattedText::appendRun(
     ExceptionState& exception_state) {
   if (!CheckRunIsNotParented(run, &exception_state))
     return nullptr;
+  if (!CheckViewExists(run, &exception_state))
+    return nullptr;
   text_runs_.push_back(run);
   block_->AddChild(run->GetLayoutObject());
   run->SetParent(this);
@@ -101,7 +103,8 @@ CanvasFormattedTextRun* CanvasFormattedText::setRun(
     CanvasFormattedTextRun* run,
     ExceptionState& exception_state) {
   if (!CheckRunsIndexBound(index, &exception_state) ||
-      !CheckRunIsNotParented(run, &exception_state))
+      !CheckRunIsNotParented(run, &exception_state) ||
+      !CheckViewExists(run, &exception_state))
     return nullptr;
   run->SetParent(this);
   block_->AddChild(run->GetLayoutObject(),
@@ -121,7 +124,8 @@ CanvasFormattedTextRun* CanvasFormattedText::insertRun(
     return nullptr;
   if (index == text_runs_.size())
     return appendRun(run, exception_state);
-  if (!CheckRunsIndexBound(index, &exception_state))
+  if (!CheckRunsIndexBound(index, &exception_state) ||
+      !CheckViewExists(run, &exception_state))
     return nullptr;
   block_->AddChild(run->GetLayoutObject(),
                    text_runs_[index]->GetLayoutObject());
