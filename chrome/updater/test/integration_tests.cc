@@ -174,6 +174,10 @@ class IntegrationTest : public ::testing::Test {
         app_id, command_id, parameters, expected_exit_code);
   }
 
+  void ExpectLegacyPolicyStatusSucceeds() {
+    test_commands_->ExpectLegacyPolicyStatusSucceeds();
+  }
+
   void RunUninstallCmdLine() { test_commands_->RunUninstallCmdLine(); }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -601,6 +605,22 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb) {
   base::Value::List parameters;
   parameters.Append("5432");
   ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432);
+
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, LegacyPolicyStatus) {
+  ScopedServer test_server(test_commands_);
+  Install();
+
+  const std::string kAppId("test");
+  InstallApp(kAppId);
+  base::Version v1("1");
+  ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"), v1);
+  RunWake(0);
+  ExpectAppVersion(kAppId, v1);
+
+  ExpectLegacyPolicyStatusSucceeds();
 
   Uninstall();
 }

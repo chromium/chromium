@@ -264,6 +264,8 @@ void AppTestHelper::FirstTaskRun() {
                  WithSwitch("app_id",
                             WithSystemScope(
                                 Wrap(&ExpectLegacyAppCommandWebSucceeds))))))},
+    {"expect_legacy_policy_status_succeeds",
+     WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds))},
     {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
 #endif  // BUILDFLAG(IS_WIN)
     {"expect_version_active",

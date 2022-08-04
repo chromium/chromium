@@ -35,6 +35,8 @@ class AppServer : public App {
     return external_constants_;
   }
 
+  scoped_refptr<const UpdaterPrefs> prefs() const { return prefs_; }
+
   // Overrides of App.
   void Uninitialize() override;
 

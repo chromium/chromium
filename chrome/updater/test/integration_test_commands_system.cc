@@ -223,6 +223,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                base::NumberToString(expected_exit_code))});
   }
 
+  void ExpectLegacyPolicyStatusSucceeds() const override {
+    RunCommand("expect_legacy_policy_status_succeeds");
+  }
+
   void RunUninstallCmdLine() const override {
     RunCommand("run_uninstall_cmd_line");
   }

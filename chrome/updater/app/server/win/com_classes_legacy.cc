@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -37,8 +39,10 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -844,11 +848,61 @@ STDMETHODIMP PolicyStatusImpl::get_updaterVersion(BSTR* version) {
   return S_OK;
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
   DCHECK(last_checked);
 
-  return E_NOTIMPL;
+  using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
+
+  // TODO(crbug.com/1349988): perhaps implement a shared scoped memory that
+  // outlives the lambda instead of these local variables.
+  base::WaitableEvent get_last_checked_complete_event;
+  bool succeeded = false;
+  DATE last_checked_variant_time = {};
+
+  AppServerSingletonInstance()->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](PolicyStatusImplPtr obj, base::WaitableEvent& event,
+             bool& succeeded, DATE& last_checked_variant_time) {
+            const base::ScopedClosureRunner signal_event(base::BindOnce(
+                [](base::WaitableEvent& event) { event.Signal(); },
+                std::ref(event)));
+
+            const auto persisted_data =
+                base::MakeRefCounted<const PersistedData>(
+                    AppServerSingletonInstance()->prefs()->GetPrefService());
+            if (!persisted_data)
+              return;
+
+            const base::Time last_checked_time =
+                persisted_data->GetLastChecked();
+            if (last_checked_time.is_null())
+              return;
+
+            const FILETIME last_checked_filetime =
+                last_checked_time.ToFileTime();
+            FILETIME file_time_local = {};
+            SYSTEMTIME system_time = {};
+            succeeded =
+                ::FileTimeToLocalFileTime(&last_checked_filetime,
+                                          &file_time_local) &&
+                ::FileTimeToSystemTime(&file_time_local, &system_time) &&
+                ::SystemTimeToVariantTime(&system_time,
+                                          &last_checked_variant_time);
+          },
+          PolicyStatusImplPtr(this), std::ref(get_last_checked_complete_event),
+          std::ref(succeeded), std::ref(last_checked_variant_time)));
+
+  if (!get_last_checked_complete_event.TimedWait(base::Seconds(60))) {
+    NOTREACHED();
+    return E_FAIL;
+  }
+
+  if (!succeeded)
+    return E_FAIL;
+
+  *last_checked = last_checked_variant_time;
+  return S_OK;
 }
 
 // TODO(crbug.com/1293203): Implement this method.

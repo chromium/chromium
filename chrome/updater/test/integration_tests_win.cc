@@ -656,18 +656,6 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     Microsoft::WRL::ComPtr<IDispatch> dispatch;
     ASSERT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
-
-    Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
-    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
-        scope == UpdaterScope::kSystem ? __uuidof(PolicyStatusSystemClass)
-                                       : __uuidof(PolicyStatusUserClass),
-        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
-    Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
-    ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
-    base::win::ScopedBstr updater_version;
-    ASSERT_HRESULT_SUCCEEDED(
-        policy_status2->get_updaterVersion(updater_version.Receive()));
-    EXPECT_STREQ(updater_version.Get(), kUpdaterVersionUtf16);
   }
 
   // IUpdaterInternal.
@@ -1010,6 +998,24 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
             static_cast<DWORD>(expected_exit_code));
 
   DeleteAppClientKey(scope, appid);
+}
+
+void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
+  Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
+  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+      scope == UpdaterScope::kSystem ? __uuidof(PolicyStatusSystemClass)
+                                     : __uuidof(PolicyStatusUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
+  Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
+  ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+  base::win::ScopedBstr updater_version;
+  ASSERT_HRESULT_SUCCEEDED(
+      policy_status2->get_updaterVersion(updater_version.Receive()));
+  EXPECT_STREQ(updater_version.Get(), kUpdaterVersionUtf16);
+
+  DATE last_checked = 0;
+  EXPECT_HRESULT_SUCCEEDED(policy_status2->get_lastCheckedTime(&last_checked));
+  EXPECT_GT(static_cast<int>(last_checked), 0);
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

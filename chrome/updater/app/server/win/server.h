@@ -54,6 +54,8 @@ class ComServerApp : public AppServer {
     return update_service_internal_;
   }
 
+  scoped_refptr<const UpdaterPrefs> prefs() const { return AppServer::prefs(); }
+
   // Handles COM factory unregistration then triggers program shutdown. This
   // function runs on a COM RPC thread when the WRL module is destroyed.
   void Stop();

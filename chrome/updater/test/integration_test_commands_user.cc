@@ -189,6 +189,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         updater_scope_, app_id, command_id, parameters, expected_exit_code);
   }
 
+  void ExpectLegacyPolicyStatusSucceeds() const override {
+    updater::test::ExpectLegacyPolicyStatusSucceeds(updater_scope_);
+  }
+
   void RunUninstallCmdLine() const override {
     updater::test::RunUninstallCmdLine(updater_scope_);
   }

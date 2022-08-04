@@ -81,6 +81,7 @@ class IntegrationTestCommands
       const std::string& command_id,
       const base::Value::List& parameters,
       int expected_exit_code) const = 0;
+  virtual void ExpectLegacyPolicyStatusSucceeds() const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;
