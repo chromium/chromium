@@ -28,17 +28,14 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void AddDiagnosticsLog(const base::FilePath& file_path) override;
   void AddScreenRecording(const base::FilePath& file_path) override;
   void AddScreenshot(const base::FilePath& file_path) override;
-  void CancelItems(const std::vector<const HoldingSpaceItem*>& items) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
   base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   void OpenDownloads(SuccessCallback callback) override;
   void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                  SuccessCallback callback) override;
   void OpenMyFiles(SuccessCallback callback) override;
-  void PauseItems(const std::vector<const HoldingSpaceItem*>& items) override;
   void PinFiles(const std::vector<base::FilePath>& file_paths) override;
   void PinItems(const std::vector<const HoldingSpaceItem*>& items) override;
-  void ResumeItems(const std::vector<const HoldingSpaceItem*>& items) override;
   void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
   void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;
 

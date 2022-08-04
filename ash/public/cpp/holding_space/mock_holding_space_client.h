@@ -36,10 +36,6 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (const base::FilePath& file_path),
               (override));
   MOCK_METHOD(void,
-              CancelItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
               CopyImageToClipboard,
               (const HoldingSpaceItem& item, SuccessCallback callback),
               (override));
@@ -55,19 +51,11 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
                SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
-              PauseItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
               PinFiles,
               (const std::vector<base::FilePath>& file_paths),
               (override));
   MOCK_METHOD(void,
               PinItems,
-              (const std::vector<const HoldingSpaceItem*>& items),
-              (override));
-  MOCK_METHOD(void,
-              ResumeItems,
               (const std::vector<const HoldingSpaceItem*>& items),
               (override));
   MOCK_METHOD(void,

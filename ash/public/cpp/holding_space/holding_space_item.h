@@ -6,8 +6,8 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_ITEM_H_
 
 #include <memory>
-#include <set>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -16,6 +16,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -33,6 +34,41 @@ class HoldingSpaceImage;
 // Contains data needed to display a single item in the holding space UI.
 class ASH_PUBLIC_EXPORT HoldingSpaceItem {
  public:
+  // Models a command for an in-progress item which is shown in the item's
+  // context menu and possibly, in the case of cancel/pause/resume, as primary/
+  // secondary actions on the item's view itself.
+  struct InProgressCommand {
+   public:
+    using Handler =
+        base::RepeatingCallback<void(const HoldingSpaceItem* item,
+                                     HoldingSpaceCommandId command_id)>;
+
+    InProgressCommand(HoldingSpaceCommandId command_id,
+                      int label_id,
+                      const gfx::VectorIcon* icon,
+                      Handler handler);
+
+    InProgressCommand(const InProgressCommand& other);
+
+    InProgressCommand& operator=(const InProgressCommand& other);
+
+    ~InProgressCommand();
+
+    bool operator==(const InProgressCommand& other) const;
+
+    // The identifier for the command.
+    HoldingSpaceCommandId command_id;
+
+    // The identifier for the label to be displayed for the command.
+    int label_id;
+
+    // The icon to be displayed for the command.
+    const gfx::VectorIcon* icon;
+
+    // The handler to be invoked to perform command execution.
+    Handler handler;
+  };
+
   // Items types supported by the holding space.
   // NOTE: These values are recorded in histograms and persisted in preferences
   // so append new values to the end and do not change the meaning of existing
@@ -149,7 +185,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // context menu and possibly, in the case of cancel/pause/resume, as primary/
   // secondary actions on the item view itself.
   bool SetInProgressCommands(
-      std::set<HoldingSpaceCommandId> in_progress_commands);
+      std::vector<InProgressCommand> in_progress_commands);
 
   // Sets the `progress_` of the item, returning `true` if a change occurred or
   // `false` to indicate no-op.
@@ -183,7 +219,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const HoldingSpaceProgress& progress() const { return progress_; }
 
-  const std::set<HoldingSpaceCommandId>& in_progress_commands() const {
+  const std::vector<InProgressCommand>& in_progress_commands() const {
     return in_progress_commands_;
   }
 
@@ -230,7 +266,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // The commands for an in-progress item which are shown in the item's context
   // menu and possibly, in the case of cancel/pause/resume, as primary/secondary
   // actions on the item's view itself.
-  std::set<HoldingSpaceCommandId> in_progress_commands_;
+  std::vector<InProgressCommand> in_progress_commands_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

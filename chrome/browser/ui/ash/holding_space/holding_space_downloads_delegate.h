@@ -44,11 +44,6 @@ class HoldingSpaceDownloadsDelegate
       const HoldingSpaceDownloadsDelegate&) = delete;
   ~HoldingSpaceDownloadsDelegate() override;
 
-  // Attempts to cancel/pause/resume the download underlying the given `item`.
-  void Cancel(const HoldingSpaceItem* item);
-  void Pause(const HoldingSpaceItem* item);
-  void Resume(const HoldingSpaceItem* item);
-
   // Attempts to mark the download underlying the given `item` to open when
   // complete. Returns `absl::nullopt` on success or the reason if the attempt
   // was not successful.
@@ -114,6 +109,11 @@ class HoldingSpaceDownloadsDelegate
   // a dangerous or mixed content state.
   void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download,
                                       bool invalidate_image);
+
+  // Attempts to cancel/pause/resume the download underlying the given `item`.
+  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
 
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>

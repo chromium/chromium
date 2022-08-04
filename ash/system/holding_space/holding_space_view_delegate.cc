@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_drag_util.h"
@@ -20,6 +21,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -492,21 +494,16 @@ void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
   data->SetFilenames(filenames);
 }
 
-void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
+void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
   const std::vector<const HoldingSpaceItem*> items(GetItems(GetSelection()));
   DCHECK_GE(items.size(), 1u);
 
+  const auto command_id = static_cast<HoldingSpaceCommandId>(command);
   HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
-  switch (static_cast<HoldingSpaceCommandId>(command_id)) {
-    case HoldingSpaceCommandId::kCancelItem:
-      client->CancelItems(items);
-      break;
+  switch (command_id) {
     case HoldingSpaceCommandId::kCopyImageToClipboard:
       DCHECK_EQ(items.size(), 1u);
       client->CopyImageToClipboard(*items.front(), base::DoNothing());
-      break;
-    case HoldingSpaceCommandId::kPauseItem:
-      client->PauseItems(items);
       break;
     case HoldingSpaceCommandId::kPinItem:
       client->PinItems(items);
@@ -524,9 +521,6 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
           },
           std::cref(items)));
       break;
-    case HoldingSpaceCommandId::kResumeItem:
-      client->ResumeItems(items);
-      break;
     case HoldingSpaceCommandId::kShowInFolder:
       DCHECK_EQ(items.size(), 1u);
       client->ShowItemInFolder(*items.front(), base::DoNothing());
@@ -535,7 +529,14 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command_id, int event_flags) {
       client->UnpinItems(items);
       break;
     default:
-      NOTREACHED();
+      if (holding_space_util::IsInProgressCommand(command_id)) {
+        for (const HoldingSpaceItem* item : items) {
+          if (!holding_space_util::ExecuteInProgressCommand(item, command_id))
+            NOTREACHED();
+        }
+      } else {
+        NOTREACHED();
+      }
       break;
   }
 }
@@ -554,9 +555,10 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
-  bool is_pausable = true;
-  bool is_resumable = true;
-  bool is_cancelable = true;
+  // Whether any item in `selection` is complete.
+  bool is_any_item_complete = false;
+
+  // Whether all items in `selection` are removable.
   bool is_removable = true;
 
   // A value for `is_pinnable` will only be present if the `selection` contains
@@ -564,29 +566,32 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   // items are ignored with respect to pin-/unpin-ability.
   absl::optional<bool> is_pinnable;
 
+  // A value for `in_progress_commands` will only be present if the `selection`
+  // does *not* contain any items which are complete.
+  absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+      in_progress_commands;
+
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   for (const HoldingSpaceItemView* view : selection) {
     const HoldingSpaceItem* item = view->item();
 
-    // NOTE: The "Pause"/"Resume"/"Cancel" commands are only currently supported
-    // by in-progress holding space items.
-    if (!item->progress().IsComplete()) {
-      // The "Pause" command should only be present if *all* of the selected
-      // holding space items are pausable.
-      is_pausable &= base::Contains(item->in_progress_commands(),
-                                    HoldingSpaceCommandId::kPauseItem);
-
-      // The "Resume" command should only be present if *all* of the selected
-      // holding space items are resumable.
-      is_resumable &= base::Contains(item->in_progress_commands(),
-                                     HoldingSpaceCommandId::kResumeItem);
-
-      // The "Cancel" command should only be present if *all* of the selected
-      // holding space items are cancelable.
-      is_cancelable &= base::Contains(item->in_progress_commands(),
-                                      HoldingSpaceCommandId::kCancelItem);
+    // In-progress commands are only available if supported by the entire
+    // `selection`. In-progress commands supported by only a subset of the
+    // `selection` are removed.
+    if (!item->progress().IsComplete() && !is_any_item_complete) {
+      if (!in_progress_commands.has_value()) {
+        in_progress_commands = item->in_progress_commands();
+      } else {
+        base::EraseIf(in_progress_commands.value(),
+                      [&](const HoldingSpaceItem::InProgressCommand&
+                              in_progress_command) {
+                        return !holding_space_util::SupportsInProgressCommand(
+                            item, in_progress_command.command_id);
+                      });
+      }
     } else {
-      is_pausable = is_resumable = is_cancelable = false;
+      in_progress_commands = absl::nullopt;
+      is_any_item_complete = true;
     }
 
     // The "Remove" command should only be present if *all* of the selected
@@ -616,28 +621,18 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   using MenuSectionModel = std::vector<MenuItemModel>;
   std::vector<MenuSectionModel> menu_sections(1);
 
-  if (is_pausable) {
-    menu_sections.back().emplace_back(
-        MenuItemModel{.command_id = HoldingSpaceCommandId::kPauseItem,
-                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE,
-                      .icon = kPauseIcon});
+  // In-progress commands.
+  if (in_progress_commands.has_value()) {
+    for (const HoldingSpaceItem::InProgressCommand& in_progress_command :
+         in_progress_commands.value()) {
+      menu_sections.back().emplace_back(
+          MenuItemModel{.command_id = in_progress_command.command_id,
+                        .label_id = in_progress_command.label_id,
+                        .icon = *in_progress_command.icon});
+    }
   }
 
-  if (is_resumable) {
-    menu_sections.back().emplace_back(
-        MenuItemModel{.command_id = HoldingSpaceCommandId::kResumeItem,
-                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME,
-                      .icon = kResumeIcon});
-  }
-
-  if (is_cancelable) {
-    menu_sections.back().emplace_back(
-        MenuItemModel{.command_id = HoldingSpaceCommandId::kCancelItem,
-                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL,
-                      .icon = kCancelIcon});
-  }
-
-  // The "Pause"/"Resume"/"Cancel" commands are separated from other commands.
+  // The in-progress commands are separated from other commands.
   if (!menu_sections.back().empty())
     menu_sections.emplace_back();
 

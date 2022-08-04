@@ -5,7 +5,6 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -17,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 namespace {
@@ -24,6 +24,13 @@ namespace {
 using UpdatedField = HoldingSpaceModelObserver::UpdatedField;
 
 // Helpers ---------------------------------------------------------------------
+
+HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
+    HoldingSpaceCommandId command_id) {
+  return HoldingSpaceItem::InProgressCommand(command_id, /*label_id=*/-1,
+                                             &gfx::kNoneIcon,
+                                             /*handler=*/base::DoNothing());
+}
 
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
@@ -244,8 +251,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
 
   // Update in-progress commands.
-  std::set<HoldingSpaceCommandId> in_progress_commands;
-  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
+  in_progress_commands.push_back(
+      CreateInProgressCommand(HoldingSpaceCommandId::kCancelItem));
   model()
       .UpdateItem(item_ptr->id())
       ->SetInProgressCommands(in_progress_commands);
@@ -291,7 +299,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
             cros_styles::ColorName::kTextColorAlert);
 
   // Update all attributes.
-  in_progress_commands.insert(HoldingSpaceCommandId::kPauseItem);
+  in_progress_commands.push_back(
+      CreateInProgressCommand(HoldingSpaceCommandId::kPauseItem));
   updated_file_path = base::FilePath("again_updated_file_path");
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
   model()
@@ -388,8 +397,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
   EXPECT_TRUE(item_ptr->in_progress_commands().empty());
 
   // Update in-progress commands.
-  std::set<HoldingSpaceCommandId> in_progress_commands;
-  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
+  in_progress_commands.push_back(
+      CreateInProgressCommand(HoldingSpaceCommandId::kCancelItem));
   model()
       .UpdateItem(item_ptr->id())
       ->SetInProgressCommands(in_progress_commands);
@@ -399,7 +409,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
   EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
 
   // Update in-progress commands again.
-  in_progress_commands.insert(HoldingSpaceCommandId::kPauseItem);
+  in_progress_commands.push_back(
+      CreateInProgressCommand(HoldingSpaceCommandId::kPauseItem));
   model()
       .UpdateItem(item_ptr->id())
       ->SetInProgressCommands(in_progress_commands);
@@ -410,7 +421,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
 
   // Update in-progress commands and progress to completion. Because the item is
   // no longer in progress, in-progress commands should be empty.
-  in_progress_commands.insert(HoldingSpaceCommandId::kResumeItem);
+  in_progress_commands.push_back(
+      CreateInProgressCommand(HoldingSpaceCommandId::kResumeItem));
   model()
       .UpdateItem(item_ptr->id())
       ->SetInProgressCommands(in_progress_commands)

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/containers/contains.h"
@@ -629,36 +630,6 @@ HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
     download_controller_ash->RemoveObserver(this);
 }
 
-void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
-  for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetHoldingSpaceItem() == item) {
-      in_progress_download->Cancel();
-      return;
-    }
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
-  for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetHoldingSpaceItem() == item) {
-      in_progress_download->Pause();
-      return;
-    }
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
-  for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetHoldingSpaceItem() == item) {
-      in_progress_download->Resume();
-      return;
-    }
-  }
-}
-
 absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
@@ -893,12 +864,25 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
     return;
 
   // Commands.
-  std::set<HoldingSpaceCommandId> in_progress_commands;
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   if (!in_progress_download->GetProgress().IsComplete()) {
-    in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
-    in_progress_commands.insert(in_progress_download->IsPaused()
-                                    ? HoldingSpaceCommandId::kResumeItem
-                                    : HoldingSpaceCommandId::kPauseItem);
+    in_progress_commands.push_back(
+        in_progress_download->IsPaused()
+            ? HoldingSpaceItem::InProgressCommand(
+                  HoldingSpaceCommandId::kResumeItem,
+                  IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME, &kResumeIcon,
+                  base::BindRepeating(&HoldingSpaceDownloadsDelegate::Resume,
+                                      weak_factory_.GetWeakPtr()))
+            : HoldingSpaceItem::InProgressCommand(
+                  HoldingSpaceCommandId::kPauseItem,
+                  IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE, &kPauseIcon,
+                  base::BindRepeating(&HoldingSpaceDownloadsDelegate::Pause,
+                                      weak_factory_.GetWeakPtr())));
+    in_progress_commands.push_back(HoldingSpaceItem::InProgressCommand(
+        HoldingSpaceCommandId::kCancelItem,
+        IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL, &kCancelIcon,
+        base::BindRepeating(&HoldingSpaceDownloadsDelegate::Cancel,
+                            weak_factory_.GetWeakPtr())));
   }
 
   // Update.
@@ -914,6 +898,48 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetSecondaryText(in_progress_download->GetSecondaryText())
       .SetSecondaryTextColor(in_progress_download->GetSecondaryTextColor())
       .SetProgress(in_progress_download->GetProgress());
+}
+
+void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
+                                           HoldingSpaceCommandId command_id) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id);
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      holding_space_metrics::RecordItemAction(
+          {item}, holding_space_metrics::ItemAction::kCancel);
+      in_progress_download->Cancel();
+      return;
+    }
+  }
+}
+
+void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
+                                          HoldingSpaceCommandId command_id) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id);
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      holding_space_metrics::RecordItemAction(
+          {item}, holding_space_metrics::ItemAction::kPause);
+      in_progress_download->Pause();
+      return;
+    }
+  }
+}
+
+void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item,
+                                           HoldingSpaceCommandId command_id) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id);
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      holding_space_metrics::RecordItemAction(
+          {item}, holding_space_metrics::ItemAction::kResume);
+      in_progress_download->Resume();
+      return;
+    }
+  }
 }
 
 }  // namespace ash

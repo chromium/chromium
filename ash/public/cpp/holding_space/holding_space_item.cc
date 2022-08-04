@@ -33,6 +33,41 @@ constexpr char kVersionPath[] = "version";
 
 }  // namespace
 
+// HoldingSpaceItem::InProgressCommand -----------------------------------------
+
+HoldingSpaceItem::InProgressCommand::InProgressCommand(
+    HoldingSpaceCommandId command_id,
+    int label_id,
+    const gfx::VectorIcon* icon,
+    Handler handler)
+    : command_id(command_id),
+      label_id(label_id),
+      icon(icon),
+      handler(std::move(handler)) {
+  DCHECK(holding_space_util::IsInProgressCommand(command_id));
+}
+
+HoldingSpaceItem::InProgressCommand::InProgressCommand(
+    const InProgressCommand& other)
+    : command_id(other.command_id),
+      label_id(other.label_id),
+      icon(other.icon),
+      handler(other.handler) {}
+
+HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
+
+HoldingSpaceItem::InProgressCommand&
+HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand& other) =
+    default;
+
+bool HoldingSpaceItem::InProgressCommand::operator==(
+    const InProgressCommand& other) const {
+  return command_id == other.command_id && label_id == other.label_id &&
+         icon == other.icon && handler == other.handler;
+}
+
+// HoldingSpaceItem ------------------------------------------------------------
+
 HoldingSpaceItem::~HoldingSpaceItem() {
   deletion_callback_list_.Notify();
 }
@@ -246,9 +281,12 @@ bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
 }
 
 bool HoldingSpaceItem::SetInProgressCommands(
-    std::set<HoldingSpaceCommandId> in_progress_commands) {
+    std::vector<InProgressCommand> in_progress_commands) {
   DCHECK(std::all_of(in_progress_commands.begin(), in_progress_commands.end(),
-                     &holding_space_util::IsInProgressCommand));
+                     [](const InProgressCommand& in_progress_command) {
+                       return holding_space_util::IsInProgressCommand(
+                           in_progress_command.command_id);
+                     }));
 
   if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands)
     return false;

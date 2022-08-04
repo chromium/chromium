@@ -5,7 +5,6 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -18,6 +17,7 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
@@ -132,8 +132,10 @@ TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 
   // It should be possible to update commands to a new value.
-  std::set<HoldingSpaceCommandId> in_progress_commands;
-  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
+  in_progress_commands.push_back(HoldingSpaceItem::InProgressCommand(
+      HoldingSpaceCommandId::kCancelItem, /*label_id=*/-1, &gfx::kNoneIcon,
+      /*handler=*/base::DoNothing()));
   EXPECT_TRUE(holding_space_item->SetInProgressCommands(in_progress_commands));
   EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);
 

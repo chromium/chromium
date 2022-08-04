@@ -65,7 +65,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     // context menu and possibly, in the case of cancel/pause/resume, as
     // primary/secondary actions on the item view itself.
     ScopedItemUpdate& SetInProgressCommands(
-        std::set<HoldingSpaceCommandId> in_progress_commands);
+        std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands);
 
     // Sets whether the image for the item should be forcibly invalidated and
     // returns a reference to `this`.
@@ -100,7 +100,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<base::FilePath> file_path_;
     absl::optional<GURL> file_system_url_;
-    absl::optional<std::set<HoldingSpaceCommandId>> in_progress_commands_;
+    absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+        in_progress_commands_;
     absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
     absl::optional<absl::optional<cros_styles::ColorName>>

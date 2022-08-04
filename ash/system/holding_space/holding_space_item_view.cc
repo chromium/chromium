@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -462,7 +463,10 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
-    HoldingSpaceController::Get()->client()->CancelItems({item()});
+    if (!holding_space_util::ExecuteInProgressCommand(
+            item(), HoldingSpaceCommandId::kCancelItem)) {
+      NOTREACHED();
+    }
     return;
   }
 
@@ -498,9 +502,8 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   // NOTE: Only in-progress items currently support cancellation.
   const bool is_item_in_progress = !item()->progress().IsComplete();
   primary_action_cancel_->SetVisible(
-      is_item_in_progress &&
-      base::Contains(item()->in_progress_commands(),
-                     HoldingSpaceCommandId::kCancelItem));
+      is_item_in_progress && holding_space_util::SupportsInProgressCommand(
+                                 item(), HoldingSpaceCommandId::kCancelItem));
 
   // Pin.
   const bool is_item_pinned =

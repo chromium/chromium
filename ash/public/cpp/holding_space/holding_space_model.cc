@@ -22,7 +22,7 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
 
   // Cache computed fields.
   const std::u16string accessible_name = item_->GetAccessibleName();
-  const std::set<HoldingSpaceCommandId> in_progress_commands =
+  const std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands =
       item_->in_progress_commands();
 
   // Update accessible name.
@@ -107,9 +107,13 @@ HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetInProgressCommands(
-    std::set<HoldingSpaceCommandId> in_progress_commands) {
-  DCHECK(std::all_of(in_progress_commands.begin(), in_progress_commands.end(),
-                     &holding_space_util::IsInProgressCommand));
+    std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands) {
+  DCHECK(std::all_of(
+      in_progress_commands.begin(), in_progress_commands.end(),
+      [](const HoldingSpaceItem::InProgressCommand& in_progress_command) {
+        return holding_space_util::IsInProgressCommand(
+            in_progress_command.command_id);
+      }));
   in_progress_commands_ = std::move(in_progress_commands);
   return *this;
 }

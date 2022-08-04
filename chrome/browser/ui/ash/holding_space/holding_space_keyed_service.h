@@ -154,11 +154,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Removes the holding space item with the specified `id` from the model.
   void RemoveItem(const std::string& id);
 
-  // Attempts to cancel/pause/resume the specified holding space `item`.
-  void CancelItem(const HoldingSpaceItem* item);
-  void PauseItem(const HoldingSpaceItem* item);
-  void ResumeItem(const HoldingSpaceItem* item);
-
   // Attempts to mark the specified holding space `item` to open when complete.
   // Returns `absl::nullopt` on success or the reason if the attempt was not
   // successful.
