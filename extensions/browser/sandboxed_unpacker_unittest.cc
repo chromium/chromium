@@ -20,6 +20,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
@@ -82,12 +83,9 @@ class IllegalImagePathInserter
 
 class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
  public:
-  void WaitForUnpack() {
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
-    quit_closure_ = runner->QuitClosure();
-    runner->Run();
-  }
+  explicit MockSandboxedUnpackerClient(
+      scoped_refptr<base::SequencedTaskRunner> callback_runner)
+      : callback_runner_(callback_runner) {}
 
   base::FilePath temp_dir() const { return temp_dir_; }
   std::u16string unpack_error_message() const {
@@ -117,10 +115,16 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
     should_compute_hashes_ = should_compute_hashes;
   }
 
+  void SetQuitClosure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
  private:
   ~MockSandboxedUnpackerClient() override {
     if (deleted_tracker_)
       *deleted_tracker_ = true;
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
   }
 
   void ShouldComputeHashesForOffWebstoreExtension(
@@ -137,14 +141,15 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
                        declarative_net_request::RulesetInstallPrefs
                            ruleset_install_prefs) override {
     temp_dir_ = temp_dir;
-    std::move(quit_closure_).Run();
+    callback_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 
   void OnUnpackFailure(const CrxInstallError& error) override {
     error_ = error;
-    std::move(quit_closure_).Run();
+    callback_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 
+  scoped_refptr<base::SequencedTaskRunner> callback_runner_;
   absl::optional<CrxInstallError> error_;
   base::OnceClosure quit_closure_;
   base::FilePath temp_dir_;
@@ -155,15 +160,21 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 class SandboxedUnpackerTest : public ExtensionsTest {
  public:
   SandboxedUnpackerTest()
-      : ExtensionsTest(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : ExtensionsTest(content::BrowserTaskEnvironment::IO_MAINLOOP),
+        unpacker_thread_("Unpacker Thread") {}
 
   void SetUp() override {
     ExtensionsTest::SetUp();
+
+    unpacker_thread_.Start();
+    unpacker_task_runner_ = unpacker_thread_.task_runner();
+
     ASSERT_TRUE(extensions_dir_.CreateUniqueTempDir());
     in_process_utility_thread_helper_ =
         std::make_unique<content::InProcessUtilityThreadHelper>();
     // It will delete itself.
-    client_ = new MockSandboxedUnpackerClient;
+    client_ = new MockSandboxedUnpackerClient(
+        task_environment()->GetMainThreadTaskRunner());
 
     InitSandboxedUnpacker();
 
@@ -175,10 +186,9 @@ class SandboxedUnpackerTest : public ExtensionsTest {
   }
 
   void InitSandboxedUnpacker() {
-    sandboxed_unpacker_ =
-        new SandboxedUnpacker(mojom::ManifestLocation::kInternal,
-                              Extension::NO_FLAGS, extensions_dir_.GetPath(),
-                              base::ThreadTaskRunnerHandle::Get(), client_);
+    sandboxed_unpacker_ = new SandboxedUnpacker(
+        mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+        extensions_dir_.GetPath(), unpacker_task_runner_, client_);
   }
 
   void TearDown() override {
@@ -189,6 +199,8 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     base::RunLoop().RunUntilIdle();
     ExtensionsTest::TearDown();
     in_process_utility_thread_helper_.reset();
+
+    unpacker_thread_.Stop();
   }
 
   base::FilePath GetCrxFullPath(const std::string& crx_name) {
@@ -204,10 +216,15 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     base::FilePath crx_path = GetCrxFullPath(crx_name);
     extensions::CRXFileInfo crx_info(crx_path, GetTestVerifierFormat());
     crx_info.expected_hash = package_hash;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+
+    base::RunLoop run_loop;
+    client_->SetQuitClosure(run_loop.QuitClosure());
+
+    unpacker_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx,
                                   sandboxed_unpacker_, crx_info));
-    client_->WaitForUnpack();
+    // Wait for unpack
+    run_loop.Run();
   }
 
   void SetupUnpackerWithDirectory(const std::string& crx_name) {
@@ -219,11 +236,17 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     std::string fake_id = crx_file::id_util::GenerateId(crx_name);
     std::string fake_public_key;
     base::Base64Encode(std::string(2048, 'k'), &fake_public_key);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+
+    base::RunLoop run_loop;
+    client_->SetQuitClosure(run_loop.QuitClosure());
+
+    unpacker_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithDirectory,
                                   sandboxed_unpacker_, fake_id, fake_public_key,
                                   temp_dir.Take()));
-    client_->WaitForUnpack();
+
+    // Wait for unpack
+    run_loop.Run();
   }
 
   bool InstallSucceeded() const { return !client_->temp_dir().empty(); }
@@ -256,9 +279,17 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     client_->set_deleted_tracker(&client_deleted);
     SetupUnpacker(package_name, "");
     EXPECT_EQ(GetInstallErrorMessage().empty(), expect_success);
+
+    base::RunLoop run_loop;
+    client_->SetQuitClosure(run_loop.QuitClosure());
+
     // Remove our reference to |sandboxed_unpacker_|, it should get deleted
     // since/ it's the last reference.
     sandboxed_unpacker_ = nullptr;
+
+    // Wait for |client_| dtor.
+    run_loop.Run();
+
     // The SandboxedUnpacker should have been deleted and deleted the client.
     EXPECT_TRUE(client_deleted);
   }
@@ -287,6 +318,13 @@ class SandboxedUnpackerTest : public ExtensionsTest {
       in_process_utility_thread_helper_;
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+
+ private:
+  // The thread where the sandboxed unpacker runs. This provides test coverage
+  // in an environment similar to what we use in production.
+  base::Thread unpacker_thread_;
+
+  scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_;
 };
 
 TEST_F(SandboxedUnpackerTest, EmptyDefaultLocale) {
@@ -424,13 +462,7 @@ TEST_F(SandboxedUnpackerTest, FromDirWithCatalogsSuccess) {
   EXPECT_EQ(CrxInstallErrorType::NONE, GetInstallErrorType());
 }
 
-// TODO(crbug.com/1348091): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_FailHashCheck DISABLED_FailHashCheck
-#else
-#define MAYBE_FailHashCheck FailHashCheck
-#endif
-TEST_F(SandboxedUnpackerTest, MAYBE_FailHashCheck) {
+TEST_F(SandboxedUnpackerTest, FailHashCheck) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       extensions::switches::kEnableCrxHashCheck);
   SetupUnpacker("good_l10n.crx", std::string(64, '0'));
