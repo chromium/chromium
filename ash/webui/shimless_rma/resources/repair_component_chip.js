@@ -60,6 +60,13 @@ export class RepairComponentChip extends RepairComponentChipBase {
       /** @type {string} */
       componentIdentifier: {type: String, value: ''},
 
+      /** @type {number} */
+      uniqueId: {
+        reflectToAttribute: true,
+        type: Number,
+        value: '',
+      },
+
       /** @type {boolean} */
       isFirstClickableComponent: {
         type: Boolean,
@@ -73,6 +80,14 @@ export class RepairComponentChip extends RepairComponentChipBase {
   /** @protected */
   onComponentButtonClicked_() {
     this.checked = !this.checked;
+
+    // Notify the page that the component chip was clicked, so that the page can
+    // put the focus on it.
+    this.dispatchEvent(new CustomEvent('click-repair-component-button', {
+      bubbles: true,
+      composed: true,
+      detail: this.uniqueId,
+    }));
   }
 
   /** @private */
