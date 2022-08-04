@@ -253,7 +253,7 @@ TEST_F(LegacyAppCommandWebImplTest, CheckLegacyTypeLibAndInterfaceExist) {
 TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebUserClass)),
-            L"{22181302-A8A6-4f84-A541-E5CBFC70CC43}");
+            L"{22181302-A8A6-4F84-A541-E5CBFC70CC43}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(GoogleUpdate3WebSystemClass)),
             L"{8A1D4361-2C08-4700-A351-3EAA9CBFF5E4}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusUserClass)),
@@ -261,15 +261,15 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(PolicyStatusSystemClass)),
             L"{521FDB42-7130-4806-822A-FC5163FAD983}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(ProcessLauncherClass)),
-            L"{ABC01078-F197-4b0b-ADBC-CFE684B39C82}");
+            L"{ABC01078-F197-4B0B-ADBC-CFE684B39C82}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(ICurrentState)),
             L"{247954F9-9EDC-4E68-8CC3-150C2B89EADF}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IGoogleUpdate3Web)),
             L"{494B20CF-282E-4BDD-9F5D-B70CB09D351E}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IAppBundleWeb)),
-            L"{DD42475D-6D46-496a-924E-BD5630B4CBBA}");
+            L"{DD42475D-6D46-496A-924E-BD5630B4CBBA}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IAppWeb)),
-            L"{18D0F672-18B4-48e6-AD36-6E6BF01DBBC4}");
+            L"{18D0F672-18B4-48E6-AD36-6E6BF01DBBC4}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IAppCommandWeb)),
             L"{8476CE12-AE1F-4198-805C-BA0F9B783F57}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IPolicyStatus)),
@@ -281,7 +281,7 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IPolicyStatusValue)),
             L"{27634814-8E41-4C35-8577-980134A96544}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IProcessLauncher)),
-            L"{128C2DA6-2BC0-44c0-B3F6-4EC22E647964}");
+            L"{128C2DA6-2BC0-44C0-B3F6-4EC22E647964}");
   EXPECT_EQ(base::win::WStringFromGUID(__uuidof(IProcessLauncher2)),
             L"{D106AB5F-A70E-400E-A21B-96208C1D8DBB}");
 #else
