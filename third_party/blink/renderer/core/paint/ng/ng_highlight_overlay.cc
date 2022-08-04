@@ -342,10 +342,11 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     return result;
   }
   if (originating.from < edges.front().offset) {
-    result.push_back(HighlightPart{originating_layer,
-                                   originating.from,
-                                   edges.front().offset,
-                                   {originating_layer}});
+    result.push_back(
+        HighlightPart{originating_layer,
+                      originating.from,
+                      ClampOffset(edges.front().offset, originating),
+                      {originating_layer}});
   }
   for (const HighlightEdge& edge : edges) {
     // If there is actually some text between the previous and current edges...
@@ -376,10 +377,11 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     prev_offset.emplace(edge.offset);
   }
   if (edges.back().offset < originating.to) {
-    result.push_back(HighlightPart{originating_layer,
-                                   edges.back().offset,
-                                   originating.to,
-                                   {originating_layer}});
+    result.push_back(
+        HighlightPart{originating_layer,
+                      ClampOffset(edges.back().offset, originating),
+                      originating.to,
+                      {originating_layer}});
   }
   return result;
 }

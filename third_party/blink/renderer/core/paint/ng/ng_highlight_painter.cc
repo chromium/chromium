@@ -39,13 +39,10 @@ using HighlightLayer = NGHighlightOverlay::HighlightLayer;
 using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
-DocumentMarkerVector ComputeMarkersToPaint(Node* node, bool is_ellipsis) {
+DocumentMarkerVector ComputeMarkersToPaint(Node* node) {
   // TODO(yoichio): Handle first-letter
   auto* text_node = DynamicTo<Text>(node);
   if (!text_node)
-    return DocumentMarkerVector();
-  // We don't paint any marker on ellipsis.
-  if (is_ellipsis)
     return DocumentMarkerVector();
 
   DocumentMarkerController& document_marker_controller =
@@ -53,13 +50,10 @@ DocumentMarkerVector ComputeMarkersToPaint(Node* node, bool is_ellipsis) {
   return document_marker_controller.ComputeMarkersToPaint(*text_node);
 }
 
-DocumentMarkerVector MarkersFor(Node* node,
-                                bool is_ellipsis,
-                                DocumentMarker::MarkerType type) {
-  // TODO(yoichio): Handle first-letter
+DocumentMarkerVector MarkersFor(Node* node, DocumentMarker::MarkerType type) {
+  // TODO(crbug.com/17528) handle ::first-letter
   const auto* text_node = DynamicTo<Text>(node);
-  // We don't paint any marker on ellipsis.
-  if (!text_node || is_ellipsis)
+  if (!text_node)
     return DocumentMarkerVector();
 
   DocumentMarkerController& controller = node->GetDocument().Markers();
@@ -364,16 +358,21 @@ NGHighlightPainter::NGHighlightPainter(
           PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground)),
       background_auto_dark_mode_(
           PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground)),
-      markers_(ComputeMarkersToPaint(node_, fragment_item_.IsEllipsis())),
       skip_backgrounds_(is_printing ||
                         paint_info.phase == PaintPhase::kTextClip ||
                         paint_info.phase == PaintPhase::kSelectionDragImage) {
-  if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-    bool is_ellipsis = fragment_item_.IsEllipsis();
-    target_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kTextFragment);
-    spelling_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kSpelling);
-    grammar_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kGrammar);
-    custom_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kCustomHighlight);
+  // Custom highlights and marker-based highlights are defined in terms of
+  // DOM ranges in a Text node. Generated text either has no Text node or does
+  // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
+  // TODO(crbug.com/17528) handle ::first-letter
+  if (!fragment_item_.IsGeneratedText()) {
+    markers_ = ComputeMarkersToPaint(node_);
+    if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+      target_ = MarkersFor(node_, DocumentMarker::kTextFragment);
+      spelling_ = MarkersFor(node_, DocumentMarker::kSpelling);
+      grammar_ = MarkersFor(node_, DocumentMarker::kGrammar);
+      custom_ = MarkersFor(node_, DocumentMarker::kCustomHighlight);
+    }
   }
 
   paint_case_ = ComputePaintCase();
