@@ -2016,6 +2016,59 @@ CommandHandler.COMMANDS_['get-info'] = new (class extends FilesCommand {
 })();
 
 /**
+ * Displays the Data Leak Prevention (DLP) Restriction details.
+ */
+CommandHandler.COMMANDS_['dlp-restriction-details'] =
+    new (class extends FilesCommand {
+      execute(event, fileManager) {
+        const entries = fileManager.getSelection().entries;
+
+        const metadata =
+            fileManager.metadataModel.getCache(entries, ['sourceUrl']);
+        if (!metadata || metadata.length !== 1) {
+          return;
+        }
+        const sourceUrl = metadata[0].sourceUrl;
+        if (sourceUrl) {
+          try {
+            chrome.fileManagerPrivate.showDlpRestrictionDetails(sourceUrl);
+          } catch (error) {
+            console.warn('Error showing DlpRestrictionDetails ', error);
+          }
+        }
+      }
+
+      /** @override */
+      canExecute(event, fileManager) {
+        if (!util.isDlpEnabled()) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
+
+        const entries = fileManager.getSelection().entries;
+
+        // Show this item only when one file is selected.
+        if (entries.length !== 1) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
+
+        const metadata =
+            fileManager.metadataModel.getCache(entries, ['isDlpRestricted']);
+        if (!metadata || metadata.length !== 1) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+        }
+
+        const isDlpRestricted = metadata[0].isDlpRestricted;
+        event.canExecute = isDlpRestricted;
+        event.command.setHidden(!isDlpRestricted);
+      }
+    })();
+
+/**
  * Focuses search input box.
  */
 CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {

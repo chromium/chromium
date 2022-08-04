@@ -54,6 +54,7 @@ testcase.dlpShowManagedIcon = async () => {
   // Setup the restrictions.
   await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
 
+  // Open Files app.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
@@ -61,4 +62,39 @@ testcase.dlpShowManagedIcon = async () => {
   // class, which means that the icon is displayed.
   await remoteCall.waitForElementsCount(
       appId, ['#file-list .dlp-managed-icon'], 3);
+};
+
+/**
+ * Tests that if the file is restricted by DLP, the Restriction details context
+ * menu item appears and is enabled.
+ */
+testcase.dlpContextMenuRestrictionDetails = async () => {
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
+
+  const entry = ENTRIES.hello;
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Wait for the DLP managed icon to be shown - this also means metadata has
+  // been cached and can be used to show the context menu command.
+  await remoteCall.waitForElementsCount(
+      appId, ['#file-list .dlp-managed-icon'], 1);
+
+  // Select the file.
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
+
+  // Right-click on the file.
+  await remoteCall.waitAndRightClick(appId, ['.table-row[selected]']);
+
+  // Wait for the context menu to appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Wait for the context menu command option to appear.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden])' +
+          ' [command="#dlp-restriction-details"]' +
+          ':not([hidden]):not([disabled])');
 };

@@ -335,6 +335,12 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
               ::testing::Return(policy::DlpRulesManager::Level::kBlock));
       return true;
     }
+    if (name == "setIsRestrictedByAnyRuleBlocked") {
+      EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
+          .WillRepeatedly(
+              ::testing::Return(policy::DlpRulesManager::Level::kBlock));
+      return true;
+    }
     return false;
   }
 
@@ -674,6 +680,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkCutDisabledForReadOnlyDocument").FilesSwa(),
         TestCase("checkCutDisabledForReadOnlyFile"),
         TestCase("checkCutDisabledForReadOnlyFile").FilesSwa(),
+        TestCase("checkDlpRestrictionDetailsDisabledForNonDlpFiles"),
+        TestCase("checkDlpRestrictionDetailsDisabledForNonDlpFiles").FilesSwa(),
         TestCase("checkCutDisabledForReadOnlyFolder"),
         TestCase("checkCutDisabledForReadOnlyFolder").FilesSwa(),
         TestCase("checkPasteIntoFolderEnabledForReadWriteFolder"),
@@ -1274,8 +1282,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
-    ::testing::Values(TestCase("transferShowDlpToast").EnableDlp(),
-                      TestCase("dlpShowManagedIcon").EnableDlp()));
+    ::testing::Values(
+        TestCase("transferShowDlpToast").EnableDlp(),
+        TestCase("dlpShowManagedIcon").EnableDlp(),
+        TestCase("dlpContextMenuRestrictionDetails").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */
