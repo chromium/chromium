@@ -34,13 +34,13 @@ static_assert(kNumberOfBuffersInCaptureQueue <= 16,
 
 inline void conditionally_set_flags(__u8* flags,
                                     const bool condition,
-                                    const bool mask) {
+                                    const __u8 mask) {
   *flags |= (condition ? mask : 0);
 }
 
 inline void conditionally_set_u32_flags(__u32* flags,
                                         const bool condition,
-                                        const bool mask) {
+                                        const __u32 mask) {
   *flags |= (condition ? mask : 0);
 }
 
