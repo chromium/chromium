@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnTermsScreen) {
     OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
     test::OobeJS().ClickOnPath(kArcTosBackButton);
   }
-  test::WaitForNetworkSelectionScreen();
+  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.

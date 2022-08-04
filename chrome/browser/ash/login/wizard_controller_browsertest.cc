@@ -2796,12 +2796,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, ArcTosBackPressed) {
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   EXPECT_CALL(*mock_arc_terms_of_service_screen_, HideImpl()).Times(1);
-  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
 
   mock_arc_terms_of_service_screen_->ExitScreen(
       ArcTermsOfServiceScreen::Result::BACK);
 
-  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 

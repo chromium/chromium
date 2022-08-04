@@ -1766,7 +1766,7 @@ void WizardController::OnArcTermsOfServiceScreenExit(
     case ArcTermsOfServiceScreen::Result::BACK:
       DCHECK(demo_setup_controller_);
       DCHECK(StartupUtils::IsEulaAccepted());
-      ShowNetworkScreen();
+      ShowDemoModePreferencesScreen();
       break;
   }
 }
