@@ -73,6 +73,9 @@ void RecordBookmarkFolderOpen(BookmarkLaunchLocation location);
 // Records the user opening the apps page for UMA purposes.
 void RecordBookmarkAppsPageOpen(BookmarkLaunchLocation location);
 
+// Records that the user edited or renamed a bookmark.
+void RecordBookmarkEdited(BookmarkLaunchLocation location);
+
 // Records the user adding a bookmark via star action, drag and drop, via
 // Bookmark this tab... and Bookmark all tabs... buttons. For the Bookmark
 // open tabs... the action is recorded only once and not as many times as

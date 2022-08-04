@@ -64,6 +64,11 @@ void RecordBookmarkAppsPageOpen(BookmarkLaunchLocation location) {
   }
 }
 
+void RecordBookmarkEdited(BookmarkLaunchLocation location) {
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EditLocation", location,
+                            BOOKMARK_LAUNCH_LOCATION_LIMIT);
+}
+
 void RecordBookmarksAdded(const Profile* profile) {
   profile_metrics::BrowserProfileType profile_type = GetMetricProfile(profile);
   UMA_HISTOGRAM_ENUMERATION("Bookmarks.AddedPerProfileType", profile_type);

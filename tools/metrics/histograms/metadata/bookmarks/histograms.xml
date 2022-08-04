@@ -203,6 +203,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
+    expires_after="2023-01-15">
+  <owner>dfried@chromium.org</owner>
+  <owner>mickeyburks@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Logs a UI location from which a bookmark is edited.</summary>
+</histogram>
+
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
     expires_after="2022-12-11">
   <owner>ianwen@chromium.org</owner>

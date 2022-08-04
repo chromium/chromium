@@ -4,6 +4,7 @@
 
 // DELETE LATER
 #include "base/logging.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
@@ -256,6 +257,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Edit"));
+      RecordBookmarkEdited(opened_from_);
 
       if (selection_.size() != 1) {
         NOTREACHED();
