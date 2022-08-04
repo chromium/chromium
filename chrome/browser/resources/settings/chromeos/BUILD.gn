@@ -111,6 +111,7 @@ ts_library("build_ts") {
   extra_deps = [
     ":preprocess_gen_ts_files",
     ":preprocess_src_ts_files",
+    "//ash/webui/common/resources:generate_definitions",
   ]
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
