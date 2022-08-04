@@ -3430,7 +3430,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_arm64',
+          'mac_12_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
@@ -3448,7 +3448,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_beta_arm64',
+          'mac_beta_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
