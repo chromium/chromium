@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 
@@ -56,14 +57,13 @@ void FuseBoxMounter::AttachStorage(const std::string& subdir,
     return;
   }
 
-  constexpr auto strip_trailing_slash_from = [](std::string string) {
-    if (string.size() && base::EndsWith(string, "/"))
-      string.resize(string.size() - 1);
-    return string;
-  };
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  if (fusebox_server) {
+    fusebox_server->RegisterFSURLPrefix(subdir, url, read_only);
+  }
 
-  std::string name = base::JoinString(
-      {subdir, strip_trailing_slash_from(url), read_only ? "ro" : ""}, " ");
+  std::string name =
+      base::JoinString({subdir, subdir, read_only ? "ro" : ""}, " ");
 
   client->AttachStorage(name, std::move(callback));
 }
@@ -76,6 +76,11 @@ void FuseBoxMounter::DetachStorage(const std::string& subdir,
   if (!mounted_) {
     std::move(callback).Run(ENODEV);
     return;
+  }
+
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  if (fusebox_server) {
+    fusebox_server->UnregisterFSURLPrefix(subdir);
   }
 
   client->DetachStorage(subdir, std::move(callback));
