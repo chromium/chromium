@@ -208,6 +208,7 @@ component("cookies_mojom_support") {
   ]
   deps = [
     ":crash_keys",
+    ":first_party_sets_mojom_support",
     ":schemeful_site_mojom_support",
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
@@ -284,6 +285,21 @@ component("schemeful_site_mojom_support") {
   defines = [ "IS_NETWORK_CPP_SCHEMEFUL_IMPL" ]
 }
 
+# This component is separate from cpp_base as it is a dependency of
+# //services/network/public/mojom:cookies_mojom.
+component("first_party_sets_mojom_support") {
+  sources = [
+    "first_party_sets_mojom_traits.cc",
+    "first_party_sets_mojom_traits.h",
+  ]
+  deps = [
+    ":schemeful_site_mojom_support",
+    "//net",
+    "//services/network/public/mojom:mojom_first_party_sets_shared",
+  ]
+  defines = [ "IS_FIRST_PARTY_SETS_MOJOM_TRAITS_IMPL" ]
+}
+
 component("cpp_base") {
   output_name = "network_cpp_base"
 
@@ -350,11 +366,13 @@ component("cpp_base") {
   ]
   deps = [
     ":buildflags",
+    ":first_party_sets_mojom_support",
     "//base",
     "//ipc",
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:cookies_mojom",
+    "//services/network/public/mojom:mojom_first_party_sets",
     "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
@@ -431,6 +449,7 @@ source_set("tests") {
     "digitally_signed_mojom_traits_unittest.cc",
     "empty_url_loader_client_unittest.cc",
     "file_enumeration_entry_mojom_traits_unittest.cc",
+    "first_party_sets_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",

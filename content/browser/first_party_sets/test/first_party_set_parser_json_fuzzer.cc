@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -26,7 +27,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
 
   // We deserialize -> serialize -> deserialize the input and make sure the
   // outcomes from the two deserialization matches.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
+  FirstPartySetParser::SetsMap deserialized =
       FirstPartySetParser::DeserializeFirstPartySets(native_input);
   std::string serialized_input =
       FirstPartySetParser::SerializeFirstPartySets(deserialized);
@@ -41,8 +42,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   for (const auto& pair : deserialized) {
     if (base::StartsWith(pair.first.GetInternalOriginForTesting().host(),
                          ".") ||
-        base::StartsWith(pair.second.GetInternalOriginForTesting().host(),
-                         ".")) {
+        base::StartsWith(
+            pair.second.primary().GetInternalOriginForTesting().host(), ".")) {
       return;
     }
   }

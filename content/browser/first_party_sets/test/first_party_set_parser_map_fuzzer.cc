@@ -9,6 +9,7 @@
 
 #include "content/browser/first_party_sets/test/first_party_set_parser_map_fuzzer.pb.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "url/gurl.h"
 
@@ -25,25 +26,25 @@ net::SchemefulSite GetSchemefulSite(const firstpartysets::proto::Site& site) {
   return net::SchemefulSite(kSiteTestCases[site.site_test_case_index()]);
 }
 
-base::flat_map<net::SchemefulSite, net::SchemefulSite> ConvertProtoToMap(
+FirstPartySetParser::SetsMap ConvertProtoToMap(
     const firstpartysets::proto::FirstPartySets& sets) {
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
+  FirstPartySetParser::SetsMap map;
   for (const firstpartysets::proto::SitePair& item : sets.items()) {
     auto member_or_owner = GetSchemefulSite(item.member_or_owner());
     auto owner = GetSchemefulSite(item.owner());
-    map.emplace(std::move(member_or_owner), std::move(owner));
+    map.emplace(std::move(member_or_owner),
+                net::FirstPartySetEntry(std::move(owner)));
   }
   return map;
 }
 
-bool AreEquivalent(
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>& native_input,
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>& output) {
+bool AreEquivalent(FirstPartySetParser::SetsMap& native_input,
+                   FirstPartySetParser::SetsMap& output) {
   if (native_input.empty() && output.empty())
     return true;
 
   auto is_owner_entry = [](const auto& pair) {
-    return pair.first == pair.second;
+    return pair.first == pair.second.primary();
   };
   base::EraseIf(native_input, is_owner_entry);
   base::EraseIf(output, is_owner_entry);
@@ -57,10 +58,9 @@ DEFINE_PROTO_FUZZER(const firstpartysets::proto::FirstPartySets& input) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << input.DebugString() << std::endl;
 
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> native_input =
-      ConvertProtoToMap(input);
+  FirstPartySetParser::SetsMap native_input = ConvertProtoToMap(input);
 
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
+  FirstPartySetParser::SetsMap deserialized =
       FirstPartySetParser::DeserializeFirstPartySets(
           FirstPartySetParser::SerializeFirstPartySets(native_input));
 

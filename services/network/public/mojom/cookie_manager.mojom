@@ -7,6 +7,7 @@ module network.mojom;
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
+import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -469,8 +470,8 @@ struct FirstPartySetMetadata {
   SamePartyContext context;
   // absl::nullopt indicates that the frame's site is not associated with any
   // First-Party Set.
-  SchemefulSite? frame_owner;
+  FirstPartySetEntry? frame_entry;
   // absl::nullopt indicates that the top frame's site is not associated with
   // any First-Party Set.
-  SchemefulSite? top_frame_owner;
+  FirstPartySetEntry? top_frame_entry;
 };

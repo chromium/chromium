@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "services/network/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,9 +29,11 @@ namespace network {
 // answers queries about First-Party Sets after they've been loaded.
 class FirstPartySetsManager {
  public:
-  using OwnerResult = absl::optional<net::SchemefulSite>;
-  using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using OwnerResult = absl::optional<net::FirstPartySetEntry>;
+  using OwnersResult =
+      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
+  using FlattenedSets =
+      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
 
   explicit FirstPartySetsManager(bool enabled);
   ~FirstPartySetsManager();
@@ -143,7 +146,7 @@ class FirstPartySetsManager {
   //
   // This is synchronous, and must not be called until the instance is fully
   // initialized.
-  const absl::optional<net::SchemefulSite> FindOwnerInternal(
+  OwnerResult FindOwnerInternal(
       const net::SchemefulSite& site,
       const FirstPartySetsContextConfig& fps_context_config) const;
 

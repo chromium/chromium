@@ -689,7 +689,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // may be collected asynchronously w.r.t. the rest of the stats collected by
   // `RecordPeriodicStats`.
   void RecordPeriodicFirstPartySetsStats(
-      base::flat_map<SchemefulSite, SchemefulSite> sets) const;
+      base::flat_map<SchemefulSite, FirstPartySetEntry> sets) const;
 
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.

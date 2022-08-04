@@ -566,12 +566,15 @@ TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
   net::SchemefulSite frame_owner(GURL("https://frame.test"));
   net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
 
+  net::FirstPartySetEntry frame_entry(frame_owner);
+  net::FirstPartySetEntry top_frame_entry(top_frame_owner);
+
   auto make_metadata = [&]() {
     // Use non-default values to ensure serialization/deserialization works
     // properly.
     return net::FirstPartySetMetadata(
         net::SamePartyContext(net::SamePartyContext::Type::kSameParty),
-        &frame_owner, &top_frame_owner);
+        &frame_entry, &top_frame_entry);
   };
 
   net::FirstPartySetMetadata original = make_metadata();
@@ -582,8 +585,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
 
   EXPECT_EQ(round_tripped.context(),
             net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
-  EXPECT_EQ(round_tripped.frame_owner(), frame_owner);
-  EXPECT_EQ(round_tripped.top_frame_owner(), top_frame_owner);
+  EXPECT_EQ(round_tripped.frame_entry(), frame_entry);
+  EXPECT_EQ(round_tripped.top_frame_entry(), top_frame_entry);
 
   EXPECT_EQ(round_tripped, make_metadata());
 }

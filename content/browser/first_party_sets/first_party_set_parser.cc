@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -203,7 +204,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
   if (!value_deserialized || !value_deserialized->is_dict())
     return {};
 
-  std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> map;
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> map;
   base::flat_set<net::SchemefulSite> owner_set;
   base::flat_set<net::SchemefulSite> member_set;
   for (const auto item : value_deserialized->DictItems()) {
@@ -222,7 +223,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
       continue;
     }
     if (!owner_set.contains(maybe_owner)) {
-      map.emplace_back(*maybe_owner, *maybe_owner);
+      map.emplace_back(*maybe_owner, net::FirstPartySetEntry(*maybe_owner));
     }
     // Check disjointness. Note that we are relying on the JSON Parser to
     // eliminate the possibility of a site being used as a key more than once,
@@ -233,7 +234,8 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
     }
     owner_set.insert(*maybe_owner);
     member_set.insert(*maybe_member);
-    map.emplace_back(std::move(*maybe_member), std::move(*maybe_owner));
+    map.emplace_back(std::move(*maybe_member),
+                     net::FirstPartySetEntry(std::move(*maybe_owner)));
   }
   return map;
 }
@@ -243,7 +245,7 @@ std::string FirstPartySetParser::SerializeFirstPartySets(
   base::DictionaryValue dict;
   for (const auto& it : sets) {
     std::string maybe_member = it.first.Serialize();
-    std::string owner = it.second.Serialize();
+    std::string owner = it.second.primary().Serialize();
     if (maybe_member != owner) {
       dict.SetKey(std::move(maybe_member), base::Value(std::move(owner)));
     }
@@ -261,9 +263,9 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
   return Canonicalize(origin_string, emit_errors);
 }
 
-base::flat_map<net::SchemefulSite, net::SchemefulSite>
-FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
-  std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> map;
+FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
+    std::istream& input) {
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> map;
   base::flat_set<net::SchemefulSite> elements;
   for (std::string line; std::getline(input, line);) {
     base::StringPiece trimmed = base::TrimWhitespaceASCII(line, base::TRIM_ALL);
@@ -286,9 +288,9 @@ FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
       return {};
     }
     auto [owner, members] = output;
-    map.emplace_back(owner, owner);
+    map.emplace_back(owner, net::FirstPartySetEntry(owner));
     for (net::SchemefulSite& member : members) {
-      map.emplace_back(std::move(member), owner);
+      map.emplace_back(std::move(member), net::FirstPartySetEntry(owner));
     }
   }
   return map;

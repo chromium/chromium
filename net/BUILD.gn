@@ -434,6 +434,8 @@ component("net") {
     "cookies/cookie_store.h",
     "cookies/cookie_util.cc",
     "cookies/cookie_util.h",
+    "cookies/first_party_set_entry.cc",
+    "cookies/first_party_set_entry.h",
     "cookies/first_party_set_metadata.cc",
     "cookies/first_party_set_metadata.h",
     "cookies/parsed_cookie.cc",

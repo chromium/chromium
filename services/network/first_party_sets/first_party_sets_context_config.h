@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -15,8 +16,8 @@ namespace network {
 // info in the given network context.
 class FirstPartySetsContextConfig {
  public:
-  using OverrideSets =
-      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
+  using OverrideSets = base::flat_map<net::SchemefulSite,
+                                      absl::optional<net::FirstPartySetEntry>>;
 
   explicit FirstPartySetsContextConfig(bool enabled);
 

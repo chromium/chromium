@@ -99,6 +99,10 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
 
+namespace net {
+class FirstPartySetEntry;
+}
+
 namespace network {
 
 namespace {
@@ -801,7 +805,7 @@ void NetworkService::BindTestInterface(
 }
 
 void NetworkService::SetFirstPartySets(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets) {
+    const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets) {
   first_party_sets_manager_->SetCompleteSets(sets);
 }
 

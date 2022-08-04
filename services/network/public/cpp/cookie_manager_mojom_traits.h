@@ -16,10 +16,12 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -382,14 +384,14 @@ struct StructTraits<network::mojom::FirstPartySetMetadataDataView,
     return m.context();
   }
 
-  static absl::optional<net::SchemefulSite> frame_owner(
+  static absl::optional<net::FirstPartySetEntry> frame_entry(
       const net::FirstPartySetMetadata& m) {
-    return m.frame_owner();
+    return m.frame_entry();
   }
 
-  static absl::optional<net::SchemefulSite> top_frame_owner(
+  static absl::optional<net::FirstPartySetEntry> top_frame_entry(
       const net::FirstPartySetMetadata& m) {
-    return m.top_frame_owner();
+    return m.top_frame_entry();
   }
 
   static bool Read(network::mojom::FirstPartySetMetadataDataView metadata,

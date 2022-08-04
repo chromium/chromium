@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 
 namespace content {
 
@@ -19,7 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // We deserialize -> serialize -> deserialize the input and make sure the
   // outcomes from the two deserialization matches.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
+  FirstPartySetParser::SetsMap deserialized =
       FirstPartySetParser::DeserializeFirstPartySets(string_input);
   std::string serialized_input =
       FirstPartySetParser::SerializeFirstPartySets(deserialized);
@@ -34,8 +35,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (const auto& pair : deserialized) {
     if (base::StartsWith(pair.first.GetInternalOriginForTesting().host(),
                          ".") ||
-        base::StartsWith(pair.second.GetInternalOriginForTesting().host(),
-                         ".")) {
+        base::StartsWith(
+            pair.second.primary().GetInternalOriginForTesting().host(), ".")) {
       return 0;
     }
   }

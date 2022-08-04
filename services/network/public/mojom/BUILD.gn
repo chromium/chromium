@@ -731,6 +731,41 @@ mojom("websocket_mojom") {
   ]
 }
 
+mojom("mojom_first_party_sets") {
+  generate_java = true
+  sources = [ "first_party_sets.mojom" ]
+
+  public_deps = [
+    ":mojom_schemeful_site",
+    "//mojo/public/mojom/base",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  shared_typemaps = []
+  cpp_typemaps =
+      shared_typemaps + [
+        {
+          types = [
+            {
+              mojom = "network.mojom.FirstPartySetEntry"
+              cpp = "::net::FirstPartySetEntry"
+            },
+          ]
+          traits_headers = [
+            "//services/network/public/cpp/first_party_sets_mojom_traits.h",
+          ]
+          traits_public_deps =
+              [ "//services/network/public/cpp:first_party_sets_mojom_support" ]
+        },
+      ]
+  blink_cpp_typemaps = shared_typemaps
+}
+
 mojom("cookies_mojom") {
   generate_java = true
   sources = [
@@ -742,6 +777,7 @@ mojom("cookies_mojom") {
   ]
 
   public_deps = [
+    ":mojom_first_party_sets",
     ":mojom_schemeful_site",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
@@ -923,6 +959,7 @@ mojom("mojom") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_first_party_sets",
     ":mojom_ip_address",
     ":mojom_network_isolation_key",
     ":mojom_network_param",

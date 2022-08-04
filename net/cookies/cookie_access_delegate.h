@@ -15,6 +15,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,11 +75,11 @@ class NET_EXPORT CookieAccessDelegate {
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] virtual absl::optional<absl::optional<net::SchemefulSite>>
+  [[nodiscard]] virtual absl::optional<absl::optional<net::FirstPartySetEntry>>
   FindFirstPartySetOwner(
       const net::SchemefulSite& site,
-      base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
-      const = 0;
+      base::OnceCallback<void(absl::optional<net::FirstPartySetEntry>)>
+          callback) const = 0;
 
   // Computes the owners of a set of sites' First-Party Sets if the site are in
   // non-trivial sets. If a given site is not in a non-trivial set, the output
@@ -89,12 +90,12 @@ class NET_EXPORT CookieAccessDelegate {
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
   [[nodiscard]] virtual absl::optional<
-      base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
   FindFirstPartySetOwners(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(
-          base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
-      const = 0;
+      base::OnceCallback<
+          void(base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>)>
+          callback) const = 0;
 
   // Converts the CookiePartitionKey's site to its First-Party Set owner if
   // the site is in a nontrivial set.

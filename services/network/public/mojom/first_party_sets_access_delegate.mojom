@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // Lives in the network service and controlled by the browser process to
@@ -32,8 +33,8 @@ struct FirstPartySetsReadyEvent {
   //
   // This map is computed by the browser side against the public First-Party
   // Sets, where the keys are member sites and the values are the ultimate
-  // owners of the final First-Party Sets combining the public sets and the
-  // modifications. Entries of site -> absl::nullopt means the key site is
+  // entries of the final First-Party Sets combining the public sets and the
+  // modifications. Map entries of site -> absl::nullopt means the key site is
   // considered deleted from the existing First-Party Sets.
-  map<SchemefulSite, SchemefulSite?> customizations;
+  map<SchemefulSite, FirstPartySetEntry?> customizations;
 };

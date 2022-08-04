@@ -59,6 +59,7 @@
 
 namespace net {
 class FileNetLogObserver;
+class FirstPartySetEntry;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
 class LoggingNetworkChangeObserver;
@@ -215,7 +216,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets)
+      const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets)
       override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 

@@ -5300,23 +5300,20 @@ class FirstPartySetEnabledCookieMonsterTest : public CookieMonsterTest {
 };
 
 TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+  net::SchemefulSite member4(GURL("https://member4.test"));
+
   access_delegate_->SetFirstPartySets({
-      {
-          SchemefulSite(GURL("https://owner1.test")),
-          {
-              SchemefulSite(GURL("https://owner1.test")),
-              SchemefulSite(GURL("https://member1.test")),
-              SchemefulSite(GURL("https://member2.test")),
-          },
-      },
-      {
-          SchemefulSite(GURL("https://owner2.test")),
-          {
-              SchemefulSite(GURL("https://owner2.test")),
-              SchemefulSite(GURL("https://member3.test")),
-              SchemefulSite(GURL("https://member4.test")),
-          },
-      },
+      {owner1, net::FirstPartySetEntry(owner1)},
+      {member1, net::FirstPartySetEntry(owner1)},
+      {member2, net::FirstPartySetEntry(owner1)},
+      {owner2, net::FirstPartySetEntry(owner2)},
+      {member3, net::FirstPartySetEntry(owner2)},
+      {member4, net::FirstPartySetEntry(owner2)},
   });
 
   ASSERT_TRUE(SetCookie(cm(), GURL("https://owner1.test"), kValidCookieLine));

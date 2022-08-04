@@ -82,7 +82,7 @@ net::CookieOptions MakeOptionsForSet(
                                         1);
   }
   options.set_is_in_nontrivial_first_party_set(
-      first_party_set_metadata.frame_owner().has_value());
+      first_party_set_metadata.frame_entry().has_value());
 
   return options;
 }
@@ -118,7 +118,7 @@ net::CookieOptions MakeOptionsForGet(
                                         1);
   }
   options.set_is_in_nontrivial_first_party_set(
-      first_party_set_metadata.frame_owner().has_value());
+      first_party_set_metadata.frame_entry().has_value());
 
   return options;
 }
@@ -343,7 +343,10 @@ RestrictedCookieManager::RestrictedCookieManager(
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
           isolation_info.network_isolation_key(),
           base::OptionalOrNullptr(
-              first_party_set_metadata_.top_frame_owner()))),
+              first_party_set_metadata_.top_frame_entry().has_value()
+                  ? absl::make_optional(
+                        first_party_set_metadata_.top_frame_entry()->primary())
+                  : absl::nullopt))),
       cookie_partition_key_collection_(
           net::CookiePartitionKeyCollection::FromOptional(
               cookie_partition_key_)),
@@ -382,7 +385,11 @@ void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
       isolation_info_.network_isolation_key(),
-      base::OptionalOrNullptr(first_party_set_metadata_.top_frame_owner()));
+      base::OptionalOrNullptr(
+          first_party_set_metadata_.top_frame_entry().has_value()
+              ? absl::make_optional(
+                    first_party_set_metadata_.top_frame_entry()->primary())
+              : absl::nullopt));
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
   std::move(done_closure).Run();

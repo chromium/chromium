@@ -6,14 +6,12 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -25,9 +23,9 @@ namespace content {
 // `SetManuallySpecifiedSet`.
 class CONTENT_EXPORT FirstPartySetsLoader {
  public:
-  using LoadCompleteOnceCallback = base::OnceCallback<void(
-      base::flat_map<net::SchemefulSite, net::SchemefulSite>)>;
-  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using LoadCompleteOnceCallback =
+      base::OnceCallback<void(FirstPartySetParser::SetsMap)>;
+  using FlattenedSets = FirstPartySetParser::SetsMap;
   using SingleSet = FirstPartySetParser::SingleSet;
 
   explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);

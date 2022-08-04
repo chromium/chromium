@@ -8,6 +8,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -26,15 +27,8 @@ namespace first_party_sets {
 // policy.
 class FirstPartySetsPolicyService : public KeyedService {
  public:
-  // The keys are member sites and the values are their owners in the final
-  // list of First-Party Sets that result from combining the public sets and
-  // the per-profile Overrides policy. Entries of site -> absl::nullopt means
-  // the key site is considered deleted from the existing First-Party Sets.
   using PolicyCustomization =
-      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
-
-  // The standard representation of the list of First-Party Sets.
-  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+      content::FirstPartySetsHandler::PolicyCustomization;
 
   FirstPartySetsPolicyService(content::BrowserContext* context,
                               const base::Value::Dict& policy);

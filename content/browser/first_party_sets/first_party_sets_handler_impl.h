@@ -23,6 +23,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -36,7 +37,8 @@ namespace content {
 // the current First-Party Sets data to disk.
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
-  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using FlattenedSets =
+      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using SetsReadyOnceCallback = base::OnceCallback<void(FlattenedSets)>;
   using PolicyCustomization = FirstPartySetsHandler::PolicyCustomization;
 

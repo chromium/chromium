@@ -16,6 +16,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
@@ -363,14 +364,15 @@ interface NetworkService {
 
   // Sets the First-Party Sets data. First-Party Sets are a collection of set
   // declarations defined in the document:
-  // https://github.com/privacycg/first-party-sets. Each set is indicated by
-  // the owner site, and member sites. |sets| contains the mapping of
-  // site -> site, where keys are members of sets, and values are owners of
-  // the sets. Owners are explicitly represented as members of the set.
+  // https://github.com/privacycg/first-party-sets. Each set is indicated by the
+  // primary site, and member sites. |sets| contains the mapping of site ->
+  // entry, where keys are sites in the sets, and values are entries containing
+  // site metadata (such as the primary site in the set). Primary sites are
+  // included as keys of the map.
   //
   // Only the first call can have any effect, subsequent invocations are
   // ignored.
-  SetFirstPartySets(map<SchemefulSite, SchemefulSite> sets);
+  SetFirstPartySets(map<SchemefulSite, FirstPartySetEntry> sets);
 
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.

@@ -4,11 +4,14 @@
 
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace mojo {
@@ -732,17 +735,17 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
   if (!metadata.ReadContext(&context))
     return false;
 
-  absl::optional<net::SchemefulSite> frame_owner;
-  if (!metadata.ReadFrameOwner(&frame_owner))
+  absl::optional<net::FirstPartySetEntry> frame_entry;
+  if (!metadata.ReadFrameEntry(&frame_entry))
     return false;
 
-  absl::optional<net::SchemefulSite> top_frame_owner;
-  if (!metadata.ReadTopFrameOwner(&top_frame_owner))
+  absl::optional<net::FirstPartySetEntry> top_frame_entry;
+  if (!metadata.ReadTopFrameEntry(&top_frame_entry))
     return false;
 
   *out_metadata =
-      net::FirstPartySetMetadata(context, base::OptionalOrNullptr(frame_owner),
-                                 base::OptionalOrNullptr(top_frame_owner));
+      net::FirstPartySetMetadata(context, base::OptionalOrNullptr(frame_entry),
+                                 base::OptionalOrNullptr(top_frame_entry));
 
   return true;
 }

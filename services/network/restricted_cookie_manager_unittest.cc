@@ -462,9 +462,11 @@ class SamePartyEnabledRestrictedCookieManagerTest
             &first_party_sets_manager_) {
     first_party_sets_manager_.SetCompleteSets(
         {{net::SchemefulSite(GURL("https://example.com")),
-          net::SchemefulSite(GURL("https://example.com"))},
+          net::FirstPartySetEntry(
+              net::SchemefulSite(GURL("https://example.com")))},
          {net::SchemefulSite(GURL("https://member1.com")),
-          net::SchemefulSite(GURL("https://example.com"))}});
+          net::FirstPartySetEntry(
+              net::SchemefulSite(GURL("https://example.com")))}});
     first_party_sets_access_delegate_remote_->NotifyReady(
         mojom::FirstPartySetsReadyEvent::New());
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(
@@ -2049,13 +2051,12 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest,
 
   const GURL kCookieURL("https://example.com");
 
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-      first_party_sets;
-  first_party_sets.insert(std::make_pair(
-      kOwnerSite, std::set<net::SchemefulSite>({kOwnerSite, kMemberSite})));
   auto cookie_access_delegate =
       std::make_unique<net::TestCookieAccessDelegate>();
-  cookie_access_delegate->SetFirstPartySets(first_party_sets);
+  cookie_access_delegate->SetFirstPartySets({
+      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite)},
+      {kMemberSite, net::FirstPartySetEntry(kOwnerSite)},
+  });
   cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
 
   // Set https://example.com cookie when the top-frame site is the owner

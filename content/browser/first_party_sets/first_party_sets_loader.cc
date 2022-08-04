@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -146,27 +147,26 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
 
   // Erase the intersection between |sets_| and |manually_specified_set_| and
   // any members whose owner was in the intersection.
-  base::EraseIf(
-      sets_, [&owner, members](
-                 const std::pair<net::SchemefulSite, net::SchemefulSite>& p) {
-        return p.first == owner || p.second == owner ||
-               members.contains(p.first) || members.contains(p.second);
-      });
+  base::EraseIf(sets_, [&owner, members](const auto& p) {
+    return p.first == owner || p.second.primary() == owner ||
+           members.contains(p.first) || members.contains(p.second.primary());
+  });
 
   // Next, we must add the manually specified set to |sets_|.
   sets_.emplace(owner, owner);
   for (const net::SchemefulSite& member : members) {
-    sets_.emplace(member, owner);
+    sets_.emplace(member, net::FirstPartySetEntry(owner));
   }
   // Now remove singleton sets, which are sets that just contain sites that
   // *are* owners, but no longer have any (other) members.
   std::set<net::SchemefulSite> owners_with_members;
   for (const auto& it : sets_) {
-    if (it.first != it.second)
-      owners_with_members.insert(it.second);
+    if (it.first != it.second.primary())
+      owners_with_members.insert(it.second.primary());
   }
   base::EraseIf(sets_, [&owners_with_members](const auto& p) {
-    return p.first == p.second && !base::Contains(owners_with_members, p.first);
+    return p.first == p.second.primary() &&
+           !base::Contains(owners_with_members, p.first);
   });
 }
 

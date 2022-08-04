@@ -7,22 +7,21 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "net/cookies/first_party_set_metadata.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 namespace {
-CookiePartitionKey CreateCookiePartitionKeyFromFirstPartySetOwner(
+CookiePartitionKey CreateCookiePartitionKeyFromFirstPartySetEntry(
     const CookiePartitionKey& cookie_partition_key,
-    absl::optional<SchemefulSite> first_party_set_owner) {
-  if (!first_party_set_owner) {
+    absl::optional<FirstPartySetEntry> first_party_set_entry) {
+  if (!first_party_set_entry) {
     return cookie_partition_key;
   }
-  return CookiePartitionKey::FromWire(first_party_set_owner.value(),
+  return CookiePartitionKey::FromWire(first_party_set_entry.value().primary(),
                                       cookie_partition_key.nonce());
 }
 }  // namespace
@@ -48,15 +47,15 @@ CookieAccessDelegate::FirstPartySetifyPartitionKey(
     return cookie_partition_key;
   }
 
-  absl::optional<absl::optional<SchemefulSite>> maybe_owner =
+  absl::optional<absl::optional<FirstPartySetEntry>> maybe_entry =
       delegate->FindFirstPartySetOwner(
           cookie_partition_key.site(),
-          base::BindOnce(&CreateCookiePartitionKeyFromFirstPartySetOwner,
+          base::BindOnce(&CreateCookiePartitionKeyFromFirstPartySetEntry,
                          cookie_partition_key)
               .Then(std::move(callback)));
-  if (maybe_owner.has_value())
-    return CreateCookiePartitionKeyFromFirstPartySetOwner(cookie_partition_key,
-                                                          maybe_owner.value());
+  if (maybe_entry.has_value())
+    return CreateCookiePartitionKeyFromFirstPartySetEntry(cookie_partition_key,
+                                                          maybe_entry.value());
 
   return absl::nullopt;
 }

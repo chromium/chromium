@@ -2250,8 +2250,8 @@ bool CookieMonster::DoRecordPeriodicStats() {
             GURL(base::StrCat({url::kHttpsScheme, "://", domain})));
       }
     }
-    absl::optional<base::flat_map<SchemefulSite, SchemefulSite>> maybe_sets =
-        cookie_access_delegate()->FindFirstPartySetOwners(
+    absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+        maybe_sets = cookie_access_delegate()->FindFirstPartySetOwners(
             sites,
             base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
                            weak_ptr_factory_.GetWeakPtr()));
@@ -2277,10 +2277,10 @@ bool CookieMonster::DoRecordPeriodicStats() {
 }
 
 void CookieMonster::RecordPeriodicFirstPartySetsStats(
-    base::flat_map<SchemefulSite, SchemefulSite> sets) const {
+    base::flat_map<SchemefulSite, FirstPartySetEntry> sets) const {
   base::flat_map<SchemefulSite, std::set<SchemefulSite>> grouped_by_owner;
-  for (const auto& [site, owner] : sets) {
-    grouped_by_owner[owner].insert(site);
+  for (const auto& [site, entry] : sets) {
+    grouped_by_owner[entry.primary()].insert(site);
   }
   for (const auto& set : grouped_by_owner) {
     int sample = std::accumulate(

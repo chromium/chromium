@@ -2958,9 +2958,10 @@ class FPSPartitionedCookiesCookieManagerTest : public CookieManagerTest {
         non_member_partition_key_(
             net::CookiePartitionKey::FromURLForTesting(non_member_url_)) {
     delegate_ = std::make_unique<net::TestCookieAccessDelegate>();
-    first_party_sets_.insert(std::make_pair(
-        owner_site_,
-        std::set<net::SchemefulSite>({owner_site_, member_site_})));
+    first_party_sets_.insert(
+        {owner_site_, net::FirstPartySetEntry(owner_site_)});
+    first_party_sets_.insert(
+        {member_site_, net::FirstPartySetEntry(owner_site_)});
     delegate_->SetFirstPartySets(first_party_sets_);
     cookie_store()->SetCookieAccessDelegate(std::move(delegate_));
   }
@@ -2977,8 +2978,7 @@ class FPSPartitionedCookiesCookieManagerTest : public CookieManagerTest {
   const GURL non_member_url_;
   const net::CookiePartitionKey non_member_partition_key_;
 
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-      first_party_sets_;
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> first_party_sets_;
   std::unique_ptr<net::TestCookieAccessDelegate> delegate_;
 };
 

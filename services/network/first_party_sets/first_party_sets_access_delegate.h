@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -30,9 +29,9 @@ namespace network {
 class FirstPartySetsAccessDelegate
     : public mojom::FirstPartySetsAccessDelegate {
  public:
-  using OwnerResult = absl::optional<net::SchemefulSite>;
-  using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using OwnerResult = FirstPartySetsManager::OwnerResult;
+  using OwnersResult = FirstPartySetsManager::OwnersResult;
+  using FlattenedSets = FirstPartySetsManager::FlattenedSets;
 
   // Construct a FirstPartySetsAccessDelegate that provides customizations
   // and serves mojo requests for the underlying First-Party Sets info.

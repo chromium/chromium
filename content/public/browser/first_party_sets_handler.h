@@ -5,11 +5,16 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
+#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net {
+class FirstPartySetEntry;
+}
 
 namespace content {
 
@@ -43,12 +48,13 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     int error_index;
   };
 
-  // The keys are member sites and the values are their owners in the final
+  // The keys are member sites and the values are their entries in the final
   // list of First-Party Sets that result from combining the public sets and
   // the per-profile Overrides policy. Entries of site -> absl::nullopt means
   // the key site is considered deleted from the existing First-Party Sets.
   using PolicyCustomization =
-      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
+      base::flat_map<net::SchemefulSite,
+                     absl::optional<net::FirstPartySetEntry>>;
 
   virtual ~FirstPartySetsHandler() = default;
 

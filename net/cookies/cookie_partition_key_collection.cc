@@ -14,20 +14,21 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/first_party_set_entry.h"
 
 namespace net {
 
 namespace {
-CookiePartitionKeyCollection TransformWithFirstPartySetOwners(
+CookiePartitionKeyCollection TransformWithFirstPartySetEntries(
     const base::flat_set<CookiePartitionKey>& keys,
-    base::flat_map<SchemefulSite, SchemefulSite> sites_to_owners) {
+    base::flat_map<SchemefulSite, FirstPartySetEntry> sites_to_entries) {
   std::vector<CookiePartitionKey> canonicalized_keys;
   canonicalized_keys.reserve(keys.size());
   for (const CookiePartitionKey& key : keys) {
-    const auto first_party_set_owner_iter = sites_to_owners.find(key.site());
+    const auto it = sites_to_entries.find(key.site());
     canonicalized_keys.push_back(
-        !key.nonce() && first_party_set_owner_iter != sites_to_owners.end()
-            ? CookiePartitionKey::FromWire(first_party_set_owner_iter->second)
+        !key.nonce() && it != sites_to_entries.end()
+            ? CookiePartitionKey::FromWire(it->second.primary())
             : key);
   }
   return CookiePartitionKeyCollection(canonicalized_keys);
@@ -80,15 +81,15 @@ CookiePartitionKeyCollection::FirstPartySetify(
   }
   if (sites.empty())
     return *this;
-  absl::optional<base::flat_map<SchemefulSite, SchemefulSite>>
-      maybe_sites_to_owners = cookie_access_delegate->FindFirstPartySetOwners(
+  absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+      maybe_sites_to_entries = cookie_access_delegate->FindFirstPartySetOwners(
           sites,
-          base::BindOnce(&TransformWithFirstPartySetOwners, PartitionKeys())
+          base::BindOnce(&TransformWithFirstPartySetEntries, PartitionKeys())
               .Then(std::move(callback)));
 
-  if (maybe_sites_to_owners.has_value())
-    return TransformWithFirstPartySetOwners(PartitionKeys(),
-                                            maybe_sites_to_owners.value());
+  if (maybe_sites_to_entries.has_value())
+    return TransformWithFirstPartySetEntries(PartitionKeys(),
+                                             maybe_sites_to_entries.value());
 
   return absl::nullopt;
 }

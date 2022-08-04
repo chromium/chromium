@@ -335,7 +335,11 @@ void URLRequestHttpJob::OnGotFirstPartySetMetadata(
 
     cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
         request_->isolation_info().network_isolation_key(),
-        base::OptionalOrNullptr(first_party_set_metadata_.top_frame_owner()));
+        base::OptionalOrNullptr(
+            first_party_set_metadata_.top_frame_entry().has_value()
+                ? absl::make_optional(
+                      first_party_set_metadata_.top_frame_entry()->primary())
+                : absl::nullopt));
     AddCookieHeaderAndStart();
   } else {
     StartTransaction();
@@ -615,7 +619,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
           is_main_frame_navigation, force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.frame_owner().has_value();
+      first_party_set_metadata_.frame_entry().has_value();
   CookieOptions options = CreateCookieOptions(
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
@@ -851,7 +855,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.frame_owner().has_value();
+      first_party_set_metadata_.frame_entry().has_value();
   CookieOptions options = CreateCookieOptions(
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);

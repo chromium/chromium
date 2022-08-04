@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -19,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class FirstPartySetEntry;
 class SchemefulSite;
 }
 
@@ -26,7 +26,7 @@ namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  using SetsMap = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using SingleSet =
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
   using ParseError = FirstPartySetsHandler::ParseError;

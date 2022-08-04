@@ -1917,16 +1917,15 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
   const IsolationInfo kNonMemberIsolationInfo =
       IsolationInfo::CreateForInternalRequest(kNonMemberOrigin);
 
-  base::flat_map<SchemefulSite, std::set<SchemefulSite>> first_party_sets;
-  first_party_sets.insert(std::make_pair(
-      kOwnerSite, std::set<SchemefulSite>({kOwnerSite, kMemberSite})));
-
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto cookie_monster = std::make_unique<CookieMonster>(
       /*store=*/nullptr, /*net_log=*/nullptr,
       /*first_party_sets_enabled=*/false);
   auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
-  cookie_access_delegate->SetFirstPartySets(first_party_sets);
+  cookie_access_delegate->SetFirstPartySets({
+      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite)},
+      {kMemberSite, net::FirstPartySetEntry(kOwnerSite)},
+  });
   cookie_monster->SetCookieAccessDelegate(std::move(cookie_access_delegate));
   context_builder->SetCookieStore(std::move(cookie_monster));
   auto context = context_builder->Build();
