@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/debug/alias.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_split.h"
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
@@ -49,10 +51,18 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                       base::MemoryMappedFile::READ_WRITE_EXTEND);
 
   if (file_valid) {
-    // TODO(crbug.com/1327267):  Writing past the end of the memory-mapped file
-    // is suspected to cause a crash. Remove CHECK once the crash is understood.
     const size_t remaining_length = kPersistedFilesizeInBytes - position;
-    CHECK(events.length() < remaining_length);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1327267): Remove this once crashes in this function on
+    // CrOS are understood. The first and last values are delimiters to aid in
+    // finding this array on the stack, as CrOS crashes are hard to debug.
+    size_t debug_data[] = {
+        0x1234beef,      reinterpret_cast<size_t>(file.data()),
+        file.length(),   position,
+        events.length(), 0x5678beef};
+    base::debug::Alias(&debug_data);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     char* data = reinterpret_cast<char*>(file.data());
     base::strlcpy(&data[position], events.c_str(), remaining_length);
