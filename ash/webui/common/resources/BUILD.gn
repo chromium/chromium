@@ -132,6 +132,7 @@ ts_definitions("generate_definitions") {
     ":css_wrapper_files",
     ":html_wrapper_files",
     ":preprocess",
+    "//ui/webui/resources:library",
   ]
 }
 
