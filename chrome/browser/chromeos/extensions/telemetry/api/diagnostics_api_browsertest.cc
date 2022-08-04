@@ -7,9 +7,9 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
-#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service_factory.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,19 +31,19 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
       const TelemetryExtensionDiagnosticsApiBrowserTest&) = delete;
 
  protected:
-  void SetServiceForTesting(std::unique_ptr<ash::FakeDiagnosticsService>
-                                fake_diagnostics_service_impl) {
+  void SetServiceForTesting(
+      std::unique_ptr<FakeDiagnosticsService> fake_diagnostics_service_impl) {
     fake_diagnostics_service_factory_.SetCreateInstanceResponse(
         std::move(fake_diagnostics_service_impl));
   }
 
-  ash::FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
+  FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
   {
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetAvailableRoutines({
         crosapi::mojom::DiagnosticsRoutineEnum::kAcPower,
         crosapi::mojom::DiagnosticsRoutineEnum::kBatteryCapacity,
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     response->routine_update_union = std::move(routineUpdateUnion);
 
     // Set the return value for a call to GetAvailableRoutines.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRoutineUpdateResponse(std::move(response));
 
     // Set the expected passed parameters.
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     response->routine_update_union = std::move(routineUpdateUnion);
 
     // Set the return value for a call to GetAvailableRoutines.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRoutineUpdateResponse(std::move(response));
 
     // Set the expected passed parameters.
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunAcPowerRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunBatteryCapacityRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunBatteryChargeRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunBatteryDischargeRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunBatteryHealthRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunCpuCacheRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunCpuFloatingPointAccuracyRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunCpuPrimeSearchRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunCpuStressRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunDiskReadRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunLanConnectivityRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunMemoryRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunNvmeWearLevelRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     base::Value::Dict expected_result;
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
 
     // Set the return value for a call to RunSmartctlCheckRoutine.
-    auto fake_service_impl = std::make_unique<ash::FakeDiagnosticsService>();
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected called routine.

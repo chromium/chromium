@@ -29,24 +29,6 @@ source_set("telemetry_extension") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_diagnostics_service.cc",
-    "fake_diagnostics_service.h",
-    "fake_diagnostics_service_factory.cc",
-    "fake_diagnostics_service_factory.h",
-  ]
-
-  deps = [
-    ":telemetry_extension",
-    "//base",
-    "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
-    "//testing/gtest",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

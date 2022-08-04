@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_DIAGNOSTICS_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_DIAGNOSTICS_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 
 class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
  public:
@@ -120,6 +120,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   crosapi::mojom::DiagnosticsRoutineEnum actual_called_routine_{
       crosapi::mojom::DiagnosticsRoutineEnum::kUnknown};
 };
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_FAKE_DIAGNOSTICS_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_DIAGNOSTICS_SERVICE_H_

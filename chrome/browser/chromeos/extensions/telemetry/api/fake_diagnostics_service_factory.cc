@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash//telemetry_extension/fake_diagnostics_service_factory.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace ash {
+namespace chromeos {
 
 FakeDiagnosticsServiceFactory::FakeDiagnosticsServiceFactory() = default;
 FakeDiagnosticsServiceFactory::~FakeDiagnosticsServiceFactory() = default;
@@ -29,4 +29,4 @@ FakeDiagnosticsServiceFactory::CreateInstance(
   return std::move(fake_service_);
 }
 
-}  // namespace ash
+}  // namespace chromeos

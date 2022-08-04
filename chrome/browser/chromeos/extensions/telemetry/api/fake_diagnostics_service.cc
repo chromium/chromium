@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/fake_diagnostics_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_diagnostics_service.h"
 
 #include <memory>
 #include <utility>
@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 
 FakeDiagnosticsService::FakeDiagnosticsService() : receiver_(this) {}
 
@@ -291,4 +291,4 @@ void FakeDiagnosticsService::SetExpectedLastCalledRoutine(
   expected_called_routine_ = expected_called_routine;
 }
 
-}  // namespace ash
+}  // namespace chromeos

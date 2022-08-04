@@ -78,6 +78,10 @@ source_set("browser_tests") {
     "diagnostics_api_browsertest.cc",
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
+    "fake_diagnostics_service.cc",
+    "fake_diagnostics_service.h",
+    "fake_diagnostics_service_factory.cc",
+    "fake_diagnostics_service_factory.h",
     "fake_probe_service.cc",
     "fake_probe_service.h",
     "fake_probe_service_factory.cc",
@@ -92,7 +96,6 @@ source_set("browser_tests") {
     "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
     "//chrome/browser/ash/telemetry_extension",
-    "//chrome/browser/ash/telemetry_extension:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
@@ -107,6 +110,7 @@ source_set("browser_tests") {
     "//extensions/common",
     "//net",
     "//net:test_support",
+    "//testing/gtest",
     "//url",
   ]
 }
@@ -125,6 +129,7 @@ source_set("unit_tests") {
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//testing/gtest",
   ]
 }
 
