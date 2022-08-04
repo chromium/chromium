@@ -29,18 +29,13 @@
 //   3. Errors are communicated via Xlib's spectacularly unhelpful mechanism
 //      of terminating the process unless you install an error handler.
 //
-// The basic approach is as follows:
+// Since we want the current mode name to be consistent, the approach is as
+// follows:
 //
-//   1. Create a new mode with the correct resolution;
-//   2. Switch to the new mode;
-//   3. Delete the old mode.
-//
-// Since the new mode must have a different name, and we want the current mode
-// name to be consistent, we then additionally:
-//
-//   4. Recreate the old mode at the new resolution;
-//   5. Switch to the old mode;
-//   6. Delete the temporary mode.
+//   1. Disable the RANDR Output.
+//   2. Delete the CRD mode, if it exists.
+//   3. Create the CRD mode at the new resolution.
+//   4. Set the Output to the CRD mode (which re-enables it).
 //
 // Name consistency will allow a future CL to disable resize-to-client if the
 // user has changed the mode to something other than "Chrome Remote Desktop
@@ -198,17 +193,13 @@ void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
 void DesktopResizerX11::SetResolutionNewMode(
     x11::RandR::Output output,
     const ScreenResolution& resolution) {
-  // The name of the mode representing the current client view resolution and
-  // the temporary mode used for the reasons described at the top of this file.
-  // The former should be localized if it's user-visible; the latter only
-  // exists briefly and does not need to localized.
+  // The name of the mode representing the current client view resolution.
   const char* kModeName = "Chrome Remote Desktop client resolution";
-  const char* kTempModeName = "Chrome Remote Desktop temporary mode";
 
   // Actually do the resize operation, preserving the current mode name. Note
-  // that we have to detach the output from any mode in order to resize it
-  // (strictly speaking, this is only required when reducing the size, but it
-  // seems safe to do it regardless).
+  // that we have to detach the output from the mode in order to delete the
+  // mode and re-create it with the new resolution. The output may also need to
+  // be detached from all modes in order to reduce the root window size.
   HOST_LOG << "Changing desktop size to " << resolution.dimensions().width()
            << "x" << resolution.dimensions().height();
 
@@ -217,19 +208,15 @@ void DesktopResizerX11::SetResolutionNewMode(
       PixelsToMillimeters(resolution.dimensions().width(), kDefaultDPI);
   uint32_t height_mm =
       PixelsToMillimeters(resolution.dimensions().height(), kDefaultDPI);
-  CreateMode(output, kTempModeName, resolution.dimensions().width(),
-             resolution.dimensions().height());
   SwitchToMode(output, nullptr);
   randr_->SetScreenSize(
       {root_, static_cast<uint16_t>(resolution.dimensions().width()),
        static_cast<uint16_t>(resolution.dimensions().height()), width_mm,
        height_mm});
-  SwitchToMode(output, kTempModeName);
   DeleteMode(output, kModeName);
   CreateMode(output, kModeName, resolution.dimensions().width(),
              resolution.dimensions().height());
   SwitchToMode(output, kModeName);
-  DeleteMode(output, kTempModeName);
 }
 
 void DesktopResizerX11::SetResolutionExistingMode(
