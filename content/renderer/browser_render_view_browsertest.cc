@@ -142,12 +142,14 @@ class RenderViewBrowserTest : public ContentBrowserTest {
 };
 
 // https://crbug.com/788788
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1349962): Flaky on linux-tsan too.
+#if (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_ConfirmCacheInformationPlumbed \
   DISABLED_ConfirmCacheInformationPlumbed
 #else
 #define MAYBE_ConfirmCacheInformationPlumbed ConfirmCacheInformationPlumbed
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif
 IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
                        MAYBE_ConfirmCacheInformationPlumbed) {
   ASSERT_TRUE(embedded_test_server()->Start());
