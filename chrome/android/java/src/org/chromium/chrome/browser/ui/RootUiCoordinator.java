@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.messages.ChromeMessageAutodismissDurationProvider;
 import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
+import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -259,6 +260,7 @@ public class RootUiCoordinator
     protected ManagedMessageDispatcher mMessageDispatcher;
     @Nullable
     private MessageContainerCoordinator mMessageContainerCoordinator;
+    private MessageContainerObserver mMessageContainerObserver;
     @Nullable
     private ChromeMessageQueueMediator mMessageQueueMediator;
     private LayoutManagerImpl mLayoutManager;
@@ -525,6 +527,9 @@ public class RootUiCoordinator
         }
 
         if (mMessageContainerCoordinator != null) {
+            if (mMessageContainerObserver != null) {
+                mMessageContainerCoordinator.removeObserver(mMessageContainerObserver);
+            }
             mMessageContainerCoordinator.destroy();
             mMessageContainerCoordinator = null;
         }
@@ -737,6 +742,18 @@ public class RootUiCoordinator
             MessageContainer container = mActivity.findViewById(R.id.message_container);
             mMessageContainerCoordinator =
                     new MessageContainerCoordinator(container, mBrowserControlsManager);
+            mMessageContainerObserver = new MessageContainerObserver() {
+                @Override
+                public void onShowMessageContainer() {
+                    if (mPageZoomCoordinator != null) {
+                        mPageZoomCoordinator.hide();
+                    }
+                }
+
+                @Override
+                public void onHideMessageContainer() {}
+            };
+            mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     new ChromeMessageAutodismissDurationProvider(),
