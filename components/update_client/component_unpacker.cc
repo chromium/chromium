@@ -102,28 +102,27 @@ void ComponentUnpacker::EndUnzipping(bool result) {
   BeginPatching();
 }
 
-bool ComponentUnpacker::BeginPatching() {
+void ComponentUnpacker::BeginPatching() {
   if (is_delta_) {  // Package is a diff package.
     // Use a different temp directory for the patch output files.
     if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
                                       &unpack_path_)) {
-      error_ = UnpackerError::kUnzipPathError;
-      return false;
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching, this,
+                                    UnpackerError::kUnzipPathError, 0));
+      return;
     }
     patcher_ = base::MakeRefCounted<ComponentPatcher>(
         unpack_diff_path_, unpack_path_, installer_, patcher_tool_);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&ComponentPatcher::Start, patcher_,
-                       base::BindOnce(&ComponentUnpacker::EndPatching,
-                                      scoped_refptr<ComponentUnpacker>(this))));
+                       base::BindOnce(&ComponentUnpacker::EndPatching, this)));
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching,
-                                  scoped_refptr<ComponentUnpacker>(this),
+        FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching, this,
                                   UnpackerError::kNone, 0));
   }
-  return true;
 }
 
 void ComponentUnpacker::EndPatching(UnpackerError error, int extended_error) {
