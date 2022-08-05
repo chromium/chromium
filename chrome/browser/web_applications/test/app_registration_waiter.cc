@@ -9,6 +9,35 @@
 
 namespace web_app {
 
+AppTypeInitializationWaiter::AppTypeInitializationWaiter(Profile* profile,
+                                                         apps::AppType app_type)
+    : app_type_(app_type) {
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  Observe(&cache);
+
+  if (cache.IsAppTypeInitialized(app_type))
+    run_loop_.Quit();
+}
+
+AppTypeInitializationWaiter::~AppTypeInitializationWaiter() = default;
+
+void AppTypeInitializationWaiter::Await() {
+  run_loop_.Run();
+}
+
+void AppTypeInitializationWaiter::OnAppUpdate(const apps::AppUpdate& update) {}
+
+void AppTypeInitializationWaiter::OnAppTypeInitialized(apps::AppType app_type) {
+  if (app_type == app_type_)
+    run_loop_.Quit();
+}
+
+void AppTypeInitializationWaiter::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
+}
+
 AppRegistrationWaiter::AppRegistrationWaiter(Profile* profile,
                                              const AppId& app_id,
                                              apps::Readiness readiness)

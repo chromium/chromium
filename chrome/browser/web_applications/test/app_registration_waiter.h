@@ -15,6 +15,24 @@ class Profile;
 
 namespace web_app {
 
+class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
+ public:
+  AppTypeInitializationWaiter(Profile* profile, apps::AppType app_type);
+  ~AppTypeInitializationWaiter() override;
+
+  void Await();
+
+ private:
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  const apps::AppType app_type_;
+  base::RunLoop run_loop_;
+};
+
 class AppRegistrationWaiter : public apps::AppRegistryCache::Observer {
  public:
   AppRegistrationWaiter(Profile* profile,
