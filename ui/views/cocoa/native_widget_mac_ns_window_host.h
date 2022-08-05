@@ -69,6 +69,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       gfx::NativeWindow window);
   static NativeWidgetMacNSWindowHost* GetFromNativeView(gfx::NativeView view);
 
+  // Key used to bind the content NSView to the overlay widget in immersive
+  // mode.
+  static const char kImmersiveContentNSView[];
+
   // Unique integer id handles are used to bridge between the
   // NativeWidgetMacNSWindowHost in one process and the NativeWidgetNSWindowHost
   // potentially in another.
@@ -189,9 +193,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Geometry of the content area of the window, in DIPs. Note that this is not
   // necessarily the same as the views::View's size.
-  const gfx::Rect& GetContentBoundsInScreen() const {
-    return content_bounds_in_screen_;
-  }
+  gfx::Rect GetContentBoundsInScreen() const;
 
   // The display that the window is currently on (or best guess thereof).
   const display::Display& GetCurrentDisplay() const { return display_; }

@@ -42,6 +42,7 @@
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/widget/widget_aura_utils.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_utils_mac.h"
 #include "ui/views/window/native_frame_view.h"
 
 using remote_cocoa::mojom::WindowVisibilityState;
@@ -220,6 +221,14 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
   ns_window_host_->SetParent(parent_host);
   ns_window_host_->InitWindow(params,
                               ConvertBoundsToScreenIfNeeded(params.bounds));
+
+  // In immersive fullscreen, bubbles will be shown under the toolbar by
+  // default. Fix it by explicitly StackAbove() its parent.
+  if (params.parent && views::IsNSToolbarFullScreenWindow(
+                           params.parent.GetNativeNSView().window)) {
+    StackAbove(params.parent);
+  }
+
   OnWindowInitialized();
 
   // Only set the z-order here if it is non-default since setting it may affect

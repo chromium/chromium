@@ -14,4 +14,11 @@ gfx::Size GetWindowSizeForClientSize(Widget* widget, const gfx::Size& size) {
       widget->GetNativeWindow().GetNativeNSWindow(), size);
 }
 
+bool IsNSToolbarFullScreenWindow(NSWindow* window) {
+  // TODO(bur): Investigate other approaches to detecting
+  // NSToolbarFullScreenWindow. This is a private class and the name could
+  // change.
+  return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
+}
+
 }  // namespace views

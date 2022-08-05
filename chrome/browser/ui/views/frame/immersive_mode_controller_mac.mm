@@ -20,10 +20,12 @@
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/cocoa/immersive_mode_delegate_mac.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils_mac.h"
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
 // NSWindow to the overlay view widget's NSWindow. The delegate will be used to
@@ -40,14 +42,17 @@
 @interface ImmersiveModeTitlebarViewController
     : NSTitlebarAccessoryViewController {
   base::mac::ScopedBlock<void (^)()> _view_will_appear_handler;
+  base::mac::ScopedBlock<void (^)()> _view_did_appear_handler;
 }
 @end
 
 @implementation ImmersiveModeTitlebarViewController
 
-- (instancetype)initWithViewWillAppearHandler:(void (^)())handler {
+- (instancetype)initWithHandlers:(void (^)())viewWillAppearHandle
+             viewDidAppearHandle:(void (^)())viewDidAppearHandle {
   if ((self = [super init])) {
-    _view_will_appear_handler.reset([handler copy]);
+    _view_will_appear_handler.reset([viewWillAppearHandle copy]);
+    _view_did_appear_handler.reset([viewDidAppearHandle copy]);
   }
   return self;
 }
@@ -66,6 +71,11 @@
       view.frame = tab_view.frame;
     }
   }
+}
+
+- (void)viewDidAppear {
+  [super viewDidAppear];
+  _view_did_appear_handler.get()();
 }
 
 @end
@@ -92,10 +102,7 @@
 }
 
 - (void)viewWillMoveToWindow:(NSWindow*)window {
-  // TODO(bur): Investigate other approaches to detecting
-  // NSToolbarFullScreenWindow. This is a private class and the name could
-  // change.
-  if ([window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")]) {
+  if (views::IsNSToolbarFullScreenWindow(window)) {
     // This window is created by AppKit. Make sure it doesn't have a delegate so
     // we can use it for out own purposes.
     DCHECK(!window.delegate);
@@ -259,10 +266,19 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
     // Create a new NSTitlebarAccessoryViewController that will host the
     // overlay_view_.
+    NSView* contentView = browser_view_->overlay_widget()
+                              ->GetNativeWindow()
+                              .GetNativeNSWindow()
+                              .contentView;
     immersive_mode_titlebar_view_controller_.reset(
         [[ImmersiveModeTitlebarViewController alloc]
-            initWithViewWillAppearHandler:^() {
+            initWithHandlers:^() {
               SetMenuRevealed(true);
+            }
+            viewDidAppearHandle:^() {
+              browser_view_->overlay_widget()->SetNativeWindowProperty(
+                  views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
+                  contentView);
             }]);
 
     // Create a NSWindow delegate that will be used to map the AppKit created

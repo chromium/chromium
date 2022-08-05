@@ -43,6 +43,7 @@
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_utils_mac.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/word_lookup_client.h"
 
@@ -239,7 +240,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
 
   // If the window is a system created NSToolbarFullScreenWindow we need to do
   // some additional work to find the original window.
-  if ([window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")]) {
+  if (views::IsNSToolbarFullScreenWindow(window)) {
     NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
     if (NativeWidgetMacNSWindow* widget_window =
             base::mac::ObjCCast<NativeWidgetMacNSWindow>(original)) {
@@ -255,6 +256,10 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeView(
     gfx::NativeView native_view) {
   return GetFromNativeWindow([native_view.GetNativeNSView() window]);
 }
+
+// static
+const char NativeWidgetMacNSWindowHost::kImmersiveContentNSView[] =
+    "kImmersiveContentNSView";
 
 // static
 NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromId(
@@ -633,6 +638,20 @@ bool NativeWidgetMacNSWindowHost::RedispatchKeyEvent(NSEvent* event) {
   // handled (because it should never be handled in this process).
   GetNSWindowMojo()->RedispatchKeyEvent(ui::EventToData(event));
   return true;
+}
+
+gfx::Rect NativeWidgetMacNSWindowHost::GetContentBoundsInScreen() const {
+  NSView* contentView =
+      (NSView*)GetNativeWindowProperty(kImmersiveContentNSView);
+  if (!contentView)
+    return content_bounds_in_screen_;
+
+  // In immersive fullscreen, the content view is hosted in another NSWindow.
+  NSRect boundsInWindow = [contentView convertRect:contentView.bounds
+                                            toView:nil];
+  NSRect boundsInScreen =
+      [contentView.window convertRectToScreen:boundsInWindow];
+  return gfx::ScreenRectFromNSRect(boundsInScreen);
 }
 
 gfx::Rect NativeWidgetMacNSWindowHost::GetRestoredBounds() const {
