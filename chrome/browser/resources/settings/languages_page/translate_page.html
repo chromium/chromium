@@ -15,7 +15,7 @@
     <template is="dom-repeat" items="[[languages.alwaysTranslate]]">
       <div class="list-item">
         <div class="start cr-padded-text">[[item.displayName]]</div>
-        <cr-icon-button class="icon-clear"
+        <cr-icon-button class="icon-delete-gray"
             on-click="onRemoveAlwaysTranslateLanguageClick_">
         </cr-icon-button>
       </div>
@@ -38,7 +38,7 @@
     <template is="dom-repeat" items="[[languages.neverTranslate]]">
       <div class="list-item">
         <div class="start cr-padded-text">[[item.displayName]]</div>
-        <cr-icon-button class="icon-clear" value="[[item.code]]"
+        <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
             on-click="onRemoveNeverTranslateLanguageClick_">
         </cr-icon-button>
       </div>
