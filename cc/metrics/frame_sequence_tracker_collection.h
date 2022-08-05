@@ -169,7 +169,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   NotifyCustomerTrackerResutlsCallback custom_tracker_results_added_callback_;
 
   std::vector<std::unique_ptr<FrameSequenceTracker>> removal_trackers_;
-  const raw_ptr<CompositorFrameReportingController, DanglingUntriaged>
+  const raw_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
 
   base::flat_map<

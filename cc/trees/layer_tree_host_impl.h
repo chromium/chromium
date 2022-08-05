@@ -934,9 +934,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   BeginFrameTracker current_begin_frame_tracker_;
 
-  std::unique_ptr<CompositorFrameReportingController>
-      compositor_frame_reporting_controller_;
-
  private:
   viz::CompositorFrame GenerateCompositorFrame(FrameData* frame);
 
@@ -1131,8 +1128,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::unique_ptr<PageScaleAnimation> page_scale_animation_;
 
-  DroppedFrameCounter dropped_frame_counter_;
+  base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
+
   TotalFrameCounter total_frame_counter_;
+  // `dropped_frame_counter_` holds a pointer `to ukm_smoothness_mapping_` so
+  // it must be declared last and deleted first;
+  DroppedFrameCounter dropped_frame_counter_;
 
   std::unique_ptr<MemoryHistory> memory_history_;
   std::unique_ptr<DebugRectHistory> debug_rect_history_;
@@ -1245,6 +1246,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   const PaintImage::GeneratorClientId paint_image_generator_client_id_;
 
+  // `compositor_frame_reporting_controller_` has a dependency on
+  // `dropped_frame_counter_` so it must be declared last and deleted first;
+  std::unique_ptr<CompositorFrameReportingController>
+      compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection frame_trackers_;
 
   // PaintWorklet painting is controlled from the LayerTreeHostImpl, dispatched
@@ -1294,8 +1299,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // True if we are measuring smoothness in TotalFrameCounter and
   // DroppedFrameCounter. Currently true when first contentful paint is done.
   bool is_measuring_smoothness_ = false;
-
-  base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
 
   // Cache for the results of calls to gfx::ColorSpace::Contains() on sRGB. This
   // computation is deterministic for a given color space, can be called
