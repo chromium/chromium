@@ -9,7 +9,6 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include <functional>
 #include <string>
 #include <vector>
 
@@ -19,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -848,38 +848,41 @@ STDMETHODIMP PolicyStatusImpl::get_updaterVersion(BSTR* version) {
   return S_OK;
 }
 
+namespace {
+
+// Holds the result of the IPC to retrieve `last checked time`.
+struct LastCheckedTimeResult
+    : public base::RefCountedThreadSafe<LastCheckedTimeResult> {
+  absl::optional<DATE> last_checked_time;
+  base::WaitableEvent completion_event;
+
+ private:
+  friend class base::RefCountedThreadSafe<LastCheckedTimeResult>;
+  virtual ~LastCheckedTimeResult() = default;
+};
+
+}  // namespace
+
 STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
   DCHECK(last_checked);
 
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
-
-  // TODO(crbug.com/1349988): perhaps implement a shared scoped memory that
-  // outlives the lambda instead of these local variables.
-  base::WaitableEvent get_last_checked_complete_event;
-  bool succeeded = false;
-  DATE last_checked_variant_time = {};
-
+  auto result = base::MakeRefCounted<LastCheckedTimeResult>();
   AppServerSingletonInstance()->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](PolicyStatusImplPtr obj, base::WaitableEvent& event,
-             bool& succeeded, DATE& last_checked_variant_time) {
+          [](PolicyStatusImplPtr obj,
+             scoped_refptr<LastCheckedTimeResult> result) {
             const base::ScopedClosureRunner signal_event(base::BindOnce(
-                [](base::WaitableEvent& event) { event.Signal(); },
-                std::ref(event)));
-
-            const auto prefs = AppServerSingletonInstance()->prefs();
-            if (!prefs)
-              return;
-
-            const auto persisted_data =
-                base::MakeRefCounted<const PersistedData>(
-                    prefs->GetPrefService());
-            if (!persisted_data)
-              return;
+                [](scoped_refptr<LastCheckedTimeResult> result) {
+                  result->completion_event.Signal();
+                },
+                result));
 
             const base::Time last_checked_time =
-                persisted_data->GetLastChecked();
+                base::MakeRefCounted<const PersistedData>(
+                    AppServerSingletonInstance()->prefs()->GetPrefService())
+                    ->GetLastChecked();
             if (last_checked_time.is_null())
               return;
 
@@ -887,25 +890,23 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
                 last_checked_time.ToFileTime();
             FILETIME file_time_local = {};
             SYSTEMTIME system_time = {};
-            succeeded =
-                ::FileTimeToLocalFileTime(&last_checked_filetime,
+            DATE last_checked_variant_time = {};
+            if (::FileTimeToLocalFileTime(&last_checked_filetime,
                                           &file_time_local) &&
                 ::FileTimeToSystemTime(&file_time_local, &system_time) &&
                 ::SystemTimeToVariantTime(&system_time,
-                                          &last_checked_variant_time);
+                                          &last_checked_variant_time)) {
+              result->last_checked_time = last_checked_variant_time;
+            }
           },
-          PolicyStatusImplPtr(this), std::ref(get_last_checked_complete_event),
-          std::ref(succeeded), std::ref(last_checked_variant_time)));
+          PolicyStatusImplPtr(this), result));
 
-  if (!get_last_checked_complete_event.TimedWait(base::Seconds(60))) {
-    NOTREACHED();
+  if (!result->completion_event.TimedWait(base::Seconds(60)) ||
+      !result->last_checked_time.has_value()) {
     return E_FAIL;
   }
 
-  if (!succeeded)
-    return E_FAIL;
-
-  *last_checked = last_checked_variant_time;
+  *last_checked = *result->last_checked_time;
   return S_OK;
 }
 
