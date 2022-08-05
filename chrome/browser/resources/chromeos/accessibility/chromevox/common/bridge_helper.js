@@ -20,17 +20,18 @@ export class BridgeHelper {
    *     this request.
    * @param {BridgeAction|string} action The name of the intended function or,
    *     if not a direct method of the class, a pseudo-function name.
-   * @param {*=} value An optional single parameter to include with the message.
-   *     If the method takes multiple parameters, they are passed as named
-   * members of an object literal.
+   *
+   * Any arguments to be passed through can be appended to the function. They
+   *     must be convertible to JSON objects for message passing - i.e., no
+   *     functions or type information will be retained, and no direct
+   *     modification of the original context is possible.
    *
    * @return {!Promise} A promise, that resolves when the handler function has
    *     finished and contains any value returned by the handler.
    */
-  static sendMessage(target, action, value) {
+  static sendMessage(target, action, ...args) {
     return new Promise(
-        resolve =>
-            chrome.runtime.sendMessage({target, action, value}, resolve));
+        resolve => chrome.runtime.sendMessage({target, action, args}, resolve));
   }
 
   /**
@@ -71,6 +72,6 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
   }
 
   const handler = targetHandlers[message.action];
-  Promise.resolve(handler(message.value)).then(respond);
+  Promise.resolve(handler(...message.args)).then(respond);
   return true; /** Wait for asynchronous response. */
 });

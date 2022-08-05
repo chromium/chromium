@@ -219,8 +219,8 @@ BridgeHelper.registerHandler(
 BridgeHelper.registerHandler(
     BridgeConstants.ChromeVoxPrefs.TARGET,
     BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
-    ({key, value}) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
+    (key, value) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
 BridgeHelper.registerHandler(
     BridgeConstants.ChromeVoxPrefs.TARGET,
     BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
-    ({key, value}) => ChromeVoxPrefs.instance.setPref(key, value));
+    (key, value) => ChromeVoxPrefs.instance.setPref(key, value));

@@ -107,6 +107,6 @@ EventStreamLogger.init_();
 
 BridgeHelper.registerHandler(
     Constants.TARGET, Constants.Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,
-    ({name, enabled}) =>
+    (name, enabled) =>
         EventStreamLogger.instance.notifyEventStreamFilterChanged(
             name, enabled));

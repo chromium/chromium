@@ -377,7 +377,7 @@ BridgeHelper.registerHandler(
     () => UserActionMonitor.destroy());
 BridgeHelper.registerHandler(
     BridgeConstants.UserActionMonitor.TARGET,
-    BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, (evt) => {
+    BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, evt => {
       if (!UserActionMonitor.instance) {
         // Continue propagating.
         return true;
