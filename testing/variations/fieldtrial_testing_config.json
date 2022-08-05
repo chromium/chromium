@@ -9882,21 +9882,6 @@
             ]
         }
     ],
-    "VaapiVideoDecoder": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VaapiVideoDecoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "VaapiVp8TemporalLayerEncoding": [
         {
             "platforms": [
