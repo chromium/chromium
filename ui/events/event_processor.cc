@@ -45,6 +45,13 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
     }
     DCHECK(targeter);
 
+    // FindTargetForEvent may dispatch event, which may delete the event
+    // processor.
+    if (!weak_this) {
+      details.dispatcher_destroyed = true;
+      return details;
+    }
+
     while (target) {
       details = DispatchEvent(target, event_to_dispatch);
 
