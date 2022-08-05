@@ -23,7 +23,7 @@ HeadlessScriptControllerImpl::HeadlessScriptControllerImpl(
   if (starter) {
     client_ = std::make_unique<ClientHeadless>(
         web_contents, starter->GetCommonDependencies(),
-        action_extension_delegate, website_login_manager, this);
+        action_extension_delegate, website_login_manager);
   }
 }
 
@@ -88,7 +88,10 @@ void HeadlessScriptControllerImpl::OnReadyToStart(
 
   // TODO(b/201964911): At this point we should be sure no other Controller
   // exists on this tab. Add logic to the starter to check that's the case.
-  client_->Start(*url, std::move(trigger_context));
+  client_->Start(
+      *url, std::move(trigger_context),
+      base::BindOnce(&HeadlessScriptControllerImpl::NotifyScriptEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HeadlessScriptControllerImpl::NotifyScriptEnded(

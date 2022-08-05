@@ -17,7 +17,6 @@
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/features.h"
-#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
@@ -46,20 +45,26 @@ ClientHeadless::ClientHeadless(
     content::WebContents* web_contents,
     const CommonDependencies* common_dependencies,
     ExternalActionDelegate* action_extension_delegate,
-    WebsiteLoginManager* website_login_manager,
-    HeadlessScriptControllerImpl* external_script_controller)
+    WebsiteLoginManager* website_login_manager)
     : web_contents_(web_contents),
       common_dependencies_(common_dependencies),
-      website_login_manager_(website_login_manager),
-      external_script_controller_(external_script_controller) {
+      website_login_manager_(website_login_manager) {
   headless_ui_controller_ =
       std::make_unique<HeadlessUiController>(action_extension_delegate);
 }
 
 ClientHeadless::~ClientHeadless() = default;
 
-void ClientHeadless::Start(const GURL& url,
-                           std::unique_ptr<TriggerContext> trigger_context) {
+void ClientHeadless::Start(
+    const GURL& url,
+    std::unique_ptr<TriggerContext> trigger_context,
+    base::OnceCallback<void(Metrics::DropOutReason reason)>
+        script_ended_callback) {
+  // Ignore the call if a script is already running.
+  if (script_ended_callback_) {
+    return;
+  }
+  script_ended_callback_ = std::move(script_ended_callback);
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(web_contents_)->GetWeakPtr(),
@@ -182,7 +187,9 @@ void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {
 }
 
 void ClientHeadless::NotifyScriptEnded(Metrics::DropOutReason reason) {
-  external_script_controller_->NotifyScriptEnded(reason);
+  if (script_ended_callback_) {
+    std::move(script_ended_callback_).Run(reason);
+  }
 
   // This instance can be destroyed by the above call, so nothing should be
   // added here.

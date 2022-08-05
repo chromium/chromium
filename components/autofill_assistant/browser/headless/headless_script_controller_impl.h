@@ -46,15 +46,16 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
       bool use_autofill_assistant_onboarding,
       base::OnceCallback<void()> onboarding_successful_callback) override;
 
+ private:
+  void OnReadyToStart(bool can_start,
+                      absl::optional<GURL> url,
+                      std::unique_ptr<TriggerContext> trigger_context);
+
   // Notifies the external caller that the script has ended. Note that the
   // external caller can decide to destroy this instance once it has been
   // notified so this method should not be called directly to avoid UAF issues.
   void NotifyScriptEnded(Metrics::DropOutReason reason);
 
- private:
-  void OnReadyToStart(bool can_start,
-                      absl::optional<GURL> url,
-                      std::unique_ptr<TriggerContext> trigger_context);
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ClientHeadless> client_;
 

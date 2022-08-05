@@ -27,25 +27,25 @@
 
 namespace autofill_assistant {
 
-class HeadlessScriptControllerImpl;
 class WebsiteLoginManager;
 
 // An Autofill Assistant client for headless runs.
 class ClientHeadless : public Client, public AccessTokenFetcher {
  public:
-  explicit ClientHeadless(
-      content::WebContents* web_contents,
-      const CommonDependencies* common_dependencies,
-      ExternalActionDelegate* action_extension_delegate,
-      WebsiteLoginManager* website_login_manager,
-      HeadlessScriptControllerImpl* external_script_controller);
+  explicit ClientHeadless(content::WebContents* web_contents,
+                          const CommonDependencies* common_dependencies,
+                          ExternalActionDelegate* action_extension_delegate,
+                          WebsiteLoginManager* website_login_manager);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 
   ~ClientHeadless() override;
 
   bool IsRunning() const;
-  void Start(const GURL& url, std::unique_ptr<TriggerContext> trigger_context);
+  void Start(const GURL& url,
+             std::unique_ptr<TriggerContext> trigger_context,
+             base::OnceCallback<void(Metrics::DropOutReason reason)>
+                 script_ended_callback);
 
   // Overrides Client
   void AttachUI() override;
@@ -100,7 +100,10 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   base::OnceCallback<void(bool, const std::string&)>
       fetch_access_token_callback_;
-  const raw_ptr<HeadlessScriptControllerImpl> external_script_controller_;
+
+  // Only set while a script is running.
+  base::OnceCallback<void(Metrics::DropOutReason reason)>
+      script_ended_callback_;
 
   base::WeakPtrFactory<ClientHeadless> weak_ptr_factory_{this};
 };
