@@ -802,9 +802,9 @@ void AXTree::Destroy() {
 
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
-
-    DestroyNodeAndSubtree(root_, nullptr);
-    root_ = nullptr;
+    // ExtractAsDangling clears the underlying pointer and returns another
+    // raw_ptr instance that is allowed to dangle.
+    DestroyNodeAndSubtree(root_.ExtractAsDangling(), nullptr);
   }  // tree_update_in_progress.
 }
 
