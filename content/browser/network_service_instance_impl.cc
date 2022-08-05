@@ -283,17 +283,8 @@ void CreateNetworkContextInternal(
     }
   }
 
-  // This might recreate g_client if the network service needed to be restarted.
-  auto* network_service = GetNetworkService();
-
-#if BUILDFLAG(USE_SOCKET_BROKER)
-  if (GetContentClient()->browser()->ShouldSandboxNetworkService() &&
-      !params->socket_broker) {
-    params->socket_broker = g_client->BindSocketBroker();
-  }
-#endif  // BUILDFLAG(USE_SOCKET_BROKER)
-
-  network_service->CreateNetworkContext(std::move(context), std::move(params));
+  GetNetworkService()->CreateNetworkContext(std::move(context),
+                                            std::move(params));
 }
 
 scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
@@ -843,6 +834,13 @@ void CreateNetworkContextInNetworkService(
         params->http_cache_file_operations_factory
             .InitWithNewPipeAndPassReceiver());
   }
+
+#if BUILDFLAG(USE_SOCKET_BROKER)
+  if (GetContentClient()->browser()->ShouldSandboxNetworkService() &&
+      !params->socket_broker) {
+    params->socket_broker = g_client->BindSocketBroker();
+  }
+#endif  // BUILDFLAG(USE_SOCKET_BROKER)
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, if a cookie_manager pending receiver was passed then migration

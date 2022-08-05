@@ -5,7 +5,6 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/buildflags.h"
 #include "content/browser/net/socket_broker_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -71,7 +70,11 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if BUILDFLAG(IS_WIN)
+    // TODO(https://crbug.com/1311014): Run these tests on Windows once the
+    // broker can open and release sockets.
+    GTEST_SKIP();
+#else
     if (check_sandbox_) {
       ASSERT_TRUE(IsOutOfProcessNetworkService());
       ASSERT_TRUE(sandbox::policy::features::IsNetworkSandboxEnabled());
@@ -83,12 +86,10 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
 
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
     ContentBrowserTest::SetUp();
-#else
-    GTEST_SKIP();
 #endif
   }
 
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if !BUILDFLAG(IS_WIN)
   void SetUpOnMainThread() override {
     embedded_test_server_.StartAcceptingConnections();
   }
@@ -113,17 +114,6 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
   net::test_server::EmbeddedTestServer embedded_test_server_;
   bool check_sandbox_ = true;
 };
-
-mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext() {
-  mojo::Remote<network::mojom::NetworkContext> network_context;
-  network::mojom::NetworkContextParamsPtr context_params =
-      network::mojom::NetworkContextParams::New();
-  context_params->cert_verifier_params = GetCertVerifierParams(
-      cert_verifier::mojom::CertVerifierCreationParams::New());
-  CreateNetworkContextInNetworkService(
-      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
-  return network_context;
-}
 
 void OnConnected(base::OnceClosure quit_closure,
                  int result,
@@ -219,40 +209,6 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
 
   RunTcpEndToEndTest(network_context.get(), embedded_test_server_);
   EXPECT_EQ(socket_broker.tcp_socket_count(), 1);
-}
-
-IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
-                       TcpEndToEndCrashingService) {
-  if (IsInProcessNetworkService())
-    GTEST_SKIP();
-
-  auto network_context = CreateNetworkContext();
-
-  ASSERT_TRUE(network_context.is_bound());
-
-  // Run test on the first network context.
-  RunTcpEndToEndTest(network_context.get(), embedded_test_server_);
-
-  // Manually call SimulateCrash instead of
-  // BrowserTestBase::SimulateNetworkServiceCrash to avoid the cleanup and
-  // reconnection work it does.
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
-  IgnoreNetworkServiceCrashes();
-  network_service_test->SimulateCrash();
-
-  // Make sure the cached mojo::Remote<NetworkService> receives error
-  // notification.
-  FlushNetworkServiceInstanceForTesting();
-
-  network_context.FlushForTesting();
-
-  auto network_context2 = CreateNetworkContext();
-  ASSERT_TRUE(network_context2.is_bound());
-
-  // Run the test again, in the new network service.
-  RunTcpEndToEndTest(network_context2.get(), embedded_test_server_);
 }
 
 }  // namespace
