@@ -12,6 +12,26 @@
 
 namespace gpu {
 
+namespace {
+bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {
+  switch (format) {
+    // AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM
+    case VK_FORMAT_R8G8B8A8_UNORM:
+    // AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM
+    case VK_FORMAT_R8G8B8_UNORM:
+    // AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM
+    case VK_FORMAT_R5G6B5_UNORM_PACK16:
+    // AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT
+    case VK_FORMAT_R16G16B16A16_SFLOAT:
+    // AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM
+    case VK_FORMAT_A2B10G10R10_UNORM_PACK32:
+      return true;
+    default:
+      return false;
+  }
+}
+}  // namespace
+
 bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
@@ -62,8 +82,10 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .externalFormat = 0,
   };
 
-  // If image has an external format, format must be VK_FORMAT_UNDEFINED.
-  if (ahb_format_props.format == VK_FORMAT_UNDEFINED) {
+  const bool should_use_external_format =
+      !IsSinglePlaneRGBVulkanAHBFormat(ahb_format_props.format);
+
+  if (should_use_external_format) {
     // externalFormat must be 0 or a value returned in the externalFormat member
     // of VkAndroidHardwareBufferFormatPropertiesANDROID by an earlier call to
     // vkGetAndroidHardwareBufferPropertiesANDROID.
@@ -126,8 +148,12 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .size = ahb_props.allocationSize,
       .memoryTypeBits = ahb_props.memoryTypeBits,
   };
-  if (!Initialize(device_queue, size, ahb_format_props.format, usage_flags,
-                  create_flags, VK_IMAGE_TILING_OPTIMAL,
+
+  // If we want to use external format, format must be VK_FORMAT_UNDEFINED.
+  if (!Initialize(device_queue, size,
+                  should_use_external_format ? VK_FORMAT_UNDEFINED
+                                             : ahb_format_props.format,
+                  usage_flags, create_flags, VK_IMAGE_TILING_OPTIMAL,
                   &external_memory_image_info, &ahb_import_info,
                   &requirements)) {
     return false;
@@ -135,7 +161,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
 
   queue_family_index_ = queue_family_index;
 
-  if (ahb_format_props.format == VK_FORMAT_UNDEFINED) {
+  if (should_use_external_format) {
     ycbcr_info_.emplace(VK_FORMAT_UNDEFINED, ahb_format_props.externalFormat,
                         ahb_format_props.suggestedYcbcrModel,
                         ahb_format_props.suggestedYcbcrRange,
