@@ -15,36 +15,37 @@
 namespace content {
 namespace responsiveness {
 
-using JankType = Calculator::JankType;
+using CongestionType = Calculator::CongestionType;
 using StartupStage = Calculator::StartupStage;
 using ::testing::_;
 
 namespace {
 // Copied from calculator.cc.
 constexpr int kMeasurementIntervalInMs = 30 * 1000;
-constexpr int kJankThresholdInMs = 100;
+constexpr int kCongestionThresholdInMs = 100;
 
 class FakeCalculator : public Calculator {
  public:
   MOCK_METHOD3(EmitResponsivenessMock,
-               void(JankType jank_type,
-                    size_t janky_slices,
+               void(CongestionType congestion_type,
+                    size_t congested_slices,
                     StartupStage startup_stage));
 
-  void EmitResponsiveness(JankType jank_type,
-                          size_t janky_slices,
+  void EmitResponsiveness(CongestionType congestion_type,
+                          size_t congested_slices,
                           StartupStage startup_stage) override {
-    EmitResponsivenessMock(jank_type, janky_slices, startup_stage);
+    EmitResponsivenessMock(congestion_type, congested_slices, startup_stage);
     // Emit the histograms anyways for verification in some tests.
-    Calculator::EmitResponsiveness(jank_type, janky_slices, startup_stage);
+    Calculator::EmitResponsiveness(congestion_type, congested_slices,
+                                   startup_stage);
   }
 
-  MOCK_METHOD3(EmitJankyIntervalsMeasurementTraceEvent,
+  MOCK_METHOD3(EmitCongestedIntervalsMeasurementTraceEvent,
                void(base::TimeTicks start_time,
                     base::TimeTicks end_time,
                     size_t amount_of_slices));
 
-  MOCK_METHOD2(EmitJankyIntervalsJankTraceEvent,
+  MOCK_METHOD2(EmitCongestedIntervalTraceEvent,
                void(base::TimeTicks start_time, base::TimeTicks end_time));
 
   using Calculator::EmitResponsivenessTraceEvents;
@@ -100,198 +101,203 @@ class ResponsivenessCalculatorTest : public testing::Test {
   base::TimeTicks last_calculation_time_;
 };
 
-#define EXPECT_EXECUTION_JANKY_SLICES(num_slices, phase)                 \
-  EXPECT_CALL(*calculator_, EmitResponsivenessMock(JankType::kExecution, \
-                                                   num_slices, phase));
-#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices, phase)             \
-  EXPECT_CALL(*calculator_,                                                    \
-              EmitResponsivenessMock(JankType::kQueueAndExecution, num_slices, \
-                                     phase));
+#define EXPECT_EXECUTION_CONGESTED_SLICES(num_slices, phase)         \
+  EXPECT_CALL(*calculator_,                                          \
+              EmitResponsivenessMock(CongestionType::kExecutionOnly, \
+                                     num_slices, phase));
+#define EXPECT_CONGESTED_SLICES(num_slices, phase)                       \
+  EXPECT_CALL(*calculator_,                                              \
+              EmitResponsivenessMock(CongestionType::kQueueAndExecution, \
+                                     num_slices, phase));
 
-// A single event executing slightly longer than kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
+// A single event executing slightly longer than kCongestionThresholdInMs.
+TEST_F(ResponsivenessCalculatorTest, ShortExecutionCongestion) {
   constexpr int kQueueTime = 35;
   constexpr int kStartTime = 40;
-  constexpr int kFinishTime = kStartTime + kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + kCongestionThresholdInMs + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// A single event queued slightly longer than kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, ShortQueueJank) {
+// A single event queued slightly longer than kCongestionThresholdInMs.
+TEST_F(ResponsivenessCalculatorTest, ShortQueueCongestion) {
   constexpr int kQueueTime = 35;
-  constexpr int kStartTime = kQueueTime + kJankThresholdInMs + 5;
+  constexpr int kStartTime = kQueueTime + kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
 // A single event whose queuing and execution time together take longer than
-// kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, ShortCombinedQueueAndExecutionJank) {
+// kCongestionThresholdInMs.
+TEST_F(ResponsivenessCalculatorTest, ShortCombinedQueueAndExecutionCongestion) {
   constexpr int kQueueTime = 35;
-  constexpr int kStartTime = kQueueTime + (kJankThresholdInMs / 2);
-  constexpr int kFinishTime = kStartTime + (kJankThresholdInMs / 2) + 1;
+  constexpr int kStartTime = kQueueTime + (kCongestionThresholdInMs / 2);
+  constexpr int kFinishTime = kStartTime + (kCongestionThresholdInMs / 2) + 1;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// A single event executing slightly longer than 10 * kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, LongExecutionJank) {
+// A single event executing slightly longer than 10 * kCongestionThresholdInMs.
+TEST_F(ResponsivenessCalculatorTest, LongExecutionCongestion) {
   constexpr int kQueueTime = 35;
   constexpr int kStartTime = 40;
-  constexpr int kFinishTime = kStartTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + 10 * kCongestionThresholdInMs + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(10, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(10, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(10u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// A single event executing slightly longer than 10 * kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, LongQueueJank) {
+// A single event executing slightly longer than 10 * kCongestionThresholdInMs.
+TEST_F(ResponsivenessCalculatorTest, LongQueueCongestion) {
   constexpr int kQueueTime = 35;
-  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kStartTime = kQueueTime + 10 * kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(10u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// Events that execute in less than 100ms do not jank, regardless of start time.
-TEST_F(ResponsivenessCalculatorTest, NoExecutionJank) {
+// Events that execute in less than 100ms are not congested, regardless of start
+// time.
+TEST_F(ResponsivenessCalculatorTest, NoExecutionCongestion) {
   int base_time = 30;
-  for (int i = 0; i < kJankThresholdInMs; ++i) {
+  for (int i = 0; i < kCongestionThresholdInMs; ++i) {
     AddEventUI(base_time, base_time, base_time + i);
   }
 
-  base_time += kJankThresholdInMs;
-  for (int i = 0; i < kJankThresholdInMs; ++i) {
+  base_time += kCongestionThresholdInMs;
+  for (int i = 0; i < kCongestionThresholdInMs; ++i) {
     AddEventUI(base_time + i, base_time + i, base_time + 2 * i);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// Events that are queued and execute in less than 100ms do not jank, regardless
-// of start time.
-TEST_F(ResponsivenessCalculatorTest, NoQueueJank) {
+// Events that are queued and execute in less than 100ms are not congested,
+// regardless of start time.
+TEST_F(ResponsivenessCalculatorTest, NoQueueCongestion) {
   int base_time = 30;
-  for (int i = 0; i < kJankThresholdInMs; ++i) {
+  for (int i = 0; i < kCongestionThresholdInMs; ++i) {
     AddEventUI(base_time, base_time + i, base_time + i);
   }
 
-  base_time += kJankThresholdInMs;
-  for (int i = 0; i < kJankThresholdInMs; ++i) {
+  base_time += kCongestionThresholdInMs;
+  for (int i = 0; i < kCongestionThresholdInMs; ++i) {
     AddEventUI(base_time + i, base_time + 2 * i, base_time + 2 * i);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// 10 execution jank events, but very closely overlapping. Time slices are
+// 10 execution congestion events, but very closely overlapping. Time slices are
 // discretized and fixed, e.g. [0 100] [100 200] [200 300]. In this test, the
 // events all start in the [0 100] slice and end in the [100 200] slice. All of
-// them end up marking the [100 200] slice as janky.
-TEST_F(ResponsivenessCalculatorTest, OverlappingExecutionJank) {
+// them end up marking the [100 200] slice as congested.
+TEST_F(ResponsivenessCalculatorTest, OverlappingExecutionCongestion) {
   int base_time = 30;
   for (int i = 0; i < 10; ++i) {
     const int queue_time = base_time;
     const int start_time = base_time;
-    const int finish_time = start_time + kJankThresholdInMs + i;
+    const int finish_time = start_time + kCongestionThresholdInMs + i;
     AddEventUI(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// 10 queue jank events, but very closely overlapping. Time slices are
+// 10 queue congestion events, but very closely overlapping. Time slices are
 // discretized and fixed, e.g. [0 100] [100 200] [200 300]. In this test, the
 // events are all queued in the [0 100] slice and start executing in the [100
-// 200] slice. All of them end up marking the [100 200] slice as janky.
-TEST_F(ResponsivenessCalculatorTest, OverlappingQueueJank) {
+// 200] slice. All of them end up marking the [100 200] slice as congested.
+TEST_F(ResponsivenessCalculatorTest, OverlappingQueueCongestion) {
   int base_time = 30;
   for (int i = 0; i < 10; ++i) {
     const int queue_time = base_time;
-    const int start_time = base_time + kJankThresholdInMs + i;
+    const int start_time = base_time + kCongestionThresholdInMs + i;
     const int finish_time = start_time + 1;
     AddEventUI(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// UI thread has 3 execution jank events on slices 1, 2, 3
-// IO thread has 3 execution jank events on slices 3, 4, 5,
-// There should be a total of 5 jank events.
-TEST_F(ResponsivenessCalculatorTest, OverlappingExecutionJankMultipleThreads) {
+// UI thread has 3 execution congestion events on slices 1, 2, 3
+// IO thread has 3 execution congestion events on slices 3, 4, 5,
+// There should be a total of 5 congestion events.
+TEST_F(ResponsivenessCalculatorTest,
+       OverlappingExecutionCongestionMultipleThreads) {
   int base_time = 105;
   for (int i = 0; i < 3; ++i) {
-    const int queue_time = base_time + i * kJankThresholdInMs;
+    const int queue_time = base_time + i * kCongestionThresholdInMs;
     const int start_time = queue_time;
-    const int finish_time = start_time + kJankThresholdInMs + 10;
+    const int finish_time = start_time + kCongestionThresholdInMs + 10;
     AddEventUI(queue_time, start_time, finish_time);
   }
 
   base_time = 305;
   for (int i = 0; i < 3; ++i) {
-    const int queue_time = base_time + i * kJankThresholdInMs;
+    const int queue_time = base_time + i * kCongestionThresholdInMs;
     const int start_time = queue_time;
-    const int finish_time = start_time + kJankThresholdInMs + 10;
+    const int finish_time = start_time + kCongestionThresholdInMs + 10;
     AddEventIO(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(5u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(5u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(5u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(5u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// UI thread has 3 queue jank events on slices 1, 2, 3
-// IO thread has 3 queue jank events on slices 3, 4, 5,
-// There should be a total of 5 jank events.
-TEST_F(ResponsivenessCalculatorTest, OverlappingQueueJankMultipleThreads) {
+// UI thread has 3 queue congestion events on slices 1, 2, 3
+// IO thread has 3 queue congestion events on slices 3, 4, 5,
+// There should be a total of 5 congestion events.
+TEST_F(ResponsivenessCalculatorTest,
+       OverlappingQueueCongestionMultipleThreads) {
   int base_time = 105;
   for (int i = 0; i < 3; ++i) {
-    const int queue_time = base_time + i * kJankThresholdInMs;
-    const int start_time = queue_time + kJankThresholdInMs + 10;
+    const int queue_time = base_time + i * kCongestionThresholdInMs;
+    const int start_time = queue_time + kCongestionThresholdInMs + 10;
     const int finish_time = start_time;
     AddEventUI(queue_time, start_time, finish_time);
   }
 
   base_time = 305;
   for (int i = 0; i < 3; ++i) {
-    const int queue_time = base_time + i * kJankThresholdInMs;
-    const int start_time = queue_time + kJankThresholdInMs + 10;
+    const int queue_time = base_time + i * kCongestionThresholdInMs;
+    const int start_time = queue_time + kCongestionThresholdInMs + 10;
     const int finish_time = start_time;
     AddEventIO(queue_time, start_time, finish_time);
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(5u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(5u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// Three execution janks, each of length 2, separated by some shorter events.
-TEST_F(ResponsivenessCalculatorTest, SeparatedExecutionJanks) {
+// Three execution congestions, each of length 2, separated by some shorter
+// events.
+TEST_F(ResponsivenessCalculatorTest, SeparatedExecutionCongestions) {
   int base_time = 105;
 
   for (int i = 0; i < 3; ++i) {
@@ -304,19 +310,19 @@ TEST_F(ResponsivenessCalculatorTest, SeparatedExecutionJanks) {
     {
       const int queue_time = base_time;
       const int start_time = base_time;
-      const int finish_time = base_time + 2 * kJankThresholdInMs + 1;
+      const int finish_time = base_time + 2 * kCongestionThresholdInMs + 1;
       AddEventUI(queue_time, start_time, finish_time);
     }
-    base_time += 10 * kJankThresholdInMs;
+    base_time += 10 * kCongestionThresholdInMs;
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(6u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(6u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(6u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
-// Three queue janks, each of length 2, separated by some shorter events.
-TEST_F(ResponsivenessCalculatorTest, SeparatedQueueJanks) {
+// Three queue congestions, each of length 2, separated by some shorter events.
+TEST_F(ResponsivenessCalculatorTest, SeparatedQueueCongestions) {
   int base_time = 105;
 
   for (int i = 0; i < 3; ++i) {
@@ -328,32 +334,33 @@ TEST_F(ResponsivenessCalculatorTest, SeparatedQueueJanks) {
     }
     {
       const int queue_time = base_time;
-      const int start_time = base_time + 2 * kJankThresholdInMs + 1;
+      const int start_time = base_time + 2 * kCongestionThresholdInMs + 1;
       const int finish_time = start_time;
       AddEventUI(queue_time, start_time, finish_time);
     }
-    base_time += 10 * kJankThresholdInMs;
+    base_time += 10 * kCongestionThresholdInMs;
   }
 
-  EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(6u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
 TEST_F(ResponsivenessCalculatorTest, MultipleTrigger) {
   int base_time = 105;
 
-  // 3 Janks, then trigger, then repeat.
+  // 3 Congestions, then trigger, then repeat.
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 3; ++j) {
-      AddEventUI(base_time, base_time, base_time + 3 * kJankThresholdInMs + 1);
-      base_time += 3 * kJankThresholdInMs;
+      AddEventUI(base_time, base_time,
+                 base_time + 3 * kCongestionThresholdInMs + 1);
+      base_time += 3 * kCongestionThresholdInMs;
     }
 
-    EXPECT_EXECUTION_JANKY_SLICES(
+    EXPECT_EXECUTION_CONGESTED_SLICES(
         9u, i == 0 ? StartupStage::kFirstInterval
                    : StartupStage::kFirstIntervalDoneWithoutFirstIdle);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
+    EXPECT_CONGESTED_SLICES(
         9u, i == 0 ? StartupStage::kFirstInterval
                    : StartupStage::kFirstIntervalDoneWithoutFirstIdle);
     TriggerCalculation();
@@ -364,7 +371,8 @@ TEST_F(ResponsivenessCalculatorTest, MultipleTrigger) {
 // A long delay means that the machine likely went to sleep.
 TEST_F(ResponsivenessCalculatorTest, LongDelay) {
   int base_time = 105;
-  AddEventUI(base_time, base_time, base_time + 3 * kJankThresholdInMs + 1);
+  AddEventUI(base_time, base_time,
+             base_time + 3 * kCongestionThresholdInMs + 1);
   base_time += 10 * kMeasurementIntervalInMs;
   AddEventUI(base_time, base_time, base_time + 1);
 
@@ -384,7 +392,7 @@ TEST_F(ResponsivenessCalculatorTest, LongEvent) {
 TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
   constexpr int kQueueTime = 35;
   constexpr int kStartTime = 40;
-  constexpr int kFinishTime = kStartTime + kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + kCongestionThresholdInMs + 5;
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
 
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
@@ -399,18 +407,18 @@ TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
 
 TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   constexpr int kQueueTime = 35;
-  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kStartTime = kQueueTime + 10 * kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
   absl::optional<base::HistogramTester> histograms;
 
-  // Queue jank event during the first kMeasurementInterval.
+  // Queue congestion event during the first kMeasurementInterval.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kExecution, 0,
+              EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
                                      StartupStage::kFirstInterval));
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+              EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                                      StartupStage::kFirstInterval));
   histograms.emplace();
   TriggerCalculation();
@@ -424,16 +432,16 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
-  // Queue jank event during a few kMeasurementInterval (without having seen
-  // OnFirstIdle()). Neither .Initial nor .Periodic
+  // Queue congestion event during a few kMeasurementInterval (without having
+  // seen OnFirstIdle()). Neither .Initial nor .Periodic
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kExecution, 0,
+      EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+      EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
@@ -449,11 +457,11 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kExecution, 0,
+      EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+      EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
@@ -473,11 +481,11 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   calculator_->OnFirstIdle();
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kExecution, 0,
+      EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   EXPECT_CALL(
       *calculator_,
-      EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+      EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
@@ -491,13 +499,14 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
-  // Events in intervals after OnFirstIdle(). Janky3.Initial still no .Periodic.
+  // Events in intervals after OnFirstIdle(). congested3.Initial still no
+  // .Periodic.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(
-                                JankType::kExecution, 0,
+                                CongestionType::kExecutionOnly, 0,
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(
-                                JankType::kQueueAndExecution, 10u,
+                                CongestionType::kQueueAndExecution, 10u,
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   histograms.emplace();
   TriggerCalculation();
@@ -513,10 +522,11 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsivenessMock(JankType::kExecution, 0,
-                                                   StartupStage::kPeriodic));
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+              EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
+                                     StartupStage::kPeriodic));
+  EXPECT_CALL(*calculator_,
+              EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                                      StartupStage::kPeriodic));
   histograms.emplace();
   TriggerCalculation();
@@ -534,7 +544,7 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
 
 TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
   constexpr int kQueueTime = 35;
-  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kStartTime = kQueueTime + 10 * kCongestionThresholdInMs + 5;
   constexpr int kFinishTime = kStartTime + 5;
 
   absl::optional<base::HistogramTester> histograms;
@@ -545,10 +555,10 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   calculator_->OnFirstIdle();
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kExecution, 0,
+              EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
                                      StartupStage::kFirstInterval));
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+              EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                                      StartupStage::kFirstInterval));
   histograms.emplace();
   TriggerCalculation();
@@ -564,10 +574,10 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(
-                                JankType::kExecution, 0,
+                                CongestionType::kExecutionOnly, 0,
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(
-                                JankType::kQueueAndExecution, 10u,
+                                CongestionType::kQueueAndExecution, 10u,
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   histograms.emplace();
   TriggerCalculation();
@@ -583,10 +593,11 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
   histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsivenessMock(JankType::kExecution, 0,
-                                                   StartupStage::kPeriodic));
   EXPECT_CALL(*calculator_,
-              EmitResponsivenessMock(JankType::kQueueAndExecution, 10u,
+              EmitResponsivenessMock(CongestionType::kExecutionOnly, 0,
+                                     StartupStage::kPeriodic));
+  EXPECT_CALL(*calculator_,
+              EmitResponsivenessMock(CongestionType::kQueueAndExecution, 10u,
                                      StartupStage::kPeriodic));
   histograms.emplace();
   TriggerCalculation();
@@ -611,15 +622,16 @@ TEST_F(ResponsivenessCalculatorTest, ExecutionCrossesBoundary) {
     AddEventUI(kTime, kTime, kTime);
   }
 
-  // The event goes from [29801, 30150]. It should count as 1 jank in the first
-  // measurement interval and 2 in the second.
+  // The event goes from [29801, 30150]. It should count as 1 congestion in the
+  // first measurement interval and 2 in the second.
   {
-    EXPECT_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+    EXPECT_EXECUTION_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
+    EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
     const int queue_time =
-        kMeasurementIntervalInMs - 2 * kJankThresholdInMs + 1;
+        kMeasurementIntervalInMs - 2 * kCongestionThresholdInMs + 1;
     const int start_time = queue_time;
-    const int finish_time = kMeasurementIntervalInMs + 1.5 * kJankThresholdInMs;
+    const int finish_time =
+        kMeasurementIntervalInMs + 1.5 * kCongestionThresholdInMs;
     AddEventUI(queue_time, start_time, finish_time);
   }
 
@@ -630,10 +642,9 @@ TEST_F(ResponsivenessCalculatorTest, ExecutionCrossesBoundary) {
   }
 
   // Trigger another calculation.
-  EXPECT_EXECUTION_JANKY_SLICES(
+  EXPECT_EXECUTION_CONGESTED_SLICES(
       2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
-      2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
+  EXPECT_CONGESTED_SLICES(2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
 
   const int kTime = 2 * kMeasurementIntervalInMs + 1;
   AddEventUI(kTime, kTime, kTime);
@@ -648,14 +659,15 @@ TEST_F(ResponsivenessCalculatorTest, QueuingCrossesBoundary) {
     AddEventUI(kTime, kTime, kTime);
   }
 
-  // The event goes from [29801, 30150]. It should count as 1 jank in the first
-  // measurement interval and 2 in the second.
+  // The event goes from [29801, 30150]. It should count as 1 congestion in the
+  // first measurement interval and 2 in the second.
   {
-    EXPECT_EXECUTION_JANKY_SLICES(0u, StartupStage::kFirstInterval);
-    EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(1u, StartupStage::kFirstInterval);
+    EXPECT_EXECUTION_CONGESTED_SLICES(0u, StartupStage::kFirstInterval);
+    EXPECT_CONGESTED_SLICES(1u, StartupStage::kFirstInterval);
     const int queue_time =
-        kMeasurementIntervalInMs - 2 * kJankThresholdInMs + 1;
-    const int start_time = kMeasurementIntervalInMs + 1.5 * kJankThresholdInMs;
+        kMeasurementIntervalInMs - 2 * kCongestionThresholdInMs + 1;
+    const int start_time =
+        kMeasurementIntervalInMs + 1.5 * kCongestionThresholdInMs;
     const int finish_time = start_time;
     AddEventUI(queue_time, start_time, finish_time);
   }
@@ -667,10 +679,9 @@ TEST_F(ResponsivenessCalculatorTest, QueuingCrossesBoundary) {
   }
 
   // Trigger another calculation.
-  EXPECT_EXECUTION_JANKY_SLICES(
+  EXPECT_EXECUTION_CONGESTED_SLICES(
       0u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(
-      2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
+  EXPECT_CONGESTED_SLICES(2u, StartupStage::kFirstIntervalDoneWithoutFirstIdle);
 
   const int kTime = 2 * kMeasurementIntervalInMs + 1;
   AddEventUI(kTime, kTime, kTime);
@@ -689,8 +700,8 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
   //   [1050, 1200, 1201]
   //   [1050, 1390, 1391] <- B
   //
-  // The execution jank in A subsumes all other execution janks. The queue jank
-  // in B subsumes all other queue janks.
+  // The execution congestion in A subsumes all other execution congestions. The
+  // queue congestion in B subsumes all other queue congestions.
   AddEventUI(100, 100, 250);
   AddEventUI(150, 150, 300);
   AddEventUI(50, 50, 200);
@@ -701,8 +712,8 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
   AddEventUI(1050, 1200, 1201);
   AddEventUI(1050, 1390, 1391);
 
-  EXPECT_EXECUTION_JANKY_SLICES(3u, StartupStage::kFirstInterval);
-  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u, StartupStage::kFirstInterval);
+  EXPECT_EXECUTION_CONGESTED_SLICES(3u, StartupStage::kFirstInterval);
+  EXPECT_CONGESTED_SLICES(6u, StartupStage::kFirstInterval);
   TriggerCalculation();
 }
 
@@ -710,52 +721,58 @@ TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
-  const std::set<int> janky_slices;
+  const std::set<int> congested_slices;
 
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _))
       .Times(0);
 
-  calculator_->EmitResponsivenessTraceEvents(
-      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
+                                             kStartTime, kFinishTime,
+                                             congested_slices);
 }
 
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
-  const std::set<int> janky_slices = {1};
+  const std::set<int> congested_slices = {1};
 
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalsMeasurementTraceEvent(_, _, _))
       .Times(0);
 
-  calculator_->EmitResponsivenessTraceEvents(JankType::kExecution, kStartTime,
-                                             kFinishTime, janky_slices);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kExecutionOnly,
+                                             kStartTime, kFinishTime,
+                                             congested_slices);
 }
 
 TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
   constexpr base::TimeDelta kSliceInterval =
-      base::Milliseconds(kJankThresholdInMs);
+      base::Milliseconds(kCongestionThresholdInMs);
   constexpr base::TimeTicks kStartTime = base::TimeTicks();
   constexpr base::TimeTicks kFinishTime =
       kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
 
-  const std::set<int> janky_slices = {3, 4, 5, 12, 15};
+  const std::set<int> congested_slices = {3, 4, 5, 12, 15};
 
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(
-                                kStartTime, kFinishTime, janky_slices.size()));
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalsMeasurementTraceEvent(
+                  kStartTime, kFinishTime, congested_slices.size()));
 
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
-                                kStartTime + 3 * kSliceInterval,
-                                kStartTime + 6 * kSliceInterval));
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+  EXPECT_CALL(*calculator_,
+              EmitCongestedIntervalTraceEvent(kStartTime + 3 * kSliceInterval,
+                                              kStartTime + 6 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
                                 kStartTime + 12 * kSliceInterval,
                                 kStartTime + 13 * kSliceInterval));
-  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+  EXPECT_CALL(*calculator_, EmitCongestedIntervalTraceEvent(
                                 kStartTime + 15 * kSliceInterval,
                                 kStartTime + 16 * kSliceInterval));
 
-  calculator_->EmitResponsivenessTraceEvents(
-      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
+  calculator_->EmitResponsivenessTraceEvents(CongestionType::kQueueAndExecution,
+                                             kStartTime, kFinishTime,
+                                             congested_slices);
 }
 
 }  // namespace responsiveness

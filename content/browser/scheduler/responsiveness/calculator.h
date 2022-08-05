@@ -23,8 +23,8 @@ namespace responsiveness {
 // This class receives execution latency on events and tasks, and uses that to
 // estimate responsiveness.
 //
-// All members are UI-thread affine, with the exception of
-// |janks_on_io_thread_| which is protected by |io_thread_lock_|.
+// All members are UI-thread affine, with the exception of |*_on_io_thread_|
+// which are protected by |io_thread_lock_|.
 class CONTENT_EXPORT Calculator {
  public:
   Calculator();
@@ -63,18 +63,18 @@ class CONTENT_EXPORT Calculator {
   // Change the Power state of the process. Must be called from the UI thread.
   void SetProcessSuspended(bool suspended);
 
-  // Each janking task/event is fully defined by |start_time| and |end_time|.
+  // Each congested task/event is fully defined by |start_time| and |end_time|.
   // Note that |duration| = |end_time| - |start_time|.
-  struct Jank {
-    Jank(base::TimeTicks start_time, base::TimeTicks end_time);
+  struct Congestion {
+    Congestion(base::TimeTicks start_time, base::TimeTicks end_time);
 
     base::TimeTicks start_time;
     base::TimeTicks end_time;
   };
 
-  // Types of jank recorded by this Calculator. Public for testing.
-  enum class JankType {
-    kExecution,
+  // Types of congestion recorded by this Calculator. Public for testing.
+  enum class CongestionType {
+    kExecutionOnly,
     kQueueAndExecution,
   };
 
@@ -95,34 +95,34 @@ class CONTENT_EXPORT Calculator {
  protected:
   // Emits an UMA metric for responsiveness of a single measurement interval.
   // Exposed for testing.
-  virtual void EmitResponsiveness(JankType jank_type,
-                                  size_t janky_slices,
+  virtual void EmitResponsiveness(CongestionType congestion_type,
+                                  size_t num_congested_slices,
                                   StartupStage startup_stage);
 
   // Emits trace events for responsiveness metric. A trace event is emitted for
   // the whole duration of the metric interval and sub events are emitted for
-  // the specific janky slices.
+  // the specific congested slices.
   // Exposed for testing.
-  void EmitResponsivenessTraceEvents(JankType jank_type,
+  void EmitResponsivenessTraceEvents(CongestionType congestion_type,
                                      base::TimeTicks start_time,
                                      base::TimeTicks end_time,
-                                     const std::set<int>& janky_slices);
+                                     const std::set<int>& congested_slices);
 
   // Exposed for testing.
-  virtual void EmitJankyIntervalsMeasurementTraceEvent(
+  virtual void EmitCongestedIntervalsMeasurementTraceEvent(
       base::TimeTicks start_time,
       base::TimeTicks end_time,
       size_t amount_of_slices);
 
   // Exposed for testing.
-  virtual void EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
-                                                base::TimeTicks end_time);
+  virtual void EmitCongestedIntervalTraceEvent(base::TimeTicks start_time,
+                                               base::TimeTicks end_time);
 
   // Exposed for testing.
   base::TimeTicks GetLastCalculationTime();
 
  private:
-  using JankList = std::vector<Jank>;
+  using CongestionList = std::vector<Congestion>;
 
   // If sufficient time has passed since the last calculation, then calculate
   // responsiveness again and update |last_calculation_time_|.
@@ -135,23 +135,24 @@ class CONTENT_EXPORT Calculator {
 
   // Responsiveness is calculated by:
   //   1) Discretizing time into small intervals.
-  //   2) In each interval, looking to see if there is a Janky event. If so, the
-  //   interval is marked as |janky|.
-  //   3) Computing the percentage of intervals that are janky.
+  //   2) In each interval, looking to see if there is a Congestion. If so, the
+  //   interval is marked as |congested|.
+  //   3) Computing the percentage of intervals that are congested.
   //
-  // This method intentionally takes a std::vector<JankList>, as we may want to
-  // extend it in the future to take JankLists from other threads/processes.
+  // This method intentionally takes a std::vector<CongestionList>, as we may
+  // want to extend it in the future to take CongestionLists from other
+  // threads/processes.
   void CalculateResponsiveness(
-      JankType jank_type,
-      std::vector<JankList> janks_from_multiple_threads,
+      CongestionType congestion_type,
+      std::vector<CongestionList> congestions_from_multiple_threads,
       base::TimeTicks start_time,
       base::TimeTicks end_time);
 
-  // Accessors for |execution_janks_on_ui_thread_| and
-  // ||queue_and_execution_janks_on_ui_thread_|. Must be called from the UI
+  // Accessors for |execution_congestion_on_ui_thread_| and
+  // ||congestion_on_ui_thread_|. Must be called from the UI
   // thread.
-  JankList& GetExecutionJanksOnUIThread();
-  JankList& GetQueueAndExecutionJanksOnUIThread();
+  CongestionList& GetExecutionCongestionOnUIThread();
+  CongestionList& GetCongestionOnUIThread();
 
 #if BUILDFLAG(IS_ANDROID)
   // Callback invoked when the application state changes.
@@ -159,20 +160,22 @@ class CONTENT_EXPORT Calculator {
 #endif
 
   // This helper method:
-  //   1) Removes all Janks with Jank.end_time < |end_time| from |janks|.
-  //   2) Returns all Janks with Jank.start_time < |end_time|.
-  static JankList TakeJanksOlderThanTime(JankList* janks,
-                                         base::TimeTicks end_time);
+  //   1) Removes all Congestions with Congestion.end_time < |end_time| from
+  //   |congestions|. 2) Returns all Congestions with Congestion.start_time <
+  //   |end_time|.
+  static CongestionList TakeCongestionsOlderThanTime(
+      CongestionList* congestions,
+      base::TimeTicks end_time);
 
-  // Janks from tasks/events with a long execution time on the UI thread. Should
-  // only be accessed via the accessor, which checks that the caller is on the
-  // UI thread.
-  JankList execution_janks_on_ui_thread_;
+  // Congestion from tasks/events with a long execution time on the UI thread.
+  // Should only be accessed via the accessor, which checks that the caller is
+  // on the UI thread.
+  CongestionList execution_congestion_on_ui_thread_;
 
-  // Janks from tasks/events with a long queueing + execution time on the UI
-  // thread. Should only be accessed via the accessor, which checks that the
+  // Congestion from tasks/events with a long queueing + execution time on the
+  // UI thread. Should only be accessed via the accessor, which checks that the
   // caller is on the UI thread.
-  JankList queue_and_execution_janks_on_ui_thread_;
+  CongestionList congestion_on_ui_thread_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Stores the current visibility state of the application. Accessed only on
@@ -188,16 +191,16 @@ class CONTENT_EXPORT Calculator {
   // to a lock-free data structure.
   base::Lock io_thread_lock_;
 
-  // Janks from tasks/events with a long execution time on the IO thread.
-  JankList execution_janks_on_io_thread_ GUARDED_BY(io_thread_lock_);
+  // Congestion from tasks/events with a long execution time on the IO thread.
+  CongestionList execution_congestion_on_io_thread_ GUARDED_BY(io_thread_lock_);
 
-  // Janks from tasks/events with a long queueing + execution time on the IO
-  // thread.
-  JankList queue_and_execution_janks_on_io_thread_ GUARDED_BY(io_thread_lock_);
+  // Congestion from tasks/events with a long queueing + execution time on the
+  // IO thread.
+  CongestionList congestion_on_io_thread_ GUARDED_BY(io_thread_lock_);
 
-  // The last time at which metrics were emitted. All janks older than this time
-  // have been consumed. Newer janks are still in their JankLists waiting to be
-  // consumed.
+  // The last time at which metrics were emitted. All congestions older than
+  // this time have been consumed. Newer congestions are still in their
+  // CongestionLists waiting to be consumed.
   base::TimeTicks last_calculation_time_;
 
   // This class keeps track of the time at which any activity occurred on the UI

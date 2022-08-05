@@ -18,13 +18,13 @@ namespace responsiveness {
 
 namespace {
 
-// We divide the measurement interval into discretized time slices.
-// Each slice is marked as janky if it contained a janky task. A janky task is
-// one whose execution latency is greater than kJankThreshold.
-constexpr auto kMeasurementInterval = base::Seconds(30);
+// We divide the measurement interval into discretized time slices. Each slice
+// is marked as congested if it contained a congested task. A congested task is
+// one whose execution latency is greater than kCongestionThreshold.
+constexpr auto kMeasurementPeriod = base::Seconds(30);
 
-// A task or event longer than kJankThreshold is considered janky.
-constexpr auto kJankThreshold = base::Milliseconds(100);
+// A task or event longer than kCongestionThreshold is considered congested.
+constexpr auto kCongestionThreshold = base::Milliseconds(100);
 
 // If there have been no events/tasks on the UI thread for a significant period
 // of time, it's likely because Chrome was suspended.
@@ -33,37 +33,41 @@ constexpr auto kSuspendInterval = base::Seconds(30);
 
 constexpr char kLatencyEventCategory[] = "latency";
 
-// The names emitted for MainThreadsCongestion measurement events.
+// The names emitted for CongestedIntervals measurement events.
 constexpr char kCongestedIntervalEvent[] = "CongestedInterval";
-constexpr char kMainThreadsCongestionsEvent[] = "MainThreadsCongestion";
+constexpr char kCongestedIntervalsMeasurementEvent[] =
+    "CongestedIntervals measurement period";
 
-// Given a |jank|, finds each janky slice between |start_time| and |end_time|,
-// and adds it to |janky_slices|.
-void AddJankySlices(std::set<int>* janky_slices,
-                    const Calculator::Jank& jank,
-                    base::TimeTicks start_time,
-                    base::TimeTicks end_time) {
-  // Ignore the first jank threshold, since that's the part of the task/event
-  // that wasn't janky.
-  base::TimeTicks jank_start = jank.start_time + kJankThreshold;
+// Given a |congestion|, finds each congested slice between |start_time| and
+// |end_time|, and adds it to |congested_slices|.
+void AddCongestedSlices(std::set<int>* congested_slices,
+                        const Calculator::Congestion& congestion,
+                        base::TimeTicks start_time,
+                        base::TimeTicks end_time) {
+  // Ignore the first congestion threshold, since that's the part of the
+  // task/event that wasn't congested.
+  base::TimeTicks congestion_start =
+      congestion.start_time + kCongestionThreshold;
 
   // Bound by |start_time| and |end_time|.
-  jank_start = std::max(jank_start, start_time);
-  base::TimeTicks jank_end = std::min(jank.end_time, end_time);
+  congestion_start = std::max(congestion_start, start_time);
+  base::TimeTicks congestion_end = std::min(congestion.end_time, end_time);
 
-  // Find each janky slice, and add it to |janky_slices|.
-  while (jank_start < jank_end) {
-    // Convert |jank_start| to a slice label.
-    int64_t label = (jank_start - start_time).IntDiv(kJankThreshold);
-    janky_slices->insert(label);
+  // Find each congested slice, and add it to |congested_slices|.
+  while (congestion_start < congestion_end) {
+    // Convert |congestion_start| to a slice label.
+    int64_t label =
+        (congestion_start - start_time).IntDiv(kCongestionThreshold);
+    congested_slices->insert(label);
 
-    jank_start += kJankThreshold;
+    congestion_start += kCongestionThreshold;
   }
 }
 
 }  // namespace
 
-Calculator::Jank::Jank(base::TimeTicks start_time, base::TimeTicks end_time)
+Calculator::Congestion::Congestion(base::TimeTicks start_time,
+                                   base::TimeTicks end_time)
     : start_time(start_time), end_time(end_time) {
   DCHECK_LE(start_time, end_time);
 }
@@ -102,12 +106,11 @@ void Calculator::TaskOrEventFinishedOnUIThread(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(execution_start_time, queue_time);
 
-  if (execution_finish_time - queue_time >= kJankThreshold) {
-    GetQueueAndExecutionJanksOnUIThread().emplace_back(queue_time,
-                                                       execution_finish_time);
-    if (execution_finish_time - execution_start_time >= kJankThreshold) {
-      GetExecutionJanksOnUIThread().emplace_back(execution_start_time,
-                                                 execution_finish_time);
+  if (execution_finish_time - queue_time >= kCongestionThreshold) {
+    GetCongestionOnUIThread().emplace_back(queue_time, execution_finish_time);
+    if (execution_finish_time - execution_start_time >= kCongestionThreshold) {
+      GetExecutionCongestionOnUIThread().emplace_back(execution_start_time,
+                                                      execution_finish_time);
     }
   }
 
@@ -122,13 +125,12 @@ void Calculator::TaskOrEventFinishedOnIOThread(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GE(execution_start_time, queue_time);
 
-  if (execution_finish_time - queue_time >= kJankThreshold) {
+  if (execution_finish_time - queue_time >= kCongestionThreshold) {
     base::AutoLock lock(io_thread_lock_);
-    queue_and_execution_janks_on_io_thread_.emplace_back(queue_time,
-                                                         execution_finish_time);
-    if (execution_finish_time - execution_start_time >= kJankThreshold) {
-      execution_janks_on_io_thread_.emplace_back(execution_start_time,
-                                                 execution_finish_time);
+    congestion_on_io_thread_.emplace_back(queue_time, execution_finish_time);
+    if (execution_finish_time - execution_start_time >= kCongestionThreshold) {
+      execution_congestion_on_io_thread_.emplace_back(execution_start_time,
+                                                      execution_finish_time);
     }
   }
 }
@@ -139,70 +141,76 @@ void Calculator::OnFirstIdle() {
   past_first_idle_ = true;
 }
 
-void Calculator::EmitResponsiveness(JankType jank_type,
-                                    size_t janky_slices,
+void Calculator::EmitResponsiveness(CongestionType congestion_type,
+                                    size_t num_congested_slices,
                                     StartupStage startup_stage) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  constexpr size_t kMaxJankySlices = 300;
-  DCHECK_LE(janky_slices, kMaxJankySlices);
-  switch (jank_type) {
-    case JankType::kExecution: {
+  constexpr size_t kMaxCongestedSlices =
+      kMeasurementPeriod / kCongestionThreshold;
+  DCHECK_LE(num_congested_slices, kMaxCongestedSlices);
+  switch (congestion_type) {
+    case CongestionType::kExecutionOnly: {
       UMA_HISTOGRAM_COUNTS_1000("Browser.MainThreadsCongestion.RunningOnly",
-                                janky_slices);
+                                num_congested_slices);
       // Only kFirstInterval and kPeriodic are reported with a suffix, stages
       // in between are only part of the unsuffixed histogram.
       if (startup_stage_ == StartupStage::kFirstInterval) {
         UMA_HISTOGRAM_COUNTS_1000(
-            "Browser.MainThreadsCongestion.RunningOnly.Initial", janky_slices);
+            "Browser.MainThreadsCongestion.RunningOnly.Initial",
+            num_congested_slices);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         UMA_HISTOGRAM_COUNTS_1000(
-            "Browser.MainThreadsCongestion.RunningOnly.Periodic", janky_slices);
+            "Browser.MainThreadsCongestion.RunningOnly.Periodic",
+            num_congested_slices);
       }
       // Emit the old name until M107.
       UMA_HISTOGRAM_COUNTS_1000(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds",
-          janky_slices);
+          num_congested_slices);
       // Only kFirstInterval and kPeriodic are reported with a suffix, stages
       // in between are only part of the unsuffixed histogram.
       if (startup_stage_ == StartupStage::kFirstInterval) {
         UMA_HISTOGRAM_COUNTS_1000(
             "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial",
-            janky_slices);
+            num_congested_slices);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         UMA_HISTOGRAM_COUNTS_1000(
             "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic",
-            janky_slices);
+            num_congested_slices);
       }
       break;
     }
-    case JankType::kQueueAndExecution: {
-      // Queuing jank doesn't count before OnFirstIdle().
+    case CongestionType::kQueueAndExecution: {
+      // Queuing congestion doesn't count before OnFirstIdle().
       if (startup_stage_ == StartupStage::kFirstInterval ||
           startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
         break;
       }
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion", janky_slices,
-                                  1, kMaxJankySlices, 50);
+      UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion",
+                                  num_congested_slices, 1, kMaxCongestedSlices,
+                                  50);
       if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
         UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Initial",
-                                    janky_slices, 1, kMaxJankySlices, 50);
+                                    num_congested_slices, 1,
+                                    kMaxCongestedSlices, 50);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Periodic",
-                                    janky_slices, 1, kMaxJankySlices, 50);
+                                    num_congested_slices, 1,
+                                    kMaxCongestedSlices, 50);
       }
       // Emit the old name until M107.
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3",
-          janky_slices, 1, kMaxJankySlices, 50);
+          num_congested_slices, 1, kMaxCongestedSlices, 50);
       if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
         UMA_HISTOGRAM_CUSTOM_COUNTS(
             "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial",
-            janky_slices, 1, kMaxJankySlices, 50);
+            num_congested_slices, 1, kMaxCongestedSlices, 50);
       } else if (startup_stage_ == StartupStage::kPeriodic) {
         UMA_HISTOGRAM_CUSTOM_COUNTS(
             "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic",
-            janky_slices, 1, kMaxJankySlices, 50);
+            num_congested_slices, 1, kMaxCongestedSlices, 50);
       }
       break;
     }
@@ -210,59 +218,61 @@ void Calculator::EmitResponsiveness(JankType jank_type,
 }
 
 void Calculator::EmitResponsivenessTraceEvents(
-    JankType jank_type,
+    CongestionType congestion_type,
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    const std::set<int>& janky_slices) {
-  // Only output JankyIntervalsPerThirtySeconds3 event when there are janky
-  // slices during the measurement.
-  if (janky_slices.empty() || jank_type != JankType::kQueueAndExecution)
+    const std::set<int>& congested_slices) {
+  // Only output kCongestedIntervalsMeasurementEvent event when there are
+  // congested slices during the measurement.
+  if (congested_slices.empty() ||
+      congestion_type != CongestionType::kQueueAndExecution)
     return;
 
-  // Emit a trace event to highlight the duration of janky intervals
+  // Emit a trace event to highlight the duration of congested intervals
   // measurement.
-  EmitJankyIntervalsMeasurementTraceEvent(start_time, end_time,
-                                          janky_slices.size());
+  EmitCongestedIntervalsMeasurementTraceEvent(start_time, end_time,
+                                              congested_slices.size());
 
-  // |janky_slices| contains the id of janky slices, e.g. {3,6,7,8,41,42}.
-  // As such if the slice following slice x is x+1, we coalesce it.
-  std::set<int>::const_iterator jank_slice_it = janky_slices.begin();
-  while (jank_slice_it != janky_slices.end()) {
-    const int start_slice = *jank_slice_it;
+  // |congested_slices| contains the id of congested slices, e.g.
+  // {3,6,7,8,41,42}. As such if the slice following slice x is x+1, we coalesce
+  // it.
+  std::set<int>::const_iterator congested_slice_it = congested_slices.begin();
+  while (congested_slice_it != congested_slices.end()) {
+    const int start_slice = *congested_slice_it;
 
     // Find the first slice that is not in the current sequence. After the loop,
-    // |jank_slice| will point to the first janky slice in the next sequence
-    // (or end() if at the end of the slices) while |current_slice| will
-    // point to the first non-janky slice number which correspond to the end of
-    // the current sequence.
+    // |congested_slice_it| will point to the first congested slice in the next
+    // sequence(or end() if at the end of the slices) while |current_slice|
+    // will point to the first non-congested slice number which correspond to
+    // the end of the current sequence.
     int current_slice = start_slice;
     do {
-      ++jank_slice_it;
+      ++congested_slice_it;
       ++current_slice;
-    } while (jank_slice_it != janky_slices.end() &&
-             *jank_slice_it == current_slice);
+    } while (congested_slice_it != congested_slices.end() &&
+             *congested_slice_it == current_slice);
 
     // Output a trace event for the range [start_slice, current_slice[.
-    EmitJankyIntervalsJankTraceEvent(
-        start_time + start_slice * kJankThreshold,
-        start_time + current_slice * kJankThreshold);
+    EmitCongestedIntervalTraceEvent(
+        start_time + start_slice * kCongestionThreshold,
+        start_time + current_slice * kCongestionThreshold);
   }
 }
 
-void Calculator::EmitJankyIntervalsMeasurementTraceEvent(
+void Calculator::EmitCongestedIntervalsMeasurementTraceEvent(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     size_t amount_of_slices) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      kLatencyEventCategory, kMainThreadsCongestionsEvent, TRACE_ID_LOCAL(this),
-      start_time, "amount_of_slices", amount_of_slices);
+      kLatencyEventCategory, kCongestedIntervalsMeasurementEvent,
+      TRACE_ID_LOCAL(this), start_time, "amount_of_slices", amount_of_slices);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kMainThreadsCongestionsEvent, TRACE_ID_LOCAL(this),
-      end_time);
+      kLatencyEventCategory, kCongestedIntervalsMeasurementEvent,
+      TRACE_ID_LOCAL(this), end_time);
 }
 
-void Calculator::EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
-                                                  base::TimeTicks end_time) {
+void Calculator::EmitCongestedIntervalTraceEvent(base::TimeTicks start_time,
+                                                 base::TimeTicks end_time) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       kLatencyEventCategory, kCongestedIntervalEvent, TRACE_ID_LOCAL(this),
       start_time);
@@ -295,51 +305,51 @@ void Calculator::CalculateResponsivenessIfNecessary(
 #endif
   if (is_suspended) {
     last_calculation_time_ = current_time;
-    GetExecutionJanksOnUIThread().clear();
-    GetQueueAndExecutionJanksOnUIThread().clear();
+    GetExecutionCongestionOnUIThread().clear();
+    GetCongestionOnUIThread().clear();
     {
       base::AutoLock lock(io_thread_lock_);
-      execution_janks_on_io_thread_.clear();
-      queue_and_execution_janks_on_io_thread_.clear();
+      execution_congestion_on_io_thread_.clear();
+      congestion_on_io_thread_.clear();
     }
     return;
   }
 
   base::TimeDelta time_since_last_calculation =
       current_time - last_calculation_time_;
-  if (time_since_last_calculation <= kMeasurementInterval)
+  if (time_since_last_calculation <= kMeasurementPeriod)
     return;
 
-  // At least |kMeasurementInterval| time has passed, so we want to move forward
-  // |last_calculation_time_| and make measurements based on janks in that
+  // At least |kMeasurementPeriod| time has passed, so we want to move forward
+  // |last_calculation_time_| and make measurements based on congestions in that
   // interval.
   const base::TimeTicks new_calculation_time =
-      current_time - (time_since_last_calculation % kMeasurementInterval);
+      current_time - (time_since_last_calculation % kMeasurementPeriod);
 
-  // Acquire the janks in the measurement interval from the UI and IO threads.
-  std::vector<JankList> execution_janks_from_multiple_threads;
-  std::vector<JankList> queue_and_execution_janks_from_multiple_threads;
-  execution_janks_from_multiple_threads.push_back(TakeJanksOlderThanTime(
-      &GetExecutionJanksOnUIThread(), new_calculation_time));
-  queue_and_execution_janks_from_multiple_threads.push_back(
-      TakeJanksOlderThanTime(&GetQueueAndExecutionJanksOnUIThread(),
-                             new_calculation_time));
+  // Acquire the congestions in the measurement interval from the UI and IO
+  // threads.
+  std::vector<CongestionList> execution_congestion_from_multiple_threads;
+  std::vector<CongestionList> congestion_from_multiple_threads;
+  execution_congestion_from_multiple_threads.push_back(
+      TakeCongestionsOlderThanTime(&GetExecutionCongestionOnUIThread(),
+                                   new_calculation_time));
+  congestion_from_multiple_threads.push_back(TakeCongestionsOlderThanTime(
+      &GetCongestionOnUIThread(), new_calculation_time));
   {
     base::AutoLock lock(io_thread_lock_);
-    execution_janks_from_multiple_threads.push_back(TakeJanksOlderThanTime(
-        &execution_janks_on_io_thread_, new_calculation_time));
-    queue_and_execution_janks_from_multiple_threads.push_back(
-        TakeJanksOlderThanTime(&queue_and_execution_janks_on_io_thread_,
-                               new_calculation_time));
+    execution_congestion_from_multiple_threads.push_back(
+        TakeCongestionsOlderThanTime(&execution_congestion_on_io_thread_,
+                                     new_calculation_time));
+    congestion_from_multiple_threads.push_back(TakeCongestionsOlderThanTime(
+        &congestion_on_io_thread_, new_calculation_time));
   }
 
-  CalculateResponsiveness(JankType::kExecution,
-                          std::move(execution_janks_from_multiple_threads),
+  CalculateResponsiveness(CongestionType::kExecutionOnly,
+                          std::move(execution_congestion_from_multiple_threads),
                           last_calculation_time_, new_calculation_time);
-  CalculateResponsiveness(
-      JankType::kQueueAndExecution,
-      std::move(queue_and_execution_janks_from_multiple_threads),
-      last_calculation_time_, new_calculation_time);
+  CalculateResponsiveness(CongestionType::kQueueAndExecution,
+                          std::move(congestion_from_multiple_threads),
+                          last_calculation_time_, new_calculation_time);
 
   if (startup_stage_ == StartupStage::kFirstInterval)
     startup_stage_ = StartupStage::kFirstIntervalDoneWithoutFirstIdle;
@@ -355,15 +365,15 @@ void Calculator::CalculateResponsivenessIfNecessary(
 }
 
 void Calculator::CalculateResponsiveness(
-    JankType jank_type,
-    std::vector<JankList> janks_from_multiple_threads,
+    CongestionType congestion_type,
+    std::vector<CongestionList> congestions_from_multiple_threads,
     base::TimeTicks start_time,
     base::TimeTicks end_time) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   while (start_time < end_time) {
     const base::TimeTicks current_interval_end_time =
-        start_time + kMeasurementInterval;
+        start_time + kMeasurementPeriod;
 
     // We divide the current measurement interval into slices. Each slice is
     // given a monotonically increasing label, from 0 to |kNumberOfSlices - 1|.
@@ -373,42 +383,45 @@ void Calculator::CalculateResponsiveness(
     //   The slice [50235, 50335] is labeled 1.
     //   ...
     //   The slice [80035, 80135] is labeled 299.
-    std::set<int> janky_slices;
+    std::set<int> congested_slices;
 
-    for (const JankList& janks : janks_from_multiple_threads) {
-      for (const Jank& jank : janks) {
-        AddJankySlices(&janky_slices, jank, start_time,
-                       current_interval_end_time);
+    for (const CongestionList& congestions :
+         congestions_from_multiple_threads) {
+      for (const Congestion& congestion : congestions) {
+        AddCongestedSlices(&congested_slices, congestion, start_time,
+                           current_interval_end_time);
       }
     }
 
-    EmitResponsiveness(jank_type, janky_slices.size(), startup_stage_);
+    EmitResponsiveness(congestion_type, congested_slices.size(),
+                       startup_stage_);
 
-    // If the 'latency' tracing category is enabled and we are ready to emit
-    // JankyIntervalsPerThirtySeconds3, emit trace events for the measurement
-    // duration and the janky slices.
+    // If the 'latency' tracing category is enabled and we are ready to observe
+    // queuing times (past first idle), emit trace events for the measurement
+    // duration and the congested slices.
     bool latency_category_enabled;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(kLatencyEventCategory,
                                        &latency_category_enabled);
     if (latency_category_enabled &&
         (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle ||
          startup_stage_ == StartupStage::kPeriodic)) {
-      EmitResponsivenessTraceEvents(jank_type, start_time,
-                                    current_interval_end_time, janky_slices);
+      EmitResponsivenessTraceEvents(congestion_type, start_time,
+                                    current_interval_end_time,
+                                    congested_slices);
     }
 
     start_time = current_interval_end_time;
   }
 }
 
-Calculator::JankList& Calculator::GetExecutionJanksOnUIThread() {
+Calculator::CongestionList& Calculator::GetExecutionCongestionOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return execution_janks_on_ui_thread_;
+  return execution_congestion_on_ui_thread_;
 }
 
-Calculator::JankList& Calculator::GetQueueAndExecutionJanksOnUIThread() {
+Calculator::CongestionList& Calculator::GetCongestionOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return queue_and_execution_janks_on_ui_thread_;
+  return congestion_on_ui_thread_;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -432,27 +445,31 @@ void Calculator::OnApplicationStateChanged(
 #endif
 
 // static
-Calculator::JankList Calculator::TakeJanksOlderThanTime(
-    JankList* janks,
+Calculator::CongestionList Calculator::TakeCongestionsOlderThanTime(
+    CongestionList* congestions,
     base::TimeTicks end_time) {
-  // Find all janks with Jank.start_time < |end_time|.
-  auto it = std::partition(
-      janks->begin(), janks->end(),
-      [&end_time](const Jank& jank) { return jank.start_time < end_time; });
+  // Find all congestions with Congestion.start_time < |end_time|.
+  auto it = std::partition(congestions->begin(), congestions->end(),
+                           [&end_time](const Congestion& congestion) {
+                             return congestion.start_time < end_time;
+                           });
 
-  // Early exit. We don't need to remove any Janks either, since Jank.end_time
-  // >= Jank.start_time.
-  if (it == janks->begin())
-    return JankList();
+  // Early exit. We don't need to remove any Congestions either, since
+  // Congestion.end_time
+  // >= Congestion.start_time.
+  if (it == congestions->begin())
+    return CongestionList();
 
-  JankList janks_to_return(janks->begin(), it);
+  CongestionList congestions_to_return(congestions->begin(), it);
 
-  // Remove all janks with Jank.end_time < |end_time|.
-  auto first_jank_to_keep = std::partition(
-      janks->begin(), janks->end(),
-      [&end_time](const Jank& jank) { return jank.end_time < end_time; });
-  janks->erase(janks->begin(), first_jank_to_keep);
-  return janks_to_return;
+  // Remove all congestions with Congestion.end_time < |end_time|.
+  auto first_congestion_to_keep =
+      std::partition(congestions->begin(), congestions->end(),
+                     [&end_time](const Congestion& congestion) {
+                       return congestion.end_time < end_time;
+                     });
+  congestions->erase(congestions->begin(), first_congestion_to_keep);
+  return congestions_to_return;
 }
 
 }  // namespace responsiveness
