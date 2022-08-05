@@ -28,8 +28,8 @@ namespace features {
 
 namespace {
 
-constexpr auto enabled_by_default_desktop_only =
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+constexpr auto enabled_by_default_non_ios =
+#if BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -110,7 +110,7 @@ const base::Feature kOptimizationGuideModelDownloading {
 
 // Enables page content to be annotated.
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
-                                            enabled_by_default_desktop_only};
+                                            enabled_by_default_non_ios};
 
 // Enables fetching page metadata from the remote Optimization Guide service.
 const base::Feature kRemotePageMetadata{"RemotePageMetadata",
@@ -118,7 +118,7 @@ const base::Feature kRemotePageMetadata{"RemotePageMetadata",
 
 // Enables the page entities model to be annotated on every page load.
 const base::Feature kPageEntitiesPageContentAnnotations{
-    "PageEntitiesPageContentAnnotations", enabled_by_default_desktop_only};
+    "PageEntitiesPageContentAnnotations", enabled_by_default_non_ios};
 // Enables the page visibility model to be annotated on every page load.
 const base::Feature kPageVisibilityPageContentAnnotations{
     "PageVisibilityPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -126,7 +126,7 @@ const base::Feature kPageVisibilityPageContentAnnotations{
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
 const base::Feature kPageEntitiesModelBypassFilters{
-    "PageEntitiesModelBypassFilters", enabled_by_default_desktop_only};
+    "PageEntitiesModelBypassFilters", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // This feature flag enables resetting the entities model on shutdown.
 const base::Feature kPageEntitiesModelResetOnShutdown{
