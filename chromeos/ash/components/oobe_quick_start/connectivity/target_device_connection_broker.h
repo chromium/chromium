@@ -32,7 +32,7 @@ class TargetDeviceConnectionBroker {
 
   // Represents a new incoming connection that has not yet been accepted by the
   // source device.
-  class UnacceptedConnection : public Connection {};
+  class IncomingConnection : public Connection {};
 
   // Represents an accepted (authenticated) connection.
   class AcceptedConnection : public Connection {};
@@ -54,19 +54,19 @@ class TargetDeviceConnectionBroker {
     // this target device, but it is the responsibility of the source device to
     // make an informed choice to accept. The user of the source device makes
     // this decision by inspecting the UI of this target device, which is
-    // expected to display the metadata that the UnacceptedConnection object
+    // expected to display the metadata that the IncomingConnection object
     // provides (QR Code or shapes/PIN matching).
     //
-    // The UnacceptedConnection pointer may be cached, but will become invalid
+    // The IncomingConnection pointer may be cached, but will become invalid
     // after either OnConnectionAccepted(), OnConnectionRejected(), or
     // OnConnectionClosed() are called.
     //
     // Use source_device_id to understand which connection
     // OnConnectionAccepted(), OnConnectionRejected(), or OnConnectionClosed()
     // refers to.
-    virtual void OnUnacceptedConnectionInitiated(
+    virtual void OnIncomingConnectionInitiated(
         const std::string& source_device_id,
-        base::WeakPtr<UnacceptedConnection> connection) = 0;
+        base::WeakPtr<IncomingConnection> connection) = 0;
 
     // Called after both sides have accepted the connection.
     //
@@ -102,7 +102,7 @@ class TargetDeviceConnectionBroker {
   // Clients can use the result of |on_start_advertising_callback| to
   // immediately understand if advertising succeeded, and can then wait for the
   // source device to connect via
-  // |ConnectionLifecycleListener::OnUnacceptedConnectionInitiated()|.
+  // |ConnectionLifecycleListener::OnIncomingConnectionInitiated()|.
   //
   // If the caller paused a connection previously, the connection to the
   // source device will resume via OnConnectionAccepted().

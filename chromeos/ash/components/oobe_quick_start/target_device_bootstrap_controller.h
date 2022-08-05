@@ -65,9 +65,9 @@ class TargetDeviceBootstrapController
   void StopAdvertising();
 
   // TargetDeviceConnectionBroker::ConnectionLifecycleListener:
-  void OnUnacceptedConnectionInitiated(
+  void OnIncomingConnectionInitiated(
       const std::string& source_device_id,
-      base::WeakPtr<TargetDeviceConnectionBroker::UnacceptedConnection>
+      base::WeakPtr<TargetDeviceConnectionBroker::IncomingConnection>
           connection) override;
   void OnConnectionAccepted(
       const std::string& source_device_id,

@@ -64,9 +64,9 @@ void TargetDeviceBootstrapController::StopAdvertising() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TargetDeviceBootstrapController::OnUnacceptedConnectionInitiated(
+void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
     const std::string& source_device_id,
-    base::WeakPtr<TargetDeviceConnectionBroker::UnacceptedConnection>
+    base::WeakPtr<TargetDeviceConnectionBroker::IncomingConnection>
         connection) {
   // TODO(b/239855593): Implement
   NOTIMPLEMENTED();
