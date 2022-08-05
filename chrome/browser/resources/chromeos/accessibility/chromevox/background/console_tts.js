@@ -5,6 +5,8 @@
 /**
  * @fileoverview A TTS engine that writes to globalThis.console.
  */
+import {SpeechLog} from '../common/log_types.js';
+
 import {LogStore} from './logging/log_store.js';
 import {ChromeVoxPrefs} from './prefs.js';
 

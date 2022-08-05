@@ -7,10 +7,5 @@
  *
  */
 
-goog.require('BaseLog');
-goog.require('EventLog');
-goog.require('LogType');
-goog.require('SpeechLog');
-goog.require('TextLog');
+goog.require('QueueMode');
 goog.require('TreeDumper');
-goog.require('TreeLog');

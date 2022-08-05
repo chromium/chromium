@@ -9,6 +9,7 @@
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
+import {BaseLog} from './log_types.js';
 
 export const BackgroundBridge = {};
 

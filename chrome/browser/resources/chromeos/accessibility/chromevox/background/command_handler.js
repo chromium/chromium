@@ -18,6 +18,7 @@ import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureGranularity} from '../common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
+import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 

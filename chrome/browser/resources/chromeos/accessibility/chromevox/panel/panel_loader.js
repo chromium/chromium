@@ -10,18 +10,12 @@ goog.require('AncestryRecoveryStrategy');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
-goog.require('BaseLog');
 goog.require('EarconDescription');
-goog.require('EventLog');
-goog.require('LogType');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');
 goog.require('RecoveryStrategy');
-goog.require('SpeechLog');
-goog.require('TextLog');
 goog.require('TreeDumper');
-goog.require('TreeLog');
 goog.require('TtsCategory');
 
 goog.require('constants');

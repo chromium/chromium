@@ -8,6 +8,7 @@
  */
 
 import {BackgroundBridge} from '../common/background_bridge.js';
+import {BaseLog, LogType} from '../common/log_types.js';
 
 /**
  * Class to manage the log page.

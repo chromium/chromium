@@ -10,6 +10,7 @@ import {CursorRange} from '../../../common/cursors/range.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
+import {LogType} from '../../common/log_types.js';
 import {Msgs} from '../../common/msgs.js';
 import {Spannable} from '../../common/spannable.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
