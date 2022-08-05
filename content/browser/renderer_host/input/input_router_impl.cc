@@ -338,6 +338,19 @@ void InputRouterImpl::SetTouchActionFromMain(cc::TouchAction touch_action) {
   UpdateTouchAckTimeoutEnabled();
 }
 
+void InputRouterImpl::SetPanAction(blink::mojom::PanAction pan_action) {
+  if (pan_action_ == pan_action)
+    return;
+  pan_action_ = pan_action;
+
+  // TODO(mahesh.ma): Update PanAction state to view, once RenderWidgetHostView
+  // is set again.
+  if (!client_->GetRenderWidgetHostViewBase())
+    return;
+  client_->GetRenderWidgetHostViewBase()->SetHoverActionStylusWritable(
+      pan_action_ == blink::mojom::PanAction::kStylusWritable);
+}
+
 void InputRouterImpl::OnSetCompositorAllowedTouchAction(
     cc::TouchAction touch_action) {
   TRACE_EVENT1("input", "InputRouterImpl::OnSetCompositorAllowedTouchAction",

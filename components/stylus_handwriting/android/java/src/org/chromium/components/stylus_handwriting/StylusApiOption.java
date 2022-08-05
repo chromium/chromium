@@ -7,6 +7,7 @@ package org.chromium.components.stylus_handwriting;
 import android.content.Context;
 
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate.StylusWritingCursorHandler;
 
 /**
  * This interface allows {@link StylusWritingController} to abstract over
@@ -21,4 +22,11 @@ public interface StylusApiOption {
     void onWebContentsChanged(Context context, WebContents webContents);
 
     default void onWindowFocusChanged(Context context, boolean hasFocus) {}
+
+    /**
+     * @return Handler that implements showing hover cursor during stylus writing.
+     */
+    default StylusWritingCursorHandler getStylusWritingCursorHandler() {
+        return null;
+    }
 }

@@ -11,22 +11,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate.StylusWritingCursorHandler;
 
 /**
  * Direct writing class that manages Input events, starting and stopping of recognition. Forwards
  * calls to DW service connection handler class {@link DirectWritingServiceBinder}. Also, sets the
  * {@link StylusWritingHandler} to receive messages about stylus writing events.
  */
-class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
+class DirectWritingTrigger
+        implements StylusWritingHandler, StylusApiOption, StylusWritingCursorHandler {
     private static final String TAG = "DWTrigger";
 
     private DirectWritingServiceBinder mBinder = new DirectWritingServiceBinder();
@@ -67,6 +71,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     public void onWebContentsChanged(Context context, WebContents webContents) {
         updateDWSettings(context);
         webContents.setStylusWritingHandler(this);
+    }
+
+    @Override
+    public StylusWritingCursorHandler getStylusWritingCursorHandler() {
+        return this;
     }
 
     @Override
@@ -400,5 +409,15 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     private void hideDWToolbar() {
         if (!mDwServiceEnabled) return;
         mBinder.hideDWToolbar();
+    }
+
+    @Override
+    public boolean didHandleCursorUpdate(View currentView) {
+        // Direct writing hover cursor is supported from Android S.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
+        PointerIcon icon = PointerIcon.getSystemIcon(
+                currentView.getContext(), DirectWritingConstants.STYLUS_WRITING_ICON_VALUE);
+        ApiHelperForN.setPointerIcon(currentView, icon);
+        return true;
     }
 }

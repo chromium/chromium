@@ -108,12 +108,19 @@ class MockRenderWidgetHostViewForStylusWriting
 
   bool RequestStartStylusWriting() override { return supports_stylus_writing_; }
 
+  void SetHoverActionStylusWritable(bool stylus_writable) override {
+    hover_action_stylus_writable_ = stylus_writable;
+  }
+
   void set_supports_stylus_writing(bool supports) {
     supports_stylus_writing_ = supports;
   }
 
+  bool hover_action_stylus_writable() { return hover_action_stylus_writable_; }
+
  private:
   bool supports_stylus_writing_ = false;
+  bool hover_action_stylus_writable_ = false;
 };
 
 // TODO(dtapuska): Remove this class when we don't have multiple implementations
@@ -2298,6 +2305,27 @@ class InputRouterImplStylusWritingTest : public InputRouterImplTest {
 };
 
 }  // namespace
+
+// Tests that hover action stylus writable is set when pan action is received.
+TEST_F(InputRouterImplStylusWritingTest, SetHoverActionStylusWritableToView) {
+  // Hover action is not set before pan action is received.
+  ASSERT_FALSE(mock_view_->hover_action_stylus_writable());
+
+  // Hover action is stylus writable only when pan action is writable.
+  input_router_->SetPanAction(blink::mojom::PanAction::kStylusWritable);
+  ASSERT_TRUE(mock_view_->hover_action_stylus_writable());
+
+  // Hover action is not stylus writable when pan action is cursor control.
+  input_router_->SetPanAction(blink::mojom::PanAction::kMoveCursorOrScroll);
+  ASSERT_FALSE(mock_view_->hover_action_stylus_writable());
+
+  // Set hover action as stylus writable to assert it changes for kScroll.
+  input_router_->SetPanAction(blink::mojom::PanAction::kStylusWritable);
+  ASSERT_TRUE(mock_view_->hover_action_stylus_writable());
+  // Hover action is not stylus writable when pan action is scroll.
+  input_router_->SetPanAction(blink::mojom::PanAction::kScroll);
+  ASSERT_FALSE(mock_view_->hover_action_stylus_writable());
+}
 
 // Tests that stylus writing is not started when touch action is not writable.
 TEST_F(InputRouterImplStylusWritingTest,

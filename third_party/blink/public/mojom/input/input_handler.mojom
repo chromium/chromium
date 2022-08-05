@@ -214,11 +214,30 @@ enum SelectionGranularity {
   kSentence,
 };
 
+// An enumeration that describes the allowed non-directional pan action for the
+// element under pointer being considered.
+enum PanAction {
+  // No pan action allowed.
+  kNone,
+  // Pan action is scroll.
+  kScroll,
+  // Pan action moves cursor when initial touch move is in horizontal direction,
+  // or scrolls in the vertical direction.
+  kMoveCursorOrScroll,
+  // Pan action is stylus writable.
+  kStylusWritable,
+};
+
 // Interface exposed by the browser to the renderer.
 interface WidgetInputHandlerHost {
   // When the renderer's main thread computes the touch action, send this to the
   // browser.
   SetTouchActionFromMain(cc.mojom.TouchAction touch_action);
+
+  // Sets the pan action possible for the element under pointer which could be
+  // one of the actions described under enum PanAction. Note that this is
+  // different from TouchAction and does not contain directional pan info.
+  SetPanAction(PanAction pan_action);
 
   // Sent by the compositor when input scroll events are dropped due to bounds
   // restrictions on the root scroll offset.
