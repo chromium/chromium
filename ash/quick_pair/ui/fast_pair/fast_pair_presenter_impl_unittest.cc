@@ -52,6 +52,8 @@ const char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
 const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
+const char kFastPairDiscoverySubsequentNotificationId[] =
+    "cros_fast_pair_discovery_subsequent_notification_id";
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
@@ -138,8 +140,10 @@ class FastPairPresenterImplTest : public AshTestBase {
     metadata.mutable_anti_spoofing_key_pair()->set_public_key(decoded_key);
     repository_->SetFakeMetadata(kValidModelId, metadata);
 
-    device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                           Protocol::kFastPairInitial);
+    initially_paired_device_ = base::MakeRefCounted<Device>(
+        kValidModelId, kTestAddress, Protocol::kFastPairInitial);
+    subsequently_paired_device_ = base::MakeRefCounted<Device>(
+        kValidModelId, kTestAddress, Protocol::kFastPairSubsequent);
     fast_pair_presenter_ =
         std::make_unique<FastPairPresenterImpl>(&test_message_center_);
   }
@@ -179,7 +183,8 @@ class FastPairPresenterImplTest : public AshTestBase {
   PairingFailedAction pairing_failed_action_;
   AssociateAccountAction associate_account_action_;
   TestMessageCenter test_message_center_;
-  scoped_refptr<Device> device_;
+  scoped_refptr<Device> initially_paired_device_;
+  scoped_refptr<Device> subsequently_paired_device_;
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
@@ -188,7 +193,8 @@ class FastPairPresenterImplTest : public AshTestBase {
   base::WeakPtrFactory<FastPairPresenterImplTest> weak_pointer_factory_{this};
 };
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedIn_FlagEnabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_User_OptedIn_FlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -204,16 +210,18 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedIn_FlagEnabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedIn_FlagDisabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_User_OptedIn_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -229,9 +237,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedIn_FlagDisabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -239,7 +248,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedIn_FlagDisabled) {
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_User_OptedIn_StrictFlagDisabled) {
+       ShowInitialDiscovery_User_OptedIn_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -254,16 +263,18 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut_FlagEnabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_User_OptedOut_FlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
@@ -279,16 +290,18 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut_FlagEnabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut_FlagDisabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_User_OptedOut_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -304,9 +317,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut_FlagDisabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -314,7 +328,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut_FlagDisabled) {
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_User_OptedOut_StrictFlagDisabled) {
+       ShowInitialDiscovery_User_OptedOut_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
@@ -329,16 +343,17 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Child) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Child) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -348,9 +363,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Child) {
   Login(user_manager::UserType::USER_TYPE_CHILD);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -368,9 +384,10 @@ TEST_F(FastPairPresenterImplTest, RemoveNotifications) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
@@ -382,7 +399,8 @@ TEST_F(FastPairPresenterImplTest, RemoveNotifications) {
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata_FlagDisabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_NoDeviceMetadata_FlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -399,9 +417,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata_FlagDisabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
@@ -409,7 +428,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata_FlagDisabled) {
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_NoDeviceMetadata_StrictFlagDisabled) {
+       ShowInitialDiscovery_NoDeviceMetadata_StrictFlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -425,16 +444,18 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata_FlagEnabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_NoDeviceMetadata_FlagEnabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -451,16 +472,18 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata_FlagEnabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagEnabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_V1initially_paired_device_FlagEnabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -470,8 +493,8 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagEnabled) {
 
   nearby::fastpair::Device metadata;
   repository_->SetFakeMetadata(kValidModelId, metadata);
-  device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                         Protocol::kFastPairInitial);
+  initially_paired_device_ = base::MakeRefCounted<Device>(
+      kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::test::ScopedFeatureList feature_list;
@@ -482,16 +505,18 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagEnabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagDisabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_V1initially_paired_device_FlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -501,8 +526,8 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagDisabled) {
 
   nearby::fastpair::Device metadata;
   repository_->SetFakeMetadata(kValidModelId, metadata);
-  device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                         Protocol::kFastPairInitial);
+  initially_paired_device_ = base::MakeRefCounted<Device>(
+      kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::test::ScopedFeatureList feature_list;
@@ -513,16 +538,18 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_FlagDisabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_StrictFlagDisabled) {
+TEST_F(FastPairPresenterImplTest,
+       ShowInitialDiscovery_V1initially_paired_device_StrictFlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -532,8 +559,8 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_StrictFlagDisabled) {
 
   nearby::fastpair::Device metadata;
   repository_->SetFakeMetadata(kValidModelId, metadata);
-  device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                         Protocol::kFastPairInitial);
+  initially_paired_device_ = base::MakeRefCounted<Device>(
+      kValidModelId, kTestAddress, Protocol::kFastPairInitial);
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::test::ScopedFeatureList feature_list;
@@ -543,9 +570,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_StrictFlagDisabled) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -553,7 +581,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device_StrictFlagDisabled) {
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_Regular_NoIdentityManager_FlagEnabled) {
+       ShowInitialDiscovery_Regular_NoIdentityManager_FlagEnabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
   base::test::ScopedFeatureList feature_list;
@@ -569,9 +597,10 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -579,7 +608,7 @@ TEST_F(FastPairPresenterImplTest,
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_Regular_NoIdentityManager_FlagDisabled) {
+       ShowInitialDiscovery_Regular_NoIdentityManager_FlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
   base::test::ScopedFeatureList feature_list;
@@ -595,9 +624,10 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -605,7 +635,7 @@ TEST_F(FastPairPresenterImplTest,
 }
 
 TEST_F(FastPairPresenterImplTest,
-       ShowDiscovery_Regular_NoIdentityManager_StrictFlagDisabled) {
+       ShowInitialDiscovery_Regular_NoIdentityManager_StrictFlagDisabled) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
   base::test::ScopedFeatureList feature_list;
@@ -620,16 +650,17 @@ TEST_F(FastPairPresenterImplTest,
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_ConnectClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_ConnectClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
@@ -640,9 +671,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_ConnectClicked) {
                              features::kFastPairSavedDevicesStrictOptIn});
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -654,7 +686,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_ConnectClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_LearnMoreClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_LearnMoreClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
@@ -665,9 +697,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_LearnMoreClicked) {
                              features::kFastPairSavedDevicesStrictOptIn});
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -679,7 +712,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_LearnMoreClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByUser) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
@@ -690,9 +723,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByUser) {
                              features::kFastPairSavedDevicesStrictOptIn});
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -704,7 +738,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByUser) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByOS) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
@@ -715,9 +749,10 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByOS) {
                              features::kFastPairSavedDevicesStrictOptIn});
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -729,7 +764,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByOS) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissed);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 
@@ -739,16 +774,17 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest) {
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_KioskApp) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_KioskApp) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 
@@ -764,24 +800,26 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_KioskApp) {
   repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_ConnectClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_ConnectClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -793,15 +831,16 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_ConnectClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_LearnMoreClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_LearnMoreClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -813,15 +852,16 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_LearnMoreClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_DismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByUser) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -833,15 +873,16 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_DismissedByUser) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_DismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByOS) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -862,7 +903,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowPairing(device_);
+  fast_pair_presenter_->ShowPairing(initially_paired_device_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -879,7 +920,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing_NoDeviceMetadata) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowPairing(device_);
+  fast_pair_presenter_->ShowPairing(initially_paired_device_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
@@ -896,9 +937,10 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnPairingFailedAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -916,9 +958,10 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_NoDeviceMetadata) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnPairingFailedAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
@@ -931,9 +974,10 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_SettingsClicked) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnPairingFailedAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -951,9 +995,10 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed_DismissedByOS) {
   Login(user_manager::UserType::USER_TYPE_GUEST);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairingFailed(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnPairingFailedAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -975,9 +1020,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -990,9 +1036,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_SaveClicked) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -1016,9 +1063,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoDeviceMetadata) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
@@ -1036,9 +1084,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoIdentityManager) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
@@ -1051,9 +1100,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_LearnMoreClicked) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -1071,9 +1121,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByUser) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -1092,9 +1143,10 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByOS) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowAssociateAccount(
-      device_,
+      initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnAssociateAccountAction,
-                          weak_pointer_factory_.GetWeakPtr(), device_));
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
@@ -1104,6 +1156,108 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByOS) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(associate_account_action_, AssociateAccountAction::kDismissed);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_Connect) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_LearnMore) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/1);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByUser) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  test_message_center_.Close(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByOS) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          initially_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  test_message_center_.Close(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissed);
 }
 
 }  // namespace quick_pair

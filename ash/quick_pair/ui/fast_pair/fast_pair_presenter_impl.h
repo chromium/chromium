@@ -79,6 +79,9 @@ class FastPairPresenterImpl : public FastPairPresenter {
   void ShowGuestDiscoveryNotification(scoped_refptr<Device> device,
                                       DiscoveryCallback callback,
                                       DeviceMetadata* device_metadata);
+  void ShowSubsequentDiscoveryNotification(scoped_refptr<Device> device,
+                                           DiscoveryCallback callback,
+                                           DeviceMetadata* device_metadata);
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
   void OnDiscoveryDismissed(DiscoveryCallback callback, bool user_dismissed);
   void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);

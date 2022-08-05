@@ -13,6 +13,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
@@ -92,10 +93,9 @@ void FastPairPresenterImpl::ShowDiscovery(scoped_refptr<Device> device,
                                           DiscoveryCallback callback) {
   const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
-      metadata_id,
-      base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryMetadataRetrieved,
-                          weak_pointer_factory_.GetWeakPtr(), std::move(device),
-                          std::move(callback)));
+      metadata_id, base::BindRepeating(
+                       &FastPairPresenterImpl::OnDiscoveryMetadataRetrieved,
+                       weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
@@ -105,6 +105,11 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
     bool has_retryable_error) {
   if (!device_metadata)
     return;
+
+  if (device->protocol == Protocol::kFastPairSubsequent) {
+    ShowSubsequentDiscoveryNotification(device, callback, device_metadata);
+    return;
+  }
 
   // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
   // available then the device is v1.
@@ -130,8 +135,7 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
           Shell::Get()->session_controller()->login_status())) {
     QP_LOG(VERBOSE) << __func__
                     << ": in guest mode, showing guest notification";
-    ShowGuestDiscoveryNotification(device, std::move(callback),
-                                   device_metadata);
+    ShowGuestDiscoveryNotification(device, callback, device_metadata);
     return;
   }
 
@@ -142,16 +146,15 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   // interpretation of the opt-in status.
   if (features::IsFastPairSavedDevicesEnabled() &&
       features::IsFastPairSavedDevicesStrictOptInEnabled()) {
-    FastPairRepository::Get()->CheckOptInStatus(
-        base::BindOnce(&FastPairPresenterImpl::OnCheckOptInStatus,
-                       weak_pointer_factory_.GetWeakPtr(), device,
-                       std::move(callback), device_metadata));
+    FastPairRepository::Get()->CheckOptInStatus(base::BindOnce(
+        &FastPairPresenterImpl::OnCheckOptInStatus,
+        weak_pointer_factory_.GetWeakPtr(), device, callback, device_metadata));
     return;
   }
 
   // If we don't have SavedDevices flag enabled, then we can ignore the user's
   // opt in status and move forward to showing the User Discovery notification.
-  ShowUserDiscoveryNotification(device, std::move(callback), device_metadata);
+  ShowUserDiscoveryNotification(device, callback, device_metadata);
 }
 
 void FastPairPresenterImpl::OnCheckOptInStatus(
@@ -162,12 +165,39 @@ void FastPairPresenterImpl::OnCheckOptInStatus(
   QP_LOG(INFO) << __func__;
 
   if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
-    ShowGuestDiscoveryNotification(device, std::move(callback),
-                                   device_metadata);
+    ShowGuestDiscoveryNotification(device, callback, device_metadata);
     return;
   }
 
-  ShowUserDiscoveryNotification(device, std::move(callback), device_metadata);
+  ShowUserDiscoveryNotification(device, callback, device_metadata);
+}
+
+void FastPairPresenterImpl::ShowSubsequentDiscoveryNotification(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    DeviceMetadata* device_metadata) {
+  if (!device_metadata)
+    return;
+
+  // Since Subsequent Pairing scenario can only happen for a signed in user
+  // when a device has already been saved to their account, this should never
+  // be null. We cannot get to this scenario in Guest Mode.
+  signin::IdentityManager* identity_manager =
+      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+  DCHECK(identity_manager);
+
+  const std::string& email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  notification_controller_->ShowSubsequentDiscoveryNotification(
+      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      base::ASCIIToUTF16(email), device_metadata->image(),
+      base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
+                     weak_pointer_factory_.GetWeakPtr(), callback));
 }
 
 void FastPairPresenterImpl::ShowGuestDiscoveryNotification(
@@ -189,13 +219,13 @@ void FastPairPresenterImpl::ShowUserDiscoveryNotification(
     scoped_refptr<Device> device,
     DiscoveryCallback callback,
     DeviceMetadata* device_metadata) {
-  // Since we check this in |OnDiscoveryMetadataRetrieved| to determine if we
-  // should show the Guest notification, this should never be null.
+  // Since we check this in |OnInitialDiscoveryMetadataRetrieved| to determine
+  // if we should show the Guest notification, this should never be null.
   signin::IdentityManager* identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();
   DCHECK(identity_manager);
 
-  const std::string email =
+  const std::string& email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
   notification_controller_->ShowUserDiscoveryNotification(
@@ -232,7 +262,7 @@ void FastPairPresenterImpl::ShowPairing(scoped_refptr<Device> device) {
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(&FastPairPresenterImpl::OnPairingMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(device)));
+                     weak_pointer_factory_.GetWeakPtr(), device));
 }
 
 void FastPairPresenterImpl::OnPairingMetadataRetrieved(
@@ -254,8 +284,7 @@ void FastPairPresenterImpl::ShowPairingFailed(scoped_refptr<Device> device,
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
       base::BindOnce(&FastPairPresenterImpl::OnPairingFailedMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(device),
-                     std::move(callback)));
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::OnPairingFailedMetadataRetrieved(
@@ -305,8 +334,7 @@ void FastPairPresenterImpl::ShowAssociateAccount(
       metadata_id,
       base::BindOnce(
           &FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved,
-          weak_pointer_factory_.GetWeakPtr(), std::move(device),
-          std::move(callback)));
+          weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
