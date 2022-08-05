@@ -301,14 +301,13 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
   result->description = match.description;
   result->description_type = ClassesToType(match.description_class);
 
+  // This may not be the final type. Bookmarks take precedence.
+  result->omnibox_type = MatchTypeToOmniboxType(match.type);
+
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       !match.image_url.is_empty()) {
-    result->omnibox_type = SearchResult::OmniboxType::kRichImage;
     result->image_url = match.image_url;
   } else {
-    // This may not be the final type. Bookmarks take precedence.
-    result->omnibox_type = MatchTypeToOmniboxType(match.type);
-
     // Set the favicon if this result is eligible.
     bool use_favicon =
         result->omnibox_type == SearchResult::OmniboxType::kDomain ||

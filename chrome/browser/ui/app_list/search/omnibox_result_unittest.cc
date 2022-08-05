@@ -403,6 +403,8 @@ TEST_F(OmniboxResultTest, RichEntityIcon) {
       GURL("https://example.com/icon.png"));
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_EQ(ash::AppListSearchResultCategory::kSearchAndAssistant,
+            result->category());
   EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
 }
 

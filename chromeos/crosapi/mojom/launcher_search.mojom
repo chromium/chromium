@@ -75,7 +75,9 @@ struct SearchResult {
   // The page transition type of this result. Used for opening a result.
   [MinVersion=2] PageTransition page_transition@15;
 
-  // The image url of the result, if any. Used to download the result image.
+  // The image url of the result, if any. Used to download the result image. The
+  // presence of this field defines a result as a "rich entity". We consider
+  // weather answer results with icons as a special kind of rich entity.
   url.mojom.Url? image_url@7;
   // Favicon of the result, if available. The presence or absence of this field
   // is what defines a result as a "favicon-type result".
@@ -115,7 +117,7 @@ struct SearchResult {
   [Stable, Extensible]
   enum OmniboxType {
     [Default] kUnset = 0,
-    kRichImage = 1,
+    kRichImageDeprecated = 1,
     kFaviconDeprecated = 2,
     kBookmark = 3,
     kDomain = 4,

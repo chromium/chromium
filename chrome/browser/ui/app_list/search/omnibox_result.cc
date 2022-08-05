@@ -277,8 +277,7 @@ bool OmniboxResult::IsUrlResultWithDescription() const {
 }
 
 bool OmniboxResult::IsRichEntity() const {
-  return search_result_->omnibox_type ==
-         CrosApiSearchResult::OmniboxType::kRichImage;
+  return search_result_->image_url.value_or(GURL()).is_valid();
 }
 
 void OmniboxResult::FetchRichEntityImage(const GURL& url) {
