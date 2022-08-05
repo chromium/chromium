@@ -152,18 +152,18 @@ class ClearKeyProperties : public KeySystemProperties {
            init_data_type == EmeInitDataType::KEYIDS;
   }
 
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       media::EncryptionScheme encryption_scheme) const final {
     switch (encryption_scheme) {
       case media::EncryptionScheme::kCenc:
       case media::EncryptionScheme::kCbcs: {
-        return EmeConfigRule();
+        return EmeConfig::SupportedRule();
       }
       case media::EncryptionScheme::kUnencrypted:
         break;
     }
     NOTREACHED();
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   SupportedCodecs GetSupportedCodecs() const final {
@@ -173,21 +173,20 @@ class ClearKeyProperties : public KeySystemProperties {
     return EME_CODEC_WEBM_ALL | EME_CODEC_MP4_ALL;
   }
 
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const final {
     if (requested_robustness.empty()) {
-      return EmeConfigRule();
+      return EmeConfig::SupportedRule();
     } else {
-      return absl::nullopt;
+      return EmeConfig::UnsupportedRule();
     }
   }
 
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const final {
-    return absl::nullopt;
+  EmeConfig::Rule GetPersistentLicenseSessionSupport() const final {
+    return EmeConfig::UnsupportedRule();
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const final {
@@ -291,20 +290,20 @@ class KeySystemsImpl : public KeySystems {
   bool CanUseAesDecryptor(const std::string& key_system) const override;
   bool IsSupportedInitDataType(const std::string& key_system,
                                EmeInitDataType init_data_type) const override;
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       EncryptionScheme encryption_scheme) const override;
-  absl::optional<EmeConfigRule> GetContentTypeConfigRule(
+  EmeConfig::Rule GetContentTypeConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& container_mime_type,
       const std::vector<std::string>& codecs) const override;
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override;
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport(
+  EmeConfig::Rule GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override;
   EmeFeatureSupport GetPersistentStateSupport(
       const std::string& key_system) const override;
@@ -588,7 +587,7 @@ bool KeySystemsImpl::IsSupportedInitDataType(
   return properties->IsSupportedInitDataType(init_data_type);
 }
 
-absl::optional<EmeConfigRule> KeySystemsImpl::GetEncryptionSchemeConfigRule(
+EmeConfig::Rule KeySystemsImpl::GetEncryptionSchemeConfigRule(
     const std::string& key_system,
     EncryptionScheme encryption_scheme) const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -596,7 +595,7 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetEncryptionSchemeConfigRule(
   const auto* properties = GetKeySystemProperties(key_system);
   if (!properties) {
     NOTREACHED();
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   return properties->GetEncryptionSchemeConfigRule(encryption_scheme);
@@ -665,7 +664,7 @@ bool KeySystemsImpl::CanUseAesDecryptor(const std::string& key_system) const {
   return properties->UseAesDecryptor();
 }
 
-absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
+EmeConfig::Rule KeySystemsImpl::GetContentTypeConfigRule(
     const std::string& key_system,
     EmeMediaType media_type,
     const std::string& container_mime_type,
@@ -677,13 +676,13 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
     case EmeMediaType::AUDIO:
       if (!base::StartsWith(container_mime_type, "audio/",
                             base::CompareCase::SENSITIVE)) {
-        return absl::nullopt;
+        return EmeConfig::UnsupportedRule();
       }
       break;
     case EmeMediaType::VIDEO:
       if (!base::StartsWith(container_mime_type, "video/",
                             base::CompareCase::SENSITIVE)) {
-        return absl::nullopt;
+        return EmeConfig::UnsupportedRule();
       }
       break;
   }
@@ -692,7 +691,7 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
   const auto* properties = GetKeySystemProperties(key_system);
   if (!properties) {
     NOTREACHED() << "Key system support should have been checked";
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   // Look up the key system's supported codecs and secure codecs.
@@ -707,7 +706,7 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
   if ((key_system_codec_mask & mime_type_codec_mask) == 0) {
     DVLOG(2) << "Container " << container_mime_type << " not supported by "
              << key_system;
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   // Check that the codecs are supported by the key system and container based
@@ -717,13 +716,13 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
   //       yes        |         no             | HW_SECURE_CODECS_NOT_ALLOWED
   //       no         |         yes            | HW_SECURE_CODECS_REQUIRED
   //       no         |         no             | NOT_SUPPORTED
-  auto to_support = EmeConfigRule();
+  auto to_support = EmeConfig::SupportedRule();
   for (auto& codec_iterator : codecs) {
     EmeCodec codec =
         GetEmeCodecForString(media_type, container_mime_type, codec_iterator);
     if (codec == EME_CODEC_NONE) {
       DVLOG(2) << "Unsupported codec string \"" << codec_iterator << "\"";
-      return absl::nullopt;
+      return EmeConfig::UnsupportedRule();
     }
 
     // Currently all EmeCodecs only have one bit set. In case there could be
@@ -735,34 +734,34 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetContentTypeConfigRule(
             codec) {
       DVLOG(2) << "Container/codec pair (" << container_mime_type << " / "
                << codec_iterator << ") not supported by " << key_system;
-      return absl::nullopt;
+      return EmeConfig::UnsupportedRule();
     }
 
     // Check whether the codec supports a hardware-secure mode (any level).
     if ((codec & key_system_hw_secure_codec_mask) != codec) {
       DCHECK_EQ(codec & key_system_codec_mask, codec);
-      if (to_support.hw_secure_codecs == EmeConfigRuleState::kRequired) {
-        return absl::nullopt;
+      if (to_support->hw_secure_codecs == EmeConfigRuleState::kRequired) {
+        return EmeConfig::UnsupportedRule();
       }
 
-      to_support.hw_secure_codecs = EmeConfigRuleState::kNotAllowed;
+      to_support->hw_secure_codecs = EmeConfigRuleState::kNotAllowed;
     }
 
     // Check whether the codec requires a hardware-secure mode (any level).
     if ((codec & key_system_codec_mask) != codec) {
       DCHECK_EQ(codec & key_system_hw_secure_codec_mask, codec);
-      if (to_support.hw_secure_codecs == EmeConfigRuleState::kNotAllowed) {
-        return absl::nullopt;
+      if (to_support->hw_secure_codecs == EmeConfigRuleState::kNotAllowed) {
+        return EmeConfig::UnsupportedRule();
       }
 
-      to_support.hw_secure_codecs = EmeConfigRuleState::kRequired;
+      to_support->hw_secure_codecs = EmeConfigRuleState::kRequired;
     }
   }
 
   return to_support;
 }
 
-absl::optional<EmeConfigRule> KeySystemsImpl::GetRobustnessConfigRule(
+EmeConfig::Rule KeySystemsImpl::GetRobustnessConfigRule(
     const std::string& key_system,
     EmeMediaType media_type,
     const std::string& requested_robustness,
@@ -772,22 +771,21 @@ absl::optional<EmeConfigRule> KeySystemsImpl::GetRobustnessConfigRule(
   const auto* properties = GetKeySystemProperties(key_system);
   if (!properties) {
     NOTREACHED();
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   return properties->GetRobustnessConfigRule(
       key_system, media_type, requested_robustness, hw_secure_requirement);
 }
 
-absl::optional<EmeConfigRule>
-KeySystemsImpl::GetPersistentLicenseSessionSupport(
+EmeConfig::Rule KeySystemsImpl::GetPersistentLicenseSessionSupport(
     const std::string& key_system) const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* properties = GetKeySystemProperties(key_system);
   if (!properties) {
     NOTREACHED();
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   return properties->GetPersistentLicenseSessionSupport();

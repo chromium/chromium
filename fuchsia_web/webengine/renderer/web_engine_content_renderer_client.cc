@@ -71,23 +71,22 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return supported_codecs_;
   }
 
-  absl::optional<media::EmeConfigRule> GetRobustnessConfigRule(
+  media::EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& /*key_system*/,
       media::EmeMediaType /*media_type*/,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     // Only empty robustness string is currently supported.
     if (requested_robustness.empty()) {
-      return media::EmeConfigRule{.hw_secure_codecs =
-                                      media::EmeConfigRuleState::kRequired};
+      return media::EmeConfig{.hw_secure_codecs =
+                                  media::EmeConfigRuleState::kRequired};
     }
 
-    return absl::nullopt;
+    return media::EmeConfig::UnsupportedRule();
   }
 
-  absl::optional<media::EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const override {
-    return absl::nullopt;
+  media::EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
+    return media::EmeConfig::UnsupportedRule();
   }
 
   media::EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -98,13 +97,13 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return media::EmeFeatureSupport::ALWAYS_ENABLED;
   }
 
-  absl::optional<media::EmeConfigRule> GetEncryptionSchemeConfigRule(
+  media::EmeConfig::Rule GetEncryptionSchemeConfigRule(
       media::EncryptionScheme encryption_mode) const override {
     if (encryption_mode == ::media::EncryptionScheme::kCenc) {
-      return media::EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     }
 
-    return absl::nullopt;
+    return media::EmeConfig::UnsupportedRule();
   }
 
  private:

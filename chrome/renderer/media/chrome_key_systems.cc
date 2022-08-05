@@ -46,7 +46,7 @@
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
 
 using media::CdmSessionType;
-using media::EmeConfigRule;
+using media::EmeConfig;
 using media::EmeFeatureSupport;
 using media::KeySystemProperties;
 using media::KeySystemPropertiesVector;

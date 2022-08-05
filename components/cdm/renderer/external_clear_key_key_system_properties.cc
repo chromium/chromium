@@ -47,41 +47,41 @@ bool ExternalClearKeyProperties::IsSupportedInitDataType(
   return false;
 }
 
-absl::optional<media::EmeConfigRule>
+absl::optional<media::EmeConfig>
 ExternalClearKeyProperties::GetEncryptionSchemeConfigRule(
     media::EncryptionScheme encryption_scheme) const {
   switch (encryption_scheme) {
     case media::EncryptionScheme::kCenc:
     case media::EncryptionScheme::kCbcs:
-      return media::EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     case media::EncryptionScheme::kUnencrypted:
       break;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return media::EmeConfig::UnsupportedRule();
 }
 
 media::SupportedCodecs ExternalClearKeyProperties::GetSupportedCodecs() const {
   return media::EME_CODEC_MP4_ALL | media::EME_CODEC_WEBM_ALL;
 }
 
-absl::optional<media::EmeConfigRule>
+absl::optional<media::EmeConfig>
 ExternalClearKeyProperties::GetRobustnessConfigRule(
     const std::string& key_system,
     media::EmeMediaType media_type,
     const std::string& requested_robustness,
     const bool* /*hw_secure_requirement*/) const {
   if (requested_robustness.empty()) {
-    return media::EmeConfigRule();
+    return media::EmeConfig::SupportedRule();
   } else {
-    return absl::nullopt;
+    return media::EmeConfig::UnsupportedRule();
   }
 }
 
 // Persistent license sessions are faked.
-absl::optional<media::EmeConfigRule>
+absl::optional<media::EmeConfig>
 ExternalClearKeyProperties::GetPersistentLicenseSessionSupport() const {
-  return media::EmeConfigRule();
+  return media::EmeConfig::SupportedRule();
 }
 
 media::EmeFeatureSupport ExternalClearKeyProperties::GetPersistentStateSupport()

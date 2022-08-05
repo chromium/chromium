@@ -24,7 +24,7 @@
 #endif
 
 using ::media::CdmSessionType;
-using ::media::EmeConfigRule;
+using ::media::EmeConfig;
 using ::media::EmeConfigRuleState;
 using ::media::EmeFeatureSupport;
 using ::media::EmeInitDataType;
@@ -67,7 +67,7 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -79,23 +79,22 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     // in KeySystemConfigSelector: crbug.com/1204284
     if (requested_robustness.empty()) {
 #if BUILDFLAG(IS_ANDROID)
-      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+      return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
 #else
-      return EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
 #endif  // BUILDFLAG(IS_ANDROID)
     }
 
     // Cast-specific PlayReady implementation does not currently recognize or
     // support non-empty robustness strings.
-    return absl::nullopt;
+    return media::EmeConfig::UnsupportedRule();
   }
 
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const override {
+  EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
     if (persistent_license_support_) {
-      return EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     } else {
-      return absl::nullopt;
+      return media::EmeConfig::UnsupportedRule();
     }
   }
 
@@ -106,12 +105,12 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     return EmeFeatureSupport::ALWAYS_ENABLED;
   }
 
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
     if (encryption_scheme == EncryptionScheme::kCenc) {
-      return EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     } else {
-      return absl::nullopt;
+      return media::EmeConfig::UnsupportedRule();
     }
   }
 

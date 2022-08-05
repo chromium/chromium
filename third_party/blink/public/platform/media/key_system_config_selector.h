@@ -130,7 +130,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
                               const std::string& codecs,
                               ConfigState* config_state);
 
-  absl::optional<media::EmeConfigRule> GetEncryptionSchemeConfigRule(
+  media::EmeConfig::Rule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       const WebMediaKeySystemMediaCapability::EncryptionScheme
           encryption_scheme);

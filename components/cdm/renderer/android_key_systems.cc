@@ -21,7 +21,7 @@
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 using media::CdmSessionType;
-using media::EmeConfigRule;
+using media::EmeConfig;
 using media::EmeConfigRuleState;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;
@@ -64,12 +64,12 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
     return false;
   }
 
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
     if (encryption_scheme == EncryptionScheme::kCenc) {
-      return EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     } else {
-      return absl::nullopt;
+      return media::EmeConfig::UnsupportedRule();
     }
   }
 
@@ -77,7 +77,7 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
     return supported_codecs_;
   }
 
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       media::EmeMediaType media_type,
       const std::string& requested_robustness,
@@ -88,15 +88,14 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
     // incompatibility at this point, it will still be caught by the rule logic
     // in KeySystemConfigSelector: crbug.com/1204284
     if (requested_robustness.empty()) {
-      return EmeConfigRule();
+      return media::EmeConfig::SupportedRule();
     } else {
-      return absl::nullopt;
+      return media::EmeConfig::UnsupportedRule();
     }
   }
 
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const override {
-    return absl::nullopt;
+  EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
+    return media::EmeConfig::UnsupportedRule();
   }
   EmeFeatureSupport GetPersistentStateSupport() const override {
     return EmeFeatureSupport::ALWAYS_ENABLED;

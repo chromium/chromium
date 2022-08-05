@@ -9,6 +9,7 @@
 
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -160,35 +161,45 @@ enum class EmeMediaType {
 };
 
 enum class EmeConfigRuleState {
-  // To correctly identify the EmeConfigRule as Supported,
-  // we use the enum value kUnset for each of the rules so
-  // that it is easy to check for, and cannot be confused.
+  // To correctly identify the EmeConfig as Supported, we use the enum value
+  // kUnset for each of the rules so that it is easy to check for, and cannot be
+  // confused.
   kUnset,
 
-  // Not Allowed represents when the rule in the collection of
-  // EmeConfigRules is not allowed by the current system.
+  // Not Allowed represents when the rule in the collection of EmeConfigRules is
+  // not allowed by the current system.
   kNotAllowed,
 
-  // Recommended represents when the rule in the collection of
-  // EmeConfigRules is recommended by the current system. In
-  // our design, the recommended takes a second priority and
-  // cannot override the NotAllowed or Required value.
+  // Recommended represents when the rule in the collection of EmeConfigRules is
+  // recommended by the current system. In our design, the recommended takes a
+  // second priority and cannot override the NotAllowed or Required value.
   kRecommended,
 
-  // Required represents when the rule in the collection of
-  // EmeConfigRules is required by the current system.
+  // Required represents when the rule in the collection of EmeConfigRules is
+  // required by the current system.
   kRequired,
 };
 
-struct MEDIA_EXPORT EmeConfigRule {
-  // Refer to the EME spec for definitions on what
-  // identifier, persistence, and hw_secure_codecs represent.
+struct MEDIA_EXPORT EmeConfig {
+  using Rule = absl::optional<EmeConfig>;
+
+  // Refer to the EME spec for definitions on what identifier, persistence, and
+  // hw_secure_codecs represent.
   EmeConfigRuleState identifier = EmeConfigRuleState::kUnset;
   EmeConfigRuleState persistence = EmeConfigRuleState::kUnset;
   EmeConfigRuleState hw_secure_codecs = EmeConfigRuleState::kUnset;
+
+  // To represent an EmeConfig::Rule where the feature is supported without any
+  // special requirements. This type adds nothing during the AddRule() function.
+  // Internally, we represent Supported as all the States set to kUnset.
+  static EmeConfig::Rule SupportedRule() { return EmeConfig(); }
+
+  // To represent an EmeConfig::Rule where the feature is not supported.
+  // Internally, we represent Unsupported as absl::nullopt.
+  static EmeConfig::Rule UnsupportedRule() { return absl::nullopt; }
 };
 
-inline bool operator==(EmeConfigRule const& lhs, EmeConfigRule const& rhs) {
+inline bool operator==(EmeConfig const& lhs, EmeConfig const& rhs) {
   return lhs.persistence == rhs.persistence &&
          lhs.identifier == rhs.identifier &&
          lhs.hw_secure_codecs == rhs.hw_secure_codecs;

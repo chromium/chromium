@@ -77,15 +77,15 @@ class TestKeySystemPropertiesBase : public KeySystemProperties {
     return EME_CODEC_WEBM_ALL | TEST_CODEC_FOO_AUDIO | TEST_CODEC_FOO_VIDEO;
   }
 
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     if (requested_robustness.empty()) {
-      return EmeConfigRule();
+      return EmeConfig::SupportedRule();
     }
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 };
 
@@ -95,18 +95,17 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
 
   std::string GetBaseKeySystemName() const override { return name_; }
 
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
     if ((encryption_scheme == EncryptionScheme::kUnencrypted ||
          encryption_scheme == EncryptionScheme::kCenc)) {
-      return EmeConfigRule();
+      return EmeConfig::SupportedRule();
     }
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const override {
-    return absl::nullopt;
+  EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfig::UnsupportedRule();
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -129,18 +128,17 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
 
   // Pretend clear (unencrypted) and 'cenc' content are always supported. But
   // 'cbcs' is not supported by hardware secure codecs.
-  absl::optional<EmeConfigRule> GetEncryptionSchemeConfigRule(
+  EmeConfig::Rule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
     switch (encryption_scheme) {
       case media::EncryptionScheme::kUnencrypted:
       case media::EncryptionScheme::kCenc:
-        return EmeConfigRule();
+        return EmeConfig::SupportedRule();
       case media::EncryptionScheme::kCbcs:
-        return EmeConfigRule{.hw_secure_codecs =
-                                 EmeConfigRuleState::kNotAllowed};
+        return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
     }
     NOTREACHED();
-    return absl::nullopt;
+    return EmeConfig::UnsupportedRule();
   }
 
   // We have hardware secure codec support for FOO_VIDEO and FOO_SECURE_VIDEO.
@@ -148,26 +146,25 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
     return TEST_CODEC_FOO_VIDEO | TEST_CODEC_FOO_SECURE_VIDEO;
   }
 
-  absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+  EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     if (requested_robustness == kRobustnessSupported) {
-      return EmeConfigRule();
+      return EmeConfig::SupportedRule();
     } else if (requested_robustness == kRobustnessSecureCodecsRequired) {
-      return EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+      return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
     } else if (requested_robustness == kRobustnessNotSupported) {
-      return absl::nullopt;
+      return EmeConfig::UnsupportedRule();
     } else {
       NOTREACHED();
-      return absl::nullopt;
+      return EmeConfig::UnsupportedRule();
     }
   }
 
-  absl::optional<EmeConfigRule> GetPersistentLicenseSessionSupport()
-      const override {
-    return absl::nullopt;
+  EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfig::UnsupportedRule();
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -179,16 +176,15 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
   }
 };
 
-void ExpectEncryptionSchemeConfigRule(
-    const std::string& key_system,
-    EncryptionScheme encryption_scheme,
-    absl::optional<EmeConfigRule> expected_rule) {
+void ExpectEncryptionSchemeConfigRule(const std::string& key_system,
+                                      EncryptionScheme encryption_scheme,
+                                      EmeConfig::Rule expected_rule) {
   EXPECT_EQ(expected_rule,
             KeySystems::GetInstance()->GetEncryptionSchemeConfigRule(
                 key_system, encryption_scheme));
 }
 
-absl::optional<EmeConfigRule> GetVideoContentTypeConfigRule(
+EmeConfig::Rule GetVideoContentTypeConfigRule(
     const std::string& mime_type,
     const std::vector<std::string>& codecs,
     const std::string& key_system) {
@@ -220,7 +216,7 @@ bool IsSupportedKeySystem(const std::string& key_system) {
   return KeySystems::GetInstance()->IsSupportedKeySystem(key_system);
 }
 
-absl::optional<EmeConfigRule> GetRobustnessConfigRule(
+EmeConfig::Rule GetRobustnessConfigRule(
     const std::string& requested_robustness) {
   return KeySystems::GetInstance()->GetRobustnessConfigRule(
       kExternal, EmeMediaType::VIDEO, requested_robustness, nullptr);
@@ -632,8 +628,8 @@ TEST_F(KeySystemsTest,
 
 TEST_F(KeySystemsTest,
        IsSupportedKeySystem_UsesAesDecryptor_EncryptionSchemes) {
-  auto supported = EmeConfigRule();
-  auto not_supported = absl::nullopt;
+  auto supported = EmeConfig::SupportedRule();
+  auto not_supported = EmeConfig::UnsupportedRule();
   ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionScheme::kUnencrypted,
                                    supported);
   ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionScheme::kCenc,
@@ -756,9 +752,9 @@ TEST_F(
 
 TEST_F(KeySystemsTest,
        IsSupportedKeySystem_ExternalDecryptor_EncryptionSchemes) {
-  auto supported = EmeConfigRule();
+  auto supported = EmeConfig::SupportedRule();
   auto hw_secure_codecs_not_allowed =
-      EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+      EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
   ExpectEncryptionSchemeConfigRule(kExternal, EncryptionScheme::kUnencrypted,
                                    supported);
   ExpectEncryptionSchemeConfigRule(kExternal, EncryptionScheme::kCenc,
@@ -804,10 +800,10 @@ TEST_F(KeySystemsTest, KeySystemsUpdate) {
 }
 
 TEST_F(KeySystemsTest, GetContentTypeConfigRule) {
-  auto supported = EmeConfigRule();
-  auto not_supported = absl::nullopt;
+  auto supported = EmeConfig::SupportedRule();
+  auto not_supported = EmeConfig::UnsupportedRule();
   auto hw_secure_codecs_required =
-      EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+      EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
   EXPECT_EQ(supported, GetRobustnessConfigRule(kRobustnessSupported));
   EXPECT_EQ(not_supported, GetRobustnessConfigRule(kRobustnessNotSupported));
   EXPECT_TRUE(hw_secure_codecs_required ==
@@ -815,12 +811,12 @@ TEST_F(KeySystemsTest, GetContentTypeConfigRule) {
 }
 
 TEST_F(KeySystemsTest, HardwareSecureCodecs) {
-  auto supported = EmeConfigRule();
-  auto not_supported = absl::nullopt;
+  auto supported = EmeConfig::SupportedRule();
+  auto not_supported = EmeConfig::UnsupportedRule();
   auto hw_secure_codecs_required =
-      EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kRequired};
+      EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
   auto hw_secure_codecs_not_allowed =
-      EmeConfigRule{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+      EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
 
   EXPECT_EQ(hw_secure_codecs_not_allowed,
             GetVideoContentTypeConfigRule(kVideoWebM, vp8_codec(), kUsesAes));
