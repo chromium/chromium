@@ -156,14 +156,14 @@ class WaylandEventSource : public PlatformEventSource,
   void OnRelativePointerMotion(const gfx::Vector2dF& delta) override;
 
  private:
-  struct PointerFrame {
-    PointerFrame();
-    PointerFrame(const PointerFrame& other);
-    PointerFrame(PointerFrame&&);
-    ~PointerFrame();
+  struct PointerScrollData {
+    PointerScrollData();
+    PointerScrollData(const PointerScrollData& other);
+    PointerScrollData(PointerScrollData&&);
+    ~PointerScrollData();
 
-    PointerFrame& operator=(const PointerFrame&);
-    PointerFrame& operator=(PointerFrame&&);
+    PointerScrollData& operator=(const PointerScrollData&);
+    PointerScrollData& operator=(PointerScrollData&&);
 
     WaylandWindow* target = nullptr;
     absl::optional<uint32_t> axis_source;
@@ -235,8 +235,12 @@ class WaylandEventSource : public PlatformEventSource,
   // Last known relative pointer location (used for pointer lock).
   absl::optional<gfx::PointF> relative_pointer_location_;
 
-  // Current frame
-  PointerFrame current_pointer_frame_;
+  // Accumulates the scroll data within a pointer frame internal.
+  PointerScrollData pointer_scroll_data_;
+
+  // Latest set of pointer scroll data to compute fling scroll.
+  // Front is newer, and back is older.
+  std::deque<PointerScrollData> pointer_scroll_data_set_;
 
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
@@ -251,10 +255,6 @@ class WaylandEventSource : public PlatformEventSource,
     float force = std::numeric_limits<float>::quiet_NaN();
   };
   base::flat_map<PointerId, absl::optional<StylusData>> last_touch_stylus_data_;
-
-  // Recent pointer frames to compute fling scroll.
-  // Front is newer, and back is older.
-  std::deque<PointerFrame> recent_pointer_frames_;
 
   // Order set of touch events to be dispatching on the next
   // wl_touch::frame event.
