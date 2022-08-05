@@ -55,7 +55,8 @@ constexpr char kDefaultKerberosConfig[] = R"([libdefaults]
   default_tgs_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
   default_tkt_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
   permitted_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
-  forwardable = true)";
+  forwardable = true
+)";
 
 // Backoff policy used to control managed accounts addition retries.
 const net::BackoffEntry::Policy kBackoffPolicyForManagedAccounts = {
@@ -384,6 +385,8 @@ void KerberosCredentialsManager::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kKerberosAddAccountsAllowed, true);
   registry->RegisterListPref(prefs::kKerberosAccounts);
   registry->RegisterStringPref(prefs::kKerberosDomainAutocomplete, "");
+  registry->RegisterStringPref(prefs::kKerberosDefaultConfiguration,
+                               kDefaultKerberosConfig);
 }
 
 void KerberosCredentialsManager::RegisterProfilePrefs(
@@ -398,11 +401,6 @@ KerberosCredentialsManager::EmptyResultCallback() {
   return base::BindOnce([](kerberos::ErrorType error) {
     // Do nothing.
   });
-}
-
-// static
-const char* KerberosCredentialsManager::GetDefaultKerberosConfig() {
-  return kDefaultKerberosConfig;
 }
 
 bool KerberosCredentialsManager::IsKerberosEnabled() const {
@@ -941,6 +939,11 @@ void KerberosCredentialsManager::SetKerberosFilesHandlerForTesting(
 void KerberosCredentialsManager::SetAddManagedAccountCallbackForTesting(
     base::RepeatingCallback<void(kerberos::ErrorType)> callback) {
   add_managed_account_callback_for_testing_ = std::move(callback);
+}
+
+// static
+const char* KerberosCredentialsManager::GetDefaultKerberosConfigForTesting() {
+  return kDefaultKerberosConfig;
 }
 
 }  // namespace ash

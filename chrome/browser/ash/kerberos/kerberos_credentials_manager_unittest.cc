@@ -87,13 +87,6 @@ constexpr char kKeyKrb5Conf[] = "krb5conf";
 // Password placeholder.
 constexpr char kLoginPasswordPlaceholder[] = "${PASSWORD}";
 
-// Default config.
-constexpr char kDefaultConfig[] = R"([libdefaults]
-  default_tgs_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
-  default_tkt_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
-  permitted_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96
-  forwardable = true)";
-
 // A long time delta, used to fast forward the task environment until all
 // pending operations are completed. This value should be equal to the maximum
 // time to delay requests on |kBackoffPolicyForManagedAccounts|.
@@ -385,7 +378,8 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
 // The default config sets strong crypto and allows forwardable tickets.
 TEST_F(KerberosCredentialsManagerTest, GetDefaultKerberosConfig) {
-  const std::string default_config = mgr_->GetDefaultKerberosConfig();
+  const std::string default_config =
+      local_state_.Get()->GetString(::prefs::kKerberosDefaultConfiguration);
 
   // Enforce strong crypto.
   EXPECT_TRUE(base::Contains(default_config, "default_tgs_enctypes"));
@@ -1002,7 +996,7 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefConfig) {
   EXPECT_EQ(kNormalizedPrincipal, accounts[0].principal_name());
   EXPECT_EQ(expected_config, accounts[0].krb5conf());
   EXPECT_EQ(kNormalizedOtherPrincipal, accounts[1].principal_name());
-  EXPECT_EQ(kDefaultConfig, accounts[1].krb5conf());
+  EXPECT_EQ(mgr_->GetDefaultKerberosConfigForTesting(), accounts[1].krb5conf());
   EXPECT_EQ(kNormalizedPrincipal, mgr_->GetActiveAccount());
 }
 

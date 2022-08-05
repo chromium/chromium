@@ -491,7 +491,8 @@
         'KerberosRememberPasswordEnabled',
         'KerberosAddAccountsAllowed',
         'KerberosAccounts',
-        'KerberosDomainAutocomplete'
+        'KerberosDomainAutocomplete',
+        'KerberosDefaultConfiguration'
       ],
     },
     {
@@ -25484,6 +25485,27 @@
           If this policy is unset, no additional information is shown and creating the ticket works as usual.''',
     },
     {
+      'name': 'KerberosDefaultConfiguration',
+      'owners': ['slutskii@google.com', 'file://chrome/browser/ash/kerberos/OWNERS'],
+      'type': 'string',
+      'schema': { 'type': 'string' },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': '[libdefaults]\n  default_tgs_enctypes = aes256-cts-hmac-sha1-96\n',
+      'id': 1000,
+      'caption': '''Changes default configuration for Kerberos tickets''',
+      'tags': ['website-sharing'],
+      'desc': '''Changes the <ph name="KRB5_CONFIG">krb5</ph> suggested configuration for the new manually created tickets.
+
+      If the policy is set, its value is applied as the suggested configuration and shown in the "Advanced" section of the authentication dialog.
+
+      If this policy is unset, the recommended <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> configuration is applied instead. Note that it is also shown in the "Advanced" section of the authentication dialog.''',
+    },
+    {
       'name': 'CommandLineFlagSecurityWarningsEnabled',
       'owners': ['proberge@chromium.org'],
       'type': 'main',
@@ -33502,6 +33524,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 999,
+  'highest_id_currently_used': 1000,
   'highest_atomic_group_id_currently_used': 43
 }

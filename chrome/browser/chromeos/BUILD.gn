@@ -3056,7 +3056,7 @@ source_set("unit_tests") {
     "../ash/input_method/ui/input_method_menu_manager_unittest.cc",
     "../ash/input_method/ui/suggestion_window_view_unittest.cc",
     "../ash/input_method/ui/undo_window_unittest.cc",
-    "../ash/kerberos/kerberos_credentials_manager_test.cc",
+    "../ash/kerberos/kerberos_credentials_manager_unittest.cc",
     "../ash/kerberos/kerberos_ticket_expiry_notification_test.cc",
     "../ash/locale_change_guard_unittest.cc",
     "../ash/lock_screen_apps/app_manager_impl_unittest.cc",

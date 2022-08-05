@@ -131,7 +131,7 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   // Kerberos default configuration.
   html_source->AddString(
       "defaultKerberosConfig",
-      chromeos::KerberosCredentialsManager::GetDefaultKerberosConfig());
+      local_state->GetString(::prefs::kKerberosDefaultConfiguration));
 }
 
 // Adds load time strings to Kerberos Accounts page.

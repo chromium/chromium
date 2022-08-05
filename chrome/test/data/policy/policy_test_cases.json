@@ -3071,6 +3071,33 @@
       }
     ]
   },
+  "KerberosDefaultConfiguration": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "kerberos.default_configuration": {
+            "default_value": "[libdefaults]\n  default_tgs_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  default_tkt_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  permitted_enctypes = aes256-cts-hmac-sha1-96 aes128-cts-hmac-sha1-96\n  forwardable = true\n",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "KerberosDefaultConfiguration": "custom-config"
+        },
+        "prefs": {
+          "kerberos.default_configuration": {
+            "value": "custom-config",
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
   "PromptForDownloadLocation": {
     "os": [
       "win",
