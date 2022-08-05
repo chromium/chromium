@@ -47,6 +47,7 @@ try:
     # This import adds `devil` to `sys.path`.
     import devil_chromium
     from devil import devil_env
+    from devil.utils.parallelizer import SyncParallelizer
     from devil.android import apk_helper
     from devil.android import device_utils
     from devil.android.device_errors import CommandFailedError
@@ -549,8 +550,8 @@ class ChromeAndroidBase(Product):
                     'No devices attached to this host. '
                     "Make sure to provide '--avd-config' "
                     'if using only emulators.')
-            for device in devices:
-                self.provision_device(device)
+
+            self.provision_devices(devices)
             yield
 
     @property
@@ -642,19 +643,32 @@ class ChromeAndroidBase(Product):
         # Assume the product is a single APK.
         return self.get_browser_package_name()
 
-    def provision_device(self, device):
-        """Provision an Android device for a test."""
-        if self._options.browser_apk:
-            self._tasks.enter_context(
-                _install_apk(device, self._options.browser_apk))
-        for apk in self._options.additional_apk:
-            self._tasks.enter_context(_install_apk(device, apk))
-        logger.info('Provisioned device (serial: %s)', device.serial)
+    def provision_devices(self, devices):
+        """Provisions a set of Android devices in parallel."""
+        contexts = [self._provision_device(device) for device in devices]
+        self._tasks.enter_context(SyncParallelizer(contexts))
 
-        if device.serial in self.devices:
-            raise Exception('duplicate device serial: %s' % device.serial)
-        self.devices[device.serial] = device
-        self._tasks.callback(self.devices.pop, device.serial, None)
+        for device in devices:
+            if device.serial in self.devices:
+                raise Exception('duplicate device serial: %s' % device.serial)
+            self.devices[device.serial] = device
+            self._tasks.callback(self.devices.pop, device.serial, None)
+
+    @contextlib.contextmanager
+    def _provision_device(self, device):
+        """Provision a single Android device for a test.
+
+        This method will be executed in parallel on all devices, so
+        it is crucial that it is thread safe.
+        """
+        with contextlib.ExitStack() as exit_stack:
+            if self._options.browser_apk:
+                exit_stack.enter_context(
+                    _install_apk(device, self._options.browser_apk))
+            for apk in self._options.additional_apk:
+                exit_stack.enter_context(_install_apk(device, apk))
+            logger.info('Provisioned device (serial: %s)', device.serial)
+            yield
 
 
 @contextlib.contextmanager
@@ -730,9 +744,10 @@ class WebView(ChromeAndroidBase):
                 return apk_helper.GetPackageName(self._options.webview_provider)
         return super().get_version_provider_package_name()
 
-    def provision_device(self, device):
-        self._tasks.enter_context(self._install_webview(device))
-        super().provision_device(device)
+    @contextlib.contextmanager
+    def _provision_device(self, device):
+        with self._install_webview(device), super()._provision_device(device):
+            yield
 
 
 class ChromeAndroid(ChromeAndroidBase):
@@ -791,19 +806,21 @@ def get_devices(args):
     instances = []
     try:
         if args.avd_config:
-          avd_config = avd.AvdConfig(args.avd_config)
-          logger.warning('Installing emulator from %s', args.avd_config)
-          avd_config.Install()
-          for _ in range(max(args.processes, 1)):
-              instance = avd_config.CreateInstance()
-              instance.Start(writable_system=True, window=args.emulator_window)
-              instances.append(instance)
+            avd_config = avd.AvdConfig(args.avd_config)
+            logger.warning('Installing emulator from %s', args.avd_config)
+            avd_config.Install()
+
+            for _ in range(max(args.processes, 1)):
+                instance = avd_config.CreateInstance()
+                instances.append(instance)
+
+            SyncParallelizer(instances).Start(
+                writable_system=True, window=args.emulator_window)
 
         #TODO(weizhong): when choose device, make sure abi matches with target
         yield device_utils.DeviceUtils.HealthyDevices()
     finally:
-        for instance in instances:
-            instance.Stop()
+        SyncParallelizer(instances).Stop()
 
 
 def main():
