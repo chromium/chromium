@@ -193,9 +193,9 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
 }
 
 DomDistillerViewerSource::DomDistillerViewerSource(
-    DomDistillerServiceInterface* dom_distiller_service,
-    const std::string& scheme)
-    : scheme_(scheme), dom_distiller_service_(dom_distiller_service) {}
+    DomDistillerServiceInterface* dom_distiller_service)
+    : scheme_(kDomDistillerScheme),
+      dom_distiller_service_(dom_distiller_service) {}
 
 DomDistillerViewerSource::~DomDistillerViewerSource() = default;
 
@@ -280,7 +280,8 @@ void DomDistillerViewerSource::StartDataRequest(
       base::RefCountedString::TakeString(&unsafe_page_html));
 }
 
-std::string DomDistillerViewerSource::GetMimeType(const std::string& path) {
+std::string DomDistillerViewerSource::GetMimeType(const GURL& url) {
+  const base::StringPiece path = url.path_piece().substr(1);
   if (kViewerCssPath == path)
     return "text/css";
   if (kViewerLoadingImagePath == path)

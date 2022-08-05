@@ -6,26 +6,29 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_constants.h"
 
 namespace dom_distiller {
 
-const char kTestScheme[] = "myscheme";
+namespace {
 
-class DomDistillerViewerSourceTest : public testing::Test {
- public:
-  void SetUp() override {
-    source_ = std::make_unique<DomDistillerViewerSource>(nullptr, kTestScheme);
-  }
+// Returns `GURL("chrome-distiller://uuid/path")`.
+GURL GetURL(base::StringPiece path) {
+  return GURL(base::StrCat(
+      {kDomDistillerScheme, url::kStandardSchemeSeparator, "uuid/", path}));
+}
 
- protected:
-  std::unique_ptr<DomDistillerViewerSource> source_;
-};
+}  // namespace
+
+class DomDistillerViewerSourceTest : public testing::Test {};
 
 TEST_F(DomDistillerViewerSourceTest, TestMimeType) {
-  EXPECT_EQ("text/css", source_->GetMimeType(kViewerCssPath));
-  EXPECT_EQ("text/html", source_->GetMimeType("anythingelse"));
+  DomDistillerViewerSource source(nullptr);
+  EXPECT_EQ("text/css", source.GetMimeType(GetURL(kViewerCssPath)));
+  EXPECT_EQ("text/html", source.GetMimeType(GetURL("anythingelse")));
 }
 
 }  // namespace dom_distiller
