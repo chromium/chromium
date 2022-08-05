@@ -128,7 +128,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     }
     // We need to start the creation of this, first part requires getting the
     // hw config data from the daemon.
-    chromeos::ChromeOsCdmFactory::GetHwConfigData(BindToCurrentLoop(
+    chromeos_cdm_context_->GetHwConfigData(BindToCurrentLoop(
         base::BindOnce(&VaapiVideoDecoderDelegate::OnGetHwConfigData,
                        weak_factory_.GetWeakPtr())));
     protected_session_state_ = ProtectedSessionState::kInProcess;

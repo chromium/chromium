@@ -619,9 +619,11 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     // NOTE: Only use this for protected content as other requirements for using
     // it are tied to protected content.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::ChromeOsCdmFactory::GetScreenResolutions(BindToCurrentLoop(
-        base::BindOnce(&VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes,
-                       weak_this_)));
+    cdm_context_ref_->GetCdmContext()
+        ->GetChromeOsCdmContext()
+        ->GetScreenResolutions(BindToCurrentLoop(base::BindOnce(
+            &VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes,
+            weak_this_)));
     return;
 #endif
   }

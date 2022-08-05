@@ -7,4 +7,5 @@ include_rules = [
   "+media/cdm",
   "+media/mojo/mojom",
   "+ui/display",
+  "+ui/gfx/geometry",
 ]

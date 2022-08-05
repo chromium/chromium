@@ -5,6 +5,7 @@
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
 #include "media/base/content_decryption_module.h"
@@ -134,6 +134,14 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
     GetHwKeyDataProxy(decrypt_config->key_id(), hw_identifier,
                       std::move(callback));
   }
+  void GetHwConfigData(
+      ChromeOsCdmContext::GetHwConfigDataCB callback) override {
+    ChromeOsCdmFactory::GetHwConfigData(std::move(callback));
+  }
+  void GetScreenResolutions(
+      ChromeOsCdmContext::GetScreenResolutionsCB callback) override {
+    ChromeOsCdmFactory::GetScreenResolutions(std::move(callback));
+  }
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override {
     return std::make_unique<SingletonCdmContextRef>(this);
   }
@@ -191,7 +199,8 @@ void ChromeOsCdmFactory::Create(
 }
 
 // static
-void ChromeOsCdmFactory::GetHwConfigData(GetHwConfigDataCB callback) {
+void ChromeOsCdmFactory::GetHwConfigData(
+    ChromeOsCdmContext::GetHwConfigDataCB callback) {
   if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetHwConfigData,
@@ -202,7 +211,8 @@ void ChromeOsCdmFactory::GetHwConfigData(GetHwConfigDataCB callback) {
 }
 
 // static
-void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
+void ChromeOsCdmFactory::GetScreenResolutions(
+    ChromeOsCdmContext::GetScreenResolutionsCB callback) {
   if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetScreenResolutions,
