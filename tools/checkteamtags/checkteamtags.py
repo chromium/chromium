@@ -9,9 +9,8 @@ from __future__ import print_function
 
 import json
 import logging
-import optparse
+import argparse
 import os
-import posixpath
 import re
 import sys
 import urllib.request
@@ -77,19 +76,20 @@ def rel_and_full_paths(root, owners_path):
   return rel_path, full_path
 
 
-def validate_mappings(options, args):
+def validate_mappings(arguments, owners_files):
   """Ensure team/component mapping remains consistent after patch.
 
   The main purpose of this check is to notify the user if any edited (or added)
   team tag makes a component map to multiple teams.
 
   Args:
-    options: Command line options from optparse
-    args: List of paths to affected OWNERS files
+    arguments: Command line arguments from argparse
+    owners_files: List of paths to affected OWNERS files
   Returns:
     A string containing the details of any multi-team per component.
   """
-  mappings_file = json.load(urllib.request.urlopen(options.current_mapping_url))
+  mappings_file = json.load(
+      urllib.request.urlopen(arguments.current_mapping_url))
   new_dir_to_component = mappings_file.get('dir-to-component', {})
   new_dir_to_team = mappings_file.get('dir-to-team', {})
 
@@ -98,8 +98,8 @@ def validate_mappings(options, args):
   affected_components = set()
 
   # Parse affected OWNERS files
-  for f in args:
-    rel, full = rel_and_full_paths(options.root, f)
+  for f in owners_files:
+    rel, full = rel_and_full_paths(arguments.root, f)
     if os.path.exists(full):
       affected[os.path.dirname(rel)] = parse(full)
     else:
@@ -131,10 +131,9 @@ def validate_mappings(options, args):
 
   # For the components affected by this patch, compute the directories that map
   # to it.
-  affected_component_to_dirs = {}
+  affected_component_to_dirs = defaultdict(list)
   for d, component in new_dir_to_component.items():
     if component in affected_components:
-      affected_component_to_dirs.setdefault(component, [])
       affected_component_to_dirs[component].append(d)
 
   # Convert component->[dirs], dir->team to component->[teams].
@@ -214,46 +213,47 @@ Examples:
   python %prog ./OWNERS
   """
 
-  parser = optparse.OptionParser(usage=usage)
-  parser.add_option(
-      '--root', help='Specifies the repository root.')
-  parser.add_option(
-      '-v', '--verbose', action='count', default=0, help='Print debug logging')
-  parser.add_option(
-      '--bare',
-      action='store_true',
-      default=False,
-      help='Prints the bare filename triggering the checks')
-  parser.add_option(
-      '--current_mapping_url', default=DEFAULT_MAPPING_URL,
+  parser = argparse.ArgumentParser(usage=usage)
+  parser.add_argument('--root', help='Specifies the repository root.')
+  parser.add_argument('-v',
+                      '--verbose',
+                      action='count',
+                      default=0,
+                      help='Print debug logging')
+  parser.add_argument('--bare',
+                      action='store_true',
+                      default=False,
+                      help='Prints the bare filename triggering the checks')
+  parser.add_argument(
+      '--current_mapping_url',
+      default=DEFAULT_MAPPING_URL,
       help='URL for existing dir/component and component/team mapping')
-  parser.add_option('--json', help='Path to JSON output file')
-  options, args = parser.parse_args()
+  parser.add_argument('--json', help='Path to JSON output file')
+  args, owners_files = parser.parse_known_args()
 
   levels = [logging.ERROR, logging.INFO, logging.DEBUG]
-  logging.basicConfig(level=levels[min(len(levels) - 1, options.verbose)])
+  logging.basicConfig(level=levels[min(len(levels) - 1, args.verbose)])
 
   errors = list(
-      filter(None,
-             [check_owners(*rel_and_full_paths(options.root, f))
-              for f in args]))
+      filter(None, (check_owners(*rel_and_full_paths(args.root, f))
+                    for f in owners_files)))
 
   warnings = None
   if not errors:
-    warnings = validate_mappings(options, args)
+    warnings = validate_mappings(args, owners_files)
 
-  if options.json:
-    with open(options.json, 'w') as f:
+  if args.json:
+    with open(args.json, 'w') as f:
       json.dump(errors, f)
 
   if errors:
-    if options.bare:
+    if args.bare:
       print('\n'.join(e['full_path'] for e in errors))
     else:
       print('\nFAILED\n')
       print('\n'.join('%s: %s' % (e['full_path'], e['error']) for e in errors))
     return 1
-  if not options.bare:
+  if not args.bare:
     if warnings:
       print(warnings)
   return 0

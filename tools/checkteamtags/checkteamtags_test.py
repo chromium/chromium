@@ -3,13 +3,10 @@
 # found in the LICENSE file.
 
 import json
-import os
-import sys
 import unittest
+import unittest.mock as mock
 
 import checkteamtags
-
-import mock
 
 
 def mock_file(lines):
@@ -37,7 +34,7 @@ def mock_url_open(data=None):
   if data is None:
     data = DEFAULT_MAPPING
 
-  class _MockJsonResponse(object):
+  class _MockJsonResponse:
     def __init__(self, data):
       self.data = data
 
