@@ -146,7 +146,7 @@ const base::Feature kDefaultEnableGpuRasterization{
 const base::Feature kCanvasOopRasterization {
   "CanvasOopRasterization",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_FUCHSIA)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
