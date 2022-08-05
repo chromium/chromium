@@ -254,8 +254,9 @@ class UpgradeDetector {
   // expected.
   void NotifyCriticalUpgradeInstalled();
 
-  // Notifies that an update is downloaded but deferred.
-  void NotifyUpdateDeferred();
+  // Notifies that an update is downloaded but deferred. Set `use_notification`
+  // to true to enable system tray notification.
+  void NotifyUpdateDeferred(bool use_notification);
 
   // The function that sends out a notification that lets the rest of the UI
   // know we should notify the user that a new update is available to download

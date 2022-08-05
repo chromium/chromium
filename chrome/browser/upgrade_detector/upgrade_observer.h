@@ -8,7 +8,7 @@
 class UpgradeObserver {
  public:
   // Triggered when a software update is downloaded but deferred.
-  virtual void OnUpdateDeferred() {}
+  virtual void OnUpdateDeferred(bool use_notification) {}
 
   // Triggered when a software update is available, but downloading requires
   // user's agreement as current connection is cellular.

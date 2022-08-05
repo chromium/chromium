@@ -74,6 +74,11 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // user that a new version is available.
   void NotifyOnUpgrade();
 
+  // The function that sends out a notification (after a certain time has
+  // elapsed) that lets the rest of the UI know we should start notifying the
+  // user that an update is available but deferred.
+  void NotifyOnDeferredUpgrade();
+
   absl::optional<InstalledVersionUpdater> installed_version_updater_;
 
   // The time when elevated annoyance deadline is reached.

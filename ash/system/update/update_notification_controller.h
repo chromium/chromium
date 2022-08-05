@@ -45,6 +45,7 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   friend class UpdateNotificationControllerTest;
 
   bool ShouldShowUpdate() const;
+  bool ShouldShowDeferredUpdate() const;
   std::u16string GetTitle() const;
   std::u16string GetMessage() const;
   const gfx::VectorIcon& GetIcon() const;

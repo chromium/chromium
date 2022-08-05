@@ -685,9 +685,11 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
   EXPECT_EQ(1, GetSessionControllerClient()->attempt_restart_chrome_count());
 }
 
-TEST_F(UpdateNotificationControllerTest, VisibilityAfterDeferredUpdate) {
+TEST_F(UpdateNotificationControllerTest,
+       VisibilityAfterDeferredUpdateShowNotification) {
   // Simulate a deferred update.
-  Shell::Get()->system_tray_model()->SetUpdateDeferred(true);
+  Shell::Get()->system_tray_model()->SetUpdateDeferred(
+      DeferredUpdateState::kShowNotification);
 
   // Wait until everything is complete and then check if the notification is
   // visible.
@@ -705,6 +707,33 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterDeferredUpdate) {
       GetNotificationMessage());
   EXPECT_EQ("Update", GetNotificationButton(0));
   EXPECT_EQ("Automatic updates", GetNotificationButton(1));
+}
+
+TEST_F(UpdateNotificationControllerTest,
+       VisibilityAfterDeferredUpdateShowDialog) {
+  // Simulate a deferred update.
+  Shell::Get()->system_tray_model()->SetUpdateDeferred(
+      DeferredUpdateState::kShowDialog);
+
+  // Wait until everything is complete and then check if the notification is
+  // not visible.
+  task_environment()->RunUntilIdle();
+
+  // The notification is not visible.
+  ASSERT_FALSE(HasNotification());
+}
+
+TEST_F(UpdateNotificationControllerTest, VisibilityAfterDeferredUpdateOff) {
+  // Simulate a deferred update.
+  Shell::Get()->system_tray_model()->SetUpdateDeferred(
+      DeferredUpdateState::kNone);
+
+  // Wait until everything is complete and then check if the notification is
+  // not visible.
+  task_environment()->RunUntilIdle();
+
+  // The notification is not visible.
+  ASSERT_FALSE(HasNotification());
 }
 
 }  // namespace ash

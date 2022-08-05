@@ -22,7 +22,7 @@ void UpdateModel::SetUpdateAvailable(UpdateSeverity severity,
                                      bool rollback,
                                      UpdateType update_type) {
   update_required_ = true;
-  update_deferred_ = false;
+  update_deferred_ = DeferredUpdateState::kNone;
   severity_ = severity;
   factory_reset_required_ = factory_reset_required;
   rollback_ = rollback;
@@ -42,8 +42,8 @@ void UpdateModel::SetUpdateOverCellularAvailable(bool available) {
   NotifyUpdateAvailable();
 }
 
-void UpdateModel::SetUpdateDeferred(bool deferred) {
-  update_deferred_ = deferred;
+void UpdateModel::SetUpdateDeferred(DeferredUpdateState state) {
+  update_deferred_ = state;
   NotifyUpdateAvailable();
 }
 
@@ -56,7 +56,7 @@ UpdateSeverity UpdateModel::GetSeverity() const {
 
 void UpdateModel::ResetUpdateAvailable() {
   update_required_ = false;
-  update_deferred_ = false;
+  update_deferred_ = DeferredUpdateState::kNone;
   NotifyUpdateAvailable();
 }
 

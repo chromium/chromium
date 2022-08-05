@@ -11,6 +11,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/cpp/update_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_party_feature_pod_controller.h"
 #include "ash/shell.h"
@@ -185,7 +186,7 @@ void UnifiedSystemTrayController::HandleSignOutAction() {
   if (Shell::Get()->session_controller()->IsDemoSession())
     base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromSystemTray"));
 
-  if (HasDeferredUpdate()) {
+  if (ShouldShowDeferredUpdateDialog()) {
     DeferredUpdateDialog::CreateDialog(
         DeferredUpdateDialog::Action::kSignOut,
         base::BindOnce(&SessionControllerImpl::RequestSignOut,
@@ -211,7 +212,7 @@ void UnifiedSystemTrayController::HandleSettingsAction() {
 void UnifiedSystemTrayController::HandlePowerAction() {
   base::RecordAction(base::UserMetricsAction("Tray_ShutDown"));
 
-  if (HasDeferredUpdate()) {
+  if (ShouldShowDeferredUpdateDialog()) {
     DeferredUpdateDialog::CreateDialog(
         DeferredUpdateDialog::Action::kShutDown,
         base::BindOnce(&LockStateController::RequestShutdown,
@@ -684,8 +685,9 @@ base::TimeDelta UnifiedSystemTrayController::GetAnimationDurationForReporting()
   return base::Milliseconds(kSystemMenuCollapseExpandAnimationDurationMs);
 }
 
-bool UnifiedSystemTrayController::HasDeferredUpdate() const {
-  return Shell::Get()->system_tray_model()->update_model()->update_deferred();
+bool UnifiedSystemTrayController::ShouldShowDeferredUpdateDialog() const {
+  return Shell::Get()->system_tray_model()->update_model()->update_deferred() ==
+         DeferredUpdateState::kShowDialog;
 }
 
 }  // namespace ash

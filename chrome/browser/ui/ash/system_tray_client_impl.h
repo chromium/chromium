@@ -128,7 +128,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void OnSystemClockChanged(ash::system::SystemClock* clock) override;
 
   // UpgradeObserver implementation.
-  void OnUpdateDeferred() override;
+  void OnUpdateDeferred(bool use_notification) override;
   void OnUpdateOverCellularAvailable() override;
   void OnUpdateOverCellularOneTimePermissionGranted() override;
   void OnUpgradeRecommended() override;

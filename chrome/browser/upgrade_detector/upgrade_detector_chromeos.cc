@@ -212,7 +212,11 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
              update_engine::Operation::UPDATED_BUT_DEFERRED) {
     // Update engine broadcasts this state when update is downloaded but
     // deferred.
-    NotifyUpdateDeferred();
+    NotifyUpdateDeferred(/*use_notification=*/false);
+    // Start timer for notification.
+    upgrade_notification_timer_.Start(
+        FROM_HERE, kDefaultHighThreshold, this,
+        &UpgradeDetectorChromeos::NotifyOnDeferredUpgrade);
   } else if (!update_in_progress_ &&
              status.current_operation() ==
                  update_engine::Operation::DOWNLOADING) {
@@ -322,6 +326,11 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
       last_stage != UPGRADE_ANNOYANCE_NONE) {
     NotifyUpgrade();
   }
+}
+
+void UpgradeDetectorChromeos::NotifyOnDeferredUpgrade() {
+  upgrade_notification_timer_.Stop();
+  NotifyUpdateDeferred(/*use_notification=*/true);
 }
 
 // static

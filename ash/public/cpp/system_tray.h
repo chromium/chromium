@@ -12,6 +12,7 @@
 namespace ash {
 
 class SystemTrayClient;
+enum class DeferredUpdateState;
 enum class NotificationStyle;
 enum class UpdateSeverity;
 enum class UpdateType;
@@ -94,9 +95,9 @@ class ASH_PUBLIC_EXPORT SystemTray {
   // when a new update starts before the current update is applied.
   virtual void ResetUpdateState() = 0;
 
-  // Shows an icon in the system tray which indicates that a update is
-  // downloaded but deferred.
-  virtual void SetUpdateDeferred(bool deferred) = 0;
+  // Set deferred update state to be either showing a dialog or showing an icon
+  // in the system tray to indicate that a update is downloaded but deferred.
+  virtual void SetUpdateDeferred(DeferredUpdateState state) = 0;
 
   // If |visible| is true, shows an icon in the system tray which indicates that
   // a software update is available but user's agreement is required as current

@@ -828,8 +828,10 @@ void SystemTrayClientImpl::OnSystemClockChanged(
 
 ////////////////////////////////////////////////////////////////////////////////
 // UpgradeDetector::UpgradeObserver:
-void SystemTrayClientImpl::OnUpdateDeferred() {
-  system_tray_->SetUpdateDeferred(true);
+void SystemTrayClientImpl::OnUpdateDeferred(bool use_notification) {
+  system_tray_->SetUpdateDeferred(
+      use_notification ? ash::DeferredUpdateState::kShowNotification
+                       : ash::DeferredUpdateState::kShowDialog);
 }
 
 void SystemTrayClientImpl::OnUpdateOverCellularAvailable() {

@@ -106,7 +106,7 @@ void UpdateNotificationController::GenerateUpdateNotification(
       RelaunchNotificationState::kRequired)
     notification->SetSystemPriority();
 
-  if (model_->update_deferred()) {
+  if (ShouldShowDeferredUpdate()) {
     notification->set_buttons({
         message_center::ButtonInfo(l10n_util::GetStringUTF16(
             IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON)),
@@ -141,7 +141,11 @@ void UpdateNotificationController::OnUpdateAvailable() {
 
 bool UpdateNotificationController::ShouldShowUpdate() const {
   return model_->update_required() ||
-         model_->update_over_cellular_available() || model_->update_deferred();
+         model_->update_over_cellular_available() || ShouldShowDeferredUpdate();
+}
+
+bool UpdateNotificationController::ShouldShowDeferredUpdate() const {
+  return model_->update_deferred() == DeferredUpdateState::kShowNotification;
 }
 
 std::u16string UpdateNotificationController::GetTitle() const {
@@ -198,7 +202,7 @@ std::u16string UpdateNotificationController::GetMessage() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS);
 
-  if (model_->update_deferred()) {
+  if (ShouldShowDeferredUpdate()) {
     return l10n_util::GetStringUTF16(
         IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE);
   }
@@ -313,7 +317,7 @@ void UpdateNotificationController::HandleNotificationClick(
     message_center::MessageCenter::Get()->RemoveNotification(
         kNotificationId, false /* by_user */);
 
-    if (model_->update_deferred()) {
+    if (ShouldShowDeferredUpdate()) {
       // When the "update" button is clicked, apply the deferred update.
       ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(base::DoNothing());
     } else if (model_->update_required()) {

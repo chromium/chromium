@@ -32,6 +32,16 @@ enum class UpdateType {
   kSystem,
 };
 
+// State for deferred system updates.
+enum class DeferredUpdateState {
+  // No deferred update available.
+  kNone,
+  // Show deferred update available dialog.
+  kShowDialog,
+  // Show deferred update available notification.
+  kShowNotification
+};
+
 // Notification state for system updates, set by policies.
 struct RelaunchNotificationState {
   enum {

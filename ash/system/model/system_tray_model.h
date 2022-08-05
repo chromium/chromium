@@ -54,7 +54,7 @@ class SystemTrayModel : public SystemTray {
   void SetRelaunchNotificationState(
       const RelaunchNotificationState& relaunch_notification_state) override;
   void ResetUpdateState() override;
-  void SetUpdateDeferred(bool deferred) override;
+  void SetUpdateDeferred(DeferredUpdateState state) override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
   void ShowVolumeSliderBubble() override;
   void ShowNetworkDetailedViewBubble() override;
