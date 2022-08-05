@@ -13,6 +13,7 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -24,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,6 +58,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/sha2.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -190,9 +193,14 @@ std::string GenerateVolumeId(const Volume& volume) {
           volume.mount_path().BaseName().AsUTF8Unsafe());
 }
 
-std::string FuseBoxMTPSubdir(const std::string& storage_info_location) {
-  auto suffix = base::TrimString(storage_info_location, "/", base::TRIM_ALL);
-  return std::string(kMtpVolumeIdPrefix).append(std::string(suffix));
+std::string FuseBoxMTPSubdir(const std::string& device_id) {
+  // Derive the subdir name from the MTP device ID (which is stable even after
+  // unplugging and replugging a phone). It's a hash of the ID, not the ID
+  // itself, to avoid sharing the device's unique ID in the file system.
+  std::string hash = crypto::SHA256HashString(device_id);
+  std::string b64;
+  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
+  return base::StrCat({"mtp.", b64});
 }
 
 std::string GetMountPointNameForMediaStorage(
@@ -1599,7 +1607,7 @@ void VolumeManager::DoAttachMtpStorage(
   DCHECK(mtp_file_system_url.is_valid());
 
   // Attach the MTP storage device to the fusebox daemon.
-  std::string subdir = FuseBoxMTPSubdir(info.location());
+  std::string subdir = FuseBoxMTPSubdir(info.device_id());
   fusebox_mounter_->AttachStorage(
       subdir, url, read_only,
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageMTP,
@@ -1671,7 +1679,7 @@ void VolumeManager::OnRemovableStorageDetached(
     mount_points->RevokeFileSystem(util::kFuseBox + fsid);
 
     // Detach the fusebox MTP storage device from the fusebox daemon.
-    std::string subdir = FuseBoxMTPSubdir(info.location());
+    std::string subdir = FuseBoxMTPSubdir(info.device_id());
     fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
     return;
   }
