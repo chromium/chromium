@@ -36252,6 +36252,14 @@ Called by update_extension_permission.py.-->
       label="Associate Account Dismissed By OS After Learn More Pressed"/>
 </enum>
 
+<enum name="FastPairSavedDevicesUiEvent">
+  <int value="0" label="Settings - saved device list subpage shown"/>
+  <int value="1" label="Settings - user has devices saved to their account"/>
+  <int value="2" label="Settings - remove saved device dialog"/>
+  <int value="3"
+      label="Settings - remove confirmed on remove saved device dialog"/>
+</enum>
+
 <enum name="FastPairVersion">
   <int value="0" label="v1"/>
   <int value="1" label="v2"/>

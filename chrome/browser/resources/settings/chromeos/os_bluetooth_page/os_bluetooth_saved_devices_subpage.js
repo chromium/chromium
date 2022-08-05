@@ -10,6 +10,7 @@
 import '../../settings_shared.css.js';
 import './os_saved_devices_list.js';
 
+import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -91,6 +92,8 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
     super.ready();
     this.addWebUIListener(
         'fast-pair-saved-devices-list', this.getSavedDevices_.bind(this));
+    recordSavedDevicesUiEventMetrics(
+        FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_SUBPAGE_SHOWN);
   }
 
   /**
@@ -99,6 +102,11 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
    */
   getSavedDevices_(devices) {
     this.savedDevices_ = devices.slice(0);
+
+    if (this.savedDevices_.length > 0) {
+      recordSavedDevicesUiEventMetrics(
+          FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_HAS_DEVICES);
+    }
   }
 
   /**

@@ -918,6 +918,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.UiEvent"
+    enum="FastPairSavedDevicesUiEvent" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records events that happen in the Fast Pair Saved Devices Settings UI, e.g.
+    when a surface is shown. This is emitted a single time for each event that
+    occurs.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result.{FastPairPairingProtocol}"
     enum="BooleanSuccess" expires_after="2022-09-20">

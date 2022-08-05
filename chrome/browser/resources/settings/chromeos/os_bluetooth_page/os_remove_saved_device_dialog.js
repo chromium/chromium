@@ -9,6 +9,7 @@
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -63,6 +64,8 @@ class SettingsBluetoothRemoveSavedDeviceDialogElement extends
    * @private
    */
   onRemoveTap_(event) {
+    recordSavedDevicesUiEventMetrics(
+        FastPairSavedDevicesUiEvent.SETTINGS_SAVED_DEVICE_LIST_REMOVE);
     const fireEvent = new CustomEvent('remove-saved-device', {
       bubbles: true,
       composed: true,

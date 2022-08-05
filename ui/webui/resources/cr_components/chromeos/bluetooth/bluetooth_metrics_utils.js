@@ -72,3 +72,26 @@ export function recordUserInitiatedReconnectionAttemptDuration(
           successHistogramName + transportHistogramName,
       durationInMs);
 }
+
+/**
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+export const FastPairSavedDevicesUiEvent = {
+  SETTINGS_SAVED_DEVICE_LIST_SUBPAGE_SHOWN: 0,
+  SETTINGS_SAVED_DEVICE_LIST_HAS_DEVICES: 1,
+  SETTINGS_SAVED_DEVICE_LIST_REMOVE_DIALOG: 2,
+  SETTINGS_SAVED_DEVICE_LIST_REMOVE: 3,
+};
+
+/**
+ * Records metric indicating that |uiEvent| was displayed to the user.
+ * @param {!FastPairSavedDevicesUiEvent} uiEvent
+ * Fast Pair Saved Devices UI event displayed.
+ */
+export function recordSavedDevicesUiEventMetrics(uiEvent) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'Bluetooth.ChromeOS.FastPair.SavedDevices.UiEvent', uiEvent,
+      Object.keys(FastPairSavedDevicesUiEvent).length);
+}
