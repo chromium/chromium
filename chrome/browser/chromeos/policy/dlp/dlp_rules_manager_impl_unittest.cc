@@ -1036,7 +1036,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
   src_urls1.Append(kExampleUrl);
   base::Value dst_urls1(base::Value::Type::LIST);
   dst_urls1.Append(kCompanyUrl);
-  // Specific destinations and the wildcard should all be returned.
+  // Since there is a wildcard, all specific destinations will be ignored.
   dst_urls1.Append(kWildCardMatching);
   base::Value restrictions1(base::Value::Type::LIST);
   restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
@@ -1077,7 +1077,6 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
   auto result = dlp_rules_manager_.GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<std::string>> expected;
-  expected[DlpRulesManager::Level::kBlock].insert(kCompanyUrl);
   expected[DlpRulesManager::Level::kBlock].insert(kWildCardMatching);
   expected[DlpRulesManager::Level::kWarn].insert(kGmailUrl);
   expected[DlpRulesManager::Level::kReport].insert(kGoogleUrl);

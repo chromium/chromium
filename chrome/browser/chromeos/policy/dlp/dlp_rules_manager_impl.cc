@@ -42,6 +42,8 @@ using UrlConditionId = DlpRulesManagerImpl::UrlConditionId;
 
 using RulesConditionsMap = std::map<RuleId, UrlConditionId>;
 
+constexpr char kWildCardMatching[] = "*";
+
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
   static constexpr auto kRestrictionsMap =
       base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Restriction>(
@@ -389,7 +391,12 @@ DlpRulesManagerImpl::GetAggregatedDestinations(const GURL& source,
 
   std::map<Level, std::set<std::string>> result;
   for (auto it : destination_level_map) {
-    result[it.second].insert(it.first);
+    if (it.first == kWildCardMatching) {
+      result[it.second] = {it.first};
+    } else if (result[it.second].find(kWildCardMatching) ==
+               result[it.second].end()) {
+      result[it.second].insert(it.first);
+    }
   }
   return result;
 }
