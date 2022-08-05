@@ -631,7 +631,7 @@ void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
   current_frame_host()->browsing_context_state()->OnDidStartLoading();
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.DidStartLoading.",
-                    IsMainFrame() ? "MainFrame" : "Subframe"}),
+                    IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
       timer.Elapsed());
 }
 
