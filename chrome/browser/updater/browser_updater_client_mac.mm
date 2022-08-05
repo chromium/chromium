@@ -123,7 +123,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 // Checks for update of a given app, with specified priority. Sends repeated
 // updates of progress and returns the result in the reply block.
-- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+- (void)checkForUpdateWithAppId:(NSString* _Nonnull)appID
                installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
@@ -138,7 +138,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
   };
 
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      checkForUpdateWithAppID:appID
+      checkForUpdateWithAppId:appID
              installDataIndex:installDataIndex
                      priority:priority
       policySameVersionUpdate:policySameVersionUpdate
@@ -168,6 +168,23 @@ NSString* GetAppIdForUpdaterAsNSString() {
                   updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
                         reply:(void (^_Nonnull)(
                                   updater::UpdateService::Result rc))reply {
+  NOTIMPLEMENTED();
+}
+
+- (void)cancelInstallsWithAppId:(NSString* _Nonnull)appId {
+  NOTIMPLEMENTED();
+}
+
+- (void)installWithAppId:(NSString* _Nonnull)appId
+               brandCode:(NSString* _Nullable)brandCode
+               brandPath:(NSString* _Nullable)brandPath
+                     tag:(NSString* _Nullable)ap
+                 version:(NSString* _Nullable)version
+    existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+        installDataIndex:(NSString* _Nullable)installDataIndex
+                priority:(CRUPriorityWrapper* _Nonnull)priority
+             updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                   reply:(void (^_Nonnull)(int rc))reply {
   NOTIMPLEMENTED();
 }
 
@@ -249,7 +266,7 @@ void BrowserUpdaterClientMac::BeginUpdateCheck(
       policySameVersionUpdateWrapper([[CRUPolicySameVersionUpdateWrapper alloc]
           initWithPolicySameVersionUpdate:
               updater::UpdateService::PolicySameVersionUpdate::kNotAllowed]);
-  [client_ checkForUpdateWithAppID:GetAppIdForUpdaterAsNSString()
+  [client_ checkForUpdateWithAppId:GetAppIdForUpdaterAsNSString()
                   installDataIndex:nil
                           priority:priority_wrapper.get()
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
