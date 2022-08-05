@@ -25,8 +25,8 @@ base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
     base::Value::Dict device_info;
     device_info.Set("guid", device.guid);
     device_info.Set("label", device.label);
-    if (device.shared_vm_name)
-      device_info.Set("sharedWith", device.shared_vm_name.value());
+    if (device.shared_guest_id.has_value())
+      device_info.Set("sharedWith", device.shared_guest_id->vm_name);
     device_info.Set("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }
@@ -120,19 +120,20 @@ void GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady(
 void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  const std::string& vm_name = args[0].GetString();
   const std::string& guid = args[1].GetString();
   bool shared = args[2].GetBool();
+
+  const auto guest_id = guest_os::GuestId(args[0].GetString(), "");
 
   chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
   if (!detector)
     return;
 
   if (shared) {
-    detector->AttachUsbDeviceToVm(vm_name, guid, base::DoNothing());
+    detector->AttachUsbDeviceToGuest(guest_id, guid, base::DoNothing());
     return;
   }
-  detector->DetachUsbDeviceFromVm(vm_name, guid, base::DoNothing());
+  detector->DetachUsbDeviceFromVm(guest_id.vm_name, guid, base::DoNothing());
 }
 
 void GuestOsHandler::OnUsbDevicesChanged() {

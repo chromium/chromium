@@ -44,6 +44,11 @@ GuestId::GuestId(VmType vm_type,
       vm_name(std::move(vm_name)),
       container_name(std::move(container_name)) {}
 
+GuestId::GuestId(std::string vm_name, std::string container_name) noexcept
+    : vm_type(VmType::UNKNOWN),
+      vm_name(std::move(vm_name)),
+      container_name(std::move(container_name)) {}
+
 GuestId::GuestId(const base::Value& value) noexcept {
   const base::Value::Dict* dict = value.GetIfDict();
   vm_type = VmTypeFromPref(value);

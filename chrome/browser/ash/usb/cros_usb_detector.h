@@ -13,6 +13,8 @@
 
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -47,7 +49,7 @@ enum class CrosUsbNotificationClosed {
 struct CrosUsbDeviceInfo {
   CrosUsbDeviceInfo(std::string guid,
                     std::u16string label,
-                    absl::optional<std::string> shared_vm_name,
+                    absl::optional<guest_os::GuestId> shared_guest_id,
                     bool prompt_before_sharing);
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
@@ -56,7 +58,7 @@ struct CrosUsbDeviceInfo {
   std::u16string label;
   // Name of VM shared with. Unset if not shared. The device may be shared but
   // not yet attached.
-  absl::optional<std::string> shared_vm_name;
+  absl::optional<guest_os::GuestId> shared_guest_id;
   // Devices shared with other devices or otherwise in use by the system
   // should have a confirmation prompt shown prior to sharing.
   bool prompt_before_sharing;
@@ -71,6 +73,7 @@ class CrosUsbDeviceObserver : public base::CheckedObserver {
 // Detects USB Devices for Chrome OS and manages UI for controlling their use
 // with CrOS, Web or GuestOSs.
 class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
+                        public CiceroneClient::Observer,
                         public ConciergeClient::VmObserver,
                         public VmPluginDispatcherClient::Observer,
                         public disks::DiskMountManager::Observer {
@@ -105,11 +108,11 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device) override;
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device) override;
 
-  // Attaches the device identified by |guid| into the VM identified by
-  // |vm_name|. Will unmount filesystems and detach any already shared devices.
-  void AttachUsbDeviceToVm(const std::string& vm_name,
-                           const std::string& guid,
-                           base::OnceCallback<void(bool success)> callback);
+  // Attaches the device identified by |guid| into the guest identified by
+  // |guest_id|. Will unmount filesystems and detach any already shared devices.
+  void AttachUsbDeviceToGuest(const guest_os::GuestId& guest_id,
+                              const std::string& guid,
+                              base::OnceCallback<void(bool success)> callback);
 
   // Detaches the device identified by |guid| from the VM identified by
   // |vm_name|.
@@ -142,9 +145,9 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
 
     // Whether the device can be shared with guest OSes.
     bool shareable = false;
-    // Name of VM shared with. Unset if not shared. The device may be shared but
-    // not yet attached.
-    absl::optional<std::string> shared_vm_name;
+    // Name of the guest the device is shared with. Unset if not shared. The
+    // device may be shared but not yet attached.
+    absl::optional<guest_os::GuestId> shared_guest_id;
     // Non-empty only when device is attached to a VM.
     absl::optional<uint8_t> guest_port;
     // Interfaces shareable with guest OSes
@@ -155,6 +158,12 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
     bool is_unmounting = false;
     // TODO(nverne): Add current state and errors etc.
   };
+
+  // CiceroneClient::Observer:
+  void OnContainerStarted(
+      const vm_tools::cicerone::ContainerStartedSignal& signal) override;
+  void OnLxdContainerDeleted(
+      const vm_tools::cicerone::LxdContainerDeletedSignal& signal) override;
 
   // ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
@@ -199,39 +208,72 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   // ejecting USB drives. A corresponding mount step when detaching from a VM is
   // not necessary as PermissionBroker reattaches the usb-storage drivers,
   // causing the drive to get mounted as usual.
-  void UnmountFilesystems(const std::string& vm_name,
+  void UnmountFilesystems(const guest_os::GuestId& guest_id,
                           const std::string& guid,
                           base::OnceCallback<void(bool success)> callback);
 
-  void OnUnmountFilesystems(const std::string& vm_name,
+  void OnUnmountFilesystems(const guest_os::GuestId& guest_id,
                             const std::string& guid,
                             base::OnceCallback<void(bool success)> callback,
                             bool unmount_success);
 
   // Devices will be auto-detached if they are attached to another VM.
-  void AttachAfterDetach(const std::string& vm_name,
+  void AttachAfterDetach(const guest_os::GuestId& guest_id,
                          const std::string& guid,
                          uint32_t allowed_interfaces_mask,
                          base::OnceCallback<void(bool success)> callback,
                          bool detach_success);
 
   // Callback for AttachUsbDeviceToVm after opening a file handler.
-  void OnAttachUsbDeviceOpened(const std::string& vm_name,
+  void OnAttachUsbDeviceOpened(const guest_os::GuestId& guest_id,
                                device::mojom::UsbDeviceInfoPtr device,
                                base::OnceCallback<void(bool success)> callback,
                                base::File file);
 
-  void DoVmAttach(const std::string& vm_name,
+  void DoVmAttach(const guest_os::GuestId& guest_id,
                   device::mojom::UsbDeviceInfoPtr device_info,
                   base::ScopedFD fd,
                   base::OnceCallback<void(bool success)> callback);
 
   // Callbacks for when the USB device state has been updated.
   void OnUsbDeviceAttachFinished(
-      const std::string& vm_name,
+      const guest_os::GuestId& guest_id,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
       absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
+
+  void AttachUsbDeviceToContainer(
+      const guest_os::GuestId& guest_id,
+      uint8_t guest_port,
+      const std::string& guid,
+      base::OnceCallback<void(bool success)> callback);
+
+  void OnContainerAttachFinished(
+      const guest_os::GuestId& guest_id,
+      const std::string& guid,
+      base::OnceCallback<void(bool success)> callback,
+      absl::optional<vm_tools::cicerone::AttachUsbToContainerResponse>
+          response);
+
+  void DetachUsbDeviceFromContainer(
+      const std::string& vm_name,
+      uint8_t guest_port,
+      const std::string& guid,
+      base::OnceCallback<void(bool success)> callback);
+
+  void OnContainerDetachFinished(
+      const std::string& vm_name,
+      const std::string& guid,
+      base::OnceCallback<void(bool success)> callback,
+      absl::optional<vm_tools::cicerone::DetachUsbFromContainerResponse>
+          response);
+
+  void ContainerAttachAfterDetach(
+      const guest_os::GuestId& guest_id,
+      uint8_t guest_port,
+      const std::string& guid,
+      base::OnceCallback<void(bool success)> callback,
+      bool detach_success);
 
   void OnUsbDeviceDetachFinished(
       const std::string& vm_name,

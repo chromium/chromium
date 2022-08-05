@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
@@ -182,7 +184,8 @@ class CrosUsbNotificationDelegate
     disposition_ = CrosUsbNotificationClosed::kConnectToLinux;
     CrosUsbDetector* detector = CrosUsbDetector::Get();
     if (detector) {
-      detector->AttachUsbDeviceToVm(vm_name, guid_, base::DoNothing());
+      detector->AttachUsbDeviceToGuest(guest_os::GuestId(vm_name, ""), guid_,
+                                       base::DoNothing());
       return;
     }
     Close(false);
@@ -380,13 +383,14 @@ void FilesystemUnmounter::OnUnmountPath(MountError mount_error) {
 
 }  // namespace
 
-CrosUsbDeviceInfo::CrosUsbDeviceInfo(std::string guid,
-                                     std::u16string label,
-                                     absl::optional<std::string> shared_vm_name,
-                                     bool prompt_before_sharing)
+CrosUsbDeviceInfo::CrosUsbDeviceInfo(
+    std::string guid,
+    std::u16string label,
+    absl::optional<guest_os::GuestId> shared_guest_id,
+    bool prompt_before_sharing)
     : guid(guid),
       label(label),
-      shared_vm_name(shared_vm_name),
+      shared_guest_id(shared_guest_id),
       prompt_before_sharing(prompt_before_sharing) {}
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(const CrosUsbDeviceInfo&) = default;
 CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
@@ -447,6 +451,7 @@ CrosUsbDetector::CrosUsbDetector() {
   fastboot_device_filter_->has_protocol_code = true;
   fastboot_device_filter_->protocol_code = kFastbootProtocol;
 
+  CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
   VmPluginDispatcherClient::Get()->AddObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
@@ -455,6 +460,7 @@ CrosUsbDetector::CrosUsbDetector() {
 CrosUsbDetector::~CrosUsbDetector() {
   DCHECK_EQ(this, g_cros_usb_detector);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
+  CiceroneClient::Get()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
   VmPluginDispatcherClient::Get()->RemoveObserver(this);
   g_cros_usb_detector = nullptr;
@@ -487,9 +493,9 @@ std::vector<CrosUsbDeviceInfo> CrosUsbDetector::GetShareableDevices() const {
     if (!device.shareable)
       continue;
     result.emplace_back(
-        device.info->guid, device.label, device.shared_vm_name,
+        device.info->guid, device.label, device.shared_guest_id,
         /*prompt_before_sharing=*/
-        device.shared_vm_name.has_value() || !device.mount_points.empty());
+        device.shared_guest_id.has_value() || !device.mount_points.empty());
   }
   return result;
 }
@@ -542,6 +548,39 @@ bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
            device.allowed_interfaces_mask;
   }
   return false;
+}
+
+void CrosUsbDetector::OnContainerStarted(
+    const vm_tools::cicerone::ContainerStartedSignal& signal) {
+  const auto guest_id =
+      guest_os::GuestId(signal.vm_name(), signal.container_name());
+  for (auto& it : usb_devices_) {
+    auto& device = it.second;
+    if (device.shared_guest_id == guest_id && device.guest_port.has_value()) {
+      VLOG(1) << "Connecting " << device.label << " to " << guest_id.vm_name
+              << ":" << guest_id.container_name;
+      AttachUsbDeviceToContainer(guest_id, *device.guest_port,
+                                 device.info->guid, base::DoNothing());
+    }
+  }
+}
+
+void CrosUsbDetector::OnLxdContainerDeleted(
+    const vm_tools::cicerone::LxdContainerDeletedSignal& signal) {
+  if (signal.status() ==
+      vm_tools::cicerone::LxdContainerDeletedSignal_Status_DELETED) {
+    const auto guest_id =
+        guest_os::GuestId(signal.vm_name(), signal.container_name());
+    for (auto& it : usb_devices_) {
+      auto& device = it.second;
+      if (device.shared_guest_id == guest_id) {
+        VLOG(1) << "Detaching " << device.label << " from deleted container "
+                << guest_id.vm_name << ":" << guest_id.container_name;
+        DetachUsbDeviceFromVm(guest_id.vm_name, device.info->guid,
+                              base::DoNothing());
+      }
+    }
+  }
 }
 
 void CrosUsbDetector::OnVmStarted(
@@ -692,8 +731,9 @@ void CrosUsbDetector::OnDeviceRemoved(
     return;
   }
 
-  if (it->second.shared_vm_name) {
-    DetachUsbDeviceFromVm(*it->second.shared_vm_name, guid, base::DoNothing());
+  if (it->second.shared_guest_id.has_value()) {
+    DetachUsbDeviceFromVm(it->second.shared_guest_id->vm_name, guid,
+                          base::DoNothing());
   }
   usb_devices_.erase(it);
   SignalUsbDeviceObservers();
@@ -710,11 +750,13 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
   // Reattach shared devices when the VM becomes available.
   for (auto& it : usb_devices_) {
     auto& device = it.second;
-    if (device.shared_vm_name == vm_name) {
+    if (device.shared_guest_id.has_value() &&
+        device.shared_guest_id->vm_name == vm_name) {
       VLOG(1) << "Connecting " << device.label << " to " << vm_name;
       // Clear any older guest_port setting.
       device.guest_port = absl::nullopt;
-      AttachUsbDeviceToVm(vm_name, device.info->guid, base::DoNothing());
+      AttachUsbDeviceToGuest(*device.shared_guest_id, device.info->guid,
+                             base::DoNothing());
     }
   }
 }
@@ -724,15 +766,16 @@ void CrosUsbDetector::DisconnectSharedDevicesOnVmShutdown(
   // Clear guest_port on shared devices when the VM shuts down.
   for (auto& it : usb_devices_) {
     auto& device = it.second;
-    if (device.shared_vm_name == vm_name) {
+    if (device.shared_guest_id.has_value() &&
+        device.shared_guest_id->vm_name == vm_name) {
       VLOG(1) << device.label << " is disconnected from " << vm_name;
       device.guest_port = absl::nullopt;
     }
   }
 }
 
-void CrosUsbDetector::AttachUsbDeviceToVm(
-    const std::string& vm_name,
+void CrosUsbDetector::AttachUsbDeviceToGuest(
+    const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
   const auto& it = usb_devices_.find(guid);
@@ -742,25 +785,38 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
     return;
   }
 
-  if (!it->second.shareable) {
-    LOG(ERROR) << "Attempted to attach non-shareable device: "
-               << it->second.label;
+  auto& device = it->second;
+  if (!device.shareable) {
+    LOG(ERROR) << "Attempted to attach non-shareable device: " << device.label;
     std::move(callback).Run(false);
     return;
   }
 
-  // If we tried to share a device to a VM that wasn't started, |shared_vm_name|
-  // would be set but |guest_port| would be empty. Once the VM is started, we go
-  // through this flow again.
-  if (it->second.shared_vm_name == vm_name &&
-      it->second.guest_port.has_value()) {
-    VLOG(1) << "Device " << it->second.label << " is already shared with vm "
-            << vm_name;
-    std::move(callback).Run(true);
-    return;
+  // If we tried to share a device to a VM that wasn't started,
+  // |shared_guest_id| would be set but |guest_port| would be empty. Once the VM
+  // is started, we go through this flow again.
+  if (device.guest_port.has_value()) {
+    if (device.shared_guest_id == guest_id) {
+      LOG(WARNING) << "Device " << device.label << " is already shared with vm "
+                   << guest_id.vm_name;
+      std::move(callback).Run(true);
+      return;
+    } else if (device.shared_guest_id->vm_name == guest_id.vm_name &&
+               device.shared_guest_id->container_name !=
+                   guest_id.container_name) {
+      // The device is already shared with VM but in wrong container. In case
+      // the new container is stopped, detach it from the old container first,
+      // so that it can be attached later.
+      DetachUsbDeviceFromContainer(
+          guest_id.vm_name, *device.guest_port, device.info->guid,
+          base::BindOnce(&CrosUsbDetector::ContainerAttachAfterDetach,
+                         weak_ptr_factory_.GetWeakPtr(), guest_id,
+                         *device.guest_port, guid, std::move(callback)));
+      return;
+    }
   }
 
-  UnmountFilesystems(vm_name, guid, std::move(callback));
+  UnmountFilesystems(guest_id, guid, std::move(callback));
 }
 
 void CrosUsbDetector::DetachUsbDeviceFromVm(
@@ -775,11 +831,13 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   }
 
   UsbDevice& device = it->second;
-  if (device.shared_vm_name != vm_name) {
+  if (!device.shared_guest_id.has_value() ||
+      device.shared_guest_id->vm_name != vm_name) {
     LOG(WARNING) << "Failed to detach " << guid << " from " << vm_name
                  << ". It appears to be shared with "
-                 << (device.shared_vm_name ? *device.shared_vm_name
-                                           : "[not shared]")
+                 << (device.shared_guest_id.has_value()
+                         ? device.shared_guest_id->vm_name
+                         : "[not shared]")
                  << " at port "
                  << (device.guest_port
                          ? base::NumberToString(*device.guest_port)
@@ -796,7 +854,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
     // TODO(timloh): Check what happens if attaching to a different VM races
     // with an in progress attach.
     RelinquishDeviceClaim(guid);
-    device.shared_vm_name = absl::nullopt;
+    device.shared_guest_id = absl::nullopt;
     SignalUsbDeviceObservers();
     std::move(callback).Run(/*success=*/true);
     return;
@@ -822,7 +880,7 @@ void CrosUsbDetector::OnListAttachedDevices(
 }
 
 void CrosUsbDetector::UnmountFilesystems(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
   auto it = usb_devices_.find(guid);
@@ -836,12 +894,12 @@ void CrosUsbDetector::UnmountFilesystems(
   FilesystemUnmounter::UnmountPaths(
       it->second.mount_points,
       base::BindOnce(&CrosUsbDetector::OnUnmountFilesystems,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
+                     weak_ptr_factory_.GetWeakPtr(), guest_id, guid,
                      std::move(callback)));
 }
 
 void CrosUsbDetector::OnUnmountFilesystems(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
     bool unmount_success) {
@@ -862,22 +920,22 @@ void CrosUsbDetector::OnUnmountFilesystems(
   }
 
   // Detach first if device is attached elsewhere
-  if (device.shared_vm_name && device.shared_vm_name != vm_name) {
+  if (device.guest_port.has_value()) {
     DetachUsbDeviceFromVm(
-        *device.shared_vm_name, guid,
+        device.shared_guest_id->vm_name, guid,
         base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
-                       weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
+                       weak_ptr_factory_.GetWeakPtr(), guest_id, guid,
                        device.allowed_interfaces_mask, std::move(callback)));
   } else {
     // The device isn't attached.
-    AttachAfterDetach(vm_name, guid, device.allowed_interfaces_mask,
+    AttachAfterDetach(guest_id, guid, device.allowed_interfaces_mask,
                       std::move(callback),
                       /*detach_success=*/true);
   }
 }
 
 void CrosUsbDetector::AttachAfterDetach(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     const std::string& guid,
     uint32_t allowed_interfaces_mask,
     base::OnceCallback<void(bool success)> callback,
@@ -900,14 +958,14 @@ void CrosUsbDetector::AttachAfterDetach(
   // Mark the USB device shared so that it will be shared when the VM starts
   // if it isn't started yet. This also ensures the UI will show the device as
   // shared. The guest_port will be set later.
-  device.shared_vm_name = vm_name;
+  device.shared_guest_id = guest_id;
 
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
     if (claim_it->second.device_file.is_valid()) {
       // We take a dup here which will be closed if DoVmAttach fails.
       base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
-      DoVmAttach(vm_name, device.info.Clone(), std::move(device_fd),
+      DoVmAttach(guest_id, device.info.Clone(), std::move(device_fd),
                  std::move(callback));
     } else {
       LOG(WARNING) << "Device " << guid << " already claimed and awaiting fd.";
@@ -933,7 +991,7 @@ void CrosUsbDetector::AttachAfterDetach(
   device_manager_->OpenFileDescriptor(
       guid, allowed_interfaces_mask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name,
+                     weak_ptr_factory_.GetWeakPtr(), guest_id,
                      device.info.Clone(), std::move(callback)));
 
   // Close any associated notifications (the user isn't using them). This
@@ -944,7 +1002,7 @@ void CrosUsbDetector::AttachAfterDetach(
 }
 
 void CrosUsbDetector::OnAttachUsbDeviceOpened(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
     base::File file) {
@@ -960,17 +1018,17 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  DoVmAttach(vm_name, device_info.Clone(),
+  DoVmAttach(guest_id, device_info.Clone(),
              base::ScopedFD(file.TakePlatformFile()), std::move(callback));
 }
 
 void CrosUsbDetector::DoVmAttach(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     device::mojom::UsbDeviceInfoPtr device_info,
     base::ScopedFD fd,
     base::OnceCallback<void(bool success)> callback) {
   vm_tools::concierge::AttachUsbDeviceRequest request;
-  request.set_vm_name(vm_name);
+  request.set_vm_name(guest_id.vm_name);
   request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
   request.set_bus_number(device_info->bus_number);
   request.set_port_number(device_info->port_number);
@@ -980,12 +1038,12 @@ void CrosUsbDetector::DoVmAttach(
   ConciergeClient::Get()->AttachUsbDevice(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
-                     weak_ptr_factory_.GetWeakPtr(), vm_name, device_info->guid,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), guest_id,
+                     device_info->guid, std::move(callback)));
 }
 
 void CrosUsbDetector::OnUsbDeviceAttachFinished(
-    const std::string& vm_name,
+    const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
     absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
@@ -1005,12 +1063,150 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
                    << "info was missing for " << guid;
       success = false;
     } else {
-      it->second.shared_vm_name = vm_name;
+      it->second.shared_guest_id = guest_id;
       it->second.guest_port = response->guest_port();
     }
   }
+
+  if (success && !guest_id.container_name.empty()) {
+    AttachUsbDeviceToContainer(guest_id, response->guest_port(), guid,
+                               std::move(callback));
+  } else {
+    SignalUsbDeviceObservers();
+    std::move(callback).Run(success);
+  }
+}
+
+void CrosUsbDetector::AttachUsbDeviceToContainer(
+    const guest_os::GuestId& guest_id,
+    uint8_t guest_port,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback) {
+  vm_tools::cicerone::AttachUsbToContainerRequest request;
+  request.set_vm_name(guest_id.vm_name);
+  request.set_container_name(guest_id.container_name);
+  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  request.set_port_num(static_cast<int32_t>(guest_port));
+
+  CiceroneClient::Get()->AttachUsbToContainer(
+      std::move(request),
+      base::BindOnce(&CrosUsbDetector::OnContainerAttachFinished,
+                     weak_ptr_factory_.GetWeakPtr(), guest_id, guid,
+                     std::move(callback)));
+}
+
+void CrosUsbDetector::OnContainerAttachFinished(
+    const guest_os::GuestId& guest_id,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback,
+    absl::optional<vm_tools::cicerone::AttachUsbToContainerResponse> response) {
+  bool success = true;
+  if (!response) {
+    LOG(ERROR) << "Failed to attach USB device, empty dbus response";
+    success = false;
+  } else if (response->status() !=
+             vm_tools::cicerone::AttachUsbToContainerResponse_Status_OK) {
+    LOG(ERROR) << "Failed to attach USB device, " << response->failure_reason();
+    success = false;
+  }
+
+  if (success) {
+    const auto& it = usb_devices_.find(guid);
+    if (it == usb_devices_.end()) {
+      LOG(WARNING) << "Dbus response indicates successful attach but device "
+                   << "info was missing for " << guid;
+      success = false;
+    } else {
+      it->second.shared_guest_id = guest_id;
+    }
+  }
+
   SignalUsbDeviceObservers();
   std::move(callback).Run(success);
+}
+
+void CrosUsbDetector::DetachUsbDeviceFromContainer(
+    const std::string& vm_name,
+    uint8_t guest_port,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback) {
+  vm_tools::cicerone::DetachUsbFromContainerRequest request;
+  request.set_vm_name(vm_name);
+  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  request.set_port_num(static_cast<int32_t>(guest_port));
+
+  CiceroneClient::Get()->DetachUsbFromContainer(
+      std::move(request),
+      base::BindOnce(&CrosUsbDetector::OnContainerDetachFinished,
+                     weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
+                     std::move(callback)));
+}
+
+void CrosUsbDetector::OnContainerDetachFinished(
+    const std::string& vm_name,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback,
+    absl::optional<vm_tools::cicerone::DetachUsbFromContainerResponse>
+        response) {
+  bool success = true;
+  if (!response) {
+    LOG(ERROR) << "Failed to attach USB device, empty dbus response";
+    success = false;
+  } else if (response->status() !=
+             vm_tools::cicerone::DetachUsbFromContainerResponse_Status_OK) {
+    LOG(ERROR) << "Failed to attach USB device, " << response->failure_reason();
+    success = false;
+  }
+
+  if (success) {
+    const auto& it = usb_devices_.find(guid);
+    if (it == usb_devices_.end()) {
+      LOG(WARNING) << "Dbus response indicates successful detach but device "
+                   << "info was missing for " << guid;
+      success = false;
+    } else {
+      it->second.shared_guest_id->container_name = "";
+    }
+  }
+
+  SignalUsbDeviceObservers();
+  std::move(callback).Run(success);
+}
+
+void CrosUsbDetector::ContainerAttachAfterDetach(
+    const guest_os::GuestId& guest_id,
+    uint8_t guest_port,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback,
+    bool detach_success) {
+  if (!detach_success) {
+    LOG(ERROR) << "Failed to detach from container before attach";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const auto& it = usb_devices_.find(guid);
+  if (it == usb_devices_.end()) {
+    LOG(ERROR) << "No device info for " << guid;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto& device = it->second;
+  if (device.shared_guest_id->vm_name != guest_id.vm_name) {
+    LOG(ERROR) << "Unexpected VM name for device " << guid;
+    std::move(callback).Run(false);
+    return;
+  } else if (device.guest_port != guest_port) {
+    LOG(ERROR) << "Unexpected guest port for device " << guid;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Set the container name so if the container is stopped, the device will be
+  // attached after the container starts.
+  device.shared_guest_id->container_name = guest_id.container_name;
+  AttachUsbDeviceToContainer(guest_id, guest_port, guid, std::move(callback));
 }
 
 void CrosUsbDetector::OnUsbDeviceDetachFinished(
@@ -1032,7 +1228,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
     LOG(WARNING) << "Dbus response indicates successful detach but device info "
                  << "was missing for " << guid;
   } else {
-    it->second.shared_vm_name = absl::nullopt;
+    it->second.shared_guest_id = absl::nullopt;
     it->second.guest_port = absl::nullopt;
   }
   RelinquishDeviceClaim(guid);

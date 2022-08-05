@@ -22,6 +22,7 @@ struct GuestId {
   GuestId(VmType vm_type,
           std::string vm_name,
           std::string container_name) noexcept;
+  GuestId(std::string vm_name, std::string container_name) noexcept;
   explicit GuestId(const base::Value&) noexcept;
 
   base::flat_map<std::string, std::string> ToMap() const;

@@ -66,6 +66,12 @@ FakeCiceroneClient::FakeCiceroneClient() {
 
   remove_file_watch_response_.set_status(
       vm_tools::cicerone::RemoveFileWatchResponse::SUCCEEDED);
+
+  attach_usb_to_container_response_.set_status(
+      vm_tools::cicerone::AttachUsbToContainerResponse::OK);
+
+  detach_usb_from_container_response_.set_status(
+      vm_tools::cicerone::DetachUsbFromContainerResponse::OK);
 }
 
 FakeCiceroneClient::~FakeCiceroneClient() {
@@ -504,6 +510,13 @@ void FakeCiceroneClient::NotifyLxdContainerCreated(
     const vm_tools::cicerone::LxdContainerCreatedSignal& proto) {
   for (auto& observer : observer_list_) {
     observer.OnLxdContainerCreated(proto);
+  }
+}
+
+void FakeCiceroneClient::NotifyLxdContainerDeleted(
+    const vm_tools::cicerone::LxdContainerDeletedSignal& proto) {
+  for (auto& observer : observer_list_) {
+    observer.OnLxdContainerDeleted(proto);
   }
 }
 
