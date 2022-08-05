@@ -811,7 +811,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // scrolling that would happen closer to the left edge.
   GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
                                             IdentifierForCellAtIndex(0), 1,
-                                            CGVectorMake(0.4, 0.5)),
+                                            CGVectorMake(0.5, 0.5)),
              @"Failed to DND cell on cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
