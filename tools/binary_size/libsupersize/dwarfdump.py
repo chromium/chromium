@@ -9,10 +9,88 @@ import bisect
 import dataclasses
 import logging
 import os
+import re
 import subprocess
 import typing
 
 import path_util
+
+
+_DWARF_DUMP_FLAGS = ['--debug-info', '--recurse-depth=0']
+
+# Matching and group examples:
+# '0x00001234: DW_TAG_compile_unit' -> None
+# '  DW_AT_low_pc  (0x123)' -> ('DW_', None)
+# '  DW_AT_name  ("foo")' -> ('DW_', 'foo')
+_RE_DW_AT_NAME = re.compile(r'\s+(DW_)(?:AT_name\s+\("(.*?)"\))?')
+
+
+class _DwoNameLookup:
+  """Helper to look up name (source file) from .dwo files
+
+  dwarfdump of an ELF file normally specifies source files in DW_AT_name fields.
+  However, debug fission can move debug info from ELF files to .dwo files. In
+  this case, dwarfdump would omit DW_AT_name of affected symbols, and use
+  DW_AT_GNU_dwo_name to specify the path (relative to output dir) of the
+  matching .dwo files, whose dwarfdump would then specify the matching source
+  file in DW_AT_name.
+
+  This class performs cached lookup from .dwo to name (source file).
+  """
+
+  def __init__(self, any_path):
+    finder = path_util.OutputDirectoryFinder(
+        any_path_within_output_directory=any_path)
+    self._output_path = finder.Detect()  # May be None.
+    self._dwarf_dump_path = path_util.GetDwarfdumpPath()
+    self._cache = {}
+
+  def _ReadName(self, dwo_path):
+    """Runs dwarfdump on .dwo to extract name.
+
+    If this is not possible then returns |dwo_path|.
+    """
+    if self._output_path is None:
+      return dwo_path
+    # Assumption: |dwo_path| is relative to output path.
+    real_dwo_path = os.path.join(self._output_path, dwo_path)
+    cmd = [self._dwarf_dump_path, real_dwo_path] + _DWARF_DUMP_FLAGS
+    proc = subprocess.Popen(cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.DEVNULL,
+                            encoding='utf-8')
+    name = None
+    state = 0
+    # Scan output line by line, exit and terminate as soon as possible.
+    for line in iter(proc.stdout.readline, ''):
+      if state == 0:  # Scan for DW_TAG_compile_unit.
+        if 'DW_TAG_compile_unit' in line:
+          state = 1
+      elif state == 1:  # scan for DW_AT_name.
+        m = _RE_DW_AT_NAME.match(line)
+        if not m:  # Not even matching prefix '  DW_'.
+          break
+        name = m.groups()[1]
+        if name is not None:  # Extracted names.
+          break
+        # Else matches '  DW_': Continue scanning.
+    proc.kill()
+    return dwo_path if name is None else name
+
+  def Lookup(self, dwo_path):
+    """Looks up name in .dwo, with caching."""
+    if dwo_path in self._cache:
+      name = self._cache[dwo_path]
+    else:
+      name = self._ReadName(dwo_path)
+      self._cache[dwo_path] = name
+    return name
+
+  def LogStats(self):
+    if self._cache:
+      num_success = sum(1 for k, v in self._cache.items() if k != v)
+      logging.info('Successful .dwo lookups: %d / %d', num_success,
+                   len(self._cache))
 
 
 @dataclasses.dataclass(order=True)
@@ -59,29 +137,24 @@ def CreateAddressSourceMapper(elf_path):
   return _SourceMapper(_Parse(elf_path))
 
 
-def CreateAddressSourceMapperForTest(lines):
-  return _SourceMapper(_ParseDumpOutput(lines))
+def CreateAddressSourceMapperForTest(lines, dwo_name_lookup=None):
+  return _SourceMapper(_ParseDumpOutput(lines, dwo_name_lookup))
 
 
-def ParseDumpOutputForTest(lines):
-  return _ParseDumpOutput(lines)
+def ParseDumpOutputForTest(lines, dwo_name_lookup=None):
+  return _ParseDumpOutput(lines, dwo_name_lookup)
 
 
 def _Parse(elf_path):
-  cmd = [
-      path_util.GetDwarfdumpPath(),
-      elf_path,
-      '--debug-info',
-      '--recurse-depth=0',
-  ]
+  cmd = [path_util.GetDwarfdumpPath(), elf_path] + _DWARF_DUMP_FLAGS
   logging.debug('Running: %s', ' '.join(cmd))
   stdout = subprocess.check_output(cmd,
                                    stderr=subprocess.DEVNULL,
                                    encoding='utf-8')
-  return _ParseDumpOutput(stdout.splitlines())
+  return _ParseDumpOutput(stdout.splitlines(), _DwoNameLookup(elf_path))
 
 
-def _ParseDumpOutput(lines):
+def _ParseDumpOutput(lines, dwo_name_lookup=None):
   """Parses passed-in dwarfdump stdout."""
 
   # List of (_AddressRange, source path) tuples.
@@ -94,10 +167,16 @@ def _ParseDumpOutput(lines):
       line = next(line_it, None)
       continue
 
-    line, address_ranges, source_path = _ParseCompileUnit(line_it)
-    if source_path and address_ranges:
+    line, address_ranges, source_path, dwo_path = _ParseCompileUnit(line_it)
+    if (source_path or dwo_path) and address_ranges:
       for address_range in address_ranges:
+        if dwo_path:
+          source_path = (dwo_name_lookup.Lookup(dwo_path)
+                         if dwo_name_lookup else dwo_path)
         range_info_list.append((address_range, source_path))
+
+  if dwo_name_lookup:
+    dwo_name_lookup.LogStats()
 
   return sorted(range_info_list)
 
@@ -107,11 +186,13 @@ def _ParseCompileUnit(line_it):
 
   Example:
   0x000026: DW_AT_compile_unit
-              DW_AT_low_pc   (0x02f)
+              DW_AT_low_pc  (0x02f)
               DW_AT_high_pc  (0x03f)
-              DW_AT_name     (foo.cc)
+              DW_AT_name  ("foo.cc")
+              DW_AT_GNU_dwo_name  ("foo.dwo")
   """
   source_path = None
+  dwo_path = None
   single_range = _AddressRange(0, 0)
   range_addresses = []
 
@@ -129,21 +210,19 @@ def _ParseCompileUnit(line_it):
         assert single_range.start == 0
       elif single_range.start > 0:
         range_addresses.append(single_range)
-      return (line, range_addresses, source_path)
+      return (line, range_addresses, source_path, dwo_path)
 
     if line.startswith('DW_AT_low_pc', dw_index):
       single_range.start = int(_ExtractDwValue(line), 16)
       if single_range.stop == 0:
         single_range.stop = single_range.start + 1
-      continue
-    if line.startswith('DW_AT_high_pc', dw_index):
+    elif line.startswith('DW_AT_high_pc', dw_index):
       single_range.stop = int(_ExtractDwValue(line), 16)
-      continue
-    if line.startswith('DW_AT_name', dw_index):
+    elif line.startswith('DW_AT_name', dw_index):
       source_path = _ExtractDwValue(line)
-      continue
-
-    if line.startswith('DW_AT_ranges', dw_index):
+    elif line.startswith('DW_AT_GNU_dwo_name', dw_index):
+      dwo_path = _ExtractDwValue(line)
+    elif line.startswith('DW_AT_ranges', dw_index):
       range_addresses = _ParseRanges(line_it)
 
 
@@ -180,9 +259,9 @@ def _ExtractDwValue(line):
   """Extract DW_AT_ value from dwarfdump stdout.
 
   Examples:
-  DW_AT_name ("foo.cc")
-  DW_AT_decl_line (177)
-  DW_AT_low_pc (0x2)
+  DW_AT_name  ("foo.cc")
+  DW_AT_decl_line  (177)
+  DW_AT_low_pc  (0x2)
   """
   lparen_index = line.rfind('(')
   if lparen_index < 0:
@@ -208,9 +287,12 @@ def main():
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   if args.dwarf_dump_output:
+    dwo_name_lookup = _DwoNameLookup(args.dwarf_dump_output)
     with open(args.dwarf_dump_output, 'r') as f:
-      source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines())
+      source_mapper = CreateAddressSourceMapperForTest(f.read().splitlines(),
+                                                       dwo_name_lookup)
   else:
+    assert args.elf_file
     source_mapper = CreateAddressSourceMapper(args.elf_file)
   logging.warning('Found %d source paths across %d ranges',
                   source_mapper.NumberOfPaths(), source_mapper.num_ranges)
