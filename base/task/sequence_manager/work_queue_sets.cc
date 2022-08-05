@@ -16,7 +16,12 @@ namespace internal {
 WorkQueueSets::WorkQueueSets(const char* name,
                              Observer* observer,
                              const SequenceManager::Settings& settings)
-    : name_(name), observer_(observer) {}
+    : name_(name),
+#if DCHECK_IS_ON()
+      last_rand_(settings.random_task_selection_seed),
+#endif
+      observer_(observer) {
+}
 
 WorkQueueSets::~WorkQueueSets() = default;
 
@@ -153,6 +158,23 @@ WorkQueueSets::GetOldestQueueAndTaskOrderInSet(size_t set_index) const {
 #endif
   return WorkQueueAndTaskOrder(*oldest.value, oldest.key);
 }
+
+#if DCHECK_IS_ON()
+absl::optional<WorkQueueAndTaskOrder>
+WorkQueueSets::GetRandomQueueAndTaskOrderInSet(size_t set_index) const {
+  DCHECK_LT(set_index, work_queue_heaps_.size());
+  if (work_queue_heaps_[set_index].empty())
+    return absl::nullopt;
+  const OldestTaskOrder& chosen =
+      work_queue_heaps_[set_index].begin()[static_cast<long>(
+          Random() % work_queue_heaps_[set_index].size())];
+#if DCHECK_IS_ON()
+  absl::optional<TaskOrder> key = chosen.value->GetFrontTaskOrder();
+  DCHECK(key && chosen.key == *key);
+#endif
+  return WorkQueueAndTaskOrder(*chosen.value, chosen.key);
+}
+#endif
 
 bool WorkQueueSets::IsSetEmpty(size_t set_index) const {
   DCHECK_LT(set_index, work_queue_heaps_.size())

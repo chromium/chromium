@@ -154,6 +154,16 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
     }
   };
 
+#if DCHECK_IS_ON()
+  struct SetOperationRandom {
+    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
+        const WorkQueueSets& sets,
+        TaskQueue::QueuePriority priority) {
+      return sets.GetRandomQueueAndTaskOrderInSet(priority);
+    }
+  };
+#endif  // DCHECK_IS_ON()
+
   template <typename SetOperation>
   WorkQueue* ChooseWithPriority(TaskQueue::QueuePriority priority) const {
     // Select an immediate work queue if we are starving immediate tasks.
@@ -222,6 +232,10 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   bool HasTasksWithPriority(TaskQueue::QueuePriority priority) const;
 
   const scoped_refptr<const AssociatedThreadId> associated_thread_;
+
+#if DCHECK_IS_ON()
+  const bool random_task_selection_ = false;
+#endif
 
   // Count of the number of sets (delayed or immediate) for each priority.
   // Should only contain 0, 1 or 2.

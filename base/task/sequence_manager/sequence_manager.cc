@@ -55,6 +55,13 @@ SequenceManager::Settings::Builder::SetAddQueueTimeToTasks(
 #if DCHECK_IS_ON()
 
 SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetRandomTaskSelectionSeed(
+    uint64_t random_task_selection_seed_val) {
+  settings_.random_task_selection_seed = random_task_selection_seed_val;
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetTaskLogging(
     TaskLogging task_execution_logging_val) {
   settings_.task_execution_logging = task_execution_logging_val;
