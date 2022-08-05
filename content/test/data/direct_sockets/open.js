@@ -12,9 +12,9 @@ async function openTcp(address, port, options = {}) {
   }
 }
 
-async function openUdp(address, port, options = {}) {
+async function openUdp(options) {
   try {
-    let udpSocket = new UDPSocket(address, port, options);
+    let udpSocket = new UDPSocket(options);
     let { remoteAddress, remotePort } = await udpSocket.opened;
     return ('openUdp succeeded: ' +
             '{remoteAddress: "' + remoteAddress +

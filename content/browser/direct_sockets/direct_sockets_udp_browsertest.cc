@@ -66,7 +66,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   void ConnectJsSocket(int port = 0) const {
     const std::string open_socket = JsReplace(
         R"(
-          socket = new UDPSocket($1, $2);
+          socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
           await socket.opened;
         )",
         kLocalhostAddress, port);
@@ -134,7 +134,8 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
-  const std::string script = "closeUdp('::1', 993, {})";
+  const std::string script =
+      "closeUdp({ remoteAddress: '::1', remotePort: 993 })";
 
   EXPECT_EQ("closeUdp succeeded", EvalJs(shell(), script));
 }
@@ -157,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
   GetUDPServerSocket()->ReceiveMore(kRequiredDatagrams);
 
   const std::string script =
-      JsReplace("sendUdp($1, $2, {}, $3)", server_address.ToStringWithoutPort(),
-                server_address.port(), static_cast<int>(kRequiredBytes));
+      JsReplace("sendUdp({ remoteAddress: $1, remotePort: $2 }, $3)",
+                server_address.ToStringWithoutPort(), server_address.port(),
+                static_cast<int>(kRequiredBytes));
 
   EXPECT_EQ("send succeeded", EvalJs(shell(), script));
 
@@ -183,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
   const int32_t kRequiredBytes = 1;
-  const std::string script = JsReplace("sendUdpAfterClose($1, $2, {}, $3)",
-                                       kLocalhostAddress, 993, kRequiredBytes);
+  const std::string script =
+      JsReplace("sendUdpAfterClose({ remoteAddress: $1, remotePort: $2 }, $3)",
+                kLocalhostAddress, 993, kRequiredBytes);
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               ::testing::HasSubstr("Stream closed."));
@@ -208,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
   // global scope and retrieve the assigned local port.
   const std::string open_socket = JsReplace(
       R"((async () => {
-        socket = new UDPSocket($1, $2);
+        socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
         let { localPort } = await socket.opened;
         return localPort;
       })())",
@@ -251,9 +254,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterSocketClose) {
   auto [server_address, server_helper] =
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
-  const std::string script =
-      JsReplace("readUdpAfterSocketClose($1, $2, {})",
-                server_address.ToStringWithoutPort(), server_address.port());
+  const std::string script = JsReplace(
+      "readUdpAfterSocketClose({ remoteAddress: $1, remotePort: $2 })",
+      server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_EQ("readUdpAferSocketClose succeeded.", EvalJs(shell(), script));
 }
@@ -266,9 +269,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterStreamClose) {
   auto [server_address, server_helper] =
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
-  const std::string script =
-      JsReplace("readUdpAfterStreamClose($1, $2, {})",
-                server_address.ToStringWithoutPort(), server_address.port());
+  const std::string script = JsReplace(
+      "readUdpAfterStreamClose({ remoteAddress: $1, remotePort: $2 })",
+      server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_EQ("readUdpAferStreamClose succeeded.", EvalJs(shell(), script));
 }
@@ -281,9 +284,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseWithActiveReader) {
   auto [server_address, server_helper] =
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
-  const std::string open_socket =
-      JsReplace("closeUdpWithLockedReadable($1, $2, /*unlock=*/false)",
-                server_address.ToStringWithoutPort(), server_address.port());
+  const std::string open_socket = JsReplace(
+      "closeUdpWithLockedReadable({ remoteAddress: $1, remotePort: $2 }, "
+      "/*unlock=*/false)",
+      server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_THAT(EvalJs(shell(), open_socket).ExtractString(),
               ::testing::StartsWith("closeUdpWithLockedReadable failed"));
@@ -298,9 +302,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest,
   auto [server_address, server_helper] =
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
-  const std::string open_socket =
-      JsReplace("closeUdpWithLockedReadable($1, $2, /*unlock=*/true)",
-                server_address.ToStringWithoutPort(), server_address.port());
+  const std::string open_socket = JsReplace(
+      "closeUdpWithLockedReadable({ remoteAddress: $1, remotePort: $2 }, "
+      "/*unlock=*/true)",
+      server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_THAT(EvalJs(shell(), open_socket).ExtractString(),
               ::testing::StartsWith("closeUdpWithLockedReadable succeeded"));

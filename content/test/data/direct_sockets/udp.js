@@ -42,9 +42,9 @@ async function readLoop(reader, requiredBytes) {
   return 'readLoop succeeded.';
 }
 
-async function sendUdp(address, port, options, requiredBytes) {
+async function sendUdp(options, requiredBytes) {
   try {
-    let udpSocket = new UDPSocket(address, port, options);
+    let udpSocket = new UDPSocket(options);
     let { writable } = await udpSocket.opened;
     return await sendLoop(writable.getWriter(), requiredBytes);
   } catch (error) {
@@ -52,9 +52,9 @@ async function sendUdp(address, port, options, requiredBytes) {
   }
 }
 
-async function closeUdp(address, port, options) {
+async function closeUdp(options) {
   try {
-    let udpSocket = new UDPSocket(address, port, options);
+    let udpSocket = new UDPSocket(options);
     await udpSocket.opened;
     await udpSocket.close();
     return 'closeUdp succeeded';
@@ -63,9 +63,9 @@ async function closeUdp(address, port, options) {
   }
 }
 
-async function sendUdpAfterClose(address, port, options, requiredBytes) {
+async function sendUdpAfterClose(options, requiredBytes) {
   try {
-    let udpSocket = new UDPSocket(address, port, options);
+    let udpSocket = new UDPSocket(options);
     let { writable } = await udpSocket.opened;
     await udpSocket.close();
 
@@ -76,9 +76,9 @@ async function sendUdpAfterClose(address, port, options, requiredBytes) {
   }
 }
 
-async function readUdpAfterSocketClose(address, port) {
+async function readUdpAfterSocketClose(options) {
   try {
-    let udpSocket = new UDPSocket(address, port);
+    let udpSocket = new UDPSocket(options);
     let { readable, writable } = await udpSocket.opened;
     let reader = readable.getReader();
     let writer = writable.getWriter();
@@ -92,9 +92,9 @@ async function readUdpAfterSocketClose(address, port) {
   }
 }
 
-async function readUdpAfterStreamClose(address, port) {
+async function readUdpAfterStreamClose(options) {
   try {
-    let udpSocket = new UDPSocket(address, port);
+    let udpSocket = new UDPSocket(options);
     let { readable } = await udpSocket.opened;
     let reader = readable.getReader();
     let rp = reader.read().catch(() => {});
@@ -109,9 +109,9 @@ async function readUdpAfterStreamClose(address, port) {
   }
 }
 
-async function closeUdpWithLockedReadable(address, port, unlock = false) {
+async function closeUdpWithLockedReadable(options, unlock = false) {
   try {
-    let udpSocket = new UDPSocket(address, port);
+    let udpSocket = new UDPSocket(options);
     let { readable } = await udpSocket.opened;
 
     let reader = readable.getReader();

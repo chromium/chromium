@@ -25,8 +25,7 @@ class MODULES_EXPORT UDPReadableStreamWrapper
  public:
   UDPReadableStreamWrapper(ScriptState*,
                            CloseOnceCallback,
-                           const Member<UDPSocketMojoRemote>,
-                           uint32_t high_water_mark);
+                           const Member<UDPSocketMojoRemote>);
 
   // ReadableStreamWrapper:
   void Pull() override;

@@ -30,10 +30,8 @@ namespace {
 constexpr char kUDPNetworkFailuresHistogramName[] =
     "DirectSockets.UDPNetworkFailures";
 
-constexpr uint32_t readableStreamDefaultBufferSize = 32;
-
-bool CheckSendReceiveReadableStreamBufferSize(const UDPSocketOptions* options,
-                                              ExceptionState& exception_state) {
+bool CheckSendReceiveBufferSize(const UDPSocketOptions* options,
+                                ExceptionState& exception_state) {
   if (options->hasSendBufferSize() && options->sendBufferSize() == 0) {
     exception_state.ThrowTypeError("sendBufferSize must be greater than zero.");
     return false;
@@ -43,27 +41,19 @@ bool CheckSendReceiveReadableStreamBufferSize(const UDPSocketOptions* options,
         "receiverBufferSize must be greater than zero.");
     return false;
   }
-  if (options->hasReadableStreamBufferSize() &&
-      options->readableStreamBufferSize() == 0) {
-    exception_state.ThrowTypeError(
-        "readableStreamBufferSize must be greater than zero.");
-    return false;
-  }
 
   return true;
 }
 
 mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
-    const String& address,
-    const uint16_t port,
     const UDPSocketOptions* options,
     ExceptionState& exception_state) {
   auto socket_options = mojom::blink::DirectSocketOptions::New();
 
-  socket_options->remote_hostname = address;
-  socket_options->remote_port = port;
+  socket_options->remote_hostname = options->remoteAddress();
+  socket_options->remote_port = options->remotePort();
 
-  if (!CheckSendReceiveReadableStreamBufferSize(options, exception_state)) {
+  if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
   }
 
@@ -81,8 +71,6 @@ mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
 
 // static
 UDPSocket* UDPSocket::Create(ScriptState* script_state,
-                             const String& address,
-                             const uint16_t port,
                              const UDPSocketOptions* options,
                              ExceptionState& exception_state) {
   if (!Socket::CheckContextAndPermissions(script_state, exception_state)) {
@@ -90,7 +78,7 @@ UDPSocket* UDPSocket::Create(ScriptState* script_state,
   }
 
   auto* socket = MakeGarbageCollected<UDPSocket>(script_state);
-  if (!socket->Open(address, port, options, exception_state)) {
+  if (!socket->Open(options, exception_state)) {
     return nullptr;
   }
   return socket;
@@ -104,19 +92,13 @@ UDPSocket::UDPSocket(ScriptState* script_state)
 
 UDPSocket::~UDPSocket() = default;
 
-bool UDPSocket::Open(const String& address,
-                     const uint16_t port,
-                     const UDPSocketOptions* options,
+bool UDPSocket::Open(const UDPSocketOptions* options,
                      ExceptionState& exception_state) {
   auto open_udp_socket_options =
-      CreateUDPSocketOptions(address, port, options, exception_state);
+      CreateUDPSocketOptions(options, exception_state);
 
   if (exception_state.HadException()) {
     return false;
-  }
-
-  if (options->hasReadableStreamBufferSize()) {
-    readable_stream_buffer_size_ = options->readableStreamBufferSize();
   }
 
   ConnectService();
@@ -138,8 +120,7 @@ void UDPSocket::Init(int32_t result,
         WTF::Bind(&UDPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
 
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state_, close_callback, udp_socket_,
-        readable_stream_buffer_size_.value_or(readableStreamDefaultBufferSize));
+        script_state_, close_callback, udp_socket_);
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
         script_state_, close_callback, udp_socket_);
 

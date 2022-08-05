@@ -10,13 +10,11 @@ dictionary SocketOptions {
 };
 
 dictionary TCPSocketOptions : SocketOptions {
-  DOMString localAddress;
-  [EnforceRange] unsigned short localPort;
-
   boolean noDelay = false;
   [EnforceRange] unsigned long keepAliveDelay;
 };
 
 dictionary UDPSocketOptions : SocketOptions {
-  [EnforceRange] unsigned short readableStreamBufferSize;
+  required DOMString remoteAddress;
+  required [EnforceRange] unsigned short remotePort;
 };

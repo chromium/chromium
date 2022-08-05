@@ -340,8 +340,12 @@ class DirectSocketsOpenCannotConnectBrowserTest
         "open%s failed: NetworkError: Network Error.", type.c_str());
 
     const std::string example_hostname = "mail.example.com";
-    const std::string script = base::StringPrintf(
-        "open%s('%s', 993)", type.c_str(), example_hostname.c_str());
+    const std::string script =
+        protocol == DirectSocketsServiceImpl::ProtocolType::kTcp
+            ? base::StringPrintf("openTcp('%s', 993)", example_hostname.c_str())
+            : base::StringPrintf(
+                  "openUdp({ remoteAddress: '%s', remotePort: 993 })",
+                  example_hostname.c_str());
 
     for (const auto& address : ProduceAllTestParams()) {
       const std::string mapping_rules = base::StringPrintf(
@@ -493,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
       "openUdp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
       kExampleAddress);
 
-  const std::string script = JsReplace("openUdp($1, 993)", kExampleHostname);
+  const std::string script = JsReplace(
+      "openUdp({ remoteAddress: $1, remotePort: 993 })", kExampleHostname);
 
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
@@ -503,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   // Port 0 is not permitted by MockUDPSocket.
-  const std::string script = JsReplace("openUdp($1, $2)", kLocalhostAddress, 0);
+  const std::string script = JsReplace(
+      "openUdp({ remoteAddress: $1, remotePort: $2 })", kLocalhostAddress, 0);
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               ::testing::HasSubstr("NetworkError"));
@@ -520,16 +526,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   const std::string expected_result =
       "openUdp failed: NetworkError: Network Error.";
 
-  const std::string script =
-      R"(
-          openUdp(
-            '12.34.56.78',
-            9012, {
-              sendBufferSize: 3456,
-              receiveBufferSize: 7890
-            }
-          )
-        )";
+  const std::string script = R"(
+    openUdp({
+      remoteAddress: '12.34.56.78',
+      remotePort: 9012,
+      sendBufferSize: 3456,
+      receiveBufferSize: 7890
+    })
+  )";
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 
   ASSERT_EQ(1U, mock_network_context.history().size());
@@ -551,16 +555,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  const std::string script =
-      R"(
-          openUdp(
-            'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
-            789, {
-              sendBufferSize: 1243,
-              receiveBufferSize: 1234
-            }
-          )
-        )";
+  const std::string script = R"(
+    openUdp({
+      remoteAddress: 'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
+      remotePort: 789,
+      sendBufferSize: 1243,
+      receiveBufferSize: 1234
+    })
+  )";
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openUdp succeeded"));
 
@@ -674,7 +676,8 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
       blink::mojom::DirectSocketFailureType::kCORS, 0);
 
   const std::string script =
-      JsReplace("openUdp($1, $2)", kLocalhostAddress, https_server()->port());
+      JsReplace("openUdp({ remoteAddress: $1, remotePort: $2 })",
+                kLocalhostAddress, https_server()->port());
 
   bool cors_success = GetParam();
 
