@@ -344,6 +344,11 @@ public class StatusView extends LinearLayout {
 
         mIconView.setVisibility(showIcon ? VISIBLE : GONE);
         updateTouchDelegate();
+        if (mIsAnimatingStatusIconChange && !showIcon) {
+            // If the icon view is hidden before it gets a chance to draw, our animation status will
+            // become stale. Reset it.
+            resetAnimationStatus();
+        }
     }
 
     /**
@@ -546,11 +551,15 @@ public class StatusView extends LinearLayout {
         long currentTimeMs = SystemClock.uptimeMillis();
         if (mIsAnimatingStatusIconChange
                 && currentTimeMs - mTimeAtTransitionStartMs >= mCurrentTransitionDuration) {
-            mTimeAtTransitionStartMs = 0;
-            mCurrentTransitionDuration = 0;
-            mIsAnimatingStatusIconChange = false;
-            allowBrowserControlsHide();
+            resetAnimationStatus();
         }
+    }
+
+    private void resetAnimationStatus() {
+        mTimeAtTransitionStartMs = 0;
+        mCurrentTransitionDuration = 0;
+        mIsAnimatingStatusIconChange = false;
+        allowBrowserControlsHide();
     }
 
     TouchDelegate getTouchDelegateForTesting() {
