@@ -13,12 +13,12 @@ void EmptyLogger::AddObserver(Observer* observer) {}
 
 void EmptyLogger::RemoveObserver(Observer* observer) {}
 
-base::Value EmptyLogger::GetServiceStatus() {
-  return base::Value();
+base::Value::Dict EmptyLogger::GetServiceStatus() {
+  return base::Value::Dict();
 }
 
-base::Value EmptyLogger::GetServiceDownloads() {
-  return base::Value();
+base::Value::List EmptyLogger::GetServiceDownloads() {
+  return base::Value::List();
 }
 
 }  // namespace test

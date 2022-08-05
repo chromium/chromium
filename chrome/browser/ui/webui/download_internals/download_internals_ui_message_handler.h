@@ -33,12 +33,14 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // download::Logger::Observer implementation.
-  void OnServiceStatusChanged(const base::Value& service_status) override;
+  void OnServiceStatusChanged(const base::Value::Dict& service_status) override;
   void OnServiceDownloadsAvailable(
-      const base::Value& service_downloads) override;
-  void OnServiceDownloadChanged(const base::Value& service_download) override;
-  void OnServiceDownloadFailed(const base::Value& service_download) override;
-  void OnServiceRequestMade(const base::Value& service_request) override;
+      const base::Value::List& service_downloads) override;
+  void OnServiceDownloadChanged(
+      const base::Value::Dict& service_download) override;
+  void OnServiceDownloadFailed(
+      const base::Value::Dict& service_download) override;
+  void OnServiceRequestMade(const base::Value::Dict& service_request) override;
 
  private:
   // Get the current DownloadService and sub component statuses.

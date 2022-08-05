@@ -49,7 +49,7 @@ void DownloadInternalsUIMessageHandler::RegisterMessages() {
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceStatusChanged(
-    const base::Value& service_status) {
+    const base::Value::Dict& service_status) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -57,7 +57,7 @@ void DownloadInternalsUIMessageHandler::OnServiceStatusChanged(
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadsAvailable(
-    const base::Value& service_downloads) {
+    const base::Value::List& service_downloads) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -65,7 +65,7 @@ void DownloadInternalsUIMessageHandler::OnServiceDownloadsAvailable(
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadChanged(
-    const base::Value& service_download) {
+    const base::Value::Dict& service_download) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -73,7 +73,7 @@ void DownloadInternalsUIMessageHandler::OnServiceDownloadChanged(
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceDownloadFailed(
-    const base::Value& service_download) {
+    const base::Value::Dict& service_download) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -81,7 +81,7 @@ void DownloadInternalsUIMessageHandler::OnServiceDownloadFailed(
 }
 
 void DownloadInternalsUIMessageHandler::OnServiceRequestMade(
-    const base::Value& service_request) {
+    const base::Value::Dict& service_request) {
   if (!IsJavascriptAllowed())
     return;
 

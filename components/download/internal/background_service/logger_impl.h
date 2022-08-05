@@ -41,8 +41,8 @@ class LoggerImpl : public Logger, public LogSink {
   // Logger implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  base::Value GetServiceStatus() override;
-  base::Value GetServiceDownloads() override;
+  base::Value::Dict GetServiceStatus() override;
+  base::Value::List GetServiceDownloads() override;
 
   // LogSink implementation.
   void OnServiceStatusChanged() override;
