@@ -25079,6 +25079,10 @@ Called by update_debug_scenarios.py.-->
   <int value="60" label="eyedropperColorPicker"/>
   <int value="61" label="instrumentationBreakpoints"/>
   <int value="62" label="cssAuthoringHints"/>
+  <int value="63" label="authoredDeployedGrouping"/>
+  <int value="64" label="importantDOMProperties"/>
+  <int value="65" label="justMyCode"/>
+  <int value="66" label="breakpointView"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
