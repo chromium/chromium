@@ -144,7 +144,6 @@
 <translation id="2282155092769082568">ಸ್ವಯಂ ಕಾನ್ಫಿಗರೇಶನ್ URL:</translation>
 <translation id="2288278176040912387">ರೆಕಾರ್ಡ್ ಪ್ಲೇಯರ್</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ.</translation>
-<translation id="2303282178633578561">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2304820083631266885">ಗ್ರಹ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ಅನ್ನು ಎಜೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -183,10 +182,8 @@
 <translation id="2570012981255377263">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಫೈಲ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="2578394532502990878">ತಮಿಳು ಫೋನೆಟಿಕ್</translation>
 <translation id="2579959351793446050">ಒಡಿಯಾ</translation>
-<translation id="2593644851255584939">ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಪ್ರಕಾರ, ನೀವು SIM ಲಾಕ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ವೀಡಿಯೊ</translation>
-<translation id="2617342710774726426">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2620090360073999360">ಈ ಸಮಯದಲ್ಲಿ Google ಡ್ರೈವ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="2621713457727696555">ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="2638942478653899953">Google ಡ್ರೈವ್ ಅನ್ನು ತಲುಪಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು <ph name="BEGIN_LINK" />ಲಾಗ್ ಔಟ್<ph name="END_LINK" /> ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಹಿಂತಿರುಗಿ ಲಾಗ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -527,7 +524,6 @@
 <translation id="5489067830765222292">ಲ್ಯಾಟ್ವಿಯನ್</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ಫಿಲ್ಟರ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
-<translation id="5500104704744051184">ನೀವು PUK ಕೋಡ್ ನಮೂದಿಸುವವರೆಗೂ ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5500122897333236901">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="5508696409934741614">ಚುಕ್ಕೆಗಳು</translation>
 <translation id="5522908512596376669">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
@@ -798,7 +794,6 @@
 <translation id="7831491651892296503">ನೆಟ್‌ವರ್ಕ್‌ ಕಾನ್ಫಿಗರ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ</translation>
 <translation id="7839804798877833423">ಈ ಫೈಲ್‌ಗಳನ್ನು ಪಡೆಯುವುದರಿಂದ ಮೊಬೈಲ್ ಡೇಟಾದ ಸುಮಾರು <ph name="FILE_SIZE" /> ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7846076177841592234">ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
-<translation id="7847617962681804761">ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಲು ಪಿನ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7853966320808728790">ಫ್ರೆಂಚ್ BÉPO</translation>
 <translation id="7857117644404132472">ವಿನಾಯಿತಿ ಸೇರಿಸು</translation>
 <translation id="7868774406711971383">ಪೋಲಿಷ್</translation>
@@ -893,7 +888,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ಐಟಂಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8600173386174225982">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಥಂಬ್‌ನೇಲ್ ವೀಕ್ಷಣೆಗೆ ಬದಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="8601932370724196034">Crostini ಚಿತ್ರದ ಫೈಲ್</translation>
-<translation id="8608515571837163082">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ. ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ 8-ಸಂಖ್ಯೆಯ ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ (PUK) ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="8609695766746872526">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="863903787380594467">ತಪ್ಪಾದ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ಪೋರ್ಟ್</translation>

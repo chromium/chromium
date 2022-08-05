@@ -240,8 +240,10 @@
 <translation id="6367753977865761591">Блакіраваць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
 <translation id="6388207532828177975">Ачысціць і скінуць</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Забараніць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
+<translation id="6467852467360539617">Выдаліць даныя і скінуць дазволы</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
@@ -281,6 +283,7 @@
 <translation id="7250468141469952378">Выбрана: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Дазволены <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Звычайна вы блакіруеце апавяшчэнні. Каб дазволіць іх, націсніце "Падрабязнасці".</translation>
+<translation id="7383715096023715447">Налады для дамена <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Спачатку запытваць</translation>
 <translation id="7423538860840206698">Чытанне буфера абмену заблакіравана</translation>
 <translation id="7425915948813553151">Цёмная тэма для сайтаў</translation>

@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
-<translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
+<translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1654477262762802994">વૉઇસ ક્વેરી શરૂ કરો</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
@@ -472,7 +472,6 @@
 <translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
 <translation id="3735740477244556633">આ પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="3742055079367172538">સ્ક્રીનશૉટ લેવાયો</translation>
-<translation id="3761848338953536304">તમે 'સિમ કાર્ડ લૉક કરો' સેટિંગ બંધ કરો એવી વિનંતી તમારા ઍડમિનિસ્ટ્રેટર કરી રહ્યાં છે</translation>
 <translation id="3765841986579723851">આજે ફેરફાર કરવામાં આવ્યો હતો</translation>
 <translation id="3771549900096082774">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
 <translation id="3773700760453577392">એડમિને <ph name="USER_EMAIL" /> માટે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે. ચાલુ રાખવા માટે બધા વપરાશકર્તાઓએ સાઇન આઉટ કરવું જરૂરી છે.</translation>
@@ -857,7 +856,6 @@
 <translation id="598407983968395253">નમૂનાનો ઉપયોગ કરો</translation>
 <translation id="598882571027504733">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરો.</translation>
 <translation id="5992218262414051481">હાઇ કોન્ટ્રાસ્ટ મોડ ચાલુ કર્યો. ટૉગલ બંધ કરવા માટે ફરીથી Ctrl+Search+H ફરીથી દબાવો.</translation>
-<translation id="6009656393242168182">તમારું 'સિમ કાર્ડ લૉક કરો' સેટિંગ બંધ કરો</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> પેજમાંનું <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">મીરર મોડથી બહાર નીકળે છે</translation>
 <translation id="602001110135236999">ડાબે સ્ક્રોલ કરો</translation>

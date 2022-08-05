@@ -469,10 +469,10 @@
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
 <translation id="371370241367527062">ਮੂਹਰਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="3713734891607377840">ਪੂਰਾ ਹੋਣ 'ਤੇ ਖੁੱਲ੍ਹੇ</translation>
+<translation id="3724279623330129812">ਸਵੈ ਜ਼ੂਮ ਨੇ ਕੈਮਰੇ ਨੂੰ ਕੇਂਦਰਿਤ ਕੀਤਾ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ਅਤੇ <ph name="UNAVAILABLE_APPS_COUNT" /> ਹੋਰ ਐਪਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</translation>
 <translation id="3735740477244556633">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="3742055079367172538">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਿਆ ਗਿਆ</translation>
-<translation id="3761848338953536304">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਨੂੰ ਲਾਕ ਸਿਮ ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="3765841986579723851">ਅੱਜ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3771549900096082774">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="3773700760453577392">ਕਿਸੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="USER_EMAIL" /> ਲਈ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਸਾਈਨ-ਆਊਟ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -868,7 +868,6 @@
 <translation id="598407983968395253">ਟੈਮਪਲੇਟ ਵਰਤੋ</translation>
 <translation id="598882571027504733">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromebook ਨੂੰ ਨਾਲ ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਰਾਹੀਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="5992218262414051481">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਬੰਦ 'ਤੇ ਟੌਗਲ ਕਰਨ ਲਈ ਦੁਬਾਰਾ Ctrl+Search+H ਦਬਾਓ।</translation>
-<translation id="6009656393242168182">ਆਪਣੀ ਸਿਮ ਲਾਕ ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> ਵਿੱਚੋਂ <ph name="SELECTED_PAGE" /> ਪੰਨਾ</translation>
 <translation id="6018164090099858612">"ਮਿਰਰ ਮੋਡ" ਤੋਂ ਬਾਹਰ ਨਿਕਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="602001110135236999">ਖੱਬੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>

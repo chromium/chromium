@@ -472,7 +472,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
 <translation id="3735740477244556633">Sortimisalus:</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
-<translation id="3761848338953536304">Teie administraator nõuab, et lülitaksite SIM-kaardi luku seade välja</translation>
 <translation id="3765841986579723851">Täna muudetud</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
@@ -760,6 +759,16 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5393156353051693207">Rakenduste järjestuse muutmiseks puudutage pikalt kus tahes</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
+<translation id="5399673806694250334">Olekusalv, aeg <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Kiirseaded, märguandekeskusele juurdepääsemiseks vajutage otsinguklahvi ja vasaknoolt.</translation>
 <translation id="5426063383988017631">Seadete menüü on suletud</translation>
 <translation id="5428899915242071344">Alustage valimist</translation>
@@ -858,7 +867,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
 <translation id="5992218262414051481">Suure kontrastsusega režiim on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + otsinguklahv + H.</translation>
-<translation id="6009656393242168182">Keelake SIM-kaardi luku seade</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
 <translation id="602001110135236999">Keri vasakule</translation>

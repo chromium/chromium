@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Линк за автоматско конфигурирање:</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Се отвораат <ph name="NUMBER_OF_FILES" /> датотеки.</translation>
-<translation id="2303282178633578561">Заклучи SIM-картичка</translation>
 <translation id="2303301624314357662">Се отвора датотеката <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> е отстранет.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Неодамнешните датотеки ќе се појават тука</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
-<translation id="2593644851255584939">Администраторот бара да го оневозможите заклучувањето SIM-картичка.</translation>
 <translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
 <translation id="2614589611416690597">Видео: <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM-картичката е заклучена</translation>
 <translation id="2620090360073999360">Не може да се достапи до Google Диск во моментов.</translation>
 <translation id="2621713457727696555">Заштитена</translation>
 <translation id="2638942478653899953">Не може да се добие Google Диск. <ph name="BEGIN_LINK" />Одјавете се<ph name="END_LINK" /> и повторно најавете се.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">летонски</translation>
 <translation id="5489965683297092283">Филтерот <ph name="FILTER_NAME" /> е исклучен.</translation>
 <translation id="5494920125229734069">Избери сè</translation>
-<translation id="5500104704744051184">Нема да може да ја користите мрежава додека не внесете PUK</translation>
 <translation id="5500122897333236901">Исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Списокот со датотеки се смени во преглед на список.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Грешка при конфигурирање на мрежата</translation>
 <translation id="7839804798877833423">Земањето на овие датотеки ќе користи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
-<translation id="7847617962681804761">Потребен е PIN за користење мобилен интернет</translation>
 <translation id="7853966320808728790">Француска BÉPO</translation>
 <translation id="7857117644404132472">Додајте исклучок</translation>
 <translation id="7868774406711971383">полски</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Се синхронизираат <ph name="NUMBER_OF_FILES" /> ставки...</translation>
 <translation id="8600173386174225982">Списокот со датотеки се смени во преглед на сликички.</translation>
 <translation id="8601932370724196034">Датотека со слика Crostini</translation>
-<translation id="8608515571837163082">Внесовте погрешен PIN премногу пати. Внесете го 8-цифрениот личен клуч за одблокирање (PUK) обезбеден од операторот.</translation>
 <translation id="8609695766746872526">исландски</translation>
 <translation id="863903787380594467">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порта</translation>

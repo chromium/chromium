@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Avtokonfiqurasiya URL-i:</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fayl açılır.</translation>
-<translation id="2303282178633578561">SİM kartı kilidləyin</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> faylı açılır.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıxarılıb.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Son fayllarınız burada görünəcək</translation>
 <translation id="2578394532502990878">Tamil dili (Fonetik)</translation>
 <translation id="2579959351793446050">Oriya dili</translation>
-<translation id="2593644851255584939">Administratorunuz SİM Kilidi deaktiv etməyinizi tələb edir.</translation>
 <translation id="2602810353103180630">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administrator tərəfindən bloklanıb, Detallar</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videosu</translation>
-<translation id="2617342710774726426">SIM kart kilidlənib</translation>
 <translation id="2620090360073999360">Hazırda Google Diskə daxil olmaq mümkün deyil.</translation>
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="2638942478653899953">Google Diskə daxil olmaq alınmadı. Lütfən, <ph name="BEGIN_LINK" />hesabdan çıxın<ph name="END_LINK" /> və yenidən daxil olun.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Latış</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtri deaktivdir.</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
-<translation id="5500104704744051184">PUK kodu daxil edilənə qədər bu şəbəkədən istifadə edə bilməyəcəksiniz</translation>
 <translation id="5500122897333236901">İsland</translation>
 <translation id="5508696409934741614">Nöqtə</translation>
 <translation id="5522908512596376669">Fayl siyahısı siyahı görünüşünə dəyişdirilib.</translation>
@@ -807,7 +803,6 @@
 <translation id="7831491651892296503">Şəbəkə konfiqurasiya xətası</translation>
 <translation id="7839804798877833423">Bu faylların əldə edilməsi təxminən <ph name="FILE_SIZE" /> mobil data istifadə edəcək.</translation>
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
-<translation id="7847617962681804761">Mobil datadan istifadə etmək üçün PIN tələb olunur</translation>
 <translation id="7853966320808728790">Fransız BÉPO</translation>
 <translation id="7857117644404132472">İstisna əlavə edin</translation>
 <translation id="7868774406711971383">Polyak</translation>
@@ -902,7 +897,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> element sinxronlaşır...</translation>
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
-<translation id="8608515571837163082">Yanlış PİN kod dəfələrlə daxil edilib. Pperator tərəfindən təmin edilən 8 rəqəmli Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin.</translation>
 <translation id="8609695766746872526">İsland</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

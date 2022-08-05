@@ -472,7 +472,6 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
-<translation id="3761848338953536304">A rendszergazda a SIM-zárolási beállítás kikapcsolására kéri Önt.</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
 <translation id="3771549900096082774">Nagy kontrasztú mód</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
@@ -868,7 +867,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="598407983968395253">Sablon használata</translation>
 <translation id="598882571027504733">A frissítés lekéréséhez indítsa újra a Chromebookot a csatlakoztatott billentyűzet segítségével.</translation>
 <translation id="5992218262414051481">Nagy kontrasztú mód bekapcsolva. Kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+H billentyűparancsot.</translation>
-<translation id="6009656393242168182">SIM-zárolási beállítás kikapcsolása</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />/<ph name="SELECTED_PAGE" />. oldal</translation>
 <translation id="6018164090099858612">Kilépés a tükrözési módból</translation>
 <translation id="602001110135236999">Görgetés balra</translation>

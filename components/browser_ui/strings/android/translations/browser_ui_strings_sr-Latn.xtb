@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
+<translation id="6467852467360539617">Obriši podatke i resetuj dozvole</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378">Izabrali ste <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Odobrene su dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Obično blokirate obaveštenja. Da biste ih dozvolili, dodirnite Detalji.</translation>
+<translation id="7383715096023715447">Podešavanja za <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">സ്വയമേവ കോൺഫിഗറേഷൻ URL:</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
-<translation id="2303282178633578561">സിം കാർഡ് ലോക്ക് ചെയ്യുക</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ഫയൽ തുറക്കുന്നു.</translation>
 <translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">നിങ്ങളുടെ അടുത്തിടെയുള്ള ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="2578394532502990878">തമിഴ് ഉച്ചാരണ ശബ്‌ദം</translation>
 <translation id="2579959351793446050">ഒഡിയ</translation>
-<translation id="2593644851255584939">സിം ലോക്ക് പ്രവർത്തനരഹിതമാക്കാൻ നിങ്ങളുടെ അഡ്മിൻ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />-ൽ <ph name="NETWORK_COUNT" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു, വിശദാംശങ്ങൾ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> വീഡിയോ</translation>
-<translation id="2617342710774726426">സിം കാർഡ് ലോക്കുചെയ്‌തു</translation>
 <translation id="2620090360073999360">Google ഡ്രൈവിൽ ഇപ്പോൾ എത്തിച്ചേരാൻ കഴിയില്ല.</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
 <translation id="2638942478653899953">Google ഡ്രൈവിൽ പ്രവേശിക്കാനായില്ല. <ph name="BEGIN_LINK" />ലോഗ് ഔട്ട്<ph name="END_LINK" /> ചെയ്‌ത ശേഷം തിരികെ ലോഗ് ഇൻ ചെയ്യുക.</translation>
@@ -530,7 +527,6 @@
 <translation id="5489067830765222292">ലാത്വിയൻ</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓഫാണ്.</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
-<translation id="5500104704744051184">PUK നൽകുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല</translation>
 <translation id="5500122897333236901">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="5508696409934741614">ഡോട്ടുകൾ</translation>
 <translation id="5522908512596376669">ഫയൽ ലിസ്‌റ്റ് ഗ്രിഡ് കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
@@ -811,7 +807,6 @@
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
 <translation id="7839804798877833423">ഈ ഫയലുകൾ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
-<translation id="7847617962681804761">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കാൻ പിൻ ആവശ്യമാണ്</translation>
 <translation id="7853966320808728790">ഫ്രഞ്ച് BÉPO</translation>
 <translation id="7857117644404132472">ഒഴിവാക്കൽ ചേർക്കുക</translation>
 <translation id="7868774406711971383">പോളിഷ്</translation>
@@ -906,7 +901,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="8600173386174225982">ഫയൽ ലിസ്‌റ്റ് ലഘുചിത്ര കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="8601932370724196034">Crostini ചിത്ര ഫയൽ</translation>
-<translation id="8608515571837163082">തെറ്റായ പിൻ നിരവധി തവണ നൽകി. നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ 8 അക്ക പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നൽകുക.</translation>
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="863903787380594467">പിൻ തെറ്റാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - പോർട്ട്</translation>

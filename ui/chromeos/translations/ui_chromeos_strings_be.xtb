@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL-адрас аўтаматычнай канфігурацыі:</translation>
 <translation id="2288278176040912387">Патэфон</translation>
 <translation id="2291538123825441971">Адкрываюцца некалькі файлаў (<ph name="NUMBER_OF_FILES" />) .</translation>
-<translation id="2303282178633578561">Заблакіраваць SIM-карту</translation>
 <translation id="2303301624314357662">Адкрываецца файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Носьбіт <ph name="VOLUME_NAME" /> выняты.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Вашы нядаўнія файлы будуць з'яўляцца тут</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
-<translation id="2593644851255584939">Ваш адміністратар патрабуе, каб вы адключылі блакіроўку SIM-карты.</translation>
 <translation id="2602810353103180630">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="2614589611416690597">Відэа <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM-карта заблакіравана</translation>
 <translation id="2620090360073999360">Зараз звязацца з Google Дыскам не ўдалося.</translation>
 <translation id="2621713457727696555">Абаронена</translation>
 <translation id="2638942478653899953">Не ўдалося атрымаць доступ да Google Дыска. <ph name="BEGIN_LINK" />Выйдзіце<ph name="END_LINK" /> і зноў увайдзіце ва ўліковы запіс.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Ачысціць сметніцу</translation>
 <translation id="5163869187418756376">Збой абагульвання. Праверце падключэнне і паўтарыце спробу пазней.</translation>
 <translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
+<translation id="5172749059808361023">Звесткі пра абмежаванні</translation>
 <translation id="5177526793333269655">Рэжым мініяцюр</translation>
 <translation id="5194713942430106590">Каб адсартаваць слупок па ўзрастанні, націсніце тут.</translation>
 <translation id="5211614973734216083">Фарэрская</translation>
@@ -528,7 +526,6 @@
 <translation id="5489067830765222292">Латышская</translation>
 <translation id="5489965683297092283">Выключаны фільтр "<ph name="FILTER_NAME" />".</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
-<translation id="5500104704744051184">Вы не зможаце выкарыстоўваць гэту сетку, пакуль не ўведзяце PUK-код</translation>
 <translation id="5500122897333236901">Ісландская</translation>
 <translation id="5508696409934741614">Кропкі</translation>
 <translation id="5522908512596376669">Спіс файлаў перайшоў у рэжым спіса.</translation>
@@ -809,7 +806,6 @@
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
-<translation id="7847617962681804761">Каб выкарыстоўваць мабільную перадачу даных, трэба ўвесці PIN-код</translation>
 <translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
 <translation id="7857117644404132472">Дадаць выключэнне</translation>
 <translation id="7868774406711971383">Польская</translation>
@@ -904,7 +900,6 @@
 <translation id="8579285237314169903">Ідзе сінхранізацыя элементаў (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Спіс файлаў перайшоў у рэжым мініяцюр.</translation>
 <translation id="8601932370724196034">Файл вобраза Crostini</translation>
-<translation id="8608515571837163082">Занадта шмат разоў быў уведзены няправільны PIN-код. Увядзіце 8-значны PUK-код, атрыманы ад аператара.</translation>
 <translation id="8609695766746872526">Ісландская</translation>
 <translation id="863903787380594467">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>

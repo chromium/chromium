@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Otomatik yapılandırma URL'si:</translation>
 <translation id="2288278176040912387">Plak çalar</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> dosya açılıyor.</translation>
-<translation id="2303282178633578561">SIM kartı kilitle</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> dosyası açılıyor.</translation>
 <translation id="2304820083631266885">Gezegen</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıkarıldı.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Son dosyalarınız burada gösterilir</translation>
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">Yöneticiniz, SIM kilidini devre dışı bırakmanızı zorunlu tutuyor.</translation>
 <translation id="2602810353103180630">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
-<translation id="2617342710774726426">SIM kart kilitli</translation>
 <translation id="2620090360073999360">Google Drive'a şu anda erişilemiyor.</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="2638942478653899953">Google Drive'a erişilemedi. Lütfen <ph name="BEGIN_LINK" />çıkıp<ph name="END_LINK" /> tekrar giriş yapın.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Letonca</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtresi kapalı.</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
-<translation id="5500104704744051184">PUK'u girmeden bu ağı kullanamazsınız</translation>
 <translation id="5500122897333236901">İzlanda dili</translation>
 <translation id="5508696409934741614">Noktalar</translation>
 <translation id="5522908512596376669">Dosya listesi, liste görünümü olarak değiştirildi.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Ağ yapılandırılırken hata oluştu</translation>
 <translation id="7839804798877833423">Bu dosyaları getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>
-<translation id="7847617962681804761">Mobil veri kullanmak için PIN gerekir</translation>
 <translation id="7853966320808728790">Fransızca BÉPO</translation>
 <translation id="7857117644404132472">İstisna ekle</translation>
 <translation id="7868774406711971383">Lehçe</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> öğe senkronize ediliyor...</translation>
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
-<translation id="8608515571837163082">Çok sayıda yanlış PIN girildi. Operatörünüz tarafından sağlanan 8 basamaklı Kişisel Engelleme Anahtarınızı (PUK) girin.</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Bağlantı noktası</translation>

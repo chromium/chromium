@@ -2513,7 +2513,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3348038390189153836">Phát hiện thiết bị di động</translation>
 <translation id="3348131053948466246">Đã đề xuất biểu tượng cảm xúc. Hãy nhấn phím mũi tên lên hoặc xuống để di chuyển và nhấn phím Enter để chèn.</translation>
 <translation id="3349933790966648062">Mức sử dụng bộ nhớ</translation>
-<translation id="3353786022389205125">Bật "Hiển thị màn hình khóa khi thức dậy từ chế độ ngủ" và thử lại</translation>
+<translation id="3353786022389205125">Hãy bật tuỳ chọn "Hiển thị màn hình khóa khi đánh thức từ chế độ ngủ" và thử lại</translation>
 <translation id="3354972872297836698">Không ghép nối được với thiết bị <ph name="DEVICE_NAME" />; hãy chọn thiết bị để thử lại</translation>
 <translation id="3355936511340229503">Lỗi kết nối</translation>
 <translation id="3356469410714175391">(Đã bật tính năng Thẻ ảo)</translation>
@@ -7978,6 +7978,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8666759526542103597">Giới thiệu về tính năng cá nhân hoá quảng cáo dựa vào trình duyệt</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> hiện ở chế độ toàn màn hình và đã tắt con trỏ chuột của bạn.</translation>
 <translation id="8667760277771450375">Chúng tôi đang nghiên cứu các cách để hạn chế hoạt động theo dõi qua nhiều trang web đồng thời giúp các trang web ngăn chặn hành vi lừa đảo và quảng cáo không liên quan.</translation>
+<translation id="8668378421690365723">Thiết bị của bạn có thể không còn hoạt động bình thường và có thể gặp phải các vấn đề về hiệu suất và bảo mật.</translation>
 <translation id="8669284339312441707">Ấm hơn</translation>
 <translation id="8670537393737592796">Để quay lại đây nhanh chóng, hãy cài đặt <ph name="APP_NAME" /> bằng cách nhấp vào nút cài đặt</translation>
 <translation id="867085395664725367">Đã xảy ra lỗi máy chủ tạm thời.</translation>
@@ -8461,6 +8462,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Để có trải nghiệm tốt nhất, hãy cài đặt <ph name="DEVICE_OS" /> vào ổ đĩa trong của bạn. Bạn cũng có thể cài đặt ứng dụng vào lúc khác trên màn hình đăng nhập.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nếu chưa sẵn sàng cài đặt, bạn có thể chạy ứng dụng từ USB để dùng thử trước. Thao tác này sẽ giữ lại hệ điều hành và dữ liệu hiện có, nhưng bạn có thể gặp phải các giới hạn về dung lượng lưu trữ và hiệu suất.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Mở dưới dạng thẻ được ghim</translation>
+<translation id="9123287046453017203">Thiết bị của bạn chưa được cập nhật</translation>
 <translation id="9124003689441359348">Mật khẩu đã lưu của bạn sẽ xuất hiện ở đây</translation>
 <translation id="9126149354162942022">Màu con trỏ</translation>
 <translation id="9128317794749765148">Không thể hoàn tất quá trình thiết lập</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL di configurazione automatica:</translation>
 <translation id="2288278176040912387">Giradischi</translation>
 <translation id="2291538123825441971">Apertura di file <ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303282178633578561">Blocca scheda SIM</translation>
 <translation id="2303301624314357662">Apertura del file <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Pianeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> è stato espulso.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">I tuoi file recenti verranno mostrati qui</translation>
 <translation id="2578394532502990878">Tamil fonetica</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">L'amministratore richiede la disattivazione del blocco SIM.</translation>
 <translation id="2602810353103180630">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">La scheda SIM è bloccata</translation>
 <translation id="2620090360073999360">Al momento non è possibile raggiungere Google Drive.</translation>
 <translation id="2621713457727696555">Protetta</translation>
 <translation id="2638942478653899953">Impossibile raggiungere Google Drive. <ph name="BEGIN_LINK" />Esci<ph name="END_LINK" /> e accedi di nuovo.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Lettone</translation>
 <translation id="5489965683297092283">Il filtro <ph name="FILTER_NAME" /> non è attivo.</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
-<translation id="5500104704744051184">Non potrai utilizzare questa rete finché non inserisci il PUK</translation>
 <translation id="5500122897333236901">Islandese</translation>
 <translation id="5508696409934741614">Punti</translation>
 <translation id="5522908512596376669">L'elenco dei file è stato modificato in visualizzazione elenco.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Errore durante la configurazione della rete</translation>
 <translation id="7839804798877833423">Per il recupero di questi file verranno utilizzati circa <ph name="FILE_SIZE" /> di dati mobili.</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
-<translation id="7847617962681804761">Viene richiesto il PIN per usare i dati mobili</translation>
 <translation id="7853966320808728790">BÉPO francese</translation>
 <translation id="7857117644404132472">Aggiungi eccezione</translation>
 <translation id="7868774406711971383">Polacco</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Sincronizzazione di <ph name="NUMBER_OF_FILES" /> elementi...</translation>
 <translation id="8600173386174225982">L'elenco dei file è stato modificato in visualizzazione miniatura.</translation>
 <translation id="8601932370724196034">File immagine Crostini</translation>
-<translation id="8608515571837163082">Hai inserito troppe volte un PIN non corretto. Inserisci il PUK (codice personale di sblocco) di 8 cifre fornito dall'operatore.</translation>
 <translation id="8609695766746872526">Islandese</translation>
 <translation id="863903787380594467">PIN errato. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>

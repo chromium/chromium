@@ -469,10 +469,10 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
+<translation id="3724279623330129812">Automatyczne powiększenie wyśrodkowało obraz z kamery</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
-<translation id="3761848338953536304">Administrator prosi o wyłączenie ustawienia blokady SIM</translation>
 <translation id="3765841986579723851">Edytowane dzisiaj</translation>
 <translation id="3771549900096082774">Tryb wysokiego kontrastu</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
@@ -759,6 +759,16 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
+<translation id="5399673806694250334">Zasobnik stanu, godzina <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Szybkie ustawienia, naciśnij Wyszukaj + strzałka w lewo, by otworzyć centrum powiadomień.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
@@ -857,7 +867,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="598407983968395253">Użyj szablonu</translation>
 <translation id="598882571027504733">Aby pobrać aktualizację, uruchom Chromebooka ponownie z podłączoną klawiaturą.</translation>
 <translation id="5992218262414051481">Tryb wysokiego kontrastu został włączony. Aby go wyłączyć, naciśnij ponownie Ctrl+Search+H.</translation>
-<translation id="6009656393242168182">Wyłącz ustawienie blokady SIM</translation>
 <translation id="6012623610530968780">Strona <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Wyłączam tryb odbicia lustrzanego</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
@@ -897,6 +906,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="619279033188484792">Wyświetlaj najnowsze zdjęcia, pliki multimedialne i powiadomienia z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Naładuj do pełna teraz</translation>
 <translation id="6193431488227440296">Deweloperska</translation>
+<translation id="6210042900243040400">Połącz urządzenie <ph name="NAME" /> wcześniej zapisane na koncie <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Teraz możesz jednocześnie nagrywać siebie i swój ekran</translation>
 <translation id="622484624075952240">W dół</translation>
 <translation id="6231419273573514727">Wydajność urządzeń peryferyjnych może być ograniczona</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">தானியங்கு உள்ளமைவு URL:</translation>
 <translation id="2288278176040912387">பதிவு பிளேயர்</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ஃபைல்களைத் திறக்கிறது.</translation>
-<translation id="2303282178633578561">சிம் கார்டைப் பூட்டு</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ஃபைலைத் திறக்கிறது.</translation>
 <translation id="2304820083631266885">கோள்</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> வெளியேற்றப்பட்டது.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">உங்கள் சமீபத்திய ஃபைல்கள் இங்கே காட்டப்படும்</translation>
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
 <translation id="2579959351793446050">ஒடியா</translation>
-<translation id="2593644851255584939">சிம் பூட்டை முடக்குமாறு உங்கள் நிர்வாகி கோருகிறார்.</translation>
 <translation id="2602810353103180630">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி தடுத்துள்ளார், விவரங்கள்</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> வீடியோ</translation>
-<translation id="2617342710774726426">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="2620090360073999360">இந்த நேரத்தில் Google இயக்ககத்தை அடைய முடியாது.</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
 <translation id="2638942478653899953">Google இயக்ககத்தை அடைய முடியவில்லை. <ph name="BEGIN_LINK" />வெளியேறி<ph name="END_LINK" /> திரும்பவும் உள்நுழையவும்.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">லாட்வியன்</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> வடிப்பான் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
-<translation id="5500104704744051184">PUKவை வழங்கினால் மட்டுமே இந்த நெட்வொர்க்கைப் பயன்படுத்த முடியும்</translation>
 <translation id="5500122897333236901">ஐஸ்லாண்டிக்</translation>
 <translation id="5508696409934741614">புள்ளிகள்</translation>
 <translation id="5522908512596376669">ஃபைல் பட்டியல் 'பட்டியல் காட்சிக்கு' மாறியுள்ளது.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
 <translation id="7839804798877833423">இந்த ஃபைல்களைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
-<translation id="7847617962681804761">மொபைல் டேட்டாவைப் பயன்படுத்த பின் (PIN) தேவை</translation>
 <translation id="7853966320808728790">ஃபிரஞ்ச் பீபோ</translation>
 <translation id="7857117644404132472">விதிவிலக்கைச் சேர்</translation>
 <translation id="7868774406711971383">போலிஷ்</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> உருப்படிகளை ஒத்திசைக்கிறது...</translation>
 <translation id="8600173386174225982">ஃபைல் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini பட ஃபைல்</translation>
-<translation id="8608515571837163082">பலமுறை தவறான பின்னை (PIN) வழங்கிவிட்டீர்கள். மொபைல் நெட்வொர்க் நிறுவனம் வழங்கிய, தடுப்பை நீக்குவதற்கான 8 இலக்கத் தனிப்பட்ட குறியீட்டை (PUK) வழங்கவும்.</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
 <translation id="863903787380594467">தவறான பின். <ph name="RETRIES" /> முயற்சிகள் மீதமுள்ளன.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - போர்ட்</translation>

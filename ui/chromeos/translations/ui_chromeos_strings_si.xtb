@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">ස්වයංවින්‍යාසකරණ URL:</translation>
 <translation id="2288278176040912387">තැටි වාදකය</translation>
 <translation id="2291538123825441971">ගොනු <ph name="NUMBER_OF_FILES" />ක් විවෘත කිරීම.</translation>
-<translation id="2303282178633578561">SIM පත අගුලු දමන්න</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ගොනුව විවෘත කිරීම.</translation>
 <translation id="2304820083631266885">ග්‍රහලෝකය</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ඉවත් කර ඇත.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ඔබේ මෑත ගොනු මෙහි දිස් වනු ඇත</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
 <translation id="2579959351793446050">ඔඩියා</translation>
-<translation id="2593644851255584939">ඔබේ පරිපාලකයා ඔබ SIM අගුල අබල කිරීම අවශ්‍ය කරයි.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> වීඩියෝ</translation>
-<translation id="2617342710774726426">SIM පත අගුළු වැටී ඇත</translation>
 <translation id="2620090360073999360">මේ අවස්ථාවේ Google Drive වෙත ලගාවිය නොහැක.</translation>
 <translation id="2621713457727696555">ආරක්ෂිතයි</translation>
 <translation id="2638942478653899953">Google Drive වෙත ප්‍රවේශ විය නොහැක. <ph name="BEGIN_LINK" />ප්‍රවිෂ්ටයෙන් පිට වී<ph name="END_LINK" /> නැවතත් ප්‍රවිෂ්ට වන්න.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">ලැට්වියානු</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> පෙරහන ක්‍රියාවිරහිතයි.</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
-<translation id="5500104704744051184">ඔබ PUK ඇතුළත් කරන තෙක් ඔබට මෙම ජාලය භාවිත කිරීමට නොහැකි වෙයි</translation>
 <translation id="5500122897333236901">අයිස්ලාන්තික</translation>
 <translation id="5508696409934741614">තිත්</translation>
 <translation id="5522908512596376669">ගොනු ලැයිස්තුව ලැයිස්තු දසුනට වෙනස් විය.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">ජාලය වින්‍යාස කිරීමේ දෝෂයකි</translation>
 <translation id="7839804798877833423">මෙම ගොනු සොයා ගැනීමෙන් ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>
-<translation id="7847617962681804761">ජංගම දත්ත භාවිත කිරීමට PIN අවශ්‍යයි</translation>
 <translation id="7853966320808728790">ප්‍රංශ BÉPO</translation>
 <translation id="7857117644404132472">ව්‍යතිරේකයක් එක් කරන්න</translation>
 <translation id="7868774406711971383">පෝලන්ත</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">අයිතම <ph name="NUMBER_OF_FILES" /> සම්මුහුර්ත කරයි...</translation>
 <translation id="8600173386174225982">ගොනු ලැයිස්තුව සිඟිති රූ දසුනට වෙනස් විය.</translation>
 <translation id="8601932370724196034">Crostini රූප ගොනුව</translation>
-<translation id="8608515571837163082">වැරදි රහස් අංකයක් ඉතා වැඩි වාර ගණනක් ඇතුළු කරන ලදි. වාහකය විසින් සපයන ලද ඉලක්කම් 8 ක පුද්ගලික අවහිර නොකිරීමේ යතුර (PUK) ඇතුළත් කරන්න.</translation>
 <translation id="8609695766746872526">අයිස්ලන්ත</translation>
 <translation id="863903787380594467">වැරදි PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - තොට</translation>

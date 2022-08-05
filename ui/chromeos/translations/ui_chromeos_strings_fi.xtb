@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
-<translation id="2303282178633578561">Lukitse SIM-kortti</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeetta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Viimeksi käytetyt tiedostot näkyvät täällä</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
 <translation id="2579959351793446050">orija</translation>
-<translation id="2593644851255584939">Järjestelmänvalvoja edellyttää, että poistat SIM-lukituksen käytöstä.</translation>
 <translation id="2602810353103180630">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
 <translation id="2614589611416690597">Video, jonka tyyppi on <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM-kortti on lukittu.</translation>
 <translation id="2620090360073999360">Google Drive ei ole käytettävissä juuri nyt.</translation>
 <translation id="2621713457727696555">Suojattu</translation>
 <translation id="2638942478653899953">Google Driveen ei saada yhteyttä. <ph name="BEGIN_LINK" />Kirjaudu ulos<ph name="END_LINK" /> ja takaisin sisään.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">latvia</translation>
 <translation id="5489965683297092283">Suodatin ei käytössä: <ph name="FILTER_NAME" /></translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
-<translation id="5500104704744051184">Et voi käyttää tätä verkkoa ennen kuin lisäät PUK-koodin</translation>
 <translation id="5500122897333236901">islanti</translation>
 <translation id="5508696409934741614">Pisteet</translation>
 <translation id="5522908512596376669">Tiedostot näkyvät nyt luettelona.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Verkon määritysvirhe</translation>
 <translation id="7839804798877833423">Mobiiliyhteyden kautta noudettavien tiedostojen koko on noin <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">Peru valinta</translation>
-<translation id="7847617962681804761">Mobiilidatan käyttö edellyttää PIN-koodia</translation>
 <translation id="7853966320808728790">Ranskalainen BÉPO</translation>
 <translation id="7857117644404132472">Lisää poikkeus</translation>
 <translation id="7868774406711971383">puola</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Synkronoidaan <ph name="NUMBER_OF_FILES" /> kohdetta…</translation>
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
-<translation id="8608515571837163082">Väärä PIN-koodi on syötetty liian monta kertaa. Lisää operaattorilta saamasi 8-numeroinen PUK-koodi.</translation>
 <translation id="8609695766746872526">islanti</translation>
 <translation id="863903787380594467">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – portti</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
 <translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
-<translation id="2303282178633578561">Lås SIM-kort</translation>
 <translation id="2303301624314357662">Öppnar filen <ph name="FILE_NAME" /></translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> har tagits bort.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">De senaste filerna visas här</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
 <translation id="2579959351793446050">odia</translation>
-<translation id="2593644851255584939">Administratören kräver att du inaktiverar SIM-låset.</translation>
 <translation id="2602810353103180630">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
-<translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2620090360073999360">Det går inte att nå Google Drive just nu.</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="2638942478653899953">Det gick inte att nå Google Drive. <ph name="BEGIN_LINK" />Logga ut<ph name="END_LINK" /> och sedan in igen.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">lettiska</translation>
 <translation id="5489965683297092283">Filtret <ph name="FILTER_NAME" /> är av.</translation>
 <translation id="5494920125229734069">Markera alla</translation>
-<translation id="5500104704744051184">Du kan inte använda det här nätverket förrän du anger PUK-koden</translation>
 <translation id="5500122897333236901">isländska</translation>
 <translation id="5508696409934741614">Punkter</translation>
 <translation id="5522908512596376669">Fillistan har ändrats till listvy.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Fel i nätverkskonfigurationen</translation>
 <translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
-<translation id="7847617962681804761">En pinkod krävs för att använda mobildata</translation>
 <translation id="7853966320808728790">franska (BÉPO)</translation>
 <translation id="7857117644404132472">Lägg till undantag</translation>
 <translation id="7868774406711971383">polska</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Synkroniserar <ph name="NUMBER_OF_FILES" /> objekt ...</translation>
 <translation id="8600173386174225982">Fillistan har ändrats till miniatyrvy.</translation>
 <translation id="8601932370724196034">Bildfil för Crostini</translation>
-<translation id="8608515571837163082">Fel pinkod har angetts för många gånger. Ange den åttasiffriga PUK-koden (Personal Unblocking Key) som du har fått från operatören.</translation>
 <translation id="8609695766746872526">isländska</translation>
 <translation id="863903787380594467">Fel pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

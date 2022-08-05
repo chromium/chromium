@@ -3546,13 +3546,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="482803100714220060">Tam URL'leri göster</translation>
 <translation id="4832852360828533362">Kullanıcı ve cihaz raporlaması</translation>
 <translation id="4834526953114077364">Yeterli boş alan sağlanıncaya kadar, son 3 ay içinde oturum açmayan ve en seyrek kullanılan kullanıcılar kaldırılır</translation>
-<translation id="483544442646753291"><ph name="SYSTEM_FEATURES_DISABLE_LIST" /> içindeki devre dışı bırakılan özelliklerle ilgili kullanıcı deneyimini kontrol eder.
-
-      Bu politika "engellendi" olarak ayarlanırsa, devre dışı bırakılan özellikler kullanılamaz hale gelir ama yine de kullanıcılar tarafından görülebilir.
-
-      Bu politika "gizli" olarak ayarlanırsa, devre dışı bırakılan özellikler kullanılamaz hale gelir ve kullanıcılar tarafından görülemez.
-
-      Bu politika ayarlanmadan bırakılırsa veya geçersiz bir değer içerirse sistem özelliklerinin devre dışı bırakma modu "engellenir".</translation>
 <translation id="4835470005923546373">Varsayılan olarak arka plan grafikleri yazdırma modunu devre dışı bırak</translation>
 <translation id="4835622243021053389">NTLMv2 kimlik doğrulamasını etkinleştir.</translation>
 <translation id="4840015507504937941">Bu politika, DataLeakPreventionRulesList politikasında belirtilen pano kısıtlama kuralları doğrultusunda kontrol edilecek pano verileri için minimum veri boyutunu (bayt cinsinden) belirler.
@@ -4431,9 +4424,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       True (doğru) değerine ayarlanırsa cihazın VPD bilgileri raporlanır.
       Önemli Ürün Verileri (Vital Product Data-VPD), cihazla ilişkilendirilmiş yapılandırma ve bilgi amaçlı (ör. parti ve seri numarası) verileri içerir.</translation>
-<translation id="576158229686912964">Bu politika M96 sürümünde kullanımdan kaldırılmıştır. Bunun yerine lütfen <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> ve <ph name="REPORT_DEVICE_NETWORK_STATUS" /> politikalarını kullanın.
-
-      Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar, türleri ve donanım adresleriyle birlikte ağ arayüzleri listesini bildirir. Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar ağ arayüzünü bildirmez.</translation>
 <translation id="5762969307102447459">Adresleri otomatik doldurmayı devre dışı bırak</translation>
 <translation id="5765780083710877561">Açıklama:</translation>
 <translation id="5766438888216077649"><ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyen bağlantılar için <ph name="WINDOW_OPENER_PROPERTY" /> özelliğini ayarlamayın</translation>
@@ -6118,9 +6108,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika ayarlanmadan bırakılırsa varsayılan değer, kuruluş tarafından yönetilen kullanıcılar için <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, yönetilmeyen kullanıcılar için de <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> olur.
 
       İleride <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> değeri kullanılarak <ph name="LACROS_NAME" /> tarayıcının <ph name="PRODUCT_OS_NAME" /> ile kullanılabilen tek tarayıcı olması sağlanabilecektir.</translation>
-<translation id="7509761893401042250">Bu politika, M96 sürümüyle birlikte kullanımdan kaldırılmıştır. Bunun yerine lütfen <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> ve <ph name="REPORT_DEVICE_AUDIO_STATUS" /> politikalarını kullanın.
-
-      Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar CPU/RAM kullanımı gibi donanım istatistiklerini bildirir. Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar donanım istatistiklerini bildirmez.</translation>
 <translation id="7512065400265675158"><ph name="USER_AGENT_HEADER_NAME" /> HTTP istek başlığı kısaltılacak. Bu politika, testi ve uyumluluk sağlanmasını kolaylaştırmak amacıyla kısaltma özelliğini tüm web siteleri için etkinleştirebilir ya da özelliği etkinleştirmek üzere kaynak denemelerini veya alan denemelerini devre dışı bırakabilir.
 
       <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> ve zaman çizelgesi hakkında daha fazla bilgiyi şu adreste bulabilirsiniz:
@@ -7136,13 +7123,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Politika true (doğru) değerine ayarlanırsa en az 5 dakikadır arka planda bulunan sekmeler dondurulabilir. Sekme dondurma işlemi CPU, pil ve bellek kullanımını azaltır. <ph name="PRODUCT_NAME" />, arka planda faydalı işler yapan sekmelerin (ör. bildirimleri görüntüleme, ses çalma, video yayınlama) dondurulmaması için sezgisel yöntemler kullanır. Web geliştiricileri, sitelerinin dondurma kapsamı dışında kalmasını seçebilir (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Politika false (yanlış) değerine ayarlanırsa hiçbir sekme dondurulmaz.</translation>
-<translation id="8619480582976056396">Politika ayarlanırsa yasaklı URL'leri olan web sayfalarının yüklenmesi önlenir. Yasaklı URL'leri belirten URL kalıpları listesi sağlar. Politika ayarlanmadan bırakılırsa tarayıcıda hiçbir URL yasaklanmaz. URL kalıbını şu biçime göre biçimlendirin ( https://www.chromium.org/administrators/url-blocklist-filter-format ). <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasında en çok 1.000 istisna tanımlanabilir.
-
-      <ph name="PRODUCT_NAME" /> sürüm 73'ten itibaren javascript://* URL'lerini engelleyebilirsiniz. Ancak bu engelleme yalnızca adres çubuğuna girilen JavaScript'i (veya örneğin yer işareti uygulamalarını) etkiler. Dinamik olarak yüklenen verileri olan sayfa içi JavaScript URL'leri bu politikaya tabi değildir. Örneğin, example.com/abc URL'sini engellerseniz example.com yine de XMLHTTPRequest kullanarak example.com/abc URL'sini yükleyebilir.
-
-      Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
-
-      Not: Dahili chrome://* URL'lerinin engellenmesi beklenmedik hatalara neden olabilir.</translation>
 <translation id="8619748440665904084">İlk çalıştırmada form otomatik doldurma verilerinin içe aktarılmasını devre dışı bırak</translation>
 <translation id="8623672932476443039">Politika, etkin değerine ayarlanırsa kullanıcılar erişime kapalı uygulamalar için geliştirici moduna erişebilir.
       Politika, devre dışı değerine ayarlanırsa kullanıcılar bu özelliklere erişemez.
@@ -7291,9 +7271,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8807313206348471682">Oturum kapatma onayı iletişimini göster</translation>
 <translation id="8812091410765157924">Yalnızca <ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan pop-up'lara, pop-up'ı açan sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça etkinleştirirse verilir.</translation>
 <translation id="8816370949847593408">Kullanımdan kaldırma durumuna bağlı olarak Chrome Uygulamalarının çalışmasına izin verilmeyebilir.</translation>
-<translation id="8818173863808665831">Cihazın coğrafi konumunu bildirin.
-
-      Bu politika ayarlanmazsa veya yanlış seçeneğine ayarlanırsa konum bildirilmez.</translation>
 <translation id="8818768076343557335">Hücresel olmayan ağlarda ağ işlemlerini tahmin et.
           (50'de kullanımdan kaldırılmıştır, 52'de kaldırılmıştır. 52'den sonra, 1 değeri ayarlanırsa 0 olarak (ağ bağlantılarında ağ işlemlerini tahmin et değeri gibi) işlem görür.)</translation>
 <translation id="8821678641132607468">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan tarama geçmişi ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi ilk çalıştırmada içe aktarılmaz.

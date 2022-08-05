@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL-ja e konfigurimit automatik:</translation>
 <translation id="2288278176040912387">Gramafoni</translation>
 <translation id="2291538123825441971">Po hapen <ph name="NUMBER_OF_FILES" /> skedarë.</translation>
-<translation id="2303282178633578561">Kyçe kartën SIM</translation>
 <translation id="2303301624314357662">Po hap skedarin <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> është nxjerrë.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Skedarët e tu më të fundit do të shfaqen këtu</translation>
 <translation id="2578394532502990878">Tamilisht fonetike</translation>
 <translation id="2579959351793446050">Odiaisht</translation>
-<translation id="2593644851255584939">Administratori yt kërkon që të çaktivizosh kyçjen e kartës SIM.</translation>
 <translation id="2602810353103180630">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Karta SIM është e kyçur</translation>
 <translation id="2620090360073999360">"Disku i Google" nuk mund të arrihet në këtë moment.</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="2638942478653899953">"Disku i Google" është i paarritshëm. <ph name="BEGIN_LINK" />Dil<ph name="END_LINK" /> dhe identifikohu përsëri.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Letonisht</translation>
 <translation id="5489965683297092283">Filtri <ph name="FILTER_NAME" /> është joaktiv.</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
-<translation id="5500104704744051184">Nuk do të mund ta përdorësh këtë rrjet derisa të futësh kodin PUK</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>
 <translation id="5522908512596376669">Lista e skedarëve ka ndryshuar në pamjen e listës.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
-<translation id="7847617962681804761">Kërkohet PIN për të përdorur të dhënat celulare</translation>
 <translation id="7853966320808728790">Franceze BÉPO</translation>
 <translation id="7857117644404132472">Shto një përjashtim</translation>
 <translation id="7868774406711971383">Polonisht</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Po sinkronizohen <ph name="NUMBER_OF_FILES" /> artikuj...</translation>
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
-<translation id="8608515571837163082">Është futur shumë herë një kod PIN i gabuar. Fut "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
 <translation id="8609695766746872526">Islandisht</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Sjálfvirk stilling vefslóðar:</translation>
 <translation id="2288278176040912387">Grammófónn</translation>
 <translation id="2291538123825441971">Opnar <ph name="NUMBER_OF_FILES" /> skrár.</translation>
-<translation id="2303282178633578561">Læsa SIM-korti</translation>
 <translation id="2303301624314357662">Opnar skrána <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Pláneta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> hefur verið aftengt.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Nýjustu skrárnar þínar birtast hér</translation>
 <translation id="2578394532502990878">Tamíl hljóðritun</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Stjórnandinn gerir kröfu um að þú slökkvir á SIM-lás.</translation>
 <translation id="2602810353103180630">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af kerfisstjóra, nánar</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> myndskeið</translation>
-<translation id="2617342710774726426">SIM-kortið er læst</translation>
 <translation id="2620090360073999360">Ekki næst í Google Drive á þessari stundu.</translation>
 <translation id="2621713457727696555">Læst</translation>
 <translation id="2638942478653899953">Ekki náðist í Google Drive. <ph name="BEGIN_LINK" />Skráðu þig út<ph name="END_LINK" /> og svo aftur inn.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Lettneska</translation>
 <translation id="5489965683297092283">Slökkt er á síunni <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Velja allt</translation>
-<translation id="5500104704744051184">Þú munt ekki geta notað þetta net þar til þú hefur slegið inn PUK-númerið</translation>
 <translation id="5500122897333236901">Íslenskt</translation>
 <translation id="5508696409934741614">Punktar</translation>
 <translation id="5522908512596376669">Skráalista var breytt í listayfirlit.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Villa við að stilla netkerfi</translation>
 <translation id="7839804798877833423">Um það bil <ph name="FILE_SIZE" /> af farsímagögnum verða notuð til að sækja þessar skrár.</translation>
 <translation id="7846076177841592234">Hætta við val</translation>
-<translation id="7847617962681804761">Til að nota farsímagögn þarf PIN-númer</translation>
 <translation id="7853966320808728790">Franskt BÉPO</translation>
 <translation id="7857117644404132472">Bæta við undantekningu</translation>
 <translation id="7868774406711971383">Pólska</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Samstillir <ph name="NUMBER_OF_FILES" /> atriði...</translation>
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
-<translation id="8608515571837163082">Rangt PIN-númer var slegið inn of oft. Sláðu inn 8 talna PUK-númerið frá símafyrirtækinu.</translation>
 <translation id="8609695766746872526">Íslenska</translation>
 <translation id="863903787380594467">Rangt PIN-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – gátt</translation>

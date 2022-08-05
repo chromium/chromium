@@ -469,10 +469,10 @@
 <translation id="3708186454126126312">Падключаныя раней прылады</translation>
 <translation id="371370241367527062">Пярэдні мікрафон</translation>
 <translation id="3713734891607377840">Адкрыць пасля завяршэння</translation>
+<translation id="3724279623330129812">Камера адцэнтравана функцыяй аўтамаштабавання</translation>
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
-<translation id="3761848338953536304">Ваш адміністратар просіць вас адключыць наладу блакіроўкі SIM-карты</translation>
 <translation id="3765841986579723851">Зменена сёння</translation>
 <translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
@@ -857,7 +857,6 @@
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
 <translation id="5992218262414051481">Рэжым высокай кантраснасці ўключаны. Каб выключыць яго, зноў націсніце Ctrl + Пошук + H.</translation>
-<translation id="6009656393242168182">Адключыце наладу блакіроўкі SIM-карты</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Выхад з рэжыму адлюстравання</translation>
 <translation id="602001110135236999">Прагартаць улева</translation>
@@ -897,6 +896,7 @@
 <translation id="619279033188484792">Праглядайце на прыладзе <ph name="DEVICE_TYPE" /> нядаўнія апавяшчэнні з тэлефона, а таксама медыяфайлы і фота</translation>
 <translation id="619335566042889110">Зарадзіць акумулятар поўнасцю</translation>
 <translation id="6193431488227440296">Для распрацоўшчыкаў</translation>
+<translation id="6210042900243040400">Можна падключыцца да прылады "<ph name="NAME" />", якая была захавана раней ва ўліковым запісе <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>

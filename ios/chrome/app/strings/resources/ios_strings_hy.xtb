@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">Անվտանգ չէ</translation>
 <translation id="3533202363250687977">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="3533436815740441613">Նոր ներդիր</translation>
+<translation id="3547799431091898961">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
@@ -681,6 +682,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6561262006871132942">Մեծացնել</translation>
 <translation id="6583087784430677195">Անջատելու համար բացեք <ph name="BEGIN_LINK" />Կարգավորումները<ph name="END_LINK" /> և անցեք «Գաղտնաբառերի ինքնալրացում»։</translation>
 <translation id="6585618849026997638">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
+<translation id="6596481460663245319">Որոնել պատկեր Google-ում</translation>
 <translation id="6598875554591387303">Տեսակավորել ըստ հրատարակչի</translation>
 <translation id="6603393121510733479">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7987685713885608670">Անվտանգության մակարդակը բարձրացնելու համար գաղտնաբառերը գաղտնագրեք ձեր սարքում՝ նախքան Google Գաղտնաբառերի կառավարիչում պահելը։</translation>
 <translation id="7993619969781047893">Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="800361585186029508">Մուտքագրված URL-ները բացվում են Google Chrome-ում։</translation>
+<translation id="8016714545083187120">Միշտ օգտագործել անվտանգ միացումներ</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8023878949384262191">Ընդարձակում է բաժինը:</translation>
 <translation id="8027581147000338959">Բացել նոր պատուհանում</translation>

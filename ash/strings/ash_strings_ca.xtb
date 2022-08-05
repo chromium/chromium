@@ -472,7 +472,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
-<translation id="3761848338953536304">L'administrador sol·licita que desactivis la configuració de bloqueig de la SIM</translation>
 <translation id="3765841986579723851">Editat avui</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -867,7 +866,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5992218262414051481">El mode d'alt contrast està activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
-<translation id="6009656393242168182">Desactiva la configuració de bloqueig de la SIM</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">S'està sortint del mode de mirall</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>

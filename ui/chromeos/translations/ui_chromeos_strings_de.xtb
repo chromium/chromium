@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL für Autokonfiguration:</translation>
 <translation id="2288278176040912387">Plattenspieler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> Dateien werden geöffnet.</translation>
-<translation id="2303282178633578561">SIM-Karte sperren</translation>
 <translation id="2303301624314357662">Datei "<ph name="FILE_NAME" />" wird geöffnet.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Hier werden deine zuletzt verwendeten Dateien angezeigt</translation>
 <translation id="2578394532502990878">Tamil (phonetisch)</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">Dein Administrator verlangt, dass du die SIM-Sperre deaktivierst.</translation>
 <translation id="2602810353103180630">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-Video</translation>
-<translation id="2617342710774726426">SIM-Karte ist gesperrt</translation>
 <translation id="2620090360073999360">Google Drive ist momentan nicht erreichbar.</translation>
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melde dich ab<ph name="END_LINK" /> und melde dich dann erneut an.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Lettisch</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />-Filter ist aus.</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
-<translation id="5500104704744051184">Du kannst dieses Mobilfunknetz erst verwenden, wenn du die PUK eingegeben hast</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
 <translation id="5522908512596376669">Die Dateiliste wird jetzt in der Listenansicht angezeigt.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
-<translation id="7847617962681804761">Zur Nutzung mobiler Daten ist eine PIN erforderlich</translation>
 <translation id="7853966320808728790">Französisch – Bépo</translation>
 <translation id="7857117644404132472">Ausnahme hinzufügen</translation>
 <translation id="7868774406711971383">Polnisch</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> Elemente werden synchronisiert...</translation>
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
-<translation id="8608515571837163082">Es wurde zu oft die falsche PIN eingegeben. Gib den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den du vom Mobilfunkanbieter erhalten hast.</translation>
 <translation id="8609695766746872526">Isländisch</translation>
 <translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

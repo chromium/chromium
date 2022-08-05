@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
+<translation id="6467852467360539617">ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="7302486331832100261">ਆਮ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰਦੇ ਹੋ। ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਵੇਰਵਿਆਂ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> ਲਈ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7423098979219808738">ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="7423538860840206698">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7425915948813553151">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ</translation>

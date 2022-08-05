@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Reproduzir/pausar</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
+<translation id="1207734034680156868">As sugestões baseiam-se na sua descrição</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
 <translation id="1236400083787698183">Antes de reiniciar, faça um Powerwash ao seu dispositivo. Se o seu dispositivo tiver tampa, aguarde pela conclusão do Powerwash antes de a fechar. A conclusão do Powerwash poderá demorar até um minuto.</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
@@ -86,7 +87,7 @@
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1631385268983122904">Não monte já o dispositivo</translation>
-<translation id="1639239467298939599">A carregar</translation>
+<translation id="1639239467298939599">A carregar…</translation>
 <translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
 <translation id="1643449475550628585">Alterar imagem de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>

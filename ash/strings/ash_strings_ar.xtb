@@ -126,7 +126,7 @@
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
-<translation id="1639239467298939599">جارٍ التحميل.</translation>
+<translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -474,7 +474,6 @@
 <translation id="3735740477244556633">الترتيب حسب
 </translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
-<translation id="3761848338953536304">‏يطلب المشرف إيقاف ميزة قفل شريحة SIM.</translation>
 <translation id="3765841986579723851">تم تعديله اليوم.</translation>
 <translation id="3771549900096082774">وضع التباين العالي</translation>
 <translation id="3773700760453577392">منع أحد المشرفين الدخول المتعدد لـ <ph name="USER_EMAIL" />. لذا على جميع المستخدمين تسجيل الخروج للمتابعة.</translation>
@@ -869,7 +868,6 @@
 <translation id="598407983968395253">استخدام النموذج</translation>
 <translation id="598882571027504733">‏للحصول على التحديث، يُرجى إعادة تشغيل جهاز Chromebook مع توصيل لوحة المفاتيح.</translation>
 <translation id="5992218262414051481">‏تم تفعيل وضع التباين العالي. اضغط على "Ctrl+Search+H" مرة أخرى لإيقافه.</translation>
-<translation id="6009656393242168182">‏إيقاف ميزة قفل شريحة SIM</translation>
 <translation id="6012623610530968780">صفحة <ph name="SELECTED_PAGE" /> من <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
@@ -909,6 +907,7 @@
 <translation id="619279033188484792">يمكنك عرض الصور والوسائط والإشعارات الحديثة في هاتفك على <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">الشحن بالكامل الآن</translation>
 <translation id="6193431488227440296">إصدار مطوِّري البرامج</translation>
+<translation id="6210042900243040400">ربط <ph name="NAME" /> الذي تم حفظه في السابق على الحساب <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>

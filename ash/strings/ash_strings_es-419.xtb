@@ -472,7 +472,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
-<translation id="3761848338953536304">El administrador te solicita que desactives la configuración de bloqueo de la SIM</translation>
 <translation id="3765841986579723851">Se editó hoy</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
@@ -563,7 +562,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4283888303416325161">Ingresa la contraseña para más seguridad</translation>
-<translation id="4285498937028063278">No fijar</translation>
+<translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="430191667033048642">Se movió <ph name="MOVED_APP_NAME" /> a la carpeta <ph name="FOLDER_NAME" />.</translation>
@@ -760,6 +759,16 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5393156353051693207">Mantén presionado en cualquier lugar para reorganizar las apps</translation>
 <translation id="5395308026110844773">Arrastra la app <ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" /> y suéltala para crear una carpeta.</translation>
 <translation id="5397578532367286026">El administrador (<ph name="MANAGER_EMAIL" />) puede revisar el uso y el historial de este usuario en la página chrome.com.</translation>
+<translation id="5399673806694250334">Bandeja de estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Configuración rápida, presiona la tecla de búsqueda + la tecla hacia la izquierda para acceder al centro de notificaciones.</translation>
 <translation id="5426063383988017631">Se cerró el menú de configuración</translation>
 <translation id="5428899915242071344">Comenzar a seleccionar</translation>
@@ -858,7 +867,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para obtener la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se habilitó el modo de contraste alto. Presiona Ctrl+Buscar+H de nuevo para desactivarlo.</translation>
-<translation id="6009656393242168182">Inhabilita la configuración de bloqueo de la SIM</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
@@ -898,6 +906,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="619279033188484792">Ve las fotos, el contenido multimedia y las notificaciones recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Cargar por completo ahora</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Abajo</translation>
 <translation id="6231419273573514727">Es posible que se limite el rendimiento de los dispositivos periféricos</translation>

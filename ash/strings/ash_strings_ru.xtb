@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
-<translation id="1639239467298939599">Загрузка</translation>
+<translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -472,7 +472,6 @@
 <translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
 <translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
-<translation id="3761848338953536304">Администратор просит вас отключить блокировку SIM-карты.</translation>
 <translation id="3765841986579723851">Изменено сегодня</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
@@ -857,7 +856,6 @@
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
 <translation id="5992218262414051481">Режим высокой контрастности включен. Чтобы отключить его, нажмите CTRL + ПОИСК + H.</translation>
-<translation id="6009656393242168182">Разблокируйте SIM-карту</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> из <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
 <translation id="602001110135236999">Влево</translation>
@@ -897,6 +895,7 @@
 <translation id="619279033188484792">Позволяет просматривать на устройстве <ph name="DEVICE_TYPE" /> уведомления с телефона, а также недавно добавленные на телефон фотографии и медиафайлы</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>
 <translation id="6193431488227440296">Версия для разработчиков</translation>
+<translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6231419273573514727">Производительность периферийных устройств может быть ограничена</translation>

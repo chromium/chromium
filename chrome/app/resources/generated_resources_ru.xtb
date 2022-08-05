@@ -8,12 +8,14 @@
 <translation id="1005274289863221750">Использование микрофона и камеры</translation>
 <translation id="1005333234656240382">Включить отладку с ADB?</translation>
 <translation id="1006873397406093306">Расширению разрешено просматривать и изменять ваши данные на сайтах. Вы можете выбрать, к каким сайтам у него будет доступ.</translation>
+<translation id="1007057452468855774">Включить Google Play</translation>
 <translation id="1008186147501209563">Экспортировать закладки</translation>
 <translation id="1008557486741366299">Не сейчас</translation>
 <translation id="1009476156254802388">Папка в сервисе "<ph name="WEB_DRIVE" />"</translation>
 <translation id="1009663062402466586">Теперь доступны средства управления играми</translation>
 <translation id="1010498023906173788">Эта вкладка подключена к последовательному порту.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница не отвечает}one{Страницы не отвечают}few{Страницы не отвечают}many{Страницы не отвечают}other{Страницы не отвечают}}</translation>
+<translation id="1011003645819296594">Сохраненные устройства</translation>
 <translation id="1011355516189274711">Громкость озвучивания текста</translation>
 <translation id="1012794136286421601">Ваши документы, таблицы, презентации и рисунки синхронизируются. Запустите приложение "Google Диск", чтобы получить к ним доступ в режиме онлайн или офлайн.</translation>
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
@@ -494,6 +496,7 @@
 <translation id="1470350905258700113">Использовать это устройство</translation>
 <translation id="1470946456740188591">Чтобы включить или отключить режим активного курсора, нажмите Ctrl + Поиск + 7</translation>
 <translation id="1472675084647422956">Показать больше...</translation>
+<translation id="1473223074251193484">Настроить режим модема</translation>
 <translation id="1474785664565228650">Изменено разрешение на доступ к микрофону. Чтобы продолжить, перезапустите Parallels Desktop.</translation>
 <translation id="1474893630593443211">Больше возможностей для управления рекламой</translation>
 <translation id="1475502736924165259">У вас имеются сертификаты, которые не попадают ни в одну из других категорий</translation>
@@ -682,7 +685,7 @@
 <translation id="1637224376458524414">Получите эту закладку на iPhone</translation>
 <translation id="1637350598157233081">Пароль сохранен на этом устройстве.</translation>
 <translation id="1637765355341780467">Не удалось открыть профиль. Некоторые функции могут быть недоступны.</translation>
-<translation id="1639239467298939599">Загрузка</translation>
+<translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> пока не работает в приложениях для Linux.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 с шифрованием RSA</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
@@ -1115,6 +1118,7 @@
 <translation id="2044014337866019681">Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
 <translation id="2045117674524495717">Справка по быстрым клавишам</translation>
+<translation id="2045211794962848221">Вы больше не увидите это сообщение.</translation>
 <translation id="2045969484888636535">Всегда блокировать сохранение cookie</translation>
 <translation id="204622017488417136">Устройство вернется к предыдущей версии Chrome. Локальные данные и аккаунты пользователей будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -3800,6 +3804,7 @@
 <translation id="4594577641390224176">Ищете информацию о системе? Перейдите на страницу</translation>
 <translation id="4595560905247879544">Изменять приложения и расширения может только менеджер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">У вас есть сертификаты, идентифицирующие эти серверы</translation>
+<translation id="4598345735110653698">Настроить ключи доступа</translation>
 <translation id="4598556348158889687">Управление хранилищем</translation>
 <translation id="4598776695426288251">Доступно подключение к Wi-Fi через несколько устройств</translation>
 <translation id="4601426376352205922">Отметить как непрочитанное</translation>
@@ -4025,6 +4030,7 @@
 <translation id="4823894915586516138">Этот PIN-код или пароль будут защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, в том числе информацию, получаемую с телефона.</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
+<translation id="4825532258163983651">Не удается удалить ключ доступа</translation>
 <translation id="4827675678516992122">Ошибка подключения</translation>
 <translation id="4827784381479890589">Использовать расширенную проверку правописания в браузере Chrome (для создания подсказок текст будет отправляться в Google)</translation>
 <translation id="4827904420700932487">Создать QR-код для этого изображения</translation>
@@ -4287,6 +4293,7 @@
 <translation id="5087249366037322692">Добавлено сторонней программой</translation>
 <translation id="5087580092889165836">Добавить карту</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
+<translation id="5089763948477033443">Маркер, который позволяет изменить размер боковой панели</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
@@ -4452,6 +4459,7 @@
 <translation id="5258992782919386492">Установить на этом устройстве</translation>
 <translation id="5260334392110301220">Умные кавычки</translation>
 <translation id="5260508466980570042">Вы указали неверный адрес электронной почты или пароль. Повторите попытку.</translation>
+<translation id="5260958083445173099">Содержимое сайтов будет по возможности показываться на предпочитаемых языках.</translation>
 <translation id="5261683757250193089">Открыть в Интернет-магазине</translation>
 <translation id="5262178194499261222">Удалить пароль</translation>
 <translation id="5262784498883614021">Автоматически подключаться к сети</translation>
@@ -4492,6 +4500,7 @@
 <translation id="5294097441441645251">Имя должно начинаться со строчной буквы или символа подчеркивания.</translation>
 <translation id="5294618183559481278">Ваше устройство <ph name="DEVICE_TYPE" /> использует встроенный датчик, чтобы распознавать человека, находящегося перед экраном. Все полученные данные сразу обрабатываются и удаляются. Они не отправляются в Google. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">Озвучивать текст, чтобы вы могли использовать устройство, не глядя на экран. Чтобы представлять текст с помощью шрифта Брайля, нужно подключить специальное устройство.</translation>
+<translation id="5297005732522718715">Обновить конфигурацию режима модема</translation>
 <translation id="5297082477358294722">Пароль сохранен. Просматривать сохраненные пароли и управлять ими можно на странице <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">Если другой человек посмотрит на экран вашего устройства, в правом нижнем углу вы увидите значок глаза.</translation>
 <translation id="5298219193514155779">Автор темы:</translation>
@@ -4662,6 +4671,7 @@
 <translation id="5466374726908360271">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
 <translation id="5468173180030470402">Поиск общих папок…</translation>
+<translation id="5468330507528805311">Статус режима модема</translation>
 <translation id="5468881191994555667">Выбрать файл</translation>
 <translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
 <translation id="5470735824776589490">Перед сбросом настроек с помощью функции Powerwash необходимо перезагрузить устройство. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4937,6 +4947,7 @@
 <translation id="5734362860645681824">Оборудование</translation>
 <translation id="5734697361979786483">Добавить общую папку</translation>
 <translation id="5736796278325406685">Введите действительное имя пользователя</translation>
+<translation id="5738093759615225354">Этот ключ доступа нужен, чтобы входить в систему на компьютере.</translation>
 <translation id="5739017626473506901">Войдите в систему, чтобы помочь пользователю <ph name="USER_NAME" /> добавить учебный аккаунт.</translation>
 <translation id="5739235828260127894">Требуется подтверждение. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Очень крупный</translation>
@@ -5098,6 +5109,7 @@
 <translation id="589541317545606110">Искать по странице, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Запретить</translation>
 <translation id="5900186025777217044">Функция Smart Lock изменена</translation>
+<translation id="5900243355162006650">Конфигурация режима модема</translation>
 <translation id="5900302528761731119">Фотография профиля Google</translation>
 <translation id="590036993063074298">Сведения о качестве трансляции</translation>
 <translation id="5901069264981746702">Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5402,6 +5414,7 @@
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6196854373336333322">Расширение "<ph name="EXTENSION_NAME" />" контролирует настройки прокси-сервера. Это значит, что оно может отследить или изменить передаваемые вами данные, а также оборвать интернет-соединение. Если вы не знали об этом, вам следует отключить расширение.</translation>
 <translation id="6197128521826316819">Создать QR-код для этой страницы</translation>
+<translation id="6197223946499512637">Эти ключи доступа хранятся на этом компьютере в приложении Windows Hello. Они не сохранены в вашем аккаунте Google.</translation>
 <translation id="6198252989419008588">Изменить PIN-код</translation>
 <translation id="6200047250927636406">Удалить файл</translation>
 <translation id="6200151268994853226">Настройки расширения</translation>
@@ -5699,6 +5712,7 @@
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
 <translation id="6483485061007832714">Открыть скачанный файл?</translation>
 <translation id="6483805311199035658">Открывается <ph name="FILE" />...</translation>
+<translation id="6486301003991593638">Чтобы управлять ключами доступа, обновите Windows.</translation>
 <translation id="6488384360522318064">Выбрать язык</translation>
 <translation id="648927581764831596">Отсутствуют</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
@@ -6291,6 +6305,7 @@
 <translation id="7029307918966275733">Установка Crostini не была выполнена. Чтобы посмотреть список участников, установите Crostini.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030304022046916278">Обеспечивает отправку URL на проверку по критериям Безопасного просмотра.</translation>
+<translation id="7030695672997239647">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в группу", а затем "Новая группа".</translation>
 <translation id="7031608529463141342">К вкладке "<ph name="WINDOW_TITLE" />" подключен последовательный порт</translation>
 <translation id="7033616203784997570">В названии должно быть не более 62 символов.</translation>
 <translation id="7034692021407794547">Сначала администратор с правом на управление платежами должен принять Условия использования оборудования Google Meet в разделе "Оборудование Google Meet" консоли администратора.</translation>
@@ -7392,6 +7407,7 @@
 <translation id="8101987792947961127">При следующей перезагрузке устройства необходимо выполнить Powerwash</translation>
 <translation id="81020759409809034">Папка на устройстве</translation>
 <translation id="8102139037507939978">Удалять из файла system_logs.txt информацию, позволяющую идентифицировать личность</translation>
+<translation id="810362914482827094">Поиск ключей доступа</translation>
 <translation id="8104088837833760645">Скачать профиль eSIM</translation>
 <translation id="8105368624971345109">Отключить</translation>
 <translation id="8107015733319732394">Установка Google Play Маркета на устройство <ph name="DEVICE_TYPE" /> (может занять несколько минут)…</translation>
@@ -7839,6 +7855,7 @@
 <translation id="8557022314818157177">Продолжайте прикасаться к сканеру отпечатков пальцев на электронном ключе, пока отпечаток не будет сохранен.</translation>
 <translation id="8557180006508471423">Включите Google Chrome в службах геолокации на устройстве Mac</translation>
 <translation id="8557856025359704738">Следующее скачивание запланировано <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8559858985063901027">Ключи доступа</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8561565784790166472">Будьте осторожны!</translation>
@@ -7965,6 +7982,7 @@
 <translation id="8677212948402625567">Свернуть все...</translation>
 <translation id="867767487203716855">Следующее обновление</translation>
 <translation id="8677859815076891398">Альбомов нет. Создайте альбом в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
+<translation id="8678378565142776698">Перезапустить и включить автоматическое обновление</translation>
 <translation id="8678538439778360739">Данные зашифрованы с помощью кодовой фразы <ph name="TIME" />. Шифрование не применяется к способам оплаты и адресам из Google Pay.</translation>
 <translation id="8678582529642151449">вкладки не уменьшаются</translation>
 <translation id="8678933587484842200">Как запустить это приложение?</translation>
@@ -8214,6 +8232,7 @@
 <translation id="8910987510378294980">Скрыть список устройств</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912810933860534797">Включить автосканирование</translation>
+<translation id="8915307125957890427">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в группу", а затем "Новая группа".</translation>
 <translation id="8915370057835397490">Загрузка подсказки</translation>
 <translation id="8916476537757519021">Субфрейм в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>
@@ -8288,6 +8307,7 @@
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="8986494364107987395">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="8987927404178983737">Месяц</translation>
+<translation id="8989359959810288806">Обновить статус режима модема</translation>
 <translation id="8991520179165052608">Сайт может использовать микрофон</translation>
 <translation id="899384117894244799">Удалить пользователя с ограниченным доступом</translation>
 <translation id="899403249577094719">URL базы сертификатов Netscape</translation>

@@ -472,7 +472,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dhe <ph name="UNAVAILABLE_APPS_COUNT" /> të tjera nuk gjenden në këtë pajisje.</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
-<translation id="3761848338953536304">Administratori po kërkon që ta çaktivizosh cilësimin e kyçjes së kartës SIM</translation>
 <translation id="3765841986579723851">Modifikuar sot</translation>
 <translation id="3771549900096082774">Modaliteti i kontrastit të lartë</translation>
 <translation id="3773700760453577392">Një administrator ka ndaluar identifikimin e shumëfishtë për <ph name="USER_EMAIL" />. Të gjithë përdoruesit duhet të dalin për të vazhduar.</translation>
@@ -857,7 +856,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
 <translation id="5992218262414051481">Modaliteti i kontrastit të lartë u aktivizua. Shtyp përsëri Ctrl+Kërko+Shift+H për ta çaktivizuar.</translation>
-<translation id="6009656393242168182">Çaktivizo cilësimin e kyçjes së kartës SIM</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
@@ -897,6 +895,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="619279033188484792">Shiko fotografitë, mediat dhe njoftimet më të fundit të telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Karikoje plotësisht tani</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>

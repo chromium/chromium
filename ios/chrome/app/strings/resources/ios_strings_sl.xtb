@@ -311,6 +311,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3529024052484145543">Ni varno</translation>
 <translation id="3533202363250687977">Zapri vse anonimne zavihke</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
+<translation id="3547799431091898961">Če se želite odjaviti iz računa Google na vseh spletnih mestih, <ph name="BEGIN_LINK" />se odjavite iz Chroma<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
@@ -681,6 +682,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6583087784430677195">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> in nato »Samodejno izpolnjevanje gesel«.</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
+<translation id="6596481460663245319">Iskanje slike z Googlom</translation>
 <translation id="6598875554591387303">Razvrsti glede na izdajatelja</translation>
 <translation id="6603393121510733479">Vaša organizacija je izklopila zasebno brskanje.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="7987685713885608670">Zaradi dodatne varnosti šifrirajte gesla v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
+<translation id="8016714545083187120">Vedno dovoli varne povezave</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8023878949384262191">Razširi razdelek.</translation>
 <translation id="8027581147000338959">Odpri v novem oknu</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL ya kuweka mipangilio kiotomatiki:</translation>
 <translation id="2288278176040912387">Kicheza rekodi</translation>
 <translation id="2291538123825441971">Inafungua faili <ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303282178633578561">Funga SIM kadi</translation>
 <translation id="2303301624314357662">Inafungua faili ya <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Sayari</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> imeondolewa.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Faili zako za hivi karibuni zitaonekana hapa</translation>
 <translation id="2578394532502990878">Fonetiki ya Kitamili</translation>
 <translation id="2579959351793446050">Kiodia</translation>
-<translation id="2593644851255584939">Msimamizi wako anahitaji uzime hali ya kufunga SIM.</translation>
 <translation id="2602810353103180630">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="2614589611416690597">Video ya <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM kadi imefungwa</translation>
 <translation id="2620090360073999360">Hifadhi ya Google haiwezi kufikiwa kwa wakati huu.</translation>
 <translation id="2621713457727696555">Unalindwa</translation>
 <translation id="2638942478653899953">Hifadhi ya Google haikuweza kupatikana. Tafadhali  <ph name="BEGIN_LINK" />ondoka<ph name="END_LINK" /> na uingie tena.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Kilativia</translation>
 <translation id="5489965683297092283">Kichujio cha <ph name="FILTER_NAME" /> kimezimwa.</translation>
 <translation id="5494920125229734069">Chagua zote</translation>
-<translation id="5500104704744051184">Hutaweza kutumia mtandao huu hadi utakapoweka PUK</translation>
 <translation id="5500122897333236901">Kiaislandi</translation>
 <translation id="5508696409934741614">Nukta</translation>
 <translation id="5522908512596376669">Umebadilisha orodha ya faili kuwa mwonekano wa orodha.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Hitilafu imetokea wakati wa kuweka mipangilio ya mtandao</translation>
 <translation id="7839804798877833423">Kupata faili hizi kutatumia takribani  <ph name="FILE_SIZE" /> za data ya simu ya mkononi.</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
-<translation id="7847617962681804761">Unahitaji PIN ili uweze kutumia data ya mtandao wa simu</translation>
 <translation id="7853966320808728790">BÉPO ya Kifaransa</translation>
 <translation id="7857117644404132472">Ongeza kighairi</translation>
 <translation id="7868774406711971383">Kipolandi</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Inasasisha vipengee <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Orodha ya faili imebadilishwa kuwa mwonekano wa kijipicha.</translation>
 <translation id="8601932370724196034">Picha ya faili ya Crostini</translation>
-<translation id="8608515571837163082">Umeweka PIN isiyo sahihi mara nyingi mno. Weka Nambari Binafsi ya Kufungua (PUK) yenye tarakimu 8 uliyopewa na mtoa huduma.</translation>
 <translation id="8609695766746872526">Kiaislandi</translation>
 <translation id="863903787380594467">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Mlango</translation>

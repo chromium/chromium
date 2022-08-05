@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">સ્વતઃગોઠવણી URL:</translation>
 <translation id="2288278176040912387">રેકોર્ડ પ્લેયર</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખુલી રહી છે.</translation>
-<translation id="2303282178633578561">સિમ કાર્ડ લૉક કરો</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ફાઇલ ખુલી રહી છે.</translation>
 <translation id="2304820083631266885">ગ્રહ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> બહાર કાઢવામાં આવ્યું છે.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">તમારી હાલની ફાઇલો અહીં દેખાશે</translation>
 <translation id="2578394532502990878">તમિળ ફોનેટિક</translation>
 <translation id="2579959351793446050">ઉડિયા</translation>
-<translation id="2593644851255584939">તમારા ઍડમિનિસ્ટ્રેટર માટે જરૂરી છે કે તમે સિમ કાર્ડ લૉક કરવાની સુવિધા બંધ કરો.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> વીડિયો</translation>
-<translation id="2617342710774726426">SIM કાર્ડ લૉક કરેલ છે</translation>
 <translation id="2620090360073999360">આ સમયે Google ડ્રાઇવ પર જઈ શકાતું નથી.</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2638942478653899953">Google ડ્રાઇવ પર પહોંચી શકાયું નથી. કૃપા કરીને <ph name="BEGIN_LINK" />લૉગ આઉટ કરો<ph name="END_LINK" /> અને પાછા લૉગ ઇન કરો.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">લૅતવિયન</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ફિલ્ટર બંધ છે.</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
-<translation id="5500104704744051184">જ્યાં સુધી તમે PUK દાખલ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં</translation>
 <translation id="5500122897333236901">આઇસલેન્ડિક</translation>
 <translation id="5508696409934741614">બિંદુઓ</translation>
 <translation id="5522908512596376669">ફાઇલ સૂચિને સૂચિ દૃશ્યમાં બદલી છે.</translation>
@@ -808,7 +804,6 @@
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
 <translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
-<translation id="7847617962681804761">મોબાઇલ ડેટાનો ઉપયોગ કરવા માટે પિન જરૂરી છે</translation>
 <translation id="7853966320808728790">ફ્રેંચ BÉPO</translation>
 <translation id="7857117644404132472">અપવાદ ઉમેરો</translation>
 <translation id="7868774406711971383">પોલિશ</translation>
@@ -903,7 +898,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> આઇટમ્સ સમન્વયિત કરી રહ્યાં છે...</translation>
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
-<translation id="8608515571837163082">ઘણી બધી વખત કોઈ ખોટો પિન દાખલ કરવામાં આવ્યો છે. મોબાઇલ ઑપરેટર દ્વારા આપવામાં આવેલો 8-અંકનો પર્સનલ અનબ્લૉકિંગ કી (PUK) દાખલ કરો.</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
 <translation id="863903787380594467">ખોટો પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - પોર્ટ</translation>

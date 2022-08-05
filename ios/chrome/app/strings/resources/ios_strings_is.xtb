@@ -311,6 +311,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3529024052484145543">Ekki öruggt</translation>
 <translation id="3533202363250687977">Loka öllum huliðsflipum</translation>
 <translation id="3533436815740441613">Nýr flipi</translation>
+<translation id="3547799431091898961">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Loka flipa</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
@@ -681,6 +682,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6561262006871132942">Auka aðdrátt</translation>
 <translation id="6583087784430677195">Opnaðu <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og síðan „Sjálfvirk útfylling aðgangsorða“ til að slökkva.</translation>
 <translation id="6585618849026997638">Þú getur komist aftur á mikilvæga síðu á einfaldan hátt með því að setja inn bókamerki</translation>
+<translation id="6596481460663245319">Leita að mynd með Google</translation>
 <translation id="6598875554591387303">Raða eftir útgefanda</translation>
 <translation id="6603393121510733479">Fyrirtækið þitt slökkti á óskráðri vefnotkun.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="7987685713885608670">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið.</translation>
 <translation id="7993619969781047893">Ekki er víst að allir eiginleikar á öllum vefsvæðum virki</translation>
 <translation id="800361585186029508">Opnar innslegnar vefslóðir í Google Chrome.</translation>
+<translation id="8016714545083187120">Nota ávallt öruggar tengingar</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8023878949384262191">Stækkar hlutann.</translation>
 <translation id="8027581147000338959">Opna í nýjum glugga</translation>

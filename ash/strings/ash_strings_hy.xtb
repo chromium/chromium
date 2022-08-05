@@ -472,7 +472,6 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" /> և <ph name="UNAVAILABLE_APPS_TWO" /> հավելվածներն ու ևս <ph name="UNAVAILABLE_APPS_COUNT" /> հավելված տեղադրված չեն այս սարքում։</translation>
 <translation id="3735740477244556633">Դասավորել ըստ</translation>
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
-<translation id="3761848338953536304">Ձեր ադմինիստրատորը պահանջում է, որ անջատեք SIM քարտի կողպման կարգավորումը</translation>
 <translation id="3765841986579723851">Այսօր փոփոխել եք</translation>
 <translation id="3771549900096082774">Բարձր կոնտրաստով ռեժիմ</translation>
 <translation id="3773700760453577392">Ադմինիստրատորն արգելել է բազմակի մուտքը <ph name="USER_EMAIL" />-ի հաշվի համար: Շարունակելու համար բոլոր օգտատերերը պետք է դուրս գրվեն:</translation>
@@ -759,6 +758,16 @@
 <translation id="5393156353051693207">Հպեք էկրանի ցանկացած հատվածին և պահեք՝ հավելվածները վերադասավորելու համար</translation>
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
+<translation id="5399673806694250334">Կարգավիճակի տող, ժամը՝ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Արագ կարգավորումներ․ սեղմեք Search+ձախ սլաքը՝ ծանուցումների կենտրոն մտնելու համար։</translation>
 <translation id="5426063383988017631">Կարգավորումների ընտրացանկը փակված է</translation>
 <translation id="5428899915242071344">Սկսել տեքստի ընտրությունը</translation>
@@ -857,7 +866,6 @@
 <translation id="598407983968395253">Օգտագործել ձևանմուշը</translation>
 <translation id="598882571027504733">Թարմացումը տեղադրելու համար վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
 <translation id="5992218262414051481">Բարձր կոնտրաստի ռեժիմը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+H:</translation>
-<translation id="6009656393242168182">Անջատեք ձեր SIM քարտի կողպման կարգավորումը</translation>
 <translation id="6012623610530968780">Էջ <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="602001110135236999">Ոլորել ձախ</translation>
@@ -897,6 +905,7 @@
 <translation id="619279033188484792">Թույլ է տալիս հեռախոսում վերջերս ավելացված լուսանկարները, մեդիա ֆայլերը և ծանուցումները դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="619335566042889110">Լիցքավորել ամբողջությամբ հիմա</translation>
 <translation id="6193431488227440296">Մշակողների</translation>
+<translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
 <translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>

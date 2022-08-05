@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
 <translation id="2288278176040912387">פטיפון</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
-<translation id="2303282178633578561">‏נעילת כרטיס ה-SIM</translation>
 <translation id="2303301624314357662">הקובץ <ph name="FILE_NAME" /> נפתח.</translation>
 <translation id="2304820083631266885">כוכב לכת</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> הוצא.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">הקבצים האחרונים יופיעו כאן</translation>
 <translation id="2578394532502990878">טמילית פונטית</translation>
 <translation id="2579959351793446050">אודיה</translation>
-<translation id="2593644851255584939">‏יש דרישה מהאדמין להשבית את נעילת ה-SIM.</translation>
 <translation id="2602810353103180630">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">‏כרטיס ה-SIM נעול</translation>
 <translation id="2620090360073999360">‏לא ניתן להגיע אל Google Drive בשלב זה.</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
 <translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />יש לצאת<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
@@ -530,7 +527,6 @@
 <translation id="5489067830765222292">לטבית</translation>
 <translation id="5489965683297092283">המסנן <ph name="FILTER_NAME" /> מושבת.</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
-<translation id="5500104704744051184">‏לא תהיה לך אפשרות להשתמש ברשת הזו עד להזנת PUK</translation>
 <translation id="5500122897333236901">איסלנדית</translation>
 <translation id="5508696409934741614">נקודות</translation>
 <translation id="5522908512596376669">רשימת הקבצים מוצגת עכשיו בתצוגת רשימה.</translation>
@@ -811,7 +807,6 @@
 <translation id="7831491651892296503">אירעה שגיאה בהגדרת הרשת</translation>
 <translation id="7839804798877833423">הבאת קבצים אלה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
-<translation id="7847617962681804761">נדרש קוד גישה לשימוש בחבילת הגלישה</translation>
 <translation id="7853966320808728790">‏BÉPO - צרפתית</translation>
 <translation id="7857117644404132472">להוספת מקרה חריג</translation>
 <translation id="7868774406711971383">פולנית</translation>
@@ -906,7 +901,6 @@
 <translation id="8579285237314169903">מתבצע סנכרון ל-<ph name="NUMBER_OF_FILES" /> פריטים...</translation>
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
-<translation id="8608515571837163082">‏הוזן קוד אימות שגוי יותר מדי פעמים. צריך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שקיבלת מהספק.</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
 <translation id="863903787380594467">קוד האימות שגוי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>

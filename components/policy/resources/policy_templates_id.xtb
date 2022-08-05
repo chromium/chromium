@@ -3578,13 +3578,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="482803100714220060">Menampilkan URL Lengkap</translation>
 <translation id="4832852360828533362">Pelaporan perangkat dan pengguna</translation>
 <translation id="4834526953114077364">Pengguna yang paling jarang digunakan yang belum masuk dalam 3 bulan terakhir dihapus sampai terdapat cukup ruang kosong</translation>
-<translation id="483544442646753291">Mengontrol pengalaman pengguna fitur yang dinonaktifkan yang tercantum di <ph name="SYSTEM_FEATURES_DISABLE_LIST" />.
-
-      Jika kebijakan ini disetel ke "diblokir", fitur yang dinonaktifkan tidak akan dapat digunakan tetapi tetap terlihat oleh pengguna.
-
-      Jika kebijakan ini disetel ke "tersembunyi", fitur yang dinonaktifkan tidak akan dapat digunakan dan tidak terlihat oleh pengguna.
-
-      Jika kebijakan in tidak disetel atau disetel ke nilai yang tidak valid, mode nonaktif dari fitur sistem akan menjadi "diblokir".</translation>
 <translation id="4835470005923546373">Nonaktifkan mode pencetakan grafis latar belakang secara default</translation>
 <translation id="4835622243021053389">Mengaktifkan autentikasi NTLMv2.</translation>
 <translation id="4840015507504937941">Kebijakan ini menyetel ukuran data minimal (dalam byte) dari data dalam papan klip yang akan diperiksa terhadap aturan pembatasan papan klip yang ditentukan di kebijakan DataLeakPreventionRulesList.
@@ -4477,9 +4470,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke benar (true), informasi VPD perangkat akan dilaporkan.
       Data Produk Vital (VPD) adalah kumpulan data konfigurasi dan informatif (seperti nomor suku cadang dan nomor seri) yang terkait dengan perangkat.</translation>
-<translation id="576158229686912964">Kebijakan ini tidak digunakan lagi di M96. Sebagai gantinya, gunakan <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> dan <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
-
-      Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan daftar antarmuka jaringan beserta jenis dan alamat hardware-nya. Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan melaporkan antarmuka jaringan.</translation>
 <translation id="5762969307102447459">Nonaktifkan Isi Otomatis untuk alamat</translation>
 <translation id="5765780083710877561">Deskripsi:</translation>
 <translation id="5766438888216077649">Tidak menyetel <ph name="WINDOW_OPENER_PROPERTY" /> untuk link yang menargetkan <ph name="BLANK_PAGE_NAME" /></translation>
@@ -6171,9 +6161,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan tidak disetel, setelan default adalah <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> untuk pengguna yang dikelola perusahaan dan <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> untuk pengguna yang tidak dikelola perusahaan.
 
       Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
-<translation id="7509761893401042250">Kebijakan ini tidak digunakan lagi mulai M96. Sebagai gantinya, gunakan <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" />, dan <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
-
-      Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan statistik hardware seperti penggunaan CPU/RAM. Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan melaporkan statistik hardware.</translation>
 <translation id="7512065400265675158">Header permintaan HTTP <ph name="USER_AGENT_HEADER_NAME" /> dijadwalkan akan dikurangi. Untuk memudahkan pengujian dan kompatibilitas, kebijakan ini dapat mengaktifkan fitur pengurangan untuk semua situs, atau menonaktifkan kemampuan uji coba asal atau uji coba kolom untuk mengaktifkan fitur tersebut.
 
       Untuk mempelajari <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> dan linimasanya lebih lanjut, baca di sini:
@@ -7193,13 +7180,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini ditetapkan ke true, tab yang telah berjalan di latar belakang selama setidaknya 5 menit dapat dibekukan. Pembekuan tab mengurangi penggunaan CPU, baterai, dan memori. <ph name="PRODUCT_NAME" /> menggunakan heuristik untuk menghindari pembekuan tab yang sedang aktif di latar belakang (misalnya, menampilkan notifikasi, memutar suara, streaming video). Developer web juga dapat memilih untuk tidak membekukan situsnya (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Jika kebijakan ditetapkan ke false, tidak ada tab yang akan dibekukan.</translation>
-<translation id="8619480582976056396">Menyetel kebijakan akan mencegah pemuatan halaman web yang berisi URL terlarang. Kebijakan menyediakan daftar pola URL yang menentukan URL terlarang. Jika kebijakan tidak disetel, tidak ada URL yang dilarang di browser. Format pola URL sesuai dengan format ini ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Hingga 1.000 pengecualian dapat ditentukan di <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Mulai <ph name="PRODUCT_NAME" /> versi 73, Anda dapat memblokir URL javascript://*. Namun, ini hanya akan memengaruhi JavaScript yang dimasukkan dalam kolom URL (atau, misalnya, bookmarklet). URL JavaScript dalam halaman dengan data yang dimuat secara dinamis tidak tunduk pada kebijakan ini. Misalnya, jika Anda memblokir example.com/abc, example.com tetap dapat memuat example.com/abc melalui XMLHTTPRequest.
-
-      Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.
-
-      Catatan: Memblokir URL chrome://* internal dapat menyebabkan error tak terduga.</translation>
 <translation id="8619748440665904084">Nonaktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
 <translation id="8623672932476443039">Jika kebijakan disetel ke Aktif, pengguna akan dapat mengakses Mode Developer untuk Aplikasi Terisolasi.
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengakses kemampuan tersebut.
@@ -7348,9 +7328,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8807313206348471682">Menampilkan dialog konfirmasi logout</translation>
 <translation id="8812091410765157924">Hanya izinkan pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang membuka pop-up jika halaman pembuka secara eksplisit memilih untuk mengizinkan interaksi tersebut</translation>
 <translation id="8816370949847593408">Aplikasi Chrome mungkin tidak diizinkan berjalan, bergantung pada status peluncuran penghentian.</translation>
-<translation id="8818173863808665831">Melaporkan lokasi geografis perangkat.
-
-      Jika kebijakan tidak disetel, atau disetel ke false, lokasi tidak akan dilaporkan.</translation>
 <translation id="8818768076343557335">Memprediksi tindakan jaringan pada jaringan apa pun yang bukan seluler.
           (Penggunaan dihentikan di nilai 50, dihapus di nilai 52. Setelah 52, jika nilai 1 disetel, nilai akan diperlakukan sebagai 0 - memprediksi tindakan jaringan di koneksi jaringan apa pun.)</translation>
 <translation id="8821678641132607468">Jika kebijakan disetel ke Aktif, histori penjelajahan akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada histori penjelajahan yang akan diimpor saat pertama kali dijalankan.

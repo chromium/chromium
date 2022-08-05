@@ -472,7 +472,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> na zingine <ph name="UNAVAILABLE_APPS_COUNT" /> hazipo kwenye kifaa hiki.</translation>
 <translation id="3735740477244556633">Panga kwa</translation>
 <translation id="3742055079367172538">Picha ya skrini imepigwa</translation>
-<translation id="3761848338953536304">Msimamizi wako anakuomba uzime mipangilio ya kufunga SIM</translation>
 <translation id="3765841986579723851">Imebadilishwa leo</translation>
 <translation id="3771549900096082774">Hali ya Juu ya Utofautishaji</translation>
 <translation id="3773700760453577392">Msimamizi ameondoa uwezo wa <ph name="USER_EMAIL" /> wa kuingia katika akaunti nyingi kwa wakati mmoja. Watumiaji wote lazima waondoke katika akaunti ili waendelee.</translation>
@@ -533,7 +532,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4115378294792113321">Rangi ya damu ya mzee</translation>
 <translation id="412298498316631026">dirisha</translation>
 <translation id="4123259114412175274">Ili kufungua Chromebook yako, hakikisha Bluetooth ya simu yako imewashwa</translation>
-<translation id="4125970834901680537">Huwezi kutiririsha maudhui ya kwenye programu katika hali ya kompyuta kibao. Jaribu tena katika hali ya kompyuta ya kupakata.</translation>
+<translation id="4125970834901680537">Huwezi kutiririsha maudhui kwenye programu katika hali ya kompyuta kibao. Jaribu tena katika hali ya kompyuta ya kupakata.</translation>
 <translation id="4129129681837227511">Ili uone arifa kwenye skrini iliyofungwa, ifungue ili ubadilishe mipangilio hii</translation>
 <translation id="4136724716305260864">Umewashwa hadi mawio</translation>
 <translation id="4146833061457621061">Cheza muziki</translation>
@@ -867,7 +866,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="598407983968395253">Tumia kiolezo</translation>
 <translation id="598882571027504733">Ili upate sasisho, washa Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
 <translation id="5992218262414051481">Hali ya Utofautishaji wa Juu imewashwa. Bonyeza Ctrl+Search+H tena ili ugeuze na kuizima.</translation>
-<translation id="6009656393242168182">Zima mipangilio yako ya kufunga SIM</translation>
 <translation id="6012623610530968780">Ukurasa wa <ph name="SELECTED_PAGE" /> kati ya <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Inaondoka kwenye hali ya kuakisi</translation>
 <translation id="602001110135236999">Sogeza kushoto</translation>
@@ -907,6 +905,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="619279033188484792">Tazama picha, maudhui na arifa za hivi karibuni za simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="619335566042889110">Chaji betri kikamilifu sasa</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Unganisha <ph name="NAME" /> zilizohifadhiwa hapo awali kwenye <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
 <translation id="622484624075952240">Chini</translation>
 <translation id="6231419273573514727">Huenda vifaa unavyounganisha kwenye kompyuta yako visifanye kazi kikamilifu</translation>

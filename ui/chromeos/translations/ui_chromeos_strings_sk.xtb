@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Webová adresa automatickej konfigurácie</translation>
 <translation id="2288278176040912387">Gramofón</translation>
 <translation id="2291538123825441971">Otvárajú sa súbory (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303282178633578561">Zamykať SIM kartu</translation>
 <translation id="2303301624314357662">Otvára sa súbor <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planéta</translation>
 <translation id="2305020378527873881">Zväzok <ph name="VOLUME_NAME" /> bol odpojený.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Tu sa budú zobrazovať vaše nedávne súbory</translation>
 <translation id="2578394532502990878">Tamilská fonetická klávesnica</translation>
 <translation id="2579959351793446050">Uríjska klávesnica</translation>
-<translation id="2593644851255584939">Správca vyžaduje, aby ste deaktivovali zámku SIM karty.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM karta je uzamknutá</translation>
 <translation id="2620090360073999360">Služba Disk Google nie je momentálne k dispozícii.</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
 <translation id="2638942478653899953">Disk Google je nedostupný. <ph name="BEGIN_LINK" />Odhláste sa<ph name="END_LINK" /> a znova sa prihláste.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Vyprázdniť kôš</translation>
 <translation id="5163869187418756376">Zdieľanie zlyhalo. Skontrolujte pripojenie a skúste to neskôr.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5172749059808361023">Podrobnosti o obmedzeniach</translation>
 <translation id="5177526793333269655">Zobrazenie miniatúr</translation>
 <translation id="5194713942430106590">Kliknutím zoradíte stĺpec vo vzostupnom poradí.</translation>
 <translation id="5211614973734216083">Faerská klávesnica</translation>
@@ -529,7 +527,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5489067830765222292">Lotyšská klávesnica</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je vypnutý.</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
-<translation id="5500104704744051184">Túto sieť budete môcť používať, až keď zadáte PUK</translation>
 <translation id="5500122897333236901">Islandčina</translation>
 <translation id="5508696409934741614">Bodky</translation>
 <translation id="5522908512596376669">Zoznam súborov sa zmenil na zobrazenie zoznamu.</translation>
@@ -810,7 +807,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7831491651892296503">Chyba pri konfigurácii siete</translation>
 <translation id="7839804798877833423">Načítanie týchto súborov spotrebuje približne <ph name="FILE_SIZE" /> mobilných dát.</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
-<translation id="7847617962681804761">Na používanie mobilných dát sa vyžaduje PIN</translation>
 <translation id="7853966320808728790">Francúzština – BÉPO</translation>
 <translation id="7857117644404132472">Pridať výnimku</translation>
 <translation id="7868774406711971383">Poľská klávesnica</translation>
@@ -905,7 +901,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8579285237314169903">Synchronizujú sa položky (počet: <ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
-<translation id="8608515571837163082">Príliš veľakrát bol zadaný nesprávny PIN. Zadajte osemmiestny PUK od operátora.</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
 <translation id="863903787380594467">Nesprávny kód PIN. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

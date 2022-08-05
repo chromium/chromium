@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">အလိုအလျောက် စီစဉ်သတ်မှတ်ခြင်း URL −</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
 <translation id="2291538123825441971">ဖိုင် <ph name="NUMBER_OF_FILES" /> ခု ဖွင့်နေသည်။</translation>
-<translation id="2303282178633578561">ဆင်းမ်ကတ် လော့ခ်ချရန်</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ဖိုင် ကို ဖွင့်နေသည်။</translation>
 <translation id="2304820083631266885">ဂြိုဟ်</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ကို ထုတ်ပယ်ထားသည်။</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">လတ်တလောဖိုင်များသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="2578394532502990878">တမီးလ် အသံထွက်</translation>
 <translation id="2579959351793446050">အိုဒီယာ</translation>
-<translation id="2593644851255584939">သင့်စီမံခန့်ခွဲသူက ‘ဆင်းမ်လော့ခ်’ ပိတ်စေလိုပါသည်။</translation>
 <translation id="2602810353103180630">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ဗီဒီယို</translation>
-<translation id="2617342710774726426">ဆင်းမ်ကတ် လော့ခ်ကျနေပါသည်</translation>
 <translation id="2620090360073999360">ဒီတစ်ချီမှာ Google ဒရိုက်ဗ် လက်လှမ်း မမှီပါ။</translation>
 <translation id="2621713457727696555">လုံခြုံပြီ</translation>
 <translation id="2638942478653899953">Google Drive အားမချိတ်ဆက် နိုင်ပါ။ ကျေးဇူးပြု၍ <ph name="BEGIN_LINK" />ထွက်<ph name="END_LINK" /> ကာ ပြန်ဝင်ပါ။</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">အမှိုက်ပုံး ရှင်းရန်</translation>
 <translation id="5163869187418756376">မျှဝေခြင်း မအောင်မြင်ပါ။ သင့်ချိတ်ဆက်မှုအား စစ်ဆေးကာ နောက်မှ ထပ်မံကြိုးစားပါ။</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5172749059808361023">ကန့်သတ်ချက် အသေးစိတ်</translation>
 <translation id="5177526793333269655">လက်သည်းပုံ ကြည့်ရန်</translation>
 <translation id="5194713942430106590">ကော်လံကို ငယ်စဉ်ကြီးလိုက်စီရန် နှိပ်ပါ။</translation>
 <translation id="5211614973734216083">ဖာရို</translation>
@@ -528,7 +526,6 @@
 <translation id="5489067830765222292">လတ်ဗီးယား</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ဖီလ်တာ ပိတ်ပြီးပြီ။</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
-<translation id="5500104704744051184">PUK မထည့်မီ ဤကွန်ရက်ကို မသုံးနိုင်ပါ</translation>
 <translation id="5500122897333236901">အိုက်စ်လန်</translation>
 <translation id="5508696409934741614">အစက်များ</translation>
 <translation id="5522908512596376669">ဖိုင်စာရင်းကို စာရင်းမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
@@ -809,7 +806,6 @@
 <translation id="7831491651892296503">ကွန်ရက်စီစဉ်သတ်မှတ်ရာတွင် အမှားအယွင်းရှိပါသည်</translation>
 <translation id="7839804798877833423">ဒီဖိုင်များကို ရယူခြင်းက မိုဘိုင်း ဒေတာ၏ <ph name="FILE_SIZE" />ခန့်ကို အသုံးပြုမည်။</translation>
 <translation id="7846076177841592234">ရွေးချယ်ထားသောဖိုင်များကို ပြန်ဖျက်ပါ</translation>
-<translation id="7847617962681804761">မိုဘိုင်းဒေတာသုံးရန် ပင်နံပါတ် လိုအပ်သည်</translation>
 <translation id="7853966320808728790">ပြင်သစ် BÉPO</translation>
 <translation id="7857117644404132472">ခြွင်းချက်ထည့်ပါ</translation>
 <translation id="7868774406711971383">ပိုလန်</translation>
@@ -904,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ခုအား စင့်လုပ်နေခြင်း...</translation>
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
-<translation id="8608515571837163082">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။ မိုဘိုင်းဖုန်းကုမ္ပဏီက ပို့ထားသည့် ဂဏန်း ၈ လုံးပါ ‘ပင်နံပါတ် ပြန်ဖွင့်သည့် ကုဒ်’ (PUK) ထည့်ပါ။</translation>
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
 <translation id="863903787380594467">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ပို့တ်</translation>

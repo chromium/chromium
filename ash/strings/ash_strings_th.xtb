@@ -470,10 +470,10 @@
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
+<translation id="3724279623330129812">ซูมอัตโนมัติให้อยู่ตรงกลางกล้อง</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>
 <translation id="3735740477244556633">จัดเรียงตาม</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
-<translation id="3761848338953536304">ผู้ดูแลระบบขอให้คุณปิดการตั้งค่าการล็อกซิม</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
 <translation id="3771549900096082774">โหมดคอนทราสต์สูง</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
@@ -859,7 +859,6 @@
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="5992218262414051481">เปิดใช้โหมดคอนทราสต์สูงอยู่ กด Ctrl+Search+H อีกครั้งเพื่อสลับเป็นปิด</translation>
-<translation id="6009656393242168182">ปิดใช้การตั้งค่าการล็อกซิม</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
@@ -899,6 +898,7 @@
 <translation id="619279033188484792">ดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">ชาร์จจนเต็มเลย</translation>
 <translation id="6193431488227440296">กำลังพัฒนา</translation>
+<translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>

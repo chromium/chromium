@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">自动配置网址：</translation>
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
-<translation id="2303282178633578561">锁定 SIM 卡</translation>
 <translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
 <translation id="2304820083631266885">星球</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">您最近用过的文件会显示在此处</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
-<translation id="2593644851255584939">您的管理员要求您停用 SIM 卡锁定功能。</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 视频</translation>
-<translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2620090360073999360">Google 云端硬盘目前无法访问。</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="2638942478653899953">无法访问 Google 云端硬盘。请先<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />，然后再重新登录。</translation>
@@ -524,7 +521,6 @@
 <translation id="5489067830765222292">拉脱维亚语</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />过滤器已关闭。</translation>
 <translation id="5494920125229734069">全选</translation>
-<translation id="5500104704744051184">在输入正确的 PUK 之前，您将无法使用此网络</translation>
 <translation id="5500122897333236901">冰岛语</translation>
 <translation id="5508696409934741614">圆点</translation>
 <translation id="5522908512596376669">文件列表已切换到列表视图。</translation>
@@ -805,7 +801,6 @@
 <translation id="7831491651892296503">配置网络时出错</translation>
 <translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="7846076177841592234">取消选择</translation>
-<translation id="7847617962681804761">必须输入 PIN 码才能使用移动数据</translation>
 <translation id="7853966320808728790">法语 BÉPO</translation>
 <translation id="7857117644404132472">添加例外情况</translation>
 <translation id="7868774406711971383">波兰语</translation>
@@ -900,7 +895,6 @@
 <translation id="8579285237314169903">正在同步 <ph name="NUMBER_OF_FILES" /> 个文件…</translation>
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
-<translation id="8608515571837163082">您输错 PIN 码的次数过多。请输入运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
 <translation id="8609695766746872526">冰岛语</translation>
 <translation id="863903787380594467">PIN 码不正确。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 端口</translation>

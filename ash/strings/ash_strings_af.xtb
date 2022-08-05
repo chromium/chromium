@@ -473,7 +473,6 @@ Koppel jou toestel aan krag.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
 <translation id="3735740477244556633">Rangskik volgens</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
-<translation id="3761848338953536304">Jou administrateur versoek tans dat jy die SIM-slotinstelling afskakel</translation>
 <translation id="3765841986579723851">Vandag gewysig</translation>
 <translation id="3771549900096082774">Hoëkontrasmodus</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
@@ -762,6 +761,16 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5393156353051693207">Raak en hou op enige plek om jou programme te herrangskik</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bo-oor <ph name="IN_PLACE_APP" />; laat los om vouer te skep.</translation>
 <translation id="5397578532367286026">Gebruiker se gebruik en geskiedenis kan op chrome.com deur die bestuurder (<ph name="MANAGER_EMAIL" />) nagegaan word.</translation>
+<translation id="5399673806694250334">Statuslaai, tyd <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Kitsinstellings; druk soek + links om na die kennisgewingsentrum toe te gaan.</translation>
 <translation id="5426063383988017631">Instellingskieslys is gesluit</translation>
 <translation id="5428899915242071344">Begin kies</translation>
@@ -860,7 +869,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="598407983968395253">Gebruik templaat</translation>
 <translation id="598882571027504733">Herbegin jou Chromebook met die sleutelbord aangeheg om die opdatering te kry.</translation>
 <translation id="5992218262414051481">Hoëkontras-modus is geaktiveer. Druk weer Ctrl+Search+H om dit af te skakel.</translation>
-<translation id="6009656393242168182">Deaktiveer jou SIM-slotinstelling</translation>
 <translation id="6012623610530968780">Bladsy <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Verlaat tans spieëlmodus</translation>
 <translation id="602001110135236999">Rollees links</translation>

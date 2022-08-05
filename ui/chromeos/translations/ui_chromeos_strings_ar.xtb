@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">‏عنوان URL للإعداد التلقائي:</translation>
 <translation id="2288278176040912387">مشغّل أقراص مسجلة</translation>
 <translation id="2291538123825441971">جارٍ فتح <ph name="NUMBER_OF_FILES" /> من الملفات.</translation>
-<translation id="2303282178633578561">‏قفل شريحة SIM</translation>
 <translation id="2303301624314357662">جارٍ فتح ملف <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">كوكب</translation>
 <translation id="2305020378527873881">تم إخراج <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ستظهر هنا أحدث الملفات.</translation>
 <translation id="2578394532502990878">التاميلية الصوتية</translation>
 <translation id="2579959351793446050">الأوديا</translation>
-<translation id="2593644851255584939">‏يطلب منك المشرف إيقاف "قفل شريحة SIM".</translation>
 <translation id="2602810353103180630">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، حجب المشرف هذه الشبكة، التفاصيل</translation>
 <translation id="2614589611416690597">ملف فيديو <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">‏تم قفل شريحة SIM</translation>
 <translation id="2620090360073999360">‏لا يمكن الوصول إلى Google Drive في الوقت الحالي.</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
 <translation id="2638942478653899953">‏تعذر الوصول إلى Google Drive. يُرجى <ph name="BEGIN_LINK" />الخروج<ph name="END_LINK" /> ثم تسجيل الدخول مرة أخرى.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">اللاتفية</translation>
 <translation id="5489965683297092283">تم إيقاف الفلتر <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
-<translation id="5500104704744051184">‏لن تتمكّن من استخدام هذه الشبكة إلى بعد إدخال رمز PUK.</translation>
 <translation id="5500122897333236901">الأيسلندية</translation>
 <translation id="5508696409934741614">نقاط</translation>
 <translation id="5522908512596376669">تم تغيير قائمة الملفات إلى عرض القائمة.</translation>
@@ -811,7 +807,6 @@
 <translation id="7831491651892296503">حدث خطأ أثناء إعداد الشبكة</translation>
 <translation id="7839804798877833423">سيؤدي جلب هذه الملفات إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
-<translation id="7847617962681804761">يجب إدخال رقم التعريف الشخصي لاستخدام بيانات الجوّال.</translation>
 <translation id="7853966320808728790">‏BÉPO الفرنسية</translation>
 <translation id="7857117644404132472">إضافة استثناء</translation>
 <translation id="7868774406711971383">البولندية</translation>
@@ -906,7 +901,6 @@
 <translation id="8579285237314169903">جارٍ مزامنة <ph name="NUMBER_OF_FILES" /> من البنود...</translation>
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
-<translation id="8608515571837163082">‏لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات. أدخِل مفتاح إزالة الحظر (PUK) المكوّن من 8 أرقام والمتوفّر من خلال مشغّل شبكة الجوّال.</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>

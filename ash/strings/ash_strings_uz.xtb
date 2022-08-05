@@ -473,7 +473,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> va yana <ph name="UNAVAILABLE_APPS_COUNT" /> ta ilova bu qurilmada emas.</translation>
 <translation id="3735740477244556633">Saralash tartibi</translation>
 <translation id="3742055079367172538">Ekran suratga olindi</translation>
-<translation id="3761848338953536304">Administratoringiz SIM kartani qulflash sozlamasini faolsizlantirishni talab qilmoqda</translation>
 <translation id="3765841986579723851">Bugun tahrirlangan</translation>
 <translation id="3771549900096082774">Yuqori kontrastli rejim</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> hisobi uchun bir multi-kirish imkoniyatini o‘chirib qo‘ydi. Hisobga kirishingizdan avval barcha foydalanuvchilar hisobdan chiqishi kerak.</translation>
@@ -869,7 +868,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="598407983968395253">Andozadan foydalanish</translation>
 <translation id="598882571027504733">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni tashqi klavuatura orqali o‘chirib yoqing.</translation>
 <translation id="5992218262414051481">Yuqori kontrastli rejim yoniq. O‘chirib qo‘yish uchun Ctrl+Qidiruv+H tugmalarini bosing.</translation>
-<translation id="6009656393242168182">SIM karta qulfi sozlamasini faolsizlantiring</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>

@@ -7958,6 +7958,7 @@
 <translation id="8666759526542103597">關於以瀏覽器為主的廣告個人化</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
 <translation id="8667760277771450375">我們正在開發限制跨網站追蹤的方法，同時讓網站能夠防範廣告垃圾內容和欺詐行為。</translation>
+<translation id="8668378421690365723">裝置可能無法再正常運作，而且可能會有安全性和效能問題。</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請點選安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器發生暫時性錯誤。</translation>
@@ -8441,6 +8442,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內部磁碟。你也可以之後再透過登入畫面安裝。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用此作業系統。這種做法可保留現有作業系統和資料，但儲存空間及效能可能會有所限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
+<translation id="9123287046453017203">這部裝置不是最新版本</translation>
 <translation id="9124003689441359348">你所儲存的密碼會顯示在這裡</translation>
 <translation id="9126149354162942022">游標顏色</translation>
 <translation id="9128317794749765148">無法完成設定</translation>

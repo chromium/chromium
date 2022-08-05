@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">স্বতঃকনফিগারেশান URL:</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
-<translation id="2303282178633578561">সিম কার্ড লক করুন</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> খোলা হচ্ছে।</translation>
 <translation id="2304820083631266885">গ্রহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সরিয়ে দেওয়া হয়েছে।</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">আপনার সাম্প্রতিক ফাইল এখানে দেখা যাবে</translation>
 <translation id="2578394532502990878">তামিল ফোনেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
-<translation id="2593644851255584939">আপনার অ্যাডমিনিস্ট্রেটর চান যে আপনি সিম কার্ড লক বন্ধ করুন।</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিও</translation>
-<translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
 <translation id="2620090360073999360">এই সময়ে Google ড্রাইভে পৌঁছানো যাবে না৷</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="2638942478653899953">Google ড্রাইভে পৌঁছানো যাবে না৷ অনুগ্রহ করে <ph name="BEGIN_LINK" />লগ-আউট<ph name="END_LINK" /> করুন এবং আবার লগ-ইন করুন৷</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">ট্র্যাশ খালি করুন</translation>
 <translation id="5163869187418756376">শেয়ার করে ব্যর্থ হয়েছে৷ আপনার সংযোগটি পরীক্ষা করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="516592729076796170">মার্কিন যুক্তরাষ্ট্র প্রোগ্রামার ডিভোরাক</translation>
+<translation id="5172749059808361023">সীমাবদ্ধতার বিবরণ</translation>
 <translation id="5177526793333269655">থাম্বনেল ভিউ</translation>
 <translation id="5194713942430106590">কলামের মানগুলি ছোট থেকে বড় ক্রমানুযায়ী সাজাতে ক্লিক করুন।</translation>
 <translation id="5211614973734216083">ফ্যারোইজ</translation>
@@ -528,7 +526,6 @@
 <translation id="5489067830765222292">লাতভিয়ান</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টার বন্ধ আছে।</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
-<translation id="5500104704744051184">আপনি PUK না লেখা পর্যন্ত এই নেটওয়ার্ক ব্যবহার করতে পারবেন না</translation>
 <translation id="5500122897333236901">আইসল্যান্ডিক</translation>
 <translation id="5508696409934741614">বিন্দু</translation>
 <translation id="5522908512596376669">লিস্ট ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
@@ -809,7 +806,6 @@
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
 <translation id="7839804798877833423">এই ফাইলগুলি আনতে আনুমানিক মোবাইল ডেটা <ph name="FILE_SIZE" /> ব্যবহার হবে</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
-<translation id="7847617962681804761">মোবাইল ডেটা ব্যবহার করতে পিন লাগবে</translation>
 <translation id="7853966320808728790">ফরাসি BÉPO</translation>
 <translation id="7857117644404132472">ব্যতিক্রম যোগ করুন</translation>
 <translation id="7868774406711971383">পোলিশ</translation>
@@ -904,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টি আইটেম সিঙ্ক করা হচ্ছে...</translation>
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
-<translation id="8608515571837163082">একটি ভুল পিন অনেকবার লেখা হয়েছে। আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া ৮-সংখ্যার 'পার্সোনাল আনব্লকিং কী' (PUK) লিখুন।</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
 <translation id="863903787380594467">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - পোর্ট</translation>

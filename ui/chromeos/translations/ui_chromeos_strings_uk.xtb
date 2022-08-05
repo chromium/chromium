@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL-адреса автоконфігурації:</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Відкриваються файли (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303282178633578561">Заблокувати SIM-карту</translation>
 <translation id="2303301624314357662">Відкривається файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> відключено.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Тут відображатимуться нещодавні файли</translation>
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
 <translation id="2579959351793446050">Орія</translation>
-<translation id="2593644851255584939">Адміністратор вимагає, щоб ви розблокували SIM-карту.</translation>
 <translation id="2602810353103180630">Мережа №<ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: <ph name="NETWORK_NAME" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
 <translation id="2614589611416690597">Відео <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM-карту заблоковано</translation>
 <translation id="2620090360073999360">Зараз неможливо отримати доступ до Google Диска.</translation>
 <translation id="2621713457727696555">Захищено</translation>
 <translation id="2638942478653899953">Диск Google недоступний. <ph name="BEGIN_LINK" />Вийдіть<ph name="END_LINK" /> і ввійдіть знову.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Латвійська</translation>
 <translation id="5489965683297092283">Фільтр "<ph name="FILTER_NAME" />" вимкнено.</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
-<translation id="5500104704744051184">Ви не зможете користуватися цією мережею, доки не введете PUK-код</translation>
 <translation id="5500122897333236901">Ісландська</translation>
 <translation id="5508696409934741614">Крапки</translation>
 <translation id="5522908512596376669">Список файлів тепер відображається у вигляді списку.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
 <translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
-<translation id="7847617962681804761">Щоб використовувати мобільний Інтернет, потрібно ввести PIN-код</translation>
 <translation id="7853966320808728790">Французька клавіатура BÉPO</translation>
 <translation id="7857117644404132472">Додати виняток</translation>
 <translation id="7868774406711971383">Польська</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Синхронізація стількох елементів: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
-<translation id="8608515571837163082">Ви ввели неправильний PIN-код забагато разів. Введіть 8-значний PUK-код, який надав оператор.</translation>
 <translation id="8609695766746872526">Ісландська</translation>
 <translation id="863903787380594467">Неправильний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>

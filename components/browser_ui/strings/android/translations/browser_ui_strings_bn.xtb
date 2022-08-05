@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
+<translation id="6467852467360539617">ডেটা মুছুন এবং অনুমতি রিসেট করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="7302486331832100261">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। অনুমতি দিতে, 'বিবরণ' বিকল্পে ক্লিক করুন।</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" />-এর সেটিংস</translation>
 <translation id="7423098979219808738">প্রথমে জিজ্ঞাসা করুন</translation>
 <translation id="7423538860840206698">ক্লিপবোর্ড পড়া ব্লক করা হয়েছে</translation>
 <translation id="7425915948813553151">সাইটের জন্য ডার্ক থিম</translation>

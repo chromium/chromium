@@ -3507,13 +3507,6 @@
 <translation id="482803100714220060">显示完整网址</translation>
 <translation id="4832852360828533362">用户和设备报告</translation>
 <translation id="4834526953114077364">删除最近3个月内未登录且使用最少的用户，直到有足够的可用空间</translation>
-<translation id="483544442646753291">此政策用于控制 <ph name="SYSTEM_FEATURES_DISABLE_LIST" /> 中所列的已停用功能的用户体验。
-
-      如果此政策设为“已禁用”，已停用的功能会不可用，但仍对用户可见。
-
-      如果此政策设为“已隐藏”，已停用的功能会不可用，并且对用户不可见。
-
-      如果此政策未设置或包含无效值，系统功能的停用模式将会是“已禁用”。</translation>
 <translation id="4835470005923546373">默认停用背景图片打印模式</translation>
 <translation id="4835622243021053389">启用 NTLMv2 身份验证。</translation>
 <translation id="4840015507504937941">此政策用于针对剪贴板中的数据设定大小下限（以字节为单位）。如果您设置了此政策，系统便会根据 DataLeakPreventionRulesList 政策中定义的剪贴板限制规则来检查不小于这一下限值的数据。
@@ -4389,9 +4382,6 @@
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告设备的 VPD 信息。
       重要产品数据 (VPD) 是指一系列与设备相关的配置数据和信息类数据，例如部件号和序列号。</translation>
-<translation id="576158229686912964">此政策在 M96 中已弃用。请改用 <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> 和 <ph name="REPORT_DEVICE_NETWORK_STATUS" />。
-
-      如果此政策已启用或未设置，已注册的设备会以列表形式报告网络接口及其类型和硬件地址。如果此政策已停用，已注册的设备不会报告网络接口。</translation>
 <translation id="5762969307102447459">禁止使用“自动填充”功能填写地址</translation>
 <translation id="5765780083710877561">说明：</translation>
 <translation id="5766438888216077649">不为那些定位到“<ph name="BLANK_PAGE_NAME" />”页面的链接设置 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
@@ -6056,9 +6046,6 @@
       如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”。
 
       将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
-<translation id="7509761893401042250">自 M96 起，此政策已被弃用。请改用 <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" /> 和 <ph name="REPORT_DEVICE_AUDIO_STATUS" />。
-
-      如果此政策已启用或未设置，已注册的设备会报告硬件统计信息（例如 CPU/RAM 使用情况）。如果此政策已停用，已注册的设备不会报告硬件统计信息。</translation>
 <translation id="7512065400265675158">我们已排定缩短<ph name="USER_AGENT_HEADER_NAME" /> HTTP 请求标头的时间。为方便测试和提高兼容性，此政策可为所有网站启用缩短功能，也可禁止通过源试用或现场试验启用该功能。
 
       如需详细了解“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能及其发布阶段时间安排，请参阅：
@@ -7067,13 +7054,6 @@
       如果此政策设为 true，系统可能会冻结已在后台运行至少 5 分钟的标签页。冻结标签页可以降低 CPU、电池和内存使用量。<ph name="PRODUCT_NAME" /> 会使用试探法来避免冻结在后台执行有用工作（例如显示通知、播放声音、流式传输视频）的标签页。网络开发者也可选择停用用于冻结网站标签页的功能 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
-<translation id="8619480582976056396">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策列出了一系列网址格式，用于指定禁止加载的网址。如果您未设置此政策，那么任何网址都能在浏览器中加载。所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
-
-      从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-      注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="8619748440665904084">禁止在首次运行时导入自动填充表单数据</translation>
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。
@@ -7222,9 +7202,6 @@
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
 <translation id="8812091410765157924">允许以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个打开弹出式窗口的页面互动，但前提是这个页面已明确接受此类互动</translation>
 <translation id="8816370949847593408">Chrome 应用能否运行取决于弃用安排的状态。</translation>
-<translation id="8818173863808665831">报告设备的地理位置。
-
-      如果未设置此政策或将其设为 false，系统将不会报告相关位置。</translation>
 <translation id="8818768076343557335">连上网络时一律预测网络操作（移动网络除外）。
           （在版本 50 中已不适用，在版本 52 中已遭到移除。在 52 以上版本中，如果设置值为 1，则系统会视为 0 - 连上网络时一律预测网络操作。）</translation>
 <translation id="8821678641132607468">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入浏览记录。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何浏览记录。

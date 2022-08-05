@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
 <translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
-<translation id="2303282178633578561">SIM քարտի կողպում</translation>
 <translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305020378527873881">Չհաջողվեց առբերել <ph name="VOLUME_NAME" /> պանակը։</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Ձեր վերջին ֆայլերը կհայտնվեն այստեղ</translation>
 <translation id="2578394532502990878">թամիլերեն (հնչյունային)</translation>
 <translation id="2579959351793446050">օրիյա</translation>
-<translation id="2593644851255584939">Ձեր ադմինիստրատորը պահանջում է, որ միացնեք SIM քարտի կողպումը։</translation>
 <translation id="2602810353103180630">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="2614589611416690597">Տեսանյութ (<ph name="VIDEO_TYPE" />)</translation>
-<translation id="2617342710774726426">SIM քարտը կողպված է</translation>
 <translation id="2620090360073999360">Google Drive-ը մատչելի չէ այս պահին:</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
 <translation id="2638942478653899953">Google Drive-ն անհասանելի է: <ph name="BEGIN_LINK" />Դուրս գրվեք<ph name="END_LINK" /> և նորից մուտք գործեք:</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">լատվիերեն</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> զտիչն անջատված է։</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
-<translation id="5500104704744051184">Դուք չեք կարողանա օգտվել այս ցանցից, մինչև չմուտքագրեք PUK կոդը</translation>
 <translation id="5500122897333236901">Իսլանդական</translation>
 <translation id="5508696409934741614">Կետեր</translation>
 <translation id="5522908512596376669">Ֆայլերի ցանկն այժմ ցուցադրված է ցանկի տեսքով:</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
-<translation id="7847617962681804761">Բջջային ինտերնետն օգտագործելու համար անհրաժեշտ է նշել PIN կոդը</translation>
 <translation id="7853966320808728790">Ֆրանսիական BÉPO</translation>
 <translation id="7857117644404132472">Ավելացնել բացառություն</translation>
 <translation id="7868774406711971383">լեհերեն</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> տարրի համաժամացում…</translation>
 <translation id="8600173386174225982">Ֆայլերի ցանկն այժմ ցուցադրված է մանրապատկերների տեսքով:</translation>
 <translation id="8601932370724196034">Crostini գրաֆիկական ֆայլ</translation>
-<translation id="8608515571837163082">PIN կոդը սխալ է մուտքագրվել չափազանց շատ անգամներ։ Մուտքագրեք ութանիշ անձնական արգելահանման բանալին (PUK), որը տրամադրվել է ձեր օպերատորի կողմից։</translation>
 <translation id="8609695766746872526">իսլանդերեն</translation>
 <translation id="863903787380594467">PIN կոդը սխալ է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Միացք</translation>

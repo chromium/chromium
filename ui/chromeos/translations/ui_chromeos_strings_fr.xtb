@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL de configuration automatique :</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
 <translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers.</translation>
-<translation id="2303282178633578561">Verrouiller la carte SIM</translation>
 <translation id="2303301624314357662">Ouverture du fichier <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a été éjecté.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Vos fichiers récents s'afficheront ici</translation>
 <translation id="2578394532502990878">Tamoul (phonétique)</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Votre administrateur exige que vous désactiviez le verrouillage SIM.</translation>
 <translation id="2602810353103180630">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Force du signal : <ph name="SIGNAL_STRENGTH" /> %, Bloqué par votre administrateur, Détails</translation>
 <translation id="2614589611416690597">Fichier vidéo <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2620090360073999360">Impossible d'établir la connexion à Google Drive pour le moment.</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="2638942478653899953">Impossible d'accéder à Google Drive. Veuillez vous <ph name="BEGIN_LINK" />déconnecter<ph name="END_LINK" />, puis vous reconnecter.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Letton</translation>
 <translation id="5489965683297092283">Le filtre <ph name="FILTER_NAME" /> est désactivé.</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
-<translation id="5500104704744051184">Vous ne pourrez pas utiliser ce réseau avant d'avoir saisi la clé PUK</translation>
 <translation id="5500122897333236901">Islandais</translation>
 <translation id="5508696409934741614">Points</translation>
 <translation id="5522908512596376669">Les fichiers s'affichent désormais sous forme de liste.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
 <translation id="7839804798877833423">L'opération de récupération de ces fichiers consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
-<translation id="7847617962681804761">Code PIN requis pour utiliser les données mobiles</translation>
 <translation id="7853966320808728790">BÉPO français</translation>
 <translation id="7857117644404132472">Ajouter une exception</translation>
 <translation id="7868774406711971383">Polonais</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Synchronisation de <ph name="NUMBER_OF_FILES" /> éléments en cours…</translation>
 <translation id="8600173386174225982">Les fichiers s'affichent désormais sous forme de vignettes.</translation>
 <translation id="8601932370724196034">Fichier image Crostini</translation>
-<translation id="8608515571837163082">Vous avez saisi un code PIN erroné trop de fois. Saisissez le code de déblocage (clé PUK) à huit chiffres fourni par votre opérateur.</translation>
 <translation id="8609695766746872526">Islandais</translation>
 <translation id="863903787380594467">Code PIN incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

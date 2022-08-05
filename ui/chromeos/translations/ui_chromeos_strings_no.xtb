@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Nettadresse for automatisk konfigurering:</translation>
 <translation id="2288278176040912387">Platespiller</translation>
 <translation id="2291538123825441971">Åpner <ph name="NUMBER_OF_FILES" /> filer.</translation>
-<translation id="2303282178633578561">Lås SIM-kortet</translation>
 <translation id="2303301624314357662">Åpner filen <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> er løst ut.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">De nylige filene dine vises her</translation>
 <translation id="2578394532502990878">Tamil, fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">Administratoren din krever at du slår av SIM-låsen.</translation>
 <translation id="2602810353103180630">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
-<translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2620090360073999360">Google Disk kan ikke nås for øyeblikket.</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="2638942478653899953">Google Disk kan ikke nås. <ph name="BEGIN_LINK" />Logg av<ph name="END_LINK" /> og på igjen.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Tøm papirkurven</translation>
 <translation id="5163869187418756376">Delingen mislyktes. Sjekk tilkoblingen din og prøv på nytt senere.</translation>
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
+<translation id="5172749059808361023">Begrensningsdetaljer</translation>
 <translation id="5177526793333269655">Miniatyrbildevisning</translation>
 <translation id="5194713942430106590">Klikk for å sortere kolonnen i stigende rekkefølge.</translation>
 <translation id="5211614973734216083">Færøysk</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Latvisk</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />-filteret er av.</translation>
 <translation id="5494920125229734069">Velg alle</translation>
-<translation id="5500104704744051184">Du kan ikke bruke dette nettverket før du har oppgitt PUK-koden</translation>
 <translation id="5500122897333236901">Islandsk</translation>
 <translation id="5508696409934741614">Prikker</translation>
 <translation id="5522908512596376669">Fillisten vises nå i listevisning.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">En feil oppsto under konfigureringen av nettverket</translation>
 <translation id="7839804798877833423">Henting av disse filene kommer til å bruke ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Opphev valget</translation>
-<translation id="7847617962681804761">PIN-kode kreves for å bruke mobildata</translation>
 <translation id="7853966320808728790">Fransk BÉPO</translation>
 <translation id="7857117644404132472">Legg til unntak</translation>
 <translation id="7868774406711971383">Polsk</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Synkroniserer <ph name="NUMBER_OF_FILES" /> elementer …</translation>
 <translation id="8600173386174225982">Fillisten vises nå i miniatyrbildevisning.</translation>
 <translation id="8601932370724196034">Crostini-bildefil</translation>
-<translation id="8608515571837163082">Feil PIN-kode ble tastet inn for mange ganger. Oppgi den åttesifrede PUK-koden fra operatøren.</translation>
 <translation id="8609695766746872526">Islandsk</translation>
 <translation id="863903787380594467">Feil PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

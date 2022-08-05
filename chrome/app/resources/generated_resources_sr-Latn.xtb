@@ -682,7 +682,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1637224376458524414">Koristite ovaj obeleživač na iPhone-u</translation>
 <translation id="1637350598157233081">Lozinka je sačuvana na ovom uređaju</translation>
 <translation id="1637765355341780467">Došlo je do problema pri otvaranju profila. Neke funkcije će možda biti nedostupne.</translation>
-<translation id="1639239467298939599">Učitavanje</translation>
+<translation id="1639239467298939599">Učitava se</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> još uvek ne radi u Linux aplikacijama</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 sa RSA šifrovanjem</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
@@ -7964,6 +7964,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8666759526542103597">O personalizaciji oglasa na osnovu pregledača</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> je sada u režimu celog ekrana i onemogućio je kursor.</translation>
 <translation id="8667760277771450375">Istražujemo načine da ograničimo praćenje na različitim sajtovima i istovremeno omogućimo sajtovima da zaustave nepoželjne oglase i prevare.</translation>
+<translation id="8668378421690365723">Uređaj možda više neće raditi kako treba i možda će imati problema sa bezbednošću i performansama.</translation>
 <translation id="8669284339312441707">Toplije</translation>
 <translation id="8670537393737592796">Da biste se ovde brzo vraćali, instalirajte aplikaciju <ph name="APP_NAME" /> klikom na dugme Instaliraj</translation>
 <translation id="867085395664725367">Došlo je do privremene greške servera.</translation>
@@ -8449,6 +8450,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Za najbolji doživljaj instalirajte <ph name="DEVICE_OS" /> na interni disk. Možete i da ga instalirate kasnije sa ekrana za prijavljivanje.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ako niste spremni za instalaciju, možete da ga pokrenete sa USB-a da biste ga isprobali. Time ćete zadržati postojeći OS i podatke, ali možda ćete primetiti ograničenja u pogledu memorijskog prostora i performansi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Otvori kao zakačenu karticu</translation>
+<translation id="9123287046453017203">Uređaj nije ažuriran</translation>
 <translation id="9124003689441359348">Sačuvane lozinke će se pojaviti ovde</translation>
 <translation id="9126149354162942022">Boja kursora</translation>
 <translation id="9128317794749765148">Podešavanje nije dovršeno</translation>

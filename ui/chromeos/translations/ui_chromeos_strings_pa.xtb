@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">ਸਵੈ-ਸੰਰੂਪਣ URL:</translation>
 <translation id="2288278176040912387">ਰਿਕਾਰਡ ਪਲੇਅਰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ।</translation>
-<translation id="2303282178633578561">ਸਿਮ ਕਾਰਡ ਲਾਕ ਕਰੋ</translation>
 <translation id="2303301624314357662">ਫ਼ਾਈਲ <ph name="FILE_NAME" /> ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2304820083631266885">ਗ੍ਰਹਿ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ਨੂੰ ਕੱਢ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ਤੁਹਾਡੀਆਂ ਹਾਲੀਆ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="2578394532502990878">ਤਮਿਲ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="2579959351793446050">ਉੜੀਆ</translation>
-<translation id="2593644851255584939">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਸਿਮ ਲਾਕ ਬੰਦ ਕਰੋ।</translation>
 <translation id="2602810353103180630">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ, ਵੇਰਵੇ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ਵੀਡੀਓ</translation>
-<translation id="2617342710774726426">ਸਿਮ ਕਾਰਡ ਲੌਕ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="2620090360073999360">ਇਸ ਸਮੇਂ Google Drive ਤੇ ਨਹੀਂ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="2638942478653899953">Google Drive 'ਤੇ ਪਹੁੰਚਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ <ph name="BEGIN_LINK" />ਲੌਗ ਆਉਟ<ph name="END_LINK" /> ਅਤੇ ਫਿਰ ਲੌਗ ਇਨ ਕਰੋ।</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">ਰੱਦੀ ਨੂੰ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="5163869187418756376">ਸਾਂਝਾਕਰਨ ਅਸਫਲ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5172749059808361023">ਪਾਬੰਦੀ ਦੇ ਵੇਰਵੇ</translation>
 <translation id="5177526793333269655">ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼</translation>
 <translation id="5194713942430106590">ਕਾਲਮ ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="5211614973734216083">ਫ਼ਰੋਇਸ</translation>
@@ -528,7 +526,6 @@
 <translation id="5489067830765222292">ਲਾਤਵੀਅਨ</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ਫਿਲਟਰ ਬੰਦ ਹੈ।</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
-<translation id="5500104704744051184">ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ PUK ਦਾਖਲ ਨਹੀਂ ਕਰਦੇ, ਤੁਸੀਂ ਇਸ ਨੈੱਟਵਰਕ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕੋਗੇ</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">ਬਿੰਦੀਆਂ</translation>
 <translation id="5522908512596376669">ਫ਼ਾਈਲ ਸੂਚੀ, ਸੂਚੀ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
@@ -809,7 +806,6 @@
 <translation id="7831491651892296503">ਨੈੱਟਵਰਕ ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="7839804798877833423">ਇਹਨਾਂ ਫਾਈਲਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਨਾਲ ਇਹ ਲਗਭਗ <ph name="FILE_SIZE" /> ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣਗੀਆਂ।</translation>
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
-<translation id="7847617962681804761">ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣ ਲਈ ਪਿੰਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="7853966320808728790">ਫਰਾਂਸੀਸੀ BÉPO</translation>
 <translation id="7857117644404132472">ਅਪਵਾਦ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7868774406711971383">ਪੋਲਿਸ਼</translation>
@@ -904,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ਆਈਟਮਾਂ ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8600173386174225982">ਫ਼ਾਈਲ ਸੂਚੀ, ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਬਦਲ ਗਈ ਹੈ।</translation>
 <translation id="8601932370724196034">Crostini ਈਮੇਜ ਫ਼ਾਈਲ</translation>
-<translation id="8608515571837163082">ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ। ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਈ 8-ਅੰਕਾਂ ਦੀ ਨਿੱਜੀ ਅਣਬਲਾਕਿੰਗ ਕੁੰਜੀ (PUK) ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8609695766746872526">ਆਈਸਲੈਂਡੀ</translation>
 <translation id="863903787380594467">ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ਪੋਰਟ</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL automatycznej konfiguracji:</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otwieram pliki (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303282178633578561">Zablokuj kartę SIM</translation>
 <translation id="2303301624314357662">Otwieram plik <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Odłączono <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Tutaj będą się pojawiać ostatnie pliki</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
-<translation id="2593644851255584939">Administrator wymaga wyłączenia blokady karty SIM.</translation>
 <translation id="2602810353103180630">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
 <translation id="2614589611416690597">Plik wideo <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2620090360073999360">Dysk Google jest obecnie nieosiągalny.</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
 <translation id="2638942478653899953">Nie można uzyskać dostępu do Dysku Google. <ph name="BEGIN_LINK" />Wyloguj się<ph name="END_LINK" /> i ponownie zaloguj.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Opróżnij kosz</translation>
 <translation id="5163869187418756376">Niepowodzenie udostępniania. Sprawdź połączenie i spróbuj ponownie później.</translation>
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
+<translation id="5172749059808361023">Informacje o ograniczeniu</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
 <translation id="5211614973734216083">Farerski</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Łotewski</translation>
 <translation id="5489965683297092283">Filtr <ph name="FILTER_NAME" /> jest wyłączony.</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
-<translation id="5500104704744051184">Nie możesz korzystać z tej sieci, dopóki nie podasz kodu PUK</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>
 <translation id="5522908512596376669">Lista plików została przełączona na widok listy.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Podczas konfigurowania sieci wystąpił błąd</translation>
 <translation id="7839804798877833423">Pobranie tych plików spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
-<translation id="7847617962681804761">Do korzystania z mobilnej transmisji danych wymagany jest kod PIN</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
 <translation id="7857117644404132472">Dodaj wyjątek</translation>
 <translation id="7868774406711971383">Polski</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Synchronizuję elementy – <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Lista plików została przełączona na widok miniatur.</translation>
 <translation id="8601932370724196034">Plik graficzny Crostini</translation>
-<translation id="8608515571837163082">Zbyt wiele razy podano nieprawidłowy kod PIN. Wpisz 8-cyfrowy kod PUK otrzymany od operatora.</translation>
 <translation id="8609695766746872526">Islandzki</translation>
 <translation id="863903787380594467">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

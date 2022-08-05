@@ -311,6 +311,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3529024052484145543">Nezabezpečeno</translation>
 <translation id="3533202363250687977">Zavřít všechny anonymní karty</translation>
 <translation id="3533436815740441613">Nová karta</translation>
+<translation id="3547799431091898961">Pokud se chcete odhlásit od účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromu<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3581564640715911333">Nabízet překlad stránek v jiných jazycích</translation>
 <translation id="3588820906588687999">Otevřít obrázek na nové kartě</translation>
@@ -681,6 +682,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6561262006871132942">Přiblížit</translation>
 <translation id="6583087784430677195">Pokud tuto funkci chcete vypnout, otevřete <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> a přejděte na Automatické vyplnění hesel.</translation>
 <translation id="6585618849026997638">Na stránky, které si přidáte do záložek, se budete moci snadno rychle vrátit</translation>
+<translation id="6596481460663245319">Vyhledat obrázek pomocí Googlu</translation>
 <translation id="6598875554591387303">Seřadit podle vydavatele</translation>
 <translation id="6603393121510733479">Vaše organizace vypnula soukromé prohlížení.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="7987685713885608670">Za účelem zvýšení zabezpečení zašifrovat hesla v zařízení před uložením do Správce hesel Google.</translation>
 <translation id="7993619969781047893">Některé weby mohou přestat fungovat</translation>
 <translation id="800361585186029508">Otevře zadané adresy URL v prohlížeči Google Chrome.</translation>
+<translation id="8016714545083187120">Vždy používat zabezpečená připojení</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8023878949384262191">Rozbalí sekci.</translation>
 <translation id="8027581147000338959">Otevřít v novém okně</translation>

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2480034874476596812">Skakel handmatig af</translation>
+<translation id="248546197012830854">Toestel is vanlyn. Koppel aan wi-fi-netwerk om hulpinhoud te sien.</translation>
 <translation id="2491955442992294626">Sleutels word nie getoets wanneer jy ’n ander venster gebruik nie</translation>
 <translation id="2493126929778606526">Jou beste foto's, outomaties gekies</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6611280807952151149">Verlaat <ph name="DEVICE_TYPE" />-herstelproses</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
+<translation id="6624819909909965616">Kan nie lêer groter as 10 MB oplaai nie</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6644568396961840069">Lêer kon nie gestoor word nie. Probeer om by ’n ander eksterne berging in te prop, of probeer later weer.</translation>
 <translation id="6647510110698214773">Enkripsie-algoritme</translation>
@@ -696,6 +698,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
 <translation id="6995564396478647735">Maak seker dat Skryfbeskerming aan is</translation>
+<translation id="7005833343836210400">Toestel is vanlyn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7041549558901442110">Toestel is nie gekoppel nie.</translation>
@@ -809,6 +812,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="8082366717211101304">Kan nie DNS van Android-programme af oplos nie</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
+<translation id="8094062939584182041">Laat Google toe om vir jou ’n e-pos oor hierdie kwessie te stuur</translation>
 <translation id="8104083085214006426">Jy gebruik tans 'n oop en onveilige netwerk</translation>
 <translation id="8109786307828817014">Gaan voort met mislukte kalibrerings?</translation>
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>

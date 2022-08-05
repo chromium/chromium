@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL ການກຳນົດຄ່າອັດໂນມັດ:</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
 <translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
-<translation id="2303282178633578561">ລັອກຊິມກາດ</translation>
 <translation id="2303301624314357662">ກຳລັງເປີດໄຟລ໌ <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">ດາວເຄາະ</translation>
 <translation id="2305020378527873881">ຖອດ <ph name="VOLUME_NAME" /> ອອກແລ້ວ.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ໄຟລ໌ຫຼ້າສຸດຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
 <translation id="2579959351793446050">ພາສາໂອເດຍ</translation>
-<translation id="2593644851255584939">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕ້ອງການໃຫ້ທ່ານປິດການນຳໃຊ້ລັອກ SIM.</translation>
 <translation id="2602810353103180630">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="2614589611416690597">ວິດີໂອ <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">ແຜ່ນ SIM ລັອກແລ້ວ</translation>
 <translation id="2620090360073999360">ບໍ່ສາມາດເຂົ້າເຖິງ Google Drive ໄດ້ໃນເວລານີ້.</translation>
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
 <translation id="2638942478653899953">ບໍ່ສາມາດເຂົ້າຫາ Google Drive ໄດ້. ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ<ph name="END_LINK" /> ແລະລົງຊື່ກັບເຂົ້າຫາອີກ.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">ພາສາລັດວຽນ</translation>
 <translation id="5489965683297092283">ປິດຕົວກັ່ນຕອງ <ph name="FILTER_NAME" /> ແລ້ວ.</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
-<translation id="5500104704744051184">ທ່ານຈະບໍ່ສາມາດໃຊ້ເຄືອຂ່າຍນີ້ໄດ້ຈົນກວ່າທ່ານຈະໃສ່ລະຫັດ PUK</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>
 <translation id="5522908512596376669">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງລາຍການແລ້ວ.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">ມີຄວາມຜິດພາດໃນການກຳນົດຄ່າເຄືອຂ່າຍ</translation>
 <translation id="7839804798877833423">ການໄປເອົາໄຟລ​໌​ເຫຼົ່າ​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
-<translation id="7847617962681804761">ຕ້ອງໃຊ້ PIN ໃນການໃຊ້ອິນເຕີເນັດມືຖື</translation>
 <translation id="7853966320808728790">BÉPO ພາ​ສາ​ຝ​ຣັ່ງ</translation>
 <translation id="7857117644404132472">ເພີ່ມຂໍ້ຍົກເວັ້ນ</translation>
 <translation id="7868774406711971383">ພາສາໂພລິຊ</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">ກໍາລັງຊິງຄ໌ <ph name="NUMBER_OF_FILES" /> ລາຍການ...</translation>
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
-<translation id="8608515571837163082">ລະບຸ PIN ບໍ່ຖືກຕ້ອງຫຼາຍເທື່ອເກີນໄປແລ້ວ. ປ້ອນລະຫັດຍົກເລີກການບລັອກ (PUK) 8 ຫຼັກ ທີ່ໃຫ້ມາໂດຍຜູ້ໃຫ້ບໍລິການ.</translation>
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
 <translation id="863903787380594467">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ຜອດ</translation>

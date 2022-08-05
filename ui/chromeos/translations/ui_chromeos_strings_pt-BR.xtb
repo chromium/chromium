@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL de configuração automática</translation>
 <translation id="2288278176040912387">Gravador</translation>
 <translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> arquivos.</translation>
-<translation id="2303282178633578561">Bloquear chip</translation>
 <translation id="2303301624314357662">Abrindo o arquivo <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">O volume <ph name="VOLUME_NAME" /> foi ejetado.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Seus arquivos recentes vão aparecer aqui</translation>
 <translation id="2578394532502990878">Tâmil (fonético)</translation>
 <translation id="2579959351793446050">Oriá</translation>
-<translation id="2593644851255584939">O administrador exige que você desative o bloqueio do chip.</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
 <translation id="2614589611416690597">Vídeo de <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2620090360073999360">Não é possível acessar o Google Drive neste momento.</translation>
 <translation id="2621713457727696555">Protegida</translation>
 <translation id="2638942478653899953">Não foi possível acessar o Google Drive. <ph name="BEGIN_LINK" />Saia<ph name="END_LINK" /> e faça login novamente.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Esvaziar lixeira</translation>
 <translation id="5163869187418756376">Falha no compartilhamento. Verifique sua conexão e tente novamente mais tarde.</translation>
 <translation id="516592729076796170">Programmer Dvorak americano</translation>
+<translation id="5172749059808361023">Detalhes de restrição</translation>
 <translation id="5177526793333269655">Visualização em miniatura</translation>
 <translation id="5194713942430106590">Clique para classificar a coluna em ordem crescente.</translation>
 <translation id="5211614973734216083">Faroês</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Letão</translation>
 <translation id="5489965683297092283">O filtro <ph name="FILTER_NAME" /> está desativado.</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
-<translation id="5500104704744051184">Não será possível usar esta rede até que a PUK seja inserida.</translation>
 <translation id="5500122897333236901">Islandês</translation>
 <translation id="5508696409934741614">Pontos</translation>
 <translation id="5522908512596376669">A lista de arquivos foi alterada para a visualização em lista.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Erro ao configurar a rede</translation>
 <translation id="7839804798877833423">A busca destes arquivos usará aproximadamente <ph name="FILE_SIZE" /> de dados móveis.</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
-<translation id="7847617962681804761">PIN necessário para usar os dados móveis</translation>
 <translation id="7853966320808728790">BÉPO francês</translation>
 <translation id="7857117644404132472">Adicionar exceção</translation>
 <translation id="7868774406711971383">Polonês</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> itens...</translation>
 <translation id="8600173386174225982">A lista de arquivos foi alterada para a visualização em miniatura.</translation>
 <translation id="8601932370724196034">Arquivo de imagem do Crostini</translation>
-<translation id="8608515571837163082">Um PIN incorreto foi digitado muitas vezes. Digite a chave de desbloqueio pessoal (PUK) de oito dígitos fornecida pela operadora.</translation>
 <translation id="8609695766746872526">Islandês</translation>
 <translation id="863903787380594467">PIN incorreto. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>

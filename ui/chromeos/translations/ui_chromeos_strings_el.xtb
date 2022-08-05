@@ -150,7 +150,6 @@
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
-<translation id="2303282178633578561">Κλείδωμα κάρτας SIM</translation>
 <translation id="2303301624314357662">Άνοιγμα αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
@@ -189,10 +188,8 @@
 <translation id="2570012981255377263">Τα πρόσφατα αρχεία σας θα εμφανίζονται εδώ</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
-<translation id="2593644851255584939">Ο διαχειριστής σας απαιτεί να απενεργοποιήσετε το κλείδωμα SIM.</translation>
 <translation id="2602810353103180630">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="2614589611416690597">Βίντεο <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Η κάρτα SIM είναι κλειδωμένη</translation>
 <translation id="2620090360073999360">Δεν είναι δυνατή η σύνδεση με το Google Drive αυτή τη φορά.</translation>
 <translation id="2621713457727696555">Unsecured</translation>
 <translation id="2638942478653899953">Δεν ήταν δυνατή η επικοινωνία με το Google Drive. <ph name="BEGIN_LINK" />Αποσυνδεθείτε<ph name="END_LINK" /> και συνδεθείτε ξανά.</translation>
@@ -542,7 +539,6 @@
 <translation id="5489067830765222292">Λετονικά</translation>
 <translation id="5489965683297092283">Το φίλτρο <ph name="FILTER_NAME" /> είναι ανενεργό.</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
-<translation id="5500104704744051184">Δεν θα μπορείτε να χρησιμοποιήσετε αυτό το δίκτυο μέχρι να εισαγάγετε τον κωδικό PUK.</translation>
 <translation id="5500122897333236901">Ισλανδικά</translation>
 <translation id="5508696409934741614">Τελείες</translation>
 <translation id="5522908512596376669">Η λίστα αρχείων έχει αλλάξει σε προβολή λίστας.</translation>
@@ -827,7 +823,6 @@
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
-<translation id="7847617962681804761">Απαιτείται PIN για τη χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7853966320808728790">Γαλλικά BÉPO</translation>
 <translation id="7857117644404132472">Προσθήκη εξαίρεσης</translation>
 <translation id="7868774406711971383">Πολωνικά</translation>
@@ -925,7 +920,6 @@
 <translation id="8579285237314169903">Γίνεται συγχρονισμός <ph name="NUMBER_OF_FILES" /> στοιχείων…</translation>
 <translation id="8600173386174225982">Η λίστα αρχείων έχει αλλάξει σε προβολή μικρογραφίας.</translation>
 <translation id="8601932370724196034">Αρχείο εικόνας Crostini</translation>
-<translation id="8608515571837163082">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Εισαγάγετε το προσωπικό κλειδί κατάργησης αποκλεισμού 8 ψηφίων (PUK) που παρέχεται από την εταιρεία κινητής τηλεφωνίας.</translation>
 <translation id="8609695766746872526">Ισλανδικά</translation>
 <translation id="863903787380594467">Εσφαλμένο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Θύρα</translation>

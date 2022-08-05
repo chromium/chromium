@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">স্বয়ংক্ৰিয় কনফিগাৰেশ্বন URL:</translation>
 <translation id="2288278176040912387">ৰেকৰ্ড প্লেয়াৰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টা ফাইল খুলি থকা হৈছে</translation>
-<translation id="2303282178633578561">ছিম কাৰ্ড লক কৰক</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ফাইলটো খুলি থকা হৈছে।</translation>
 <translation id="2304820083631266885">গ্ৰহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সুৰক্ষিতভাৱে গুচোৱা হ’ল।</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">আপোনাৰ শেহতীয়া ফাইলসমূহ ইয়াত প্ৰদৰ্শিত হ’ব</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
-<translation id="2593644851255584939">আপোনাৰ প্ৰশাসকে আপুনি ছিমৰ লক অক্ষম কৰাটো বিচাৰে।</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিঅ’</translation>
-<translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2620090360073999360">এই মুহূৰ্তত Google Driveৰ সৈতে সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="2638942478653899953">Google Drive পাব পৰা অৱস্থাত নাই। অনুগ্ৰহ কৰি <ph name="BEGIN_LINK" />লগ আউট কৰক<ph name="END_LINK" /> আৰু পুনৰ লগ ইন কৰক।</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">লাটভিয়ান</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টাৰটো অফ হৈ আছে।</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
-<translation id="5500104704744051184">আপুনি PUKটো নিদিয়া পৰ্যন্ত এই নেটৱৰ্কটো ব্যৱহাৰ কৰিব নোৱাৰিব</translation>
 <translation id="5500122897333236901">আইচলেণ্ডীয়</translation>
 <translation id="5508696409934741614">ডট্‌</translation>
 <translation id="5522908512596376669">ফাইলৰ সূচীখন সূচী ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">নেটৱৰ্ক কনফিগাৰ কৰাত আসোঁৱাহ</translation>
 <translation id="7839804798877833423">এই ফাইলবোৰ বিচাৰি আনিবলৈ ম’বাইল ডেটাৰ প্ৰায় <ph name="FILE_SIZE" /> খৰচ হ’ব৷</translation>
 <translation id="7846076177841592234">বাছনি বাতিল কৰক</translation>
-<translation id="7847617962681804761">ম'বাইল ডেটা ব্যৱহাৰ কৰিবলৈ পিনটোৰ আৱশ্যক</translation>
 <translation id="7853966320808728790">ফৰাছী বেপ’</translation>
 <translation id="7857117644404132472">ব্যতিক্ৰম যোগ কৰক</translation>
 <translation id="7868774406711971383">প’লিশ্ব</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টা বস্তু ছিংক কৰি থকা হৈছে...</translation>
 <translation id="8600173386174225982">ফাইলৰ সূচীখন থাম্বনেইল ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="8601932370724196034">Crostini প্ৰতিচ্ছবিৰ ফাইল</translation>
-<translation id="8608515571837163082">বহুবাৰ এটা ভুল পিন দিয়া হৈছে। বাহকে প্ৰদান কৰা ৮ টা অংকৰ অৱৰোধৰ পৰা আঁতৰোৱাৰ ব্যক্তিগত কীটো (PUK) দিয়ক।</translation>
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>
 <translation id="863903787380594467">ভুল পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - প’ৰ্ট</translation>

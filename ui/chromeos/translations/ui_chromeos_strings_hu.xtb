@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL automatikus konfigurációja:</translation>
 <translation id="2288278176040912387">Lemezjátszó</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fájl megnyitása.</translation>
-<translation id="2303282178633578561">SIM-kártya lezárása</translation>
 <translation id="2303301624314357662">A <ph name="FILE_NAME" /> fájl megnyitása folyamatban van.</translation>
 <translation id="2304820083631266885">Bolygó</translation>
 <translation id="2305020378527873881">A(z) <ph name="VOLUME_NAME" /> kiadása megtörtént.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Itt jelennek majd meg a legutóbbi fájlok</translation>
 <translation id="2578394532502990878">tamil, fonetikus</translation>
 <translation id="2579959351793446050">odia</translation>
-<translation id="2593644851255584939">A rendszergazda a SIM-zárolás feloldását kéri.</translation>
 <translation id="2602810353103180630">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> videó</translation>
-<translation id="2617342710774726426">A SIM-kártya zárolva van</translation>
 <translation id="2620090360073999360">A Google Drive jelenleg nem érhető el.</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
 <translation id="2638942478653899953">A Google Drive nem érhető el. Kérjük, <ph name="BEGIN_LINK" />jelentkezzen ki<ph name="END_LINK" />, majd jelentkezzen be újra.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">lett</translation>
 <translation id="5489965683297092283">A(z) <ph name="FILTER_NAME" /> szűrő ki van kapcsolva.</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
-<translation id="5500104704744051184">Addig nem tudja használni ezt a hálózatot, amíg meg nem adja a PUK kódot</translation>
 <translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>
 <translation id="5522908512596376669">A fájllista nézete listanézetre változott.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Hiba történt a hálózat konfigurálásakor</translation>
 <translation id="7839804798877833423">E fájlok lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
-<translation id="7847617962681804761">A mobiladatok használatához PIN-kód megadása szükséges.</translation>
 <translation id="7853966320808728790">Francia BÉPO</translation>
 <translation id="7857117644404132472">Kivétel hozzáadása</translation>
 <translation id="7868774406711971383">lengyel</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elem szinkronizálása…</translation>
 <translation id="8600173386174225982">A fájllista nézete indexképnézetre változott.</translation>
 <translation id="8601932370724196034">Crostini-képfájl</translation>
-<translation id="8608515571837163082">Túl sokszor lett megadva helytelen PIN-kód. Adja meg a szolgáltatótól kapott nyolcjegyű személyes feloldókulcsot (PUK kódot).</translation>
 <translation id="8609695766746872526">izlandi</translation>
 <translation id="863903787380594467">Helytelen PIN-kód. <ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

@@ -327,6 +327,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2894949423239620203">De kabel kan invloed hebben op de prestaties</translation>
 <translation id="2903844815300039659">Verbonden met <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Schermopnamen</translation>
+<translation id="2925246975070834767">Probeer automatisch zoomen zodat je het midden van het scherm ziet. Zet dit aan via Snelle instellingen.</translation>
 <translation id="2941112035454246133">Laag</translation>
 <translation id="2942350706960889382">Vastgezet vergrootglas</translation>
 <translation id="2942516765047364088">Positie van plank</translation>
@@ -469,10 +470,10 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
+<translation id="3724279623330129812">De camera automatisch centreren</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
-<translation id="3761848338953536304">Je beheerder vraagt je om de simlockinstelling uit te zetten</translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
@@ -634,6 +635,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4628757576491864469">Apparaten</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Zet het apparaat binnen een dag terug naar een oudere versie}other{Zet het apparaat binnen # dagen terug naar een oudere versie}}</translation>
+<translation id="4633636853437260449">Druk op Ctrl + W om te verwijderen</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
@@ -867,7 +869,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
 <translation id="5992218262414051481">De modus voor hoog contrast staat aan. Druk nogmaals op Ctrl+Zoeken+H om deze uit te zetten.</translation>
-<translation id="6009656393242168182">Je simlockinstelling uitzetten</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>

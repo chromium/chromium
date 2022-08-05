@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL autokonfigurasi:</translation>
 <translation id="2288278176040912387">Pemain Piring Hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> fail.</translation>
-<translation id="2303282178633578561">Kunci kad SIM</translation>
 <translation id="2303301624314357662">Membuka fail <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />telah dikeluarkan.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Fail terbaharu anda akan dipaparkan di sini</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Pentadbir anda menghendaki anda melumpuhkan Kunci SIM.</translation>
 <translation id="2602810353103180630">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Kad SIM dikunci</translation>
 <translation id="2620090360073999360">Google Drive tidak dapat dicapai pada masa ini.</translation>
 <translation id="2621713457727696555">Selamat</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dicapai. Sila <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" /> dan log masuk kembali.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Kosongkan Sampah</translation>
 <translation id="5163869187418756376">Perkongsian gagal. Periksa sambungan anda dan cuba lagi nanti.</translation>
 <translation id="516592729076796170">Dvorak Pengatur Cara AS</translation>
+<translation id="5172749059808361023">Butiran sekatan</translation>
 <translation id="5177526793333269655">Paparan lakaran kenit</translation>
 <translation id="5194713942430106590">Klik untuk mengisih lajur dalam tertib menaik.</translation>
 <translation id="5211614973734216083">Faroe</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Latvia</translation>
 <translation id="5489965683297092283">Penapis <ph name="FILTER_NAME" /> dimatikan.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
-<translation id="5500104704744051184">Anda tidak akan dapat menggunakan rangkaian ini sehingga anda memasukkan PUK</translation>
 <translation id="5500122897333236901">Bahasa Iceland</translation>
 <translation id="5508696409934741614">Titik</translation>
 <translation id="5522908512596376669">Senarai fail telah berubah kepada paparan senarai.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Ralat mengkonfigurasi rangkaian</translation>
 <translation id="7839804798877833423">Pengambilan fail ini akan menggunakan kira-kira <ph name="FILE_SIZE" /> data mudah alih.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
-<translation id="7847617962681804761">PIN diperlukan untuk menggunakan data mudah alih</translation>
 <translation id="7853966320808728790">BEPO Perancis</translation>
 <translation id="7857117644404132472">Tambah pengecualian</translation>
 <translation id="7868774406711971383">Poland</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Menyegerakkan <ph name="NUMBER_OF_FILES" /> item...</translation>
 <translation id="8600173386174225982">Senarai fail telah berubah kepada paparan lakaran kecil.</translation>
 <translation id="8601932370724196034">Fail imej Crostini</translation>
-<translation id="8608515571837163082">PIN yang salah telah dimasukkan terlalu banyak kali. Masukkan Kunci Penyahsekat Peribadi (PUK) 8 digit yang diberikan oleh pembawa.</translation>
 <translation id="8609695766746872526">Iceland</translation>
 <translation id="863903787380594467">PIN salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ఫైళ్లను తెరుస్తోంది.</translation>
-<translation id="2303282178633578561">సిమ్ కార్డ్‌ను లాక్ చేయి</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ఫైల్‌ని తెరుస్తోంది.</translation>
 <translation id="2304820083631266885">గ్రహం</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> తొలగించబడింది.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">మీ తాజా ఫైళ్లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="2578394532502990878">తమిళం ఫొనెటిక్</translation>
 <translation id="2579959351793446050">ఒడియా</translation>
-<translation id="2593644851255584939">SIM లాక్‌ను డిజేబుల్ చేయాల్సిందిగా మీ అడ్మినిస్ట్రేటర్ కోరుతున్నారు.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు, వివరాలు</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> వీడియో</translation>
-<translation id="2617342710774726426">SIM కార్డ్ లాక్ అయింది</translation>
 <translation id="2620090360073999360">Google Driveను ఈ సమయంలో చేరుకోవడం సాధ్యపడదు.</translation>
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="2638942478653899953">Google Driveను చేరుకోవడం సాధ్యపడలేదు. దయచేసి <ph name="BEGIN_LINK" />లాగ్ అవుట్<ph name="END_LINK" /> చేసి, తిరిగి లాగిన్ చేయండి.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">లాత్వియన్</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ఫిల్టర్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
-<translation id="5500104704744051184">మీరు PUKను ఎంటర్ చేసే వరకు మీరు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు</translation>
 <translation id="5500122897333236901">ఐస్‌లాండిక్</translation>
 <translation id="5508696409934741614">చుక్కలు</translation>
 <translation id="5522908512596376669">ఫైల్ లిస్ట్‌, "లిస్ట్‌ వీక్షణ"కు మార్చబడింది.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో ఎర్రర్</translation>
 <translation id="7839804798877833423">ఈ ఫైళ్లను పొందడానికి మొబైల్ డేటాలో సుమారుగా <ph name="FILE_SIZE" /> ఉపయోగించబడుతుంది.</translation>
 <translation id="7846076177841592234">ఎంపికను రద్దు చేయి</translation>
-<translation id="7847617962681804761">మొబైల్ డేటాను ఉపయోగించడానికి PIN అవసరం</translation>
 <translation id="7853966320808728790">ఫ్రెంచ్ BÉPO</translation>
 <translation id="7857117644404132472">మినహాయింపును జోడించు</translation>
 <translation id="7868774406711971383">పోలిష్</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> అంశాలను సింక్ చేస్తోంది...</translation>
 <translation id="8600173386174225982">ఫైల్ లిస్ట్‌, "సూక్ష్మచిత్ర వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="8601932370724196034">Crostini చిత్రం ఫైల్</translation>
-<translation id="8608515571837163082">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది. క్యారియర్ అందించిన 8-అంకెల వ్యక్తిగత అన్‌బ్లాకింగ్ కీ (PUK)ని ఎంటర్ చేయండి.</translation>
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
 <translation id="863903787380594467">పిన్ తప్పు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - పోర్ట్</translation>

@@ -472,7 +472,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3726171378575546917">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“, „<ph name="UNAVAILABLE_APPS_TWO" />“ ir dar <ph name="UNAVAILABLE_APPS_COUNT" /> program.</translation>
 <translation id="3735740477244556633">Rūšiuoti pagal</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
-<translation id="3761848338953536304">Administratorius prašo jūsų išjungti SIM užrakto nustatymą</translation>
 <translation id="3765841986579723851">Redaguota šiandien</translation>
 <translation id="3771549900096082774">Didelio kontrasto režimas</translation>
 <translation id="3773700760453577392">Administratorius neleido <ph name="USER_EMAIL" /> prisijungti prie kelių paskyrų. Norėdami tęsti, visi naudotojai turi atsijungti.</translation>
@@ -759,6 +758,16 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5393156353051693207">Norėdami pertvarkyti programas, palieskite ir palaikykite bet kur</translation>
 <translation id="5395308026110844773">„<ph name="DRAGGED_APP_NAME" />“ ant „<ph name="IN_PLACE_APP" />“, paleiskite, kad sukurtumėte aplanką.</translation>
 <translation id="5397578532367286026">Šio naudotojo naudojimo duomenis ir istoriją valdytojas (<ph name="MANAGER_EMAIL" />) gali peržiūrėti adresu chrome.com.</translation>
+<translation id="5399673806694250334">Būsenos dėklas, laikas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Spartieji nustatymai: paspauskite „Ieškoti“ ir rodyklę kairėn, kad pasiektumėte pranešimų centrą.</translation>
 <translation id="5426063383988017631">Nustatymų meniu uždarytas</translation>
 <translation id="5428899915242071344">Pradėti rinktis</translation>
@@ -857,7 +866,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="598407983968395253">Naudoti šabloną</translation>
 <translation id="598882571027504733">Kad gautumėte naujinį, iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
 <translation id="5992218262414051481">Didelio kontrasto režimas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + H, kad išjungtumėte režimą.</translation>
-<translation id="6009656393242168182">Išjunkite SIM užrakto nustatymą</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> psl. iš <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Išjungiamas atvaizdavimo režimas</translation>
 <translation id="602001110135236999">Slinkti kairėn</translation>

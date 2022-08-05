@@ -3380,13 +3380,6 @@
 <translation id="482803100714220060">URL 全体を表示する</translation>
 <translation id="4832852360828533362">ユーザーとデバイスに関するレポートの送信</translation>
 <translation id="4834526953114077364">十分な空き容量に達するまで、3 か月以内にログインしていないユーザーを順に削除する</translation>
-<translation id="483544442646753291"><ph name="SYSTEM_FEATURES_DISABLE_LIST" /> で指定し無効にした機能のユーザー エクスペリエンスを管理します。
-
-      このポリシーを「blocked」（ブロック）に設定した場合、無効にした機能は使用不可となりますがユーザーには引き続き表示されます。
-
-      このポリシーを「hidden」（非表示）に設定した場合、無効にした機能は使用不可となり、ユーザーにも表示されなくなります。
-
-      このポリシーを未設定のままにするか、無効な値を指定した場合、システム機能の無効化モードは「blocked」になります。</translation>
 <translation id="4835470005923546373">背景のグラフィックの印刷モードをデフォルトで無効にする</translation>
 <translation id="4835622243021053389">NTLMv2 認証を有効にする。</translation>
 <translation id="4840015507504937941">このポリシーでは、DataLeakPreventionRulesList ポリシーで定義されたクリップボード制限ルールに基づいてチェックするクリップボード データの最小サイズ（バイト単位）を設定します。
@@ -3949,6 +3942,7 @@
 <translation id="5464816904705580310">管理対象ユーザーの設定を行います。</translation>
 <translation id="5466596281866046569">アプリ情報を報告する</translation>
 <translation id="546726650689747237">画面が暗くなるまでの時間（AC 電源での実行時）</translation>
+<translation id="546830339470589966">新しい Kerberos チケットのドメインをオートコンプリートする</translation>
 <translation id="5469143988693423708">ユーザーは Crostini を実行できます</translation>
 <translation id="5469825884154817306">これらのサイトの画像をブロックする</translation>
 <translation id="5470500958458209831">Ansible playbook をダウンロードすることのできる URL です。</translation>
@@ -4202,9 +4196,6 @@
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスの VPD に関する情報が報告されます。
       バイタル商品データ （VPD）は、デバイスに関連付けられた一連の構成データと情報データ（部品およびシリアル番号など）です。</translation>
-<translation id="576158229686912964">このポリシーは M96 でサポート終了となりました。代わりに <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> と <ph name="REPORT_DEVICE_NETWORK_STATUS" /> を使用してください。
-
-      このポリシーを有効にするか未設定のままにした場合、登録済みのデバイスはネットワーク インターフェースのリスト（タイプとハードウェア アドレスを含む）を報告します。このポリシーを無効に設定した場合、登録済みのデバイスはネットワーク インターフェースを報告しません。</translation>
 <translation id="5762969307102447459">住所の自動入力を無効にする</translation>
 <translation id="5765780083710877561">説明:</translation>
 <translation id="5766438888216077649"><ph name="BLANK_PAGE_NAME" /> をターゲットとするリンクで <ph name="WINDOW_OPENER_PROPERTY" /> を設定しない</translation>
@@ -4752,6 +4743,10 @@
       このポリシーでサイトを指定しない場合は、<ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> のポリシーが適用されます。このポリシーでサイトを指定した場合は、ブラウザのデフォルトの権限設定が適用され、ユーザーはサイトごとに権限を選択できます。</translation>
 <translation id="6384542789059421431">ブラウザのサイドパネルにおけるデフォルトの検索エンジンの検索結果ページの表示を有効にします。</translation>
 <translation id="6394350458541421998">このポリシーは <ph name="PRODUCT_OS_NAME" /> バージョン 29 で廃止されました。PresentationScreenDimDelayScale ポリシーを代わりに使用してください。</translation>
+<translation id="6396956366662970339">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留するかどうかを指定します。
+
+      アダプティブ充電モデルでは、デバイスが AC 電源に接続されている場合、バッテリー寿命を延ばすため充電プロセスを保留すべきかどうかを評価します。アダプティブ充電モデルで充電プロセスを保留する場合、バッテリーを一定の残量（80% など）に維持し、ユーザーが必要とするときは 100% まで充電します。
+      このポリシーを True に設定した場合、アダプティブ充電モデルが有効になり、バッテリー寿命を延ばすため充電プロセスを保留します。このポリシーを False に設定するか未設定のままにした場合、アダプティブ充電モデルは充電プロセスに適用されません。</translation>
 <translation id="6397588391180665797">登録済みデバイスのユーザーのネットワーク設定を報告します。
 
       このポリシーを false に設定した場合、この情報は報告されません。
@@ -5785,9 +5780,6 @@
       このポリシーが未設定の場合、デフォルトで、企業の管理対象ユーザーは <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />、管理対象外のユーザーは <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定されます。
 
       今後、<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 値を使用して、<ph name="PRODUCT_OS_NAME" /> で <ph name="LACROS_NAME" /> を唯一の使用可能なブラウザとして設定できるようになる予定です。</translation>
-<translation id="7509761893401042250">このポリシーは M96 でサポートが終了しました。代わりに <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" />、<ph name="REPORT_DEVICE_AUDIO_STATUS" /> を使用してください。
-
-      このポリシーを有効にするか未設定のままにした場合、登録済みのデバイスは CPU/RAM 使用量などに関するハードウェアの統計情報を報告します。このポリシーを無効に設定した場合、登録済みのデバイスはハードウェアの統計情報を報告しません。</translation>
 <translation id="7512065400265675158"><ph name="USER_AGENT_HEADER_NAME" /> HTTP リクエスト ヘッダーは、今後、含められる情報の削減が予定されています。このポリシーでは、テストを行って互換性を確保できるように、この削減をすべてのウェブサイトに対して有効にすることができます。オリジン トライアルやフィールド トライアルによる削減の有効化を許可しないよう設定することもできます。
 
       <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> とそのスケジュールについて詳しくは、こちらをご覧ください。
@@ -6005,6 +5997,10 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="7771298620150437359">使用言語の内容と順序を設定する</translation>
+<translation id="7773790010815041731">Chrome アプリは、<ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="LINUX_OS_NAME" /> でのサポートが終了しています。
+      このポリシーを有効に設定した場合、2022 年 6 月にすべてのプラットフォームで Chrome アプリのサポートが廃止される日まで、これらのプラットフォームでは引き続き <ph name="PRODUCT_NAME" /> で Chrome アプリを実行できます。
+      このポリシーを無効に設定するか未設定のままにした場合、サポート終了の段階に応じて、一部の Chrome アプリは実行できなくなります。
+      いずれの場合も、ポリシーにより自動インストールされた Chrome アプリについては引き続き実行できます。</translation>
 <translation id="7774768074957326919">システムのプロキシ設定を使用する</translation>
 <translation id="777734450201217641">ログイン画面でユーザー補助機能のショートカットを有効にします。
 
@@ -6750,13 +6746,6 @@
       このポリシーを true に設定した場合、5 分以上バックグラウンドになっているタブは凍結可能になります。タブを凍結すると、CPU、バッテリー、メモリの使用量が削減されます。<ph name="PRODUCT_NAME" /> ではヒューリスティックにより、バックグラウンドで有用な処理（通知の表示、サウンドの再生、動画のストリーミングなど）を行うタブが凍結の対象から外されます。ウェブ デベロッパーが自身のサイトを凍結の対象から外すこともできます（https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md）。
 
       このポリシーを false に設定した場合は、どのタブも凍結されません。</translation>
-<translation id="8619480582976056396">このポリシーでは、禁止した URL のリストからのウェブページの読み込みを防止できます。このリストには、禁止する URL のパターンを指定します。このポリシーを未設定のままにした場合、ブラウザですべての URL が許可されます。URL のパターンは、https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。また、<ph name="URL_ALLOWLIST_POLICY_NAME" /> で最大 1,000 件の URL を例外として指定できます。
-
-      <ph name="PRODUCT_NAME" /> バージョン 73 以降では、「javascript://*」の URL をブロックできます。ただし、ブロックされるのはアドレスバーに入力された（またはブックマークレットなどの）JavaScript のみです。ページ内の JavaScript URL に動的に読み込まれるデータが含まれる場合、このポリシーは適用されません。たとえば、「example.com/abc」をブロックした場合でも、「example.com」では XMLHTTPRequest を使用して「example.com/abc」を読み込むことができます。
-
-      <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
-
-      注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
 <translation id="8619748440665904084">初回実行時の自動入力フォームのデータのインポートを無効にする</translation>
 <translation id="8623672932476443039">このポリシーを有効に設定した場合、ユーザーは分離されたアプリのデベロッパー モードにアクセスできます。このポリシーを無効に設定した場合、ユーザーはこの機能を利用できません。このポリシーを未設定のままにした場合、デフォルトでは、Chrome OS 上で企業の管理対象ユーザーはこの機能を利用できず、他のすべてのユーザーと OS は利用できます。</translation>
 <translation id="8626826495474944836">すべてのサイトに対してサイト分離を必須にする</translation>
@@ -6903,9 +6892,6 @@
 <translation id="8807313206348471682">ログアウト確認ダイアログを表示する</translation>
 <translation id="8812091410765157924">ポップアップの表示元ページで操作が明示的に許可されている場合に限り、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたポップアップにその表示元ページの操作を許可する</translation>
 <translation id="8816370949847593408">サポート終了の段階に応じて、一部の Chrome アプリの実行を許可しない。</translation>
-<translation id="8818173863808665831">デバイスの地理的位置をレポートします。
-
-      このポリシーを設定していない場合、あるいは false に設定している場合、位置はレポートされません。</translation>
 <translation id="8818768076343557335">モバイル以外のネットワークでのネットワーク動作を予測します。
           （バージョン 50 でサポート終了、バージョン 52 で削除。バージョン 52 以降は、値 1 が設定されている場合は 0 として扱われ、あらゆるネットワーク接続でネットワーク動作を予測します。）</translation>
 <translation id="8821678641132607468">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザから閲覧履歴が読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時に閲覧履歴は読み込まれません。
@@ -7086,6 +7072,7 @@
 
       有効な入力パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="9010080992450148617">高度な保護機能プログラムに登録しているユーザーがダウンロードしたコンテンツを Google に送信して詳細なスキャンを行えるようにする</translation>
+<translation id="9012101302849557459">Chrome アプリのサポートを <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="LINUX_OS_NAME" /> に拡張する。</translation>
 <translation id="9013875414788074110">ログイン時に、<ph name="PRODUCT_OS_NAME" /> は、サーバーに対して（オンライン）またはキャッシュに保存されたパスワードを使用して（オフライン）、認証を行うことができます。
 
       このポリシーが -1 の値に設定されている場合、ユーザーは時間制限なくオフラインで認証を行うことができます。このポリシーが -1 以外の値に設定されている場合、その値は、ユーザーがオンライン認証を行ってから再度オンライン認証を行うことが必要になるまでの時間を表します。

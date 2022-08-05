@@ -3511,13 +3511,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="482803100714220060">Volledige URL's tonen</translation>
 <translation id="4832852360828533362">Gebruikers- en apparaatrapporten</translation>
 <translation id="4834526953114077364">De gebruikers die het langst geleden gebruikt zijn en gedurende de laatste drie maanden niet zijn ingelogd, worden verwijderd totdat er voldoende vrije ruimte is</translation>
-<translation id="483544442646753291">Hiermee beheer je de gebruikerservaring voor uitgezette functies die worden vermeld in <ph name="SYSTEM_FEATURES_DISABLE_LIST" />.
-
-      Als je dit beleid instelt op Geblokkeerd, kunnen gebruikers de uitgezette functies niet gebruiken maar wel zien.
-
-      Als je dit beleid instelt op Verborgen, kunnen gebruikers de uitgezette functies niet gebruiken en niet zien.
-
-      Als je dit beleid niet instelt of instelt op een ongeldige waarde, wordt de stand voor het uitzetten van systeemfuncties geblokkeerd.</translation>
 <translation id="4835470005923546373">Modus voor afdrukken met achtergrondbeelden standaard uitzetten</translation>
 <translation id="4835622243021053389">NTLMv2-verificatie aanzetten.</translation>
 <translation id="4840015507504937941">Met dit beleid stel je de minimale gegevensgrootte (in bytes) in van de gegevens op het klembord die worden gecheckt aan de hand van de klembordbeperkingsregels die zijn gedefinieerd in het beleid DataLeakPreventionRulesList.
@@ -4136,6 +4129,7 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 <translation id="5464816904705580310">Hiermee configureer je instellingen voor beheerde gebruikers.</translation>
 <translation id="5466596281866046569">App-gegevens melden</translation>
 <translation id="546726650689747237">Vertraging van dimmen van scherm wanneer op netstroom wordt gewerkt</translation>
+<translation id="546830339470589966">Domein automatisch aanvullen voor nieuwe Kerberos-tickets</translation>
 <translation id="5469143988693423708">Gebruiker mag Crostini uitvoeren</translation>
 <translation id="5469825884154817306">Afbeeldingen blokkeren op deze sites</translation>
 <translation id="5470500958458209831">De URL waar het Ansible-playbook kan worden gedownload.</translation>
@@ -4394,9 +4388,6 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
-<translation id="576158229686912964">Dit beleid is beëindigd in M96. Gebruik in plaats daarvan <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> en <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
-
-      Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres. Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
 <translation id="5762969307102447459">Automatisch invullen voor adressen uitzetten</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
 <translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
@@ -4964,6 +4955,10 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
+<translation id="6396956366662970339">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
+
+      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat helemaal opgeladen als de gebruiker dat nodig heeft.
+      Als je dit beleid instelt op True, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid instelt op False of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -6058,9 +6053,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
       Als het beleid niet is ingesteld, is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> de standaard voor gebruikers die op ondernemingsniveau worden beheerd en <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> voor niet-beheerde gebruikers.
 
       In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
-<translation id="7509761893401042250">Dit beleid is beëindigd vanaf M96. Gebruik in plaats daarvan <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> en <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
-
-      Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten hardwarestatistieken, zoals het CPU/RAM-gebruik. Als je het beleid niet toepast, rapporteren ingeschreven apparaten de hardwarestatistieken niet.</translation>
 <translation id="7512065400265675158">De <ph name="USER_AGENT_HEADER_NAME" /> HTTP-verzoekheader wordt volgens planning ingekort. Dit beleid kan de inkortfunctie voor alle websites aanzetten of de mogelijkheid uitzetten dat origin trials of field trials de functie aanzetten. Dit wordt gedaan om tests en compatibiliteit mogelijk te maken.
 
       Lees het volgende voor meer informatie over <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> en de bijbehorende tijdlijn:
@@ -6297,6 +6289,10 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
 <translation id="7771298620150437359">Voorkeurstalen en hun volgorde instellen</translation>
+<translation id="7773790010815041731">Chrome-apps zijn beëindigd op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" />.
+      Als je dit beleid toepast, staat <ph name="PRODUCT_NAME" /> nog steeds toe dat Chrome-apps worden uitgevoerd op deze platforms, tot de einddatum van juni 2022. Op dat moment wordt ondersteuning voor Chrome-apps op alle platforms verwijderd.
+      Als je dit beleid niet toepast of niet instelt, kunnen Chrome-apps misschien niet worden uitgevoerd, afhankelijk van de status van de uitrol van de beëindiging.
+      In beide gevallen zijn Chrome-apps die door het beleid afgedwongen worden geïnstalleerd, nog steeds toegestaan.</translation>
 <translation id="7774768074957326919">Proxyinstellingen van het systeem gebruiken</translation>
 <translation id="777734450201217641">Zet snelkoppelingen voor toegankelijkheidsfuncties aan op het inlogscherm.
 
@@ -7078,13 +7074,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als het beleid is ingesteld op 'True', kunnen tabbladen die minimaal vijf minuten op de achtergrond actief zijn worden vastgezet. Het vastzetten van tabbladen verlaagt het CPU-, batterij- en geheugengebruik. <ph name="PRODUCT_NAME" /> gebruikt bepaalde methoden om te voorkomen dat tabbladen worden vastgezet die nuttig werk op de achtergrond leveren (zoals meldingen tonen, geluid afspelen en video streamen). Webontwikkelaars kunnen daarnaast hun toestemming intrekken voor het vastzetten van hun site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
-<translation id="8619480582976056396">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt opgegeven in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld example.com/abc blokkeert, kan de pagina example.com nog steeds example.com/abc laden via XMLHTTPRequest.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.
-
-      Opmerking: Het blokkeren van interne chrome://* URL's kan tot onverwachte fouten leiden.</translation>
 <translation id="8619748440665904084">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering uitzetten</translation>
 <translation id="8623672932476443039">Als je het beleid toepast, hebben gebruikers toegang tot de ontwikkelaarsmodus voor geïsoleerde apps.
       Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze mogelijkheden.
@@ -7233,9 +7222,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8807313206348471682">Het bevestigingsdialoogvenster voor uitloggen tonen</translation>
 <translation id="8812091410765157924">Alleen toestaan dat pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die de pop-up heeft geopend als de openende pagina expliciet toestemming geeft voor dergelijke interactie</translation>
 <translation id="8816370949847593408">Afhankelijk van de status van de uitrol van de beëindiging kun je mogelijk geen Chrome-apps uitvoeren.</translation>
-<translation id="8818173863808665831">De geografische locatie van het apparaat rapporteren.
-
-      Als het beleid niet is ingesteld of is ingesteld op 'false', wordt de locatie niet gerapporteerd.</translation>
 <translation id="8818768076343557335">Netwerkacties voorspellen op elk netwerk dat niet mobiel is.
           (Beëindigd in 50, verwijderd in 52. Als na 52 waarde 1 is ingesteld, wordt deze waarde verwerkt als 0 - netwerkacties voorspellen voor elke netwerkverbinding.)</translation>
 <translation id="8821678641132607468">Als je het beleid toepast, wordt de browsegeschiedenis van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, wordt de browsegeschiedenis niet geïmporteerd bij de eerste uitvoering.
@@ -7414,6 +7400,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor meer informatie over geldige invoerpatronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
 <translation id="9010080992450148617">Downloads naar Google sturen voor uitgebreide scans voor gebruikers die zijn ingeschreven voor Geavanceerde beveiliging</translation>
+<translation id="9012101302849557459">Ondersteuning voor Chrome-apps op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> uitbreiden.</translation>
 <translation id="9013875414788074110">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een gecachet wachtwoord (offline).
 
       Wanneer voor dit beleid de waarde -1 is ingesteld, kan de gebruiker zich offline oneindig verifiëren. Wanneer er een andere waarde voor dit beleid is opgegeven, wordt hiermee aangegeven na hoeveel tijd sinds de meest recente online verificatie de gebruiker opnieuw een online verificatie moet uitvoeren.

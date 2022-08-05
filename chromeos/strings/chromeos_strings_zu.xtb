@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Uhlobo</translation>
 <translation id="2461822463642141190">Okwamanje</translation>
 <translation id="2480034874476596812">Vala ngokuzenzela</translation>
+<translation id="248546197012830854">Idivayisi ayixhunyiwe ku-inthanethi. Xhuma kunethiwekhi ye-Wi-Fi ukuze ubone okuqukethwe kosizo.</translation>
 <translation id="2491955442992294626">Okhiye abahlolwa uma usebenzisa elinye iwindi</translation>
 <translation id="2493126929778606526">Izithombe zakho ezingcono kakhulu, zikhethwe ngokuzenzakalelayo</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6611280807952151149">Phuma ekulungiseni i-<ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Uyagijima</translation>
 <translation id="6620487321149975369">Imisebenzi yokuphrinta izovela emlandweni ngaphandle kwalapho uma isuswe mathupha</translation>
+<translation id="6624819909909965616">Ayikwazi ukulayisha ifayela elikhulu kuno-10 MB</translation>
 <translation id="6643016212128521049">Sula</translation>
 <translation id="6644568396961840069">Ifayela alilondolozwanga. Zama ukuxhuma isitoreji sangaphandle esihlukile, noma uzame futhi ngokuhamba kwesikhathi.</translation>
 <translation id="6647510110698214773">Ukubethela i-algorithm</translation>
@@ -696,6 +698,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Isibuyekezo se-firmware</translation>
 <translation id="6995564396478647735">Qiniseka ukuthi i-Write Protect ivuliwe</translation>
+<translation id="7005833343836210400">Idivayisi ayixhunyiwe ku-inthanethi</translation>
 <translation id="7028979494427204405">I-<ph name="MANAGER" /> iphatha le divayisi futhi inokufinyelela kuwo wonke umsebenzi womsebenzisi, kufaka phakathi amakhasi ewebhu avakashelwe, amaphasiwedi, ne-imeyili.</translation>
 <translation id="7040230719604914234">Opharetha</translation>
 <translation id="7041549558901442110">Idivayisi ayixhunyiwe.</translation>
@@ -809,6 +812,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8075838845814659848">Inkokhelo esele</translation>
 <translation id="8082366717211101304">Ayikwazi ukuxazulula i-DNS kusukela kuma-app we-Android</translation>
 <translation id="808894953321890993">Shintsha iphasiwedi</translation>
+<translation id="8094062939584182041">Vumela i-Google ikuthumelele i-imeyili mayelana nale nkinga</translation>
 <translation id="8104083085214006426">Usebenzisa inethiwekhi evulekile nengaphephile</translation>
 <translation id="8109786307828817014">Qhubeka nokulinganisa okuhlulekile?</translation>
 <translation id="811820734797650957">(Android) Isango Lingaqhwetshwa</translation>

@@ -311,6 +311,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3529024052484145543">Inte säkert</translation>
 <translation id="3533202363250687977">Stäng alla inkognitoflikar</translation>
 <translation id="3533436815740441613">Ny flik</translation>
+<translation id="3547799431091898961"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
@@ -681,6 +682,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
+<translation id="6596481460663245319">Bildsökning med Google</translation>
 <translation id="6598875554591387303">Sortera efter utgivare</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL การกำหนดค่าอัตโนมัติ:</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
 <translation id="2291538123825441971">กำลังเปิด <ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
-<translation id="2303282178633578561">ล็อกซิมการ์ด</translation>
 <translation id="2303301624314357662">กำลังเปิดไฟล์ <ph name="FILE_NAME" /></translation>
 <translation id="2304820083631266885">ดาวเคราะห์</translation>
 <translation id="2305020378527873881">นำ <ph name="VOLUME_NAME" /> ออกแล้ว</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ไฟล์ล่าสุดจะปรากฏที่นี่</translation>
 <translation id="2578394532502990878">ทมิฬ (ตามการออกเสียง)</translation>
 <translation id="2579959351793446050">โอเดีย</translation>
-<translation id="2593644851255584939">ผู้ดูแลระบบกำหนดให้คุณปิดใช้การล็อกซิม</translation>
 <translation id="2602810353103180630">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
 <translation id="2614589611416690597">วิดีโอ <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">ซิมการ์ดถูกล็อก</translation>
 <translation id="2620090360073999360">ไม่สามารถเข้าถึง Google ไดรฟ์ได้ในเวลานี้</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
 <translation id="2638942478653899953">ไม่สามารถเข้าถึง Google ไดรฟ์ โปรด<ph name="BEGIN_LINK" />ออกจากระบบ<ph name="END_LINK" /> และเข้าสู่ระบบใหม่อีกครั้ง</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">ล้างถังขยะ</translation>
 <translation id="5163869187418756376">การแชร์ล้มเหลว ตรวจสอบการเชื่อมต่อของคุณและพยายามอีกครั้งในภายหลัง</translation>
 <translation id="516592729076796170">ดีโวรักโปรแกรมเมอร์สหรัฐอเมริกา</translation>
+<translation id="5172749059808361023">รายละเอียดข้อจำกัด</translation>
 <translation id="5177526793333269655">มุมมองรูปภาพขนาดย่อ</translation>
 <translation id="5194713942430106590">คลิกเพื่อจัดเรียงคอลัมน์จากน้อยไปหามาก</translation>
 <translation id="5211614973734216083">แฟโร</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">ลัตเวีย</translation>
 <translation id="5489965683297092283">ตัวกรอง <ph name="FILTER_NAME" /> ปิดอยู่</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
-<translation id="5500104704744051184">คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะป้อน PUK</translation>
 <translation id="5500122897333236901">ไอซ์แลนดิก</translation>
 <translation id="5508696409934741614">จุด</translation>
 <translation id="5522908512596376669">เปลี่ยนรายการไฟล์เป็นมุมมองรายการแล้ว</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">เกิดข้อผิดพลาดในการกำหนดค่าเครือข่าย</translation>
 <translation id="7839804798877833423">การดึงไฟล์เหล่านี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
-<translation id="7847617962681804761">ต้องมี PIN เพื่อใช้อินเทอร์เน็ตมือถือ</translation>
 <translation id="7853966320808728790">ภาษาฝรั่งเศสแบบ BÉPO</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
 <translation id="7868774406711971383">โปแลนด์</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">กำลังซิงค์ <ph name="NUMBER_OF_FILES" /> รายการ...</translation>
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
-<translation id="8608515571837163082">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการ</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>

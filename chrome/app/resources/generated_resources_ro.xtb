@@ -7964,6 +7964,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8666759526542103597">Despre Personalizarea anunțurilor bazată pe browser</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> este acum în modul ecran complet și a dezactivat cursorul mouse-ului dvs.</translation>
 <translation id="8667760277771450375">Explorăm noi moduri de a restricționa urmărirea pe mai multe site-uri, permițând site-urilor să prevină spamul cu anunțuri și frauda.</translation>
+<translation id="8668378421690365723">Este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
 <translation id="8669284339312441707">Mai caldă</translation>
 <translation id="8670537393737592796">Ca să revii rapid aici, instalează <ph name="APP_NAME" /> dând clic pe butonul de instalare</translation>
 <translation id="867085395664725367">A apărut o eroare temporară de server.</translation>
@@ -8448,6 +8449,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pentru o experiență optimă, instalează <ph name="DEVICE_OS" /> pe discul intern. Poți să instalezi și mai târziu din ecranul de conectare.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dacă nu ești gata de instalare, poți să rulezi serviciul de pe USB pentru a-l încerca. Astfel, vei păstra sistemul de operare și datele existente, dar pot să existe limitări ale spațiului de stocare și ale performanței.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Deschide ca filă fixată</translation>
+<translation id="9123287046453017203">Dispozitivul tău nu este actualizat</translation>
 <translation id="9124003689441359348">Parolele salvate vor fi afișate aici</translation>
 <translation id="9126149354162942022">Culoarea cursorului</translation>
 <translation id="9128317794749765148">Nu s-a putut finaliza configurarea</translation>

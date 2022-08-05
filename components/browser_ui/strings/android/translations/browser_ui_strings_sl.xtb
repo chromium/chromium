@@ -240,8 +240,10 @@
 <translation id="6367753977865761591">Blokiranje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="6388207532828177975">Izbriši in ponastavi</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
+<translation id="6467852467360539617">Počisti podatke in ponastavi dovoljenja</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
@@ -281,6 +283,7 @@
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
+<translation id="7383715096023715447">Nastavitve za domeno <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>

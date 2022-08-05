@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Autoconfiguration URL:</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Binubuksan ang <ph name="NUMBER_OF_FILES" /> (na) file.</translation>
-<translation id="2303282178633578561">I-lock ang SIM card</translation>
 <translation id="2303301624314357662">Binubuksan ang file na <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Na-eject ang <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Lalabas dito ang iyong mga kamakailang file</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Hinihiling sa iyo ng administrator mo na i-disable ang SIM Lock.</translation>
 <translation id="2602810353103180630">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> na video</translation>
-<translation id="2617342710774726426">Naka-lock ang SIM card</translation>
 <translation id="2620090360073999360">Hindi maaabot ang Google Drive sa ngayon.</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2638942478653899953">Hindi maabot ang Google Drive. Mangyaring <ph name="BEGIN_LINK" />mag-log out<ph name="END_LINK" /> at mag-log in muli.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283">Naka-off ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
-<translation id="5500104704744051184">Hindi mo magagamit ang network na ito hanggang sa ilagay mo ang PUK</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
 <translation id="5522908512596376669">Naging list view ang listahan ng file.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
-<translation id="7847617962681804761">Kailangan ng PIN para magamit ang mobile data</translation>
 <translation id="7853966320808728790">French na BÉPO</translation>
 <translation id="7857117644404132472">Magdagdag ng exception</translation>
 <translation id="7868774406711971383">Polish</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Nagsi-sync ng <ph name="NUMBER_OF_FILES" /> (na) item...</translation>
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
-<translation id="8608515571837163082">Napakaraming beses nang naglagay ng maling PIN. Ilagay ang 8 digit na Personal Unblocking Key (PUK) na ibinigay ng carrier.</translation>
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Mali ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

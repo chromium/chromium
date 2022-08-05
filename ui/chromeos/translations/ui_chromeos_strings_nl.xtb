@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL voor autoconfiguratie</translation>
 <translation id="2288278176040912387">Platenspeler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> bestanden openen.</translation>
-<translation id="2303282178633578561">Simkaart vergrendelen</translation>
 <translation id="2303301624314357662">Bestand <ph name="FILE_NAME" /> wordt geopend.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is verwijderd.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Je recente bestanden zie je hier</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Je beheerder vereist dat je simlock uitzet.</translation>
 <translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
-<translation id="2617342710774726426">Simkaart is vergrendeld</translation>
 <translation id="2620090360073999360">Kan Google Drive momenteel niet bereiken.</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
 <translation id="2638942478653899953">Google Drive kan niet worden bereikt. <ph name="BEGIN_LINK" />Log uit<ph name="END_LINK" /> en log weer in.</translation>
@@ -489,6 +486,7 @@
 <translation id="5159560892333415631">Prullenbak leegmaken</translation>
 <translation id="5163869187418756376">Delen mislukt. Controleer de verbinding en probeer het later opnieuw.</translation>
 <translation id="516592729076796170">Amerikaans Programmer Dvorak</translation>
+<translation id="5172749059808361023">Beperkingsdetails</translation>
 <translation id="5177526793333269655">Miniatuurweergave</translation>
 <translation id="5194713942430106590">Klik om de kolom in oplopende volgorde te sorteren.</translation>
 <translation id="5211614973734216083">Faeröers</translation>
@@ -530,7 +528,6 @@
 <translation id="5489067830765222292">Lets</translation>
 <translation id="5489965683297092283">Het filter <ph name="FILTER_NAME" /> staat uit.</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
-<translation id="5500104704744051184">Je kunt dit netwerk pas gebruiken nadat je de pukcode hebt opgegeven</translation>
 <translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>
 <translation id="5522908512596376669">Bestandslijst is gewijzigd naar lijstweergave.</translation>
@@ -811,7 +808,6 @@
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
-<translation id="7847617962681804761">De pincode is vereist om mobiele data te gebruiken</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
 <translation id="7857117644404132472">Uitzondering toevoegen</translation>
 <translation id="7868774406711971383">Pools</translation>
@@ -906,7 +902,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> items synchroniseren...</translation>
 <translation id="8600173386174225982">Bestandslijst is gewijzigd naar miniatuurweergave.</translation>
 <translation id="8601932370724196034">Crostini-afbeeldingsbestand</translation>
-<translation id="8608515571837163082">Je hebt te vaak een verkeerde pincode opgegeven. Geef de 8-cijferige pukcode op die je van de provider hebt gekregen.</translation>
 <translation id="8609695766746872526">IJslands</translation>
 <translation id="863903787380594467">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: poort</translation>

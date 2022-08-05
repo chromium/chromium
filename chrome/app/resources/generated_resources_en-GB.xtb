@@ -7978,6 +7978,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> is now full screen and has disabled your mouse cursor.</translation>
 <translation id="8667760277771450375">We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>
+<translation id="8668378421690365723">Your device may no longer work properly and may experience security and performance issues.</translation>
 <translation id="8669284339312441707">Warmer</translation>
 <translation id="8670537393737592796">To get back here quickly, install <ph name="APP_NAME" /> by clicking the install button</translation>
 <translation id="867085395664725367">Temporary server error occurred.</translation>
@@ -8461,6 +8462,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />For the best experience, install <ph name="DEVICE_OS" /> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Open as pinned tab</translation>
+<translation id="9123287046453017203">Your device is not up to date</translation>
 <translation id="9124003689441359348">Saved passwords will appear here</translation>
 <translation id="9126149354162942022">Cursor colour</translation>
 <translation id="9128317794749765148">Setup couldn't complete</translation>

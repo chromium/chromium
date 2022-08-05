@@ -469,10 +469,10 @@ Koble enheten til strøm.</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
+<translation id="3724279623330129812">Automatisk zoom sentrerte kameraet</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> til er ikke på denne enheten.</translation>
 <translation id="3735740477244556633">Sortér etter</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
-<translation id="3761848338953536304">Administratoren ber deg slå av innstillingen for SIM-kortlås</translation>
 <translation id="3765841986579723851">Redigert i dag</translation>
 <translation id="3771549900096082774">Høykontrastmodus</translation>
 <translation id="3773700760453577392">En administrator har slått av multipålogging for <ph name="USER_EMAIL" />. Alle brukere må logge av for å fortsette.</translation>
@@ -867,7 +867,6 @@ Koble enheten til strøm.</translation>
 <translation id="598407983968395253">Bruk mal</translation>
 <translation id="598882571027504733">For å laste ned oppdateringen, start Chromebooken på nytt med tastaturet tilkoblet.</translation>
 <translation id="5992218262414051481">Høykontrastmodus er slått på. Trykk på Ctrl + Søk + H på nytt for å slå den av.</translation>
-<translation id="6009656393242168182">Slå av innstillingen for SIM-kortlås</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Avslutter speilingsmodus</translation>
 <translation id="602001110135236999">Rull til venstre</translation>

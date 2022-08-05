@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL konfigurasi otomatis:</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
-<translation id="2303282178633578561">Kunci kartu SIM</translation>
 <translation id="2303301624314357662">Membuka file <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> telah dikeluarkan.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">File terbaru Anda akan muncul di sini</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Administrator mengharuskan Anda menonaktifkan Kunci SIM.</translation>
 <translation id="2602810353103180630">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Kartu SIM terkunci</translation>
 <translation id="2620090360073999360">Google Drive tidak dapat dijangkau saat ini.</translation>
 <translation id="2621713457727696555">Aman</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dibuka. <ph name="BEGIN_LINK" />Keluar<ph name="END_LINK" /> dan masuk lagi.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Latvia</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> nonaktif.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
-<translation id="5500104704744051184">Anda tidak akan dapat menggunakan jaringan ini hingga Anda memasukkan PUK</translation>
 <translation id="5500122897333236901">Islandia</translation>
 <translation id="5508696409934741614">Titik</translation>
 <translation id="5522908512596376669">Daftar file telah berubah menjadi tampilan daftar.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Terjadi error saat mengonfigurasi jaringan</translation>
 <translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
-<translation id="7847617962681804761">Perlu PIN untuk menggunakan data seluler</translation>
 <translation id="7853966320808728790">BÉPO Prancis</translation>
 <translation id="7857117644404132472">Tambahkan pengecualian</translation>
 <translation id="7868774406711971383">Polandia</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Menyinkronkan <ph name="NUMBER_OF_FILES" /> item...</translation>
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
-<translation id="8608515571837163082">Terlalu sering memasukkan PIN yang salah. Masukkan Kunci Pembuka Blokir Pribadi (PUK) 8 digit yang diberikan oleh operator.</translation>
 <translation id="8609695766746872526">Islandia</translation>
 <translation id="863903787380594467">PIN salah. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

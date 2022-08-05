@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Avtomatik sozlash uchun URL manzil:</translation>
 <translation id="2288278176040912387">Patefon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ta fayl ochilmoqda.</translation>
-<translation id="2303282178633578561">SIM kartani qulflash</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fayli ochilmoqda.</translation>
 <translation id="2304820083631266885">Sayyora</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> tizimdan uzildi.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Oxirgi fayllar shu yerda chiqadi</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">Administrator SIM qulfini faolsizlantirishni talab qiladi.</translation>
 <translation id="2602810353103180630">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
-<translation id="2617342710774726426">SIM karta qulflangan</translation>
 <translation id="2620090360073999360">Ayni paytda Google Disk ish faoliyatida emas.</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
 <translation id="2638942478653899953">Google Drive‘ga ulanib bo‘lmadi. Iltimos, <ph name="BEGIN_LINK" />tizimdan chiqing<ph name="END_LINK" /> va qaytadan kiring.</translation>
@@ -528,7 +525,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5489067830765222292">Latish</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtri oʻchiq.</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
-<translation id="5500104704744051184">PUK kaliti kiritilmaguncha bu tarmoqdan foydalana olmaysiz</translation>
 <translation id="5500122897333236901">Island tili</translation>
 <translation id="5508696409934741614">Nuqtalar</translation>
 <translation id="5522908512596376669">Fayllar roʻyxati uchun saralash shakli almashdi.</translation>
@@ -809,7 +805,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7831491651892296503">Tarmoqni sozlashda xatolik yuz berdi</translation>
 <translation id="7839804798877833423">Bu fayllarni yuklashga taxminan <ph name="FILE_SIZE" /> mobil trafik sarf bo‘ladi.</translation>
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
-<translation id="7847617962681804761">Mobil internetdan foydalanish uchun PIN kod talab etiladi</translation>
 <translation id="7853966320808728790">Fransuz BEPO</translation>
 <translation id="7857117644404132472">Istisno qo‘shish</translation>
 <translation id="7868774406711971383">Polyak</translation>
@@ -904,7 +899,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ta element sinxronlanmoqda...</translation>
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
-<translation id="8608515571837163082">PIN kod juda koʻp marta xato kiritildi. Aloqa operatori taqdim qilgan 8-raqamli shaxsiy qulfdan chiqarish kalitini (PUK) kiriting.</translation>
 <translation id="8609695766746872526">Island</translation>
 <translation id="863903787380594467">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
 <translation id="2288278176040912387">Патефон</translation>
 <translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303282178633578561">Блокировка SIM-карты</translation>
 <translation id="2303301624314357662">Открывается файл <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Том <ph name="VOLUME_NAME" /> извлечен.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Здесь будут появляться ваши недавние файлы.</translation>
 <translation id="2578394532502990878">Тамильский, фонетический</translation>
 <translation id="2579959351793446050">Ория</translation>
-<translation id="2593644851255584939">Согласно настройкам администратора, SIM-карта должна быть разблокирована.</translation>
 <translation id="2602810353103180630">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM-карта заблокирована</translation>
 <translation id="2620090360073999360">В данный момент Google Диск недоступен.</translation>
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="2638942478653899953">Не удается подключиться к Google Диску. Попробуйте <ph name="BEGIN_LINK" />выйти<ph name="END_LINK" /> и снова зайти в систему.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Латышский</translation>
 <translation id="5489965683297092283">Фильтр "<ph name="FILTER_NAME" />" отключен.</translation>
 <translation id="5494920125229734069">Выделить все</translation>
-<translation id="5500104704744051184">Вы не сможете использовать эту сеть, пока не введете PUK-код.</translation>
 <translation id="5500122897333236901">Исландский</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Файлы отображаются в виде списка.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
-<translation id="7847617962681804761">Для использования мобильного интернета нужен PIN-код</translation>
 <translation id="7853966320808728790">Французская (BÉPO)</translation>
 <translation id="7857117644404132472">Добавить исключение</translation>
 <translation id="7868774406711971383">Польский</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Синхронизация файлов (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
-<translation id="8608515571837163082">PIN-код был введен неверно слишком много раз. Введите 8-значный PUK-код, предоставленный оператором связи.</translation>
 <translation id="8609695766746872526">Исландский</translation>
 <translation id="863903787380594467">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>

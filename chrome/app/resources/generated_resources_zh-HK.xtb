@@ -2213,7 +2213,7 @@
 <translation id="3021065318976393105">使用電池時</translation>
 <translation id="3021066826692793094">蝴蝶</translation>
 <translation id="3021678814754966447">檢視頁框原始碼(&amp;V)</translation>
-<translation id="3022361196600037287"><ph name="DEVICE" /> 將從這部 Chromebook 中移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> 將會從此 Chromebook 移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音。</translation>
 <translation id="3023464535986383522">選取以朗讀</translation>
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
@@ -3753,7 +3753,7 @@
 <translation id="4535127706710932914">預設設定檔</translation>
 <translation id="4535767533210902251">指紋感應器位於鍵盤右上方。請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="4536140153723794651">一律可以使用 Cookie 的網站</translation>
-<translation id="4536769240747010177">網路共用功能：</translation>
+<translation id="4536769240747010177">網絡共享功能：</translation>
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
@@ -6209,10 +6209,10 @@
 <translation id="6943939122536910181">中斷咗同 <ph name="DEVICE" /> 嘅連線</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="694592694773692225">已在此網頁禁止重新導向。</translation>
-<translation id="6947015141909171112">系統會根據你最近搜尋的食譜，向你顯示食譜。
+<translation id="6947015141909171112">系統會根據您最近搜尋的食譜，為您顯示食譜。
         <ph name="BREAK" />
         <ph name="BREAK" />
-        你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
+        您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="6949434160682548041">密碼 (選填)</translation>
 <translation id="6950627417367801484">還原應用程式</translation>
 <translation id="6952242901357037157">您亦可在此顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>
@@ -7801,7 +7801,7 @@
 <translation id="8486666913807228950">原因：在「強制開啟方式」清單中找到反轉規則 <ph name="REVERT_RULE" />。</translation>
 <translation id="848666842773560761">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="8487678622945914333">放大</translation>
-<translation id="8487699605742506766">無線基地台</translation>
+<translation id="8487699605742506766">熱點</translation>
 <translation id="8489156414266187072">個人建議只會在您的帳戶上顯示</translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式 (<ph name="UPDATED_APPS" />) 已更新。請重新啟動裝置以完成更新程序。</translation>
 <translation id="8492685019009920170">用手指輕觸指紋感應器。系統會妥善地將您的資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
@@ -7976,6 +7976,7 @@
 <translation id="8666759526542103597">關於基於瀏覽器的廣告個人化</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
 <translation id="8667760277771450375">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
+<translation id="8668378421690365723">裝置可能無法再正常運作，並可能會遇到安全性和效能問題。</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>
@@ -8298,7 +8299,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個標籤}other{「<ph name="TAB_TITLE" />」和另外 # 個標籤}}</translation>
 <translation id="8977811652087512276">密碼不正確或檔案損毀</translation>
 <translation id="8978154919215542464">開啟 - 同步所有內容</translation>
-<translation id="8978670037548431647">重新整理網路共用功能</translation>
+<translation id="8978670037548431647">重新整理網絡共享功能</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
 <translation id="8980345560318123814">意見反映報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>
@@ -8459,6 +8460,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內置磁碟。您亦可稍後從登入畫面進行安裝。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用 CloudReady 2.0。此操作會保留您現有的作業系統和資料，但系統的儲存空間和效能可能受限。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
+<translation id="9123287046453017203">您的裝置不是最新版本</translation>
 <translation id="9124003689441359348">已儲存的密碼將會在這裡顯示</translation>
 <translation id="9126149354162942022">游標顏色</translation>
 <translation id="9128317794749765148">無法完成設定</translation>

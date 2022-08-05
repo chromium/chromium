@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Konfigurazio automatikoaren URLa:</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
-<translation id="2303282178633578561">Blokeatu SIM txartela</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Kanporatu da <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Azken fitxategiak hemen agertuko dira</translation>
 <translation id="2578394532502990878">Tamildar fonetikoa</translation>
 <translation id="2579959351793446050">Odiarra</translation>
-<translation id="2593644851255584939">SIMa blokeatzeko ezarpena desgaitzea eskatzen du administratzaileak.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> bideoa</translation>
-<translation id="2617342710774726426">Blokeatuta dago SIM txartela</translation>
 <translation id="2620090360073999360">Une honetan, ezin da konektatu Google Drive zerbitzuarekin.</translation>
 <translation id="2621713457727696555">Babestuta</translation>
 <translation id="2638942478653899953">Ezin izan da Google Drive-rekin konektatu. <ph name="BEGIN_LINK" />Amaitu saioa<ph name="END_LINK" /> eta hasi saioa berriro.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Letoniarra</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> iragazkia inaktibo dago.</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
-<translation id="5500104704744051184">Ezingo duzu erabili sarea PUKa idatzi arte</translation>
 <translation id="5500122897333236901">Islandiarra</translation>
 <translation id="5508696409934741614">Puntuak</translation>
 <translation id="5522908512596376669">Zerrenda-ikuspegira aldatu da fitxategi-zerrenda.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Errore bat gertatu da sarea konfiguratzean</translation>
 <translation id="7839804798877833423">Fitxategi horiek eskuratzeko, mugikorreko datuen <ph name="FILE_SIZE" /> erabiliko dira.</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
-<translation id="7847617962681804761">PINa behar da datu-konexioa erabiltzeko</translation>
 <translation id="7853966320808728790">BÉPO teklatu frantsesa</translation>
 <translation id="7857117644404132472">Gehitu salbuespena</translation>
 <translation id="7868774406711971383">Poloniarra</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementu sinkronizatzen…</translation>
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
-<translation id="8608515571837163082">PINa gehiegitan idatzi da oker. Idatzi operadoreak emandako zortzi digituko desblokeatzeko gako pertsonala (PUKa).</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
 <translation id="863903787380594467">PINa okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Ataka</translation>

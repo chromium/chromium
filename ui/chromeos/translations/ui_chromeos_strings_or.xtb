@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">ସ୍ଵତଃକନଫିଗ୍‌ରେସନ୍ URL:</translation>
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />ଟି ଫାଇଲ୍ ଖୋଲାଯାଉଛି।</translation>
-<translation id="2303282178633578561">SIM କାର୍ଡ ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ଫାଇଲ୍ ଖୋଲୁଛି।</translation>
 <translation id="2304820083631266885">ଗ୍ରହ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ବାହାର କରାଯାଇଛି</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଫାଇଲଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="2578394532502990878">ତାମିଲ ଫୋନେଟିକ୍</translation>
 <translation id="2579959351793446050">ଓଡ଼ିଆ</translation>
-<translation id="2593644851255584939">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ପାଇଁ ଆପଣଙ୍କୁ SIM ଲକ ଅକ୍ଷମ କରିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ଭିଡିଓ</translation>
-<translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2620090360073999360">ଏହି ସମୟରେ Google Driveରେ ପହଞ୍ଚି ହେବ ନାହିଁ।</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
 <translation id="2638942478653899953">Google Drive ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିହେଲା ନାହିଁ। ଦୟାକରି <ph name="BEGIN_LINK" />ଲଗ୍‌ ଆଉଟ୍‍<ph name="END_LINK" /> ଏବଂ ଫେରି ଲଗ୍‍ ଇନ୍‍ କରନ୍ତୁ।</translation>
@@ -523,7 +520,6 @@
 <translation id="5489067830765222292">ଲାତଭିଆନ୍</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ଫିଲ୍ଟର ବନ୍ଦ ଅଛି।</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="5500104704744051184">ଆପଣ PUKକୁ ନଲେଖିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ</translation>
 <translation id="5500122897333236901">ଆଇସ୍ଲେଣ୍ଡିକ୍</translation>
 <translation id="5508696409934741614">ଡଟ୍</translation>
 <translation id="5522908512596376669">ଫାଇଲ୍‍ର ତାଲିକା ଭ୍ୟୁ ତାଲିକାରେ ବଦଳି ଯାଇଛି।</translation>
@@ -804,7 +800,6 @@
 <translation id="7831491651892296503">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗର୍ କରିବା ସମୟରେ ତ୍ରୁଟି ହୋଇଛି</translation>
 <translation id="7839804798877833423">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
-<translation id="7847617962681804761">ମୋବାଇଲ ଡାଟା ବ୍ୟବହାର କରିବା ପାଇଁ PINର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="7853966320808728790">ଫ୍ରେଞ୍ଚ BÉPO</translation>
 <translation id="7857117644404132472">ବ୍ୟତିକ୍ରମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7868774406711971383">ପୋଲିଶ୍</translation>
@@ -899,7 +894,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍‌ ସିଙ୍କ୍‌ ହେଉଛି...</translation>
 <translation id="8600173386174225982">ଫାଇଲ୍‌ ତାଲିକାକୁ ଥମ୍ବନେଲ୍ ଭ୍ୟୁରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="8601932370724196034">Crostini ଛବି ଫାଇଲ୍</translation>
-<translation id="8608515571837163082">ଏକ ଭୁଲ PIN ବହୁତ ଥର ଲେଖାଯାଇଛି। କ୍ୟାରିଅର ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା 8-ଅଙ୍କ ବିଶିଷ୍ଟ ବ୍ୟକ୍ତିଗତ ଅନବ୍ଲକ କରିବା କୀ (PUK) ଲେଖନ୍ତୁ।</translation>
 <translation id="8609695766746872526">ଆଇସଲାଣ୍ଡିକ୍</translation>
 <translation id="863903787380594467">ଭୁଲ PIN। ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ପୋର୍ଟ</translation>

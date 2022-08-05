@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">نشانی وب پیکربندی خودکار</translation>
 <translation id="2288278176040912387">ضبط صوت</translation>
 <translation id="2291538123825441971">درحال باز کردن <ph name="NUMBER_OF_FILES" /> فایل.</translation>
-<translation id="2303282178633578561">قفل کردن سیم کارت</translation>
 <translation id="2303301624314357662">درحال باز کردن فایل <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">سیاره</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> خارج شد.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">فایل‌های اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
 <translation id="2579959351793446050">اوریه</translation>
-<translation id="2593644851255584939">سرپرستتان از شما می‌خواهد قفل سیم‌کارت را غیرفعال کنید.</translation>
 <translation id="2602810353103180630">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
 <translation id="2614589611416690597">ویدیوی <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2620090360073999360">‏دسترسی به Google Drive در حال حاضر ممکن نیست.</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
 <translation id="2638942478653899953">‏دسترسی به Google Drive امکان‌پذیر نیست. لطفاً <ph name="BEGIN_LINK" />از سیستم خارج شوید<ph name="END_LINK" /> و دوباره وارد شوید.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">لتونیایی</translation>
 <translation id="5489965683297092283">فیلتر <ph name="FILTER_NAME" /> خاموش است.</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
-<translation id="5500104704744051184">‏تا زمانی‌که PUK را وارد نکنید، نمی‌توانید از این شبکه استفاده کنید</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>
 <translation id="5522908512596376669">نمای فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">خطا در پیکربندی شبکه</translation>
 <translation id="7839804798877833423">دریافت این فایل‌ها تقریباً <ph name="FILE_SIZE" /> از داده تلفن همراه شما را مصرف می‌کند.</translation>
 <translation id="7846076177841592234">لغو انتخاب</translation>
-<translation id="7847617962681804761">برای استفاده از داده تلفن همراه، به پین نیاز دارید</translation>
 <translation id="7853966320808728790">‏BÉPO فرانسوی</translation>
 <translation id="7857117644404132472">افزودن استثنا</translation>
 <translation id="7868774406711971383">لهستانی</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">در حال همگام‌سازی <ph name="NUMBER_OF_FILES" /> مورد...</translation>
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
-<translation id="8608515571837163082">‏پین نادرست دفعات زیادی وارد شده است. «کلید لغو انسداد شخصی» (PUK‏) ۸ رقمی را که شرکت مخابراتی ارائه کرده است وارد کنید.</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
 <translation id="863903787380594467">پین اشتباه است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - درگاه</translation>

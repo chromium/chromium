@@ -472,7 +472,6 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ஆகியவையும் மேலும் <ph name="UNAVAILABLE_APPS_COUNT" /> ஆப்ஸும் இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
-<translation id="3761848338953536304">சிம் கார்டைப் பூட்டுவதற்கான அமைப்பை உங்கள் நிர்வாகி முடக்கச் சொல்கிறார்</translation>
 <translation id="3765841986579723851">இன்று திருத்தப்பட்டது</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
@@ -759,6 +758,16 @@
 <translation id="5393156353051693207">உங்கள் ஆப்ஸை மறுவரிசைப்படுத்த, எங்கேயாவது தொட்டுப் பிடிக்கவும்</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். ஃபோல்டரை உருவாக்க, விடுவிக்கவும்.</translation>
 <translation id="5397578532367286026">இந்தப் பயனரின் பயன்பாடு மற்றும் வரலாறு chrome.com இன் நிர்வாகியால் (<ph name="MANAGER_EMAIL" />) மதிப்பாய்வு செய்யப்படும்.</translation>
+<translation id="5399673806694250334">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">விரைவு அமைப்புகள், அறிவிப்பு மையத்தை அணுக, தேடல் + இடது அம்புக்குறியை அழுத்தவும்.</translation>
 <translation id="5426063383988017631">அமைப்புகள் மெனு மூடப்பட்டது</translation>
 <translation id="5428899915242071344">தேர்ந்தெடுப்பதைத் தொடங்கு</translation>
@@ -857,7 +866,6 @@
 <translation id="598407983968395253">டெம்ப்ளேட்டைப் பயன்படுத்து</translation>
 <translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="5992218262414051481">அதிக ஒளி மாறுபாட்டுப் பயன்முறை இயக்கப்பட்டது. அதை முடக்க, Ctrl+தேடல்+Hஐ மீண்டும் அழுத்தவும்.</translation>
-<translation id="6009656393242168182">உங்கள் சிம் கார்டைப் பூட்டுவதற்கான அமைப்பை முடக்குங்கள்</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> இல் <ph name="SELECTED_PAGE" />வது பக்கம்</translation>
 <translation id="6018164090099858612">கண்ணாடிப் பயன்முறையிலிருந்து வெளியேறுகிறது</translation>
 <translation id="602001110135236999">இடப்புறம் செல்</translation>
@@ -897,6 +905,7 @@
 <translation id="619279033188484792">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள் ஆகியவற்றை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="619335566042889110">இப்போதே சார்ஜ் செய்க</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400"><ph name="EMAIL" /> என்ற கணக்கில் இதற்குமுன்பு சேமிக்கப்பட்ட <ph name="NAME" /> சாதனத்தை இணைக்கவும்</translation>
 <translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
 <translation id="622484624075952240">கீழ்</translation>
 <translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>

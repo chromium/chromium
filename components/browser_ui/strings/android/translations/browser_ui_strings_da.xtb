@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6467852467360539617">Ryd data, og nulstil tilladelser</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
+<translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>

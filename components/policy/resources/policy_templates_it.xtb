@@ -3555,13 +3555,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="482803100714220060">Mostra URL completi</translation>
 <translation id="4832852360828533362">Report su dispositivi e utenti</translation>
 <translation id="4834526953114077364">Gli utenti utilizzati meno di recente che non hanno eseguito l'accesso negli ultimi tre mesi vengono rimossi fino alla disponibilità di spazio libero sufficiente</translation>
-<translation id="483544442646753291">Controlla l'esperienza utente delle funzionalità disattivate che sono elencate in <ph name="SYSTEM_FEATURES_DISABLE_LIST" />.
-
-      Se il criterio viene impostato su "Bloccato", le funzionalità disattivate non saranno utilizzabili, ma rimarranno visibili per gli utenti.
-
-      Se il criterio viene impostato su "Nascosto", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
-
-      Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità del sistema sarà "Bloccato".</translation>
 <translation id="4835470005923546373">Disattiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
 <translation id="4835622243021053389">Attiva autenticazione NTLMv2</translation>
 <translation id="4840015507504937941">Questo criterio consente di impostare le dimensioni minime (in byte) dei dati negli appunti, che verranno controllate in base alle regole di limitazione relativa agli appunti definite nel criterio DataLeakPreventionRulesList.
@@ -4443,9 +4436,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio è impostato su False o non è configurato, le informazioni non vengono segnalate.
       Se è impostato su True, le informazioni sui VPD del dispositivo vengono segnalate.
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
-<translation id="576158229686912964">Questo criterio è stato ritirato nella versione M96. Usa i criteri <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> e <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
-
-      Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware. Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
 <translation id="5762969307102447459">Disattiva la compilazione automatica per gli indirizzi</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
@@ -6126,9 +6116,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
 
       In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
-<translation id="7509761893401042250">Questo criterio è stato ritirato a partire dalla versione M96. Usa i criteri <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> e <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
-
-      Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano statistiche hardware quali l'utilizzo di CPU/RAM. Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le statistiche hardware.</translation>
 <translation id="7512065400265675158">L'intestazione della richiesta <ph name="USER_AGENT_HEADER_NAME" /> è stata programmata per essere ridotta. Per semplificare il test e la compatibilità, questo criterio può attivare la funzionalità di riduzione per tutti i siti web o disattivare la possibilità per le prove dell'origine o le prove sul campo di abilitare la funzionalità.
 
       Per scoprire di più sulla funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> e la relativa cronologia, leggi qui:
@@ -7142,13 +7129,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
-<translation id="8619480582976056396">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL vietati. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partire dalla versione 73 di <ph name="PRODUCT_NAME" />, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
-
-      A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
-
-      Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="8619748440665904084">Disabilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
 <translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
       Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.
@@ -7298,9 +7278,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8807313206348471682">Mostra la finestra di dialogo di conferma di disconnessione</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>
-<translation id="8818173863808665831">Consente di segnalare la posizione geografica del dispositivo.
-
-Se la norma non viene impostata o viene impostata su false, la posizione non viene segnalata.</translation>
 <translation id="8818768076343557335">Prevedi sempre le azioni di rete su ogni rete non cellulare.
           (obsoleto nella versione 50, rimosso nella 52. Dopo la versione 52, se viene impostato il valore 1, viene gestito come 0; prevedi le azioni di rete su qualsiasi connessione di rete).</translation>
 <translation id="8821678641132607468">Se il criterio viene impostato su Attivato, la cronologia di navigazione del precedente browser predefinito verrà importata alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione non verrà importata alla prima esecuzione.

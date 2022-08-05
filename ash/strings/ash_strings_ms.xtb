@@ -470,10 +470,10 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka apabila sudah selesai</translation>
+<translation id="3724279623330129812">Autozum memusatkan kamera</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dan <ph name="UNAVAILABLE_APPS_COUNT" /> lagi tidak tersedia pada peranti ini.</translation>
 <translation id="3735740477244556633">Isih mengikut</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
-<translation id="3761848338953536304">Pentadbir anda meminta agar anda mematikan tetapan Kunci SIM</translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
 <translation id="3771549900096082774">Mod Kontras Tinggi</translation>
 <translation id="3773700760453577392">Pentadbir tidak membenarkan log masuk berbilang untuk <ph name="USER_EMAIL" />.
@@ -762,6 +762,16 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5393156353051693207">Sentuh &amp; tahan di mana-mana untuk menyusun semula apl anda</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ke atas <ph name="IN_PLACE_APP" />, lepaskan untuk membuat folder.</translation>
 <translation id="5397578532367286026">Penggunaan dan sejarah pengguna ini boleh disemak oleh pengurus (<ph name="MANAGER_EMAIL" />) di chrome.com.</translation>
+<translation id="5399673806694250334">Dulang status, masa <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Tetapan Pantas, Tekan cari + kiri untuk mengakses pusat pemberitahuan.</translation>
 <translation id="5426063383988017631">Menu tetapan ditutup</translation>
 <translation id="5428899915242071344">Mula memilih</translation>
@@ -860,7 +870,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="598407983968395253">Gunakan templat</translation>
 <translation id="598882571027504733">Untuk mendapatkan kemas kini, mulakan semula Chromebook dengan papan kekunci yang dipasang.</translation>
 <translation id="5992218262414051481">Mod Kontras Tinggi didayakan. Tekan Ctrl+Cari+H semula untuk mematikannya.</translation>
-<translation id="6009656393242168182">Lumpuhkan tetapan Kunci SIM anda</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> daripada <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Keluar daripada mod cermin</translation>
 <translation id="602001110135236999">Tatal ke kiri</translation>

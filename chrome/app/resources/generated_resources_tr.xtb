@@ -4673,6 +4673,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5470735824776589490">Cihazınızın Powerwash ile sıfırlanabilmesi için yeniden başlatılması gerekir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Merhaba! Ben sizin metin okuma sesinizim.</translation>
 <translation id="5472627187093107397">Bu site için şifreleri kaydet</translation>
+<translation id="5473062644742711742">Chrome Web Mağazası'nda daha fazla erişilebilirlik aracı bulun</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Devam ederek bu cihazın Google'dan, çocuğunuzun operatöründen ve bu cihazın üreticisinden güncellemeleri ve uygulamaları, muhtemelen hücresel veri üzerinden otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN en az bir karakter olmalıdır}other{PIN en az # karakter olmalıdır}}</translation>

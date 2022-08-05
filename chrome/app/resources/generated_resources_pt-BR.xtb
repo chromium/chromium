@@ -7983,6 +7983,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8666759526542103597">Sobre a personalização de anúncios com base no navegador</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> está agora em modo de tela inteira e desativou o cursor do mouse.</translation>
 <translation id="8667760277771450375">Estamos desenvolvendo meios para restringir o rastreamento entre sites e também possibilitar que sites evitem anúncios de spam e fraudes.</translation>
+<translation id="8668378421690365723">Seu dispositivo pode deixar de funcionar corretamente e enfrentar problemas de segurança e performance.</translation>
 <translation id="8669284339312441707">Mais quentes</translation>
 <translation id="8670537393737592796">Para voltar aqui rapidamente, instale o app <ph name="APP_NAME" /> clicando no botão de instalação</translation>
 <translation id="867085395664725367">Ocorreu um erro temporário no servidor.</translation>
@@ -8467,6 +8468,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para ter a melhor experiência possível, instale o <ph name="DEVICE_OS" /> no seu disco interno. Você também pode o instalar mais tarde na tela de login.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se ainda não quiser fazer a instalação, é possível o executar no dispositivo USB para conhecer o sistema. Essa opção garantirá que o SO e seus dados sejam mantidos, mas talvez haja limitações de armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como guia fixada</translation>
+<translation id="9123287046453017203">O dispositivo não está atualizado</translation>
 <translation id="9124003689441359348">As senhas salvas aparecerão aqui</translation>
 <translation id="9126149354162942022">Cor do cursor</translation>
 <translation id="9128317794749765148">Não foi possível concluir a configuração</translation>

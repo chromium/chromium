@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Автоматаар тохируулах URL:</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
-<translation id="2303282178633578561">SIM картыг түгжих</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
 <translation id="2304820083631266885">Гараг</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />-г салгалаа.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Таны саяхны файлууд энд харагдана</translation>
 <translation id="2578394532502990878">Тамил авиа зүй</translation>
 <translation id="2579959351793446050">Одиа</translation>
-<translation id="2593644851255584939">Таны администратор SIM түгжээгээ идэвхгүй болгохыг шаардаж байна.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Танай администратор блоклосон, Дэлгэрэнгүй</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> видео</translation>
-<translation id="2617342710774726426">SIM карт түгжигдсэн</translation>
 <translation id="2620090360073999360">Google Drive-д одоогоор хандаж болохгүй байна.</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
 <translation id="2638942478653899953">Google Drive-тай холбогдож чадсангүй. <ph name="BEGIN_LINK" /> руу ороод <ph name="END_LINK" />-ээс гараад дахин нэвтэрнэ үү.</translation>
@@ -486,6 +483,7 @@
 <translation id="5159560892333415631">Хогийн савыг хоослох</translation>
 <translation id="5163869187418756376">Хуваалцах ажиллагаа амжилтгүй боллоо. Холболтоо шалгаад, дараа дахин оролдож үзнэ үү.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5172749059808361023">Хязгаарлалтын дэлгэрэнгүй</translation>
 <translation id="5177526793333269655">Хажуугийн талбарт жижгээр харах</translation>
 <translation id="5194713942430106590">Баганыг өсөх дарааллаар эрэмбэлэхийн тулд товшино уу.</translation>
 <translation id="5211614973734216083">Фарер</translation>
@@ -526,7 +524,6 @@
 <translation id="5489067830765222292">Латви</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> шүүлтүүр унтраалттай байна.</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
-<translation id="5500104704744051184">Та PUK-г оруулах хүртлээ энэ сүлжээг ашиглах боломжгүй байх болно</translation>
 <translation id="5500122897333236901">Исланд</translation>
 <translation id="5508696409934741614">Цэг</translation>
 <translation id="5522908512596376669">Файлын жагсаалтыг жагсаалтаар харах горимд шилжүүлэв.</translation>
@@ -807,7 +804,6 @@
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
 <translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>
-<translation id="7847617962681804761">Мобайл дата ашиглахын тулд ПИН шаардлагатай</translation>
 <translation id="7853966320808728790">Франц хэлний BÉPO</translation>
 <translation id="7857117644404132472">Онцгой тохиолдол нэмэх</translation>
 <translation id="7868774406711971383">Польш</translation>
@@ -902,7 +898,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> зүйлийг хуулж байна</translation>
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
-<translation id="8608515571837163082">ПИН-г хэт олон удаа буруу оруулсан байна. Оператор компанийн олгосон 8 оронтой Блокоос гаргах хувийн түлхүүр (PUK)-ийг оруулна уу.</translation>
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="863903787380594467">ПИН буруу байна. Танд <ph name="RETRIES" /> оролдлого үлдлээ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порт</translation>

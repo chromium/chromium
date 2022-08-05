@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">ავტოკონფიგურაციის URL:</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
 <translation id="2291538123825441971">მიმდინარეობს <ph name="NUMBER_OF_FILES" /> ფაილის გახსნა.</translation>
-<translation id="2303282178633578561">SIM ბარათის დაბლოკვა</translation>
 <translation id="2303301624314357662">იხსნება <ph name="FILE_NAME" /> ფაილი.</translation>
 <translation id="2304820083631266885">პლანეტა</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ამოღებულია.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">თქვენი ბოლოდროინდელი ფაილები აქ გამოჩნდება</translation>
 <translation id="2578394532502990878">ტამილური ფონეტიკური</translation>
 <translation id="2579959351793446050">ორია</translation>
-<translation id="2593644851255584939">თქვენი ადმინისტრატორი მოითხოვს, რომ გათიშოთ SIM ბარათის ჩაკეტვა.</translation>
 <translation id="2602810353103180630">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაბლოკილია თქვენი ადმინისტრატორის მიერ, დეტალები</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ვიდეო</translation>
-<translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2620090360073999360">Google Drive-ზე წვდომა ამჟამად შეუძლებელია.</translation>
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="2638942478653899953">Google Drive-თან დაკავშირება ვერ მოხერხდა. <ph name="BEGIN_LINK" />გამოდით<ph name="END_LINK" /> და ხელახლა შედით.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">წაშლილების გასუფთავება</translation>
 <translation id="5163869187418756376">გაზიარება ვერ მოხერხდა. შეამოწმეთ კავშირი და ხელახლა სცადეთ.</translation>
 <translation id="516592729076796170">შეერთებული შტატების დვორაკი პროგრამისტებისთვის</translation>
+<translation id="5172749059808361023">შეზღუდვის დეტალები</translation>
 <translation id="5177526793333269655">ესკიზების ხედი</translation>
 <translation id="5194713942430106590">დააწკაპუნეთ სვეტის ზრდადი მიმდევრობით დასალაგებლად.</translation>
 <translation id="5211614973734216083">ფარერული</translation>
@@ -528,7 +526,6 @@
 <translation id="5489067830765222292">ლატვიური</translation>
 <translation id="5489965683297092283">ფილტრი <ph name="FILTER_NAME" /> გამორთულია.</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
-<translation id="5500104704744051184">ამ ქსელს ვერ გამოიყენებთ, სანამ PUK-ს არ შეიყვანთ</translation>
 <translation id="5500122897333236901">ისლანდიური</translation>
 <translation id="5508696409934741614">წერტილები</translation>
 <translation id="5522908512596376669">ფაილების სია ნაჩვენებია სიის ხედში.</translation>
@@ -809,7 +806,6 @@
 <translation id="7831491651892296503">შეცდომა ქსელის კონფიგურაციისას</translation>
 <translation id="7839804798877833423">ამ ფაილების შერჩევას გამოყენებული იქნება დაახლოებით <ph name="FILE_SIZE" /> მობილური მონაცემებისა.</translation>
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
-<translation id="7847617962681804761">მობილური ინტერნეტის გამოსაყენებლად საჭიროა PIN კოდის გამოყენება</translation>
 <translation id="7853966320808728790">ფრანგული BÉPO</translation>
 <translation id="7857117644404132472">გამონაკლისის დამატება</translation>
 <translation id="7868774406711971383">პოლონური</translation>
@@ -904,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ელემენტის სინქრონიზაცია…</translation>
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
-<translation id="8608515571837163082">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ. შეიყვანეთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="8609695766746872526">ისლანდიური</translation>
 <translation id="863903787380594467">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — პორტი</translation>

@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">Небезпечно</translation>
 <translation id="3533202363250687977">Закрити всі анонімні вкладки</translation>
 <translation id="3533436815740441613">Нова вкладка</translation>
+<translation id="3547799431091898961">Щоб вийти з облікового запису Google на всіх веб-сайтах, <ph name="BEGIN_LINK" />вийдіть із Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Закрити вкладку</translation>
 <translation id="3581564640715911333">Пропозиція перекладати сторінки іншими мовами</translation>
 <translation id="3588820906588687999">Відкрити зображення в новій вкладці</translation>
@@ -681,6 +682,7 @@
 <translation id="6561262006871132942">Наблизити</translation>
 <translation id="6583087784430677195">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Параметри<ph name="END_LINK" /> та перейдіть у розділ "Автозаповнення паролів".</translation>
 <translation id="6585618849026997638">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
+<translation id="6596481460663245319">Шукати зображення за допомогою Google</translation>
 <translation id="6598875554591387303">Сортувати за категорією "Видавець"</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@
 <translation id="7987685713885608670">З міркувань додаткового захисту шифруйте паролі на пристрої, перш ніж вони збережуться в Менеджері паролів Google.</translation>
 <translation id="7993619969781047893">Функції на деяких сайтах можуть не працювати</translation>
 <translation id="800361585186029508">Відкриває введені URL-адреси в Google Chrome.</translation>
+<translation id="8016714545083187120">Завжди використовувати надійні з’єднання</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8023878949384262191">Розгортає розділ.</translation>
 <translation id="8027581147000338959">Відкрити в новому вікні</translation>

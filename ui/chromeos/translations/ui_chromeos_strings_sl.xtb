@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Spletni naslov samodejne konfiguracije:</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Odpiranje toliko datotek: <ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303282178633578561">Zakleni kartico SIM</translation>
 <translation id="2303301624314357662">Odpiranje datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Pogon <ph name="VOLUME_NAME" /> je bil izvržen.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Vaše nedavne datoteke bodo prikazane tukaj</translation>
 <translation id="2578394532502990878">tamilščina (fonetična)</translation>
 <translation id="2579959351793446050">odijščina</translation>
-<translation id="2593644851255584939">Skrbnik zahteva, da onemogočite zaklepanje kartice SIM.</translation>
 <translation id="2602810353103180630">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
 <translation id="2614589611416690597">Videoposnetek <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2620090360073999360">Storitev Google Drive trenutno ni na voljo.</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="2638942478653899953">Google Drive ni dosegljiv. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" /> in se znova prijavite.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Izprazni smetnjak</translation>
 <translation id="5163869187418756376">Souporaba ni uspela. Preverite povezavo in poskusite znova.</translation>
 <translation id="516592729076796170">Angleška tipkovnica Dvorak za programerje (ZDA)</translation>
+<translation id="5172749059808361023">Podrobnosti o omejitvi</translation>
 <translation id="5177526793333269655">Pogled sličic</translation>
 <translation id="5194713942430106590">Kliknite, če želite razvrstiti elemente stolpca v naraščajočem vrstnem redu.</translation>
 <translation id="5211614973734216083">ferščina</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">latvijščina</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je izklopljen.</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
-<translation id="5500104704744051184">Tega omrežja ne bo mogoče uporabljati, dokler ne vnesete kode PUK.</translation>
 <translation id="5500122897333236901">islandščina</translation>
 <translation id="5508696409934741614">Pike</translation>
 <translation id="5522908512596376669">Seznam datotek je spremenjen na prikaz seznama.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Napaka pri konfiguriranju omrežja</translation>
 <translation id="7839804798877833423">Za prenos teh datotek bo porabljenih približno <ph name="FILE_SIZE" /> MB mobilnih podatkov.</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
-<translation id="7847617962681804761">Če želite uporabljati prenos podatkov v mobilnem omrežju, potrebujete kodo PIN.</translation>
 <translation id="7853966320808728790">francoščina – BÉPO</translation>
 <translation id="7857117644404132472">Dodaj izjemo</translation>
 <translation id="7868774406711971383">poljščina</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Sinhroniziranje datotek (<ph name="NUMBER_OF_FILES" />) ...</translation>
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
-<translation id="8608515571837163082">Prevečkrat ste vnesli napačno kodo PIN. Vnesite 8-mestno osebno kodo za odblokiranje (PUK), ki jo dobite od operaterja.</translation>
 <translation id="8609695766746872526">islandščina</translation>
 <translation id="863903787380594467">Napačna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – vrata</translation>

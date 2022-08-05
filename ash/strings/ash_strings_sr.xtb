@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уређаја</translation>
-<translation id="1639239467298939599">Учитавање</translation>
+<translation id="1639239467298939599">Учитава се</translation>
 <translation id="1654477262762802994">Започните гласовну претрагу</translation>
 <translation id="1668469839109562275">Уграђени VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">Кабл може да утиче на учинак</translation>
 <translation id="2903844815300039659">Повезано на мрежу <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Снимци екрана</translation>
+<translation id="2925246975070834767">Пробајте аутоматско зумирање да бисте били у центру екрана. Укључите га у Брзим подешавањима.</translation>
 <translation id="2941112035454246133">Низак</translation>
 <translation id="2942350706960889382">Монтирана лупа екрана</translation>
 <translation id="2942516765047364088">Положај полице</translation>
@@ -469,10 +470,10 @@
 <translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
+<translation id="3724279623330129812">Аутоматско зумирање је центрирало камеру</translation>
 <translation id="3726171378575546917">Апликације <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и још <ph name="UNAVAILABLE_APPS_COUNT" /> нису на овом уређају.</translation>
 <translation id="3735740477244556633">Сортирај према</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
-<translation id="3761848338953536304">Администратор захтева да искључите подешавање закључавања SIM картице</translation>
 <translation id="3765841986579723851">Измењено данас</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
@@ -635,6 +636,7 @@
 <translation id="4628757576491864469">Уређаји</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцена у звездицама <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног дана}one{Промените верзију уређаја у претходну верзију у року од # дана}few{Промените верзију уређаја у претходну верзију у року од # дана}other{Промените верзију уређаја у претходну верзију у року од # дана}}</translation>
+<translation id="4633636853437260449">Притисните Ctrl+W да бисте избрисали</translation>
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4644727592819780893">Регион је премали да би стала камера</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, препоручена апликација</translation>
@@ -868,7 +870,6 @@
 <translation id="598407983968395253">Користи шаблон</translation>
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
 <translation id="5992218262414051481">Режим високог контраста је омогућен. Притисните Ctrl + тастер за претрагу + H поново да бисте га искључили.</translation>
-<translation id="6009656393242168182">Онемогућите подешавање закључавања SIM картице</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Излазак из режима са пресликавањем</translation>
 <translation id="602001110135236999">Помери налево</translation>

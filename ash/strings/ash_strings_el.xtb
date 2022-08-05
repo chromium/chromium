@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> συσκευές</translation>
-<translation id="1639239467298939599">Γίνεται φόρτωση</translation>
+<translation id="1639239467298939599">Φόρτωση</translation>
 <translation id="1654477262762802994">Έναρξη φωνητικού ερωτήματος</translation>
 <translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
@@ -472,7 +472,6 @@
 <translation id="3726171378575546917">Οι εφαρμογές <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> και <ph name="UNAVAILABLE_APPS_COUNT" /> ακόμη εφαρμογές δεν βρίσκονται σε αυτήν τη συσκευή.</translation>
 <translation id="3735740477244556633">Ταξινόμηση κατά</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
-<translation id="3761848338953536304">Ο διαχειριστής ζητάει να απενεργοποιήσετε τη ρύθμιση κλειδώματος SIM.</translation>
 <translation id="3765841986579723851">Έγινε επεξεργασία σήμερα</translation>
 <translation id="3771549900096082774">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="3773700760453577392">Ένας διαχειριστής δεν επιτρέπει τη σύνδεση σε πολλούς λογαριασμούς για τον χρήστη <ph name="USER_EMAIL" />. Όλοι οι χρήστες πρέπει να αποσυνδεθούν για να συνεχίσετε.</translation>
@@ -759,6 +758,16 @@
 <translation id="5393156353051693207">Αγγίξτε παρατεταμένα οπουδήποτε για να αναδιατάξετε τις εφαρμογές σας</translation>
 <translation id="5395308026110844773">Η εφαρμογή <ph name="DRAGGED_APP_NAME" /> πάνω από την εφαρμογή <ph name="IN_PLACE_APP" />, αφήστε για να δημιουργήσετε φάκελο.</translation>
 <translation id="5397578532367286026">Ο διαχειριστής (<ph name="MANAGER_EMAIL" />) μπορεί να ελέγξει τη χρήση και το ιστορικό αυτού του χρήστη στη διεύθυνση chrome.com.</translation>
+<translation id="5399673806694250334">Περιοχή κατάστασης, ώρα <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Γρήγορες ρυθμίσεις, πατήστε Αναζήτηση και αριστερά για πρόσβαση στο κέντρο ειδοποιήσεων.</translation>
 <translation id="5426063383988017631">Το μενού Ρυθμίσεις έκλεισε.</translation>
 <translation id="5428899915242071344">Έναρξη επιλογής</translation>
@@ -857,7 +866,6 @@
 <translation id="598407983968395253">Χρήση προτύπου</translation>
 <translation id="598882571027504733">Για να λάβετε την ενημέρωση, επανεκκινήστε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
 <translation id="5992218262414051481">Η Λειτουργία υψηλής αντίθεσης ενεργοποιήθηκε. Πατήστε Ctrl+Search+H ξανά για να την απενεργοποιήσετε.</translation>
-<translation id="6009656393242168182">Απενεργοποιήστε τη ρύθμιση κλειδώματος SIM</translation>
 <translation id="6012623610530968780">Σελίδα <ph name="SELECTED_PAGE" /> από <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Έξοδος από λειτουργία κατοπτρισμού</translation>
 <translation id="602001110135236999">Κύλιση αριστερά</translation>

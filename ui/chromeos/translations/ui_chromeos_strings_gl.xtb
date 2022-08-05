@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL de configuración automática:</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> ficheiros.</translation>
-<translation id="2303282178633578561">Bloquear tarxeta SIM</translation>
 <translation id="2303301624314357662">Abrindo o ficheiro <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Expulsouse <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Os teus ficheiros recentes mostraranse aquí</translation>
 <translation id="2578394532502990878">Támil (fonético)</translation>
 <translation id="2579959351793446050">Odiá</translation>
-<translation id="2593644851255584939">O teu administrador require que desactives o bloqueo da SIM.</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, bloqueada polo administrador, detalles</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">A tarxeta SIM está bloqueada</translation>
 <translation id="2620090360073999360">Non se pode acceder a Google Drive neste momento.</translation>
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="2638942478653899953">Non se puido acceder a Google Drive. <ph name="BEGIN_LINK" />Pecha sesión<ph name="END_LINK" /> e volve iniciala.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Letón</translation>
 <translation id="5489965683297092283">Desactivouse o filtro <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
-<translation id="5500104704744051184">Non poderás usar esta rede mentres non metas o PUK</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>
 <translation id="5522908512596376669">A lista de ficheiros cambiou á vista de lista.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Produciuse un erro ao configurar a rede</translation>
 <translation id="7839804798877833423">A recuperación destes ficheiros ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
-<translation id="7847617962681804761">É necesario indicar o PIN para utilizar os datos móbiles</translation>
 <translation id="7853966320808728790">BÉPO francés</translation>
 <translation id="7857117644404132472">Engadir excepción</translation>
 <translation id="7868774406711971383">Polaco</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos...</translation>
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
-<translation id="8608515571837163082">Meteuse un PIN incorrecto demasiadas veces. Escribe a clave de desbloqueo persoal (PUK) de 8 díxitos que che facilitou o operador.</translation>
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="863903787380594467">O PIN é incorrecto. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: porto</translation>

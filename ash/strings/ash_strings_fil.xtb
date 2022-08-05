@@ -327,6 +327,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2894949423239620203">Posibleng naaapektuhan ng cable ang performance</translation>
 <translation id="2903844815300039659">Nakakonekta sa <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Mga pag-capture ng screen</translation>
+<translation id="2925246975070834767">Subukan ang awtomatikong pag-zoom para mapunta ka sa gitna ng screen. I-on ito sa Mga Mabilisang Setting.</translation>
 <translation id="2941112035454246133">Mababa</translation>
 <translation id="2942350706960889382">Naka-dock na Magnifier</translation>
 <translation id="2942516765047364088">Posisyon ng shelf</translation>
@@ -472,7 +473,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3726171378575546917">Wala ang <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, at <ph name="UNAVAILABLE_APPS_COUNT" /> pa sa device na ito.</translation>
 <translation id="3735740477244556633">Pagbukud-bukurin ayon sa</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
-<translation id="3761848338953536304">Hinihiling ng iyong administrator na i-off mo ang setting ng Lock SIM</translation>
 <translation id="3765841986579723851">Na-edit ngayon</translation>
 <translation id="3771549900096082774">High Contrast Mode</translation>
 <translation id="3773700760453577392">Hindi pinayagan ng isang administrator ang maraming pag-sign in para sa <ph name="USER_EMAIL" />. Dapat mag-sign out ang lahat ng user para makapagpatuloy.</translation>
@@ -634,6 +634,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4628757576491864469">Mga Device</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Star na rating <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang araw}one{Ibalik sa nakaraang bersyon ang device sa loob ng # araw}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na araw}}</translation>
+<translation id="4633636853437260449">Pindutin ang Ctrl+W para i-delete</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
 <translation id="4644727592819780893">Masyadong maliit ang rehiyon para ipakita ang preview ng camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasyon sa app</translation>
@@ -857,7 +858,6 @@ Isaksak ang iyong device.</translation>
 <translation id="598407983968395253">Gamitin ang template</translation>
 <translation id="598882571027504733">Para makuha ang update, i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="5992218262414051481">Na-enable ang High Contrast Mode. Pinduting muli ang Ctrl+Search+H upang i-off ito.</translation>
-<translation id="6009656393242168182">I-disable ang iyong setting ng SIM Lock</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Lumalabas sa mirror mode</translation>
 <translation id="602001110135236999">Mag-scroll pakaliwa</translation>
@@ -897,6 +897,7 @@ Isaksak ang iyong device.</translation>
 <translation id="619279033188484792">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="619335566042889110">Ganap na i-charge ngayon</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6210042900243040400">Ikonekta ang <ph name="NAME" /> na dating na-save sa <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Puwede mo na ngayong sabay na i-record ang iyong sarili at ang screen mo</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>

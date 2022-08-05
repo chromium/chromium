@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL адрес за автоматично конфигуриране:</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
-<translation id="2303282178633578561">Заключване на SIM картата</translation>
 <translation id="2303301624314357662">Файлът „<ph name="FILE_NAME" />“ се отваря.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Изваждането на „<ph name="VOLUME_NAME" />“ завърши.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Скорошните ви файлове ще се показват тук</translation>
 <translation id="2578394532502990878">Тамилски (фонетична клавиатура)</translation>
 <translation id="2579959351793446050">Одия</translation>
-<translation id="2593644851255584939">Администраторът ви изисква да деактивирате заключването на SIM картата.</translation>
 <translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
 <translation id="2614589611416690597">Видеоклип във формат <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM картата е заключена</translation>
 <translation id="2620090360073999360">В момента няма връзка с Google Диск.</translation>
 <translation id="2621713457727696555">защитена</translation>
 <translation id="2638942478653899953">Не можа да се установи връзка с Google Диск. Моля, <ph name="BEGIN_LINK" />излезте от профила си<ph name="END_LINK" /> и влезте отново.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Латвийски</translation>
 <translation id="5489965683297092283">Филтърът „<ph name="FILTER_NAME" />“ е изключен.</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
-<translation id="5500104704744051184">Няма да можете да използвате тази мрежа, докато не въведете PUK кода</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Списъкът с файлове е превключен към списъчен изглед.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Грешка при конфигурирането на мрежата</translation>
 <translation id="7839804798877833423">При извличането на тези файлове ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
 <translation id="7846076177841592234">Анулиране на избора</translation>
-<translation id="7847617962681804761">За използването на мобилни данни се изисква ПИН код</translation>
 <translation id="7853966320808728790">френски (BÉPO)</translation>
 <translation id="7857117644404132472">Добавяне на изключение</translation>
 <translation id="7868774406711971383">Полски</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> елемента се синхронизират...</translation>
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
-<translation id="8608515571837163082">Въведохте грешен ПИН код твърде много пъти. Въведете 8-цифрения PUK код, предоставен от оператора.</translation>
 <translation id="8609695766746872526">Исландски</translation>
 <translation id="863903787380594467">Неправилен ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>

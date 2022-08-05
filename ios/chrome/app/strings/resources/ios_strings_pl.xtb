@@ -311,6 +311,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3529024052484145543">Niezabezpieczona</translation>
 <translation id="3533202363250687977">Zamknij karty incognito</translation>
 <translation id="3533436815740441613">Nowa karta</translation>
+<translation id="3547799431091898961">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
@@ -681,6 +682,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6583087784430677195">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Automatyczne wypełnianie haseł.</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
+<translation id="6596481460663245319">Szukaj grafiki z Google</translation>
 <translation id="6598875554591387303">Sortuj według wydawcy</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7987685713885608670">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo.</translation>
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
+<translation id="8016714545083187120">Zawsze używaj bezpiecznych połączeń</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8023878949384262191">Rozwija sekcję.</translation>
 <translation id="8027581147000338959">Otwórz w nowym oknie</translation>

@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">საიტებისთვის თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების დაბლოკვა</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
+<translation id="6467852467360539617">მონაცემთა გასუფთავება და ნებართვების გადაყენება</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378">არჩეულია <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაშვებულია</translation>
 <translation id="7302486331832100261">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. დასაშვებად შეხებით აირჩიეთ „დეტალები“.</translation>
+<translation id="7383715096023715447">პარამეტრები <ph name="DOMAIN" />-ისთვის</translation>
 <translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
 <translation id="7423538860840206698">გაცვლის ბუფერზე წვდომა დაბლოკილია</translation>
 <translation id="7425915948813553151">მუქი თემა საიტებისთვის</translation>

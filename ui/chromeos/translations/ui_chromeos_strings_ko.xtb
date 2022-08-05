@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">자동설정 URL:</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
 <translation id="2291538123825441971">파일 <ph name="NUMBER_OF_FILES" />개를 열고 있습니다.</translation>
-<translation id="2303282178633578561">SIM 카드 잠금</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> 파일을 엽니다.</translation>
 <translation id="2304820083631266885">행성</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />이(가) 제거되었습니다.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">최근 파일이 여기에 표시됩니다.</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
-<translation id="2593644851255584939">관리자의 요청에 따라 SIM 잠금을 사용 중지해야 합니다.</translation>
 <translation id="2602810353103180630">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 동영상</translation>
-<translation id="2617342710774726426">SIM 카드가 잠겨 있습니다.</translation>
 <translation id="2620090360073999360">현재 Google Drive에 연결할 수 없습니다.</translation>
 <translation id="2621713457727696555">보안</translation>
 <translation id="2638942478653899953">Google Drive에 연결할 수 없습니다. <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />한 후 다시 로그인하세요.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">라트비아어</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> 필터가 해제되었습니다.</translation>
 <translation id="5494920125229734069">모두 선택</translation>
-<translation id="5500104704744051184">PUK를 입력할 때까지 이 네트워크를 사용할 수 없습니다.</translation>
 <translation id="5500122897333236901">아이슬란드어</translation>
 <translation id="5508696409934741614">점</translation>
 <translation id="5522908512596376669">파일 목록을 목록 보기로 변경했습니다.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">네트워크를 설정하는 중에 오류가 발생했습니다</translation>
 <translation id="7839804798877833423">이 파일을 가져오는 데 약 <ph name="FILE_SIZE" />의 모바일 데이터가 사용됩니다.</translation>
 <translation id="7846076177841592234">선택 취소</translation>
-<translation id="7847617962681804761">모바일 데이터를 사용하려면 PIN이 필요합니다.</translation>
 <translation id="7853966320808728790">프랑스어 BÉPO</translation>
 <translation id="7857117644404132472">예외 추가</translation>
 <translation id="7868774406711971383">폴란드어</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />개 항목 동기화 중...</translation>
 <translation id="8600173386174225982">파일 목록을 미리보기 이미지 뷰로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
-<translation id="8608515571837163082">잘못된 PIN을 너무 여러 번 입력했습니다. 이동통신사에서 제공한 8자리 PUK(Personal Unblocking Key)를 입력하세요.</translation>
 <translation id="8609695766746872526">아이슬란드어</translation>
 <translation id="863903787380594467">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 포트</translation>

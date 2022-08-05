@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL awtoffurffweddu:</translation>
 <translation id="2288278176040912387">Chwaraeydd recordiau</translation>
 <translation id="2291538123825441971">Wrthi'n agor <ph name="NUMBER_OF_FILES" /> ffeil.</translation>
-<translation id="2303282178633578561">Cloi cerdyn SIM</translation>
 <translation id="2303301624314357662">Yn agor ffeil <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planed</translation>
 <translation id="2305020378527873881">Mae <ph name="VOLUME_NAME" /> wedi'i dynnu.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Bydd eich ffeiliau diweddar yn ymddangos yma</translation>
 <translation id="2578394532502990878">Tamileg Seinegol</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Mae eich gweinyddwr yn gofyn i chi analluogi Clo SIM.</translation>
 <translation id="2602810353103180630">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rhwystrwyd gan eich Gweinyddwr, Manylion</translation>
 <translation id="2614589611416690597">Fideo <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Mae'r cerdyn SIM wedi'i gloi</translation>
 <translation id="2620090360073999360">Ni ellir cyrraedd Google Drive ar hyn o bryd.</translation>
 <translation id="2621713457727696555">Diogel</translation>
 <translation id="2638942478653899953">Ni ellid cyrraedd Google Drive. <ph name="BEGIN_LINK" />Allgofnodwch<ph name="END_LINK" /> a mewngofnodwch eto.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Latfieg</translation>
 <translation id="5489965683297092283">Mae'r hidlydd <ph name="FILTER_NAME" /> wedi'i ddiffodd.</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
-<translation id="5500104704744051184">Ni fyddwch yn gallu defnyddio'r rhwydwaith hwn nes i chi roi'r PUK</translation>
 <translation id="5500122897333236901">Islandeg</translation>
 <translation id="5508696409934741614">Dotiau</translation>
 <translation id="5522908512596376669">Mae'r rhestr ffeiliau wedi newid i wedd rhestr.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Bu gwall wrth ffurfweddu'r rhwydwaith</translation>
 <translation id="7839804798877833423">Bydd nôl y ffeiliau hyn yn defnyddio tua <ph name="FILE_SIZE" /> o ddata symudol.</translation>
 <translation id="7846076177841592234">Canslo dewis</translation>
-<translation id="7847617962681804761">Mae angen PIN i ddefnyddio data symudol</translation>
 <translation id="7853966320808728790">BÉPO Ffrengig</translation>
 <translation id="7857117644404132472">Ychwanegu eithriad</translation>
 <translation id="7868774406711971383">Pwyleg</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Wrthi'n cysoni <ph name="NUMBER_OF_FILES" /> o eitemau…</translation>
 <translation id="8600173386174225982">Mae'r rhestr ffeiliau wedi newid i olwg mân-luniau.</translation>
 <translation id="8601932370724196034">Ffeil llun Crostini</translation>
-<translation id="8608515571837163082">Rhoddwyd y PIN anghywir gormod o weithiau. Rhowch yr Allwedd Ddadrwystro Bersonol (PUK) 8-digid a ddarperir gan y cludwr.</translation>
 <translation id="8609695766746872526">Islandeg</translation>
 <translation id="863903787380594467">PIN anghywir. Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porth</translation>

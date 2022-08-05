@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">ไม่ปลอดภัย</translation>
 <translation id="3533202363250687977">ปิดแท็บไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="3533436815740441613">แท็บใหม่</translation>
+<translation id="3547799431091898961">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -681,6 +682,7 @@
 <translation id="6561262006871132942">ซูมเข้า</translation>
 <translation id="6583087784430677195">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="6585618849026997638">กลับไปที่หน้าที่สำคัญกับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
+<translation id="6596481460663245319">ค้นหารูปภาพด้วย Google</translation>
 <translation id="6598875554591387303">จัดเรียงตามผู้เผยแพร่เนื้อหา</translation>
 <translation id="6603393121510733479">องค์กรปิดการเรียกดูแบบส่วนตัวไว้
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

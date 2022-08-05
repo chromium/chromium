@@ -4681,6 +4681,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5470735824776589490">Seade tuleb taaskäivitada, enne kui saate selle Powerwashiga lähtestada. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Tere! Mina olen teie kõnesünteesi hääl.</translation>
 <translation id="5472627187093107397">Salvesta selle saidi paroolid</translation>
+<translation id="5473062644742711742">Leidke Chrome'i veebipoest rohkem juurdepääsetavuse tööriistu</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Jätkamisel nõustute, et see seade võib Google'i, teie lapse operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-kood peab koosnema vähemalt ühest tähemärgist}other{PIN-kood peab koosnema vähemalt # tähemärgist}}</translation>

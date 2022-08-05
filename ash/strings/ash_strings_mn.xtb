@@ -470,10 +470,10 @@
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
 <translation id="371370241367527062">Урд талын микрофон</translation>
 <translation id="3713734891607377840">Дуусах үед нээх</translation>
+<translation id="3724279623330129812">Автомат томруулалтыг камерын төвд байрлуулсан</translation>
 <translation id="3726171378575546917">Энэ төхөөрөмж дээр <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> болон өөр <ph name="UNAVAILABLE_APPS_COUNT" /> апп байхгүй байна.</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
-<translation id="3761848338953536304">Танай администратор таныг SIM түгжих тохиргоог унтраахыг хүсэж байна</translation>
 <translation id="3765841986579723851">Өнөөдөр зассан</translation>
 <translation id="3771549900096082774">Өндөр ялгаралтай горим</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
@@ -870,7 +870,6 @@
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
 <translation id="5992218262414051481">Өндөр ялгаралтай горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H-г дахин дарна уу.</translation>
-<translation id="6009656393242168182">SIM-н түгжээний тохиргоогоо идэвхгүй болгох</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>

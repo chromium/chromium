@@ -683,7 +683,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1637224376458524414">Obter este marcador no seu iPhone</translation>
 <translation id="1637350598157233081">A sua palavra-passe foi guardada neste dispositivo.</translation>
 <translation id="1637765355341780467">Ocorreu um erro ao abrir o perfil. Algumas funcionalidades podem estar indisponíveis.</translation>
-<translation id="1639239467298939599">A carregar</translation>
+<translation id="1639239467298939599">A carregar…</translation>
 <translation id="1640235262200048077">O <ph name="IME_NAME" /> ainda não funciona em aplicações Linux.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Com encriptação RSA</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -7964,6 +7964,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8666759526542103597">Acerca da personalização de anúncios com base no navegador</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> está agora em ecrã inteiro e desativou o cursor do rato.</translation>
 <translation id="8667760277771450375">Estamos a explorar formas de restringir a monitorização entre sites enquanto permitimos que os sites acabem com as fraudes e o spam de anúncios.</translation>
+<translation id="8668378421690365723">O seu dispositivo pode deixar de funcionar corretamente e sofrer problemas de segurança e desempenho.</translation>
 <translation id="8669284339312441707">Mais quente</translation>
 <translation id="8670537393737592796">Para voltar aqui rapidamente, instale a app <ph name="APP_NAME" /> ao clicar no botão de instalação.</translation>
 <translation id="867085395664725367">Ocorreu um erro temporário no servidor.</translation>
@@ -8447,6 +8448,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para obter a melhor experiência, instale o <ph name="DEVICE_OS" /> no seu disco interno. Também pode instalá-lo mais tarde a partir do ecrã de início de sessão.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se não tiver tudo pronto para instalar, pode executar a partir de uma unidade USB para o experimentar. Deste modo, mantém o seu SO e dados existentes, mas pode verificar limites ao nível do armazenamento e desempenho.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como separador fixo</translation>
+<translation id="9123287046453017203">O dispositivo não está atualizado</translation>
 <translation id="9124003689441359348">As palavras-passe guardadas aparecem aqui</translation>
 <translation id="9126149354162942022">Cor do cursor</translation>
 <translation id="9128317794749765148">Não foi possível concluir a configuração</translation>

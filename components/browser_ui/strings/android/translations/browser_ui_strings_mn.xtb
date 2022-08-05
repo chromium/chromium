@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг хориглох</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6467852467360539617">Өгөгдлийг цуцлаад зөвшөөрлийг шинэчлэх</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />-г сонгосон</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>
 <translation id="7302486331832100261">Та ихэвчлэн мэдэгдлийг хориглодог. Зөвшөөрөхийн тулд Дэлгэрэнгүй мэдээлэл дээр товшино уу.</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" />-н тохиргоо</translation>
 <translation id="7423098979219808738">Эхлээд асуу</translation>
 <translation id="7423538860840206698">Түр санах ойгоос уншихыг хориглосон</translation>
 <translation id="7425915948813553151">Сайтуудад зориулсан бараан загвар</translation>

@@ -472,7 +472,6 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ועוד <ph name="UNAVAILABLE_APPS_COUNT" /> אפליקציות נוספות לא נמצאות במכשיר הזה.</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
-<translation id="3761848338953536304">‏לפי בקשת האדמין, עליך להשבית את ההגדרה של נעילת ה-SIM</translation>
 <translation id="3765841986579723851">נערך היום</translation>
 <translation id="3771549900096082774">מצב ניגודיות גבוהה</translation>
 <translation id="3773700760453577392">מנהל מערכת ביטל הרשאה של כניסה עם מספר חשבונות עבור <ph name="USER_EMAIL" />. כדי להמשיך, כל המשתמשים חייבים לבצע יציאה.</translation>
@@ -759,6 +758,16 @@
 <translation id="5393156353051693207">לוחצים לחיצה ארוכה במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
 <translation id="5397578532367286026">‏המנהל (<ph name="MANAGER_EMAIL" />) יכול לבדוק את השימוש וההיסטוריה של משתמש זה ב-chrome.com.</translation>
+<translation id="5399673806694250334">מגש סטטוס, שעה <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">הגדרות מהירות, יש להקיש על מקש החיפוש ביחד עם מקש חץ שמאלה כדי לגשת אל מרכז ההתראות.</translation>
 <translation id="5426063383988017631">תפריט ההגדרות נסגר</translation>
 <translation id="5428899915242071344">אני רוצה להתחיל לבחור</translation>
@@ -857,7 +866,6 @@
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
 <translation id="5992218262414051481">‏מצב ניגודיות גבוהה פועל. יש להקיש שוב על Ctrl+Search+H כדי לכבות אותו.</translation>
-<translation id="6009656393242168182">‏השבתת ההגדרה של נעילת ה-SIM</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">יציאה ממצב שיקוף</translation>
 <translation id="602001110135236999">גלילה שמאלה</translation>

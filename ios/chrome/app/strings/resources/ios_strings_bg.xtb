@@ -311,6 +311,7 @@
 <translation id="3529024052484145543">Няма защита</translation>
 <translation id="3533202363250687977">Затв. на разделите „инкогнито“</translation>
 <translation id="3533436815740441613">Нов раздел</translation>
+<translation id="3547799431091898961">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
@@ -681,6 +682,7 @@
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>
+<translation id="6596481460663245319">Търсене на изобр. с Google</translation>
 <translation id="6598875554591387303">Сортиране по издател</translation>
 <translation id="6603393121510733479">Организацията ви е изключила режима за частно сърфиране.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otvaraju se datoteke (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303282178633578561">Zaključaj SIM karticu</translation>
 <translation id="2303301624314357662">Otvara se datoteka <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Nedavni fajlovi će se prikazivati ovde</translation>
 <translation id="2578394532502990878">fonetski tamilski</translation>
 <translation id="2579959351793446050">orija</translation>
-<translation id="2593644851255584939">Administrator zahteva da onemogućite zaključavanje SIM kartice.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao administrator, detalji</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">SIM kartica je zaključana</translation>
 <translation id="2620090360073999360">Trenutno nije moguće uspostaviti vezu sa Google diskom.</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="2638942478653899953">Nije moguće uspostaviti vezu sa Google diskom. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" />, pa se ponovo prijavite.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Isprazni Otpad</translation>
 <translation id="5163869187418756376">Deljenje nije uspelo. Proverite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">Američka Dvorak tastatura za programere</translation>
+<translation id="5172749059808361023">Detalji ograničenja</translation>
 <translation id="5177526793333269655">Prikaz sličica</translation>
 <translation id="5194713942430106590">Kliknite da biste sortirali stavke u koloni po rastućem redosledu.</translation>
 <translation id="5211614973734216083">farski</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">letonski</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je isključen.</translation>
 <translation id="5494920125229734069">Izbor svih stavki</translation>
-<translation id="5500104704744051184">Nećete moći da koristite ovu mrežu dok ne unesete PUK</translation>
 <translation id="5500122897333236901">islandski</translation>
 <translation id="5508696409934741614">Tačke</translation>
 <translation id="5522908512596376669">Lista datoteka se promenila u prikaz liste.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Greška pri konfiguraciji mreže</translation>
 <translation id="7839804798877833423">Preuzimanje ovih datoteka će iskoristiti oko <ph name="FILE_SIZE" /> podataka za mobilne uređaje.</translation>
 <translation id="7846076177841592234">Otkaži izbor</translation>
-<translation id="7847617962681804761">PIN je neophodan da bi se koristili mobilni podaci</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
 <translation id="7857117644404132472">Dodaj izuzetak</translation>
 <translation id="7868774406711971383">poljski</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Sinhronizuju se stavke (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Lista datoteka se promenila u prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini datoteka slike</translation>
-<translation id="8608515571837163082">Previše puta ste uneli pogrešan PIN. Unesite osmocifrenu ličnu šifru za otključavanje (PUK) koju vam je dao mobilni operater.</translation>
 <translation id="8609695766746872526">islandski</translation>
 <translation id="863903787380594467">Netačan PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

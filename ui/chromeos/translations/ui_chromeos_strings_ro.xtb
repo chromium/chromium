@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Adresa URL de autoconfigurare:</translation>
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
-<translation id="2303282178633578561">Blochează cardul SIM</translation>
 <translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planetă</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a fost scos.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Fișierele recente vor apărea aici</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
-<translation id="2593644851255584939">Administratorul solicită să dezactivezi blocarea cardului SIM.</translation>
 <translation id="2602810353103180630">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2620090360073999360">Disc Google nu poate fi accesat în acest moment.</translation>
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="2638942478653899953">Google Drive nu a putut fi accesat. <ph name="BEGIN_LINK" />Deconectați-vă<ph name="END_LINK" /> și conectați-vă din nou.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Golește coșul de gunoi</translation>
 <translation id="5163869187418756376">Trimiterea nu a reușit. Verificați conexiunea la internet și încercați din nou mai târziu.</translation>
 <translation id="516592729076796170">Programator S.U.A. Dvorak</translation>
+<translation id="5172749059808361023">Detalii despre restricții</translation>
 <translation id="5177526793333269655">Vizualizare cu miniaturi</translation>
 <translation id="5194713942430106590">Dă clic pentru a sorta coloana în ordine crescătoare.</translation>
 <translation id="5211614973734216083">Faroeză</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Letonă</translation>
 <translation id="5489965683297092283">Filtrul <ph name="FILTER_NAME" /> este dezactivat.</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
-<translation id="5500104704744051184">Nu vei putea să folosești rețeaua până când nu introduci codul PUK</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>
 <translation id="5522908512596376669">Lista de fișiere s-a modificat la afișare listă.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Eroare la configurarea rețelei</translation>
 <translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
-<translation id="7847617962681804761">Pentru a folosi datele mobile, este necesar codul PIN</translation>
 <translation id="7853966320808728790">Franceză BÉPO</translation>
 <translation id="7857117644404132472">Adaugă o excepție</translation>
 <translation id="7868774406711971383">Poloneză</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903">Se sincronizează <ph name="NUMBER_OF_FILES" /> elemente...</translation>
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
-<translation id="8608515571837163082">Codul PIN a fost introdus greșit de prea multe ori. Introdu cheia personală de deblocare (PUK) din opt cifre oferită de operator.</translation>
 <translation id="8609695766746872526">Islandeză</translation>
 <translation id="863903787380594467">Codul PIN este incorect. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

@@ -311,6 +311,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3529024052484145543">No seguro</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
+<translation id="3547799431091898961">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagen en nueva pestaña</translation>
@@ -681,6 +682,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
+<translation id="6596481460663245319">Buscar imagen con Google</translation>
 <translation id="6598875554591387303">Ordenar por publicador</translation>
 <translation id="6603393121510733479">Tu organización desactivó la navegación privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google.</translation>
 <translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="800361585186029508">Abre las URL ingresadas en Google Chrome.</translation>
+<translation id="8016714545083187120">Usar siempre conexiones seguras</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8023878949384262191">Expande la sección.</translation>
 <translation id="8027581147000338959">Abrir en una nueva ventana</translation>

@@ -3507,13 +3507,6 @@
 <translation id="482803100714220060">顯示完整網址</translation>
 <translation id="4832852360828533362">使用者與裝置回報功能</translation>
 <translation id="4834526953114077364">移除近期登入次數最少的使用者 (3 個月都未曾登入)，直到有足夠的可用空間</translation>
-<translation id="483544442646753291">控管 <ph name="SYSTEM_FEATURES_DISABLE_LIST" /> 所列已停用功能的使用者體驗。
-
-      如果將這項政策設為「已封鎖」，已停用的功能將無法使用，但仍會顯示在畫面上。
-
-      如果將這項政策設為「已隱藏」，已停用的功能將無法使用，且不會顯示在畫面上。
-
-      如果未設定這項政策或設為無效的值，系統功能的停用模式將設為「已封鎖」。</translation>
 <translation id="4835470005923546373">預設停用背景圖形列印模式</translation>
 <translation id="4835622243021053389">啟用 NTLMv2 驗證。</translation>
 <translation id="4840015507504937941">這項政策設定的是系統會檢查的最低剪貼簿資料大小 (以位元組為單位)，檢查作業將根據 DataLeakPreventionRulesList 政策定義的剪貼簿限制規則進行。
@@ -4378,9 +4371,6 @@
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統將會回報裝置的 VPD 資訊。
       重要產品資料 (VPD) 是與裝置相關聯的一組設定和說明資料 (例如零件和序號)。</translation>
-<translation id="576158229686912964">這項政策已在 M96 遭到淘汰，請改用 <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> 和 <ph name="REPORT_DEVICE_NETWORK_STATUS" />。
-
-      如果將這項政策設為啟用或不設定，已註冊的裝置會回報網路介面清單，當中包含網路介面類型和硬體位址資料。如果將這項政策設為停用，已註冊的裝置不會回報網路介面資訊。</translation>
 <translation id="5762969307102447459">停用地址的自動填入功能</translation>
 <translation id="5765780083710877561">說明：</translation>
 <translation id="5766438888216077649">不要為目標是 <ph name="BLANK_PAGE_NAME" /> 的連結設定 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
@@ -6039,9 +6029,6 @@
       如果不設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />；其他未受管理使用者的預設值則為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />。
 
       日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" /> 中唯一可用的瀏覽器。</translation>
-<translation id="7509761893401042250">這項政策已在 M96 遭到淘汰，請改用 <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" /> 和 <ph name="REPORT_DEVICE_AUDIO_STATUS" />。
-
-      如果將這項政策設為啟用或不設定，已註冊的裝置會回報 CPU/RAM 使用量等硬體統計資料。如果將這項政策設為停用，已註冊的裝置不會回報硬體統計資料。</translation>
 <translation id="7512065400265675158">已排定縮減「<ph name="USER_AGENT_HEADER_NAME" />」要求標頭。為了方便測試及提高相容性，這項政策可以為所有網站啟用縮減功能，或停用來源試用或實際測試設定以啟用這項功能。
 
       如要進一步瞭解「<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />」和其時間軸，請閱讀這篇文章：
@@ -7039,13 +7026,6 @@
       如果將這項政策設為 True，系統可能會凍結在背景執行 5 分鐘以上的分頁。凍結分頁可降低 CPU、電力和記憶體的使用量。<ph name="PRODUCT_NAME" /> 會根據經驗法則判斷，不會凍結在背景執行實用作業 (例如顯示通知、播放音效、串流播放影片) 的分頁。網站開發人員也可以將自己的網站設為禁止凍結 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果將這項政策設為 False，系統將不會凍結任何分頁。</translation>
-<translation id="8619480582976056396">你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
-
-      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript，動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
-
-      自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
-
-      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="8619748440665904084">不允許在第一次執行時匯入自動填入表單資料</translation>
 <translation id="8623672932476443039">如果將這項政策設為啟用，使用者可以存取「已隔離應用程式的開發人員模式」。
       如果將這項政策設為停用，使用者將無法存取這些功能。
@@ -7190,9 +7170,6 @@
 <translation id="8807313206348471682">顯示登出確認對話方塊</translation>
 <translation id="8812091410765157924">只有在要求開啟彈出式視窗的網頁明確同意與該彈出式視窗互動時，才允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動</translation>
 <translation id="8816370949847593408">視淘汰實施狀態而定，系統可能會不允許執行 Chrome 應用程式。</translation>
-<translation id="8818173863808665831">回報裝置的地理位置。
-
-      如果未設定這項政策，或將其設定為 False，系統將不會回報位置。</translation>
 <translation id="8818768076343557335">連上網路時一律預測網路動作 (行動網路除外)。
           (在版本 50 中已不適用，在版本 52 中已遭移除。在 52 以上版本中，如果設定值為 1，系統會視為 0 - 連上網路時一律預測網路動作。)</translation>
 <translation id="8821678641132607468">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入瀏覽記錄。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何瀏覽記錄。

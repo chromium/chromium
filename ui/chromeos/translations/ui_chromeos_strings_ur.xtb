@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">‏خودکار کنفیگریشن URL:</translation>
 <translation id="2288278176040912387">ریکارڈ پلیئر</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> فائلیں کھل رہی ہیں۔</translation>
-<translation id="2303282178633578561">‏SIM کارڈ کو مقفل کریں</translation>
 <translation id="2303301624314357662">فائل <ph name="FILE_NAME" /> کھل رہی ہے۔</translation>
 <translation id="2304820083631266885">سیارہ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> کو خارج کر دیا گیا ہے۔</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">آپ کی حالیہ فائلیں یہاں ظاہر ہوں گی</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
-<translation id="2593644851255584939">‏آپ کا منتظم آپ سے SIM لاک کو غیر فعال کرنے کا مطالبہ کرتا ہے۔</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ویڈیو</translation>
-<translation id="2617342710774726426">‏SIM کارڈ مقفل ہے</translation>
 <translation id="2620090360073999360">‏اس وقت Google Drive تک رسائی نہیں ہو سکتی ہے۔</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="2638942478653899953">‏Google Drive تک رسائی حاصل نہیں ہو سکی۔ براہ کرم <ph name="BEGIN_LINK" />لاگ آؤٹ کریں<ph name="END_LINK" /> اور دوبارہ لاگ ان کریں۔</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">لیٹویائی</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> فلٹر آف ہے۔</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
-<translation id="5500104704744051184">‏جب تک آپ PUK درج نہیں کرتے ہیں تب تک آپ اس نیٹ ورک کا استعمال نہیں کر سکیں گے</translation>
 <translation id="5500122897333236901">آئس لینڈک</translation>
 <translation id="5508696409934741614">نقطے</translation>
 <translation id="5522908512596376669">فائل کی فہرست کو فہرست منظر پر تبدیل کر دیا گيا ہے۔</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">نیٹ ورک کو ترتیب دینے میں خرابی</translation>
 <translation id="7839804798877833423">ان فائلوں کو بازیافت کرنے میں تقریباً <ph name="FILE_SIZE" /> موبائل ڈیٹا استعمال ہوگا۔</translation>
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
-<translation id="7847617962681804761">‏موبائل ڈیٹا استعمال کرنے کیلئے PIN درکار ہے</translation>
 <translation id="7853966320808728790">‏فرانسیسی BÉPO</translation>
 <translation id="7857117644404132472">استثناء شامل کریں</translation>
 <translation id="7868774406711971383">پولش</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> آئٹمز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
-<translation id="8608515571837163082">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔ کیرئیر کے ذریعے فراہم کردہ 8 ہندسوں کی غیر مسدود کرنے کی ذاتی کلید (PUK) درج کریں۔</translation>
 <translation id="8609695766746872526">آئس لینڈک</translation>
 <translation id="863903787380594467">‏غلط PIN۔ آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - پورٹ</translation>

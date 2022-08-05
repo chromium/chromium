@@ -473,7 +473,6 @@
 <translation id="3726171378575546917">ບໍ່ມີ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ແລະ ອີກ <ph name="UNAVAILABLE_APPS_COUNT" /> ແອັບຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="3735740477244556633">ຈັດຮຽງຕາມ</translation>
 <translation id="3742055079367172538">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
-<translation id="3761848338953536304">ຜູ້ເບິ່ງແຍງລະບົບຮ້ອງຂໍໃຫ້ທ່ານປິດການຕັ້ງຄ່າການລັອກຊິມ</translation>
 <translation id="3765841986579723851">ແກ້ໄຂມື້ນີ້</translation>
 <translation id="3771549900096082774">ໂໝດສີຕັດກັນສູງ</translation>
 <translation id="3773700760453577392">ຜູ້ເບິ່ງແຍງລະບົບໄດ້ເຊົາອະນຸຍາດການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີສໍາລັບ <ph name="USER_EMAIL" /> ແລ້ວ. ຜູ້ໃຊ້ທັງໝົດຕ້ອງອອກຈາກລະບົບເພື່ອສືບຕໍ່.</translation>
@@ -869,7 +868,6 @@
 <translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="598882571027504733">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="5992218262414051481">ເປີດນຳໃຊ້ໂໝດສີຕັດສູງແລ້ວ. ກົດ Ctrl+Search+H ອີກຄັ້ງເພື່ອປິດມັນ.</translation>
-<translation id="6009656393242168182">ປິດການນຳໃຊ້ການຕັ້ງຄ່າການລັອກຊິມຂອງທ່ານ</translation>
 <translation id="6012623610530968780">ໜ້າທີ <ph name="SELECTED_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">ກຳລັງອອກຈາກໂໝດແວ່ນສະທ້ອນ</translation>
 <translation id="602001110135236999">ເລື່ອນໄປຊ້າຍ</translation>

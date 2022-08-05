@@ -469,10 +469,10 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3713734891607377840">Odpri ob dokončanju</translation>
+<translation id="3724279623330129812">Samodejna povečava/pomanjšava je osredotočila fotoaparat</translation>
 <translation id="3726171378575546917">Aplikacij <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> in drugih (<ph name="UNAVAILABLE_APPS_COUNT" />) ni v tej napravi.</translation>
 <translation id="3735740477244556633">Razvrsti po</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
-<translation id="3761848338953536304">Vaš skrbnik zahteva, da izklopite nastavitev zaklepanja kartice SIM.</translation>
 <translation id="3765841986579723851">Urejeno danes</translation>
 <translation id="3771549900096082774">Visokokontrastni način</translation>
 <translation id="3773700760453577392">Skrbnik je prepovedal prijavo z več računi za <ph name="USER_EMAIL" />. Če želite nadaljevati, morajo biti odjavljeni vsi uporabniki.</translation>
@@ -707,7 +707,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5071064518267176975">Aplikacija želi uporabljati mikrofon</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
-<translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj</translation>
+<translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj.</translation>
 <translation id="5098537242461068432">Namizje in okna so znova odprti</translation>
 <translation id="5107522548814527560">Splet</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
@@ -759,6 +759,16 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5393156353051693207">Če želite preurediti aplikacije, se kjer koli dotaknite in pridržite.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) lahko na chrome.com pregleduje uporabo in zgodovino tega uporabnika.</translation>
+<translation id="5399673806694250334">Vrstica stanja, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Hitre nastavitve, pritisnite tipko za iskanje in puščico levo, če želite dostopati do središča za obvestila.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
 <translation id="5428899915242071344">Začni izbiranje</translation>
@@ -857,7 +867,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="598407983968395253">Uporabi predlogo</translation>
 <translation id="598882571027504733">Če želite prejeti posodobitev, znova zaženite Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="5992218262414051481">Visokokontrastni način je omogočen. Če ga želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + H.</translation>
-<translation id="6009656393242168182">Onemogočanje nastavitve zaklepanja kartice SIM</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stran od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izhod iz zrcalnega načina</translation>
 <translation id="602001110135236999">Pomik levo</translation>
@@ -897,6 +906,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="619279033188484792">Oglejte si nedavne fotografije, predstavnost in obvestila telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Napolni v celoti</translation>
 <translation id="6193431488227440296">Za razvijalce</translation>
+<translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>

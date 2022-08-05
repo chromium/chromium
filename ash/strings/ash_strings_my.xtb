@@ -469,10 +469,10 @@
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
 <translation id="371370241367527062">အရှေ့မိုက်ခရိုဖုန်း</translation>
 <translation id="3713734891607377840">ပြီးသွားပါက ဖွင့်မည်</translation>
+<translation id="3724279623330129812">အလိုအလျောက် ဇူးမ်ဆွဲခြင်းက ကင်မရာကို အလယ်တည့်တည့်တွင် ထားသည်</translation>
 <translation id="3726171378575546917">ဤစက်တွင် <ph name="UNAVAILABLE_APPS_ONE" />၊<ph name="UNAVAILABLE_APPS_TWO" /> နှင့် အခြားအက်ပ်<ph name="UNAVAILABLE_APPS_COUNT" /> ခု မရှိပါ။</translation>
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3742055079367172538">မျက်နှာပြင်ပုံရိပ် ရယူပြီး</translation>
-<translation id="3761848338953536304">သင့်စီမံခန့်ခွဲသူက ‘ဆင်းမ်လော့ခ်’ ဆက်တင်ကို ပိတ်ရန် တောင်းဆိုနေသည်</translation>
 <translation id="3765841986579723851">ယနေ့ ပြင်ဆင်ထားသည်</translation>
 <translation id="3771549900096082774">အဖြူအမဲခြားနားချက် မြင့်သောမုဒ်</translation>
 <translation id="3773700760453577392">စီမံခန့်ခွဲသူသည် <ph name="USER_EMAIL" /> အတွက် အကောင့်များစွာ လက်မှတ်ထိုးဝင်ခွင့်ကို ပိတ်ထားသည်။ ရှေ့ဆက်နိုင်ရန်အတွက် အသုံးပြုသူများအားလုံး ထွက်ရပါမည်။</translation>
@@ -867,7 +867,6 @@
 <translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="5992218262414051481">ခြားနားမှုမြင့်သည့်မုဒ်ကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+H ကို ထပ်မံနှိပ်ပါ။</translation>
-<translation id="6009656393242168182">သင့် ‘ဆင်းမ်လော့ခ်’ ဆက်တင်ကို ပိတ်ခြင်း</translation>
 <translation id="6012623610530968780">စာမျက်နှာ <ph name="TOTAL_PAGE_NUM" /> အနက် <ph name="SELECTED_PAGE" /></translation>
 <translation id="6018164090099858612">ကြေးမုံရိပ်မုဒ်မှ ထွက်နေသည်</translation>
 <translation id="602001110135236999">ဘယ်သို့ လှိမ့်ရန်</translation>

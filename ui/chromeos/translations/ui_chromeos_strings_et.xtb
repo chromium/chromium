@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Automaatse konfigureerimise URL:</translation>
 <translation id="2288278176040912387">Grammofon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> faili avamine.</translation>
-<translation id="2303282178633578561">SIM-kaardi lukustamine</translation>
 <translation id="2303301624314357662">Faili <ph name="FILE_NAME" /> avamine.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on väljutatud.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Teie hiljutised failid kuvatakse siin</translation>
 <translation id="2578394532502990878">tamili, foneetiline</translation>
 <translation id="2579959351793446050">odia</translation>
-<translation id="2593644851255584939">Administraator nõuab, et keelaksite SIM-i luku.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
-<translation id="2617342710774726426">SIM-kaart on lukustatud</translation>
 <translation id="2620090360073999360">Google Drive'iga ei saa praegu ühendust.</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
 <translation id="2638942478653899953">Google Drive'iga ei saadud ühendust. <ph name="BEGIN_LINK" />Logige välja<ph name="END_LINK" /> ja tagasi sisse.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">läti</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> on välja lülitatud.</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
-<translation id="5500104704744051184">Te ei saa seda võrku kasutada enne, kui sisestate PUK-i</translation>
 <translation id="5500122897333236901">islandi keel</translation>
 <translation id="5508696409934741614">Punktid</translation>
 <translation id="5522908512596376669">Faililoendi jaoks aktiveeriti loendikuva.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Viga võrgu seadistamisel</translation>
 <translation id="7839804798877833423">Failide toomine kasutab umbes <ph name="FILE_SIZE" /> mobiilsideandmeid.</translation>
 <translation id="7846076177841592234">Tühista valik</translation>
-<translation id="7847617962681804761">Mobiilse andmeside kasutamiseks on vaja PIN-koodi</translation>
 <translation id="7853966320808728790">Prantsuse BÉPO</translation>
 <translation id="7857117644404132472">Lisa erand</translation>
 <translation id="7868774406711971383">poola</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> üksuse sünkroonimine ...</translation>
 <translation id="8600173386174225982">Faililoendi jaoks aktiveeriti pisipildikuva.</translation>
 <translation id="8601932370724196034">Crostini pildifail</translation>
-<translation id="8608515571837163082">Vale PIN-kood sisestati liiga mitu korda. Sisestage operaatorilt saadud kaheksakohaline isiklik avamisvõti (PUK).</translation>
 <translation id="8609695766746872526">islandi</translation>
 <translation id="863903787380594467">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

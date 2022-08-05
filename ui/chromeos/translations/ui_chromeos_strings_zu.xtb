@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">I-URL yokulungiselelwa ngokuzenzakalela:</translation>
 <translation id="2288278176040912387">Isidlali serekhodi</translation>
 <translation id="2291538123825441971">Ukuvula amafayela e-<ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303282178633578561">Khiya ikhadi le-SIM</translation>
 <translation id="2303301624314357662">Ivula ifayela <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Iplanethi</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ikhishiwe.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Amafayela akho akamuva azovela lapha</translation>
 <translation id="2578394532502990878">I-Tamil Phonetic</translation>
 <translation id="2579959351793446050">Isi-Odia</translation>
-<translation id="2593644851255584939">Umlawuli wakho udinga ukuthi ukhubaze Ukukhiya Kwe-SIM.</translation>
 <translation id="2602810353103180630">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Amandla Wesinglai<ph name="SIGNAL_STRENGTH" />%, Kuvinjelwe Umphathi wakho, Imininingwane</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ividiyo</translation>
-<translation id="2617342710774726426">I-SIM card ikhiyiwe</translation>
 <translation id="2620090360073999360">I-Google Drayivu ayikwazi ukufinyelelwa ngalesi sikhathi.</translation>
 <translation id="2621713457727696555">Kuvikelwe</translation>
 <translation id="2638942478653899953">I-Google Drayivu ayikwazanga ukufinyelelwa. Sicela <ph name="BEGIN_LINK" />uphume ngemvume<ph name="END_LINK" /> uphinde ungene ngemvume.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283">Isihlungi esithi <ph name="FILTER_NAME" /> sivaliwe.</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
-<translation id="5500104704744051184">Ngeke ukwazi ukusebenzisa le nethiwekhi uze ufake i-PUK</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Amachashazi</translation>
 <translation id="5522908512596376669">Uhlu lwefayela lushintshele kuhlu lokubuka.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Iphutha lokulungiselela inethiwekhi</translation>
 <translation id="7839804798877833423">Ukulanda lama fayela cishe kuzosebenzisa idatha yeselula engu-<ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">Khansela ukukhetha</translation>
-<translation id="7847617962681804761">Iphinikhodi iyadingeka ukuze usebenzise idatha yeselula</translation>
 <translation id="7853966320808728790">I-French BÉPO</translation>
 <translation id="7857117644404132472">Engeza okuhlukile</translation>
 <translation id="7868774406711971383">Polish</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903">Ivumelanisa izinto ezingu-<ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Uhlu lwefayela lushintshele ekubukeni kwesithonjana.</translation>
 <translation id="8601932370724196034">Ifayela lesithombe se-Crostini</translation>
-<translation id="8608515571837163082">Iphinikhodi engalungile ifakwe izikhathi eziningi kakhulu. Faka ukhiye we-Personal Unblocking Key (PUK) onamadijithi ayi-8 onikezwe inkampani yenethiwekhi.</translation>
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Iphinikhodi engalungile. Unemizamo engu-<ph name="RETRIES" /> esele.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Imbobo</translation>

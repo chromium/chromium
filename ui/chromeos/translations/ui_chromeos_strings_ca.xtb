@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL de configuració automàtica:</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">S'estan obrint <ph name="NUMBER_OF_FILES" /> fitxers.</translation>
-<translation id="2303282178633578561">Bloqueja la targeta SIM</translation>
 <translation id="2303301624314357662">S'està obrint el fitxer <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">S'ha expulsat <ph name="VOLUME_NAME" />.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Els teus fitxers recents es mostraran aquí</translation>
 <translation id="2578394532502990878">Tàmil fonètic</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">L'administrador necessita que desactivis el bloqueig de la SIM.</translation>
 <translation id="2602810353103180630">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2620090360073999360">No es pot contactar amb Google Drive en aquest moment.</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2638942478653899953">No s'ha pogut accedir a Google Drive. <ph name="BEGIN_LINK" />Tanqueu la sessió<ph name="END_LINK" /> i torneu-la a iniciar.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Letó</translation>
 <translation id="5489965683297092283">El filtre <ph name="FILTER_NAME" /> està desactivat.</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
-<translation id="5500104704744051184">No podràs utilitzar aquesta xarxa fins que no introdueixis el PUK</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>
 <translation id="5522908512596376669">La llista de fitxers ha canviat a la visualització de llista.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">S'ha produït un error en configurar la xarxa</translation>
 <translation id="7839804798877833423">Per obtenir aquests fitxers s'utilitzaran aproximadament <ph name="FILE_SIZE" /> de dades mòbils.</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
-<translation id="7847617962681804761">Es requereix un PIN per utilitzar dades mòbils</translation>
 <translation id="7853966320808728790">BÉPO francès</translation>
 <translation id="7857117644404132472">Afegeix una excepció</translation>
 <translation id="7868774406711971383">Polonès</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">S'estan sincronitzant <ph name="NUMBER_OF_FILES" /> elements...</translation>
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
-<translation id="8608515571837163082">S'ha introduït un PIN incorrecte massa vegades. Introdueix el número personal de desbloqueig (PUK) de 8 dígits proporcionat per l'operador.</translation>
 <translation id="8609695766746872526">Islandès</translation>
 <translation id="863903787380594467">El PIN no és correcte. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

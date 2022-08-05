@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
+<translation id="6467852467360539617">Șterge datele și resetează permisiunile</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt blocate}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selectate</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /> sunt permise</translation>
 <translation id="7302486331832100261">De obicei blochezi notificările. Ca să le permiți, atinge Detalii.</translation>
+<translation id="7383715096023715447">Setări pentru <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>

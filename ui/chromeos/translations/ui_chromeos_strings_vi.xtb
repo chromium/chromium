@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL tự động định cấu hình:</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
 <translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
-<translation id="2303282178633578561">Khóa thẻ SIM</translation>
 <translation id="2303301624314357662">Đang mở tệp <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> đã được đẩy ra.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Các tệp gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
 <translation id="2579959351793446050">Tiếng Odia</translation>
-<translation id="2593644851255584939">Quản trị viên của bạn yêu cầu bạn tắt chế độ Khoá SIM.</translation>
 <translation id="2602810353103180630">Mạng <ph name="NETWORK_INDEX" /> trong tổng số <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên của bạn đã chặn, Thông tin chi tiết</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2620090360073999360">Không thể kết nối với Google Drive tại thời điểm này.</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="2638942478653899953">Không thể truy cập Google Drive. Vui lòng <ph name="BEGIN_LINK" />đăng xuất<ph name="END_LINK" /> và đăng nhập lại.</translation>
@@ -530,7 +527,6 @@
 <translation id="5489067830765222292">Tiếng Latvia</translation>
 <translation id="5489965683297092283">Đang tắt bộ lọc <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
-<translation id="5500104704744051184">Bạn chỉ có thể sử dụng mạng này khi đã nhập PUK</translation>
 <translation id="5500122897333236901">Tiếng Ai-xơ-len</translation>
 <translation id="5508696409934741614">Dấu chấm</translation>
 <translation id="5522908512596376669">Danh sách tệp đã thay đổi thành chế độ xem danh sách.</translation>
@@ -811,7 +807,6 @@
 <translation id="7831491651892296503">Lỗi khi định cấu hình mạng</translation>
 <translation id="7839804798877833423">Tìm nạp các tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
-<translation id="7847617962681804761">Bạn cần nhập mã PIN để dùng dữ liệu di động</translation>
 <translation id="7853966320808728790">BÉPO tiếng Pháp</translation>
 <translation id="7857117644404132472">Thêm ngoại lệ</translation>
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
@@ -906,7 +901,6 @@
 <translation id="8579285237314169903">Đang đồng bộ hóa <ph name="NUMBER_OF_FILES" /> mục...</translation>
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
-<translation id="8608515571837163082">Bạn đã nhập sai mã PIN quá nhiều lần. Nhập Khoá mở khoá cá nhân (PUK) gồm 8 chữ số do nhà mạng cung cấp.</translation>
 <translation id="8609695766746872526">Tiếng Iceland</translation>
 <translation id="863903787380594467">Mã PIN không chính xác. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Cổng</translation>

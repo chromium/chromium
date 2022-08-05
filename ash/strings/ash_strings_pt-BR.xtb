@@ -327,6 +327,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
 <translation id="2903844815300039659">Conectado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de tela</translation>
+<translation id="2925246975070834767">Use o zoom automático para ficar no centro da tela. Ative essa opção nas Configurações rápidas.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2942350706960889382">Lupa em área fixa</translation>
 <translation id="2942516765047364088">Posição da estante</translation>
@@ -469,10 +470,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir quando o download for concluído</translation>
+<translation id="3724279623330129812">O zoom automático centralizou o foco da câmera</translation>
 <translation id="3726171378575546917">Os apps <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> não estão no dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
-<translation id="3761848338953536304">Seu administrador está solicitando que você desative a configuração de bloqueio do chip</translation>
 <translation id="3765841986579723851">Editado hoje</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
@@ -634,6 +635,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, avaliado com <ph name="RATING_SCORE" /> estrelas</translation>
 <translation id="4633185660152240791">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 dia}one{Reverta o dispositivo para a versão anterior em até # dia}other{Reverta o dispositivo para a versão anterior em até # dias}}</translation>
+<translation id="4633636853437260449">Pressione Ctrl+W para excluir</translation>
 <translation id="4642092649622328492">Fazer uma captura de tela parcial</translation>
 <translation id="4644727592819780893">A região é muito pequena para caber na câmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de app</translation>
@@ -867,7 +869,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para receber a atualização, reinicie seu Chromebook com o teclado conectado.</translation>
 <translation id="5992218262414051481">Modo de alto contraste ativado. Pressione Ctrl+Pesquisa+H novamente para desativá-lo.</translation>
-<translation id="6009656393242168182">Desative a configuração de bloqueio do chip</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>

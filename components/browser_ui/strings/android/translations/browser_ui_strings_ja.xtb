@@ -242,6 +242,7 @@
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6467852467360539617">データを消去して権限をリセット</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
@@ -281,6 +282,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>
 <translation id="7302486331832100261">通知はデフォルトでブロックされています。許可するには [詳細] をタップしてください。</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> の設定</translation>
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>

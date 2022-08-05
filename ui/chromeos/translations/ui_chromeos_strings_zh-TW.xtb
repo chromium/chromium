@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">自動設定網址：</translation>
 <translation id="2288278176040912387">唱機</translation>
 <translation id="2291538123825441971">正在開啟 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
-<translation id="2303282178633578561">鎖定 SIM 卡</translation>
 <translation id="2303301624314357662">正在開啟「<ph name="FILE_NAME" />」。</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2305020378527873881">「<ph name="VOLUME_NAME" />」已退出。</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">最近存取的檔案會顯示在這裡</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
-<translation id="2593644851255584939">管理員要求你停用 SIM 卡鎖定功能。</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
-<translation id="2617342710774726426">SIM 卡已鎖定</translation>
 <translation id="2620090360073999360">目前無法使用 Google 雲端硬碟。</translation>
 <translation id="2621713457727696555">已受到安全保護</translation>
 <translation id="2638942478653899953">無法連上 Google 雲端硬碟。請<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />並重新登入帳戶。</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">拉脫維亞文</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> 篩選器已關閉。</translation>
 <translation id="5494920125229734069">全選</translation>
-<translation id="5500104704744051184">你必須先輸入 PUK，才能使用這個網路</translation>
 <translation id="5500122897333236901">冰島文</translation>
 <translation id="5508696409934741614">圓點</translation>
 <translation id="5522908512596376669">檔案清單已變更為清單檢視模式。</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">網路設定錯誤</translation>
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 行動數據流量。</translation>
 <translation id="7846076177841592234">全部取消選取</translation>
-<translation id="7847617962681804761">必須輸入 PIN 碼才能使用行動數據</translation>
 <translation id="7853966320808728790">法文 BÉPO</translation>
 <translation id="7857117644404132472">新增例外狀況</translation>
 <translation id="7868774406711971383">波蘭文</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">正在同步處理 <ph name="NUMBER_OF_FILES" /> 個項目...</translation>
 <translation id="8600173386174225982">檔案清單已變更為縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 圖片檔</translation>
-<translation id="8608515571837163082">輸入錯誤 PIN 碼的次數太多。輸入電信業者提供的 8 位數個人解鎖金鑰 (PUK)。</translation>
 <translation id="8609695766746872526">冰島文</translation>
 <translation id="863903787380594467">PIN 碼不正確，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>

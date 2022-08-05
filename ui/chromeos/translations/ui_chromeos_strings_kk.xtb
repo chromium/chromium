@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Автоматты конфигурациялау URL мекенжайы:</translation>
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ашылуда.</translation>
-<translation id="2303282178633578561">SIM картасын құлыптау</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ашылуда.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> шығарылды.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Жақында пайдаланған файлдарыңыз осы жерде көрсетіледі.</translation>
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
 <translation id="2579959351793446050">Одия</translation>
-<translation id="2593644851255584939">Әкімшіңіз SIM картасының құлпын ашуды талап етеді.</translation>
 <translation id="2602810353103180630">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> бейнесі</translation>
-<translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2620090360073999360">Google Drive жүйесіне қазір кіру мүмкін емес.</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="2638942478653899953">Google Drive мазмұнына қол жеткізу мүмкін емес. <ph name="BEGIN_LINK" />Жүйеден шығып<ph name="END_LINK" />, қайта кіріңіз.</translation>
@@ -528,7 +525,6 @@
 <translation id="5489067830765222292">Латыш</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> сүзгісі өшірулі.</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
-<translation id="5500104704744051184">PUK кодын енгізбейінше, бұл желіні пайдалана алмайсыз.</translation>
 <translation id="5500122897333236901">исланд</translation>
 <translation id="5508696409934741614">Нүктелер</translation>
 <translation id="5522908512596376669">Файлдар тізім ретінде көрсетілді.</translation>
@@ -809,7 +805,6 @@
 <translation id="7831491651892296503">Желіні конфигурациялауда қате болды</translation>
 <translation id="7839804798877833423">Бұл файлдарды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>
-<translation id="7847617962681804761">Мобильдік интернетті пайдалану үшін PIN коды қажет.</translation>
 <translation id="7853966320808728790">Француз BÉPO</translation>
 <translation id="7857117644404132472">Ерекше жағдайды қосу</translation>
 <translation id="7868774406711971383">Поляк</translation>
@@ -904,7 +899,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> элемент синхрондалуда…</translation>
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
-<translation id="8608515571837163082">PIN коды бірнеше рет қате енгізілді. Оператор берген 8 цифрлы Жеке бөгеуден шығару кодын (PUK кодын) енгізіңіз.</translation>
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="863903787380594467">PIN коды дұрыс емес. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – ұяшық</translation>

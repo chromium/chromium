@@ -125,7 +125,7 @@
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
-<translation id="1639239467298939599">読み込み中</translation>
+<translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
@@ -469,10 +469,10 @@
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
+<translation id="3724279623330129812">オートズームによりカメラの中心に合わせました</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />、<ph name="UNAVAILABLE_APPS_COUNT" /> はこのデバイスにありません。</translation>
 <translation id="3735740477244556633">並べ替え</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
-<translation id="3761848338953536304">管理者が SIM ロック設定を無効にするよう求めています</translation>
 <translation id="3765841986579723851">今日編集したファイル</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
@@ -867,7 +867,6 @@
 <translation id="598407983968395253">テンプレートを使用</translation>
 <translation id="598882571027504733">アップデートを取得するには、キーボードを接続した状態で Chromebook を再起動してください。</translation>
 <translation id="5992218262414051481">ハイコントラスト モードが有効になりました。無効にするには、Ctrl+検索+H キーをもう一度押します。</translation>
-<translation id="6009656393242168182">SIM ロック設定を無効にしてください</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /> ページ</translation>
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
 <translation id="602001110135236999">左にスクロール</translation>

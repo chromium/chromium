@@ -86,7 +86,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
 <translation id="1631385268983122904">Bitte setze den Akku bzw. die Batterie(n) noch nicht wieder ein</translation>
-<translation id="1639239467298939599">Wird geladen...</translation>
+<translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1641857168437328880">Dokumenteneinzug (einseitig)</translation>
 <translation id="1643449475550628585">Hintergrundbild täglich ändern</translation>
 <translation id="1644574205037202324">Verlauf</translation>
@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2480034874476596812">Manuell deaktivieren</translation>
+<translation id="248546197012830854">Das Gerät ist offline. Stelle eine WLAN-Verbindung her, um Hilfeinhalte zu sehen.</translation>
 <translation id="2491955442992294626">Tasten werden nicht getestet, wenn du ein anderes Fenster verwendest</translation>
 <translation id="2493126929778606526">Meine besten automatisch ausgewählten Fotos</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />-Reparatur beenden</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
+<translation id="6624819909909965616">Dateien mit einer Größe von 10 MB oder mehr können nicht hochgeladen werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6644568396961840069">Die Datei konnte nicht gespeichert werden. Schließ einen anderen externen Speicher an oder versuch es später noch einmal.</translation>
 <translation id="6647510110698214773">Verschlüsselungsalgorithmus</translation>
@@ -696,6 +698,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="6995564396478647735">Der Schreibschutz muss aktiviert sein</translation>
+<translation id="7005833343836210400">Das Gerät ist offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Das Gerät ist nicht verbunden.</translation>
@@ -809,6 +812,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
+<translation id="8094062939584182041">Zulassen, dass Google dir eine E-Mail zu diesem Problem sendet</translation>
 <translation id="8104083085214006426">Du verwendest ein offenes und unsicheres Netzwerk</translation>
 <translation id="8109786307828817014">Trotz fehlgeschlagener Kalibrierung fortfahren?</translation>
 <translation id="811820734797650957">(Android) Gateway kann kontaktiert werden</translation>

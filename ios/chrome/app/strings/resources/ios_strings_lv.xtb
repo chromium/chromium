@@ -311,6 +311,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3529024052484145543">Nav droši</translation>
 <translation id="3533202363250687977">Aizvērt visas inkognito cilnes</translation>
 <translation id="3533436815740441613">Jauna cilne</translation>
+<translation id="3547799431091898961">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Aizvērt cilni</translation>
 <translation id="3581564640715911333">Piedāvāt tulkot lapas citās valodās</translation>
 <translation id="3588820906588687999">Atvērt attēlu jaunā cilnē</translation>
@@ -681,6 +682,7 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6561262006871132942">Tuvināt</translation>
 <translation id="6583087784430677195">Atveriet sadaļu <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Iestatījumi) un pārejiet uz iestatījumu “AutoFill Passwords” (Automātiska paroļu aizpilde), lai to izslēgtu.</translation>
 <translation id="6585618849026997638">Varat pievienot grāmatzīmi, lai varētu atgriezties vajadzīgajā lapā</translation>
+<translation id="6596481460663245319">Meklēt attēlu ar Google</translation>
 <translation id="6598875554591387303">Kārtot pēc izdevēja</translation>
 <translation id="6603393121510733479">Jūsu organizācija izslēdza privātu pārlūkošanu.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
@@ -849,6 +851,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="7987685713885608670">Lai gādātu par papildu drošību, šifrējiet paroles savā ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="7993619969781047893">Noteiktās vietnēs funkcijas var nedarboties</translation>
 <translation id="800361585186029508">Ievadītie vietrāži URL tiek atvērti pārlūkā Google Chrome.</translation>
+<translation id="8016714545083187120">Vienmēr izmantot drošus savienojumus</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8023878949384262191">Izvērš sadaļu.</translation>
 <translation id="8027581147000338959">Atvērt jaunā logā</translation>

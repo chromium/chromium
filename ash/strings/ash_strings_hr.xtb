@@ -469,10 +469,10 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvaranje nakon završetka</translation>
+<translation id="3724279623330129812">Automatsko zumiranje centriralo je kameru</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i njih još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu instalirane na ovom uređaju.</translation>
 <translation id="3735740477244556633">Poredaj po</translation>
 <translation id="3742055079367172538">Izrađena je snimka zaslona</translation>
-<translation id="3761848338953536304">Administrator traži da isključite postavku zaključavanja SIM-a</translation>
 <translation id="3765841986579723851">Uređeno danas</translation>
 <translation id="3771549900096082774">Način visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je onemogućio višestruku prijavu za <ph name="USER_EMAIL" />. Svi se korisnici moraju odjaviti da bi nastavili.</translation>
@@ -533,7 +533,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da biste otključali Chromebook, provjerite je li na telefonu uključen Bluetooth</translation>
-<translation id="4125970834901680537">Aplikacije se ne mogu emitirati u načinu rada tableta. Pokušajte ponovo u načinu rada prijenosnog računala.</translation>
+<translation id="4125970834901680537">Aplikacije se ne mogu streamati u načinu rada tableta. Pokušajte u načinu prijenosnog računala.</translation>
 <translation id="4129129681837227511">Za prikaz obavijesti na zaključanom zaslonu otključajte zaslon da biste promijenili postavku</translation>
 <translation id="4136724716305260864">Uključeno do izlaska sunca</translation>
 <translation id="4146833061457621061">Pusti glazbu</translation>
@@ -867,7 +867,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="598407983968395253">Koristi predložak</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook dok je tipkovnica priključena.</translation>
 <translation id="5992218262414051481">Način visokog kontrasta omogućen je. Ponovo pritisnite Ctrl + Search + H da biste ga isključili.</translation>
-<translation id="6009656393242168182">Onemogućite postavku zaključavanja SIM-a</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izlaz iz zrcalnog načina</translation>
 <translation id="602001110135236999">Pomicanje ulijevo</translation>

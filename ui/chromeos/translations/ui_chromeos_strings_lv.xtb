@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Automātiskās konfigurācijas vietrādis URL</translation>
 <translation id="2288278176040912387">Ierakstu atskaņotājs</translation>
 <translation id="2291538123825441971">Notiek <ph name="NUMBER_OF_FILES" /> failu atvēršana.</translation>
-<translation id="2303282178633578561">Bloķēt SIM karti</translation>
 <translation id="2303301624314357662">Tiek atvērts fails <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planēta</translation>
 <translation id="2305020378527873881">Sējums <ph name="VOLUME_NAME" /> ir noņemts.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Jaunākie faili tiks rādīti šeit</translation>
 <translation id="2578394532502990878">Tamilu, fonētiskā</translation>
 <translation id="2579959351793446050">Oriju</translation>
-<translation id="2593644851255584939">Administrators pieprasa atspējot SIM kartes bloķēšanu.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, bloķēja jūsu administrators, detalizēta informācija</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
-<translation id="2617342710774726426">SIM karte ir bloķēta.</translation>
 <translation id="2620090360073999360">Šobrīd Google disku nevar sasniegt.</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
 <translation id="2638942478653899953">Nevarēja piekļūt Google diskam. Lūdzu, <ph name="BEGIN_LINK" />atsakieties<ph name="END_LINK" /> un atkārtoti piesakieties.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">Latviešu</translation>
 <translation id="5489965683297092283">Filtrs “<ph name="FILTER_NAME" />” ir izslēgts.</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
-<translation id="5500104704744051184">Nevarēsiet lietot šo tīklu, kamēr nebūsiet ievadījis PUK.</translation>
 <translation id="5500122897333236901">Īslandiešu valoda</translation>
 <translation id="5508696409934741614">Punkti</translation>
 <translation id="5522908512596376669">Failu saraksts ir mainīts uz saraksta skatu.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">Tīkla konfigurācijas kļūda</translation>
 <translation id="7839804798877833423">Izgūstot šos failus, tiks izmantoti aptuveni <ph name="FILE_SIZE" /> mobilo datu.</translation>
 <translation id="7846076177841592234">Atcelt atlasi</translation>
-<translation id="7847617962681804761">Lai izmantotu mobilos datus, jānorāda PIN</translation>
 <translation id="7853966320808728790">Franču valodas BÉPO tastatūra</translation>
 <translation id="7857117644404132472">Pievienot izņēmumu</translation>
 <translation id="7868774406711971383">Poļu</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903">Notiek <ph name="NUMBER_OF_FILES" /> vienumu sinhronizēšana...</translation>
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
-<translation id="8608515571837163082">Pārāk daudz reižu tika ievadīts nepareizs PIN. Ievadiet astoņu ciparu personisko atbloķēšanas atslēgu (PUK), ko nodrošina mobilo sakaru operators.</translation>
 <translation id="8609695766746872526">Islandiešu</translation>
 <translation id="863903787380594467">Nepareizs PIN. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — ports</translation>

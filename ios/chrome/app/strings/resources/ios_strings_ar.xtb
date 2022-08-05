@@ -313,6 +313,7 @@
 <translation id="3529024052484145543">غير آمن</translation>
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
+<translation id="3547799431091898961">‏لتسجيل الخروج من حسابك على Google في جميع المواقع الإلكترونية، <ph name="BEGIN_LINK" />سجِّل الخروج من متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
@@ -683,6 +684,7 @@
 <translation id="6561262006871132942">تكبير</translation>
 <translation id="6583087784430677195">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings (الإعدادات)<ph name="END_LINK" /> ثم انتقِل إلى Passwords (كلمات المرور).</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
+<translation id="6596481460663245319">‏البحث باستخدام صورة مع Google</translation>
 <translation id="6598875554591387303">الترتيب حسب الناشر</translation>
 <translation id="6603393121510733479">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة".
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

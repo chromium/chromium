@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">URL का अपने आप कॉन्‍फ़िगरेशन:</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फ़ाइलें खुल रही हैं.</translation>
-<translation id="2303282178633578561">सिम कार्ड लॉक करें</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> फ़ाइल खुल रही है.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> को निकाल लिया गया है.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">आपकी हाल ही की फ़ाइलें यहां दिखेंगी</translation>
 <translation id="2578394532502990878">तमिल फ़ोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
-<translation id="2593644851255584939">आपका एडमिन चाहता है कि आप सिम लॉक की सुविधा बंद करें.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> वीडियो</translation>
-<translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
 <translation id="2620090360073999360">इस समय Google डिस्क तक नहीं पहुंचा जा सकता.</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="2638942478653899953">Google डिस्क तक नहीं पहुंचा जा सका. कृपया <ph name="BEGIN_LINK" />लॉग आउट करें<ph name="END_LINK" /> और वापस प्रवेश करें.</translation>
@@ -529,7 +526,6 @@
 <translation id="5489067830765222292">लातवियन</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> फ़िल्टर बंद है.</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
-<translation id="5500104704744051184">जब तक PUK नहीं डाला जाता, तब तक इस नेटवर्क का इस्तेमाल नहीं किया जा सकेगा</translation>
 <translation id="5500122897333236901">आइसलैंडिक</translation>
 <translation id="5508696409934741614">बिंदु</translation>
 <translation id="5522908512596376669">फ़ाइल की सूची को अब सूची की तरह दिखाया जा रहा है.</translation>
@@ -810,7 +806,6 @@
 <translation id="7831491651892296503">नेटवर्क कॉन्फ़िगर करने में गड़बड़ी</translation>
 <translation id="7839804798877833423">इन फ़ाइलों को लाने में मोबाइल डेटा का करीब <ph name="FILE_SIZE" /> उपयोग होगा.</translation>
 <translation id="7846076177841592234">चुना गया हटाएं</translation>
-<translation id="7847617962681804761">मोबाइल डेटा के इस्तेमाल के लिए पिन ज़रूरी है</translation>
 <translation id="7853966320808728790">फ़्रेंच बेपो</translation>
 <translation id="7857117644404132472">अपवाद जोड़ें</translation>
 <translation id="7868774406711971383">पोलिश</translation>
@@ -905,7 +900,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> आइटम समन्‍वयित कर रहा है...</translation>
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
-<translation id="8608515571837163082">कई बार गलत पिन डाला गया. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिली आठ अंकों वाली निजी अनब्लॉकिंग कुंजी (PUK) डालें.</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>
 <translation id="863903787380594467">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>

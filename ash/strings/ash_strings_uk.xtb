@@ -472,7 +472,6 @@
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
-<translation id="3761848338953536304">Ваш адміністратор просить вимкнути налаштування блокування вашої SIM-карти</translation>
 <translation id="3765841986579723851">Змінено сьогодні</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
@@ -759,6 +758,16 @@
 <translation id="5393156353051693207">Натисніть і втримуйте будь-яке місце, щоб змінити порядок додатків</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> перетягнено на додаток <ph name="IN_PLACE_APP" />. Відпустіть, щоб створити папку.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) може переглядати дії й історію цього користувача на chrome.com.</translation>
+<translation id="5399673806694250334">Панель статусу, час: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Швидкі налаштування: натисніть клавішу пошуку + стрілку ліворуч, щоб перейти в центр сповіщень.</translation>
 <translation id="5426063383988017631">Меню налаштувань закрито</translation>
 <translation id="5428899915242071344">Почати вибір</translation>
@@ -857,7 +866,6 @@
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
 <translation id="5992218262414051481">Увімкнено режим високого контрасту. Щоб вимкнути його, знову натисніть Ctrl+Search+H.</translation>
-<translation id="6009656393242168182">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
@@ -897,6 +905,7 @@
 <translation id="619279033188484792">Переглядайте нещодавні фотографії, медіаконтент і сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
 <translation id="6193431488227440296">Версія для розробників</translation>
+<translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>

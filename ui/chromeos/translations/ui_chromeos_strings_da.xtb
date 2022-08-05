@@ -148,7 +148,6 @@
 <translation id="2282155092769082568">Webadresse til automatisk konfiguration:</translation>
 <translation id="2288278176040912387">Pladespiller</translation>
 <translation id="2291538123825441971">Åbner <ph name="NUMBER_OF_FILES" /> filer.</translation>
-<translation id="2303282178633578561">Lås SIM-kort</translation>
 <translation id="2303301624314357662">Åbner filen <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> er skubbet ud.</translation>
@@ -187,10 +186,8 @@
 <translation id="2570012981255377263">Dine seneste filer vises her</translation>
 <translation id="2578394532502990878">Tamil fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
-<translation id="2593644851255584939">Din administrator kræver, at du deaktiverer SIM-lås.</translation>
 <translation id="2602810353103180630">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
-<translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2620090360073999360">Der er ikke adgang til Google Drev på nuværende tidspunkt.</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
 <translation id="2638942478653899953">Der kunne ikke oprettes forbindelse til Google Drev. <ph name="BEGIN_LINK" />Log ud <ph name="END_LINK" />, og log ind igen.</translation>
@@ -488,6 +485,7 @@
 <translation id="5159560892333415631">Tøm papirkurv</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
+<translation id="5172749059808361023">Oplysninger om begrænsning</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
 <translation id="5211614973734216083">Færøsk</translation>
@@ -529,7 +527,6 @@
 <translation id="5489067830765222292">Lettisk</translation>
 <translation id="5489965683297092283">Filteret <ph name="FILTER_NAME" /> er deaktiveret.</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
-<translation id="5500104704744051184">Du kan ikke bruge dette netværk, før du har angivet PUK-koden</translation>
 <translation id="5500122897333236901">Islandsk</translation>
 <translation id="5508696409934741614">Prikker</translation>
 <translation id="5522908512596376669">Der blev skiftet til listevisning for listen med filer.</translation>
@@ -810,7 +807,6 @@
 <translation id="7831491651892296503">Der opstod en fejl under konfigurationen af netværket</translation>
 <translation id="7839804798877833423">Hvis du henter disse filer, bruge du ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
-<translation id="7847617962681804761">Der kræves en pinkode for at bruge mobildata</translation>
 <translation id="7853966320808728790">Fransk BÉPO</translation>
 <translation id="7857117644404132472">Tilføj undtagelse</translation>
 <translation id="7868774406711971383">Polsk</translation>
@@ -905,7 +901,6 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementer synkroniseres...</translation>
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
-<translation id="8608515571837163082">Der blev angivet en forkert pinkode for mange gange. Angiv den 8-cifrede PUK-kode, du har fået af dit mobilselskab.</translation>
 <translation id="8609695766746872526">Islandsk</translation>
 <translation id="863903787380594467">Forkert pinkode. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
