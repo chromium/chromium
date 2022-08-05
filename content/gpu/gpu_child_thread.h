@@ -53,7 +53,7 @@ class GpuChildThread : public ChildThreadImpl,
 
   ~GpuChildThread() override;
 
-  void Init(const base::Time& process_start_time);
+  void Init(const base::TimeTicks& process_start_time);
 
  private:
   GpuChildThread(base::RepeatingClosure quit_closure,

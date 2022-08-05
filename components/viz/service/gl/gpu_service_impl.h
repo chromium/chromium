@@ -333,7 +333,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   bool in_host_process() const { return gpu_info_.in_process_gpu; }
 
-  void set_start_time(base::Time start_time) { start_time_ = start_time; }
+  void set_start_time(base::TimeTicks start_time) { start_time_ = start_time; }
 
   const gpu::GPUInfo& gpu_info() const { return gpu_info_; }
   const gpu::GpuPreferences& gpu_preferences() const {
@@ -489,7 +489,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   std::unique_ptr<gpu::ImageDecodeAcceleratorWorker>
       image_decode_accelerator_worker_;
 
-  base::Time start_time_;
+  base::TimeTicks start_time_;
 
   // Used to track the task to bind |receiver_| on the IO thread.
   base::CancelableTaskTracker bind_task_tracker_;

@@ -215,7 +215,7 @@ int GpuMain(MainFunctionParams parameters) {
   if (gpu_preferences.gpu_startup_dialog)
     WaitForDebugger("Gpu");
 
-  base::Time start_time = base::Time::Now();
+  base::TimeTicks start_time = base::TimeTicks::Now();
 
 #if BUILDFLAG(IS_WIN)
   base::trace_event::TraceEventETWExport::EnableETWExport();

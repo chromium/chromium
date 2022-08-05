@@ -504,7 +504,7 @@ void GpuServiceImpl::UpdateGPUInfo() {
 
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
-  gpu_info_.initialization_time = base::Time::Now() - start_time_;
+  gpu_info_.initialization_time = base::TimeTicks::Now() - start_time_;
 }
 
 void GpuServiceImpl::UpdateGPUInfoGL() {

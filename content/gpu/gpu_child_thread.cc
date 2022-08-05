@@ -134,7 +134,7 @@ GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
 
 GpuChildThread::~GpuChildThread() = default;
 
-void GpuChildThread::Init(const base::Time& process_start_time) {
+void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
   if (!in_process_gpu())
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 

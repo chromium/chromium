@@ -69,7 +69,7 @@ void InProcessGpuThread::Init() {
 
   // Since we are in the browser process, use the thread start time as the
   // process start time.
-  child_thread->Init(base::Time::Now());
+  child_thread->Init(base::TimeTicks::Now());
 
   gpu_process_->set_main_thread(child_thread);
 }
