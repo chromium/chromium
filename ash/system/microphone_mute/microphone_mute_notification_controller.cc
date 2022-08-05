@@ -79,8 +79,13 @@ void MicrophoneMuteNotificationController::MaybeShowNotification(
     message_center::NotificationPriority priority,
     bool recreate) {
   if (mic_mute_on_) {
+    auto* microphone_mute_notification_delegate =
+        MicrophoneMuteNotificationDelegate::Get();
+    // `MicrophoneMuteNotificationDelegate` is not created in guest mode.
+    if (!microphone_mute_notification_delegate)
+      return;
     absl::optional<std::u16string> app_name =
-        MicrophoneMuteNotificationDelegate::Get()->GetAppAccessingMicrophone();
+        microphone_mute_notification_delegate->GetAppAccessingMicrophone();
     if (app_name.has_value() || input_stream_count_) {
       if (recreate)
         RemoveMicrophoneMuteNotification();
