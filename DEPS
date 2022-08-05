@@ -680,7 +680,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': 'ekvYgaz0Q8adDlksn73Gh-sUisY5m76_4lr_0c1woM0C',
+          'version': 'UEHK7zslk3sVEEqwqnRp9i3kNWbv1PiHuTanLbEU64wC',
         },
       ],
   },
