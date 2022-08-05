@@ -94,8 +94,9 @@ constexpr base::TimeDelta kEventLatencyHistogramMax = base::Seconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
 constexpr base::TimeDelta kHighLatencyMin = base::Milliseconds(75);
 
-// Number of stages of the current PipelineReporter
-constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
+// Number of breakdown stages of the current PipelineReporter
+constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount) - 1;
+
 // Number of dispatch stages of the current EventLatency
 constexpr int kNumDispatchStages =
     static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
@@ -104,6 +105,8 @@ constexpr int kNumDispatchStages =
 // since TimeDelta calculate based on microseconds instead of nanoseconds,
 // therefore, decimals of stage durations in microseconds may be lost.)
 constexpr double kWeightOfCurStageInPercent = 25;
+// Used for comparing doubles
+constexpr double kEpsilon = 0.001;
 
 std::string GetCompositorLatencyHistogramName(
     FrameReportType report_type,
@@ -128,12 +131,11 @@ std::string GetEventLatencyHistogramBaseName(
     const EventMetrics& event_metrics) {
   auto* scroll_metrics = event_metrics.AsScroll();
   auto* pinch_metrics = event_metrics.AsPinch();
-  return base::StrCat(
-      {"EventLatency.", event_metrics.GetTypeName(),
-       scroll_metrics || pinch_metrics ? "." : "",
-       scroll_metrics
-           ? scroll_metrics->GetScrollTypeName()
-           : pinch_metrics ? pinch_metrics->GetPinchTypeName() : ""});
+  return base::StrCat({"EventLatency.", event_metrics.GetTypeName(),
+                       scroll_metrics || pinch_metrics ? "." : "",
+                       scroll_metrics  ? scroll_metrics->GetScrollTypeName()
+                       : pinch_metrics ? pinch_metrics->GetPinchTypeName()
+                                       : ""});
 }
 
 constexpr char kTraceCategory[] =
@@ -151,6 +153,15 @@ base::TimeDelta CalculateWeightedAverage(base::TimeDelta previous_value,
     return current_value;
   return (kWeightOfCurStageInPercent * current_value +
           (100 - kWeightOfCurStageInPercent) * previous_value) /
+         100;
+}
+
+// Calculate new prediction of latency based on old prediction and current
+// latency
+base::TimeDelta PredictLatency(base::TimeDelta previous_prediction,
+                               base::TimeDelta current_latency) {
+  return (kWeightOfCurStageInPercent * current_latency +
+          (100 - kWeightOfCurStageInPercent) * previous_prediction) /
          100;
 }
 
@@ -340,6 +351,16 @@ CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
   return Iterator(this, skip_swap_start_to_swap_end_if_breakdown_available &&
                             buffer_ready_available_);
 }
+
+// CompositorFrameReporter::CompositorLatencyInfo ==============================
+
+CompositorFrameReporter::CompositorLatencyInfo::CompositorLatencyInfo() =
+    default;
+CompositorFrameReporter::CompositorLatencyInfo::CompositorLatencyInfo(
+    base::TimeDelta init_value)
+    : top_level_stages(kNumOfStages, init_value), total_latency(init_value) {}
+CompositorFrameReporter::CompositorLatencyInfo::~CompositorLatencyInfo() =
+    default;
 
 // CompositorFrameReporter =====================================================
 
@@ -925,9 +946,9 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     const int stage_type_index =
         blink_breakdown
             ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
-            : viz_breakdown
-                  ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
-                  : static_cast<int>(stage_type);
+        : viz_breakdown
+            ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
+            : static_cast<int>(stage_type);
     const int histogram_index =
         (stage_type_index == static_cast<int>(StageType::kTotalLatency)
              ? kStagesWithBreakdownCount + frame_sequence_tracker_type_index
@@ -1119,6 +1140,10 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           reporter->set_frame_type(ChromeFrameReporter::BACKFILL);
         }
 
+        for (auto stage : high_latency_substages_) {
+          reporter->add_high_latency_contribution_stage(stage);
+        }
+
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });
 
@@ -1248,19 +1273,18 @@ void CompositorFrameReporter::AdoptReporter(
   DiscardOldPartialUpdateReporters();
 }
 
-void CompositorFrameReporter::CalculateStageLatencyPrediction(
-    std::vector<base::TimeDelta>& previous_predictions) {
+void CompositorFrameReporter::CalculateCompositorLatencyPrediction(
+    CompositorLatencyInfo& previous_predictions,
+    base::TimeDelta prediction_deviation_threshold) {
   // `stage_history_` should not be empty since we are calling this function
   // from DidPresentCompositorFrame(), which means there has to be some sort of
   // stage data.
   DCHECK(!stage_history_.empty());
 
-  int index_of_total_latency = static_cast<int>(StageType::kTotalLatency);
-
   // The bad case of having `previous_predictions` being 0s should never happen
   // since this function always only record the current PipelineReporter's
   // duration if its duration is not 0s. Investigate if such rare case happens.
-  DCHECK(!previous_predictions[index_of_total_latency].is_zero())
+  DCHECK(!previous_predictions.total_latency.is_zero())
       << "previous_predictions should theoretically never have duration of 0s ";
 
   base::TimeDelta total_pipeline_latency =
@@ -1275,36 +1299,40 @@ void CompositorFrameReporter::CalculateStageLatencyPrediction(
   // Note that `current_stage_durations` would always have the same length as
   // `previous_predictions`, since each index represent the breakdown stages of
   // the PipelineReporter listed at enum class, StageType.
-  std::vector<base::TimeDelta> current_stage_durations(kNumOfStages,
-                                                       base::Microseconds(0));
+  CompositorLatencyInfo current_stage_durations(base::Microseconds(0));
+  current_stage_durations.total_latency = total_pipeline_latency;
+
   for (auto stage : stage_history_) {
     base::TimeDelta substageLatency = stage.end_time - stage.start_time;
-    current_stage_durations[static_cast<int>(stage.stage_type)] =
-        substageLatency;
+    current_stage_durations
+        .top_level_stages[static_cast<int>(stage.stage_type)] = substageLatency;
   }
-  current_stage_durations[index_of_total_latency] = total_pipeline_latency;
 
   // Do not record current pipeline details or update predictions if no frame
   // is submitted.
   if (current_stage_durations
-          [static_cast<int>(
-               StageType::kSubmitCompositorFrameToPresentationCompositorFrame)]
-              .is_zero())
+          .top_level_stages[static_cast<int>(
+              StageType::kSubmitCompositorFrameToPresentationCompositorFrame)]
+          .is_zero())
     return;
 
   // The previous prediction is initialized to be -1, so check if the current
   // PipelineReporter is the first reporter ever to be calculated.
-  if (previous_predictions[index_of_total_latency] == base::Microseconds(-1)) {
+  if (previous_predictions.total_latency == base::Microseconds(-1)) {
     previous_predictions = current_stage_durations;
   } else {
-    // TODO(crbug.com/1334823): Perform latency attribution.
+    if ((current_stage_durations.total_latency -
+         previous_predictions.total_latency) >= prediction_deviation_threshold)
+      FindHighLatencyAttribution(previous_predictions, current_stage_durations);
 
     for (int i = 0; i < kNumOfStages; i++) {
-      previous_predictions[i] =
-          (kWeightOfCurStageInPercent * current_stage_durations[i] +
-           (100 - kWeightOfCurStageInPercent) * previous_predictions[i]) /
-          100;
+      previous_predictions.top_level_stages[i] =
+          PredictLatency(previous_predictions.top_level_stages[i],
+                         current_stage_durations.top_level_stages[i]);
     }
+    previous_predictions.total_latency =
+        PredictLatency(previous_predictions.total_latency,
+                       current_stage_durations.total_latency);
   }
 }
 
@@ -1586,6 +1614,37 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   }
 
   return info;
+}
+
+void CompositorFrameReporter::FindHighLatencyAttribution(
+    CompositorLatencyInfo& previous_predictions,
+    CompositorLatencyInfo& current_stage_durations) {
+  double contribution_change = -1;
+  double highest_contribution_change = -1;
+  std::vector<int> highest_contribution_change_index;
+
+  for (int i = 0; i < kNumOfStages; i++) {
+    contribution_change = (current_stage_durations.top_level_stages[i] /
+                           current_stage_durations.total_latency) -
+                          (previous_predictions.top_level_stages[i] /
+                           previous_predictions.total_latency);
+
+    if (contribution_change > highest_contribution_change) {
+      highest_contribution_change = contribution_change;
+      highest_contribution_change_index = {i};
+    } else if (std::abs(contribution_change - highest_contribution_change) <
+               kEpsilon) {
+      highest_contribution_change_index.push_back(i);
+    }
+  }
+
+  // It is not expensive to go through vector of indexes again since it is
+  // usually very small (possibilities of breakdown stages having the same
+  // change contribution is small).
+  for (auto index : highest_contribution_change_index) {
+    high_latency_substages_.push_back(
+        GetStageName(static_cast<StageType>(index)));
+  }
 }
 
 }  // namespace cc
