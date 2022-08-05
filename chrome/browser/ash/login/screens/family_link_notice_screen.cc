@@ -37,9 +37,8 @@ FamilyLinkNoticeScreen::FamilyLinkNoticeScreen(
 
 FamilyLinkNoticeScreen::~FamilyLinkNoticeScreen() = default;
 
-bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext* context) {
-  if (!context->skip_post_login_screens_for_tests &&
-      context->sign_in_as_child &&
+bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext& context) {
+  if (!context.skip_post_login_screens_for_tests && context.sign_in_as_child &&
       !ProfileManager::GetActiveUserProfile()->IsChild()) {
     return false;
   }

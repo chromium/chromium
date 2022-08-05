@@ -97,7 +97,7 @@ class SyncConsentScreen : public BaseScreen,
   ~SyncConsentScreen() override;
 
   // Inits `user_`, its `profile_` and `behavior_` before using the screen.
-  void Init(const WizardContext* context);
+  void Init(const WizardContext& context);
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -138,7 +138,7 @@ class SyncConsentScreen : public BaseScreen,
   void Finish(Result result);
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
 

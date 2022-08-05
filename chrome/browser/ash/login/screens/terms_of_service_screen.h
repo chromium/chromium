@@ -68,7 +68,7 @@ class TermsOfServiceScreen : public BaseScreen {
   static base::FilePath GetTosFilePath();
  private:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;

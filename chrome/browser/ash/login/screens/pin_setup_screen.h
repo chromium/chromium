@@ -65,7 +65,7 @@ class PinSetupScreen : public BaseScreen {
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
@@ -81,8 +81,8 @@ class PinSetupScreen : public BaseScreen {
 
   base::OneShotTimer token_lifetime_timeout_;
 
-  bool SkipScreen(WizardContext* context);
-  void ClearAuthData(WizardContext* context);
+  bool SkipScreen(WizardContext& context);
+  void ClearAuthData(WizardContext& context);
   void OnHasLoginSupport(bool login_available);
   void OnTokenTimedOut();
 

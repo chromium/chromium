@@ -105,15 +105,15 @@ MarketingOptInScreen::~MarketingOptInScreen() {
   }
 }
 
-bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests) {
+bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
   Initialize();
 
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      IsCurrentUserManaged() || !context->is_branded_build) {
+      IsCurrentUserManaged() || !context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

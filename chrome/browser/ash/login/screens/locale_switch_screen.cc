@@ -59,8 +59,8 @@ LocaleSwitchScreen::LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,
 
 LocaleSwitchScreen::~LocaleSwitchScreen() = default;
 
-bool LocaleSwitchScreen::MaybeSkip(WizardContext* wizard_context) {
-  if (wizard_context->skip_post_login_screens_for_tests) {
+bool LocaleSwitchScreen::MaybeSkip(WizardContext& wizard_context) {
+  if (wizard_context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

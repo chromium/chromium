@@ -54,8 +54,8 @@ ParentalHandoffScreen::ParentalHandoffScreen(
 
 ParentalHandoffScreen::~ParentalHandoffScreen() = default;
 
-bool ParentalHandoffScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests ||
+bool ParentalHandoffScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests ||
       !IsFamilyLinkOobeHandoffEnabled()) {
     exit_callback_.Run(Result::SKIPPED);
     return true;

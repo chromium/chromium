@@ -2014,7 +2014,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   VLOG(1) << "SetCurrentScreen: "
           << (new_current ? new_current->screen_id().name : "null");
 
-  if (new_current && new_current->MaybeSkip(wizard_context_)) {
+  if (new_current && new_current->MaybeSkip(*wizard_context_)) {
     RecordUMAHistogramForOOBEStepShownStatus(new_current->screen_id(),
                                              ScreenShownStatus::kSkipped);
     return;
@@ -2349,7 +2349,7 @@ bool WizardController::IsZeroDelayEnabled() {
 void WizardController::SkipPostLoginScreensForTesting() {
   wizard_context_->skip_post_login_screens_for_tests = true;
   auto* current_screen = default_controller()->current_screen();
-  if (current_screen && !current_screen->MaybeSkip(wizard_context_)) {
+  if (current_screen && !current_screen->MaybeSkip(*wizard_context_)) {
     LOG(WARNING) << __func__ << ": Ignore screen "
                  << current_screen->screen_id().name;
   }

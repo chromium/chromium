@@ -73,7 +73,7 @@ void NetworkScreen::OnViewDestroyed(NetworkScreenView* view) {
   }
 }
 
-bool NetworkScreen::MaybeSkip(WizardContext* context) {
+bool NetworkScreen::MaybeSkip(WizardContext& context) {
   // Skip this screen if the device is connected to Ethernet for the first time
   // in this session.
   return UpdateStatusIfConnectedToEthernet();

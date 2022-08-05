@@ -127,7 +127,7 @@ class EnrollmentScreen
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;

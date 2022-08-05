@@ -149,13 +149,13 @@ SyncConsentScreen::~SyncConsentScreen() {
     view_->Bind(nullptr);
 }
 
-void SyncConsentScreen::Init(const WizardContext* context) {
+void SyncConsentScreen::Init(const WizardContext& context) {
   if (is_initialized_)
     return;
   is_initialized_ = true;
   user_ = user_manager::UserManager::Get()->GetPrimaryUser();
   profile_ = ProfileHelper::Get()->GetProfileByUser(user_);
-  UpdateScreen(*context);
+  UpdateScreen(context);
 }
 
 void SyncConsentScreen::Finish(Result result) {
@@ -176,8 +176,8 @@ void SyncConsentScreen::Finish(Result result) {
   }
 }
 
-bool SyncConsentScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests) {
+bool SyncConsentScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -201,7 +201,7 @@ bool SyncConsentScreen::MaybeSkip(WizardContext* context) {
 }
 
 void SyncConsentScreen::ShowImpl() {
-  Init(context());
+  Init(*context());
 
   if (behavior_ != SyncScreenBehavior::kShow) {
     syncer::SyncService* service = GetSyncService(profile_);

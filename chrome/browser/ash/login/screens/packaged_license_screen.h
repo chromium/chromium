@@ -52,7 +52,7 @@ class PackagedLicenseScreen : public BaseScreen {
   }
 
   // BaseScreen
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
  protected:
   // BaseScreen

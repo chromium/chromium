@@ -111,7 +111,7 @@ void RecommendAppsScreen::OnInstall(base::Value::List apps) {
   exit_callback_.Run(Result::SELECTED);
 }
 
-bool RecommendAppsScreen::MaybeSkip(WizardContext* context) {
+bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   DCHECK(user_manager->IsUserLoggedIn());

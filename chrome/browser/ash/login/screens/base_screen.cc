@@ -33,7 +33,7 @@ void BaseScreen::Hide() {
   wizard_context_ = nullptr;
 }
 
-bool BaseScreen::MaybeSkip(WizardContext* context) {
+bool BaseScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 

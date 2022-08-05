@@ -36,7 +36,7 @@ QuickStartScreen::~QuickStartScreen() {
   UnbindFromBootstrapController();
 }
 
-bool QuickStartScreen::MaybeSkip(WizardContext* context) {
+bool QuickStartScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 

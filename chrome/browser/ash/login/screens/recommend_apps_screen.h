@@ -67,7 +67,7 @@ class RecommendAppsScreen : public BaseScreen,
   void OnParseResponseError() override;
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
   void set_exit_callback_for_testing(ScreenExitCallback exit_callback) {
     exit_callback_ = exit_callback;

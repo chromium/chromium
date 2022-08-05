@@ -43,7 +43,7 @@ PackagedLicenseScreen::PackagedLicenseScreen(
 
 PackagedLicenseScreen::~PackagedLicenseScreen() = default;
 
-bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
+bool PackagedLicenseScreen::MaybeSkip(WizardContext& context) {
   policy::EnrollmentConfig config =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   // License screen should be shown when device packed with license and other

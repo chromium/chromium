@@ -70,7 +70,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
   // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
   // `this` has been destroyed (by wrapping it with a callback bound to a weak

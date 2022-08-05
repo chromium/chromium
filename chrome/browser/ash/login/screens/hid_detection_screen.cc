@@ -237,7 +237,7 @@ void HIDDetectionScreen::CheckIsScreenRequired(
                      weak_ptr_factory_.GetWeakPtr(), std::move(on_check_done)));
 }
 
-bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
+bool HIDDetectionScreen::MaybeSkip(WizardContext& context) {
   if (!CanShowScreen()) {
     // TODO(https://crbug.com/1275960): Introduce Result::SKIPPED.
     Exit(Result::SKIPPED_FOR_TESTS);

@@ -52,7 +52,7 @@ class LocaleSwitchScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
   void SwitchLocale(std::string locale);
   void OnLanguageChangedCallback(

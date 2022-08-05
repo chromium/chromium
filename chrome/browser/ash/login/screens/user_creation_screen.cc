@@ -67,16 +67,16 @@ void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
   test_exit_delegate = test_delegate;
 }
 
-bool UserCreationScreen::MaybeSkip(WizardContext* context) {
+bool UserCreationScreen::MaybeSkip(WizardContext& context) {
   if (g_browser_process->platform_part()
           ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged() ||
-      context->skip_to_login_for_tests) {
-    context->is_user_creation_enabled = false;
+      context.skip_to_login_for_tests) {
+    context.is_user_creation_enabled = false;
     RunExitCallback(Result::SKIPPED);
     return true;
   }
-  context->is_user_creation_enabled = true;
+  context.is_user_creation_enabled = true;
   return false;
 }
 

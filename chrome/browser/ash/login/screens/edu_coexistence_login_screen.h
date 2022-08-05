@@ -47,7 +47,7 @@ class EduCoexistenceLoginScreen : public BaseScreen,
   }
 
  private:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
 

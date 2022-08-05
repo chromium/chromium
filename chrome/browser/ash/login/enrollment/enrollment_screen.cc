@@ -247,14 +247,14 @@ void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
+bool EnrollmentScreen::MaybeSkip(WizardContext& context) {
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "EnrollmentScreen::MaybeSkip("
                << "config_.is_forced = " << config_.is_forced()
                << ", skip_to_login_for_tests = "
-               << context->skip_to_login_for_tests << ").";
-  if (context->skip_to_login_for_tests && !config_.is_forced()) {
+               << context.skip_to_login_for_tests << ").";
+  if (context.skip_to_login_for_tests && !config_.is_forced()) {
     exit_callback_.Run(Result::SKIPPED_FOR_TESTS);
     return true;
   }

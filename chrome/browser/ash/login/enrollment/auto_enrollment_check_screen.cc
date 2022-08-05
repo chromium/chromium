@@ -120,7 +120,7 @@ void AutoEnrollmentCheckScreen::HideImpl() {
   network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
-bool AutoEnrollmentCheckScreen::MaybeSkip(WizardContext* context) {
+bool AutoEnrollmentCheckScreen::MaybeSkip(WizardContext& context) {
   // If the decision got made already, don't show the screen at all.
   if (!policy::AutoEnrollmentTypeChecker::IsEnabled() || IsCompleted()) {
     RunExitCallback(Result::NOT_APPLICABLE);
@@ -142,7 +142,6 @@ void AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed(
     return;
   }
   UpdateState();
-  
 }
 
 void AutoEnrollmentCheckScreen::UpdateState() {

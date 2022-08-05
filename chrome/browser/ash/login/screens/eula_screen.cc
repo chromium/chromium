@@ -116,16 +116,16 @@ EulaScreen::~EulaScreen() {
     view_->Unbind();
 }
 
-bool EulaScreen::MaybeSkip(WizardContext* context) {
+bool EulaScreen::MaybeSkip(WizardContext& context) {
   // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
   // became too complicated we need to consider extract and reuse parts of it.
 
-  if (!context->is_branded_build) {
+  if (!context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
-  if (StartupUtils::IsEulaAccepted() && !context->is_cloud_ready_update_flow) {
+  if (StartupUtils::IsEulaAccepted() && !context.is_cloud_ready_update_flow) {
     const auto* const demo_setup_controller =
         WizardController::default_controller()->demo_setup_controller();
     exit_callback_.Run(demo_setup_controller

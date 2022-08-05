@@ -44,7 +44,7 @@ class HWDataCollectionScreen : public BaseScreen {
 
  private:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserActionDeprecated(const std::string& action_id) override;

@@ -42,7 +42,7 @@ class BaseScreen {
 
   // Returns whether the screen should be skipped i. e. should be exited due to
   // specific unmet conditions. Returns true if skips the screen.
-  [[nodiscard]] virtual bool MaybeSkip(WizardContext* context);
+  [[nodiscard]] virtual bool MaybeSkip(WizardContext& context);
 
   // Forwards user action if screen is shown.
   void HandleUserAction(const base::Value::List& args);

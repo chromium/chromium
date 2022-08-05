@@ -47,7 +47,7 @@ class GestureNavigationScreen : public BaseScreen {
   void GesturePageChange(const std::string& new_page);
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
  protected:
   // BaseScreen:

@@ -118,8 +118,8 @@ void ConsolidatedConsentScreen::OnViewDestroyed(
     view_ = nullptr;
 }
 
-bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests) {
+bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests) {
     if (features::IsOobeConsolidatedConsentEnabled())
       StartupUtils::MarkEulaAccepted();
 
@@ -132,7 +132,7 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
 
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!context->is_branded_build ||
+  if (!context.is_branded_build ||
       policy_connector->IsActiveDirectoryManaged() ||
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);

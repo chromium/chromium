@@ -104,18 +104,18 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
 
 PinSetupScreen::~PinSetupScreen() = default;
 
-bool PinSetupScreen::SkipScreen(WizardContext* context) {
+bool PinSetupScreen::SkipScreen(WizardContext& context) {
   ClearAuthData(context);
   exit_callback_.Run(Result::NOT_APPLICABLE);
   return true;
 }
 
-bool PinSetupScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests || ShouldSkipBecauseOfPolicy())
+bool PinSetupScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests || ShouldSkipBecauseOfPolicy())
     return SkipScreen(context);
 
   // Just a precaution:
-  if (!context->extra_factors_auth_session)
+  if (!context.extra_factors_auth_session)
     return SkipScreen(context);
 
   // If cryptohome takes very long to respond, `has_login_support_` may be null
@@ -168,7 +168,7 @@ void PinSetupScreen::ShowImpl() {
 
 void PinSetupScreen::HideImpl() {
   token_lifetime_timeout_.Stop();
-  ClearAuthData(context());
+  ClearAuthData(*context());
 }
 
 void PinSetupScreen::OnUserAction(const base::Value::List& args) {
@@ -189,8 +189,8 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-void PinSetupScreen::ClearAuthData(WizardContext* context) {
-  context->extra_factors_auth_session.reset();
+void PinSetupScreen::ClearAuthData(WizardContext& context) {
+  context.extra_factors_auth_session.reset();
 }
 
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
@@ -200,7 +200,7 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 }
 
 void PinSetupScreen::OnTokenTimedOut() {
-  ClearAuthData(context());
+  ClearAuthData(*context());
   exit_callback_.Run(Result::TIMED_OUT);
 }
 

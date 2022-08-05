@@ -68,16 +68,16 @@ void HWDataCollectionScreen::OnViewDestroyed(HWDataCollectionView* view) {
     view_ = nullptr;
 }
 
-bool HWDataCollectionScreen::MaybeSkip(WizardContext* context) {
-  if (!switches::IsRevenBranding() || !context->is_branded_build) {
+bool HWDataCollectionScreen::MaybeSkip(WizardContext& context) {
+  if (!switches::IsRevenBranding() || !context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
   bool is_owner = false;
   // Taking device ownership can take some time, so we can't rely on it here.
   // However it can be already checked during ConsolidateConsentScreen.
-  if (context->is_owner_flow.has_value()) {
-    is_owner = context->is_owner_flow.value();
+  if (context.is_owner_flow.has_value()) {
+    is_owner = context.is_owner_flow.value();
   } else {
     // If no, check that the device is not managed and user is either already
     // marked as an owner in user_manager or is the first on the device.
@@ -92,7 +92,7 @@ bool HWDataCollectionScreen::MaybeSkip(WizardContext* context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
-  if (context->skip_post_login_screens_for_tests) {
+  if (context.skip_post_login_screens_for_tests) {
     // Set a default value if the screen should be shown, but is skipped because
     // of the test flow. This value is important, as we rely on it during update
     // flow from CloudReady to Chrome OS Flex and it should be set after owner

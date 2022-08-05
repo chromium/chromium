@@ -119,8 +119,8 @@ FingerprintSetupScreen::FingerprintSetupScreen(
 
 FingerprintSetupScreen::~FingerprintSetupScreen() = default;
 
-bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests ||
+bool FingerprintSetupScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests ||
       !quick_unlock::IsFingerprintEnabled(
           ProfileManager::GetActiveUserProfile(),
           quick_unlock::Purpose::kAny) ||
