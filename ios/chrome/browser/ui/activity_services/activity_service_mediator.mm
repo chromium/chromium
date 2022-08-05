@@ -203,6 +203,14 @@
   RecordScenarioInitiated(scenario);
 }
 
+- (void)recordShareChromeFinishedInPrefs {
+  PrefService* prefs = self.prefService;
+  DCHECK(prefs);
+  int count = prefs->GetInteger(prefs::kIosShareChromeCount);
+  prefs->SetInteger(prefs::kIosShareChromeCount, count + 1);
+  prefs->SetTime(prefs::kIosShareChromeLastShare, base::Time::Now());
+}
+
 - (void)shareFinishedWithScenario:(ActivityScenario)scenario
                      activityType:(NSString*)activityType
                         completed:(BOOL)completed {
@@ -212,6 +220,9 @@
     activity_type_util::RecordMetricForActivity(type);
     RecordActivityForScenario(type, scenario);
     [self.promoScheduler logUserFinishedActivityFlow];
+    if (ActivityScenario::ShareChrome == scenario) {
+      [self recordShareChromeFinishedInPrefs];
+    }
   } else {
     // Share action was cancelled.
     base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));

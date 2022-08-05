@@ -69,6 +69,10 @@ class ActivityServiceMediatorTest : public PlatformTest {
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);
+    pref_service_->registry()->RegisterIntegerPref(prefs::kIosShareChromeCount,
+                                                   0);
+    pref_service_->registry()->RegisterTimePref(prefs::kIosShareChromeLastShare,
+                                                base::Time());
   }
 
   void VerifyTypes(NSArray* activities, NSArray* expected_types) {
@@ -376,6 +380,23 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_Success) {
   const char histogramName[] = "Mobile.Share.TabShareButton.Actions";
   int copyAction = 3;
   histograms_tester_.ExpectBucketCount(histogramName, copyAction, 1);
+}
+
+// Tests that successful action completion in ShareChrome scenario stores prefs
+TEST_F(ActivityServiceMediatorTest, ShareFinished_SuccessShareChrome) {
+  int initialCount = pref_service_->GetInteger(prefs::kIosShareChromeCount);
+  base::Time startTime = base::Time::Now();
+  // Since mocked_handler_ is a strict mock, any call to its methods would make
+  // the test fail.
+  NSString* copyActivityString = @"com.google.chrome.copyActivity";
+  [mediator_ shareFinishedWithScenario:ActivityScenario::ShareChrome
+                          activityType:copyActivityString
+                             completed:YES];
+  int count = pref_service_->GetInteger(prefs::kIosShareChromeCount);
+  base::Time lastShare =
+      pref_service_->GetTime(prefs::kIosShareChromeLastShare);
+  EXPECT_EQ(count, initialCount + 1);
+  EXPECT_GT(lastShare, startTime);
 }
 
 TEST_F(ActivityServiceMediatorTest, ShareFinished_Cancel) {

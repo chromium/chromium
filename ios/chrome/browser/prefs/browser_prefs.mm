@@ -367,6 +367,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       policy::policy_prefs::kUserPolicyNotificationWasShown, false);
 
   registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
+
+  registry->RegisterIntegerPref(prefs::kIosShareChromeCount, 0,
+                                PrefRegistry::LOSSY_PREF);
+  registry->RegisterTimePref(prefs::kIosShareChromeLastShare, base::Time(),
+                             PrefRegistry::LOSSY_PREF);
 }
 
 // This method should be periodically pruned of year+ old migrations.
