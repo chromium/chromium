@@ -54,8 +54,6 @@ class WebUIBubbleManagerTest : public ChromeViewsTestBase {
 
   // ChromeViewsTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebUIBubblePerProfilePersistence}, {});
     ASSERT_TRUE(profile_manager_.SetUp());
     ChromeViewsTestBase::SetUp();
   }
@@ -63,11 +61,25 @@ class WebUIBubbleManagerTest : public ChromeViewsTestBase {
   TestingProfileManager* profile_manager() { return &profile_manager_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
 };
 
-TEST_F(WebUIBubbleManagerTest, UsesPersistentContentsWrapperPerProfile) {
+// Fixture for testing the persistent renderer functionality.
+class WebUIBubbleManagerPersistentRendererTest : public WebUIBubbleManagerTest {
+ public:
+  // WebUIBubbleManagerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebUIBubblePerProfilePersistence}, {});
+    WebUIBubbleManagerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebUIBubbleManagerPersistentRendererTest,
+       UsesPersistentContentsWrapperPerProfile) {
   const char* kProfileName = "Person 1";
   auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
 
@@ -109,7 +121,7 @@ TEST_F(WebUIBubbleManagerTest, UsesPersistentContentsWrapperPerProfile) {
   profile_manager()->DeleteTestingProfile(kProfileName);
 }
 
-TEST_F(WebUIBubbleManagerTest,
+TEST_F(WebUIBubbleManagerPersistentRendererTest,
        PerProfileContentsWrapperNotUsedForOffTheRecordProfile) {
   const char* kProfileName = "Person 1";
   auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
@@ -166,7 +178,7 @@ TEST_F(WebUIBubbleManagerTest, CreateWebUIBubbleDialogWithAnchorProvided) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
-TEST_F(WebUIBubbleManagerTest,
+TEST_F(WebUIBubbleManagerPersistentRendererTest,
        UsesPersistentContentsWrapperPerProfileMultiProfile) {
   const char* kProfileName1 = "Person 1";
   const char* kProfileName2 = "Person 2";
