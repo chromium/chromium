@@ -36,7 +36,6 @@ OverlayWindowAndroid::OverlayWindowAndroid(
       compositor_view_(nullptr),
       surface_layer_(cc::SurfaceLayer::Create()),
       bounds_(gfx::Rect(0, 0)),
-      update_action_timer_(std::make_unique<base::OneShotTimer>()),
       controller_(controller) {
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
@@ -94,13 +93,7 @@ void OverlayWindowAndroid::OnActivityStart(
 
   Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
                                                  playback_state_);
-  Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
-                                                   microphone_muted_);
-  Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
-                                               camera_on_);
-
-  if (!update_action_timer_->IsRunning())
-    MaybeNotifyVisibleActionsChanged();
+  MaybeNotifyVisibleActionsChanged();
 
   if (video_size_.IsEmpty())
     return;
@@ -131,11 +124,7 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
     window_android_ = nullptr;
   }
 
-  // Only pause the video when play/pause button is visible.
-  controller_->OnWindowDestroyed(
-      /*should_pause_video=*/visible_actions_.find(
-          static_cast<int>(media_session::mojom::MediaSessionAction::kPlay)) !=
-      visible_actions_.end());
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
 void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env) {
@@ -149,18 +138,6 @@ void OverlayWindowAndroid::NextTrack(JNIEnv* env) {
 
 void OverlayWindowAndroid::PreviousTrack(JNIEnv* env) {
   controller_->PreviousTrack();
-}
-
-void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env) {
-  controller_->ToggleMicrophone();
-}
-
-void OverlayWindowAndroid::ToggleCamera(JNIEnv* env) {
-  controller_->ToggleCamera();
-}
-
-void OverlayWindowAndroid::HangUp(JNIEnv* env) {
-  controller_->HangUp();
 }
 
 void OverlayWindowAndroid::CompositorViewCreated(
@@ -252,61 +229,30 @@ void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
                                                  playback_state);
 }
 
-void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
-  if (microphone_muted_ == muted)
-    return;
-
-  microphone_muted_ = muted;
-  if (java_ref_.is_uninitialized())
-    return;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
-                                                   microphone_muted_);
-}
-
-void OverlayWindowAndroid::SetCameraState(bool turned_on) {
-  if (camera_on_ == turned_on)
-    return;
-
-  camera_on_ = turned_on;
-  if (java_ref_.is_uninitialized())
-    return;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
-                                               camera_on_);
-}
-
 void OverlayWindowAndroid::SetPlayPauseButtonVisibility(bool is_visible) {
-  MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kPlay,
+  if (!MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kPlay,
+                                is_visible)) {
+    return;
+  }
+
+  MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kPause,
                            is_visible);
+  MaybeNotifyVisibleActionsChanged();
 }
 
 void OverlayWindowAndroid::SetNextTrackButtonVisibility(bool is_visible) {
-  MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kNextTrack,
-                           is_visible);
+  if (MaybeUpdateVisibleAction(
+          media_session::mojom::MediaSessionAction::kNextTrack, is_visible)) {
+    MaybeNotifyVisibleActionsChanged();
+  }
 }
 
 void OverlayWindowAndroid::SetPreviousTrackButtonVisibility(bool is_visible) {
-  MaybeUpdateVisibleAction(
-      media_session::mojom::MediaSessionAction::kPreviousTrack, is_visible);
-}
-
-void OverlayWindowAndroid::SetToggleMicrophoneButtonVisibility(
-    bool is_visible) {
-  MaybeUpdateVisibleAction(
-      media_session::mojom::MediaSessionAction::kToggleMicrophone, is_visible);
-}
-
-void OverlayWindowAndroid::SetToggleCameraButtonVisibility(bool is_visible) {
-  MaybeUpdateVisibleAction(
-      media_session::mojom::MediaSessionAction::kToggleCamera, is_visible);
-}
-
-void OverlayWindowAndroid::SetHangUpButtonVisibility(bool is_visible) {
-  MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kHangUp,
-                           is_visible);
+  if (MaybeUpdateVisibleAction(
+          media_session::mojom::MediaSessionAction::kPreviousTrack,
+          is_visible)) {
+    MaybeNotifyVisibleActionsChanged();
+  }
 }
 
 void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
@@ -343,13 +289,13 @@ void OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged() {
           std::vector<int>(visible_actions_.begin(), visible_actions_.end())));
 }
 
-void OverlayWindowAndroid::MaybeUpdateVisibleAction(
+bool OverlayWindowAndroid::MaybeUpdateVisibleAction(
     const media_session::mojom::MediaSessionAction& action,
     bool is_visible) {
   int action_code = static_cast<int>(action);
   if ((visible_actions_.find(action_code) != visible_actions_.end()) ==
       is_visible) {
-    return;
+    return false;
   }
 
   if (is_visible)
@@ -357,10 +303,5 @@ void OverlayWindowAndroid::MaybeUpdateVisibleAction(
   else
     visible_actions_.erase(action_code);
 
-  if (!update_action_timer_->IsRunning()) {
-    update_action_timer_->Start(
-        FROM_HERE, base::Seconds(1),
-        base::BindOnce(&OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged,
-                       base::Unretained(this)));
-  }
+  return true;
 }

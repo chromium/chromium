@@ -8,7 +8,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/timer/timer.h"
 #include "content/public/browser/overlay_window.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 #include "ui/android/window_android.h"
@@ -40,9 +39,6 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void TogglePlayPause(JNIEnv* env);
   void NextTrack(JNIEnv* env);
   void PreviousTrack(JNIEnv* env);
-  void ToggleMicrophone(JNIEnv* env);
-  void ToggleCamera(JNIEnv* env);
-  void HangUp(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& compositor_view);
@@ -74,11 +70,12 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override;
   void SetPreviousTrackButtonVisibility(bool is_visible) override;
-  void SetMicrophoneMuted(bool muted) override;
-  void SetCameraState(bool turned_on) override;
-  void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
-  void SetToggleCameraButtonVisibility(bool is_visible) override;
-  void SetHangUpButtonVisibility(bool is_visible) override;
+  // TODO(crbug.com/1331269): Implement video conferencing actions.
+  void SetMicrophoneMuted(bool muted) override {}
+  void SetCameraState(bool turned_on) override {}
+  void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
+  void SetToggleCameraButtonVisibility(bool is_visible) override {}
+  void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
   cc::Layer* GetLayerForTesting() override;
 
@@ -87,7 +84,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void MaybeNotifyVisibleActionsChanged();
 
   // Maybe update visible actions. Returns true if update happened.
-  void MaybeUpdateVisibleAction(
+  bool MaybeUpdateVisibleAction(
       const media_session::mojom::MediaSessionAction& action,
       bool is_visible);
   void CloseInternal();
@@ -102,11 +99,6 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
 
   PlaybackState playback_state_ = PlaybackState::kEndOfVideo;
   std::unordered_set<int> visible_actions_;
-
-  bool microphone_muted_ = false;
-  bool camera_on_ = false;
-
-  std::unique_ptr<base::OneShotTimer> update_action_timer_;
 
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 };

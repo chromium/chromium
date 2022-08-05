@@ -1770,7 +1770,6 @@ android_library("chrome_test_java") {
     "//services/device/public/java:geolocation_java",
     "//services/device/public/java:geolocation_java_test_support",
     "//services/device/public/mojom:mojom_java",
-    "//services/media_session/public/mojom:mojom_java",
     "//services/network/public/mojom:mojom_java",
     "//services/network/public/mojom:mojom_proxy_config_java",
     "//services/network/public/mojom:url_loader_base_java",

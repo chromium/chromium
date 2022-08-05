@@ -712,21 +712,6 @@
       <message name="IDS_ACCESSIBILITY_SEEK_BACKWARD" desc="The seek backward button that seeks media to an earlier position.">
         Seek backward
       </message>
-      <message name="IDS_ACCESSIBILITY_HANG_UP" desc="The hang up button that hangs up the video call.">
-        Hang up
-      </message>
-      <message name="IDS_ACCESSIBILITY_MUTE_MICROPHONE" desc="The mute microphone button that mutes the microphone of the video call.">
-        Mute microphone
-      </message>
-      <message name="IDS_ACCESSIBILITY_UNMUTE_MICROPHONE" desc="The unmute microphone button that unmutes the microphone of the video call.">
-        Unmute microphone
-      </message>
-      <message name="IDS_ACCESSIBILITY_TURN_ON_CAMERA" desc="The turn on camera button that turns on the camera of the video call.">
-        Turn on camera
-      </message>
-      <message name="IDS_ACCESSIBILITY_TURN_OFF_CAMERA" desc="The turn off camera button that turns off the camera of the video call.">
-        Turn off camera
-      </message>
       <message name="IDS_MEDIA_NOTIFICATION_INCOGNITO" desc="Text used as a placeholder for a media notification about playing media, when notification is shown from Incognito tab.">
         A site is playing media
       </message>
