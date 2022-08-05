@@ -24,6 +24,7 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -95,6 +96,11 @@ template <>
 std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {
   return base::StringPrintf("%d, %d, %d", value.start_hour_,
                             value.start_minute_, value.duration_minute_);
+}
+
+template <>
+std::string GetStringFromValue(const std::vector<std::string>& value) {
+  return base::JoinString(value, ";");
 }
 
 }  // namespace
@@ -920,10 +926,9 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
   DCHECK(value);
 
   PolicyStatus<int> policy_status;
-  if (!policy_service_->GetLastCheckPeriodMinutes(&policy_status, nullptr))
-    return E_FAIL;
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetLastCheckPeriodMinutes(&policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
@@ -954,12 +959,10 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetDownloadPreferenceGroupPolicy(&policy_status,
-                                                         nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetDownloadPreferenceGroupPolicy(&policy_status,
+                                                           nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
@@ -967,12 +970,10 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
   DCHECK(value);
 
   PolicyStatus<int> policy_status;
-  if (!policy_service_->GetPackageCacheSizeLimitMBytes(&policy_status,
-                                                       nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetPackageCacheSizeLimitMBytes(&policy_status,
+                                                         nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
@@ -980,45 +981,37 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
   DCHECK(value);
 
   PolicyStatus<int> policy_status;
-  if (!policy_service_->GetPackageCacheExpirationTimeDays(&policy_status,
-                                                          nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetPackageCacheExpirationTimeDays(&policy_status,
+                                                            nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetProxyMode(&policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetProxyMode(&policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetProxyPacUrl(&policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetProxyPacUrl(&policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetProxyServer(&policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetProxyServer(&policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
@@ -1027,12 +1020,10 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
   DCHECK(value);
 
   PolicyStatus<int> policy_status;
-  if (!policy_service_->GetEffectivePolicyForAppInstalls(
-          base::WideToASCII(app_id), &policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetEffectivePolicyForAppInstalls(
+             base::WideToASCII(app_id), &policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
@@ -1041,12 +1032,10 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
   DCHECK(value);
 
   PolicyStatus<int> policy_status;
-  if (!policy_service_->GetEffectivePolicyForAppUpdates(
-          base::WideToASCII(app_id), &policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetEffectivePolicyForAppUpdates(
+             base::WideToASCII(app_id), &policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
@@ -1055,12 +1044,10 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetTargetVersionPrefix(base::WideToASCII(app_id),
-                                               &policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetTargetVersionPrefix(base::WideToASCII(app_id),
+                                                 &policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
@@ -1069,12 +1056,10 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
   DCHECK(value);
 
   PolicyStatus<bool> policy_status;
-  if (!policy_service_->IsRollbackToTargetVersionAllowed(
-          base::WideToASCII(app_id), &policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->IsRollbackToTargetVersionAllowed(
+             base::WideToASCII(app_id), &policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
@@ -1082,21 +1067,21 @@ STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
   DCHECK(value);
 
   PolicyStatus<std::string> policy_status;
-  if (!policy_service_->GetTargetChannel(base::WideToASCII(app_id),
-                                         &policy_status, nullptr)) {
-    return E_FAIL;
-  }
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return policy_service_->GetTargetChannel(base::WideToASCII(app_id),
+                                           &policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
     VARIANT_BOOL is_machine,
     IPolicyStatusValue** value) {
   DCHECK(value);
 
-  return E_NOTIMPL;
+  PolicyStatus<std::vector<std::string>> policy_status;
+  return policy_service_->GetForceInstallApps(&policy_status, nullptr)
+             ? PolicyStatusValueImpl::Create(policy_status, value)
+             : E_FAIL;
 }
 
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
