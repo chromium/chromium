@@ -776,7 +776,11 @@ export class TabListElement extends CustomElement implements
   }
 
   shouldPreventDrag(): boolean {
-    return this.$all('tabstrip-tab').length === 1;
+    // Do not allow dragging if there's only 1 tab with no tab group, or only 1
+    // tab group with no other tabs outside of the tab group.
+    return (this.pinnedTabsElement_.childElementCount +
+        this.unpinnedTabsElement_.childElementCount) ===
+        1;
   }
 
   private tabThumbnailUpdated_(tabId: number, imgData: string) {
