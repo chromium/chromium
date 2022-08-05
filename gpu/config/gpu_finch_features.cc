@@ -472,11 +472,8 @@ bool NeedThreadSafeAndroidMedia() {
 }
 
 bool IsANGLEValidationEnabled() {
-  if (!UsePassthroughCommandDecoder()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation);
+  return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation) &&
+         UsePassthroughCommandDecoder();
 }
 
 #if BUILDFLAG(IS_ANDROID)
