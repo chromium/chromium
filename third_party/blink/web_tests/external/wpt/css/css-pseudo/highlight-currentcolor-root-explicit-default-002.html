@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>CSS Pseudo-Elements Test: Custom Highlights color inherit painting</title>
+<meta name="assert" content="Checks the painting for highlight pseudos (using ::highlight), when ‘color’ is universally set to ‘inherit’. When the parent is explicitly set to ‘blue’, inheritance stops there, yielding blue. Otherwise inheritance reaches the root element, where the inherited value is defined as ‘currentColor’ for highlights, yielding green.">
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-pseudo/#highlight-text">
-<meta name="assert" content="Checks that color inherit is properly resolved when painting highlight pseudos. It works like currentcolor, unless some specific color has been defined.">
-<link rel="match" href="highlight-painting-currentcolor-004-ref.html">
+<link rel="match" href="highlight-currentcolor-root-explicit-default-002-ref.html">
 <link rel="stylesheet" href="support/highlights.css">
 <style>
 .highlight_reftest {

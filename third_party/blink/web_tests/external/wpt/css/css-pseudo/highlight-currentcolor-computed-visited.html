@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>CSS Pseudo-Elements Test: highlight selectors getComputedStyle for currentcolor on visited</title>
+<meta name="assert" content="Checks the result of getComputedStyle for each kind of highlight pseudo, when ‘color’ is set to ‘currentColor’ for visited links (and for unvisited links, via implicit defaulting up to the root). The result for both links should equal the originating element ‘color’ as if the link was unvisited.">
 <link rel="help" href="https://drafts.csswg.org/css-pseudo/#highlight-selectors">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>

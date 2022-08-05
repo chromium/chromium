@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>CSS Pseudo-Elements Test: Custom Highlights currentcolor, initial, inherit, unset painting</title>
+<meta name="assert" content="Checks the painting for highlight pseudos (using ::highlight), when ‘color’ is explicitly defaulted in a universal rule. ‘inherit’ (and ‘unset’, due to highlight inheritance) should equal the originating element ‘color’, because ‘color’ inherits through ancestor highlight pseudos up to the root, where the inherited value is defined as ‘currentColor’ for highlights. ‘initial’ should equal the initial value of ‘color’, which is ‘CanvasText’.">
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-pseudo/#highlight-text">
-<meta name="assert" content="Checks that color currentcolor, initial, inherit, unset are properly resolved when painting highlight pseudos.">
-<link rel="match" href="highlight-painting-currentcolor-003-ref.html">
+<link rel="match" href="highlight-currentcolor-root-explicit-default-001-ref.html">
 <link rel="stylesheet" href="support/highlights.css">
 <style>
 div {
