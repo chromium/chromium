@@ -159,9 +159,18 @@ void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
         output_id, origin, logical_size, physical_size, insets, scale_factor,
         panel_transform, logical_transform, label);
   }
-  auto* wayland_window_manager = connection_->wayland_window_manager();
-  for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
-    window->UpdateWindowScale(true);
+
+  // Update scale of the windows currently associated with |output_id|. i.e:
+  // the ones whose GetPreferredEnteredOutputId() returns |output_id|; or those
+  // which have not yet entered any output (i.e: no wl_surface.enter event
+  // received for their root surface) and |output_id| is the primary output.
+  const bool is_primary =
+      wayland_screen_ && output_id == wayland_screen_->GetPrimaryDisplay().id();
+  for (auto* window : connection_->wayland_window_manager()->GetAllWindows()) {
+    uint32_t entered_output = window->GetPreferredEnteredOutputId();
+    if (entered_output == output_id || (!entered_output && is_primary))
+      window->UpdateWindowScale(true);
+  }
 }
 
 }  // namespace ui

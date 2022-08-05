@@ -92,10 +92,6 @@ class WaylandWindowManager {
   // The given |window| must be managed by this manager.
   void SetKeyboardFocusedWindow(WaylandWindow* window);
 
-  // TODO(crbug.com/971525): remove this in favor of targeted subscription of
-  // windows to their outputs.
-  std::vector<WaylandWindow*> GetWindowsOnOutput(uint32_t output_id);
-
   // Returns all stored windows.
   std::vector<WaylandWindow*> GetAllWindows() const;
 

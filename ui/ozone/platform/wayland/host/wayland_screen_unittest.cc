@@ -806,6 +806,36 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   display::Display::ResetForceDeviceScaleFactorForTesting();
 }
 
+// Regression test for https://crbug.com/1346534.
+//
+// Scenario: With (at least) one output connected and a surface, with no output
+// associated yet, ie: wl_surface.enter event not received yet for that surface,
+// which implies in its scale being set to the primary output's scale at its
+// initialization, any primary output scale update (or other properties that
+// lead to scale change) must be propagated to the window.
+TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
+  // Test pre-conditions: single output setup whereas |output_| is the primary
+  // output managed by |output_manager_|, with initial scale == 1.
+  ASSERT_EQ(1u, output_manager_->GetAllOutputs().size());
+  ASSERT_TRUE(output_);
+  ASSERT_EQ(1, output_->GetScale());
+
+  // Ensure |surface_| has not entered any wl_output. Assuming |window_| has
+  // been already initialized with |output_|'s scale.
+  wl_surface_send_leave(surface_->resource(), output_->resource());
+  Sync();
+  ASSERT_EQ(0u, window_->GetPreferredEnteredOutputId());
+
+  // Change |output_|'s scale and make sure |window_|'s scale is update
+  // accordingly.
+  output_->SetScale(2);
+  output_->Flush();
+  Sync();
+
+  EXPECT_EQ(window_->window_scale(), 2);
+  EXPECT_EQ(window_->ui_scale(), 2);
+}
+
 // Checks that output transform is properly translated into Display orientation.
 // The first one is counter-clockwise, while the latter is clockwise.
 TEST_P(WaylandScreenTest, Transform) {
