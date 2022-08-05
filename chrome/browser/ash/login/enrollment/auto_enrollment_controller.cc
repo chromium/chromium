@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -32,6 +31,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/statistics_provider.h"

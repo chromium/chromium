@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TPM_STUB_INSTALL_ATTRIBUTES_H_
-#define ASH_COMPONENTS_TPM_STUB_INSTALL_ATTRIBUTES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_STUB_INSTALL_ATTRIBUTES_H_
+#define CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_STUB_INSTALL_ATTRIBUTES_H_
 
 #include <string>
 
-#include "ash/components/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 namespace ash {
 
@@ -89,4 +89,4 @@ using ::ash::ScopedStubInstallAttributes;
 using ::ash::StubInstallAttributes;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_TPM_STUB_INSTALL_ATTRIBUTES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_STUB_INSTALL_ATTRIBUTES_H_

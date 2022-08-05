@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 

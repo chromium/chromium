@@ -23,10 +23,10 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif

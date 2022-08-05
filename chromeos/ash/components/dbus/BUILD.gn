@@ -12,7 +12,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
   testonly = true
   deps = [
-    "//ash/components/tpm:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/audio",
@@ -37,6 +36,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/update_engine:unit_tests",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/dbus:test_support",
     "//components/account_id",
     "//dbus",

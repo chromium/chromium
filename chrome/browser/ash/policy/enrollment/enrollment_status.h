@@ -11,7 +11,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #endif
 
 namespace policy {

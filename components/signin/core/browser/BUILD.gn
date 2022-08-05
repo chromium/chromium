@@ -80,7 +80,7 @@ static_library("browser") {
       "active_directory_account_reconcilor_delegate.h",
     ]
     deps += [
-      "//ash/components/tpm",
+      "//chromeos/ash/components/install_attributes",
       "//chromeos/crosapi/mojom",
     ]
   }
@@ -144,7 +144,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/components/tpm:test_support",
+      "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/crosapi/mojom",
     ]
     sources -= [

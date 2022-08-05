@@ -20,8 +20,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/tpm/install_attributes.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

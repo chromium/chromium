@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -23,6 +22,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "components/prefs/pref_service.h"

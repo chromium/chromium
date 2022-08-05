@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +24,7 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/features.h"

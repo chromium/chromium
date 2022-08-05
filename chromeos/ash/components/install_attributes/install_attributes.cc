@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 #include <stddef.h>
 
@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"

@@ -1598,6 +1598,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",

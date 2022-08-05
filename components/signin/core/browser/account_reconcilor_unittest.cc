@@ -49,7 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 #endif
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"

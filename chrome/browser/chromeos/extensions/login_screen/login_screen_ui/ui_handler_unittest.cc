@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
@@ -16,6 +15,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"

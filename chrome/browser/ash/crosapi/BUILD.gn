@@ -271,6 +271,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/quick_answers/public/cpp:prefs",

@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -43,6 +42,7 @@
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"

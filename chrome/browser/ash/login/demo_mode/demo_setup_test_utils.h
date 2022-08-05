@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

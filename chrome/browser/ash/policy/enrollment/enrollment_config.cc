@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/location.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 

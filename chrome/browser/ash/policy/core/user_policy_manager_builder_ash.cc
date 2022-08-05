@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -34,6 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +31,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

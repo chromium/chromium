@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -20,6 +19,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

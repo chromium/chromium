@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
@@ -33,6 +32,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "components/crx_file/crx_verifier.h"

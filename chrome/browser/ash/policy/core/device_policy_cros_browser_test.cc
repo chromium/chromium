@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/browser_process.h"

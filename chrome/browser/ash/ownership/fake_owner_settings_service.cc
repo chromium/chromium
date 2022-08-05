@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/check.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/mock_owner_key_util.h"
 
 namespace ash {

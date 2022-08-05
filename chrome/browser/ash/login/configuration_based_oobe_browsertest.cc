@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/components/attestation/attestation_flow_utils.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"

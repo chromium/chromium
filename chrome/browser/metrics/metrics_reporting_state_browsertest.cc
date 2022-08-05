@@ -37,8 +37,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #endif

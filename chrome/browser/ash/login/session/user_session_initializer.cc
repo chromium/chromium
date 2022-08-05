@@ -6,7 +6,6 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"

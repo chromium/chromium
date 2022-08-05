@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"

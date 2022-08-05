@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"

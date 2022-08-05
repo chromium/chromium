@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/run_loop.h"
@@ -17,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"

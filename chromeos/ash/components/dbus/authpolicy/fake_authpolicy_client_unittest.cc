@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

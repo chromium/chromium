@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/user_names.h"

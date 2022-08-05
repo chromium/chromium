@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"

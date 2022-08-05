@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_device_policy_value_validator.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"

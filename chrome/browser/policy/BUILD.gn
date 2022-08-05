@@ -87,9 +87,9 @@ source_set("onc") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/settings:settings",
-      "//ash/components/tpm",
       "//ash/constants:constants",
       "//base",
+      "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",
       "//chromeos/system:system",
       "//components/policy/core/common:common_constants",

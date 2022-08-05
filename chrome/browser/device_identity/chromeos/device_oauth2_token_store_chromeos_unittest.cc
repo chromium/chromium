@@ -5,7 +5,6 @@
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 
 #include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

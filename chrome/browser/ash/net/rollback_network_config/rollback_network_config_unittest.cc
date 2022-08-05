@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -21,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"

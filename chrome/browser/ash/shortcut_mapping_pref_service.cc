@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/shortcut_mapping_pref_service.h"
 
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

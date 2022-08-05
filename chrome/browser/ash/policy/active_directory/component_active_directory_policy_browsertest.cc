@@ -5,7 +5,6 @@
 #include <string>
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -17,6 +16,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"

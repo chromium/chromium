@@ -4,8 +4,8 @@
 
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/containers/contains.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace signin {

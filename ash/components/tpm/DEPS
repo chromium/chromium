@@ -8,7 +8,6 @@ include_rules = [
   "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
   "+components/account_id",
-  "+components/policy/core/common/cloud/cloud_policy_constants.h",
   "+components/policy/proto",
   "+google_apis/gaia",
   "+testing",

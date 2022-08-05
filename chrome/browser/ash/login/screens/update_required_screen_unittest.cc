@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -22,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"

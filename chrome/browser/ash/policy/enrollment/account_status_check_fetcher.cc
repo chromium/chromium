@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"

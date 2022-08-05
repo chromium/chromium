@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/statistics_provider.h"

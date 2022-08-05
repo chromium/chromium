@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 
 #include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -75,6 +74,7 @@
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"

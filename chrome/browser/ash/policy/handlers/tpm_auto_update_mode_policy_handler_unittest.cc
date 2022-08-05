@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"

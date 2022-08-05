@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/components/settings/timezone_settings.h"
-#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -36,6 +35,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
