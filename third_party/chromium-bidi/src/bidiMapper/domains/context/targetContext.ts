@@ -23,6 +23,7 @@ import { IEventManager } from '../events/EventManager';
 import { LogManager } from '../log/logManager';
 import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Context } from './context';
+import { Deferred } from '../../utils/deferred';
 
 export class TargetContext extends Context {
   readonly #sessionId: string;
@@ -30,17 +31,7 @@ export class TargetContext extends Context {
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
 
-  // Delegate to resolve `#initialized`.
-  #markContextInitialized: () => void = () => {
-    throw Error('Context is not created yet.');
-  };
-
-  // `#initialized` is resolved when `#markContextInitialized` is called.
-  #initialized: Promise<void> = new Promise((resolve) => {
-    this.#markContextInitialized = () => {
-      resolve();
-    };
-  });
+  #initialized: Deferred<void> = new Deferred<void>();
 
   async waitInitialized(): Promise<void> {
     await this.#initialized;
@@ -145,6 +136,6 @@ export class TargetContext extends Context {
     });
 
     await this.cdpClient.Runtime.runIfWaitingForDebugger();
-    this.#markContextInitialized();
+    this.#initialized.resolve();
   }
 }

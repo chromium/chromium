@@ -9,11 +9,14 @@ function convertFile(filename) {
   for (const domain of data.domains) {
     domains.push({
       domain: domain.domain,
-      commands: domain.commands.map(c => c.name),
+      commands: domain.commands.map((c) => c.name),
     });
   }
 
-  fs.writeFileSync(filename.replace('.json', '_commands_only.json'), JSON.stringify({domains}));
+  fs.writeFileSync(
+    filename.replace('.json', '_commands_only.json'),
+    JSON.stringify({ domains })
+  );
 }
 
 convertFile('node_modules/devtools-protocol/json/browser_protocol.json');

@@ -19,8 +19,22 @@ import { Protocol } from 'devtools-protocol';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { NoSuchFrameException, UnknownErrorResponse } from '../protocol/error';
 import { CdpClient } from '../../../cdp';
+import { Deferred } from '../../utils/deferred';
 
 export abstract class Context {
+  readonly #targetDeferres = {
+    Page: {
+      navigatedWithinDocument: new Deferred(),
+      lifecycleEvent: {
+        DOMContentLoaded: new Map<
+          string,
+          Deferred<Protocol.Page.LifecycleEventEvent>
+        >(),
+        load: new Map<string, Deferred<Protocol.Page.LifecycleEventEvent>>(),
+      },
+    },
+  };
+
   static #contexts: Map<string, Context> = new Map();
   protected readonly cdpClient: CdpClient;
 
@@ -82,6 +96,39 @@ export abstract class Context {
     this.#parentId = parent;
     this.#sessionId = sessionId;
     this.cdpClient = cdpClient;
+
+    this.#setCdpListeners();
+  }
+
+  #setCdpListeners() {
+    this.cdpClient.Page.on(
+      'lifecycleEvent',
+      (params: Protocol.Page.LifecycleEventEvent) => {
+        let map: Map<
+          string,
+          Deferred<Protocol.Page.LifecycleEventEvent>
+        > | null = null;
+        if (params.name === 'DOMContentLoaded') {
+          map = this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded;
+        }
+        if (params.name === 'load') {
+          map = this.#targetDeferres.Page.lifecycleEvent.load;
+        }
+
+        map?.get(params.loaderId)?.resolve(params);
+      }
+    );
+
+    this.cdpClient.Page.on(
+      'navigatedWithinDocument',
+      (params: Protocol.Page.NavigatedWithinDocumentEvent) => {
+        if (params.frameId !== this.getContextId()) {
+          return;
+        }
+        this.#targetDeferres.Page.navigatedWithinDocument.resolve(params);
+        this.#targetDeferres.Page.navigatedWithinDocument = new Deferred();
+      }
+    );
   }
 
   abstract callFunction(
@@ -166,11 +213,11 @@ export abstract class Context {
       case 'interactive':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.waitNavigatedWithinDocument();
+          await this.#targetDeferres.Page.navigatedWithinDocument;
         } else {
-          await this.waitPageLifeCycleEvent(
-            'DOMContentLoaded',
-            cdpNavigateResult.loaderId!
+          await Context.#waitForDeferredWithKey(
+            cdpNavigateResult.loaderId,
+            this.#targetDeferres.Page.lifecycleEvent.DOMContentLoaded
           );
         }
         break;
@@ -178,11 +225,11 @@ export abstract class Context {
       case 'complete':
         // No `loaderId` means same-document navigation.
         if (cdpNavigateResult.loaderId === undefined) {
-          await this.waitNavigatedWithinDocument();
+          await this.#targetDeferres.Page.navigatedWithinDocument;
         } else {
-          await this.waitPageLifeCycleEvent(
-            'load',
-            cdpNavigateResult.loaderId!
+          await Context.#waitForDeferredWithKey(
+            cdpNavigateResult.loaderId,
+            this.#targetDeferres.Page.lifecycleEvent.load
           );
         }
         break;
@@ -199,43 +246,13 @@ export abstract class Context {
     };
   }
 
-  protected async waitPageLifeCycleEvent(eventName: string, loaderId: string) {
-    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
-      const handleLifecycleEvent = async (
-        params: Protocol.Page.LifecycleEventEvent
-      ) => {
-        if (params.name !== eventName || params.loaderId !== loaderId) {
-          return;
-        }
-        this.cdpClient.Page.removeListener(
-          'lifecycleEvent',
-          handleLifecycleEvent
-        );
-        resolve(params);
-      };
-
-      this.cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
-    });
-  }
-
-  protected async waitNavigatedWithinDocument() {
-    return new Promise<Protocol.Page.NavigatedWithinDocumentEvent>(
-      (resolve) => {
-        const handleLifecycleEvent = async (
-          params: Protocol.Page.NavigatedWithinDocumentEvent
-        ) => {
-          if (params.frameId !== this.getContextId()) {
-            return;
-          }
-          this.cdpClient.Page.removeListener(
-            'navigatedWithinDocument',
-            handleLifecycleEvent
-          );
-          resolve(params);
-        };
-
-        this.cdpClient.Page.on('navigatedWithinDocument', handleLifecycleEvent);
-      }
-    );
+  static async #waitForDeferredWithKey<T>(
+    key: string,
+    map: Map<string, Deferred<T>>
+  ): Promise<T> {
+    if (!map.has(key)) {
+      map.set(key, new Deferred<T>());
+    }
+    return map.get(key)!;
   }
 }

@@ -18,8 +18,8 @@
 import { EventEmitter } from 'events';
 import { CdpConnection } from './cdpConnection';
 
-import {domains as browserProtocolDomains} from 'devtools-protocol/json/browser_protocol_commands_only.json';
-import {domains as jsProtocolDomains} from 'devtools-protocol/json/js_protocol_commands_only.json';
+import { domains as browserProtocolDomains } from 'devtools-protocol/json/browser_protocol_commands_only.json';
+import { domains as jsProtocolDomains } from 'devtools-protocol/json/js_protocol_commands_only.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping';
 
