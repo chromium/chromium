@@ -85,5 +85,8 @@ const base::Feature kEnableCBDSignOut{"EnableCbdSignOut",
 const base::Feature kEnablePhoneNumbers{"EnablePhoneNumbers",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMapsExperienceKit{"MapsExperienceKit",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableMiniMap{"EnableMiniMap",
                                    base::FEATURE_DISABLED_BY_DEFAULT};

@@ -139,6 +139,11 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kEnableExpKitCalendarTextClassifierName[];
 extern const char kEnableExpKitCalendarTextClassifierDescription[];
 
+// Title and description for the flag to enable experience kit maps location and
+// directions.
+extern const char kMapsExperienceKitName[];
+extern const char kMapsExperienceKitDescription[];
+
 // Title and description for the flag that updates the Content Suggestions to a
 // new module design.
 extern const char kContentSuggestionsUIModuleRefreshName[];

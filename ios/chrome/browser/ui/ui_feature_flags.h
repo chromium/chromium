@@ -100,6 +100,9 @@ extern const base::Feature kEnableCBDSignOut;
 // Feature flag to enable Phone Numbers detection.
 extern const base::Feature kEnablePhoneNumbers;
 
+// Feature flag to enable Maps in experience kit.
+extern const base::Feature kMapsExperienceKit;
+
 // Feature flag to enable Mini Map in experience kit.
 extern const base::Feature kEnableMiniMap;
 
