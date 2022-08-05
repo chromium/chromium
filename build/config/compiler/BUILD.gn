@@ -1643,8 +1643,7 @@ config("chromium_code") {
   if (is_clang) {
     cflags += [
       # Warn on missing break statements at the end of switch cases.
-      # For intentional fallthrough, use FALLTHROUGH; from
-      # base/compiler_specific.h
+      # For intentional fallthrough, use [[fallthrough]].
       "-Wimplicit-fallthrough",
     ]
 
