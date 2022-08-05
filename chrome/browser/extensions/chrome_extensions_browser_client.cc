@@ -714,10 +714,9 @@ ChromeExtensionsBrowserClient::GetRelatedContextsForExtension(
       Profile::FromBrowserContext(browser_context), extension);
 }
 
-std::unique_ptr<const PermissionSet>
-ChromeExtensionsBrowserClient::AddAdditionalAllowedHosts(
+void ChromeExtensionsBrowserClient::AddAdditionalAllowedHosts(
     const PermissionSet& desired_permissions,
-    const PermissionSet& granted_permissions) const {
+    PermissionSet* granted_permissions) const {
   auto get_new_host_patterns = [](const URLPatternSet& desired_patterns,
                                   const URLPatternSet& granted_patterns) {
     URLPatternSet new_patterns = granted_patterns.Clone();
@@ -738,15 +737,12 @@ ChromeExtensionsBrowserClient::AddAdditionalAllowedHosts(
 
   URLPatternSet new_explicit_hosts =
       get_new_host_patterns(desired_permissions.explicit_hosts(),
-                            granted_permissions.explicit_hosts());
+                            granted_permissions->explicit_hosts());
   URLPatternSet new_scriptable_hosts =
       get_new_host_patterns(desired_permissions.scriptable_hosts(),
-                            granted_permissions.scriptable_hosts());
-
-  return std::make_unique<PermissionSet>(
-      granted_permissions.apis().Clone(),
-      granted_permissions.manifest_permissions().Clone(),
-      std::move(new_explicit_hosts), std::move(new_scriptable_hosts));
+                            granted_permissions->scriptable_hosts());
+  granted_permissions->SetExplicitHosts(std::move(new_explicit_hosts));
+  granted_permissions->SetScriptableHosts(std::move(new_scriptable_hosts));
 }
 
 }  // namespace extensions

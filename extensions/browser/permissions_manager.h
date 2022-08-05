@@ -175,20 +175,20 @@ class PermissionsManager : public KeyedService {
   // Returns null if there are no stored runtime-granted permissions.
   // TODO(https://crbug.com/931881): ExtensionPrefs should return
   // properly-bounded permissions.
-  std::unique_ptr<const PermissionSet> GetRuntimePermissionsFromPrefs(
+  std::unique_ptr<PermissionSet> GetRuntimePermissionsFromPrefs(
       const Extension& extension) const;
 
   // Returns the set of permissions that the `extension` wants to have active at
   // this time. This does *not* take into account user-granted or runtime-
   // withheld permissions.
-  std::unique_ptr<const PermissionSet> GetBoundedExtensionDesiredPermissions(
+  std::unique_ptr<PermissionSet> GetBoundedExtensionDesiredPermissions(
       const Extension& extension) const;
 
   // Returns the set of permissions that should be granted to the given
   // `extension` according to the runtime-granted permissions and current
   // preferences, omitting host permissions if the extension supports it and
   // the user has withheld permissions.
-  std::unique_ptr<const PermissionSet> GetEffectivePermissionsToGrant(
+  std::unique_ptr<PermissionSet> GetEffectivePermissionsToGrant(
       const Extension& extension,
       const PermissionSet& desired_permissions) const;
 

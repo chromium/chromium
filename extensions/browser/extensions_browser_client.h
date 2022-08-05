@@ -445,10 +445,10 @@ class ExtensionsBrowserClient {
       const Extension& extension) const;
 
   // Adds any hosts that should be automatically considered "granted" if
-  // requested, returning a modified permission set.
-  virtual std::unique_ptr<const PermissionSet> AddAdditionalAllowedHosts(
+  // requested to `granted_permissions`.
+  virtual void AddAdditionalAllowedHosts(
       const PermissionSet& desired_permissions,
-      const PermissionSet& granted_permissions) const;
+      PermissionSet* granted_permissions) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

@@ -175,11 +175,8 @@ ExtensionsBrowserClient::GetRelatedContextsForExtension(
   return {browser_context};
 }
 
-std::unique_ptr<const PermissionSet>
-ExtensionsBrowserClient::AddAdditionalAllowedHosts(
+void ExtensionsBrowserClient::AddAdditionalAllowedHosts(
     const PermissionSet& desired_permissions,
-    const PermissionSet& granted_permissions) const {
-  return granted_permissions.Clone();
-}
+    PermissionSet* granted_permissions) const {}
 
 }  // namespace extensions

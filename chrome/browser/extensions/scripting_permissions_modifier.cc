@@ -212,29 +212,27 @@ ScriptingPermissionsModifier::GetRevokablePermissions() const {
         &extension_->permissions_data()->active_permissions();
   }
 
-  std::unique_ptr<const PermissionSet> unrevokable_permissions;
+  // Unrevokable permissions include granted API permissions, manifest
+  // permissions, and host permissions that are always allowed.
+  PermissionSet unrevokable_permissions(
+      current_granted_permissions->apis().Clone(),
+      current_granted_permissions->manifest_permissions().Clone(),
+      URLPatternSet(), URLPatternSet());
   {
-    PermissionSet apis_and_manifest(
-        current_granted_permissions->apis().Clone(),
-        current_granted_permissions->manifest_permissions().Clone(),
-        URLPatternSet(), URLPatternSet());
     // TODO(devlin): We do this pattern of "required + optional" enough. Make it
     // a part of PermissionsParser and stop duplicating the set each time.
-    std::unique_ptr<const PermissionSet> requested_permissions =
+    std::unique_ptr<PermissionSet> requested_permissions =
         PermissionSet::CreateUnion(
             PermissionsParser::GetRequiredPermissions(extension_.get()),
             PermissionsParser::GetOptionalPermissions(extension_.get()));
-    // Unrevokable permissions include API permissions, manifest permissions,
-    // and host permissions that are always allowed.
-    unrevokable_permissions =
-        ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
-            *requested_permissions, apis_and_manifest);
+    ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
+        *requested_permissions, &unrevokable_permissions);
   }
 
   // Revokable permissions are, predictably, any in the current set that aren't
   // considered unrevokable.
   return PermissionSet::CreateDifference(*current_granted_permissions,
-                                         *unrevokable_permissions);
+                                         unrevokable_permissions);
 }
 
 void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
