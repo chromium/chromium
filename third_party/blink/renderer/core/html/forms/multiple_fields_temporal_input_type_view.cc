@@ -284,7 +284,7 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     const String& value) {
   if (will_be_destroyed_)
     return;
-  if (GetElement().IsValidValue(value)) {
+  if (value.IsEmpty() || GetElement().IsValidValue(value)) {
     GetElement().SetValue(value, TextFieldEventBehavior::kDispatchInputEvent);
     return;
   }
