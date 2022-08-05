@@ -40,6 +40,8 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
         mContentView = new SizeListenableLinearLayout(context);
         mContentView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mContentView.setTag(
+                AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
         mBottomBarDelegateSupplier = supplier;
     }
 

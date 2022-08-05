@@ -210,6 +210,7 @@ android_library("public_java") {
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntry.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntryProvider.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferencesUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPublicTags.java",
     "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
     "public/java/src/org/chromium/components/autofill_assistant/TriggerContext.java",
   ]
