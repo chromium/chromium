@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_DEMUXER_STREAM_DATA_PROVIDER_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_DEMUXER_STREAM_DATA_PROVIDER_H_
 
+#include <type_traits>
+
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,15 +20,19 @@
 namespace cast_streaming {
 
 // Forward declarations of concrete types. Definitions to follow.
-template <typename TMojoReceiverType, typename TStreamInfoType>
+template <typename TMojoReceiverType,
+          typename TStreamInfoType,
+          typename TGetBufferResponseType>
 class DemuxerStreamDataProvider;
 
 using AudioDemuxerStreamDataProvider =
     DemuxerStreamDataProvider<mojom::AudioBufferRequester,
-                              mojom::AudioStreamInfoPtr>;
+                              mojom::AudioStreamInfoPtr,
+                              mojom::GetAudioBufferResponsePtr>;
 using VideoDemuxerStreamDataProvider =
     DemuxerStreamDataProvider<mojom::VideoBufferRequester,
-                              mojom::VideoStreamInfoPtr>;
+                              mojom::VideoStreamInfoPtr,
+                              mojom::GetVideoBufferResponsePtr>;
 
 // Helper class to simplify responding to calls made over AudioBufferRequester
 // and VideoBufferRequester mojo APIs.
@@ -35,7 +41,11 @@ using VideoDemuxerStreamDataProvider =
 // Currently expected to be either AudioBufferRequester or VideoBufferRequester.
 // |TStreamInfoType| is the StreamInfo that may be returned by this call, either
 // AudioStreamInfo or VideoStreamInfo.
-template <typename TMojoReceiverType, typename TStreamInfoType>
+// |TGetBufferResponseType| is the response type to a GetBuffer() call. Either
+// GetAudioBufferResponse or GetVideoBufferResponse.
+template <typename TMojoReceiverType,
+          typename TStreamInfoType,
+          typename TGetBufferResponseType>
 class DemuxerStreamDataProvider : public TMojoReceiverType {
  public:
   // Deduce the Config type associated with this Mojo API (either
@@ -73,6 +83,11 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
     config_ = std::move(config);
     next_stream_info_ =
         TStreamInfoType::element_type::New(config_, std::move(handle));
+    if (current_callback_) {
+      std::move(current_callback_)
+          .Run(TGetBufferResponseType::element_type::NewStreamInfo(
+              std::move(next_stream_info_)));
+    }
   }
 
   // Sets the buffer to be passed to the renderer process as part of the
@@ -80,11 +95,11 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
   void ProvideBuffer(media::mojom::DecoderBufferPtr buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(current_callback_);
+    DCHECK(!next_stream_info_);
 
-    // NOTE: |next_stream_info_| may be empty if none has been set since the
-    // last time this method was called.
     std::move(current_callback_)
-        .Run(std::move(next_stream_info_), std::move(buffer));
+        .Run(
+            TGetBufferResponseType::element_type::NewBuffer(std::move(buffer)));
   }
 
   const ConfigType& config() const {
@@ -122,6 +137,13 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
       return;
     }
 
+    if (next_stream_info_) {
+      std::move(callback).Run(
+          TGetBufferResponseType::element_type::NewStreamInfo(
+              std::move(next_stream_info_)));
+      return;
+    }
+
     current_callback_ = std::move(callback);
     request_buffer_.Run(
         base::BindOnce(&DemuxerStreamClient::OnNoBuffersAvailable, client_));
@@ -132,7 +154,7 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
     if (client_) {
       client_->EnableBitstreamConverter(std::move(callback));
     } else {
-      std::move(callback).Run(false);
+      std::move(callback).Run(true);
       LOG(WARNING)
           << "EnableBitstreamConverter() called when no client was available";
     }

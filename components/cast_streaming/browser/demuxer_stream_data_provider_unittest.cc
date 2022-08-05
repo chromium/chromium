@@ -80,16 +80,18 @@ class DemuxerStreamDataProviderTest : public testing::Test {
     MOCK_METHOD0(OnGetBufferDoneCalled, void());
     void OnGetBufferDone(absl::optional<media::AudioDecoderConfig> config,
                          scoped_refptr<media::DecoderBuffer> buffer_expected,
-                         mojom::AudioStreamInfoPtr data_stream_info,
-                         media::mojom::DecoderBufferPtr buffer) {
-      ASSERT_TRUE(!!buffer);
-      scoped_refptr<media::DecoderBuffer> media_buffer(
-          buffer.To<scoped_refptr<media::DecoderBuffer>>());
-      EXPECT_TRUE(buffer_expected->MatchesMetadataForTesting(*media_buffer));
+                         mojom::GetAudioBufferResponsePtr get_buffer_response) {
+      if (get_buffer_response->is_buffer()) {
+        scoped_refptr<media::DecoderBuffer> media_buffer(
+            get_buffer_response->get_buffer()
+                .To<scoped_refptr<media::DecoderBuffer>>());
+        EXPECT_TRUE(buffer_expected->MatchesMetadataForTesting(*media_buffer));
+      }
 
-      ASSERT_EQ(!!config, !!data_stream_info);
+      ASSERT_EQ(!!config, !!get_buffer_response->is_stream_info());
       if (config) {
-        EXPECT_TRUE(config->Matches(data_stream_info->decoder_config));
+        EXPECT_TRUE(config->Matches(
+            get_buffer_response->get_stream_info()->decoder_config));
       }
 
       OnGetBufferDoneCalled();
@@ -136,50 +138,65 @@ class DemuxerStreamDataProviderTest : public testing::Test {
 };
 
 TEST_F(DemuxerStreamDataProviderTest, DataSentInOrderExpected) {
-  // Test first call, providing a config and a buffer.
+  // Test providing a config.
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
-  remote_->GetBuffer(base::BindOnce(
-      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), first_config_, first_buffer_));
+  remote_->GetBuffer(
+      base::BindOnce(&DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+                     base::Unretained(&callbacks_), first_config_,
+                     scoped_refptr<media::DecoderBuffer>()));
   task_environment_.RunUntilIdle();
-
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   MojoPipePair pipes = GetMojoPipePair();
   data_provider_->OnNewStreamInfo(first_config_, std::move(pipes.second));
   EXPECT_TRUE(first_config_.Matches(data_provider_->config()));
   task_environment_.RunUntilIdle();
+
+  // Test providing a buffer.
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
+  remote_->GetBuffer(base::BindOnce(
+      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+      base::Unretained(&callbacks_), absl::nullopt, first_buffer_));
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   data_provider_->ProvideBuffer(
       media::mojom::DecoderBuffer::From(*first_buffer_));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(first_config_.Matches(data_provider_->config()));
 
-  // Test second call, providing NO config but do provide a buffer.
+  // Test providing a different buffer.
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
       base::Unretained(&callbacks_), absl::nullopt, second_buffer_));
   task_environment_.RunUntilIdle();
-
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
-  task_environment_.RunUntilIdle();
   data_provider_->ProvideBuffer(
       media::mojom::DecoderBuffer::From(*second_buffer_));
   EXPECT_TRUE(first_config_.Matches(data_provider_->config()));
   task_environment_.RunUntilIdle();
 
-  // Test third call, providing a different config and a buffer.
+  // Test providing a different config.
   EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
-  remote_->GetBuffer(base::BindOnce(
-      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), second_config_, third_buffer_));
+  remote_->GetBuffer(
+      base::BindOnce(&DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+                     base::Unretained(&callbacks_), second_config_,
+                     scoped_refptr<media::DecoderBuffer>()));
   task_environment_.RunUntilIdle();
-
+  task_environment_.RunUntilIdle();
   EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
-  task_environment_.RunUntilIdle();
   pipes = GetMojoPipePair();
   EXPECT_TRUE(first_config_.Matches(data_provider_->config()));
   data_provider_->OnNewStreamInfo(second_config_, std::move(pipes.second));
   EXPECT_TRUE(second_config_.Matches(data_provider_->config()));
+  task_environment_.RunUntilIdle();
+
+  // Test providing a third buffer.
+  EXPECT_CALL(callbacks_, RequestBuffer(testing::_));
+  remote_->GetBuffer(base::BindOnce(
+      &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
+      base::Unretained(&callbacks_), absl::nullopt, third_buffer_));
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(callbacks_, OnGetBufferDoneCalled());
   data_provider_->ProvideBuffer(
       media::mojom::DecoderBuffer::From(*third_buffer_));
   task_environment_.RunUntilIdle();
@@ -193,7 +210,7 @@ TEST_F(DemuxerStreamDataProviderTest, NoBuffersCallback) {
   EXPECT_CALL(client_, OnNoBuffersAvailable());
   remote_->GetBuffer(base::BindOnce(
       &DemuxerStreamDataProviderTest::Callbacks::OnGetBufferDone,
-      base::Unretained(&callbacks_), first_config_, first_buffer_));
+      base::Unretained(&callbacks_), absl::nullopt, first_buffer_));
   task_environment_.RunUntilIdle();
 }
 
@@ -201,7 +218,6 @@ TEST_F(DemuxerStreamDataProviderTest, EnableBitstreamConverter) {
   EXPECT_CALL(client_, EnableBitstreamConverter(testing::_))
       .WillOnce(
           [](base::OnceCallback<void(bool)> cb) { std::move(cb).Run(true); });
-  ;
   remote_->EnableBitstreamConverter(base::OnceCallback<void(bool)>());
   task_environment_.RunUntilIdle();
 }

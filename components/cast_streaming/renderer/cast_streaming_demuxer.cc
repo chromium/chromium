@@ -4,6 +4,7 @@
 
 #include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
 
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -31,7 +32,11 @@ namespace {
 // Currently expected to be either AudioBufferRequester or VideoBufferRequester.
 // |TStreamInfoType| is the StreamInfo that may be returned by this call, either
 // AudioStreamInfo or VideoStreamInfo.
-template <typename TMojoRemoteType, typename TStreamInfoType>
+// |TGetBufferResponseType| is the response type to a GetBuffer() call. Either
+// GetAudioBufferResponse or GetVideoBufferResponse.
+template <typename TMojoRemoteType,
+          typename TStreamInfoType,
+          typename TGetBufferResponseType>
 class CastStreamingDemuxerStream : public media::DemuxerStream {
  public:
   CastStreamingDemuxerStream(
@@ -50,10 +55,6 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
     OnNewConfig(std::move(stream_initialization_info));
     DCHECK(pending_config_change_);
     pending_config_change_ = false;
-
-    // Request the first buffer from the browser process, to be returned
-    // asynchronously as the response to the first Read() call.
-    RequestNextBuffer();
   }
 
   ~CastStreamingDemuxerStream() override {
@@ -95,11 +96,6 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(buffer);
 
-    // Starts an asynchronous callback to the browser. Will not be handled as
-    // part of the current call sequence, but instead will be used as part of
-    // the next call to Read().
-    RequestNextBuffer();
-
     // Stop processing the pending buffer. OnMojoDisconnect() will trigger
     // sending kAborted on subsequent Read() calls. This can happen if this
     // object was in the process of reading a buffer off the data pipe when the
@@ -135,19 +131,18 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
   }
 
   // Processes a new buffer as received over mojo.
-  void OnGetBufferDone(TStreamInfoType data_stream_info,
-                       media::mojom::DecoderBufferPtr buffer) {
+  void OnGetBufferDone(TGetBufferResponseType get_buffer_response) {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (data_stream_info) {
-      OnNewConfig(std::move(data_stream_info));
-    }
-
     DCHECK(buffer_reader_);
 
-    // Eventually calls OnBufferReady().
-    buffer_reader_->ProvideBuffer(std::move(buffer));
+    if (get_buffer_response->is_stream_info()) {
+      OnNewConfig(std::move(get_buffer_response->get_stream_info()));
+    } else {
+      // Eventually calls OnBufferReady().
+      buffer_reader_->ProvideBuffer(
+          std::move(get_buffer_response->get_buffer()));
+    }
   }
 
   // Called when a new config is received over mojo. Sets for the next call to
@@ -182,7 +177,18 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
     }
   }
 
-  void OnBitstreamConverterEnabled(bool success) { NOTIMPLEMENTED_LOG_ONCE(); }
+  void OnBitstreamConverterEnabled(bool success) {
+    if (!success) {
+      LOG(ERROR) << "Failed to enable Bitstream Converter";
+      OnMojoDisconnect();
+      return;
+    }
+
+    is_bitstream_enable_in_progress_ = false;
+    if (pending_read_cb_) {
+      Read(std::move(pending_read_cb_));
+    }
+  }
 
   // DemuxerStream partial implementation.
   void Read(ReadCB read_cb) final {
@@ -210,11 +216,21 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
       return;
     }
 
+    // If enabling bitstream conversion is in progress, do not send a Read()
+    // request until that has succeeded.
+    if (is_bitstream_enable_in_progress_) {
+      return;
+    }
+
+    // Request a new buffer from the browser process.
+    RequestNextBuffer();
+
     // Eventually this will call OnBufferReady().
     buffer_reader_->ReadBufferAsync();
   }
 
   void EnableBitstreamConverter() final {
+    is_bitstream_enable_in_progress_ = true;
     remote_->EnableBitstreamConverter(
         base::BindOnce(&CastStreamingDemuxerStream::OnBitstreamConverterEnabled,
                        weak_factory_.GetWeakPtr()));
@@ -244,6 +260,8 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
   // True when this stream is undergoing a decoder configuration change.
   bool pending_config_change_ = false;
 
+  bool is_bitstream_enable_in_progress_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CastStreamingDemuxerStream> weak_factory_;
@@ -253,11 +271,13 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
 
 class CastStreamingAudioDemuxerStream final
     : public CastStreamingDemuxerStream<mojom::AudioBufferRequester,
-                                        mojom::AudioStreamInfoPtr> {
+                                        mojom::AudioStreamInfoPtr,
+                                        mojom::GetAudioBufferResponsePtr> {
  public:
   using CastStreamingDemuxerStream<
       mojom::AudioBufferRequester,
-      mojom::AudioStreamInfoPtr>::CastStreamingDemuxerStream;
+      mojom::AudioStreamInfoPtr,
+      mojom::GetAudioBufferResponsePtr>::CastStreamingDemuxerStream;
 
   ~CastStreamingAudioDemuxerStream() override = default;
 
@@ -273,11 +293,13 @@ class CastStreamingAudioDemuxerStream final
 
 class CastStreamingVideoDemuxerStream final
     : public CastStreamingDemuxerStream<mojom::VideoBufferRequester,
-                                        mojom::VideoStreamInfoPtr> {
+                                        mojom::VideoStreamInfoPtr,
+                                        mojom::GetVideoBufferResponsePtr> {
  public:
   using CastStreamingDemuxerStream<
       mojom::VideoBufferRequester,
-      mojom::VideoStreamInfoPtr>::CastStreamingDemuxerStream;
+      mojom::VideoStreamInfoPtr,
+      mojom::GetVideoBufferResponsePtr>::CastStreamingDemuxerStream;
 
   ~CastStreamingVideoDemuxerStream() override = default;
 

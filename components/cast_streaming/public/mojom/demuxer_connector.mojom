@@ -24,13 +24,27 @@ struct VideoStreamInfo {
   handle<data_pipe_consumer> data_pipe;
 };
 
+// Response type for AudioBufferRequester::GetBuffer(). See this method for
+// further details.
+union GetAudioBufferResponse {
+  AudioStreamInfo stream_info;
+  media.mojom.DecoderBuffer buffer;
+};
+
+// Response type for VideoBufferRequester::GetBuffer(). See this method for
+// further details.
+union GetVideoBufferResponse {
+  VideoStreamInfo stream_info;
+  media.mojom.DecoderBuffer buffer;
+};
+
 // Provides a "pull" mechanism to request DecoderBuffer frames of audio data.
 // This will be used by the DemuxerStream within the renderer process to
 // request from the browser process a new frame of audio data to play out.
 interface AudioBufferRequester {
   // Requests more information about the cast streaming session's data stream to
-  // the renderer process. This will be in the form of one |buffer|, and
-  // potentially one |stream_info|.
+  // the renderer process. This will be in the form of one |buffer| or one
+  // |stream_info|, as detailed in the GetAudioBufferResponse type.
   //
   // The |buffer| data itself is on the associated |data_pipe|, from the
   // AudioStreamInfo most recently provided during this or a prior call to this
@@ -39,14 +53,13 @@ interface AudioBufferRequester {
   //
   // |stream_info| is provided only when the audio configuration has changed.
   // The new |decoder_config| and |data_pipe| provided in this instance should
-  // be used for this and all future calls of this method, until a new
-  // |stream_info| is provided.
+  // be used for all future calls of this method, until a new |stream_info| is
+  // provided.
   //
   // Only one call to this method may be in-flight at a time. Or, in other
   // words, this method may not be called a second time until the prior call
   // returns.
-  GetBuffer() => (AudioStreamInfo? stream_info,
-                  media.mojom.DecoderBuffer buffer);
+  GetBuffer() => (GetAudioBufferResponse buffer_response);
 
   // Requests that the data source providing audio buffers enable its bitstream
   // converter. Returns whether the operation was successful.
@@ -58,8 +71,7 @@ interface AudioBufferRequester {
 // request from the browser process a new frame of video data to display.
 interface VideoBufferRequester {
   // As AudioBufferRequester::GetBuffer() above.
-  GetBuffer() => (VideoStreamInfo? stream_info,
-                  media.mojom.DecoderBuffer buffer);
+  GetBuffer() => (GetVideoBufferResponse buffer_response);
 
   // As AudioBufferRequester::EnableBitstreamConverter() above.
   EnableBitstreamConverter() => (bool success);

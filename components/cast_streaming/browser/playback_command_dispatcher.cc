@@ -248,14 +248,12 @@ void PlaybackCommandDispatcher::MaybeStartStreamingSession() {
   if (streaming_init_info_->audio_stream_info) {
     auto client = demuxer_stream_handler_->GetAudioClient();
     DCHECK(client);
-    client->OnNoBuffersAvailable();
     streaming_init_info_->audio_stream_info->demuxer_stream_client =
         std::move(client);
   }
   if (streaming_init_info_->video_stream_info) {
     auto client = demuxer_stream_handler_->GetVideoClient();
     DCHECK(client);
-    client->OnNoBuffersAvailable();
     streaming_init_info_->video_stream_info->demuxer_stream_client =
         std::move(client);
   }
