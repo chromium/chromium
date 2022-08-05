@@ -28,7 +28,7 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
 
   ~XDGPopupWrapperImpl() override;
 
-  // XDGPopupWrapper:
+  // ShellPopupWrapper overrides:
   bool Initialize(const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
   bool IsConfigured() override;
