@@ -7584,6 +7584,10 @@ test("unit_tests") {
       sources +=
           [ "../browser/spellchecker/spelling_service_client_unittest.cc" ]
     }
+
+    if (use_browser_spellchecker && enable_spelling_service) {
+      sources += [ "../browser/spellchecker/spelling_request_unittest.cc" ]
+    }
   }
 
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
