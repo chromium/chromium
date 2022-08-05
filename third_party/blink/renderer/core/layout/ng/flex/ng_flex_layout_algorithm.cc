@@ -1960,19 +1960,6 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
 
     item_contributions.sizes.Encompass(preferred_size);
   }
-
-  // This block implements the "clamped" part of the 9.9.3:
-  // "the contribution is the larger of [stuff], clamped by its flex base size
-  // as a maximum (if it is not growable) and/or as a minimum (if it is not
-  // shrinkable)"
-  const LayoutUnit flex_base_size_border_box =
-      item.flex_base_content_size_ + item.main_axis_border_padding_;
-  const ComputedStyle& parent_style = Style();
-  if (child_style.ResolvedFlexGrow(parent_style) == 0.f)
-    item_contributions.sizes.Constrain(flex_base_size_border_box);
-  if (child_style.ResolvedFlexShrink(parent_style) == 0.f)
-    item_contributions.sizes.Encompass(flex_base_size_border_box);
-
   item_contributions.sizes.Constrain(item.min_max_main_sizes_.max_size +
                                      item.main_axis_border_padding_);
   item_contributions.sizes.Encompass(item.min_max_main_sizes_.min_size +
@@ -1986,33 +1973,59 @@ class NGFlexLayoutAlgorithm::FlexFractionParts {
       : parent_style_(parent_style) {}
   // After we find the largest flex fraction, this function calculates the
   // product from https://drafts.csswg.org/css-flexbox/#intrinsic-main-sizes,
-  // step 3:
+  // step 4:
   // "Add each item’s flex base size to the product of its flex grow factor (or
   // scaled flex shrink factor, if the chosen max-content flex fraction was
-  // negative) and the chosen max-content flex fraction"
+  // negative) and the chosen flex fraction"
   LayoutUnit ApplyLargestFlexFractionToItem(const ComputedStyle& child_style,
                                             LayoutUnit flex_base_content_size) {
-    if (flex_fraction_ > 0.f) {
+    if (chosen_flex_fraction_ == std::numeric_limits<float>::lowest()) {
+      // All the items wanted to shrink from their flex basis to get to their
+      // min-content size, but all had flex-shrink = 0.
+      DCHECK_EQ(numerator_, LayoutUnit());
+      return LayoutUnit();
+    }
+
+    if (chosen_flex_fraction_ > 0.f) {
       DCHECK(!denominator_pixels_part_.has_value());
-      return LayoutUnit((child_style.ResolvedFlexGrow(parent_style_) /
-                         denominator_float_part_) *
-                        numerator_);
-    }
-    if (flex_fraction_ < 0.f) {
+      DCHECK_GT(sum_factors_less_than_one_adjustment_, 0.f)
+          << "If all the flex grow factors were == 0, then "
+             "chosen_flex_fraction_ can't be positive";
       return LayoutUnit(
-          (child_style.ResolvedFlexShrink(parent_style_) /
-           denominator_float_part_) *
-          flex_base_content_size.MulDiv(numerator_, *denominator_pixels_part_));
+          numerator_ *
+          (child_style.ResolvedFlexGrow(parent_style_) /
+           (sum_factors_less_than_one_adjustment_ * denominator_float_part_)));
     }
-    DCHECK_EQ(numerator_, LayoutUnit());
-    DCHECK_EQ(denominator_float_part_, 1.f);
-    DCHECK(!denominator_pixels_part_.has_value());
+    if (chosen_flex_fraction_ < 0.f) {
+      return LayoutUnit(
+          flex_base_content_size.MulDiv(numerator_, *denominator_pixels_part_) *
+          (sum_factors_less_than_one_adjustment_ *
+           child_style.ResolvedFlexShrink(parent_style_) /
+           denominator_float_part_));
+    }
+    // Control-flow reaches here if the item that contributed the chosen flex
+    // fraction had (1) a flex base size smaller than max-content contribution
+    // size and grow factor 0 (it wants to grow but it can't); OR (2) a flex
+    // base size equal to its max-content contribution size.
+    DCHECK(!denominator_pixels_part_.has_value())
+        << "We're not supposed to get here if the chosen flex "
+           "fraction was from an item with a negative desired flex fraction, "
+           "which is the only time |denominator_pixels_part_| has a value.";
     return LayoutUnit();
   }
 
+  // This function does 9.9.1 step 1 and 2: calculate the item's desired flex
+  // fraction (step 1) and save it if it's the largest (step 2).
   void UpdateLargestFlexFraction(const FlexItem& item,
                                  LayoutUnit item_contribution) {
     const ComputedStyle& child_style = item.style_;
+
+    const float flex_grow_factor = child_style.ResolvedFlexGrow(parent_style_);
+    sum_flex_grow_factors_ += flex_grow_factor;
+    const float flex_shrink_factor =
+        child_style.ResolvedFlexShrink(parent_style_);
+    sum_flex_shrink_factors_ += flex_shrink_factor;
+
     // |difference| is contribution - flex_basis, which can be negative because
     // item contributions can be smaller than the item's flex base size.
     LayoutUnit difference = item_contribution - item.flex_base_content_size_ -
@@ -2023,13 +2036,16 @@ class NGFlexLayoutAlgorithm::FlexFractionParts {
       // fraction will be positive and the container's max-content size (or
       // min-content size, whichever this object is associated with) will be
       // greater than the sum of the items' flex bases.
-      const float floored_flex_grow_factor =
-          std::max(1.0f, child_style.ResolvedFlexGrow(parent_style_));
-      const float item_flex_fraction = difference / floored_flex_grow_factor;
-      if (item_flex_fraction > flex_fraction_) {
-        flex_fraction_ = item_flex_fraction;
+      float desired_flex_fraction = difference;
+      if (flex_grow_factor >= 1.f)
+        desired_flex_fraction /= flex_grow_factor;
+      else
+        desired_flex_fraction *= flex_grow_factor;
+      if (desired_flex_fraction > chosen_flex_fraction_) {
+        chosen_flex_fraction_ = desired_flex_fraction;
         numerator_ = difference;
-        denominator_float_part_ = floored_flex_grow_factor;
+        denominator_float_part_ =
+            flex_grow_factor >= 1.f ? flex_grow_factor : 1 / flex_grow_factor;
         denominator_pixels_part_.reset();
       }
     } else if (difference < LayoutUnit()) {
@@ -2037,25 +2053,29 @@ class NGFlexLayoutAlgorithm::FlexFractionParts {
       // will be negative and the container's max-content (or min-content) size
       // will be less than the sum of the items' flex bases, but still most
       // likely greater than the sum of each item's contribution.
-      const float floored_flex_shrink_factor =
-          std::max(1.0f, child_style.ResolvedFlexShrink(parent_style_));
-      const float item_flex_fraction =
-          difference /
-          (item.flex_base_content_size_ * floored_flex_shrink_factor);
-      if (item_flex_fraction > flex_fraction_) {
-        flex_fraction_ = item_flex_fraction;
+      const float scaled_flex_shrink_factor =
+          item.flex_base_content_size_ * flex_shrink_factor;
+      if (scaled_flex_shrink_factor == 0.f) {
+        // If the desired flex fraction is -infinity, it should never become the
+        // chosen flex fraction.
+        return;
+      }
+      const float desired_flex_fraction =
+          difference / scaled_flex_shrink_factor;
+      if (desired_flex_fraction > chosen_flex_fraction_) {
+        chosen_flex_fraction_ = desired_flex_fraction;
         numerator_ = difference;
-        denominator_float_part_ = floored_flex_shrink_factor;
+        denominator_float_part_ = flex_shrink_factor;
         denominator_pixels_part_ = item.flex_base_content_size_;
       }
     } else {
-      // This item's flex basis was exactly equal to its contribution size. If
-      // we end up in either this block or the previous block for every item,
-      // then whichever intrinsic size is represented by this object (min or
-      // max) will be equal to the sum of the items' flex bases.
+      // This item's flex basis was equal to its contribution size. If
+      // every item enters either this block or the previous block then
+      // the intrinsic size represented by this object (either min or max)
+      // will be equal to the sum of the items' flex bases.
       DCHECK_EQ(difference, LayoutUnit());
-      if (difference > flex_fraction_) {
-        flex_fraction_ = 0.f;
+      if (difference > chosen_flex_fraction_) {
+        chosen_flex_fraction_ = 0.f;
         numerator_ = difference;
         denominator_float_part_ = 1.f;
         denominator_pixels_part_.reset();
@@ -2063,18 +2083,40 @@ class NGFlexLayoutAlgorithm::FlexFractionParts {
     }
   }
 
- private:
-  float flex_fraction_ = std::numeric_limits<float>::lowest();
+  // This function sets up sum_factors_less_than_one_adjustment_ to handle 9.9.1
+  // step 3:
+  // If the chosen flex fraction is positive, and the sum of the line’s
+  // flex grow factors is less than 1, divide the chosen flex fraction by that
+  // sum.
+  // If the chosen flex fraction is negative, and the sum of the line’s
+  // flex shrink factors is less than 1, multiply the chosen flex fraction by
+  // that sum.
+  void SetSumFactorsLessThanOneAdjustment() {
+    if (chosen_flex_fraction_ > 0.f && sum_flex_grow_factors_ < 1.f) {
+      DCHECK_GT(sum_flex_grow_factors_, 0.f)
+          << "If all the flex grow factors were == 0, then "
+             "chosen_flex_fraction can't be positive";
+      sum_factors_less_than_one_adjustment_ = sum_flex_grow_factors_;
+    } else if (chosen_flex_fraction_ < 0.f && sum_flex_shrink_factors_ < 1.f) {
+      sum_factors_less_than_one_adjustment_ = sum_flex_shrink_factors_;
+    }
+  }
 
-  // We have to store the individual components of the flex fraction so that we
-  // can multiply them in an order that doesn't have precision issues.
+ private:
+  float chosen_flex_fraction_ = std::numeric_limits<float>::lowest();
+
+  // We have to store these individual components of the flex fraction so that
+  // we can multiply them in an order that minimizes precision issues.
   LayoutUnit numerator_;
   float denominator_float_part_;
   // This optional field is filled when we use scaled flex shrink factor as
   // dictated in step 1 from
   // https://drafts.csswg.org/css-flexbox/#intrinsic-main-sizes.
   absl::optional<LayoutUnit> denominator_pixels_part_;
+  float sum_factors_less_than_one_adjustment_ = 1.f;
 
+  float sum_flex_shrink_factors_ = 0;
+  float sum_flex_grow_factors_ = 0;
   const ComputedStyle& parent_style_;
 };
 
@@ -2107,6 +2149,8 @@ NGFlexLayoutAlgorithm::FindLargestFractions() const {
     max_content_largest_fraction.UpdateLargestFlexFraction(
         item, min_max_content_contributions.sizes.max_size);
   }
+  min_content_largest_fraction.SetSumFactorsLessThanOneAdjustment();
+  max_content_largest_fraction.SetSumFactorsLessThanOneAdjustment();
 
   return std::tuple(min_content_largest_fraction, max_content_largest_fraction,
                     depends_on_block_constraints);
