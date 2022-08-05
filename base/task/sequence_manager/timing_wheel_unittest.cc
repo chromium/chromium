@@ -52,10 +52,12 @@ struct TimingWheelHandleAccessor {
 };
 
 // Gets the delayed run time of the |element|.
-template <typename T>
-TimeTicks GetDelayedRunTime(const T& element) {
-  return element.delayed_run_time;
-}
+struct GetDelayedRunTime {
+  template <typename T>
+  TimeTicks operator()(const T& element) {
+    return element.delayed_run_time;
+  }
+};
 
 // The total number of buckets that we use for the TimingWheel in all the unit
 // tests.

@@ -51,7 +51,7 @@ class BASE_EXPORT TimingWheelHandle {
   template <typename T,
             size_t WheelSize,
             typename TimingWheelHandleAccessor,
-            TimeTicks (*GetDelayedRunTime)(const T&)>
+            typename GetDelayedRunTime>
   friend class TimingWheel;
 
   // Only TimingWheels can create valid TimingWheelHandles.
@@ -74,21 +74,23 @@ class BASE_EXPORT TimingWheelHandle {
 // inserted in a TimingWheel. |T| is a typename for element. |WheelSize| is the
 // number of buckets this TimingWheel has. |TimingWheelHandleAccessor| is the
 // type of the object which under the hood manages the TimingWheelHandle.
-// |GetDelayedRunTime| is a function which returns the time when the element is
+// |GetDelayedRunTime| is a functor which returns the time when the element is
 // due at.
 template <typename T,
           size_t WheelSize,
           typename TimingWheelHandleAccessor,
-          TimeTicks (*GetDelayedRunTime)(const T&)>
+          typename GetDelayedRunTime>
 class TimingWheel {
  public:
   // Constructs a TimingWheel instance where each bucket corresponds to a
   // TimeDelta of |time_delta_per_bucket_|.
-  TimingWheel(TimeDelta time_delta_per_bucket)
+  explicit TimingWheel(
+      TimeDelta time_delta_per_bucket,
+      const GetDelayedRunTime& get_delayed_run_time = GetDelayedRunTime())
       : time_delta_per_bucket_(time_delta_per_bucket),
         last_updated_bucket_index_(0),
         time_passed_(Microseconds(0)),
-        total_elements_(0) {}
+        get_delayed_run_time_(get_delayed_run_time) {}
 
   TimingWheel(TimingWheel&&) = delete;
   TimingWheel& operator=(TimingWheel&&) = delete;
@@ -182,9 +184,8 @@ class TimingWheel {
       }
 
       auto it = std::min_element(
-          bucket.begin(), bucket.end(), [](const T& a, const T& b) {
-            // return a.delayed_run_time > b.delayed_run_time;
-            return GetDelayedRunTime(a) > GetDelayedRunTime(b);
+          bucket.begin(), bucket.end(), [this](const T& a, const T& b) {
+            return get_delayed_run_time_(a) > get_delayed_run_time_(b);
           });
       return *it;
     }
@@ -247,7 +248,10 @@ class TimingWheel {
   TimeDelta time_passed_;
 
   // The number of elements in |buckets_|.
-  size_t total_elements_;
+  size_t total_elements_ = 0;
+
+  // The functor to get the delayed run time of elements.
+  GetDelayedRunTime get_delayed_run_time_;
 };
 
 }  // namespace base::sequence_manager::internal
