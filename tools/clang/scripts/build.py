@@ -148,7 +148,10 @@ def CheckoutLLVM(commit, dir):
     print('Removing %s.' % dir)
     RmTree(dir)
 
-  clone_cmd = ['git', 'clone', 'https://github.com/llvm/llvm-project/', dir]
+  clone_cmd = [
+      'git', 'clone', 'https://chromium.googlesource.com/external/' +
+      'github.com/llvm/llvm-project', dir
+  ]
 
   if RunCommand(clone_cmd, fail_hard=False):
     os.chdir(dir)
@@ -167,11 +170,11 @@ def UrlOpen(url):
 
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
-  ref = json.loads(
-      UrlOpen(('https://api.github.com/repos/'
-               'llvm/llvm-project/git/refs/heads/main')))
-  assert ref['object']['type'] == 'commit'
-  return ref['object']['sha']
+  main = json.loads(
+      UrlOpen('https://chromium.googlesource.com/external/' +
+              'github.com/llvm/llvm-project/' +
+              '+/refs/heads/main?format=JSON').replace(")]}'", ""))
+  return main['commit']
 
 
 def GetCommitDescription(commit):
