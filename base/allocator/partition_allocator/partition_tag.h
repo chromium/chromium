@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
+#include "base/allocator/partition_allocator/partition_tag_types.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -24,10 +25,6 @@
 namespace partition_alloc {
 
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-
-// Use 8 bits for the partition tag.
-// TODO(tasak): add a description about the partition tag.
-using PartitionTag = uint8_t;
 
 static_assert(
     sizeof(PartitionTag) == internal::tag_bitmap::kPartitionTagSize,
@@ -116,8 +113,6 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
 }  // namespace internal
 
 #else  // No-op versions
-
-using PartitionTag = uint8_t;
 
 PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   PA_NOTREACHED();

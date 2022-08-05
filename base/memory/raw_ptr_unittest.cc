@@ -32,7 +32,7 @@
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-#include "base/allocator/partition_allocator/partition_tag.h"
+#include "base/allocator/partition_allocator/partition_tag_types.h"
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

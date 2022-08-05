@@ -153,6 +153,7 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_stats.h",
     "partition_tag.h",
     "partition_tag_bitmap.h",
+    "partition_tag_types.h",
     "partition_tls.h",
     "random.cc",
     "random.h",
