@@ -26,4 +26,10 @@ void EmitFeedbackAppIncludedScreenshot(bool included_screenshot) {
                             included_screenshot);
 }
 
+void EmitFeedbackAppCanContactUser(
+    FeedbackAppContactUserConsentType contact_user_consent) {
+  base::UmaHistogramEnumeration(kFeedbackAppCanContactUser,
+                                contact_user_consent);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

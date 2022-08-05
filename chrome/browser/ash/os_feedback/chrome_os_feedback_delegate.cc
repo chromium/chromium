@@ -200,9 +200,17 @@ void ChromeOsFeedbackDelegate::SendReport(
   if (report->contact_user_consent_granted) {
     feedback_data->AddLog(kFeedbackUserConsentKey,
                           kFeedbackUserConsentGrantedValue);
+    ash::os_feedback_ui::metrics::EmitFeedbackAppCanContactUser(
+        os_feedback_ui::metrics::FeedbackAppContactUserConsentType::kYes);
   } else {
     feedback_data->AddLog(kFeedbackUserConsentKey,
                           kFeedbackUserConsentDeniedValue);
+    feedback_context->email.has_value()
+        ? ash::os_feedback_ui::metrics::EmitFeedbackAppCanContactUser(
+              os_feedback_ui::metrics::FeedbackAppContactUserConsentType::kNo)
+        : ash::os_feedback_ui::metrics::EmitFeedbackAppCanContactUser(
+              os_feedback_ui::metrics::FeedbackAppContactUserConsentType::
+                  kNoEmail);
   }
 
   const AttachedFilePtr& attached_file = report->attached_file;

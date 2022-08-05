@@ -5767,6 +5767,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.CanContactUser"
+    enum="FeedbackAppContactUserConsentType" expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether users allow Google to contact them about the issues. Fires
+    when feedback report is being sent.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedScreenshot" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

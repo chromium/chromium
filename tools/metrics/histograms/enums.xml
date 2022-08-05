@@ -41168,6 +41168,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="User clicks on the auto-play video."/>
 </enum>
 
+<enum name="FeedbackAppContactUserConsentType">
+  <int value="0" label="kNoEmail"/>
+  <int value="1" label="kYes"/>
+  <int value="2" label="kNo"/>
+</enum>
+
 <enum name="FeedbackAppPostSubmitAction">
   <int value="0" label="kSendNewReport"/>
   <int value="1" label="kClickDoneButton"/>

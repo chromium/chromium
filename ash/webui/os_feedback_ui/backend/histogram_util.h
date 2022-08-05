@@ -20,6 +20,18 @@ constexpr char kFeedbackAppIncludedScreenshot[] =
     "Feedback.ChromeOSApp.IncludedScreenshot";
 constexpr char kFeedbackAppViewedScreenshot[] =
     "Feedback.ChromeOSApp.ViewedScreenshot";
+constexpr char kFeedbackAppCanContactUser[] =
+    "Feedback.ChromeOSApp.CanContactUser";
+
+// The enums below are used in histograms, do not remove/renumber entries. If
+// you're adding to any of these enums, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml: FeedbackAppContactUserConsentType
+enum class FeedbackAppContactUserConsentType {
+  kNoEmail = 0,
+  kYes = 1,
+  kNo = 2,
+  kMaxValue = kNo,
+};
 
 void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed);
 
@@ -28,6 +40,9 @@ void EmitFeedbackAppPostSubmitAction(mojom::FeedbackAppPostSubmitAction action);
 void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action);
 
 void EmitFeedbackAppIncludedScreenshot(bool included_screenshot);
+
+void EmitFeedbackAppCanContactUser(
+    FeedbackAppContactUserConsentType contact_user_consent);
 
 }  // namespace ash::os_feedback_ui::metrics
 
