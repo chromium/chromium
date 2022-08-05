@@ -298,9 +298,15 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
                                   HitTestPhase phase) {
   TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
-  return local_location &&
-         LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
-             result, *local_location, accumulated_offset, phase);
+  if (!local_location)
+    return false;
+
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, ObjectBoundingBox(),
+                                            *local_location))
+    return false;
+
+  return LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
+      result, *local_location, accumulated_offset, phase);
 }
 
 PositionWithAffinity LayoutNGSVGText::PositionForPoint(

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<svg height="100" width="200">
+<g>
+<defs>
+<clipPath id="clip-path-1">
+<path d="M15.5,11L84.5,11A3.5,3.5 0 0,1 88,14.5L88,36.5A3.5,3.5 0 0,1 84.5,40
+  L15.5,40A3.5,3.5 0 0,1 12,36.5L12,14.5A3.5,3.5 0 0,1 15.5,11z"></path>
+</clipPath>
+</defs>
+<text x="49.75" y="24.75" text-anchor="middle" clip-path="url(#clip-path-1)">
+<tspan x="49.75" dy="-12">Here is my sample text1!</tspan>
+<tspan x="49.75" dy="12">Here is my sample text2!</tspan>
+<tspan x="49.75" dy="12">Here is my sample text3!</tspan>
+<tspan x="49.75" dy="12">Here is my sample text4!</tspan>
+<tspan x="49.75" dy="12">Here is my sample text5!</tspan>
+</text>
+</g>
+</svg>
+
+<script>
+test(() => {
+  assert_equals(document.elementFromPoint(80, 64), document.querySelector('svg'));
+}, 'Hittest on clipped <text>');
+</script>
+</body>
+</html>
