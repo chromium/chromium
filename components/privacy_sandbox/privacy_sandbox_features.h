@@ -51,6 +51,10 @@ extern const base::Feature kDisablePrivacySandboxPrompts;
 // Enables the First Party Sets UI.
 extern const base::Feature kPrivacySandboxFirstPartySetsUI;
 
+// Populates First Party Sets information with sample membership information,
+// for testing purposes only.
+extern const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets;
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

@@ -35,5 +35,7 @@ const base::Feature kDisablePrivacySandboxPrompts{
 
 const base::Feature kPrivacySandboxFirstPartySetsUI{
     "PrivacySandboxFirstPartySetsUI", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets{
+    &kPrivacySandboxFirstPartySetsUI, "use-sample-sets", false};
 
 }  // namespace privacy_sandbox

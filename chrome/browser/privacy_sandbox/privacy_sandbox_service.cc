@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -599,6 +600,42 @@ void PrivacySandboxService::SetTopicAllowed(
     browsing_topics_service_->ClearTopic(topic);
 
   privacy_sandbox_settings_->SetTopicAllowed(topic, allowed);
+}
+
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
+PrivacySandboxService::GetFirstPartySets() {
+  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
+    return {{net::SchemefulSite(GURL("https://youtube.com")),
+             net::SchemefulSite(GURL("https://google.com"))},
+            {net::SchemefulSite(GURL("https://google.com")),
+             net::SchemefulSite(GURL("https://google.com"))},
+            {net::SchemefulSite(GURL("https://google.com.au")),
+             net::SchemefulSite(GURL("https://google.com"))},
+            {net::SchemefulSite(GURL("https://google.de")),
+             net::SchemefulSite(GURL("https://google.com"))}};
+  }
+
+  // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
+  return {};
+}
+
+absl::optional<std::u16string> PrivacySandboxService::GetFpsOwnerForDisplay(
+    const GURL& site_url) {
+  auto sets = GetFirstPartySets();
+  auto schemeful_site = net::SchemefulSite(site_url);
+
+  if (!sets.count(schemeful_site))
+    return absl::nullopt;
+
+  // TODO(crbug.com/1332513): Apply formatting that correctly displays unicode
+  // domains.
+  return base::UTF8ToUTF16(sets[schemeful_site].GetURL().host());
+}
+
+bool PrivacySandboxService::ShouldShowDetailedFpsControls() {
+  // TODO(crbug.com/1332513): Consult the preference state to determine whether
+  // detailed controls should be shown.
+  return privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get();
 }
 
 /*static*/ PrivacySandboxService::PromptType

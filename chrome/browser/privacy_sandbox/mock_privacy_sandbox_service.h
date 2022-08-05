@@ -27,6 +27,15 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (override));
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+  MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
+              GetFirstPartySets,
+              (),
+              (override));
+  MOCK_METHOD(absl::optional<std::u16string>,
+              GetFpsOwnerForDisplay,
+              (const GURL& site_url),
+              (override));
+  MOCK_METHOD(bool, ShouldShowDetailedFpsControls, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

@@ -1970,6 +1970,19 @@ TEST_F(PrivacySandboxServiceTest, MetricsLoggingOccursCorrectly) {
       1);
 }
 
+TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+      {{"use-sample-sets", "true"}});
+
+  EXPECT_EQ(u"google.com", privacy_sandbox_service()->GetFpsOwnerForDisplay(
+                               GURL("https://mail.google.com.au")));
+  EXPECT_EQ(u"google.com", privacy_sandbox_service()->GetFpsOwnerForDisplay(
+                               GURL("https://youtube.com")));
+  EXPECT_EQ(absl::nullopt, privacy_sandbox_service()->GetFpsOwnerForDisplay(
+                               GURL("https://example.com")));
+}
+
 class PrivacySandboxServiceTestNonRegularProfile
     : public PrivacySandboxServiceTest {
   profile_metrics::BrowserProfileType GetProfileType() override {
