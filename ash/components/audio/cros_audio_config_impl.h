@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
 #define ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
 
+#include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/audio/cros_audio_config.h"
 #include "base/component_export.h"
@@ -22,10 +23,13 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   // CrosAudioConfig:
   uint8_t GetOutputVolumePercent() const override;
   mojom::MuteState GetOutputMuteState() const override;
+  void GetAudioDevices(
+      std::vector<mojom::AudioDevicePtr>* output_devices_out) const override;
 
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
+  void OnAudioNodesChanged() override;
 };
 
 }  // namespace ash::audio_config

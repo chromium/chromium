@@ -14,7 +14,7 @@ import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_uti
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {defaultFakeAudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
+import {crosAudioConfigFakeMicJack, crosAudioConfigFakeSpeaker, defaultFakeAudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 import {FakeSystemDisplay} from './fake_system_display.js';
 
 /** @enum {string} */
@@ -720,6 +720,9 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!MuteState} */
       outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
     };
 
     const minVolumePercentFakeAudioSystemProperties = {
@@ -727,13 +730,9 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!MuteState} */
       outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
-    };
 
-    const notMutedFakeAudioSystemProperties = {
-      outputVolumePercent: 75,
-
-      /** @type {!MuteState} */
-      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
     };
 
     const mutedByUserFakeAudioSystemProperties = {
@@ -741,6 +740,9 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!MuteState} */
       outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByUser,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
     };
 
     const mutedByPolicyFakeAudioSystemProperties = {
@@ -748,6 +750,9 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!MuteState} */
       outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByPolicy,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
     };
 
     setup(async function() {

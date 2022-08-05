@@ -19,9 +19,69 @@ export const CrosAudioConfigMuteState = {
   kMutedByPolicy: 2,
 };
 
+/**
+ * Enumeration of all possible AudioDeviceType options for CrosAudioConfig.
+ * Note: This must be kept in sync with CrosAudioConfig in
+ * ash//components/audio/public/mojom/cros_audio_config.mojom
+ * @enum {number}
+ */
+export const CrosAudioConfigAudioDeviceType = {
+  kHeadphone: 0,
+  kMic: 1,
+  kUsb: 2,
+  kBluetooth: 3,
+  kBluetoothNbMic: 4,
+  kHdmi: 5,
+  kInternalSpeaker: 6,
+  kInternalMic: 7,
+  kFrontMic: 8,
+  kRearMic: 9,
+  kKeyboardMic: 10,
+  kHotword: 11,
+  kPostDspLoopback: 12,
+  kPostMixLoopback: 13,
+  kLineout: 14,
+  kAlsaLoopback: 15,
+  kOther: 16,
+};
+
+/** @type {!ash.audioConfig.mojom.AudioDevice} */
+export const crosAudioConfigFakeSpeaker = {
+  /** @type {bigint} */
+  id: BigInt(10001),
+
+  /** @type {string} */
+  displayName: 'Speaker',
+
+  /** @type {boolean} */
+  isActive: false,
+
+  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
+  deviceType: CrosAudioConfigAudioDeviceType.kInternalSpeaker,
+};
+
+/** @type {!ash.audioConfig.mojom.AudioDevice} */
+export const crosAudioConfigFakeMicJack = {
+  /** @type {bigint} */
+  id: BigInt(10010),
+
+  /** @type {string} */
+  displayName: 'Mic Jack',
+
+  /** @type {boolean} */
+  isActive: true,
+
+  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
+  deviceType: CrosAudioConfigAudioDeviceType.kInternalMic,
+};
+
 /** @type {!ash.audioConfig.mojom.AudioSystemProperties} */
 export const defaultFakeAudioSystemProperties = {
+  /** @type {!Array<!ash.audioConfig.mojom.AudioDevice>} */
+  outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
+
   outputVolumePercent: 75,
+
   /** @type {!ash.audioConfig.mojom.MuteState} */
   outputMuteState: CrosAudioConfigMuteState.kNotMuted,
 };

@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
 #define ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
 
+#include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/component_export.h"
@@ -33,6 +34,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfig
 
   virtual uint8_t GetOutputVolumePercent() const = 0;
   virtual mojom::MuteState GetOutputMuteState() const = 0;
+  virtual void GetAudioDevices(
+      std::vector<mojom::AudioDevicePtr>* output_devices_out) const = 0;
 
  private:
   // mojom::CrosAudioConfig:

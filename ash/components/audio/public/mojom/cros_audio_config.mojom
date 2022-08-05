@@ -4,6 +4,27 @@
 
 module ash.audio_config.mojom;
 
+// Enum that corresponds with ash::AudioDeviceType.
+enum AudioDeviceType {
+  kHeadphone,
+  kMic,
+  kUsb,
+  kBluetooth,
+  kBluetoothNbMic,
+  kHdmi,
+  kInternalSpeaker,
+  kInternalMic,
+  kFrontMic,
+  kRearMic,
+  kKeyboardMic,
+  kHotword,
+  kPostDspLoopback,
+  kPostMixLoopback,
+  kLineout,
+  kAlsaLoopback,
+  kOther
+};
+
 // Represents the mute state of a user's audio device.
 enum MuteState {
   // The device is not muted.
@@ -16,8 +37,31 @@ enum MuteState {
   kMutedByPolicy
 };
 
+// Represents a user's audio device.
+struct AudioDevice {
+  // Id of the audio device. Assigned to be unique each time a device is plugged
+  // in, so that the same physical device will have a different id after an
+  // unplug then replug.
+  uint64 id;
+
+  // Human-readable name of the device.
+  string display_name;
+
+  // When true, indicates that the device is currently being used. Only one
+  // output device will be active at a time, and only one input device will
+  // be active at a time.
+  bool is_active;
+
+  // The type of the device.
+  AudioDeviceType device_type;
+};
+
 // Represents the audio state of the Audio system.
 struct AudioSystemProperties {
+  // List of output devices. UI surfaces should display devices in the order
+  // indicated by this array.
+  array<AudioDevice> output_devices;
+
   // The volume of the active output device.
   uint8 output_volume_percent;
 
