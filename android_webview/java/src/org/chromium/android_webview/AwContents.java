@@ -863,10 +863,15 @@ public class AwContents implements SmartClipProvider {
         }
     };
 
-    private static class AwWindowCoverageTracker {
+    /**
+     * Tracks and reports the percentage of coverage of AwContents on the root view.
+     */
+    @VisibleForTesting
+    public static class AwWindowCoverageTracker {
         private static final long RECALCULATION_DELAY_MS = 200;
 
-        private static final HashMap<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
+        @VisibleForTesting
+        public static final Map<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
                 new HashMap<>();
 
         private final View mRootView;
@@ -895,21 +900,20 @@ public class AwContents implements SmartClipProvider {
             return tracker;
         }
 
-        public boolean trackContents(AwContents contents) {
+        public void trackContents(AwContents contents) {
             contents.mAwWindowCoverageTracker = this;
-            return mAwContentsList.add(contents);
+            mAwContentsList.add(contents);
         }
 
-        public boolean untrackContents(AwContents contents) {
+        public void untrackContents(AwContents contents) {
             contents.mAwWindowCoverageTracker = null;
+            mAwContentsList.remove(contents);
 
-            // If that was the last AwContents, remove ourselves from the static list.
+            // If that was the last AwContents, remove ourselves from the static map.
             if (!isTracking()) {
                 if (TRACE) Log.i(TAG, "%s removing " + this, contents);
                 sWindowCoverageTrackers.remove(mRootView);
             }
-
-            return mAwContentsList.remove(contents);
         }
 
         private boolean isTracking() {
@@ -980,7 +984,8 @@ public class AwContents implements SmartClipProvider {
                         // protective copy.
                         Rect contentRect = new Rect(content.getGlobalVisibleRect());
 
-                        // If the intersect method returns true then it has modified contentRect.
+                        // If the intersect method returns true then it may have modified
+                        // contentRect. A Rect with area 0 will not intersect with anything.
                         if (contentRect.intersect(rootVisibleRect)) {
                             contentRects.add(contentRect);
                             schemes.add(AwContentsJni.get().getScheme(content.mNativeAwContents));

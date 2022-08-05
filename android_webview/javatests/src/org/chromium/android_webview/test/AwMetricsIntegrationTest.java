@@ -570,6 +570,14 @@ public class AwMetricsIntegrationTest {
                     RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
             Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
                     zeroBucketSamples, totalSamples);
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                Assert.assertEquals(
+                        1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                mAwContents.onDetachedFromWindow();
+                Assert.assertEquals(
+                        0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+            });
         } finally {
             embeddedTestServer.stopAndDestroyServer();
         }
