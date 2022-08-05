@@ -176,24 +176,100 @@ class Match {
 }
 
 /**
+ * A part of a Match, within a Section. A Match may cover multiple sections_ in
+ * |allText_|, so it must be split into multiple PartialMatches and then
+ * dispatched into the Sections they belong. The range of a PartialMatch in
+ * |allText_| is [begin, end). Exactly one <chrome_find> will be created for
+ * each PartialMatch.
+ */
+class PartialMatch {
+  /**
+   * @param {number} matchId ID of the Match to which this PartialMatch belongs.
+   * @param {number} begin Beginning index of partial match text in |allText_|.
+   * @param {number} end Ending index of partial match text in |allText_|.
+   */
+  constructor(
+      public matchId: number, public begin: number, public end: number) {}
+}
+
+/**
+ * A Replacement represents a DOM operation that swaps |oldNode| with |newNodes|
+ * under the parent of |oldNode| to highlight the match result inside |oldNode|.
+ * |newNodes| may contain plain TEXT Nodes for unhighlighted parts and
+ * <chrome_find> nodes for highlighted parts. This operation will be executed
+ * reversely when clearing current highlights for next FindInPage action.
+ */
+class Replacement {
+  /**
+   * @param {Node} HTMLElement The HTML Node containing search result.
+   * @param {Array<HTMLElement>} newNodes New HTML Nodes created for
+   *     substitution of |oldNode|.
+   */
+  constructor(
+      private readonly oldNode: HTMLElement,
+      private readonly newNodes: HTMLElement[]) {}
+
+  /**
+   * Executes the replacement to highlight search result.
+   */
+  doSwap(): void {
+    let parentNode = this.oldNode.parentNode;
+    if (!parentNode)
+      return;
+    for (const newNode of this.newNodes) {
+      parentNode.insertBefore(newNode, this.oldNode);
+    }
+    parentNode.removeChild(this.oldNode);
+  }
+
+  /**
+   * Executes the replacement reversely to clear the highlight.
+   */
+  undoSwap(): void {
+    const firstNewNode = this.newNodes[0];
+    if (!firstNewNode) {
+      return;
+    }
+    let parentNode = firstNewNode.parentNode;
+    if (!parentNode)
+      return;
+    parentNode.insertBefore(this.oldNode, firstNewNode);
+    for (const newNode of this.newNodes) {
+      parentNode.removeChild(newNode);
+    }
+  }
+}
+
+/**
  * A Section contains the info of one TEXT node in the |allText_|. The node's
  * textContent is [begin, end) of |allText_|.
  */
 class Section {
-  begin: number;
-  end: number;
-  node: Node;
-
   /**
    * @param {number} begin Beginning index of |node|.textContent in |allText_|.
    * @param {number} end Ending index of |node|.textContent in |allText_|.
    * @param {Node} node The TEXT Node of this section.
    */
-  constructor(begin: number, end: number, node: Node) {
-    this.begin = begin;
-    this.end = end;
-    this.node = node;
+  constructor(public begin: number, public end: number, public node: Node) {}
+}
+
+/**
+ * A timer that checks timeout for long tasks.
+ */
+class Timer {
+  private beginTime = Date.now();
+
+  /**
+   * @param {Number} timeoutMs Timeout in milliseconds.
+   */
+  constructor(private timeoutMs: number) {}
+
+  /**
+   * @return {Boolean} Whether this timer has been reached.
+   */
+  overtime(): boolean {
+    return Date.now() - this.beginTime > this.timeoutMs;
   }
 }
 
-export {CSS_CLASS_NAME_SELECT, Match, Section}
+export {CSS_CLASS_NAME_SELECT, Match, PartialMatch, Replacement, Section, Timer}

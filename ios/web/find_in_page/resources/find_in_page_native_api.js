@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CSS_CLASS_NAME_SELECT, Match, Section} from '//ios/web/find_in_page/resources/find_in_page.js';
+import {CSS_CLASS_NAME_SELECT, Match, PartialMatch, Replacement, Section, Timer} from '//ios/web/find_in_page/resources/find_in_page.js';
 
 /**
  * Based on code from the Google iOS app.
@@ -91,77 +91,10 @@ let selectedMatchIndex_ = -1;
 let matchId_ = 0;
 
 /**
- * A part of a Match, within a Section. A Match may cover multiple sections_ in
- * |allText_|, so it must be split into multiple PartialMatches and then
- * dispatched into the Sections they belong. The range of a PartialMatch in
- * |allText_| is [begin, end). Exactly one <chrome_find> will be created for
- * each PartialMatch.
- */
-class PartialMatch {
-  /**
-   * @param {number} matchId ID of the Match to which this PartialMatch belongs.
-   * @param {number} begin Beginning index of partial match text in |allText_|.
-   * @param {number} end Ending index of partial match text in |allText_|.
-   */
-  constructor(matchId, begin, end) {
-    this.matchId = matchId;
-    this.begin = begin;
-    this.end = end;
-  }
-}
-
-/**
  * A temporary array used for storing all PartialMatches inside current Section.
  * @type {Array<PartialMatch>}
  */
 let partialMatches_ = [];
-
-/**
- * A Replacement represents a DOM operation that swaps |oldNode| with |newNodes|
- * under the parent of |oldNode| to highlight the match result inside |oldNode|.
- * |newNodes| may contain plain TEXT Nodes for unhighlighted parts and
- * <chrome_find> nodes for highlighted parts. This operation will be executed
- * reversely when clearing current highlights for next FindInPage action.
- */
-class Replacement {
-  /**
-   * @param {Node} oldNode The HTML Node containing search result.
-   * @param {Array<Node>} newNodes New HTML Nodes created for substitution of
-   *     |oldNode|.
-   */
-  constructor(oldNode, newNodes) {
-    this.oldNode = oldNode;
-    this.newNodes = newNodes;
-  }
-
-  /**
-   * Executes the replacement to highlight search result.
-   * @return {undefined}
-   */
-  doSwap() {
-    let parentNode = this.oldNode.parentNode;
-    if (!parentNode)
-      return;
-    for (var i = 0; i < this.newNodes.length; ++i) {
-      parentNode.insertBefore(this.newNodes[i], this.oldNode);
-    }
-    parentNode.removeChild(this.oldNode);
-  }
-
-  /**
-   * Executes the replacement reversely to clear the highlight.
-   * @return {undefined}
-   */
-  undoSwap() {
-    let parentNode = this.newNodes[0].parentNode;
-    if (!parentNode)
-      return;
-    parentNode.insertBefore(this.oldNode, this.newNodes[0]);
-    for (var i = 0; i < this.newNodes.length; ++i) {
-      parentNode.removeChild(this.newNodes[i]);
-    }
-  }
-}
 
 /**
  * The replacements of current FindInPage action.
@@ -318,26 +251,6 @@ function getRegex_(findText) {
   let regexString = '(' + escapeRegex_(findText) + ')';
   return new RegExp(regexString, 'ig');
 };
-
-/**
- * A timer that checks timeout for long tasks.
- */
-class Timer {
-  /**
-   * @param {Number} timeoutMs Timeout in milliseconds.
-   */
-  constructor(timeoutMs) {
-    this.beginTime = Date.now();
-    this.timeoutMs = timeoutMs;
-  }
-
-  /**
-   * @return {Boolean} Whether this timer has been reached.
-   */
-  overtime() {
-    return Date.now() - this.beginTime > this.timeoutMs;
-  }
-}
 
 /**
  * Looks for a phrase in the DOM.
