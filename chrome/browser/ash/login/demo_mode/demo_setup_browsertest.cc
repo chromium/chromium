@@ -162,7 +162,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::WaitForWelcomeScreen();
     IsConfirmationDialogHidden();
 
-    InvokeDemoModeWithAccelerator();
+    InvokeDemoModeWithTaps();
     IsConfirmationDialogShown();
 
     ClickOkOnConfirmationDialog();
