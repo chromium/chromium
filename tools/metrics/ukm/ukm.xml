@@ -17313,6 +17313,13 @@ be describing additional metrics about the same event.
       This is replicated as Prerender.Experimental.PrerenderHostFinalStatus.* in
       UMA.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InteractiveTiming.FirstInputDelay4">
     <summary>
@@ -17338,6 +17345,13 @@ be describing additional metrics about the same event.
       the time when the page first paints content. A contentful paint includes a
       paint of text, image, SVG, or canvas.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Timing.ActivationToLargestContentfulPaint">
     <summary>
@@ -17345,6 +17359,13 @@ be describing additional metrics about the same event.
       the time when the page first paints the largest content (text or image)
       within viewport, across all frames.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Timing.NavigationToActivation">
     <summary>
