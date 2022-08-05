@@ -230,7 +230,8 @@ void LargestContentfulPaintHandler::RecordSubFrameTiming(
         largest_contentful_paint,
     const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
-    content::RenderFrameHost* subframe_rfh) {
+    content::RenderFrameHost* subframe_rfh,
+    const GURL& main_frame_url) {
   // For subframes
   const auto it = subframe_navigation_start_offset_.find(
       subframe_rfh->GetFrameTreeNodeId());
@@ -241,8 +242,9 @@ void LargestContentfulPaintHandler::RecordSubFrameTiming(
   RecordSubFrameTimingInternal(largest_contentful_paint,
                                first_input_or_scroll_notified_timestamp,
                                it->second);
-  if (!IsSameSite(subframe_rfh->GetLastCommittedURL(),
-                  subframe_rfh->GetMainFrame()->GetLastCommittedURL())) {
+  // Note that subframe can be in other page like FencedFrames.
+  // So, we can't know `main_frame_url` without help of PageLoadTracker.
+  if (!IsSameSite(subframe_rfh->GetLastCommittedURL(), main_frame_url)) {
     RecordCrossSiteSubframeTiming(largest_contentful_paint, it->second);
   }
 }

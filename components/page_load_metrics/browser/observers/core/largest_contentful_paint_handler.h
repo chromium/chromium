@@ -12,6 +12,7 @@
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -128,7 +129,8 @@ class LargestContentfulPaintHandler {
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
-      content::RenderFrameHost* subframe_rfh);
+      content::RenderFrameHost* subframe_rfh,
+      const GURL& main_frame_url);
   inline void RecordMainFrameTreeNodeId(int main_frame_tree_node_id) {
     main_frame_tree_node_id_.emplace(main_frame_tree_node_id);
   }
