@@ -64,19 +64,11 @@
         },
         {
             "files": [
-                "chrome/updater/.install"
-            ],
-            "dirs": [
-                "ChromiumUpdater.app",
-                "ChromiumUpdater_test.app",
-                "Updater Packaging"
-            ],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "updater"}
+                "updater.zip"
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Mac_Arm/{%position%}/updater.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
+            "gcs_path": "Mac_Arm/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }
