@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_CHROMEOS_LACROS_FAKE_SYNC_EXPLICIT_PASSPHRASE_CLIENT_ASH_H_
 #define COMPONENTS_SYNC_CHROMEOS_LACROS_FAKE_SYNC_EXPLICIT_PASSPHRASE_CLIENT_ASH_H_
 
+#include "base/callback.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,7 +38,8 @@ class FakeSyncExplicitPassphraseClientAsh
           receiver);
   void MimicPassphraseAvailable(crosapi::mojom::NigoriKeyPtr nigori_key);
   void MimicPassphraseRequired(
-      crosapi::mojom::NigoriKeyPtr expected_nigori_key);
+      crosapi::mojom::NigoriKeyPtr expected_nigori_key,
+      base::OnceClosure passphrase_provided_callback = base::DoNothing());
   void SetExpectedAccountKey(crosapi::mojom::AccountKeyPtr account_key);
 
   bool IsPassphraseRequired() const;
@@ -52,6 +54,8 @@ class FakeSyncExplicitPassphraseClientAsh
   crosapi::mojom::NigoriKeyPtr stored_nigori_key_;
   crosapi::mojom::NigoriKeyPtr expected_nigori_key_;
   crosapi::mojom::AccountKeyPtr expected_account_key_;
+
+  base::OnceClosure passphrase_provided_callback_;
 
   bool get_decryption_nigori_key_called_ = false;
   bool set_decryption_nigori_key_called_ = false;

@@ -50,6 +50,8 @@ void FakeSyncExplicitPassphraseClientAsh::SetDecryptionNigoriKey(
     return;
   }
   stored_nigori_key_ = std::move(nigori_key);
+  expected_nigori_key_ = nullptr;
+  std::move(passphrase_provided_callback_).Run();
 }
 
 void FakeSyncExplicitPassphraseClientAsh::BindReceiver(
@@ -68,8 +70,10 @@ void FakeSyncExplicitPassphraseClientAsh::MimicPassphraseAvailable(
 }
 
 void FakeSyncExplicitPassphraseClientAsh::MimicPassphraseRequired(
-    crosapi::mojom::NigoriKeyPtr expected_nigori_key) {
+    crosapi::mojom::NigoriKeyPtr expected_nigori_key,
+    base::OnceClosure passphrase_provided_callback) {
   expected_nigori_key_ = std::move(expected_nigori_key);
+  passphrase_provided_callback_ = std::move(passphrase_provided_callback);
   for (auto& observer : observers_) {
     observer->OnPassphraseRequired();
   }
@@ -82,8 +86,7 @@ void FakeSyncExplicitPassphraseClientAsh::SetExpectedAccountKey(
 }
 
 bool FakeSyncExplicitPassphraseClientAsh::IsPassphraseRequired() const {
-  return expected_account_key_ &&
-         !expected_nigori_key_.Equals(stored_nigori_key_);
+  return !expected_nigori_key_.is_null();
 }
 
 bool FakeSyncExplicitPassphraseClientAsh::IsGetDecryptionNigoriKeyCalled()

@@ -14,77 +14,34 @@
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
+#include "components/sync/chromeos/lacros/fake_sync_explicit_passphrase_client_ash.h"
+#include "components/sync/chromeos/lacros/fake_sync_mojo_service.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using testing::_;
-
-std::string ComputeKeyName(const syncer::Nigori& nigori) {
-  std::string key_name;
-  nigori.Permute(syncer::Nigori::Password, syncer::kNigoriKeyName, &key_name);
-  return key_name;
+crosapi::mojom::NigoriKeyPtr MakeMojoNigoriKey(
+    const syncer::KeyParamsForTesting& key_params) {
+  return syncer::NigoriToMojo(*syncer::Nigori::CreateByDerivation(
+      key_params.derivation_params, key_params.password));
 }
 
-MATCHER_P(AccountKeyEq, expected_account_key, "") {
-  const crosapi::mojom::AccountKeyPtr& given_account_key = arg;
-  return given_account_key->id == expected_account_key.id &&
-         given_account_key->account_type == expected_account_key.account_type;
+syncer::KeyParamsForTesting
+MakeCustomPassphraseKeyParamsFromServerNigoriAndPassphrase(
+    const std::string& passphrase,
+    fake_server::FakeServer* fake_server) {
+  sync_pb::NigoriSpecifics nigori_specifics;
+  fake_server::GetServerNigori(fake_server, &nigori_specifics);
+  return {syncer::InitCustomPassphraseKeyDerivationParamsFromNigori(
+              nigori_specifics),
+          passphrase};
 }
-
-MATCHER_P(MojoNigoriCanDecryptServerNigori, fake_server, "") {
-  const crosapi::mojom::NigoriKeyPtr& mojo_nigori = arg;
-  sync_pb::NigoriSpecifics server_specifics;
-  fake_server::GetServerNigori(fake_server, &server_specifics);
-  return mojo_nigori && ComputeKeyName(*syncer::NigoriFromMojo(*mojo_nigori)) ==
-                            server_specifics.encryption_keybag().key_name();
-}
-
-class MockSyncExplicitPassphraseClientAsh
-    : public crosapi::mojom::SyncExplicitPassphraseClient {
- public:
-  MockSyncExplicitPassphraseClientAsh() = default;
-  ~MockSyncExplicitPassphraseClientAsh() override = default;
-
-  MOCK_METHOD(void,
-              AddObserver,
-              (mojo::PendingRemote<
-                  crosapi::mojom::SyncExplicitPassphraseClientObserver>),
-              (override));
-  MOCK_METHOD(void,
-              GetDecryptionNigoriKey,
-              (crosapi::mojom::AccountKeyPtr, GetDecryptionNigoriKeyCallback),
-              (override));
-  MOCK_METHOD(void,
-              SetDecryptionNigoriKey,
-              (crosapi::mojom::AccountKeyPtr, crosapi::mojom::NigoriKeyPtr),
-              (override));
-};
-
-class MockSyncMojoService : public crosapi::mojom::SyncService {
- public:
-  MockSyncMojoService() = default;
-  ~MockSyncMojoService() override = default;
-
-  MOCK_METHOD(
-      void,
-      BindExplicitPassphraseClient,
-      (mojo::PendingReceiver<crosapi::mojom::SyncExplicitPassphraseClient>),
-      (override));
-  MOCK_METHOD(void,
-              BindUserSettingsClient,
-              (mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient>),
-              (override));
-};
 
 class SyncCustomPassphraseSharingLacrosBrowserTest : public SyncTest {
  public:
@@ -123,18 +80,7 @@ class SyncCustomPassphraseSharingLacrosBrowserTest : public SyncTest {
         chromeos::LacrosService::Get()
             ->GetRemote<crosapi::mojom::SyncService>();
     remote.reset();
-    sync_mojo_service_receiver_.Bind(remote.BindNewPipeAndPassReceiver());
-
-    // Lacros client is not expected to call these methods more than once.
-    ON_CALL(sync_mojo_service_, BindExplicitPassphraseClient)
-        .WillByDefault(testing::Invoke(
-            this, &SyncCustomPassphraseSharingLacrosBrowserTest::
-                      BindExplicitPassphraseClient));
-
-    ON_CALL(client_ash_, AddObserver)
-        .WillByDefault(testing::Invoke(
-            this,
-            &SyncCustomPassphraseSharingLacrosBrowserTest::AddClientObserver));
+    sync_mojo_service_.BindReceiver(remote.BindNewPipeAndPassReceiver());
   }
 
   bool IsServiceAvailable() const {
@@ -144,43 +90,28 @@ class SyncCustomPassphraseSharingLacrosBrowserTest : public SyncTest {
            lacros_service->IsAvailable<crosapi::mojom::SyncService>();
   }
 
-  crosapi::mojom::AccountKey GetSyncingUserAccountKey() {
-    crosapi::mojom::AccountKey account_key;
-    account_key.id = GetSyncService(0)->GetAccountInfo().gaia;
-    account_key.account_type = crosapi::mojom::AccountType::kGaia;
-    return account_key;
+  bool SetupSyncAndSetAccountKeyExpectations() {
+    if (!SetupSync()) {
+      return false;
+    }
+
+    crosapi::mojom::AccountKeyPtr account_key =
+        crosapi::mojom::AccountKey::New();
+    account_key->id = GetSyncService(0)->GetAccountInfo().gaia;
+    account_key->account_type = crosapi::mojom::AccountType::kGaia;
+    client_ash().SetExpectedAccountKey(std::move(account_key));
+
+    return true;
   }
 
-  MockSyncExplicitPassphraseClientAsh* client_ash() { return &client_ash_; }
-
-  crosapi::mojom::SyncExplicitPassphraseClientObserver* client_observer() {
-    return client_observer_remote_.get();
+  syncer::FakeSyncExplicitPassphraseClientAsh& client_ash() {
+    return sync_mojo_service_.GetFakeSyncExplicitPassphraseClientAsh();
   }
 
  private:
-  void BindExplicitPassphraseClient(
-      mojo::PendingReceiver<crosapi::mojom::SyncExplicitPassphraseClient>
-          pending_receiver) {
-    client_ash_receiver_.Bind(std::move(pending_receiver));
-  }
-
-  void AddClientObserver(
-      mojo::PendingRemote<crosapi::mojom::SyncExplicitPassphraseClientObserver>
-          pending_remote) {
-    client_observer_remote_.Bind(std::move(pending_remote));
-  }
-
-  testing::NiceMock<MockSyncMojoService> sync_mojo_service_;
-  testing::NiceMock<MockSyncExplicitPassphraseClientAsh> client_ash_;
-
   // Mojo fields order is important to allow safe use of `this` when passing
   // callbacks.
-  mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClientObserver>
-      client_observer_remote_;
-  mojo::Receiver<crosapi::mojom::SyncExplicitPassphraseClient>
-      client_ash_receiver_{&client_ash_};
-  mojo::Receiver<crosapi::mojom::SyncService> sync_mojo_service_receiver_{
-      &sync_mojo_service_};
+  syncer::FakeSyncMojoService sync_mojo_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
@@ -189,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
     GTEST_SKIP() << "Unsupported Ash version.";
   }
 
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndSetAccountKeyExpectations());
 
   // Mimic custom passphrase being set by other client.
   const syncer::KeyParamsForTesting kKeyParams =
@@ -210,14 +141,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
 
   // Mimic passphrase being provided by Ash, verify that passphrase is no longer
   // required and the data is decryptable.
-  EXPECT_CALL(*client_ash(), GetDecryptionNigoriKey(
-                                 AccountKeyEq(GetSyncingUserAccountKey()), _))
-      .WillOnce([&kKeyParams](auto account_key, auto callback) {
-        std::move(callback).Run(
-            syncer::NigoriToMojo(*syncer::Nigori::CreateByDerivation(
-                kKeyParams.derivation_params, kKeyParams.password)));
-      });
-  client_observer()->OnPassphraseAvailable();
+  client_ash().MimicPassphraseAvailable(MakeMojoNigoriKey(kKeyParams));
   EXPECT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
 }
@@ -228,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
     GTEST_SKIP() << "Unsupported Ash version.";
   }
 
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndSetAccountKeyExpectations());
 
   // Mimic custom passphrase being set by other client.
   const syncer::KeyParamsForTesting kKeyParams =
@@ -239,23 +163,20 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
 
   // Mimic Ash received the remote update and indicates that passphrase is
   // required.
-  client_observer()->OnPassphraseRequired();
+  base::RunLoop run_loop;
+  client_ash().MimicPassphraseRequired(
+      /*expected_nigori_key=*/MakeMojoNigoriKey(kKeyParams),
+      /*passphrase_provided_callback=*/run_loop.QuitClosure());
 
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
 
   // Mimic that user enters the passphrase, key should be exposed to Ash.
-  base::RunLoop run_loop;
-  EXPECT_CALL(
-      *client_ash(),
-      SetDecryptionNigoriKey(AccountKeyEq(GetSyncingUserAccountKey()),
-                             MojoNigoriCanDecryptServerNigori(GetFakeServer())))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
 
   run_loop.Run();
+  EXPECT_FALSE(client_ash().IsPassphraseRequired());
 }
 
 IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
@@ -264,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
     GTEST_SKIP() << "Unsupported Ash version.";
   }
 
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndSetAccountKeyExpectations());
 
   const std::string kPassphrase = "hunter2";
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase(kPassphrase);
@@ -275,14 +196,14 @@ IN_PROC_BROWSER_TEST_F(SyncCustomPassphraseSharingLacrosBrowserTest,
   // Mimic Ash received the remote update and indicates that passphrase is
   // required, key should be exposed to Ash.
   base::RunLoop run_loop;
-  EXPECT_CALL(
-      *client_ash(),
-      SetDecryptionNigoriKey(AccountKeyEq(GetSyncingUserAccountKey()),
-                             MojoNigoriCanDecryptServerNigori(GetFakeServer())))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  client_ash().MimicPassphraseRequired(
+      /*expected_nigori_key=*/MakeMojoNigoriKey(
+          MakeCustomPassphraseKeyParamsFromServerNigoriAndPassphrase(
+              kPassphrase, GetFakeServer())),
+      /*passphrase_provided_callback=*/run_loop.QuitClosure());
 
-  client_observer()->OnPassphraseRequired();
   run_loop.Run();
+  EXPECT_FALSE(client_ash().IsPassphraseRequired());
 }
 
 }  // namespace
