@@ -46,6 +46,9 @@ class FirstPartySetsPolicyServiceFactory
   // PrefService.
   static const base::Value::Dict* GetPolicyIfEnabled(const Profile& profile);
 
+  // Stores `test_factory` to inject test logic into BuildServiceInstanceFor.
+  void SetTestingFactoryForTesting(TestingFactory test_factory);
+
  private:
   friend struct base::DefaultSingletonTraits<
       FirstPartySetsPolicyServiceFactory>;

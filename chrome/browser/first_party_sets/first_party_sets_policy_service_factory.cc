@@ -10,12 +10,23 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 
 namespace first_party_sets {
+
+namespace {
+
+BrowserContextKeyedServiceFactory::TestingFactory* GetTestingFactory() {
+  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+      instance;
+  return instance.get();
+}
+
+}  // namespace
 
 // static
 FirstPartySetsPolicyService*
@@ -48,6 +59,11 @@ const base::Value::Dict* FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(
       first_party_sets::kFirstPartySetsOverrides);
 }
 
+void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
+    TestingFactory test_factory) {
+  *GetTestingFactory() = std::move(test_factory);
+}
+
 FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FirstPartySetsPolicyService",
@@ -64,6 +80,9 @@ FirstPartySetsPolicyServiceFactory::GetBrowserContextToUse(
 
 KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!GetTestingFactory()->is_null()) {
+    return GetTestingFactory()->Run(context).release();
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   if (const base::Value::Dict* policy = GetPolicyIfEnabled(*profile); policy) {
     return new FirstPartySetsPolicyService(context, *policy);
