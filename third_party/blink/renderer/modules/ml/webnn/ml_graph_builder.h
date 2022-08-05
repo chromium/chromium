@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
@@ -41,27 +42,45 @@ class MLGraphBuilder final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // ml_graph_builder.idl
-  MLOperand* input(String name, const MLOperandDescriptor* desc);
+  MLOperand* input(String name,
+                   const MLOperandDescriptor* desc,
+                   ExceptionState& exception_state);
   MLOperand* constant(const MLOperandDescriptor* desc,
-                      NotShared<DOMArrayBufferView> buffer_view);
+                      NotShared<DOMArrayBufferView> buffer_view,
+                      ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
-  MLOperand* clamp(const MLOperand*, const MLClampOptions*);
-  MLOperator* clamp(const MLClampOptions*);
+  MLOperand* clamp(const MLOperand* input,
+                   const MLClampOptions* options,
+                   ExceptionState& exception_state);
+  MLOperator* clamp(const MLClampOptions* options,
+                    ExceptionState& exception_state);
 
-  MLOperand* conv2d(const MLOperand*, const MLOperand*, const MLConv2dOptions*);
+  MLOperand* conv2d(const MLOperand* input,
+                    const MLOperand* filter,
+                    const MLConv2dOptions* options,
+                    ExceptionState& exception_state);
 
   // Element-wise binary operations
-  MLOperand* add(const MLOperand*, const MLOperand*);
+  MLOperand* add(const MLOperand* a,
+                 const MLOperand* b,
+                 ExceptionState& exception_state);
 
-  MLOperand* gemm(const MLOperand*, const MLOperand*, const MLGemmOptions*);
+  MLOperand* gemm(const MLOperand* a,
+                  const MLOperand* b,
+                  const MLGemmOptions* options,
+                  ExceptionState& exception_state);
 
   // Pooling operations
-  MLOperand* averagePool2d(const MLOperand*, const MLPool2dOptions*);
+  MLOperand* averagePool2d(const MLOperand* input,
+                           const MLPool2dOptions* options,
+                           ExceptionState& exception_state);
 
-  MLOperand* reshape(const MLOperand*, const Vector<int32_t>&);
+  MLOperand* reshape(const MLOperand* input,
+                     const Vector<int32_t>& new_shape,
+                     ExceptionState& exception_state);
 
-  MLOperand* softmax(const MLOperand*);
+  MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 
  private:
   Member<MLContext> ml_context_;

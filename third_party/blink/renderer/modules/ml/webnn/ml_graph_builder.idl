@@ -59,26 +59,24 @@ dictionary MLClampOptions {
 ] interface MLGraphBuilder {
   constructor(MLContext context);
 
-  MLOperand input(DOMString name, MLOperandDescriptor desc);
+  [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
-  MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+  [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
 
-  MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
-  MLOperator clamp(optional MLClampOptions options = {});
+  [RaisesException] MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
+  [RaisesException] MLOperator clamp(optional MLClampOptions options = {});
 
-  MLOperand conv2d(MLOperand input, MLOperand filter,
-                   optional MLConv2dOptions options = {});
+  [RaisesException] MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
 
   // Element-wise binary operations
-  MLOperand add(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand add(MLOperand a, MLOperand b);
 
-  MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+  [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 
   // Pooling operations
-  MLOperand averagePool2d(MLOperand input,
-                          optional MLPool2dOptions options = {});
+  [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
 
-  MLOperand reshape(MLOperand input, sequence<long> newShape);
+  [RaisesException] MLOperand reshape(MLOperand input, sequence<long> newShape);
 
-  MLOperand softmax(MLOperand input);
+  [RaisesException] MLOperand softmax(MLOperand input);
 };
