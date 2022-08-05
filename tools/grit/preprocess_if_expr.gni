@@ -10,7 +10,10 @@ template("preprocess_if_expr") {
 
     # Declare deps of preprocess_if_expr.py as inputs as well, to re-trigger
     # preprocess_if_expr() targets whenever those change.
-    inputs = [ "//tools/grit/grit/node/base.py" ]
+    inputs = [
+      "//tools/grit/grit/node/base.py",
+      "//tools/grit/grit/format/html_inline.py",
+    ]
 
     forward_variables_from(invoker,
                            [
