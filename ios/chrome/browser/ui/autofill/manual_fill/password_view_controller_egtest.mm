@@ -304,7 +304,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the Password View Controller is not present when presenting UI.
-- (void)testPasswordControllerPauses {
+// TODO(crbug.com/1350323): Test is flaky.
+- (void)DISABLED_testPasswordControllerPauses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
