@@ -4,18 +4,31 @@
 
 static_library("system_signals") {
   public = [
-    "base_platform_delegate.h",
     "file_system_service.h",
     "platform_delegate.h",
+    "platform_utils.h",
   ]
 
   sources = [
-    "base_platform_delegate.cc",
     "file_system_service.cc",
     "hashing_utils.cc",
     "hashing_utils.h",
     "platform_delegate.cc",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    public += [ "base_platform_delegate.h" ]
+
+    sources += [ "base_platform_delegate.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "win/platform_utils_win.cc" ]
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "posix/platform_utils_posix.cc" ]
+  }
 
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 
@@ -45,10 +58,11 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "base_platform_delegate_unittest.cc",
-    "file_system_service_unittest.cc",
-  ]
+  sources = [ "file_system_service_unittest.cc" ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "base_platform_delegate_unittest.cc" ]
+  }
 
   deps = [
     ":system_signals",

@@ -18,9 +18,16 @@ class BasePlatformDelegate : public PlatformDelegate {
   // PlatformDelegate:
   bool PathIsReadable(const base::FilePath& file_path) const override;
   bool DirectoryExists(const base::FilePath& file_path) const override;
+  FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
+      const FilePathSet& file_paths) override;
 
  protected:
   BasePlatformDelegate();
+
+  // Returns a map of file paths to whether a currently running process was
+  // spawned from that file. The set of file paths in the map are specified by
+  // `file_paths`.
+  FilePathMap<bool> AreExecutablesRunning(const FilePathSet& file_paths);
 };
 
 }  // namespace device_signals

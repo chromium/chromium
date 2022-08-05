@@ -29,10 +29,6 @@ class TestPlatformDelegate : public BasePlatformDelegate {
               ResolveFilePath,
               (const base::FilePath&, base::FilePath*),
               (override));
-  MOCK_METHOD(FilePathMap<ExecutableMetadata>,
-              GetAllExecutableMetadata,
-              (const FilePathSet&),
-              (override));
 };
 
 class BasePlatformDelegateTest : public testing::Test {

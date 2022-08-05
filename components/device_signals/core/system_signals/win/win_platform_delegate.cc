@@ -8,7 +8,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/process/process.h"
+#include "base/process/process_iterator.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +26,7 @@ absl::optional<std::wstring> ExpandEnvironmentVariables(
   std::wstring path_expanded;
   DWORD path_len = MAX_PATH;
   do {
-    DWORD result = ExpandEnvironmentStrings(
+    DWORD result = ::ExpandEnvironmentStrings(
         path.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
     if (!result) {
       // Failed to expand variables.
@@ -57,12 +60,6 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
 
   *resolved_file_path = base::MakeAbsoluteFilePath(expanded_file_path);
   return true;
-}
-
-FilePathMap<ExecutableMetadata> WinPlatformDelegate::GetAllExecutableMetadata(
-    const FilePathSet& file_paths) {
-  // TODO(b:231472924): Implement.
-  return FilePathMap<ExecutableMetadata>();
 }
 
 }  // namespace device_signals

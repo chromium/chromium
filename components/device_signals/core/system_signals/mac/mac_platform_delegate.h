@@ -13,10 +13,6 @@ class MacPlatformDelegate : public PosixPlatformDelegate {
  public:
   MacPlatformDelegate();
   ~MacPlatformDelegate() override;
-
-  // FileSystemDelegate:
-  FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
-      const FilePathSet& file_paths) override;
 };
 
 }  // namespace device_signals
