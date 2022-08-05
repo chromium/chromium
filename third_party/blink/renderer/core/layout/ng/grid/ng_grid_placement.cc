@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_line_resolver.h"
+
 namespace blink {
 
 namespace {
@@ -135,15 +137,15 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     const auto& item_style = grid_item.node.Style();
 
     GridArea position;
-    position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
+    position.columns = NGGridLineResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
-        /* is_ng_grid */ true, placement_data_.is_parent_grid_container,
+        placement_data_.is_parent_grid_container,
         placement_data_.column_subgrid_span_size);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
-    position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
+    position.rows = NGGridLineResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
-        /* is_ng_grid */ true, placement_data_.is_parent_grid_container,
+        placement_data_.is_parent_grid_container,
         placement_data_.row_subgrid_span_size);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
@@ -169,14 +171,12 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
   minor_max_end_line_ =
       (minor_direction_ == kForColumns)
           ? placement_data_.column_start_offset +
-                GridPositionsResolver::ExplicitGridColumnCount(
+                NGGridLineResolver::ExplicitGridColumnCount(
                     grid_style_, column_auto_repeat_track_count_,
-                    /* is_ng_grid */ true,
                     placement_data_.column_subgrid_span_size)
           : placement_data_.row_start_offset +
-                GridPositionsResolver::ExplicitGridRowCount(
+                NGGridLineResolver::ExplicitGridRowCount(
                     grid_style_, row_auto_repeat_track_count_,
-                    /* is_ng_grid */ true,
                     placement_data_.row_subgrid_span_size);
 
   placed_items->needs_to_sort_item_vector = false;
@@ -675,9 +675,9 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
   DCHECK(start_line && end_line);
 
   const GridTrackSizingDirection track_direction = track_collection.Direction();
-  GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
+  GridSpan span = NGGridLineResolver::ResolveGridPositionsFromStyle(
       grid_style_, out_of_flow_item_style, track_direction,
-      AutoRepeatTrackCount(track_direction), /* is_ng_grid */ true,
+      AutoRepeatTrackCount(track_direction),
       placement_data_.is_parent_grid_container,
       SubgridSpanSize(track_direction));
 

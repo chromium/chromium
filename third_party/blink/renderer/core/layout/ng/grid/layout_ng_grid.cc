@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_line_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
 namespace blink {
@@ -170,12 +172,12 @@ wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
                      : cached_placement_data_.row_subgrid_span_size;
 
   const wtf_size_t explicit_grid_track_count =
-      is_for_columns ? GridPositionsResolver::ExplicitGridColumnCount(
+      is_for_columns ? NGGridLineResolver::ExplicitGridColumnCount(
                            StyleRef(), AutoRepeatCountForDirection(kForColumns),
-                           /* is_ng_grid */ true, subgrid_span_size)
-                     : GridPositionsResolver::ExplicitGridRowCount(
+                           subgrid_span_size)
+                     : NGGridLineResolver::ExplicitGridRowCount(
                            StyleRef(), AutoRepeatCountForDirection(kForRows),
-                           /* is_ng_grid */ true, subgrid_span_size);
+                           subgrid_span_size);
 
   return base::checked_cast<wtf_size_t>(
       ExplicitGridStartForDirection(track_direction) +
