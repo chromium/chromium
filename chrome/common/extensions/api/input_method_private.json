@@ -93,6 +93,7 @@
           "enableSoundOnKeypress": { "type": "boolean", "optional": true, "description": "Whether to enable sound on keypress."},
           "physicalKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for physical keyboard (0: Off, 1: Modest, 2: Aggressive)."},
           "physicalKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether to enable auto capitalization for physical keyboard."},
+          "physicalKeyboardEnableDiacriticsOnLongpress": { "type": "boolean", "optional": true, "description": "Whether to enable diacritics on longpress for physical keyboard."},
           "virtualKeyboardAutoCorrectionLevel": { "type": "integer", "optional": true, "description": "The level of auto correction for virtual keyboard (0: Off, 1: Modest, 2: Aggressive)."},
           "virtualKeyboardEnableCapitalization": { "type": "boolean", "optional": true, "description": "Whether enable auto capitalization for virtual keyboard."},
           "xkbLayout": { "type": "string", "optional": true, "description": "The xkb keyboard (system provided keyboard) layout."},
