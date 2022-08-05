@@ -42,7 +42,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // Returns the ScriptState of the relevant realm of the callback object.
   //
   // NOTE: This function must be used only when it's pretty sure that the
-  // callcack object is the same origin-domain. Otherwise,
+  // callback object is the same origin-domain. Otherwise,
   // |CallbackRelevantScriptStateOrReportError| or
   // |CallbackRelevantScriptStateOrThrowException| must be used instead.
   ScriptState* CallbackRelevantScriptState() {
