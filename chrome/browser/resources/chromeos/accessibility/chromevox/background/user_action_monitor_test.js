@@ -22,6 +22,7 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
     await importModule('KeySequence', '/chromevox/common/key_sequence.js');
     await importModule(
         'UserActionMonitor', '/chromevox/background/user_action_monitor.js');
+    await importModule('KeyCode', '/common/key_code.js');
   }
 
   /**

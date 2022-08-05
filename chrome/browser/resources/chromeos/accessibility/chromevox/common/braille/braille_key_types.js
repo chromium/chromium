@@ -11,6 +11,8 @@
  * chrome.brailleDisplayPrivate.*.
  */
 
+import {KeyCode} from '../../../common/key_code.js';
+
 /**
  * The set of commands sent from a braille display.
  * @enum {string}

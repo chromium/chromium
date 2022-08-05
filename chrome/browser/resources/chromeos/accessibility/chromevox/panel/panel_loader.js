@@ -13,7 +13,6 @@ goog.require('AutomationUtil');
 goog.require('BaseLog');
 goog.require('EarconDescription');
 goog.require('EventLog');
-goog.require('KeyCode');
 goog.require('LogType');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');

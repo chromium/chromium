@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {KeyCode} from './key_code.js';
+
 /** Functions to send synthetic key and mouse events. */
 export class EventGenerator {
   /**

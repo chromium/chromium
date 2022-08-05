@@ -9,10 +9,8 @@
  * OS and accessibility.
  */
 
-goog.provide('KeyCode');
-
 /** @enum {number} */
-KeyCode = {
+export const KeyCode = {
   CANCEL: 3,
   BACK: 8,
   TAB: 9,

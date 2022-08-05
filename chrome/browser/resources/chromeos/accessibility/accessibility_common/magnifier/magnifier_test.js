@@ -30,6 +30,7 @@ MagnifierE2ETest = class extends E2ETestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('RectUtil', '/common/rect_util.js');
+    await importModule('KeyCode', '/common/key_code.js');
   }
 
   async getPref(name) {

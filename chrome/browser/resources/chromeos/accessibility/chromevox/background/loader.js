@@ -14,7 +14,6 @@ goog.require('AutomationUtil');
 goog.require('BaseLog');
 goog.require('EventLog');
 goog.require('JaPhoneticData');
-goog.require('KeyCode');
 goog.require('LogType');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');

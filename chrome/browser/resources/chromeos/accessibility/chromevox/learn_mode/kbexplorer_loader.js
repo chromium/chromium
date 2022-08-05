@@ -7,7 +7,6 @@
  */
 
 goog.require('AbstractEarcons');
-goog.require('KeyCode');
 goog.require('TtsInterface');
 goog.require('TtsSpeechProperties');
 

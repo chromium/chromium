@@ -23,6 +23,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     await importModule(
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
+    await importModule('KeyCode', '/common/key_code.js');
   }
 
   assertActiveLessonIndex(expectedIndex) {

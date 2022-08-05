@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../../common/event_generator.js';
+import {KeyCode} from '../../../common/key_code.js';
 import {LocaleInfo} from '../locale_info.js';
 
 import {Macro, MacroError} from './macro.js';

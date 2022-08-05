@@ -24,6 +24,9 @@
  * - Whether or not a prefix key was entered before the discrete keys.
  * - Whether sticky mode was active.
  */
+
+import {KeyCode} from '../../common/key_code.js';
+
 export class KeySequence {
   /**
    * @param {Event|Object} originalEvent The original key event entered by a

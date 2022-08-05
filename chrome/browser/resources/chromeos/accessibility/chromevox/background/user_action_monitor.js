@@ -5,6 +5,7 @@
 /**
  * @fileoverview Monitors user actions.
  */
+import {KeyCode} from '../../common/key_code.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {KeySequence} from '../common/key_sequence.js';

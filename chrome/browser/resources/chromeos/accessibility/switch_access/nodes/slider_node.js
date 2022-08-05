@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../common/event_generator.js';
+import {KeyCode} from '../../common/key_code.js';
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';

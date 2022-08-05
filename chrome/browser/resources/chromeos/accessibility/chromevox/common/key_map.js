@@ -19,6 +19,8 @@
  * To retrieve static data about user commands, see both CommandStore and
  * UserCommands.
  */
+import {KeyCode} from '../../common/key_code.js';
+
 import {KeySequence} from './key_sequence.js';
 
 export class KeyMap {

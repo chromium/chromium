@@ -24,6 +24,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
     await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('KeyCode', '/common/key_code.js');
   }
 
   async loadOptionsPage() {
