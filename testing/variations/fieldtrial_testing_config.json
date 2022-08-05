@@ -7450,6 +7450,17 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledWithContinueAndMultipleQueries_20220621",
+                    "params": {
+                        "enable_continue": "true",
+                        "multiple_queries_per_session": "true"
+                    },
+                    "enable_features": [
+                        "LauncherItemSuggest",
+                        "ProductivityLauncher"
+                    ]
+                },
+                {
                     "name": "EnabledWithContinueSection_20220621",
                     "params": {
                         "enable_continue": "true"
@@ -7471,17 +7482,6 @@
                     ],
                     "disable_features": [
                         "LauncherItemSuggest"
-                    ]
-                },
-                {
-                    "name": "EnabledWithContinueAndMultipleQueries_20220621",
-                    "params": {
-                        "enable_continue": "true",
-                        "multiple_queries_per_session": "true"
-                    },
-                    "enable_features": [
-                        "LauncherItemSuggest",
-                        "ProductivityLauncher"
                     ]
                 }
             ]
