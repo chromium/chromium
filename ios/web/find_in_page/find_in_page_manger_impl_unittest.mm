@@ -701,11 +701,13 @@ TEST_F(FindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state() && fake_delegate_.state()->match_count == 2;
   }));
-  auto select_and_scroll_result = std::make_unique<base::DictionaryValue>();
-  select_and_scroll_result->SetDouble("matches", 3.0);
-  select_and_scroll_result->SetDouble("index", 1.0);
+  base::Value::Dict select_and_scroll_result;
+  select_and_scroll_result.Set("matches", 3.0);
+  select_and_scroll_result.Set("index", 1.0);
+  base::Value select_and_scroll_result_value(
+      std::move(select_and_scroll_result));
   frame_with_hidden_match_ptr->AddJsResultForFunctionCall(
-      select_and_scroll_result.get(), kFindInPageSelectAndScrollToMatch);
+      &select_and_scroll_result_value, kFindInPageSelectAndScrollToMatch);
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
