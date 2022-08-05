@@ -361,5 +361,66 @@ TEST_F(NGAnchorQueryTest, Scroll) {
                   AnchorTestData{"--inner", PhysicalRect(0, 0, 400, 500)}));
 }
 
+TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+    }
+    #cb {
+      position: relative;
+    }
+    #columns {
+      column-count: 3;
+      column-fill: auto;
+      column-gap: 10px;
+      column-width: 100px;
+      width: 320px;
+      height: 100px;
+    }
+    </style>
+    <div id="container">
+      <div style="height: 10px"></div>
+      <div id="columns">
+        <div style="height: 10px"></div>
+        <div id="cb">
+          <div style="height: 140px"></div>
+          <!-- This anchor box starts at the middle of the 2nd column. -->
+          <div style="anchor-name: --a1; width: 100px; height: 100px"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  auto* cb = To<LayoutBox>(GetLayoutObjectByElementId("cb"));
+  ASSERT_EQ(cb->PhysicalFragmentCount(), 3u);
+  const NGPhysicalBoxFragment* cb_fragment1 = cb->GetPhysicalFragment(1);
+  const NGPhysicalAnchorQuery* cb_anchor_query1 = cb_fragment1->AnchorQuery();
+  ASSERT_NE(cb_anchor_query1, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query1),
+              testing::ElementsAre(
+                  AnchorTestData{"--a1", PhysicalRect(0, 50, 100, 50)}));
+  const NGPhysicalBoxFragment* cb_fragment2 = cb->GetPhysicalFragment(2);
+  const NGPhysicalAnchorQuery* cb_anchor_query2 = cb_fragment2->AnchorQuery();
+  ASSERT_NE(cb_anchor_query2, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query2),
+              testing::ElementsAre(
+                  AnchorTestData{"--a1", PhysicalRect(0, 0, 100, 50)}));
+
+  const NGPhysicalAnchorQuery* columns_anchor_query =
+      AnchorQueryByElementId("columns");
+  ASSERT_NE(columns_anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*columns_anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--a1", PhysicalRect(110, 0, 210, 100)}));
+
+  const NGPhysicalAnchorQuery* container_anchor_query =
+      AnchorQueryByElementId("container");
+  ASSERT_NE(container_anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*container_anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--a1", PhysicalRect(110, 10, 210, 100)}));
+}
+
 }  // namespace
 }  // namespace blink
