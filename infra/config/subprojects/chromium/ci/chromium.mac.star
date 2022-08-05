@@ -415,6 +415,8 @@ ios_builder(
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     name = "ios-catalyst",
+
+    # TODO(crbug.com/1350126): Move ios-catalyst to xcode.x14main when fixed.
     xcode = xcode.x13main,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

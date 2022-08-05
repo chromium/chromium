@@ -274,6 +274,9 @@ ios_builder(
 
 ios_builder(
     name = "ios-catalyst",
+
+    # TODO(crbug.com/1350126): Move ios-catalyst to xcode.x14main when fixed.
+    xcode = xcode.x13main,
     mirrors = [
         "ci/ios-catalyst",
     ],
