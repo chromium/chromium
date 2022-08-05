@@ -26,8 +26,7 @@ const char kAnyPath[] = "anyPath";
 const char kAnyPathOrUrl[] = "anyPathOrUrl";
 
 // Converts a numeric dialog type to a string.
-std::string GetDialogTypeAsString(
-    ui::SelectFileDialog::Type dialog_type) {
+std::string GetDialogTypeAsString(ui::SelectFileDialog::Type dialog_type) {
   std::string type_str;
   switch (dialog_type) {
     case ui::SelectFileDialog::SELECT_NONE:

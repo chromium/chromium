@@ -51,11 +51,11 @@ using content::ChildProcessSecurityPolicy;
 using content::SiteInstance;
 using content::WebContents;
 using extensions::Extension;
-using storage::FileSystemURL;
 using file_manager::util::EntryDefinition;
 using file_manager::util::EntryDefinitionList;
 using file_manager::util::FileDefinition;
 using file_manager::util::FileDefinitionList;
+using storage::FileSystemURL;
 
 namespace file_manager {
 namespace file_browser_handlers {
@@ -95,8 +95,7 @@ FileBrowserHandlerList FindFileBrowserHandlersForURL(
       continue;
     for (FileBrowserHandler::List::const_iterator handler_iter =
              handler_list->begin();
-         handler_iter != handler_list->end();
-         ++handler_iter) {
+         handler_iter != handler_list->end(); ++handler_iter) {
       const FileBrowserHandler* handler = handler_iter->get();
       if (!handler->MatchesURL(lowercase_url))
         continue;
@@ -198,8 +197,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
 
     // If the file is from a physical volume, actual file must be found.
     if (is_native_file) {
-      if (!base::PathExists(local_path) ||
-          base::IsLink(local_path) ||
+      if (!base::PathExists(local_path) || base::IsLink(local_path) ||
           !base::GetFileInfo(local_path, &file_info)) {
         continue;
       }
@@ -336,8 +334,8 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
     return;
   }
 
-  SetupHandlerHostFileAccessPermissions(
-      file_definition_list.get(), extension_.get(), handler_pid);
+  SetupHandlerHostFileAccessPermissions(file_definition_list.get(),
+                                        extension_.get(), handler_pid);
 
   base::Value::List event_args;
   event_args.Append(action_id_);
@@ -365,8 +363,7 @@ void FileBrowserHandlerExecutor::SetupHandlerHostFileAccessPermissions(
   const FileBrowserHandler* action =
       FileBrowserHandler::FindForActionId(extension_.get(), action_id_);
   for (FileDefinitionList::const_iterator iter = file_definition_list->begin();
-       iter != file_definition_list->end();
-       ++iter) {
+       iter != file_definition_list->end(); ++iter) {
     if (!action)
       continue;
     if (action->CanRead()) {
@@ -374,8 +371,8 @@ void FileBrowserHandlerExecutor::SetupHandlerHostFileAccessPermissions(
           handler_pid, iter->absolute_path);
     }
     if (action->CanWrite()) {
-      content::ChildProcessSecurityPolicy::GetInstance()->
-          GrantCreateReadWriteFile(handler_pid, iter->absolute_path);
+      content::ChildProcessSecurityPolicy::GetInstance()
+          ->GrantCreateReadWriteFile(handler_pid, iter->absolute_path);
     }
   }
 }

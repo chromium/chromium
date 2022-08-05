@@ -59,7 +59,7 @@ struct EntryDefinition {
 
   std::string file_system_root_url;  // Used to create DOMFileSystem.
   std::string file_system_name;      // Value of DOMFileSystem.name.
-  base::FilePath full_path;    // Value of Entry.fullPath.
+  base::FilePath full_path;          // Value of Entry.fullPath.
   // Whether to create FileEntry or DirectoryEntry when the corresponding entry
   // is not found.
   bool is_directory;

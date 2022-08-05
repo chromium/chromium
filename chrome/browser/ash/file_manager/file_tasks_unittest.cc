@@ -92,9 +92,8 @@ TEST(FileManagerFileTasksTest, MakeTaskID) {
 
 TEST(FileManagerFileTasksTest, TaskDescriptorToId) {
   EXPECT_EQ("app-id|file|action-id",
-            TaskDescriptorToId(TaskDescriptor("app-id",
-                                              TASK_TYPE_FILE_BROWSER_HANDLER,
-                                              "action-id")));
+            TaskDescriptorToId(TaskDescriptor(
+                "app-id", TASK_TYPE_FILE_BROWSER_HANDLER, "action-id")));
 }
 
 TEST(FileManagerFileTasksTest, ParseTaskID_FileBrowserHandler) {
@@ -227,11 +226,9 @@ class FileManagerFileTaskPreferencesTest : public testing::Test {
 TEST_F(FileManagerFileTaskPreferencesTest,
        ChooseAndSetDefaultTask_MultipleTasks) {
   // Text.app and Nice.app were found for "foo.txt".
-  TaskDescriptor text_app_task("text-app-id",
-                               TASK_TYPE_FILE_HANDLER,
+  TaskDescriptor text_app_task("text-app-id", TASK_TYPE_FILE_HANDLER,
                                "action-id");
-  TaskDescriptor nice_app_task("nice-app-id",
-                               TASK_TYPE_FILE_HANDLER,
+  TaskDescriptor nice_app_task("nice-app-id", TASK_TYPE_FILE_HANDLER,
                                "action-id");
   std::vector<FullTaskDescriptor> tasks;
   tasks.emplace_back(
@@ -290,9 +287,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
        ChooseAndSetDefaultTask_FallbackFileBrowser) {
   // The internal file browser handler of the Files app was found for
   // "foo.txt".
-  TaskDescriptor files_app_task(kFileManagerAppId,
-                                TASK_TYPE_FILE_BROWSER_HANDLER,
-                                "view-in-browser");
+  TaskDescriptor files_app_task(
+      kFileManagerAppId, TASK_TYPE_FILE_BROWSER_HANDLER, "view-in-browser");
   std::vector<FullTaskDescriptor> tasks;
   tasks.emplace_back(
       files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
@@ -512,9 +508,8 @@ class FileManagerFileTasksComplexTest : public testing::Test {
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(test_profile_.get()));
     extension_service_ = test_extension_system->CreateExtensionService(
-        &command_line_,
-        base::FilePath()  /* install_directory */,
-        false  /* autoupdate_enabled*/);
+        &command_line_, base::FilePath() /* install_directory */,
+        false /* autoupdate_enabled*/);
   }
 
   // Helper class for calling FindAllTypesOfTask synchronously.

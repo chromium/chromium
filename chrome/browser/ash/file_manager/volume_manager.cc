@@ -1151,8 +1151,8 @@ void VolumeManager::OnFormatEvent(
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnDeviceEvent: " << event << ", " << error_code
-           << ", " << device_path;
+  DVLOG(1) << "OnDeviceEvent: " << event << ", " << error_code << ", "
+           << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::FORMAT_STARTED:
@@ -1557,8 +1557,7 @@ void VolumeManager::DoAttachMtpStorage(
   // prohibited by the preference.
   const bool read_only =
       mtp_storage_info->access_capability != kAccessCapabilityReadWrite ||
-      mtp_storage_info->filesystem_type !=
-          kFilesystemTypeGenericHierarchical ||
+      mtp_storage_info->filesystem_type != kFilesystemTypeGenericHierarchical ||
       GetExternalStorageAccessMode(profile_) ==
           chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
 
@@ -1769,9 +1768,8 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
 
     // If archives[i]'s source_path is in another archive, mount it first.
     for (size_t parent = i + 1; parent < archives.size(); ++parent) {
-      if (!done[parent] &&
-          archives[parent]->mount_path().IsParent(
-              chain.back()->source_path())) {
+      if (!done[parent] && archives[parent]->mount_path().IsParent(
+                               chain.back()->source_path())) {
         // done[parent] started false, so archives[parent] is non-null.
         done[parent] = true;
         chain.push_back(std::move(archives[parent]));

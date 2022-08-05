@@ -269,8 +269,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
       const GURL& origin,
       const SelectedFileInfoList& selected_info_list,
       FileChooserFileInfoListCallback callback)
-      : context_(context),
-        callback_(std::move(callback)) {
+      : context_(context), callback_(std::move(callback)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     Lifetime lifetime(this);

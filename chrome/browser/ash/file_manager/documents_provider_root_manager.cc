@@ -148,11 +148,13 @@ DocumentsProviderRootManager::RootInfo::RootInfo(RootInfo&& that) noexcept =
 
 DocumentsProviderRootManager::RootInfo::~RootInfo() = default;
 
-DocumentsProviderRootManager::RootInfo& DocumentsProviderRootManager::RootInfo::
-operator=(const RootInfo& that) = default;
+DocumentsProviderRootManager::RootInfo&
+DocumentsProviderRootManager::RootInfo::operator=(const RootInfo& that) =
+    default;
 
-DocumentsProviderRootManager::RootInfo& DocumentsProviderRootManager::RootInfo::
-operator=(RootInfo&& that) noexcept = default;
+DocumentsProviderRootManager::RootInfo&
+DocumentsProviderRootManager::RootInfo::operator=(RootInfo&& that) noexcept =
+    default;
 
 bool DocumentsProviderRootManager::RootInfo::operator<(
     const RootInfo& rhs) const {

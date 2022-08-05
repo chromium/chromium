@@ -140,8 +140,7 @@ bool IsNonNativeFileSystemType(storage::FileSystemType type) {
   }
 }
 
-bool IsUnderNonNativeLocalPath(Profile* profile,
-                        const base::FilePath& path) {
+bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GURL url;

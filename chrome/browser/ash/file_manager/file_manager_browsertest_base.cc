@@ -1674,21 +1674,21 @@ class SmbfsTestVolume : public LocalTestVolume {
     std::unique_ptr<MockSmbFsMounter> mock_mounter =
         std::make_unique<MockSmbFsMounter>();
     EXPECT_CALL(*mock_mounter, Mount(_))
-        .WillOnce([this,
-                   delegate](smbfs::SmbFsMounter::DoneCallback mount_callback) {
-          mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
-          mock_smbfs_ = std::make_unique<MockSmbFsImpl>(
-              smbfs_remote.BindNewPipeAndPassReceiver());
+        .WillOnce(
+            [this, delegate](smbfs::SmbFsMounter::DoneCallback mount_callback) {
+              mojo::Remote<smbfs::mojom::SmbFs> smbfs_remote;
+              mock_smbfs_ = std::make_unique<MockSmbFsImpl>(
+                  smbfs_remote.BindNewPipeAndPassReceiver());
 
-          std::move(mount_callback)
-              .Run(smbfs::mojom::MountError::kOk,
-                   std::make_unique<smbfs::SmbFsHost>(
-                       std::make_unique<ash::disks::MountPoint>(
-                           mount_path(),
-                           ash::disks::DiskMountManager::GetInstance()),
-                       delegate, std::move(smbfs_remote),
-                       delegate_.BindNewPipeAndPassReceiver()));
-        });
+              std::move(mount_callback)
+                  .Run(smbfs::mojom::MountError::kOk,
+                       std::make_unique<smbfs::SmbFsHost>(
+                           std::make_unique<ash::disks::MountPoint>(
+                               mount_path(),
+                               ash::disks::DiskMountManager::GetInstance()),
+                           delegate, std::move(smbfs_remote),
+                           delegate_.BindNewPipeAndPassReceiver()));
+            });
     return std::move(mock_mounter);
   }
 

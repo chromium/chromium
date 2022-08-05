@@ -34,9 +34,7 @@ class DriveMountPointWaiter : public drive::DriveIntegrationServiceObserver {
   }
 
   // Runs loop until the file system is mounted.
-  void Wait() {
-    run_loop_.Run();
-  }
+  void Wait() { run_loop_.Run(); }
 
  private:
   drive::DriveIntegrationService* integration_service_;

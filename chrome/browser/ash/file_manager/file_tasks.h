@@ -173,9 +173,7 @@ struct TaskDescriptor {
   TaskDescriptor(const std::string& in_app_id,
                  TaskType in_task_type,
                  const std::string& in_action_id)
-      : app_id(in_app_id),
-        task_type(in_task_type),
-        action_id(in_action_id) {
+      : app_id(in_app_id), task_type(in_task_type), action_id(in_action_id) {
     // For web apps, the action_id must be a full valid URL if it exists.
     DCHECK(task_type != TASK_TYPE_WEB_APP || action_id.empty() ||
            GURL(action_id).is_valid());
@@ -290,10 +288,9 @@ bool ExecuteFileTask(Profile* profile,
 // Finds the file browser handler tasks (app/extensions declaring
 // "file_browser_handlers" in manifest.json) that can be used with the
 // given files, appending them to the |result_list|.
-void FindFileBrowserHandlerTasks(
-    Profile* profile,
-    const std::vector<GURL>& file_urls,
-    std::vector<FullTaskDescriptor>* result_list);
+void FindFileBrowserHandlerTasks(Profile* profile,
+                                 const std::vector<GURL>& file_urls,
+                                 std::vector<FullTaskDescriptor>* result_list);
 
 // Callback function type for FindAllTypesOfTasks.
 typedef base::OnceCallback<void(

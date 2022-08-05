@@ -20,8 +20,7 @@ std::u16string GetSelectFileDialogTitle(
 
     case ui::SelectFileDialog::SELECT_FOLDER:
     case ui::SelectFileDialog::SELECT_EXISTING_FOLDER:
-      title = l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_SELECT_FOLDER_TITLE);
+      title = l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SELECT_FOLDER_TITLE);
       break;
 
     case ui::SelectFileDialog::SELECT_UPLOAD_FOLDER:
@@ -30,13 +29,13 @@ std::u16string GetSelectFileDialogTitle(
       break;
 
     case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
-      title = l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_SELECT_SAVEAS_FILE_TITLE);
+      title =
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SELECT_SAVEAS_FILE_TITLE);
       break;
 
     case ui::SelectFileDialog::SELECT_OPEN_FILE:
-      title = l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_SELECT_OPEN_FILE_TITLE);
+      title =
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SELECT_OPEN_FILE_TITLE);
       break;
 
     case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
