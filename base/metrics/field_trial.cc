@@ -90,7 +90,8 @@ void WriteStringPair(Pickle* pickle,
 // format of the pickle looks like:
 // TrialName, GroupName, ParamKey1, ParamValue1, ParamKey2, ParamValue2, ...
 // If there are no parameters, then it just ends at GroupName.
-void PickleFieldTrial(const FieldTrial::State& trial_state, Pickle* pickle) {
+void PickleFieldTrial(const FieldTrial::PickleState& trial_state,
+                      Pickle* pickle) {
   WriteStringPair(pickle, *trial_state.trial_name, *trial_state.group_name);
 
   // Get field trial params.
@@ -122,18 +123,11 @@ FieldTrial::Probability GetGroupBoundaryValue(
   return std::min(result, divisor - 1);
 }
 
-// Separate type from FieldTrial::State so that it can use StringPieces.
-struct FieldTrialStringEntry {
-  StringPiece trial_name;
-  StringPiece group_name;
-  bool activated = false;
-};
-
 // Parses the --force-fieldtrials string |trials_string| into |entries|.
 // Returns true if the string was parsed correctly. On failure, the |entries|
 // array may end up being partially filled.
 bool ParseFieldTrialsString(const std::string& trials_string,
-                            std::vector<FieldTrialStringEntry>* entries) {
+                            std::vector<FieldTrial::State>* entries) {
   const StringPiece trials_string_piece(trials_string);
 
   size_t next_item = 0;
@@ -148,7 +142,7 @@ bool ParseFieldTrialsString(const std::string& trials_string,
     if (group_name_end == trials_string.npos)
       group_name_end = trials_string.length();
 
-    FieldTrialStringEntry entry;
+    FieldTrial::State entry;
     // Verify if the trial should be activated or not.
     if (trials_string[next_item] == kActivationMarker) {
       // Name cannot be only the indicator.
@@ -224,11 +218,11 @@ bool FieldTrial::enable_benchmarking_ = false;
 
 FieldTrial::EntropyProvider::~EntropyProvider() = default;
 
-FieldTrial::State::State() = default;
+FieldTrial::PickleState::PickleState() = default;
 
-FieldTrial::State::State(const State& other) = default;
+FieldTrial::PickleState::PickleState(const PickleState& other) = default;
 
-FieldTrial::State::~State() = default;
+FieldTrial::PickleState::~PickleState() = default;
 
 bool FieldTrial::FieldTrialEntry::GetTrialAndGroupName(
     StringPiece* trial_name,
@@ -437,7 +431,7 @@ bool FieldTrial::GetActiveGroup(ActiveGroup* active_group) const {
   return true;
 }
 
-bool FieldTrial::GetStateWhileLocked(State* field_trial_state,
+bool FieldTrial::GetStateWhileLocked(PickleState* field_trial_state,
                                      bool include_disabled) {
   if (!include_disabled && !enable_field_trial_)
     return false;
@@ -607,6 +601,32 @@ void FieldTrialList::StatesToString(std::string* output) {
 }
 
 // static
+std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
+    PassKey<test::ScopedFeatureList>) {
+  std::vector<FieldTrial::State> states;
+
+  if (!global_)
+    return states;
+
+  AutoLock auto_lock(global_->lock_);
+  for (const auto& registered : global_->registered_) {
+    FieldTrial::PickleState trial;
+    if (!registered.second->GetStateWhileLocked(&trial, true))
+      continue;
+    DCHECK_EQ(std::string::npos,
+              trial.trial_name->find(kPersistentStringSeparator));
+    DCHECK_EQ(std::string::npos,
+              trial.group_name->find(kPersistentStringSeparator));
+    FieldTrial::State entry;
+    entry.activated = trial.activated;
+    entry.trial_name = *trial.trial_name;
+    entry.group_name = *trial.group_name;
+    states.push_back(std::move(entry));
+  }
+  return states;
+}
+
+// static
 void FieldTrialList::AllStatesToString(std::string* output,
                                        bool include_disabled) {
   if (!global_)
@@ -614,7 +634,7 @@ void FieldTrialList::AllStatesToString(std::string* output,
   AutoLock auto_lock(global_->lock_);
 
   for (const auto& registered : global_->registered_) {
-    FieldTrial::State trial;
+    FieldTrial::PickleState trial;
     if (!registered.second->GetStateWhileLocked(&trial, include_disabled))
       continue;
     DCHECK_EQ(std::string::npos,
@@ -637,7 +657,7 @@ std::string FieldTrialList::AllParamsToString(bool include_disabled,
       FieldTrialParamAssociator::GetInstance();
   std::string output;
   for (const auto& registered : GetRegisteredTrials()) {
-    FieldTrial::State trial;
+    FieldTrial::PickleState trial;
     if (!registered.second->GetStateWhileLocked(&trial, include_disabled))
       continue;
     DCHECK_EQ(std::string::npos,
@@ -693,7 +713,7 @@ void FieldTrialList::GetActiveFieldTrialGroups(
 void FieldTrialList::GetActiveFieldTrialGroupsFromString(
     const std::string& trials_string,
     FieldTrial::ActiveGroups* active_groups) {
-  std::vector<FieldTrialStringEntry> entries;
+  std::vector<FieldTrial::State> entries;
   if (!ParseFieldTrialsString(trials_string, &entries))
     return;
 
@@ -744,22 +764,18 @@ bool FieldTrialList::CreateTrialsFromString(const std::string& trials_string) {
   if (trials_string.empty() || !global_)
     return true;
 
-  std::vector<FieldTrialStringEntry> entries;
+  std::vector<FieldTrial::State> entries;
   if (!ParseFieldTrialsString(trials_string, &entries))
     return false;
 
-  for (const auto& entry : entries) {
-    FieldTrial* trial = CreateFieldTrial(entry.trial_name, entry.group_name);
-    if (!trial)
-      return false;
-    if (entry.activated) {
-      // Call |group()| to mark the trial as "used" and notify observers, if
-      // any. This is useful to ensure that field trials created in child
-      // processes are properly reported in crash reports.
-      trial->group();
-    }
-  }
-  return true;
+  return CreateTrialsFromFieldTrialStatesInternal(entries);
+}
+
+// static
+bool FieldTrialList::CreateTrialsFromFieldTrialStates(
+    PassKey<test::ScopedFeatureList>,
+    const std::vector<FieldTrial::State>& entries) {
+  return CreateTrialsFromFieldTrialStatesInternal(entries);
 }
 
 // static
@@ -1376,7 +1392,7 @@ void FieldTrialList::AddToAllocatorWhileLocked(
   if (allocator->IsReadonly())
     return;
 
-  FieldTrial::State trial_state;
+  FieldTrial::PickleState trial_state;
   if (!field_trial->GetStateWhileLocked(&trial_state, false))
     return;
 
@@ -1463,6 +1479,27 @@ FieldTrialList::RegistrationMap FieldTrialList::GetRegisteredTrials() {
     output = global_->registered_;
   }
   return output;
+}
+
+// static
+bool FieldTrialList::CreateTrialsFromFieldTrialStatesInternal(
+    const std::vector<FieldTrial::State>& entries) {
+  DCHECK(global_);
+  if (entries.empty() || !global_)
+    return true;
+
+  for (const auto& entry : entries) {
+    FieldTrial* trial = CreateFieldTrial(entry.trial_name, entry.group_name);
+    if (!trial)
+      return false;
+    if (entry.activated) {
+      // Call |group()| to mark the trial as "used" and notify observers, if
+      // any. This is useful to ensure that field trials created in child
+      // processes are properly reported in crash reports.
+      trial->group();
+    }
+  }
+  return true;
 }
 
 }  // namespace base

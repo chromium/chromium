@@ -23,7 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"

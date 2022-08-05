@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -74,6 +73,9 @@ class WebUITabStripFieldTrialBrowserTest : public InProcessBrowserTest {
   WebUITabStripFieldTrialBrowserTest() {
     variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
         ->ResetForTesting();
+    null_feature_list_.InitWithNullFeatureAndFieldTrialLists();
+    field_trial_list_ = std::make_unique<base::FieldTrialList>(
+        std::make_unique<base::MockEntropyProvider>(0.0));
   }
 
  protected:
@@ -84,10 +86,14 @@ class WebUITabStripFieldTrialBrowserTest : public InProcessBrowserTest {
   base::FeatureList* feature_list() { return feature_list_.get(); }
 
  private:
-  base::test::ScopedFieldTrialListResetter scoped_field_trial_list_resetter_;
-  base::FieldTrialList field_trial_list_{
-      std::make_unique<base::MockEntropyProvider>(0.0)};
-
+  // |null_feature_list_| is used to initialize FieldTrialLists to be
+  // null. This is required to create a new FieldTrialList.
+  base::test::ScopedFeatureList null_feature_list_;
+  // |field_trial_list_| is a new FieldTrialList with MockEntryProvider(0.0),
+  // created for WebUITabStripFieldTrialBrowserTest.
+  std::unique_ptr<base::FieldTrialList> field_trial_list_;
+  // |scoped_feature_list_| is used to enable and disable features for
+  // WebUITabStripFieldTrialBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<base::FeatureList> feature_list_ =

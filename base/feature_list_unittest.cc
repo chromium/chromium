@@ -21,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -182,8 +181,9 @@ TEST_F(FeatureListTest, FieldTrialOverrides) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
-    test::ScopedFieldTrialListResetter resetter;
-    FieldTrialList field_trial_list(nullptr);
+    test::ScopedFeatureList outer_scope;
+    outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
     auto feature_list = std::make_unique<FeatureList>();
 
     FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("TrialExample1", "A");
@@ -402,8 +402,9 @@ TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
                                     test_case.enable_features,
                                     test_case.disable_features));
 
-    test::ScopedFieldTrialListResetter resetter;
-    FieldTrialList field_trial_list(nullptr);
+    test::ScopedFeatureList outer_scope;
+    outer_scope.InitWithEmptyFeatureAndFieldTrialLists();
+
     auto feature_list = std::make_unique<FeatureList>();
     feature_list->InitializeFromCommandLine(test_case.enable_features,
                                             test_case.disable_features);

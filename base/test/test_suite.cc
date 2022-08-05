@@ -136,13 +136,12 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
       delete;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    field_trial_list_ = std::make_unique<FieldTrialList>(
-        std::make_unique<MockEntropyProvider>());
-
     const CommandLine* command_line = CommandLine::ForCurrentProcess();
 
-    // Set up a FeatureList instance, so that code using that API will not hit a
-    // an error that it's not set. It will be cleared automatically.
+    // We set up a FeatureList via ScopedFeatureList::InitFromCommandLine().
+    // This ensures that code using that API will not hit an error that it's
+    // not set. It will be cleared by ~ScopedFeatureList().
+
     // TestFeatureForBrowserTest1 and TestFeatureForBrowserTest2 used in
     // ContentBrowserTestScopedFeatureListTest to ensure ScopedFeatureList keeps
     // features from command line.
@@ -172,11 +171,9 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
     scoped_feature_list_.Reset();
-    field_trial_list_.reset();
   }
 
  private:
-  std::unique_ptr<FieldTrialList> field_trial_list_;
   test::ScopedFeatureList scoped_feature_list_;
 };
 

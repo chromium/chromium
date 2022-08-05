@@ -94,8 +94,6 @@ static_library("test_support") {
     "scoped_command_line.h",
     "scoped_feature_list.cc",
     "scoped_feature_list.h",
-    "scoped_field_trial_list_resetter.cc",
-    "scoped_field_trial_list_resetter.h",
     "scoped_mock_clock_override.cc",
     "scoped_mock_clock_override.h",
     "scoped_mock_time_message_loop_task_runner.cc",

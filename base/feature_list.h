@@ -258,12 +258,16 @@ class BASE_EXPORT FeatureList {
   // accepted by InitializeFromCommandLine()) corresponding to features that
   // have been overridden - either through command-line or via FieldTrials. For
   // those features that have an associated FieldTrial, the output entry will be
-  // of the format "FeatureName<TrialName", where "TrialName" is the name of the
-  // FieldTrial. Features that have overrides with OVERRIDE_USE_DEFAULT will be
-  // added to |enable_overrides| with a '*' character prefix. Must be called
-  // only after the instance has been initialized and registered.
+  // of the format "FeatureName<TrialName" (|include_group_name|=false) or
+  // "FeatureName<TrialName.GroupName" (if |include_group_name|=true), where
+  // "TrialName" is the name of the FieldTrial and "GroupName" is the group
+  // name of the FieldTrial. Features that have overrides with
+  // OVERRIDE_USE_DEFAULT will be added to |enable_overrides| with a '*'
+  // character prefix. Must be called only after the instance has been
+  // initialized and registered.
   void GetFeatureOverrides(std::string* enable_overrides,
-                           std::string* disable_overrides) const;
+                           std::string* disable_overrides,
+                           bool include_group_names = false) const;
 
   // Like GetFeatureOverrides(), but only returns overrides that were specified
   // explicitly on the command-line, omitting the ones from field trials.
@@ -307,6 +311,19 @@ class BASE_EXPORT FeatureList {
   // resulting pieces point to parts of |input|.
   static std::vector<base::StringPiece> SplitFeatureListString(
       base::StringPiece input);
+
+  // Checks and parses the |enable_feature| (e.g.
+  // FeatureName<Study.Group:Param1/value1/) obtained by applying
+  // SplitFeatureListString() to the |enable_features| flag, and sets
+  // |feature_name| to be the feature's name, |study_name| and |group_name| to
+  // be the field trial name and its group name if the field trial is specified
+  // or field trial parameters are given, |params| to be the field trial
+  // parameters if exists.
+  static bool ParseEnableFeatureString(StringPiece enable_feature,
+                                       std::string* feature_name,
+                                       std::string* study_name,
+                                       std::string* group_name,
+                                       std::string* params);
 
   // Initializes and sets an instance of FeatureList with feature overrides via
   // command-line flags |enable_features| and |disable_features| if one has not
@@ -441,7 +458,8 @@ class BASE_EXPORT FeatureList {
   // function's comments for more details.
   void GetFeatureOverridesImpl(std::string* enable_overrides,
                                std::string* disable_overrides,
-                               bool command_line_only) const;
+                               bool command_line_only,
+                               bool include_group_name = false) const;
 
   // Verifies that there's only a single definition of a Feature struct for a
   // given feature name. Keeps track of the first seen Feature struct for each

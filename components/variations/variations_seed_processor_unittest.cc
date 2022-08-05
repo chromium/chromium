@@ -23,7 +23,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/time/time.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
@@ -1020,7 +1019,8 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
 
   // An entropy value of 0.1 will cause the AA group to be chosen, since AA is
   // the only non-default group, and has a probability percent above 0.1.
-  base::test::ScopedFieldTrialListResetter resetter;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
   base::FieldTrialList field_trial_list(
       std::make_unique<base::MockEntropyProvider>(0.1));
 

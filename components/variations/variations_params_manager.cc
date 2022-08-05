@@ -32,8 +32,9 @@ base::FieldTrial* CreateFieldTrialWithParams(
 }  // namespace
 
 VariationParamsManager::VariationParamsManager()
-    : field_trial_list_(new base::FieldTrialList(nullptr)),
-      scoped_feature_list_(new base::test::ScopedFeatureList()) {}
+    : scoped_feature_list_(new base::test::ScopedFeatureList()) {
+  scoped_feature_list_->InitWithEmptyFeatureAndFieldTrialLists();
+}
 
 VariationParamsManager::VariationParamsManager(
     const std::string& trial_name,
@@ -66,6 +67,8 @@ void VariationParamsManager::SetVariationParamsWithFeatureAssociations(
     const std::string& trial_name,
     const std::map<std::string, std::string>& param_values,
     const std::set<std::string>& associated_features) {
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+
   base::FieldTrial* field_trial =
       CreateFieldTrialWithParams(trial_name, param_values);
 
@@ -89,9 +92,7 @@ void VariationParamsManager::ClearAllVariationParams() {
   // When the scoped feature list is destroyed, it puts back the original
   // feature list that was there when InitWithFeatureList() was called.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  // Ensure the destructor is called properly, so it can be freshly recreated.
-  field_trial_list_.reset();
-  field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
+  scoped_feature_list_->InitWithEmptyFeatureAndFieldTrialLists();
 }
 
 // static

@@ -15,7 +15,7 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -180,7 +180,9 @@ void PerformEntropyUniformityTest(
 }  // namespace
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
-  base::test::ScopedFieldTrialListResetter resetter;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
   // Simply asserts that two trials using one-time randomization
   // that have different names, normally generate different results.
   //
@@ -210,7 +212,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
 }
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
-  base::test::ScopedFieldTrialListResetter resetter;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
   // Simply asserts that two trials using one-time randomization
   // that have different names, normally generate different results.
   //
@@ -241,7 +245,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
 }
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
-  base::test::ScopedFieldTrialListResetter resetter;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
   // Ensures that two trials with different names but the same custom seed used
   // for one time randomization produce the same group assignments.
   base::FieldTrialList field_trial_list(
@@ -269,7 +275,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
 
 TEST(EntropyProviderTest,
      UseOneTimeRandomizationWithCustomSeedNormalizedMurmurHash) {
-  base::test::ScopedFieldTrialListResetter resetter;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+
   // Ensures that two trials with different names but the same custom seed used
   // for one time randomization produce the same group assignments.
   base::FieldTrialList field_trial_list(

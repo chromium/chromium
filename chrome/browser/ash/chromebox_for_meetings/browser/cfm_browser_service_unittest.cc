@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
@@ -38,7 +37,9 @@ namespace mojom = ::chromeos::cfm::mojom;
 
 class CfmBrowserServiceTest : public testing::Test {
  public:
-  CfmBrowserServiceTest() = default;
+  CfmBrowserServiceTest() {
+    scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  }
   CfmBrowserServiceTest(const CfmBrowserServiceTest&) = delete;
   CfmBrowserServiceTest& operator=(const CfmBrowserServiceTest&) = delete;
 
@@ -102,10 +103,6 @@ class CfmBrowserServiceTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  // The test suite instantiates a FieldTrialList but for the purpose of these
-  // tests it's cleaner to start from scratch.
-  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
-  base::FieldTrialList trial_list_{nullptr};
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeCfmServiceContext context_;
   mojo::Remote<mojom::CfmBrowser> browser_remote_;
@@ -135,7 +132,8 @@ TEST_F(CfmBrowserServiceTest, GetVariationsData) {
 
   ASSERT_TRUE(variations::AssociateParamsFromString(field_trial_parameters));
   ASSERT_TRUE(base::FieldTrialList::CreateTrialsFromString(field_trial_states));
-  scoped_feature_list_.InitFromCommandLine(enabled_features, disabled_features);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(enabled_features, disabled_features);
 
   base::RunLoop run_loop;
   GetBrowserRemote()->GetVariationsData(base::BindLambdaForTesting(

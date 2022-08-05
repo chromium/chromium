@@ -21,7 +21,6 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_shared_memory_util.h"
 #include "base/test/test_timeouts.h"
@@ -120,16 +119,17 @@ std::string MockEscapeQueryParamValue(const std::string& input) {
 
 class FieldTrialTest : public ::testing::Test {
  public:
-  FieldTrialTest() : trial_list_(nullptr) {}
+  FieldTrialTest() {
+    // The test suite instantiates a FieldTrialList but for the purpose of these
+    // tests it's cleaner to start from scratch.
+    scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  }
   FieldTrialTest(const FieldTrialTest&) = delete;
   FieldTrialTest& operator=(const FieldTrialTest&) = delete;
 
  private:
   test::TaskEnvironment task_environment_;
-  // The test suite instantiates a FieldTrialList but for the purpose of these
-  // tests it's cleaner to start from scratch.
-  test::ScopedFieldTrialListResetter trial_list_resetter_;
-  FieldTrialList trial_list_;
+  test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test registration, and also check that destructors are called for trials.
@@ -1104,14 +1104,18 @@ TEST_F(FieldTrialTest, CreateSimulatedFieldTrial) {
 TEST(FieldTrialTestWithoutList, StatesStringFormat) {
   std::string save_string;
 
+  test::ScopedFeatureList scoped_feature_list;
   // The test suite instantiates a FieldTrialList but for the purpose of these
   // tests it's cleaner to start from scratch.
-  test::ScopedFieldTrialListResetter trial_list_resetter_;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
 
   // Scoping the first FieldTrialList, as we need another one to test the
   // importing function.
   {
+    test::ScopedFeatureList scoped_feature_list1;
+    scoped_feature_list1.InitWithNullFeatureAndFieldTrialLists();
     FieldTrialList field_trial_list(nullptr);
+
     scoped_refptr<FieldTrial> trial =
         CreateFieldTrial("Abc", 10, "Default some name", nullptr);
     trial->AppendGroup("cba", 10);
@@ -1127,6 +1131,8 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
   }
 
   // Starting with a new blank FieldTrialList.
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithNullFeatureAndFieldTrialLists();
   FieldTrialList field_trial_list(nullptr);
   ASSERT_TRUE(field_trial_list.CreateTrialsFromString(save_string));
 
@@ -1141,7 +1147,9 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
 }
 
 TEST(FieldTrialDeathTest, OneTimeRandomizedTrialWithoutFieldTrialList) {
-  test::ScopedFieldTrialListResetter resetter;
+  test::ScopedFeatureList scoped_feature_list1;
+  scoped_feature_list1.InitWithNullFeatureAndFieldTrialLists();
+
   // Trying to instantiate a one-time randomized field trial before the
   // FieldTrialList is created should crash.
   EXPECT_DEATH_IF_SUPPORTED(
@@ -1153,19 +1161,21 @@ TEST(FieldTrialDeathTest, OneTimeRandomizedTrialWithoutFieldTrialList) {
 
 class FieldTrialListTest : public ::testing::Test {
  public:
-  FieldTrialListTest() = default;
+  FieldTrialListTest() {
+    // The test suite instantiates a FieldTrialList but for the purpose of these
+    // tests it's cleaner to start from scratch.
+    scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  }
 
  private:
-  // The test suite instantiates a FieldTrialList but for the purpose of these
-  // tests it's cleaner to start from scratch.
-  test::ScopedFieldTrialListResetter trial_list_resetter_;
+  test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_IOS)
 // LaunchOptions is not available on iOS.
 TEST_F(FieldTrialListTest, TestCopyFieldTrialStateToFlags) {
-  FieldTrialList field_trial_list(std::make_unique<MockEntropyProvider>());
-
+  test::ScopedFeatureList scoped_feature_list1;
+  scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
   feature_list->InitializeFromCommandLine("A,B", "C");
 
@@ -1173,8 +1183,8 @@ TEST_F(FieldTrialListTest, TestCopyFieldTrialStateToFlags) {
   feature_list->RegisterFieldTrialOverride(
       "MyFeature", FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
 
-  test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithFeatureList(std::move(feature_list));
 
   FilePath test_file_path = FilePath(FILE_PATH_LITERAL("Program"));
   CommandLine command_line = CommandLine(test_file_path);
@@ -1191,18 +1201,21 @@ TEST_F(FieldTrialListTest, TestCopyFieldTrialStateToFlags) {
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(FieldTrialListTest, InstantiateAllocator) {
-  FieldTrialList field_trial_list(nullptr);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+
+  FieldTrialList* field_trial_list = FieldTrialList::GetInstance();
 
   FieldTrialList::CreateFieldTrial("Trial1", "Group1");
 
   FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
-  const void* memory = field_trial_list.field_trial_allocator_->data();
-  size_t used = field_trial_list.field_trial_allocator_->used();
+  const void* memory = field_trial_list->field_trial_allocator_->data();
+  size_t used = field_trial_list->field_trial_allocator_->used();
 
   // Ensure that the function is idempotent.
   FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
-  const void* new_memory = field_trial_list.field_trial_allocator_->data();
-  size_t new_used = field_trial_list.field_trial_allocator_->used();
+  const void* new_memory = field_trial_list->field_trial_allocator_->data();
+  size_t new_used = field_trial_list->field_trial_allocator_->used();
   EXPECT_EQ(memory, new_memory);
   EXPECT_EQ(used, new_used);
 }
@@ -1214,7 +1227,9 @@ TEST_F(FieldTrialListTest, AddTrialsToAllocator) {
   // Scoping the first FieldTrialList, as we need another one to test that it
   // matches.
   {
-    FieldTrialList field_trial_list1(nullptr);
+    test::ScopedFeatureList scoped_feature_list1;
+    scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
+
     FieldTrialList::CreateFieldTrial("Trial1", "Group1");
     FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
     FieldTrialList::AllStatesToString(&save_string, false);
@@ -1222,7 +1237,9 @@ TEST_F(FieldTrialListTest, AddTrialsToAllocator) {
     ASSERT_TRUE(shm_region.IsValid());
   }
 
-  FieldTrialList field_trial_list2(nullptr);
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithEmptyFeatureAndFieldTrialLists();
+
   // 4 KiB is enough to hold the trials only created for this test.
   base::ReadOnlySharedMemoryMapping shm_mapping = shm_region.MapAt(0, 4 << 10);
   ASSERT_TRUE(shm_mapping.IsValid());
@@ -1236,7 +1253,8 @@ TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
   constexpr char kTrialName[] = "trial";
   base::ReadOnlySharedMemoryRegion shm_region;
   {
-    FieldTrialList field_trial_list1(nullptr);
+    test::ScopedFeatureList scoped_feature_list1;
+    scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
 
     // Create a simulated trial and a real trial and call group() on them, which
     // should only add the real trial to the field trial allocator.
@@ -1258,7 +1276,8 @@ TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
   }
 
   // Check that there's only one entry in the allocator.
-  FieldTrialList field_trial_list2(nullptr);
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithEmptyFeatureAndFieldTrialLists();
   // 4 KiB is enough to hold the trials only created for this test.
   base::ReadOnlySharedMemoryMapping shm_mapping = shm_region.MapAt(0, 4 << 10);
   ASSERT_TRUE(shm_mapping.IsValid());
@@ -1269,7 +1288,8 @@ TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
 }
 
 TEST_F(FieldTrialListTest, AssociateFieldTrialParams) {
-  FieldTrialList field_trial_list(nullptr);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
 
   std::string trial_name("Trial1");
   std::string group_name("Group1");
@@ -1305,7 +1325,8 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
 
   base::ReadOnlySharedMemoryRegion shm_region;
   {
-    FieldTrialList field_trial_list1(nullptr);
+    test::ScopedFeatureList scoped_feature_list1;
+    scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
 
     // Create a field trial with some params.
     FieldTrial* trial =
@@ -1336,7 +1357,8 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
   }
 
   // Check that we have the trial.
-  FieldTrialList field_trial_list2(nullptr);
+  test::ScopedFeatureList scoped_feature_list2;
+  scoped_feature_list2.InitWithEmptyFeatureAndFieldTrialLists();
   // 4 KiB is enough to hold the trials only created for this test.
   base::ReadOnlySharedMemoryMapping shm_mapping = shm_region.MapAt(0, 4 << 10);
   ASSERT_TRUE(shm_mapping.IsValid());
@@ -1351,7 +1373,9 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   std::string group_name("Group1");
 
   // Create a field trial with some params.
-  FieldTrialList field_trial_list(nullptr);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+
   FieldTrialList::CreateFieldTrial(trial_name, group_name);
   std::map<std::string, std::string> params;
   params["key1"] = "value1";
@@ -1451,7 +1475,9 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
 // which don't support/implement shared memory configuration.
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
 TEST_F(FieldTrialListTest, CheckReadOnlySharedMemoryRegion) {
-  FieldTrialList field_trial_list(nullptr);
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+
   FieldTrialList::CreateFieldTrial("Trial1", "Group1");
 
   FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();

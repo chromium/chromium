@@ -9,7 +9,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "base/metrics/field_trial.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -53,15 +53,11 @@ class ArcPropertyBridgeTest : public testing::Test {
   ArcPropertyBridgeTest& operator=(const ArcPropertyBridgeTest&) = delete;
 
   void SetUp() override {
-    trial_list_resetter_ =
-        std::make_unique<base::test::ScopedFieldTrialListResetter>();
-    trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithEmptyFeatureAndFieldTrialLists();
   }
 
-  void TearDown() override {
-    trial_list_ = nullptr;
-    trial_list_resetter_ = nullptr;
-  }
+  void TearDown() override { scoped_feature_list_.reset(); }
 
   void CreatePropertyInstance() {
     instance_ = std::make_unique<FakePropertyInstance>();
@@ -85,9 +81,7 @@ class ArcPropertyBridgeTest : public testing::Test {
   std::unique_ptr<ArcPropertyBridge> property_bridge_;
   std::unique_ptr<FakePropertyInstance> instance_;
 
-  std::unique_ptr<base::test::ScopedFieldTrialListResetter>
-      trial_list_resetter_;
-  std::unique_ptr<base::FieldTrialList> trial_list_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(ArcPropertyBridgeTest, MinimizeOnBackButtonDefault) {
