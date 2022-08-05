@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import logging
+import optparse
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
@@ -15,13 +16,21 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
     help_text = ('Reshuffles the baselines for the given tests to use '
                  'as little space on disk as possible.')
     show_in_main_help = True
-    argument_names = 'TEST_NAMES'
+    argument_names = '[TEST_NAMES]'
+
+    all_option = optparse.make_option(
+        '--all',
+        dest='all_tests',
+        action='store_true',
+        default=False,
+        help=('Optimize all tests (instead of using TEST_NAMES)'))
 
     def __init__(self):
         super(OptimizeBaselines, self).__init__(options=[
             self.suffixes_option,
             self.port_name_option,
             self.flag_specific_option,
+            self.all_option,
         ] + self.platform_options + self.wpt_options)
 
     def _optimize_baseline(self, optimizer, test_name):
@@ -29,6 +38,10 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
             optimizer.optimize(test_name, suffix)
 
     def execute(self, options, args, tool):
+        if not args != options.all_tests:
+            _log.error('Must provide one of --all or TEST_NAMES')
+            return
+
         self._tool = tool
         self._baseline_suffix_list = options.suffixes.split(',')
         port_names = tool.port_factory.all_port_names(options.platform)
@@ -37,6 +50,6 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
             return
         port = tool.port_factory.get(port_names[0], options)
         optimizer = BaselineOptimizer(tool, port, port_names)
-        tests = port.tests(args)
+        tests = port.tests() if options.all_tests else port.tests(args)
         for test_name in tests:
             self._optimize_baseline(optimizer, test_name)

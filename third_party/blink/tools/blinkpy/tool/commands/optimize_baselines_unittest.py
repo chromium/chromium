@@ -36,6 +36,7 @@ class TestOptimizeBaselines(BaseTestCase):
         self.command.execute(
             optparse.Values({
                 'suffixes': 'txt,wav,png',
+                'all_tests': False,
                 'no_modify_git': True,
                 'platform': 'test-mac-mac10.10'
             }), ['another/test.html'], self.tool)
