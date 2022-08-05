@@ -4337,40 +4337,31 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
 
 class MPArchApiUsage(unittest.TestCase):
   def _assert_notify(
-      self, expected_uses, msg, local_path, new_contents):
+      self, expected_uses, expect_fyi, msg, local_path, new_contents):
     mock_input_api = MockInputApi()
     mock_output_api = MockOutputApi()
     mock_input_api.files = [
         MockFile(local_path, new_contents),
     ]
     result = PRESUBMIT.CheckMPArchApiUsage(mock_input_api, mock_output_api)
+
+    watchlist_email = ('mparch-reviews+watchfyi@chromium.org'
+        if expect_fyi else 'mparch-reviews+watch@chromium.org')
     self.assertEqual(
-        bool(expected_uses),
-        'mparch-reviews+watch@chromium.org' in mock_output_api.more_cc,
+        bool(expected_uses or expect_fyi),
+        watchlist_email in mock_output_api.more_cc,
         msg)
     if expected_uses:
         self.assertEqual(1, len(result), msg)
         self.assertEqual(result[0].type, 'notify', msg)
         self.assertEqual(sorted(result[0].items), sorted(expected_uses), msg)
+    else:
+        self.assertEqual(0, len(result), msg)
 
   def testNotify(self):
     self._assert_notify(
-        ['WebContentsObserver', 'WebContentsUserData'],
-        'Introduce WCO and WCUD',
-        'chrome/my_feature.h',
-        ['class MyFeature',
-         '    : public content::WebContentsObserver,',
-         '      public content::WebContentsUserData<MyFeature> {};',
-        ])
-    self._assert_notify(
-        ['DidFinishNavigation'],
-        'Introduce WCO override',
-        'chrome/my_feature.h',
-        ['void DidFinishNavigation(',
-         '    content::NavigationHandle* navigation_handle) override;',
-        ])
-    self._assert_notify(
         ['IsInMainFrame'],
+        False,
         'Introduce IsInMainFrame',
         'chrome/my_feature.cc',
         ['void DoSomething(content::NavigationHandle* navigation_handle) {',
@@ -4380,6 +4371,7 @@ class MPArchApiUsage(unittest.TestCase):
         ])
     self._assert_notify(
         ['FromRenderFrameHost'],
+        False,
         'Introduce WC::FromRenderFrameHost',
         'chrome/my_feature.cc',
         ['void DoSomething(content::RenderFrameHost* rfh) {',
@@ -4388,9 +4380,29 @@ class MPArchApiUsage(unittest.TestCase):
          '}',
         ])
 
+  def testFyi(self):
+    self._assert_notify(
+        [],
+        True,
+        'Introduce WCO and WCUD',
+        'chrome/my_feature.h',
+        ['class MyFeature',
+         '    : public content::WebContentsObserver,',
+         '      public content::WebContentsUserData<MyFeature> {};',
+        ])
+    self._assert_notify(
+        [],
+        True,
+        'Introduce WCO override',
+        'chrome/my_feature.h',
+        ['void DidFinishNavigation(',
+         '    content::NavigationHandle* navigation_handle) override;',
+        ])
+
   def testNoNotify(self):
     self._assert_notify(
         [],
+        False,
         'No API usage',
         'chrome/my_feature.cc',
         ['void DoSomething() {',
@@ -4401,6 +4413,7 @@ class MPArchApiUsage(unittest.TestCase):
     # to share a name with a content API.
     self._assert_notify(
         [],
+        False,
         'Uninteresting top level directory',
         'third_party/my_dep/my_code.cc',
         ['bool HasParent(Node* node) {',
@@ -4410,10 +4423,11 @@ class MPArchApiUsage(unittest.TestCase):
     # We're not concerned with usage in test code.
     self._assert_notify(
         [],
+        False,
         'Usage in test code',
         'chrome/my_feature_unittest.cc',
         ['TEST_F(MyFeatureTest, DoesSomething) {',
-         '  EXPECT_TRUE(web_contents()->GetMainFrame());',
+         '  EXPECT_TRUE(rfh()->GetMainFrame());',
          '}',
         ])
 
