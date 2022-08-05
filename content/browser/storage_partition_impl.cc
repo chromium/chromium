@@ -302,10 +302,10 @@ void PerformQuotaManagerStorageCleanup(
       quota_storage_type, std::move(quota_client_types), std::move(callback));
 }
 
-void ClearedShaderCache(base::OnceClosure callback) {
+void ClearedGpuCache(base::OnceClosure callback) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ClearedShaderCache, std::move(callback)));
+        FROM_HERE, base::BindOnce(&ClearedGpuCache, std::move(callback)));
     return;
   }
   std::move(callback).Run();
@@ -997,12 +997,13 @@ class StoragePartitionImpl::DataDeletionHelper {
     kQuota = 3,
     kLocalStorage = 4,
     kSessionStorage = 5,
-    kShaderCache = 6,
+    kShaderCache = 6,  // Deprecated in favor of using kGpuCache.
     kPluginPrivate = 7,
     kConversions = 8,
     kAggregationService = 9,
     kSharedStorage = 10,
-    kMaxValue = kSharedStorage,
+    kGpuCache = 11,
+    kMaxValue = kGpuCache,
   };
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
@@ -2500,16 +2501,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_SHADER_CACHE) {
-    gpu::ShaderCacheFactory* shader_cache_factory =
-        GetShaderCacheFactorySingleton();
+    gpu::GpuDiskCacheFactory* gpu_cache_factory =
+        GetGpuDiskCacheFactorySingleton();
     // May be null in tests where it is difficult to plumb through a test
     // storage partition.
-    if (shader_cache_factory) {
-      shader_cache_factory->ClearByPath(
+    if (gpu_cache_factory) {
+      gpu_cache_factory->ClearByPath(
           path, begin, end,
-          base::BindOnce(
-              &ClearedShaderCache,
-              CreateTaskCompletionClosure(TracingDataType::kShaderCache)));
+          base::BindOnce(&ClearedGpuCache, CreateTaskCompletionClosure(
+                                               TracingDataType::kGpuCache)));
     }
   }
 

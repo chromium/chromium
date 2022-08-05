@@ -16,7 +16,7 @@ GPU_EXPORT extern const char kGpuBlocklistTestGroup[];
 GPU_EXPORT extern const char kGpuDriverBugListTestGroup[];
 GPU_EXPORT extern const char kGpuPreferences[];
 GPU_EXPORT extern const char kIgnoreGpuBlocklist[];
-GPU_EXPORT extern const char kShaderDiskCacheSizeKB[];
+GPU_EXPORT extern const char kGpuDiskCacheSizeKB[];
 GPU_EXPORT extern const char kDisableGpuProcessForDX12InfoCollection[];
 GPU_EXPORT extern const char kEnableUnsafeWebGPU[];
 GPU_EXPORT extern const char kEnableWebGPUDeveloperFeatures[];

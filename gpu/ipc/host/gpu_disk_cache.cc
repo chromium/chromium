@@ -45,18 +45,18 @@ size_t GetCustomCacheSizeBytesIfExists(base::StringPiece switch_string) {
 
 }  // namespace
 
-// ShaderDiskCacheEntry handles the work of caching/updating the cached
-// shaders.
-class ShaderDiskCacheEntry : public base::ThreadChecker {
+// GpuDiskCacheEntry handles the work of caching/updating the cached
+// blobs.
+class GpuDiskCacheEntry {
  public:
-  ShaderDiskCacheEntry(ShaderDiskCache* cache,
-                       const std::string& key,
-                       const std::string& shader);
+  GpuDiskCacheEntry(GpuDiskCache* cache,
+                    const std::string& key,
+                    const std::string& blob);
 
-  ShaderDiskCacheEntry(const ShaderDiskCacheEntry&) = delete;
-  ShaderDiskCacheEntry& operator=(const ShaderDiskCacheEntry&) = delete;
+  GpuDiskCacheEntry(const GpuDiskCacheEntry&) = delete;
+  GpuDiskCacheEntry& operator=(const GpuDiskCacheEntry&) = delete;
 
-  ~ShaderDiskCacheEntry();
+  ~GpuDiskCacheEntry();
 
   void Cache();
   void OnOpComplete(int rv);
@@ -73,27 +73,29 @@ class ShaderDiskCacheEntry : public base::ThreadChecker {
   int WriteCallback(int rv);
   int IOComplete(int rv);
 
-  raw_ptr<ShaderDiskCache> cache_;
-  OpType op_type_;
+  THREAD_CHECKER(thread_checker_);
+
+  raw_ptr<GpuDiskCache> cache_;
+  OpType op_type_ = OPEN_ENTRY;
   std::string key_;
-  std::string shader_;
+  std::string blob_;
   raw_ptr<disk_cache::Entry> entry_;
-  base::WeakPtr<ShaderDiskCacheEntry> weak_ptr_;
-  base::WeakPtrFactory<ShaderDiskCacheEntry> weak_ptr_factory_{this};
+  base::WeakPtr<GpuDiskCacheEntry> weak_ptr_;
+  base::WeakPtrFactory<GpuDiskCacheEntry> weak_ptr_factory_{this};
 };
 
-// ShaderDiskReadHelper is used to load all of the cached shaders from the
+// GpuDiskCacheReadHelper is used to load all of the cached blobs from the
 // disk cache and send to the memory cache.
-class ShaderDiskReadHelper : public base::ThreadChecker {
+class GpuDiskCacheReadHelper {
  public:
-  using ShaderLoadedCallback = ShaderDiskCache::ShaderLoadedCallback;
-  ShaderDiskReadHelper(ShaderDiskCache* cache,
-                       const ShaderLoadedCallback& callback);
+  using BlobLoadedCallback = GpuDiskCache::BlobLoadedCallback;
+  GpuDiskCacheReadHelper(GpuDiskCache* cache,
+                         const BlobLoadedCallback& callback);
 
-  ShaderDiskReadHelper(const ShaderDiskReadHelper&) = delete;
-  ShaderDiskReadHelper& operator=(const ShaderDiskReadHelper&) = delete;
+  GpuDiskCacheReadHelper(const GpuDiskCacheReadHelper&) = delete;
+  GpuDiskCacheReadHelper& operator=(const GpuDiskCacheReadHelper&) = delete;
 
-  ~ShaderDiskReadHelper();
+  ~GpuDiskCacheReadHelper();
 
   void LoadCache();
   void OnOpComplete(int rv);
@@ -113,70 +115,70 @@ class ShaderDiskReadHelper : public base::ThreadChecker {
   int ReadComplete(int rv);
   int IterationComplete(int rv);
 
-  raw_ptr<ShaderDiskCache> cache_;
-  ShaderLoadedCallback shader_loaded_callback_;
-  OpType op_type_;
+  THREAD_CHECKER(thread_checker_);
+
+  raw_ptr<GpuDiskCache> cache_;
+  BlobLoadedCallback blob_loaded_callback_;
+  OpType op_type_ = OPEN_NEXT;
   std::unique_ptr<disk_cache::Backend::Iterator> iter_;
   scoped_refptr<net::IOBufferWithSize> buf_;
   raw_ptr<disk_cache::Entry> entry_;
-  base::WeakPtrFactory<ShaderDiskReadHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GpuDiskCacheReadHelper> weak_ptr_factory_{this};
 };
 
-class ShaderClearHelper : public base::ThreadChecker {
+class GpuDiskCacheClearHelper {
  public:
-  ShaderClearHelper(ShaderCacheFactory* factory,
-                    scoped_refptr<ShaderDiskCache> cache,
-                    const base::FilePath& path,
-                    const base::Time& delete_begin,
-                    const base::Time& delete_end,
-                    base::OnceClosure callback);
+  GpuDiskCacheClearHelper(GpuDiskCacheFactory* factory,
+                          scoped_refptr<GpuDiskCache> cache,
+                          const base::FilePath& path,
+                          const base::Time& delete_begin,
+                          const base::Time& delete_end,
+                          base::OnceClosure callback);
 
-  ShaderClearHelper(const ShaderClearHelper&) = delete;
-  ShaderClearHelper& operator=(const ShaderClearHelper&) = delete;
+  GpuDiskCacheClearHelper(const GpuDiskCacheClearHelper&) = delete;
+  GpuDiskCacheClearHelper& operator=(const GpuDiskCacheClearHelper&) = delete;
 
-  ~ShaderClearHelper();
+  ~GpuDiskCacheClearHelper();
 
   void Clear();
 
  private:
   enum OpType { TERMINATE, VERIFY_CACHE_SETUP, DELETE_CACHE };
 
-  void DoClearShaderCache(int rv);
+  void DoClearGpuCache(int rv);
 
-  raw_ptr<ShaderCacheFactory> factory_;
-  scoped_refptr<ShaderDiskCache> cache_;
-  OpType op_type_;
+  THREAD_CHECKER(thread_checker_);
+
+  raw_ptr<GpuDiskCacheFactory> factory_;
+  scoped_refptr<GpuDiskCache> cache_;
+  OpType op_type_ = VERIFY_CACHE_SETUP;
   base::FilePath path_;
   base::Time delete_begin_;
   base::Time delete_end_;
   base::OnceClosure callback_;
-  base::WeakPtrFactory<ShaderClearHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GpuDiskCacheClearHelper> weak_ptr_factory_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// ShaderDiskCacheEntry
+// GpuDiskCacheEntry
 
-ShaderDiskCacheEntry::ShaderDiskCacheEntry(ShaderDiskCache* cache,
-                                           const std::string& key,
-                                           const std::string& shader)
-    : cache_(cache),
-      op_type_(OPEN_ENTRY),
-      key_(key),
-      shader_(shader),
-      entry_(nullptr) {
+GpuDiskCacheEntry::GpuDiskCacheEntry(GpuDiskCache* cache,
+                                     const std::string& key,
+                                     const std::string& blob)
+    : cache_(cache), key_(key), blob_(blob), entry_(nullptr) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
-ShaderDiskCacheEntry::~ShaderDiskCacheEntry() {
-  DCHECK(CalledOnValidThread());
+GpuDiskCacheEntry::~GpuDiskCacheEntry() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (entry_)
     entry_->Close();
 }
 
-void ShaderDiskCacheEntry::Cache() {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheEntry::Cache() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  auto callback = base::BindOnce(&ShaderDiskCacheEntry::OnEntryOpenComplete,
+  auto callback = base::BindOnce(&GpuDiskCacheEntry::OnEntryOpenComplete,
                                  weak_ptr_factory_.GetWeakPtr());
 
   disk_cache::EntryResult result =
@@ -185,8 +187,8 @@ void ShaderDiskCacheEntry::Cache() {
     OnEntryOpenComplete(std::move(result));
 }
 
-void ShaderDiskCacheEntry::OnOpComplete(int rv) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheEntry::OnOpComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The function calls inside the switch block below can end up destroying
   // |this|. So hold on to a WeakPtr<>, and terminate the while loop if |this|
   // has been destroyed.
@@ -208,14 +210,14 @@ void ShaderDiskCacheEntry::OnOpComplete(int rv) {
     weak_ptr_ = std::move(weak_ptr);
 }
 
-void ShaderDiskCacheEntry::OnEntryOpenComplete(disk_cache::EntryResult result) {
+void GpuDiskCacheEntry::OnEntryOpenComplete(disk_cache::EntryResult result) {
   int rv = result.net_error();
   entry_ = result.ReleaseEntry();
   OnOpComplete(rv);
 }
 
-int ShaderDiskCacheEntry::OpenCallback(int rv) {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheEntry::OpenCallback(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (rv == net::OK) {
     cache_->backend()->OnExternalCacheHit(key_);
     cache_->EntryComplete(this);
@@ -224,7 +226,7 @@ int ShaderDiskCacheEntry::OpenCallback(int rv) {
 
   op_type_ = CREATE_ENTRY;
 
-  auto callback = base::BindOnce(&ShaderDiskCacheEntry::OnEntryOpenComplete,
+  auto callback = base::BindOnce(&GpuDiskCacheEntry::OnEntryOpenComplete,
                                  weak_ptr_factory_.GetWeakPtr());
 
   disk_cache::EntryResult create_result =
@@ -236,53 +238,53 @@ int ShaderDiskCacheEntry::OpenCallback(int rv) {
   return rv;
 }
 
-int ShaderDiskCacheEntry::WriteCallback(int rv) {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheEntry::WriteCallback(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (rv != net::OK) {
-    LOG(ERROR) << "Failed to create shader cache entry: " << rv;
+    LOG(ERROR) << "Failed to create blob cache entry: " << rv;
     cache_->EntryComplete(this);
     return rv;
   }
 
   op_type_ = WRITE_DATA;
-  auto io_buf = base::MakeRefCounted<net::StringIOBuffer>(shader_);
-  return entry_->WriteData(1, 0, io_buf.get(), shader_.length(),
-                           base::BindOnce(&ShaderDiskCacheEntry::OnOpComplete,
+  auto io_buf = base::MakeRefCounted<net::StringIOBuffer>(blob_);
+  return entry_->WriteData(1, 0, io_buf.get(), blob_.length(),
+                           base::BindOnce(&GpuDiskCacheEntry::OnOpComplete,
                                           weak_ptr_factory_.GetWeakPtr()),
                            false);
 }
 
-int ShaderDiskCacheEntry::IOComplete(int rv) {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheEntry::IOComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   cache_->EntryComplete(this);
   return rv;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ShaderDiskReadHelper
+// GpuDiskCacheReadHelper
 
-ShaderDiskReadHelper::ShaderDiskReadHelper(ShaderDiskCache* cache,
-                                           const ShaderLoadedCallback& callback)
+GpuDiskCacheReadHelper::GpuDiskCacheReadHelper(
+    GpuDiskCache* cache,
+    const BlobLoadedCallback& callback)
     : cache_(cache),
-      shader_loaded_callback_(callback),
-      op_type_(OPEN_NEXT),
+      blob_loaded_callback_(callback),
       buf_(nullptr),
       entry_(nullptr) {}
 
-ShaderDiskReadHelper::~ShaderDiskReadHelper() {
-  DCHECK(CalledOnValidThread());
+GpuDiskCacheReadHelper::~GpuDiskCacheReadHelper() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (entry_)
     entry_->Close();
   iter_ = nullptr;
 }
 
-void ShaderDiskReadHelper::LoadCache() {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheReadHelper::LoadCache() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   OnOpComplete(net::OK);
 }
 
-void ShaderDiskReadHelper::OnOpComplete(int rv) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheReadHelper::OnOpComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   do {
     switch (op_type_) {
       case OPEN_NEXT:
@@ -305,19 +307,20 @@ void ShaderDiskReadHelper::OnOpComplete(int rv) {
   } while (rv != net::ERR_IO_PENDING);
 }
 
-void ShaderDiskReadHelper::OnEntryOpenComplete(disk_cache::EntryResult result) {
+void GpuDiskCacheReadHelper::OnEntryOpenComplete(
+    disk_cache::EntryResult result) {
   int rv = result.net_error();
   entry_ = result.ReleaseEntry();
   OnOpComplete(rv);
 }
 
-int ShaderDiskReadHelper::OpenNextEntry() {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheReadHelper::OpenNextEntry() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   op_type_ = OPEN_NEXT_COMPLETE;
   if (!iter_)
     iter_ = cache_->backend()->CreateIterator();
 
-  auto callback = base::BindOnce(&ShaderDiskReadHelper::OnEntryOpenComplete,
+  auto callback = base::BindOnce(&GpuDiskCacheReadHelper::OnEntryOpenComplete,
                                  weak_ptr_factory_.GetWeakPtr());
 
   disk_cache::EntryResult result = iter_->OpenNextEntry(std::move(callback));
@@ -328,8 +331,8 @@ int ShaderDiskReadHelper::OpenNextEntry() {
   return rv;
 }
 
-int ShaderDiskReadHelper::OpenNextEntryComplete(int rv) {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheReadHelper::OpenNextEntryComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (rv == net::ERR_FAILED) {
     iter_.reset();
     op_type_ = ITERATION_FINISHED;
@@ -342,15 +345,15 @@ int ShaderDiskReadHelper::OpenNextEntryComplete(int rv) {
   op_type_ = READ_COMPLETE;
   buf_ = base::MakeRefCounted<net::IOBufferWithSize>(entry_->GetDataSize(1));
   return entry_->ReadData(1, 0, buf_.get(), buf_->size(),
-                          base::BindOnce(&ShaderDiskReadHelper::OnOpComplete,
+                          base::BindOnce(&GpuDiskCacheReadHelper::OnOpComplete,
                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-int ShaderDiskReadHelper::ReadComplete(int rv) {
-  DCHECK(CalledOnValidThread());
-  if (rv && rv == buf_->size() && !shader_loaded_callback_.is_null()) {
-    shader_loaded_callback_.Run(entry_->GetKey(),
-                                std::string(buf_->data(), buf_->size()));
+int GpuDiskCacheReadHelper::ReadComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (rv && rv == buf_->size() && !blob_loaded_callback_.is_null()) {
+    blob_loaded_callback_.Run(entry_->GetKey(),
+                              std::string(buf_->data(), buf_->size()));
   }
 
   buf_ = nullptr;
@@ -361,54 +364,54 @@ int ShaderDiskReadHelper::ReadComplete(int rv) {
   return net::OK;
 }
 
-int ShaderDiskReadHelper::IterationComplete(int rv) {
-  DCHECK(CalledOnValidThread());
+int GpuDiskCacheReadHelper::IterationComplete(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   iter_.reset();
   op_type_ = TERMINATE;
   return net::OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ShaderClearHelper
+// GpuDiskCacheClearHelper
 
-ShaderClearHelper::ShaderClearHelper(ShaderCacheFactory* factory,
-                                     scoped_refptr<ShaderDiskCache> cache,
-                                     const base::FilePath& path,
-                                     const base::Time& delete_begin,
-                                     const base::Time& delete_end,
-                                     base::OnceClosure callback)
+GpuDiskCacheClearHelper::GpuDiskCacheClearHelper(
+    GpuDiskCacheFactory* factory,
+    scoped_refptr<GpuDiskCache> cache,
+    const base::FilePath& path,
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    base::OnceClosure callback)
     : factory_(factory),
       cache_(std::move(cache)),
-      op_type_(VERIFY_CACHE_SETUP),
       path_(path),
       delete_begin_(delete_begin),
       delete_end_(delete_end),
       callback_(std::move(callback)) {}
 
-ShaderClearHelper::~ShaderClearHelper() {
-  DCHECK(CalledOnValidThread());
+GpuDiskCacheClearHelper::~GpuDiskCacheClearHelper() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void ShaderClearHelper::Clear() {
-  DCHECK(CalledOnValidThread());
-  DoClearShaderCache(net::OK);
+void GpuDiskCacheClearHelper::Clear() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DoClearGpuCache(net::OK);
 }
 
-void ShaderClearHelper::DoClearShaderCache(int rv) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheClearHelper::DoClearGpuCache(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   while (rv != net::ERR_IO_PENDING) {
     switch (op_type_) {
       case VERIFY_CACHE_SETUP:
         rv = cache_->SetAvailableCallback(
-            base::BindOnce(&ShaderClearHelper::DoClearShaderCache,
+            base::BindOnce(&GpuDiskCacheClearHelper::DoClearGpuCache,
                            weak_ptr_factory_.GetWeakPtr()));
         op_type_ = DELETE_CACHE;
         break;
       case DELETE_CACHE:
-        rv =
-            cache_->Clear(delete_begin_, delete_end_,
-                          base::BindOnce(&ShaderClearHelper::DoClearShaderCache,
-                                         weak_ptr_factory_.GetWeakPtr()));
+        rv = cache_->Clear(
+            delete_begin_, delete_end_,
+            base::BindOnce(&GpuDiskCacheClearHelper::DoClearGpuCache,
+                           weak_ptr_factory_.GetWeakPtr()));
         op_type_ = TERMINATE;
         break;
       case TERMINATE:
@@ -422,106 +425,106 @@ void ShaderClearHelper::DoClearShaderCache(int rv) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ShaderCacheFactory
+// GpuDiskCacheFactory
 
-ShaderCacheFactory::ShaderCacheFactory() = default;
+GpuDiskCacheFactory::GpuDiskCacheFactory() = default;
 
-ShaderCacheFactory::~ShaderCacheFactory() = default;
+GpuDiskCacheFactory::~GpuDiskCacheFactory() = default;
 
-void ShaderCacheFactory::SetCacheInfo(int32_t client_id,
-                                      const base::FilePath& path) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheFactory::SetCacheInfo(int32_t client_id,
+                                       const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_id_to_path_map_[client_id] = path;
 }
 
-void ShaderCacheFactory::RemoveCacheInfo(int32_t client_id) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheFactory::RemoveCacheInfo(int32_t client_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_id_to_path_map_.erase(client_id);
 }
 
-scoped_refptr<ShaderDiskCache> ShaderCacheFactory::Get(int32_t client_id) {
-  DCHECK(CalledOnValidThread());
+scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(int32_t client_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ClientIdToPathMap::iterator iter = client_id_to_path_map_.find(client_id);
   if (iter == client_id_to_path_map_.end())
     return nullptr;
-  return ShaderCacheFactory::GetByPath(iter->second);
+  return GpuDiskCacheFactory::GetByPath(iter->second);
 }
 
-scoped_refptr<ShaderDiskCache> ShaderCacheFactory::GetByPath(
+scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetByPath(
     const base::FilePath& path) {
-  DCHECK(CalledOnValidThread());
-  ShaderCacheMap::iterator iter = shader_cache_map_.find(path);
-  if (iter != shader_cache_map_.end())
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = gpu_cache_map_.find(path);
+  if (iter != gpu_cache_map_.end())
     return iter->second;
 
-  auto cache = base::WrapRefCounted(new ShaderDiskCache(this, path));
+  auto cache = base::WrapRefCounted(new GpuDiskCache(this, path));
   cache->Init();
   return cache;
 }
 
-void ShaderCacheFactory::AddToCache(const base::FilePath& key,
-                                    ShaderDiskCache* cache) {
-  DCHECK(CalledOnValidThread());
-  shader_cache_map_[key] = cache;
+void GpuDiskCacheFactory::AddToCache(const base::FilePath& key,
+                                     GpuDiskCache* cache) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  gpu_cache_map_[key] = cache;
 }
 
-void ShaderCacheFactory::RemoveFromCache(const base::FilePath& key) {
-  DCHECK(CalledOnValidThread());
-  shader_cache_map_.erase(key);
+void GpuDiskCacheFactory::RemoveFromCache(const base::FilePath& key) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  gpu_cache_map_.erase(key);
 }
 
-void ShaderCacheFactory::ClearByPath(const base::FilePath& path,
-                                     const base::Time& delete_begin,
-                                     const base::Time& delete_end,
-                                     base::OnceClosure callback) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheFactory::ClearByPath(const base::FilePath& path,
+                                      const base::Time& delete_begin,
+                                      const base::Time& delete_end,
+                                      base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!callback.is_null());
   if (path.empty()) {
     std::move(callback).Run();
     return;
   }
 
-  auto helper = std::make_unique<ShaderClearHelper>(this, GetByPath(path), path,
-                                                    delete_begin, delete_end,
-                                                    std::move(callback));
+  auto helper = std::make_unique<GpuDiskCacheClearHelper>(
+      this, GetByPath(path), path, delete_begin, delete_end,
+      std::move(callback));
 
   // We could receive requests to clear the same path with different
   // begin/end times. So, we keep a list of requests. If we haven't seen this
   // path before we kick off the clear and add it to the list. If we have see it
   // already, then we already have a clear running. We add this clear to the
   // list and wait for any previous clears to finish.
-  ShaderClearMap::iterator iter = shader_clear_map_.find(path);
-  if (iter != shader_clear_map_.end()) {
+  auto iter = gpu_clear_map_.find(path);
+  if (iter != gpu_clear_map_.end()) {
     iter->second.push(std::move(helper));
     return;
   }
 
   // Insert the helper in the map before calling Clear(), since it can lead to a
   // call back into CacheCleared().
-  ShaderClearHelper* helper_ptr = helper.get();
-  shader_clear_map_.insert(
-      std::pair<base::FilePath, ShaderClearQueue>(path, ShaderClearQueue()));
-  shader_clear_map_[path].push(std::move(helper));
+  GpuDiskCacheClearHelper* helper_ptr = helper.get();
+  gpu_clear_map_.insert(
+      std::pair<base::FilePath, ClearHelperQueue>(path, ClearHelperQueue()));
+  gpu_clear_map_[path].push(std::move(helper));
   helper_ptr->Clear();
 }
 
-void ShaderCacheFactory::ClearByClientId(int32_t client_id,
-                                         const base::Time& delete_begin,
-                                         const base::Time& delete_end,
-                                         base::OnceClosure callback) {
-  DCHECK(CalledOnValidThread());
-  ClientIdToPathMap::iterator iter = client_id_to_path_map_.find(client_id);
+void GpuDiskCacheFactory::ClearByClientId(int32_t client_id,
+                                          const base::Time& delete_begin,
+                                          const base::Time& delete_end,
+                                          base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = client_id_to_path_map_.find(client_id);
   if (iter == client_id_to_path_map_.end())
     return;
   return ClearByPath(iter->second, delete_begin, delete_end,
                      std::move(callback));
 }
 
-void ShaderCacheFactory::CacheCleared(const base::FilePath& path) {
-  DCHECK(CalledOnValidThread());
+void GpuDiskCacheFactory::CacheCleared(const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  ShaderClearMap::iterator iter = shader_clear_map_.find(path);
-  if (iter == shader_clear_map_.end()) {
+  auto iter = gpu_clear_map_.find(path);
+  if (iter == gpu_clear_map_.end()) {
     LOG(ERROR) << "Completed clear but missing clear helper.";
     return;
   }
@@ -535,38 +538,36 @@ void ShaderCacheFactory::CacheCleared(const base::FilePath& path) {
     return;
   }
 
-  shader_clear_map_.erase(iter);
+  gpu_clear_map_.erase(iter);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ShaderDiskCache
+// GpuDiskCache
 
-ShaderDiskCache::ShaderDiskCache(ShaderCacheFactory* factory,
-                                 const base::FilePath& cache_path)
-    : factory_(factory),
-      cache_available_(false),
-      cache_path_(cache_path),
-      is_initialized_(false) {
+GpuDiskCache::GpuDiskCache(GpuDiskCacheFactory* factory,
+                           const base::FilePath& cache_path)
+    : factory_(factory), cache_path_(cache_path) {
   factory_->AddToCache(cache_path_, this);
 }
 
-ShaderDiskCache::~ShaderDiskCache() {
+GpuDiskCache::~GpuDiskCache() {
   factory_->RemoveFromCache(cache_path_);
 }
 
-void ShaderDiskCache::Init() {
+void GpuDiskCache::Init() {
   if (is_initialized_) {
     NOTREACHED();  // can't initialize disk cache twice.
     return;
   }
   is_initialized_ = true;
 
+  // TODO(dawn:549) Add GPU_CACHE type and replace SHADER_CACHE here.
   disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
       /*file_operations=*/nullptr, cache_path_.Append(kGpuCachePath),
       CacheSizeBytes(), disk_cache::ResetHandling::kResetOnError,
       /*net_log=*/nullptr,
-      base::BindOnce(&ShaderDiskCache::CacheCreatedCallback, this));
+      base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
   if (rv.net_error == net::OK) {
     NOTREACHED();  // This shouldn't actually happen with a non-memory backend.
@@ -575,19 +576,19 @@ void ShaderDiskCache::Init() {
   }
 }
 
-void ShaderDiskCache::Cache(const std::string& key, const std::string& shader) {
+void GpuDiskCache::Cache(const std::string& key, const std::string& blob) {
   if (!cache_available_)
     return;
 
-  auto shim = std::make_unique<ShaderDiskCacheEntry>(this, key, shader);
+  auto shim = std::make_unique<GpuDiskCacheEntry>(this, key, blob);
   shim->Cache();
   auto* raw_ptr = shim.get();
   entries_.insert(std::make_pair(raw_ptr, std::move(shim)));
 }
 
-int ShaderDiskCache::Clear(const base::Time begin_time,
-                           const base::Time end_time,
-                           net::CompletionOnceCallback completion_callback) {
+int GpuDiskCache::Clear(const base::Time begin_time,
+                        const base::Time end_time,
+                        net::CompletionOnceCallback completion_callback) {
   int rv;
   if (begin_time.is_null()) {
     rv = backend_->DoomAllEntries(std::move(completion_callback));
@@ -598,38 +599,37 @@ int ShaderDiskCache::Clear(const base::Time begin_time,
   return rv;
 }
 
-int32_t ShaderDiskCache::Size() {
+int32_t GpuDiskCache::Size() {
   if (!cache_available_)
     return -1;
   return backend_->GetEntryCount();
 }
 
-int ShaderDiskCache::SetAvailableCallback(
-    net::CompletionOnceCallback callback) {
+int GpuDiskCache::SetAvailableCallback(net::CompletionOnceCallback callback) {
   if (cache_available_)
     return net::OK;
   available_callback_ = std::move(callback);
   return net::ERR_IO_PENDING;
 }
 
-void ShaderDiskCache::CacheCreatedCallback(disk_cache::BackendResult result) {
+void GpuDiskCache::CacheCreatedCallback(disk_cache::BackendResult result) {
   if (result.net_error != net::OK) {
-    LOG(ERROR) << "Shader Cache Creation failed: " << result.net_error;
+    LOG(ERROR) << "Gpu Cache Creation failed: " << result.net_error;
     return;
   }
   backend_ = std::move(result.backend);
   helper_ =
-      std::make_unique<ShaderDiskReadHelper>(this, shader_loaded_callback_);
+      std::make_unique<GpuDiskCacheReadHelper>(this, blob_loaded_callback_);
   helper_->LoadCache();
 }
 
-void ShaderDiskCache::EntryComplete(ShaderDiskCacheEntry* entry) {
+void GpuDiskCache::EntryComplete(GpuDiskCacheEntry* entry) {
   entries_.erase(entry);
   if (entries_.empty() && cache_complete_callback_)
     std::move(cache_complete_callback_).Run(net::OK);
 }
 
-void ShaderDiskCache::ReadComplete() {
+void GpuDiskCache::ReadComplete() {
   helper_ = nullptr;
 
   // The cache is considered available after we have finished reading any
@@ -640,7 +640,7 @@ void ShaderDiskCache::ReadComplete() {
     std::move(available_callback_).Run(net::OK);
 }
 
-int ShaderDiskCache::SetCacheCompleteCallback(
+int GpuDiskCache::SetCacheCompleteCallback(
     net::CompletionOnceCallback callback) {
   if (entries_.empty()) {
     return net::OK;
@@ -650,10 +650,10 @@ int ShaderDiskCache::SetCacheCompleteCallback(
 }
 
 // static
-size_t ShaderDiskCache::CacheSizeBytes() {
+size_t GpuDiskCache::CacheSizeBytes() {
 #if !BUILDFLAG(IS_ANDROID)
   size_t custom_cache_size =
-      GetCustomCacheSizeBytesIfExists(switches::kShaderDiskCacheSizeKB);
+      GetCustomCacheSizeBytesIfExists(switches::kGpuDiskCacheSizeKB);
   if (custom_cache_size)
     return custom_cache_size;
   return kDefaultMaxProgramCacheMemoryBytes;

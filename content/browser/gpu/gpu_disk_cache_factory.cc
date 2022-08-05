@@ -10,21 +10,20 @@ namespace content {
 
 namespace {
 
-gpu::ShaderCacheFactory* factory_instance = nullptr;
+gpu::GpuDiskCacheFactory* factory_instance = nullptr;
 
 void CreateFactoryInstance() {
   DCHECK(!factory_instance);
-  factory_instance = new gpu::ShaderCacheFactory();
+  factory_instance = new gpu::GpuDiskCacheFactory();
 }
 
 }  // namespace
 
-void InitShaderCacheFactorySingleton() {
+void InitGpuDiskCacheFactorySingleton() {
   CreateFactoryInstance();
 }
 
-gpu::ShaderCacheFactory* GetShaderCacheFactorySingleton() {
-  DCHECK(!factory_instance || factory_instance->CalledOnValidThread());
+gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactorySingleton() {
   return factory_instance;
 }
 

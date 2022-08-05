@@ -22,14 +22,14 @@ const char kCacheValue2[] = "cached value2";
 
 }  // namespace
 
-class ShaderDiskCacheTest : public testing::Test {
+class GpuDiskCacheTest : public testing::Test {
  public:
-  ShaderDiskCacheTest() = default;
+  GpuDiskCacheTest() = default;
 
-  ShaderDiskCacheTest(const ShaderDiskCacheTest&) = delete;
-  ShaderDiskCacheTest& operator=(const ShaderDiskCacheTest&) = delete;
+  GpuDiskCacheTest(const GpuDiskCacheTest&) = delete;
+  GpuDiskCacheTest& operator=(const GpuDiskCacheTest&) = delete;
 
-  ~ShaderDiskCacheTest() override = default;
+  ~GpuDiskCacheTest() override = default;
 
   const base::FilePath& cache_path() { return temp_dir_.GetPath(); }
 
@@ -38,7 +38,7 @@ class ShaderDiskCacheTest : public testing::Test {
     factory_.SetCacheInfo(kDefaultClientId, cache_path());
   }
 
-  ShaderCacheFactory* factory() { return &factory_; }
+  GpuDiskCacheFactory* factory() { return &factory_; }
 
  private:
   void TearDown() override {
@@ -52,13 +52,13 @@ class ShaderDiskCacheTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  ShaderCacheFactory factory_;
+  GpuDiskCacheFactory factory_;
 };
 
-TEST_F(ShaderDiskCacheTest, ClearsCache) {
+TEST_F(GpuDiskCacheTest, ClearsCache) {
   InitCache();
 
-  scoped_refptr<ShaderDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
   ASSERT_TRUE(cache.get() != nullptr);
 
   net::TestCompletionCallback available_cb;
@@ -80,7 +80,7 @@ TEST_F(ShaderDiskCacheTest, ClearsCache) {
   EXPECT_EQ(0, cache->Size());
 }
 
-TEST_F(ShaderDiskCacheTest, ClearByPathTriggersCallback) {
+TEST_F(GpuDiskCacheTest, ClearByPathTriggersCallback) {
   InitCache();
   factory()->Get(kDefaultClientId)->Cache(kCacheKey, kCacheValue);
   net::TestCompletionCallback test_callback;
@@ -91,7 +91,7 @@ TEST_F(ShaderDiskCacheTest, ClearByPathTriggersCallback) {
 }
 
 // Important for clearing in-memory profiles.
-TEST_F(ShaderDiskCacheTest, ClearByPathWithEmptyPathTriggersCallback) {
+TEST_F(GpuDiskCacheTest, ClearByPathWithEmptyPathTriggersCallback) {
   net::TestCompletionCallback test_callback;
   factory()->ClearByPath(
       base::FilePath(), base::Time(), base::Time::Max(),
@@ -100,11 +100,11 @@ TEST_F(ShaderDiskCacheTest, ClearByPathWithEmptyPathTriggersCallback) {
 }
 
 // For https://crbug.com/663589.
-TEST_F(ShaderDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
+TEST_F(GpuDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   InitCache();
 
   // Create a cache and wait for it to open.
-  scoped_refptr<ShaderDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
   ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
@@ -126,11 +126,11 @@ TEST_F(ShaderDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   ASSERT_EQ(net::OK, available_cb2.GetResult(rv2));
 }
 
-TEST_F(ShaderDiskCacheTest, MultipleLoaderCallbacks) {
+TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   InitCache();
 
   // Create a cache and wait for it to open.
-  scoped_refptr<ShaderDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
   ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
@@ -151,7 +151,7 @@ TEST_F(ShaderDiskCacheTest, MultipleLoaderCallbacks) {
   cache = factory()->Get(kDefaultClientId);
   ASSERT_TRUE(cache.get() != nullptr);
   int loaded_calls = 0;
-  cache->set_shader_loaded_callback(base::BindLambdaForTesting(
+  cache->SetBlobLoadedCallback(base::BindLambdaForTesting(
       [&loaded_calls](const std::string& key, const std::string& value) {
         ++loaded_calls;
       }));

@@ -476,16 +476,16 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
 void BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO(
     int gpu_client_id,
     const base::FilePath& cache_dir) {
-  GetShaderCacheFactorySingleton()->SetCacheInfo(gpu_client_id, cache_dir);
-  GetShaderCacheFactorySingleton()->SetCacheInfo(
+  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(gpu_client_id, cache_dir);
+  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(
       gpu::kDisplayCompositorClientId, cache_dir);
 }
 
 // static
 void BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO(
     const base::FilePath& cache_dir) {
-  GetShaderCacheFactorySingleton()->SetCacheInfo(gpu::kGrShaderCacheClientId,
-                                                 cache_dir);
+  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(gpu::kGrShaderCacheClientId,
+                                                  cache_dir);
 }
 
 }  // namespace content

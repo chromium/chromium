@@ -10,12 +10,12 @@
 
 namespace content {
 
-// Initializes the ShaderCacheFactory singleton instance.
-CONTENT_EXPORT void InitShaderCacheFactorySingleton();
+// Initializes the GpuDiskCacheFactory singleton instance.
+CONTENT_EXPORT void InitGpuDiskCacheFactorySingleton();
 
-// Returns an instance previously created by InitShaderCacheFactorySingleton().
+// Returns an instance previously created by InitGpuDiskCacheFactorySingleton().
 // This can return nullptr if an instance has not yet been created.
-CONTENT_EXPORT gpu::ShaderCacheFactory* GetShaderCacheFactorySingleton();
+CONTENT_EXPORT gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactorySingleton();
 
 }  // namespace content
 

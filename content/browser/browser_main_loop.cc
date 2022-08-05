@@ -1237,10 +1237,10 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
     cc::SetClientNameForMetrics("Browser");
   }
 
-  // Initialize the GPU shader cache. This needs to be initialized before
+  // Initialize the GPU cache. This needs to be initialized before
   // BrowserGpuChannelHostFactory below, since that depends on an initialized
-  // ShaderCacheFactory.
-  InitShaderCacheFactorySingleton();
+  // GpuDiskCacheFactory.
+  InitGpuDiskCacheFactorySingleton();
 
   // Initialize the FontRenderParams. This needs to be initialized before gpu
   // process initialization below.

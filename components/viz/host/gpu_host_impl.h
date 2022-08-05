@@ -50,8 +50,8 @@ struct FontRenderParams;
 }
 
 namespace gpu {
-class ShaderCacheFactory;
-class ShaderDiskCache;
+class GpuDiskCacheFactory;
+class GpuDiskCache;
 }  // namespace gpu
 
 namespace viz {
@@ -86,7 +86,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                                        gpu::DomainGuilt guilt) = 0;
     virtual void DisableGpuCompositing() = 0;
     virtual bool GpuAccessAllowed() const = 0;
-    virtual gpu::ShaderCacheFactory* GetShaderCacheFactory() = 0;
+    virtual gpu::GpuDiskCacheFactory* GetGpuDiskCacheFactory() = 0;
     virtual void RecordLogMessage(int32_t severity,
                                   const std::string& header,
                                   const std::string& message) = 0;
@@ -295,7 +295,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   // are guilty, and block automatic execution of 3D content from those domains.
   std::multiset<GURL> urls_with_live_offscreen_contexts_;
 
-  std::map<int32_t, scoped_refptr<gpu::ShaderDiskCache>>
+  std::map<int32_t, scoped_refptr<gpu::GpuDiskCache>>
       client_id_to_shader_cache_;
   std::string shader_prefix_key_;
 

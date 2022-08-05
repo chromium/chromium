@@ -1079,8 +1079,8 @@ void GpuProcessHost::DisableGpuCompositing() {
 #endif
 }
 
-gpu::ShaderCacheFactory* GpuProcessHost::GetShaderCacheFactory() {
-  return GetShaderCacheFactorySingleton();
+gpu::GpuDiskCacheFactory* GpuProcessHost::GetGpuDiskCacheFactory() {
+  return GetGpuDiskCacheFactorySingleton();
 }
 
 void GpuProcessHost::RecordLogMessage(int32_t severity,

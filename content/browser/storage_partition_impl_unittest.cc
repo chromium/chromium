@@ -755,16 +755,16 @@ class StoragePartitionShaderClearTest : public testing::Test {
   StoragePartitionShaderClearTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(new TestBrowserContext()) {
-    InitShaderCacheFactorySingleton();
-    GetShaderCacheFactorySingleton()->SetCacheInfo(
+    InitGpuDiskCacheFactorySingleton();
+    GetGpuDiskCacheFactorySingleton()->SetCacheInfo(
         kDefaultClientId,
         browser_context()->GetDefaultStoragePartition()->GetPath());
-    cache_ = GetShaderCacheFactorySingleton()->Get(kDefaultClientId);
+    cache_ = GetGpuDiskCacheFactorySingleton()->Get(kDefaultClientId);
   }
 
   ~StoragePartitionShaderClearTest() override {
     cache_ = nullptr;
-    GetShaderCacheFactorySingleton()->RemoveCacheInfo(kDefaultClientId);
+    GetGpuDiskCacheFactorySingleton()->RemoveCacheInfo(kDefaultClientId);
   }
 
   void InitCache() {
@@ -789,7 +789,7 @@ class StoragePartitionShaderClearTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
 
-  scoped_refptr<gpu::ShaderDiskCache> cache_;
+  scoped_refptr<gpu::GpuDiskCache> cache_;
 };
 
 // Tests ---------------------------------------------------------------------

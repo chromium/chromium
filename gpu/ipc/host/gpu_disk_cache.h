@@ -21,27 +21,26 @@
 
 namespace gpu {
 
-class ShaderCacheFactory;
-class ShaderDiskCacheEntry;
-class ShaderDiskReadHelper;
-class ShaderClearHelper;
+class GpuDiskCacheFactory;
+class GpuDiskCacheEntry;
+class GpuDiskCacheReadHelper;
+class GpuDiskCacheClearHelper;
 
-// ShaderDiskCache is the interface to the on disk cache for
-// GL shaders.
-class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
+// GpuDiskCache is the interface to the on disk cache for the GPU process.
+class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
  public:
-  using ShaderLoadedCallback =
+  using BlobLoadedCallback =
       base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
-  ShaderDiskCache(const ShaderDiskCache&) = delete;
-  ShaderDiskCache& operator=(const ShaderDiskCache&) = delete;
+  GpuDiskCache(const GpuDiskCache&) = delete;
+  GpuDiskCache& operator=(const GpuDiskCache&) = delete;
 
-  void set_shader_loaded_callback(const ShaderLoadedCallback& callback) {
-    shader_loaded_callback_ = callback;
+  void SetBlobLoadedCallback(const BlobLoadedCallback& callback) {
+    blob_loaded_callback_ = callback;
   }
 
-  // Store the |shader| into the cache under |key|.
-  void Cache(const std::string& key, const std::string& shader);
+  // Store the |blob| into the cache under |key|.
+  void Cache(const std::string& key, const std::string& blob);
 
   // Clear a range of entries. This supports unbounded deletes in either
   // direction by using null Time values for either |begin_time| or |end_time|.
@@ -68,55 +67,53 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   // been written to the cache.
   int SetCacheCompleteCallback(net::CompletionOnceCallback callback);
 
-  // Returns the size which should be used for the shader disk cache.
+  // Returns the size which should be used for the gpu disk cache.
   static size_t CacheSizeBytes();
 
  private:
-  friend class base::RefCounted<ShaderDiskCache>;
-  friend class ShaderDiskCacheEntry;
-  friend class ShaderDiskReadHelper;
-  friend class ShaderCacheFactory;
+  friend class base::RefCounted<GpuDiskCache>;
+  friend class GpuDiskCacheEntry;
+  friend class GpuDiskCacheReadHelper;
+  friend class GpuDiskCacheFactory;
 
-  ShaderDiskCache(ShaderCacheFactory* factory,
-                  const base::FilePath& cache_path);
-  ~ShaderDiskCache();
+  GpuDiskCache(GpuDiskCacheFactory* factory, const base::FilePath& cache_path);
+  ~GpuDiskCache();
 
   void Init();
   void CacheCreatedCallback(disk_cache::BackendResult rv);
 
   disk_cache::Backend* backend() { return backend_.get(); }
 
-  void EntryComplete(ShaderDiskCacheEntry* entry);
+  void EntryComplete(GpuDiskCacheEntry* entry);
   void ReadComplete();
 
-  raw_ptr<ShaderCacheFactory> factory_;
-  bool cache_available_;
+  raw_ptr<GpuDiskCacheFactory> factory_;
+  bool cache_available_ = false;
   base::FilePath cache_path_;
-  bool is_initialized_;
+  bool is_initialized_ = false;
   net::CompletionOnceCallback available_callback_;
   net::CompletionOnceCallback cache_complete_callback_;
-  ShaderLoadedCallback shader_loaded_callback_;
+  BlobLoadedCallback blob_loaded_callback_;
 
   std::unique_ptr<disk_cache::Backend> backend_;
 
-  std::unique_ptr<ShaderDiskReadHelper> helper_;
-  std::unordered_map<ShaderDiskCacheEntry*,
-                     std::unique_ptr<ShaderDiskCacheEntry>>
+  std::unique_ptr<GpuDiskCacheReadHelper> helper_;
+  std::unordered_map<GpuDiskCacheEntry*, std::unique_ptr<GpuDiskCacheEntry>>
       entries_;
 };
 
-// ShaderCacheFactory maintains a cache of ShaderDiskCache objects
-// so we only create one per profile directory.
-class ShaderCacheFactory : public base::ThreadChecker {
+// GpuDiskCacheFactory maintains a cache of GpuDiskCache objects so we only
+// create one per profile directory.
+class GpuDiskCacheFactory {
  public:
-  ShaderCacheFactory();
+  GpuDiskCacheFactory();
 
-  ShaderCacheFactory(const ShaderCacheFactory&) = delete;
-  ShaderCacheFactory& operator=(const ShaderCacheFactory&) = delete;
+  GpuDiskCacheFactory(const GpuDiskCacheFactory&) = delete;
+  GpuDiskCacheFactory& operator=(const GpuDiskCacheFactory&) = delete;
 
-  ~ShaderCacheFactory();
+  ~GpuDiskCacheFactory();
 
-  // Clear the shader disk cache for the given |path|. This supports unbounded
+  // Clear the gpu disk cache for the given |path|. This supports unbounded
   // deletes in either direction by using null Time values for either
   // |begin_time| or |end_time|. The |callback| will be executed when the
   // clear is complete.
@@ -132,8 +129,8 @@ class ShaderCacheFactory : public base::ThreadChecker {
                        const base::Time& end_time,
                        base::OnceClosure callback);
 
-  // Retrieve the shader disk cache for the provided |client_id|.
-  scoped_refptr<ShaderDiskCache> Get(int32_t client_id);
+  // Retrieve the gpu disk cache for the provided |client_id|.
+  scoped_refptr<GpuDiskCache> Get(int32_t client_id);
 
   // Set the |path| to be used for the disk cache for |client_id|.
   void SetCacheInfo(int32_t client_id, const base::FilePath& path);
@@ -142,26 +139,29 @@ class ShaderCacheFactory : public base::ThreadChecker {
   void RemoveCacheInfo(int32_t client_id);
 
   // Set the provided |cache| into the cache map for the given |path|.
-  void AddToCache(const base::FilePath& path, ShaderDiskCache* cache);
+  void AddToCache(const base::FilePath& path, GpuDiskCache* cache);
 
   // Remove the provided |path| from our cache map.
   void RemoveFromCache(const base::FilePath& path);
 
  private:
-  friend class ShaderClearHelper;
+  friend class GpuDiskCacheClearHelper;
 
-  scoped_refptr<ShaderDiskCache> GetByPath(const base::FilePath& path);
+  scoped_refptr<GpuDiskCache> GetByPath(const base::FilePath& path);
   void CacheCleared(const base::FilePath& path);
 
-  using ShaderCacheMap = std::map<base::FilePath, ShaderDiskCache*>;
-  ShaderCacheMap shader_cache_map_;
+  THREAD_CHECKER(thread_checker_);
+
+  using PathToCacheMap = std::map<base::FilePath, GpuDiskCache*>;
+  PathToCacheMap gpu_cache_map_;
 
   using ClientIdToPathMap = std::map<int32_t, base::FilePath>;
   ClientIdToPathMap client_id_to_path_map_;
 
-  using ShaderClearQueue = base::queue<std::unique_ptr<ShaderClearHelper>>;
-  using ShaderClearMap = std::map<base::FilePath, ShaderClearQueue>;
-  ShaderClearMap shader_clear_map_;
+  using ClearHelperQueue =
+      base::queue<std::unique_ptr<GpuDiskCacheClearHelper>>;
+  using PathToClearHelperQueueMap = std::map<base::FilePath, ClearHelperQueue>;
+  PathToClearHelperQueueMap gpu_clear_map_;
 };
 
 }  // namespace gpu

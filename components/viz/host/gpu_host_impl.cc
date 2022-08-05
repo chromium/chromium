@@ -176,14 +176,14 @@ void GpuHostImpl::OnProcessCrashed() {
   // to be re-created.
   if (activity_flags_.IsFlagSet(
           gpu::ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY)) {
-    auto* shader_cache_factory = delegate_->GetShaderCacheFactory();
-    for (auto cache_key : client_id_to_shader_cache_) {
+    auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
+    for (auto& [client_id, _] : client_id_to_shader_cache_) {
       // This call will temporarily extend the lifetime of the cache (kept
       // alive in the factory), and may drop loads of cached shader binaries if
       // it takes a while to complete. As we are intentionally dropping all
       // binaries, this behavior is fine.
-      shader_cache_factory->ClearByClientId(
-          cache_key.first, base::Time(), base::Time::Max(), base::DoNothing());
+      gpu_disk_cache_factory->ClearByClientId(
+          client_id, base::Time(), base::Time::Max(), base::DoNothing());
     }
   }
 }
@@ -249,7 +249,7 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   }
 
   bool cache_shaders_on_disk =
-      delegate_->GetShaderCacheFactory()->Get(client_id) != nullptr;
+      delegate_->GetGpuDiskCacheFactory()->Get(client_id) != nullptr;
 
   channel_requests_[client_id] = std::move(callback);
   if (sync) {
@@ -403,12 +403,12 @@ void GpuHostImpl::CreateChannelCache(int32_t client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "GpuHostImpl::CreateChannelCache");
 
-  scoped_refptr<gpu::ShaderDiskCache> cache =
-      delegate_->GetShaderCacheFactory()->Get(client_id);
+  scoped_refptr<gpu::GpuDiskCache> cache =
+      delegate_->GetGpuDiskCacheFactory()->Get(client_id);
   if (!cache)
     return;
 
-  cache->set_shader_loaded_callback(base::BindRepeating(
+  cache->SetBlobLoadedCallback(base::BindRepeating(
       &GpuHostImpl::LoadedShader, weak_ptr_factory_.GetWeakPtr(), client_id));
 
   client_id_to_shader_cache_[client_id] = cache;

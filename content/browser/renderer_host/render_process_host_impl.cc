@@ -298,13 +298,13 @@ RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
 
 void CacheShaderInfo(int32_t id, base::FilePath path) {
-  if (GetShaderCacheFactorySingleton())
-    GetShaderCacheFactorySingleton()->SetCacheInfo(id, path);
+  if (GetGpuDiskCacheFactorySingleton())
+    GetGpuDiskCacheFactorySingleton()->SetCacheInfo(id, path);
 }
 
 void RemoveShaderInfo(int32_t id) {
-  if (GetShaderCacheFactorySingleton())
-    GetShaderCacheFactorySingleton()->RemoveCacheInfo(id);
+  if (GetGpuDiskCacheFactorySingleton())
+    GetGpuDiskCacheFactorySingleton()->RemoveCacheInfo(id);
 }
 
 // the global list of all renderer processes

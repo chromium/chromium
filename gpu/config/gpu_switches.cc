@@ -35,7 +35,7 @@ const char kIgnoreGpuBlocklist[] = "ignore-gpu-blocklist";
 // Allows explicitly specifying the shader disk cache size for embedded devices.
 // Default value is 6MB. On Android, 2MB is default and 128KB for low-end
 // devices.
-const char kShaderDiskCacheSizeKB[] = "shader-disk-cache-size-kb";
+const char kGpuDiskCacheSizeKB[] = "gpu-disk-cache-size-kb";
 
 // Disables the non-sandboxed GPU process for DX12 info collection
 const char kDisableGpuProcessForDX12InfoCollection[] =
