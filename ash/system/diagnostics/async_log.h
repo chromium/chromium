@@ -10,6 +10,8 @@
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace ash {
@@ -31,6 +33,9 @@ class ASH_EXPORT AsyncLog {
   // Returns the current contents as a string.
   std::string GetContents() const;
 
+  void SetTaskRunnerForTesting(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
  private:
   // Appends to the file. Run on the the task runner.
   void AppendImpl(const std::string& text);
@@ -43,6 +48,10 @@ class ASH_EXPORT AsyncLog {
 
   // Blockable task runner to enable I/O operations.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(async_log_checker_);
+
+  // WeakPtr should be destroyed first.
+  base::WeakPtrFactory<AsyncLog> weak_factory_{this};
 };
 
 }  // namespace diagnostics

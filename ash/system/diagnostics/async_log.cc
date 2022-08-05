@@ -6,6 +6,9 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 
@@ -16,6 +19,7 @@ AsyncLog::AsyncLog(const base::FilePath& file_path) : file_path_(file_path) {
   sequenced_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  DETACH_FROM_SEQUENCE(async_log_checker_);
 }
 
 AsyncLog::~AsyncLog() = default;
@@ -23,7 +27,7 @@ AsyncLog::~AsyncLog() = default;
 void AsyncLog::Append(const std::string& text) {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&AsyncLog::AppendImpl, base::Unretained(this), text));
+      base::BindOnce(&AsyncLog::AppendImpl, weak_factory_.GetWeakPtr(), text));
 }
 
 std::string AsyncLog::GetContents() const {
@@ -37,7 +41,13 @@ std::string AsyncLog::GetContents() const {
   return contents;
 }
 
+void AsyncLog::SetTaskRunnerForTesting(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
+  sequenced_task_runner_ = std::move(task_runner);
+}
+
 void AsyncLog::AppendImpl(const std::string& text) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(async_log_checker_);
   // Ensure file exists.
   if (!base::PathExists(file_path_)) {
     CreateFile();

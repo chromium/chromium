@@ -4,12 +4,15 @@
 
 #include "ash/system/diagnostics/async_log.h"
 
+#include <memory>
+
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -22,7 +25,7 @@ const char kLogFileName[] = "test_async_log";
 
 class AsyncLogTest : public testing::Test {
  public:
-  AsyncLogTest() {
+  AsyncLogTest() : task_runner_(new base::TestSimpleTaskRunner) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     log_path_ = temp_dir_.GetPath().AppendASCII(kLogFileName);
   }
@@ -32,6 +35,7 @@ class AsyncLogTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
   base::ScopedTempDir temp_dir_;
   base::FilePath log_path_;
@@ -39,6 +43,7 @@ class AsyncLogTest : public testing::Test {
 
 TEST_F(AsyncLogTest, NoWriteEmpty) {
   AsyncLog log(log_path_);
+  log.SetTaskRunnerForTesting(task_runner_);
 
   // The file won't until it is written to.
   EXPECT_FALSE(base::PathExists(log_path_));
@@ -49,12 +54,15 @@ TEST_F(AsyncLogTest, NoWriteEmpty) {
 
 TEST_F(AsyncLogTest, WriteEmpty) {
   AsyncLog log(log_path_);
+  log.SetTaskRunnerForTesting(task_runner_);
 
   // Append empty string to the log.
   log.Append("");
 
+  EXPECT_TRUE(task_runner_->HasPendingTask());
   // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
+  task_runner_->RunUntilIdle();
+  EXPECT_FALSE(task_runner_->HasPendingTask());
 
   // The file exists.
   EXPECT_TRUE(base::PathExists(log_path_));
@@ -65,6 +73,7 @@ TEST_F(AsyncLogTest, WriteEmpty) {
 
 TEST_F(AsyncLogTest, WriteOneLine) {
   AsyncLog log(log_path_);
+  log.SetTaskRunnerForTesting(task_runner_);
 
   const std::string line = "Hello";
 
@@ -72,7 +81,7 @@ TEST_F(AsyncLogTest, WriteOneLine) {
   log.Append(line);
 
   // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
+  task_runner_->RunUntilIdle();
 
   // Log contains `line`.
   EXPECT_EQ(line, log.GetContents());
@@ -80,6 +89,7 @@ TEST_F(AsyncLogTest, WriteOneLine) {
 
 TEST_F(AsyncLogTest, WriteMultipleLines) {
   AsyncLog log(log_path_);
+  log.SetTaskRunnerForTesting(task_runner_);
 
   const std::vector<std::string> lines = {
       "Line 1",
@@ -93,10 +103,28 @@ TEST_F(AsyncLogTest, WriteMultipleLines) {
   }
 
   // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
+  task_runner_->RunUntilIdle();
 
   // Read back the log and split the lines.
   EXPECT_EQ(lines, GetLogLines(log.GetContents()));
+}
+
+TEST_F(AsyncLogTest, NoUseAfterFreeCrash) {
+  auto log = std::make_unique<AsyncLog>(log_path_);
+  log->SetTaskRunnerForTesting(task_runner_);
+
+  const std::string line_not_written = "Should not be written";
+  log->Append(line_not_written);
+  EXPECT_EQ(1u, task_runner_->NumPendingTasks());
+
+  // Simulate log destroyed before append can complete.
+  log.reset();
+
+  // Attempt to run pending AppendImpl call after AsyncLog destroyed.
+  task_runner_->RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(log_path_));
+  EXPECT_EQ(0u, task_runner_->NumPendingTasks());
 }
 
 }  // namespace diagnostics
