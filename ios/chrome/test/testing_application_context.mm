@@ -211,6 +211,11 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
   return browser_policy_connector_.get();
 }
 
+PromosManager* TestingApplicationContext::GetPromosManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
+}
+
 breadcrumbs::BreadcrumbPersistentStorageManager*
 TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
   DCHECK(thread_checker_.CalledOnValidThread());

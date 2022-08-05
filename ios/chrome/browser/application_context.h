@@ -70,6 +70,7 @@ class VariationsService;
 
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
+class PromosManager;
 class IOSChromeIOThread;
 class PrefService;
 class SafeBrowsingService;
@@ -161,6 +162,10 @@ class ApplicationContext {
   // Returns the BrowserPolicyConnectorIOS that starts and manages the policy
   // system. May be |nullptr| if policy is not enabled.
   virtual BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() = 0;
+
+  // Gets the Promos Manager. For v1, this will be a Fullscreen Promos Manager.
+  // May be |nullptr| if feature kFullscreenPromosManager is not enabled.
+  virtual PromosManager* GetPromosManager() = 0;
 
   // Returns the BreadcrumbPersistentStorageManager writing breadcrumbs to disk.
   // Will be null if breadcrumb collection is not enabled.

@@ -58,6 +58,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 #include "ios/chrome/common/channel_info.h"
@@ -457,6 +459,14 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
     }
   }
   return browser_policy_connector_.get();
+}
+
+PromosManager* ApplicationContextImpl::GetPromosManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (IsFullscreenPromosManagerEnabled() && !promos_manager_) {
+    promos_manager_ = std::make_unique<PromosManager>();
+  }
+  return promos_manager_.get();
 }
 
 breadcrumbs::BreadcrumbPersistentStorageManager*
