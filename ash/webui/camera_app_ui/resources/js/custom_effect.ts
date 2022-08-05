@@ -8,6 +8,7 @@ import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import {speakMessage} from './spoken_msg.js';
 import * as state from './state.js';
 import * as util from './util.js';
 
@@ -205,6 +206,7 @@ class Toast {
       protected readonly anchor: HTMLElement,
       protected readonly template: DocumentFragment,
       protected readonly toast: HTMLDivElement,
+      protected readonly message: string,
       protected readonly positionInfos: PositionInfos) {
     this.cancelHandle = setInterval(() => {
       updatePositions(anchor, positionInfos);
@@ -214,6 +216,7 @@ class Toast {
 
   show(): void {
     document.body.appendChild(this.template);
+    speakMessage(this.message);
   }
 
   focus(): void {
@@ -245,7 +248,7 @@ class NewFeatureToast extends Toast {
         loadTimeData.getI18nMessage(I18nString.NEW_CONTROL_NAVIGATION, text);
     toast.setAttribute('aria-label', ariaLabel);
 
-    super(anchor, template, toast, [{
+    super(anchor, template, toast, text, [{
             target: toast,
             properties: getOffsetProperties(anchor, 'toast'),
           }]);
@@ -276,7 +279,7 @@ class IndicatorToast extends Toast {
 
     const indicatorDot =
         dom.getFrom(template, '#indicator-dot', HTMLDivElement);
-    super(anchor, template, toast, [
+    super(anchor, template, toast, text, [
       {
         target: toast,
         properties: getOffsetProperties(anchor, 'toast'),
