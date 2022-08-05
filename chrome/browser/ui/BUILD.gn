@@ -2091,6 +2091,7 @@ static_library("ui") {
       "app_list/search/omnibox_provider.h",
       "app_list/search/omnibox_result.cc",
       "app_list/search/omnibox_result.h",
+      "app_list/search/omnibox_util.cc",
       "app_list/search/omnibox_util.h",
       "app_list/search/open_tab_result.cc",
       "app_list/search/open_tab_result.h",

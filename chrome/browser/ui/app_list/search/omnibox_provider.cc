@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/common/types_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
@@ -41,16 +41,6 @@ namespace app_list {
 namespace {
 
 using ::ash::string_matching::TokenizedString;
-
-// Some omnibox answers overtrigger on short queries. This controls the minimum
-// query length before they are displayed.
-constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
-
-bool IsDriveUrl(const GURL& url) {
-  // Returns true if the |url| points to a Drive Web host.
-  const std::string& host = url.host();
-  return host == "drive.google.com" || host == "docs.google.com";
-}
 
 // Returns true if the match is an answer, including calculator answers.
 bool IsAnswer(const AutocompleteMatch& match) {
@@ -89,28 +79,6 @@ int ProviderTypes() {
     providers |= AutocompleteProvider::TYPE_OPEN_TAB;
   }
   return providers;
-}
-
-void RemoveDuplicates(std::vector<std::unique_ptr<OmniboxResult>>& results) {
-  // Sort the results by deduplication priority and then filter from left to
-  // right. This ensures that higher priority results are retained.
-  sort(results.begin(), results.end(),
-       [](const std::unique_ptr<OmniboxResult>& a,
-          const std::unique_ptr<OmniboxResult>& b) {
-         return a->dedup_priority() > b->dedup_priority();
-       });
-
-  base::flat_set<std::string> seen_ids;
-  for (auto iter = results.begin(); iter != results.end();) {
-    bool inserted = seen_ids.insert((*iter)->id()).second;
-    if (!inserted) {
-      // C++11:: The return value of erase(iter) is an iterator pointing to the
-      // next element in the container.
-      iter = results.erase(iter);
-    } else {
-      ++iter;
-    }
-  }
 }
 
 }  //  namespace
@@ -232,7 +200,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   }
 
   // Deduplicate the list results and then move-concatenate it into new_results.
-  RemoveDuplicates(list_results);
+  RemoveDuplicateResults(list_results);
   std::move(list_results.begin(), list_results.end(),
             std::back_inserter(new_results));
 

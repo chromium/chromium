@@ -16,6 +16,7 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider.h"
@@ -114,7 +115,8 @@ std::unique_ptr<SearchController> CreateSearchController(
   if (app_list_features::IsLauncherLacrosIntegrationEnabled()) {
     controller->AddProvider(
         omnibox_group_id,
-        std::make_unique<OmniboxLacrosProvider>(profile, list_controller));
+        std::make_unique<OmniboxLacrosProvider>(
+            profile, list_controller, crosapi::CrosapiManager::Get()));
   } else {
     controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
                                                   profile, list_controller));

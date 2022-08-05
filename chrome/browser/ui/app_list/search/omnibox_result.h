@@ -30,6 +30,9 @@ class OmniboxResult : public ChromeSearchResult,
  public:
   // `remove_closure` must remove this result from the results list; it is
   // called when the "x" button next to the search result is pressed.
+  //
+  // TODO(1272361): remove this argument once result deletions are handled via
+  //                their own ranker.
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
                 base::RepeatingClosure remove_closure,

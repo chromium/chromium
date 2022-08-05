@@ -8,12 +8,16 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class Profile;
 
 namespace crosapi {
+class CrosapiManager;
 class SearchProviderAsh;
 }  // namespace crosapi
 
@@ -22,7 +26,8 @@ namespace app_list {
 class OmniboxLacrosProvider : public SearchProvider {
  public:
   OmniboxLacrosProvider(Profile* profile,
-                        AppListControllerDelegate* list_controller);
+                        AppListControllerDelegate* list_controller,
+                        crosapi::CrosapiManager* crosapi_manager);
   ~OmniboxLacrosProvider() override;
 
   // SearchProvider:
@@ -33,8 +38,13 @@ class OmniboxLacrosProvider : public SearchProvider {
   void OnResultsReceived(std::vector<crosapi::mojom::SearchResultPtr> results);
 
   crosapi::SearchProviderAsh* search_provider_;
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
+  Profile* const profile_;
+  AppListControllerDelegate* const list_controller_;
+
+  AutocompleteInput input_;
+
+  std::u16string last_query_;
+  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
   base::WeakPtrFactory<OmniboxLacrosProvider> weak_factory_{this};
 };

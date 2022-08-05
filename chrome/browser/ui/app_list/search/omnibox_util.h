@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_UTIL_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_UTIL_H_
 
+#include <memory>
+#include <vector>
+
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
+class GURL;
+
 namespace app_list {
+
+class OmniboxResult;
 
 // The magic number 1500 is the highest score of an omnibox result.
 // See comments in autocomplete_provider.h.
@@ -39,6 +46,19 @@ constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
             "No content is uploaded or saved, this request downloads a "
             "publicly available image."
         })");
+
+// Some omnibox answers overtrigger on short queries. This controls the minimum
+// query length before they are displayed.
+constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
+
+// Whether this URL points to a Drive location.
+bool IsDriveUrl(const GURL& url);
+
+// Removes duplicate results from the given list, with higher-priority results
+// taking precedence over lower. After calling this function, the list will be
+// sorted in descending order of priority.
+void RemoveDuplicateResults(
+    std::vector<std::unique_ptr<OmniboxResult>>& results);
 
 }  // namespace app_list
 
