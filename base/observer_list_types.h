@@ -29,7 +29,6 @@ class BASE_EXPORT CheckedObserver {
   CheckedObserver(const CheckedObserver&) = delete;
   CheckedObserver& operator=(const CheckedObserver&) = delete;
 
- protected:
   virtual ~CheckedObserver();
 
   // Returns whether |this| is in any ObserverList. Subclasses can CHECK() this
