@@ -202,6 +202,30 @@ TEST_F(TransferredMediaStreamTrackTest, ContentHintSetAfterImplementation) {
   EXPECT_EQ(transferred_track_->ContentHint(), kContentHint);
 }
 
+TEST_F(TransferredMediaStreamTrackTest, SetEnabledBeforeImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  mock_impl_->SetExecutionContext(scope.GetExecutionContext());
+  transferred_track_->setEnabled(/*enabled=*/true);
+  ASSERT_TRUE(transferred_track_->enabled());
+  ASSERT_FALSE(mock_impl_->enabled());
+  transferred_track_->SetImplementation(mock_impl_);
+  EXPECT_TRUE(transferred_track_->enabled());
+}
+
+TEST_F(TransferredMediaStreamTrackTest, SetEnabledAfterImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  mock_impl_->SetExecutionContext(scope.GetExecutionContext());
+  ASSERT_TRUE(transferred_track_->enabled());
+  transferred_track_->SetImplementation(mock_impl_);
+  EXPECT_FALSE(transferred_track_->enabled());
+  transferred_track_->setEnabled(/*enabled=*/true);
+  EXPECT_TRUE(transferred_track_->enabled());
+}
+
 TEST_F(TransferredMediaStreamTrackTest, MultipleSetterFunctions) {
   V8TestingScope scope;
   CustomSetUp(scope);
@@ -211,10 +235,14 @@ TEST_F(TransferredMediaStreamTrackTest, MultipleSetterFunctions) {
   transferred_track_->SetContentHint("speech");
   transferred_track_->applyConstraints(scope.GetScriptState(),
                                        MediaTrackConstraints::Create());
+  transferred_track_->setEnabled(/*enabled=*/true);
   transferred_track_->SetContentHint("music");
+  transferred_track_->setEnabled(/*enabled=*/false);
+  ASSERT_TRUE(transferred_track_->enabled());
   ASSERT_EQ(transferred_track_->ContentHint(), "");
   transferred_track_->SetImplementation(mock_impl_);
   EXPECT_EQ(transferred_track_->ContentHint(), "music");
+  EXPECT_FALSE(transferred_track_->enabled());
 }
 
 TEST_F(TransferredMediaStreamTrackTest, SetImplementationTriggersObservers) {

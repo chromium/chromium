@@ -106,7 +106,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
  private:
   // Enumerates function names which can change the state of MediaStreamTrack.
-  enum SetterFunction { APPLY_CONSTRAINTS, SET_CONTENT_HINT };
+  enum SetterFunction { APPLY_CONSTRAINTS, SET_CONTENT_HINT, SET_ENABLED };
 
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
@@ -132,6 +132,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   Vector<SetterFunction> setter_call_order_;
   WTF::Deque<String> content_hint_list_;
   WTF::Deque<ConstraintsPair> constraints_list_;
+  WTF::Deque<bool> enabled_state_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;

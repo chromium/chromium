@@ -88,9 +88,10 @@ bool TransferredMediaStreamTrack::enabled() const {
 void TransferredMediaStreamTrack::setEnabled(bool enabled) {
   if (track_) {
     track_->setEnabled(enabled);
+    return;
   }
-  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
-  // initialized.
+  setter_call_order_.push_back(SET_ENABLED);
+  enabled_state_list_.push_back(enabled);
 }
 
 bool TransferredMediaStreamTrack::muted() const {
@@ -209,6 +210,11 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
       case SET_CONTENT_HINT: {
         track->SetContentHint(content_hint_list_.front());
         content_hint_list_.pop_front();
+        break;
+      }
+      case SET_ENABLED: {
+        track->setEnabled(enabled_state_list_.front());
+        enabled_state_list_.pop_front();
         break;
       }
     }
