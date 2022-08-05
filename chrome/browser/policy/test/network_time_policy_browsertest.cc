@@ -28,16 +28,17 @@ namespace policy {
 
 class NetworkTimePolicyTest : public SafeBrowsingPolicyTest {
  public:
-  NetworkTimePolicyTest() = default;
+  NetworkTimePolicyTest() {
+    std::map<std::string, std::string> parameters;
+    parameters["FetchBehavior"] = "on-demand-only";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        network_time::kNetworkTimeServiceQuerying, parameters);
+  }
   NetworkTimePolicyTest(const NetworkTimePolicyTest&) = delete;
   NetworkTimePolicyTest& operator=(const NetworkTimePolicyTest&) = delete;
   ~NetworkTimePolicyTest() override = default;
 
   void SetUpOnMainThread() override {
-    std::map<std::string, std::string> parameters;
-    parameters["FetchBehavior"] = "on-demand-only";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        network_time::kNetworkTimeServiceQuerying, parameters);
     SafeBrowsingPolicyTest::SetUpOnMainThread();
   }
 
@@ -66,11 +67,7 @@ class NetworkTimePolicyTest : public SafeBrowsingPolicyTest {
   uint32_t num_requests_ = 0;
 };
 
-// TODO(https://crbug.com/1012853): This test is using ScopedFeatureList
-// incorrectly, and fixing it causes conflicts with PolicyTest's use of the
-// deprecated variations API.
-IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
-                       DISABLED_NetworkTimeQueriesDisabled) {
+IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest, NetworkTimeQueriesDisabled) {
   // Set a policy to disable network time queries.
   PolicyMap policies;
   policies.Set(key::kBrowserNetworkTimeQueriesEnabled, POLICY_LEVEL_MANDATORY,
