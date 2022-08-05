@@ -8359,8 +8359,11 @@ test("unit_tests") {
       "../browser/plugins/plugin_installer_unittest.cc",
       "../browser/plugins/plugin_metadata_unittest.cc",
       "../browser/plugins/plugin_prefs_unittest.cc",
-      "../common/pepper_permission_util_unittest.cc",
     ]
+  }
+
+  if (enable_ppapi) {
+    sources += [ "../common/pepper_permission_util_unittest.cc" ]
   }
 
   if (enable_basic_printing) {

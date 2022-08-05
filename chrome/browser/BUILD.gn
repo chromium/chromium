@@ -7328,8 +7328,7 @@ static_library("browser") {
     ]
   }
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
-  if (enable_ppapi) {
+  if (enable_plugins) {
     sources += [
       "plugins/chrome_content_browser_client_plugins_part.cc",
       "plugins/chrome_content_browser_client_plugins_part.h",
@@ -7361,16 +7360,23 @@ static_library("browser") {
       "plugins/plugin_utils.h",
       "plugins/reload_plugin_infobar_delegate.cc",
       "plugins/reload_plugin_infobar_delegate.h",
+    ]
+    deps += [
+      "//media:media_buildflags",
+      "//services/network/public/mojom",
+    ]
+  }
+
+  if (enable_ppapi) {
+    sources += [
       "renderer_host/pepper/chrome_browser_pepper_host_factory.cc",
       "renderer_host/pepper/chrome_browser_pepper_host_factory.h",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.cc",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
     ]
     deps += [
-      "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy:ipc",
-      "//services/network/public/mojom",
     ]
     if (is_chromeos_ash) {
       deps += [ "//ash/components/cryptohome" ]

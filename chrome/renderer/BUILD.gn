@@ -228,7 +228,14 @@ static_library("renderer") {
     }
   }
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_plugins) {
+    sources += [
+      "plugins/chrome_plugin_placeholder.cc",
+      "plugins/chrome_plugin_placeholder.h",
+    ]
+    deps += [ "//components/strings" ]
+  }
+
   if (enable_ppapi) {
     sources += [
       "pepper/chrome_renderer_pepper_host_factory.cc",
@@ -239,11 +246,8 @@ static_library("renderer") {
       "pepper/pepper_shared_memory_message_filter.h",
       "pepper/pepper_uma_host.cc",
       "pepper/pepper_uma_host.h",
-      "plugins/chrome_plugin_placeholder.cc",
-      "plugins/chrome_plugin_placeholder.h",
     ]
     deps += [
-      "//components/strings",
       "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy",
