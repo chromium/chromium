@@ -75,6 +75,20 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
 
  private:
   void OnListVms(absl::optional<vm_tools::concierge::ListVmsResponse> response);
+  void OnListRunningContainers(
+      absl::optional<vm_tools::cicerone::ListRunningContainersResponse>
+          response);
+  void OnGetGarconSessionInfo(
+      std::string vm_name,
+      std::string container_name,
+      absl::optional<vm_tools::cicerone::GetGarconSessionInfoResponse>
+          response);
+  void HandleNewGuest(const std::string& vm_name,
+                      const std::string& container_name,
+                      const std::string& username,
+                      const std::string& homedir,
+                      const std::string& ipv4_address,
+                      uint32_t sftp_vsock_port);
   std::string owner_id_;
   base::flat_map<std::string, vm_tools::concierge::VmInfo> vms_;
   base::flat_map<GuestId, GuestInfo> guests_;

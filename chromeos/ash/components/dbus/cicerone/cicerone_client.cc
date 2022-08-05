@@ -708,6 +708,52 @@ class CiceroneClientImpl : public CiceroneClient {
                                 base::DoNothing());
   }
 
+  void ListRunningContainers(
+      const vm_tools::cicerone::ListRunningContainersRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
+          callback) override {
+    dbus::MethodCall method_call(
+        vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kListRunningContainersMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode GetVshSessionRequest protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+
+    cicerone_proxy_->CallMethod(
+        &method_call, kDefaultTimeout.InMilliseconds(),
+        base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
+                           vm_tools::cicerone::ListRunningContainersResponse>,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetGarconSessionInfo(
+      const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
+          callback) override {
+    dbus::MethodCall method_call(
+        vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kGetGarconSessionInfoMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode GetVshSessionRequest protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+
+    cicerone_proxy_->CallMethod(
+        &method_call, kDefaultTimeout.InMilliseconds(),
+        base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
+                           vm_tools::cicerone::GetGarconSessionInfoResponse>,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
       override {

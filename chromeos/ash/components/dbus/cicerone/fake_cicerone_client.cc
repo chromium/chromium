@@ -482,6 +482,24 @@ void FakeCiceroneClient::DetachUsbFromContainer(
 void FakeCiceroneClient::FileSelected(
     const vm_tools::cicerone::FileSelectedSignal& signal) {}
 
+void FakeCiceroneClient::ListRunningContainers(
+    const vm_tools::cicerone::ListRunningContainersRequest& request,
+    DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
+        callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), list_containers_response_));
+}
+
+void FakeCiceroneClient::GetGarconSessionInfo(
+    const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
+    DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
+        callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_garcon_session_info_response_));
+}
+
 void FakeCiceroneClient::NotifyLxdContainerCreated(
     const vm_tools::cicerone::LxdContainerCreatedSignal& proto) {
   for (auto& observer : observer_list_) {

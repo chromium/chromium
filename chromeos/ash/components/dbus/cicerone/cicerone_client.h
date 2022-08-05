@@ -372,6 +372,20 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public DBusClient {
   virtual void FileSelected(
       const vm_tools::cicerone::FileSelectedSignal& signal) = 0;
 
+  // Lists the containers Cicerone knows about.
+  // |callback| is called when the method completes.
+  virtual void ListRunningContainers(
+      const vm_tools::cicerone::ListRunningContainersRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
+          callback) = 0;
+
+  // Queries Garcon for info about the current session.
+  // |callback| is called when the method completes.
+  virtual void GetGarconSessionInfo(
+      const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
+          callback) = 0;
+
   // Registers |callback| to run when the Cicerone service becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.

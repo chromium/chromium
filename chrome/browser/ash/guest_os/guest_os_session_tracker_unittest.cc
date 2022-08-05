@@ -125,8 +125,36 @@ TEST_F(GuestOsSessionTrackerTest, AlreadyRunningVMsTracked) {
 }
 
 TEST_F(GuestOsSessionTrackerTest, AlreadyRunningContainersTracked) {
-  // TODO(b/217469540): We need to expose additional information from Cicerone
-  // to be able to adopt up already-running containers.
+  vm_tools::concierge::ListVmsResponse list_vms_response;
+  vm_tools::concierge::ExtendedVmInfo vm_info;
+  vm_info.set_owner_id(OwnerId());
+  vm_info.set_name("vm_name");
+  *list_vms_response.add_vms() = vm_info;
+  list_vms_response.set_success(true);
+  FakeConciergeClient()->set_list_vms_response(list_vms_response);
+
+  vm_tools::cicerone::ListRunningContainersResponse list_containers_response;
+  auto* pair = list_containers_response.add_containers();
+  pair->set_vm_name("vm_name");
+  pair->set_container_name("penguin");
+  FakeCiceroneClient()->set_list_containers_response(list_containers_response);
+
+  vm_tools::cicerone::GetGarconSessionInfoResponse garcon_response;
+  garcon_response.set_container_homedir("/homedir");
+  garcon_response.set_container_username("username");
+  garcon_response.set_sftp_vsock_port(24);
+  garcon_response.set_status(
+      vm_tools::cicerone::GetGarconSessionInfoResponse::SUCCEEDED);
+  FakeCiceroneClient()->set_get_garcon_session_info_response(garcon_response);
+
+  GuestOsSessionTracker tracker{OwnerId()};
+  run_loop_.RunUntilIdle();
+
+  auto info = tracker.GetInfo(GuestId(VmType::UNKNOWN, "vm_name", "penguin"));
+  ASSERT_NE(info, absl::nullopt);
+  ASSERT_EQ(info->homedir, base::FilePath(garcon_response.container_homedir()));
+  ASSERT_EQ(info->username, garcon_response.container_username());
+  ASSERT_EQ(info->sftp_vsock_port, garcon_response.sftp_vsock_port());
 }
 
 TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedAlreadyRunning) {

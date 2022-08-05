@@ -159,6 +159,14 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
           callback) override;
   void FileSelected(
       const vm_tools::cicerone::FileSelectedSignal& signal) override;
+  void ListRunningContainers(
+      const vm_tools::cicerone::ListRunningContainersRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
+          callback) override;
+  void GetGarconSessionInfo(
+      const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
+          callback) override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
@@ -361,6 +369,17 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
     detach_usb_from_container_response_ =
         std::move(detach_usb_from_container_response);
   }
+  void set_list_containers_response(
+      vm_tools::cicerone::ListRunningContainersResponse
+          list_container_response) {
+    list_containers_response_ = std::move(list_container_response);
+  }
+  void set_get_garcon_session_info_response(
+      vm_tools::cicerone::GetGarconSessionInfoResponse
+          get_garcon_session_info_response) {
+    get_garcon_session_info_response_ =
+        std::move(get_garcon_session_info_response);
+  }
 
   void set_send_container_starting_signal_delay(base::TimeDelta delay) {
     send_container_starting_signal_delay_ = delay;
@@ -522,6 +541,9 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       attach_usb_to_container_response_;
   vm_tools::cicerone::DetachUsbFromContainerResponse
       detach_usb_from_container_response_;
+  vm_tools::cicerone::ListRunningContainersResponse list_containers_response_;
+  vm_tools::cicerone::GetGarconSessionInfoResponse
+      get_garcon_session_info_response_;
 
   base::TimeDelta send_container_starting_signal_delay_;
   base::TimeDelta send_container_started_signal_delay_;
