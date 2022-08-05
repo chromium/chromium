@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 
@@ -60,9 +59,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
     : public base::SupportsUserData,
       public RenderProcessHostObserver,
       public IPC::Listener,
-      public mojom::AgentSchedulingGroupHost,
-      public mojom::RouteProvider,
-      public blink::mojom::AssociatedInterfaceProvider {
+      public mojom::AgentSchedulingGroupHost {
  public:
   // Get the appropriate AgentSchedulingGroupHost for the given
   // `site_instance_group` and `process`. Depending on the value of
@@ -143,18 +140,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // mojom::RouteProvider
-  void GetRoute(
-      int32_t routing_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-          receiver) override;
-
-  // blink::mojom::AssociatedInterfaceProvider
-  void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-          receiver) override;
-
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
@@ -211,15 +196,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // `blink::AssociatedInterfaceProvider` routes between this and the
   // renderer-side `AgentSchedulingGroup`.
   mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
-  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
-
-  // The `blink::mojom::AssociatedInterfaceProvider` receiver set that *all*
-  // renderer-side `blink::AssociatedInterfaceProvider` objects own a remote to.
-  // `AgentSchedulingGroupHost` will be responsible for routing each associated
-  // interface request to the appropriate renderer host object.
-  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
-                              int32_t>
-      associated_interface_provider_receivers_;
 
   LifecycleState state_{LifecycleState::kNewborn};
 

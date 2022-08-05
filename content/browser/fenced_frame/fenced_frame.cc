@@ -23,9 +23,14 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
   return owner_render_frame_host->frame_tree()->AddFrame(
       &*owner_render_frame_host, owner_render_frame_host->GetProcess()->GetID(),
       owner_render_frame_host->GetProcess()->GetNextRoutingID(),
+      // We're creating an dummy outer delegate node which will never have a
+      // corresponding `RenderFrameImpl`, and therefore we pass null
+      // remotes/receivers for connections that it would normally have to a
+      // renderer process.
       /*frame_remote=*/mojo::NullAssociatedRemote(),
       /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
       /*policy_container_bind_params=*/nullptr,
+      /*associated_interface_provider_receiver=*/mojo::NullAssociatedReceiver(),
       blink::mojom::TreeScopeType::kDocument, "", "", true,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,

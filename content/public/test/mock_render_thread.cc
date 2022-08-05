@@ -288,6 +288,8 @@ void MockRenderThread::OnCreateWindow(
   frame_routing_id_to_initial_browser_brokers_.emplace(
       reply->main_frame_route_id,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
+  reply->associated_interface_provider =
+      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 

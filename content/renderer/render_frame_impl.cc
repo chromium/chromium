@@ -1396,11 +1396,14 @@ RenderFrameImpl* RenderFrameImpl::Create(
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
+    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK(routing_id != MSG_ROUTING_NONE);
   CreateParams params(
       agent_scheduling_group, routing_id, std::move(frame_receiver),
-      std::move(browser_interface_broker), devtools_frame_token);
+      std::move(browser_interface_broker),
+      std::move(associated_interface_provider), devtools_frame_token);
 
   if (g_create_render_frame_impl)
     return g_create_render_frame_impl(std::move(params));
@@ -1437,7 +1440,9 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker), devtools_frame_token);
+      std::move(params->interface_broker),
+      std::move(params->associated_interface_provider_remote),
+      devtools_frame_token);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view, render_frame, render_frame->blink_interface_registry_.get(),
@@ -1517,6 +1522,8 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
+    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider,
     const absl::optional<blink::FrameToken>& previous_frame_token,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     const absl::optional<blink::FrameToken>& parent_frame_token,
@@ -1561,7 +1568,8 @@ void RenderFrameImpl::CreateFrame(
     // Create the RenderFrame and WebLocalFrame, linking the two.
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
-        std::move(browser_interface_broker), devtools_frame_token);
+        std::move(browser_interface_broker),
+        std::move(associated_interface_provider), devtools_frame_token);
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state->unique_name);
     WebFrame* opener = nullptr;
@@ -1594,7 +1602,8 @@ void RenderFrameImpl::CreateFrame(
     // main frame, as in the case where a navigation to the current process'
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
-        std::move(browser_interface_broker), devtools_frame_token);
+        std::move(browser_interface_broker),
+        std::move(associated_interface_provider), devtools_frame_token);
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(), token,
         previous_web_frame, replicated_state->frame_policy,
@@ -1755,11 +1764,14 @@ RenderFrameImpl::CreateParams::CreateParams(
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
+    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider,
     const base::UnguessableToken& devtools_frame_token)
     : agent_scheduling_group(&agent_scheduling_group),
       routing_id(routing_id),
       frame_receiver(std::move(frame_receiver)),
       browser_interface_broker(std::move(browser_interface_broker)),
+      associated_interface_provider(std::move(associated_interface_provider)),
       devtools_frame_token(devtools_frame_token) {}
 RenderFrameImpl::CreateParams::~CreateParams() = default;
 RenderFrameImpl::CreateParams::CreateParams(CreateParams&&) = default;
@@ -1800,6 +1812,12 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   browser_interface_broker_proxy_.Bind(
       std::move(params.browser_interface_broker),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
+
+  // Save the pending remote for lazy binding in
+  // `GetRemoteAssociatedInterfaces().
+  DCHECK(params.associated_interface_provider.is_valid());
+  pending_associated_interface_provider_remote_ =
+      std::move(params.associated_interface_provider);
 
   delayed_state_sync_timer_.SetTaskRunner(
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
@@ -2308,13 +2326,10 @@ RenderFrameImpl::GetAssociatedInterfaceRegistry() {
 blink::AssociatedInterfaceProvider*
 RenderFrameImpl::GetRemoteAssociatedInterfaces() {
   if (!remote_associated_interfaces_) {
-    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
-        remote_interfaces;
-    agent_scheduling_group_.GetRemoteRouteProvider()->GetRoute(
-        routing_id_, remote_interfaces.InitWithNewEndpointAndPassReceiver());
+    DCHECK(pending_associated_interface_provider_remote_);
     remote_associated_interfaces_ =
         std::make_unique<blink::AssociatedInterfaceProvider>(
-            std::move(remote_interfaces),
+            std::move(pending_associated_interface_provider_remote_),
             GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
   }
   return remote_associated_interfaces_.get();
@@ -3398,6 +3413,9 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
 
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      associated_interface_provider;
+
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
       child_routing_id,
@@ -3405,7 +3423,8 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       blink::mojom::PolicyContainerBindParams::New(
           std::move(policy_container_bind_params.receiver)),
-      scope, name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
+      associated_interface_provider.InitWithNewEndpointAndPassReceiver(), scope,
+      name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
       blink::mojom::FrameOwnerProperties::From(frame_owner_properties),
       frame_owner_element_type);
 
@@ -3413,7 +3432,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
       agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
-      devtools_frame_token);
+      std::move(associated_interface_provider), devtools_frame_token);
   child_render_frame->loader_factories_ = CloneLoaderFactories();
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);

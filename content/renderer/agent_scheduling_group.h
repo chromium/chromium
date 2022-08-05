@@ -77,7 +77,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
   void BindAssociatedInterfaces(
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           remote_host,
-      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
       mojo::PendingAssociatedReceiver<mojom::RouteProvider>
           route_provider_receiever) override;
 
@@ -133,16 +132,18 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // the (browser-side) AgentSchedulingGroupHost.
   mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote_;
 
-  // The |mojom::RouteProvider| mojo pair to setup
-  // |blink::AssociatedInterfaceProvider| routes between us and the browser-side
-  // |AgentSchedulingGroup|.
-  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
+  // The `mojom::RouteProvider` mojo receiver that the browser uses to establish
+  // a `blink::AssociatedInterfaceProvider` route between `this` and a
+  // `RenderFrameHostImpl`. See documentation above
+  // `associated_interface_provider_receivers_`.
   mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
 
   // The `blink::mojom::AssociatedInterfaceProvider` receiver set that *all*
-  // browser-side `blink::AssociatedInterfaceProvider` objects own a remote to.
-  // `AgentSchedulingGroupHost` will be responsible for routing each associated
-  // interface request to the appropriate renderer object.
+  // `RenderFrameHostImpl`s associated with this agent scheduling group own a
+  // remote to. `this` handles each of their associated interface requests. If
+  // we have an associated `RenderFrameImpl` that we can forward the request to,
+  // we do. Otherwise, we "queue" these requests in `pending_receivers_`. This
+  // is really bad though; see the documentation there.
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;

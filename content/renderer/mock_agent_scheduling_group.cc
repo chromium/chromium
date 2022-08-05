@@ -65,7 +65,7 @@ void MockAgentSchedulingGroup::Init() {
       browser_route_provider.BindNewEndpointAndPassDedicatedReceiver();
 
   BindAssociatedInterfaces(
-      agent_scheduling_group_host.Unbind(), browser_route_provider.Unbind(),
+      agent_scheduling_group_host.Unbind(),
       mojo::PendingAssociatedReceiver<mojom::RouteProvider>());
 }
 

@@ -371,35 +371,11 @@ void AgentSchedulingGroupHost::DidUnloadRenderFrame(
   }
 }
 
-void AgentSchedulingGroupHost::GetRoute(
-    int32_t routing_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-        receiver) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  DCHECK(receiver.is_valid());
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
-}
-
-void AgentSchedulingGroupHost::GetAssociatedInterface(
-    const std::string& name,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-        receiver) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  int32_t routing_id =
-      associated_interface_provider_receivers_.current_context();
-
-  if (auto* listener = GetListener(routing_id))
-    listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
-}
-
 void AgentSchedulingGroupHost::ResetIPC() {
   DCHECK_EQ(state_, LifecycleState::kRenderProcessExited);
   receiver_.reset();
   mojo_remote_.reset();
   remote_route_provider_.reset();
-  route_provider_receiver_.reset();
-  associated_interface_provider_receivers_.Clear();
   broker_receiver_.reset();
   channel_ = nullptr;
 }
@@ -420,7 +396,6 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK(!mojo_remote_.is_bound());
   DCHECK(!receiver_.is_bound());
   DCHECK(!remote_route_provider_.is_bound());
-  DCHECK(!route_provider_receiver_.is_bound());
   DCHECK(!broker_receiver_.is_bound());
 
   // After this function returns, all of `this`'s mojo interfaces need to be
@@ -476,7 +451,6 @@ void AgentSchedulingGroupHost::SetUpIPC() {
 
   mojo_remote_.get()->BindAssociatedInterfaces(
       receiver_.BindNewEndpointAndPassRemote(),
-      route_provider_receiver_.BindNewEndpointAndPassRemote(),
       remote_route_provider_.BindNewEndpointAndPassReceiver());
   SetState(LifecycleState::kBound);
 }

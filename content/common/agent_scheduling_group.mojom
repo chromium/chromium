@@ -63,7 +63,6 @@ interface AgentSchedulingGroup {
   // create the AgentSchedulingGroup over.
   BindAssociatedInterfaces(
     pending_associated_remote<AgentSchedulingGroupHost> remote_host,
-    pending_associated_remote<RouteProvider> remote_route_provider,
     pending_associated_receiver<RouteProvider> route_provider_receiver);
 
   // Tells the renderer to create a new view.

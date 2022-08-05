@@ -204,6 +204,12 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   static mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   CreateStubBrowserInterfaceBrokerReceiver();
 
+  // Returns an `AssociatedInterfaceProvider` that will never receive any
+  // interface requests.
+  static mojo::PendingAssociatedReceiver<
+      blink::mojom::AssociatedInterfaceProvider>
+  CreateStubAssociatedInterfaceProviderReceiver();
+
   // Returns a blink::mojom::PolicyContainerBindParams containing a
   // PendingAssociatedReceiver<PolicyContainerHost> and a
   // PendingReceiver<PolicyContainerHostKeepAliveHandle> that are safe to bind

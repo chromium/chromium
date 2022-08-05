@@ -329,6 +329,8 @@ FrameTreeNode* FrameTree::AddFrame(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider_receiver,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -349,6 +351,8 @@ FrameTreeNode* FrameTree::AddFrame(
   // well as `WebContentsObserverConsistencyChecker::RenderFrameHostChanged()`).
   DCHECK_NE(frame_remote.is_valid(), is_dummy_frame_for_inner_tree);
   DCHECK_NE(browser_interface_broker_receiver.is_valid(),
+            is_dummy_frame_for_inner_tree);
+  DCHECK_NE(associated_interface_provider_receiver.is_valid(),
             is_dummy_frame_for_inner_tree);
 
   // A child frame always starts with an initial empty document, which means
@@ -389,6 +393,11 @@ FrameTreeNode* FrameTree::AddFrame(
   if (policy_container_bind_params) {
     added_node->current_frame_host()->policy_container_host()->Bind(
         std::move(policy_container_bind_params));
+  }
+
+  if (associated_interface_provider_receiver.is_valid()) {
+    added_node->current_frame_host()->BindAssociatedInterfaceProviderReceiver(
+        std::move(associated_interface_provider_receiver));
   }
 
   // The last committed NavigationEntry may have a FrameNavigationEntry with the

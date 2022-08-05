@@ -4339,6 +4339,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
+    std::ignore = params->associated_interface_provider_remote
+                      .InitWithNewEndpointAndPassReceiver();
     params->previous_frame_token = previous_frame_token;
     params->opener_frame_token = absl::nullopt;
     params->parent_frame_token =
@@ -4421,6 +4423,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
+    std::ignore = params->associated_interface_provider_remote
+                      .InitWithNewEndpointAndPassReceiver();
     params->previous_frame_token = absl::nullopt;
     params->opener_frame_token = absl::nullopt;
     params->parent_frame_token = parent_frame_token;

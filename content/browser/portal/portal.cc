@@ -140,13 +140,17 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
           owner_render_frame_host_,
           owner_render_frame_host_->GetProcess()->GetID(),
           owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
-          // The renderer frame doesn't exist yet and will be created later with
-          // the CreateRenderView message.
+          // `outer_node` is just a dummy outer delegate node, which will never
+          // have a corresponding `RenderFrameImpl`, and therefore we pass null
+          // remotes/receivers for connections that it would normally have to a
+          // renderer process.
           /*frame_remote=*/mojo::NullAssociatedRemote(),
           /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
           // The PolicyContainerHost remote is sent to Blink in the
           // CreateRenderView mojo message.
           /*policy_container_bind_params=*/nullptr,
+          /*associated_interface_provider_receiver=*/
+          mojo::NullAssociatedReceiver(),
           blink::mojom::TreeScopeType::kDocument, "", "", true,
           blink::LocalFrameToken(), base::UnguessableToken::Create(),
           blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,

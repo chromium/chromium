@@ -159,6 +159,7 @@ class RenderFrameImplTest : public RenderViewTest {
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
+        TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
         /*previous_frame_token=*/absl::nullopt,
         /*opener_frame_token=*/absl::nullopt,
         /*parent_frame_token=*/remote_child_token,

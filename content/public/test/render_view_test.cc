@@ -485,6 +485,8 @@ void RenderViewTest::SetUp() {
   // Ignoring the returned PendingReceiver because it is not bound to anything
   std::ignore =
       main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver();
+  main_frame_params->associated_interface_provider_remote =
+      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
   policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
   main_frame_params->policy_container =
       policy_container_host_->CreatePolicyContainerForBlink();

@@ -71,6 +71,13 @@ class TestRenderFrame : public RenderFrameImpl {
   static mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
   CreateStubBrowserInterfaceBrokerRemote();
 
+  // Returns a pending `AssociatedInterfaceProvider` remote that represents a
+  // connection to a non-existent browser, where all messages will go into the
+  // void.
+  static mojo::PendingAssociatedRemote<
+      blink::mojom::AssociatedInterfaceProvider>
+  CreateStubAssociatedInterfaceProviderRemote();
+
  protected:
   explicit TestRenderFrame(RenderFrameImpl::CreateParams params);
 

@@ -212,6 +212,8 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
+      mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+          associated_interface_provider,
       const absl::optional<blink::FrameToken>& previous_frame_token,
       const absl::optional<blink::FrameToken>& opener_frame_token,
       const absl::optional<blink::FrameToken>& parent_frame_token,
@@ -232,12 +234,15 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Constructor parameters are bundled into a struct.
   struct CONTENT_EXPORT CreateParams {
-    CreateParams(AgentSchedulingGroup& agent_scheduling_group,
-                 int32_t routing_id,
-                 mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
-                 mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-                     browser_interface_broker,
-                 const base::UnguessableToken& devtools_frame_token);
+    CreateParams(
+        AgentSchedulingGroup& agent_scheduling_group,
+        int32_t routing_id,
+        mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
+        mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+            browser_interface_broker,
+        mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+            associated_interface_provider,
+        const base::UnguessableToken& devtools_frame_token);
     ~CreateParams();
 
     CreateParams(CreateParams&&);
@@ -248,6 +253,8 @@ class CONTENT_EXPORT RenderFrameImpl
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker;
+    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider;
     base::UnguessableToken devtools_frame_token;
   };
 
@@ -800,6 +807,8 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
+      mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+          associated_interface_provider,
       const base::UnguessableToken& devtools_frame_token);
 
   // Functions to add and remove observers for this object.
@@ -1299,6 +1308,16 @@ class CONTENT_EXPORT RenderFrameImpl
   MediaFactory media_factory_;
 
   blink::AssociatedInterfaceRegistry associated_interfaces_;
+  // `remote_associated_interfaces_` cannot be constructed/bound at
+  // RenderFrameImpl construction because it needs the underlying WebFrame to
+  // get a TaskRunner. It also cannot be constructed/bound later in
+  // `RenderFrame::Initialize()` (where we bind the `mojom::Frame` receiver),
+  // because that happens *after* the `WebFrame` is initialized, and its
+  // initialization relies on the interface provider being bound. So we stash
+  // the pending remote here, and we bind it lazily in
+  // `GetRemoteAssociatedInterfaces()`.
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      pending_associated_interface_provider_remote_;
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;
 

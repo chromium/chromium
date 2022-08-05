@@ -248,11 +248,6 @@ void AgentSchedulingGroup::DidUnloadRenderFrame(
   host_remote_->DidUnloadRenderFrame(frame_token);
 }
 
-mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
-  DCHECK(remote_route_provider_);
-  return remote_route_provider_.get();
-}
-
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   RenderThreadImpl& renderer = ToImpl(render_thread_);
   renderer.SetScrollAnimatorEnabled(
@@ -266,11 +261,12 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
       *this, params->token, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker), params->previous_frame_token,
-      params->opener_frame_token, params->parent_frame_token,
-      params->previous_sibling_frame_token, params->devtools_frame_token,
-      params->tree_scope_type, std::move(params->replication_state),
-      std::move(params->widget_params),
+      std::move(params->interface_broker),
+      std::move(params->associated_interface_provider_remote),
+      params->previous_frame_token, params->opener_frame_token,
+      params->parent_frame_token, params->previous_sibling_frame_token,
+      params->devtools_frame_token, params->tree_scope_type,
+      std::move(params->replication_state), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->is_on_initial_empty_document,
       std::move(params->policy_container));
@@ -285,13 +281,10 @@ void AgentSchedulingGroup::CreateSharedStorageWorkletService(
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(
     mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> remote_host,
-    mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
     mojo::PendingAssociatedReceiver<mojom::RouteProvider>
         route_provider_receiever) {
   host_remote_.Bind(std::move(remote_host),
                     agent_group_scheduler_->DefaultTaskRunner());
-  remote_route_provider_.Bind(std::move(remote_route_provider),
-                              agent_group_scheduler_->DefaultTaskRunner());
   route_provider_receiver_.Bind(std::move(route_provider_receiever),
                                 agent_group_scheduler_->DefaultTaskRunner());
 }

@@ -335,6 +335,8 @@ WebView* RenderViewImpl::CreateView(
   main_frame_params->interface_broker =
       std::move(reply->main_frame_interface_broker);
   main_frame_params->policy_container = std::move(reply->policy_container);
+  main_frame_params->associated_interface_provider_remote =
+      std::move(reply->associated_interface_provider);
   main_frame_params->widget_params = std::move(reply->widget_params);
   main_frame_params->subresource_loader_factories =
       base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(

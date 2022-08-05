@@ -2800,23 +2800,10 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  // TODO(https://crbug.com/1123438) It is not understood why
-  // OnAssociatedInterfaceRequest can be received after resetting
-  // `associated_registry_`. This is reset in TearDownMojoConnection(), which
-  // means we want to stop receiving messages on behalf of the frame. Ignoring
-  // this request sounded like the right way to handle this.
-  if (!associated_registry_)
-    return;
-
-  // Perform Mojo capability control if `mojo_binder_policy_applier_` exists.
-  if (mojo_binder_policy_applier_ &&
-      !mojo_binder_policy_applier_->ApplyPolicyToAssociatedBinder(
-          interface_name)) {
-    return;
-  }
-
-  if (associated_registry_->TryBindInterface(interface_name, &handle))
-    return;
+  // `this` is an `IPC::Listener`, but there is no path by which `this` would
+  // receive associated interface requests through this method. Associated
+  // interface requests come in through `GetAssociatedInterface()`.
+  NOTREACHED();
 }
 
 std::string RenderFrameHostImpl::ToDebugString() {
@@ -3273,6 +3260,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
       browsing_context_state_->current_replication_state().Clone();
   params->token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
+  BindAssociatedInterfaceProviderReceiver(
+      params->associated_interface_provider_remote
+          .InitWithNewEndpointAndPassReceiver());
 
   // If this is a new RenderFrameHost for a frame that has already committed a
   // document, we don't have a policy container yet. Indeed, in that case, this
@@ -3736,6 +3726,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider_receiver,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -3749,6 +3741,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
   DCHECK(policy_container_bind_params->receiver.is_valid());
+  DCHECK(associated_interface_provider_receiver.is_valid());
   DCHECK(devtools_frame_token);
 
   // The RenderFrame corresponding to this host sent an IPC message to create a
@@ -3771,14 +3764,15 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // |new_routing_id|, |browser_interface_broker_receiver| and
   // |devtools_frame_token| were generated on the browser's IO thread and not
   // taken from the renderer process.
-  frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
-                        std::move(frame_remote),
-                        std::move(browser_interface_broker_receiver),
-                        std::move(policy_container_bind_params), scope,
-                        frame_name, frame_unique_name, is_created_by_script,
-                        frame_token, devtools_frame_token, frame_policy,
-                        frame_owner_properties, was_discarded_, owner_type,
-                        /*is_dummy_frame_for_inner_tree=*/false);
+  frame_tree_->AddFrame(
+      this, GetProcess()->GetID(), new_routing_id, std::move(frame_remote),
+      std::move(browser_interface_broker_receiver),
+      std::move(policy_container_bind_params),
+      std::move(associated_interface_provider_receiver), scope, frame_name,
+      frame_unique_name, is_created_by_script, frame_token,
+      devtools_frame_token, frame_policy, frame_owner_properties,
+      was_discarded_, owner_type,
+      /*is_dummy_frame_for_inner_tree=*/false);
 }
 
 void RenderFrameHostImpl::CreateChildFrame(
@@ -3787,6 +3781,8 @@ void RenderFrameHostImpl::CreateChildFrame(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        associated_interface_provider_receiver,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -3828,9 +3824,10 @@ void RenderFrameHostImpl::CreateChildFrame(
   // match the mojo interface.
   OnCreateChildFrame(new_routing_id, std::move(frame_remote),
                      std::move(browser_interface_broker_receiver),
-                     std::move(policy_container_bind_params), scope, frame_name,
-                     frame_unique_name, is_created_by_script, frame_token,
-                     devtools_frame_token, frame_policy,
+                     std::move(policy_container_bind_params),
+                     std::move(associated_interface_provider_receiver), scope,
+                     frame_name, frame_unique_name, is_created_by_script,
+                     frame_token, devtools_frame_token, frame_policy,
                      *frame_owner_properties, owner_type);
 }
 
@@ -7058,6 +7055,13 @@ void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
   broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
 }
 
+void RenderFrameHostImpl::BindAssociatedInterfaceProviderReceiver(
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        receiver) {
+  DCHECK(receiver.is_valid());
+  associated_interface_provider_receiver_.Bind(std::move(receiver));
+}
+
 void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
     mojo::PendingAssociatedReceiver<mojom::DomAutomationControllerHost>
         receiver) {
@@ -7181,6 +7185,26 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->user_gesture, params->triggering_event_info,
       params->href_translate, std::move(blob_url_loader_factory),
       params->impression);
+}
+
+void RenderFrameHostImpl::GetAssociatedInterface(
+    const std::string& name,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+        receiver) {
+  // `associated_interface_provider_receiver_` and `associated_registry_` are
+  // both reset at the same time, so we should never get a request for an
+  // associated interface when `associated_registry_` is not valid.
+  DCHECK(associated_registry_);
+
+  // Perform Mojo capability control if `mojo_binder_policy_applier_` exists.
+  if (mojo_binder_policy_applier_ &&
+      !mojo_binder_policy_applier_->ApplyPolicyToAssociatedBinder(name)) {
+    return;
+  }
+
+  mojo::ScopedInterfaceEndpointHandle handle = receiver.PassHandle();
+  if (associated_registry_->TryBindInterface(name, &handle))
+    return;
 }
 
 void RenderFrameHostImpl::DidStopLoading() {
@@ -7459,6 +7483,12 @@ void RenderFrameHostImpl::CreateNewWindow(
   new_main_rfh->BindBrowserInterfaceBrokerReceiver(
       browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      pending_associated_interface_provider;
+  new_main_rfh->BindAssociatedInterfaceProviderReceiver(
+      pending_associated_interface_provider
+          .InitWithNewEndpointAndPassReceiver());
+
   // With this path, RenderViewHostImpl::CreateRenderView is never called
   // because RenderView is already created on the renderer side. Thus we need to
   // establish the connection here.
@@ -7480,8 +7510,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       std::move(pending_frame_receiver), std::move(widget_params),
       std::move(page_broadcast_receiver), std::move(browser_interface_broker),
-      cloned_namespace->id(), new_main_rfh->GetDevToolsFrameToken(),
-      wait_for_debugger,
+      std::move(pending_associated_interface_provider), cloned_namespace->id(),
+      new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
@@ -9428,6 +9458,7 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   high_priority_local_frame_.reset();
 
   frame_host_associated_receiver_.reset();
+  associated_interface_provider_receiver_.reset();
   back_forward_cache_controller_host_associated_receiver_.reset();
   frame_.reset();
   frame_bindings_control_.reset();

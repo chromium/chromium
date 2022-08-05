@@ -454,6 +454,9 @@ bool RenderViewHostImpl::CreateRenderView(
     main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
     main_rfh->BindBrowserInterfaceBrokerReceiver(
         local_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
+    main_rfh->BindAssociatedInterfaceProviderReceiver(
+        local_frame_params->associated_interface_provider_remote
+            .InitWithNewEndpointAndPassReceiver());
 
     local_frame_params->is_on_initial_empty_document =
         main_rfh->frame_tree_node()->is_on_initial_empty_document();

@@ -173,6 +173,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       GetProcess()->GetNextRoutingID(), CreateStubFrameRemote(),
       CreateStubBrowserInterfaceBrokerReceiver(),
       CreateStubPolicyContainerBindParams(),
+      CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy({network::mojom::WebSandboxFlags::kNone, allow, {}}),
@@ -691,12 +692,23 @@ TestRenderFrameHost::CreateStubFrameRemote() {
       frame_remote.BindNewEndpointAndPassDedicatedReceiver();
   return frame_remote.Unbind();
 }
+
 // static
 blink::mojom::PolicyContainerBindParamsPtr
 TestRenderFrameHost::CreateStubPolicyContainerBindParams() {
   return blink::mojom::PolicyContainerBindParams::New(
       mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>()
           .InitWithNewEndpointAndPassReceiver());
+}
+
+// static
+mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver() {
+  mojo::AssociatedReceiver<blink::mojom::AssociatedInterfaceProvider> receiver(
+      nullptr);
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      pending_remote = receiver.BindNewEndpointAndPassDedicatedRemote();
+  return receiver.Unbind();
 }
 
 void TestRenderFrameHost::SimulateLoadingCompleted(

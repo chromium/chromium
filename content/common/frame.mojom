@@ -25,6 +25,7 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
+import "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
@@ -175,6 +176,12 @@ struct CreateLocalMainFrameParams {
 
   pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
 
+  // The `AssociatedInterfaceProvider` that the main `RenderFrameImpl` will use
+  // to request associated interfaces from its corresponding
+  // `RenderFrameHostImpl`.
+  pending_associated_remote<blink.mojom.AssociatedInterfaceProvider>
+      associated_interface_provider_remote;
+
   // Whether the frame is still on the initial empty document or not.
   bool is_on_initial_empty_document = true;
 
@@ -290,6 +297,11 @@ struct CreateFrameParams {
 
   // The mojo connection to the mojom::Frame in the renderer.
   pending_associated_receiver<content.mojom.Frame> frame;
+
+  // The `AssociatedInterfaceProvider` that the `RenderFrameImpl` will use to
+  // request associated interfaces from its corresponding `RenderFrameHostImpl`.
+  pending_associated_remote<blink.mojom.AssociatedInterfaceProvider>
+      associated_interface_provider_remote;
 };
 
 // Provided with each call to Frame::GetSerializedHtmlWithLocalLinks() so that
@@ -599,6 +611,12 @@ struct CreateNewWindowReply {
   pending_remote<blink.mojom.BrowserInterfaceBroker>
       main_frame_interface_broker;
 
+  // The `AssociatedInterfaceProvider` that the main `RenderFrameImpl` will use
+  // to request associated interfaces from its corresponding
+  // `RenderFrameHostImpl`.
+  pending_associated_remote<blink.mojom.AssociatedInterfaceProvider>
+      associated_interface_provider;
+
   // Duplicated from CreateNewWindowParams because legacy code.
   string cloned_session_storage_namespace_id;
 
@@ -654,6 +672,8 @@ interface FrameHost {
                      browser_interface_broker,
                    blink.mojom.PolicyContainerBindParams
                      policy_container_bind_params,
+                   pending_associated_receiver<blink.mojom.AssociatedInterfaceProvider>
+                     associated_interface_provider,
                    blink.mojom.TreeScopeType scope,
                    string frame_name,
                    string frame_unique_name,
