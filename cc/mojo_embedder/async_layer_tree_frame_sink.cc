@@ -117,9 +117,11 @@ void AsyncLayerTreeFrameSink::DetachFromClient() {
   begin_frame_source_.reset();
   synthetic_begin_frame_source_.reset();
   client_receiver_.reset();
+  // `compositor_frame_sink_ptr_` points to either `compositor_frame_sink_` or
+  // `compositor_frame_sink_associated_`, so it must be set to nullptr first.
+  compositor_frame_sink_ptr_ = nullptr;
   compositor_frame_sink_.reset();
   compositor_frame_sink_associated_.reset();
-  compositor_frame_sink_ptr_ = nullptr;
   LayerTreeFrameSink::DetachFromClient();
 }
 
