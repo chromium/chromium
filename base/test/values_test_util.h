@@ -88,10 +88,16 @@ inline testing::PolymorphicMatcher<IsJsonMatcher> IsJson(const T& value) {
   return testing::MakePolymorphicMatcher(IsJsonMatcher(value));
 }
 
-// Parses |json| as JSON, allowing trailing commas, and returns the resulting
-// value.  If |json| fails to parse, causes an EXPECT failure and returns the
+// Parses `json` as JSON, allowing trailing commas, and returns the resulting
+// value.  If `json` fails to parse, causes an EXPECT failure and returns the
 // Null Value.
 Value ParseJson(StringPiece json);
+
+// Just like ParseJson(), except returns Dicts/Lists. If `json` fails to parse
+// or is not of the expected type, causes an EXPECT failure and returns an empty
+// container.
+Value::Dict ParseJsonDict(StringPiece json);
+Value::List ParseJsonList(StringPiece json);
 
 // DEPRECATED.
 // Parses |json| as JSON, allowing trailing commas, and returns the

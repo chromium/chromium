@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -167,6 +168,27 @@ class DictionaryHasValuesMatcher
   const base::Value template_value_;
 };
 
+// Attempts to parse `json` as JSON. Returns resulting Value on success, has an
+// EXPECT failure and returns nullopt on failure. If `expected_type` is
+// provided, treats `json` parsing as a Value of a different type as a failure.
+//
+absl::optional<Value> ParseJsonHelper(
+    StringPiece json,
+    absl::optional<Value::Type> expected_type) {
+  auto result = JSONReader::ReadAndReturnValueWithError(
+      json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.has_value()) {
+    ADD_FAILURE() << "Failed to parse \"" << json
+                  << "\": " << result.error().message;
+    return absl::nullopt;
+  }
+  if (expected_type && result->type() != *expected_type) {
+    ADD_FAILURE() << "JSON is of wrong type: " << json;
+    return absl::nullopt;
+  }
+  return std::move(*result);
+}
+
 }  // namespace
 
 testing::Matcher<const base::Value&> DictionaryHasValue(
@@ -233,14 +255,21 @@ void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 Value ParseJson(StringPiece json) {
-  auto result = JSONReader::ReadAndReturnValueWithError(
-      json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
-  if (!result.has_value()) {
-    ADD_FAILURE() << "Failed to parse \"" << json
-                  << "\": " << result.error().message;
-    return Value();
-  }
-  return std::move(*result);
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/absl::nullopt);
+  return result.has_value() ? std::move(*result) : Value();
+}
+
+Value::Dict ParseJsonDict(StringPiece json) {
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT);
+  return result.has_value() ? std::move(result->GetDict()) : Value::Dict();
+}
+
+Value::List ParseJsonList(StringPiece json) {
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST);
+  return result.has_value() ? std::move(result->GetList()) : Value::List();
 }
 
 std::unique_ptr<Value> ParseJsonDeprecated(StringPiece json) {
