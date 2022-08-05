@@ -758,7 +758,6 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
 });
 
 [['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
- ['AppearancePage', 'appearance_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
    'settings_category_default_radio_group_tests.js',
@@ -844,6 +843,8 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 [['DefaultBrowser', 'default_browser_test.js'],
  ['ImportDataDialog', 'import_data_dialog_test.js'],
  ['SystemPage', 'system_page_tests.js'],
+ // TODO(crbug.com/1350019) Test is flaky on ChromeOS
+ ['AppearancePage', 'appearance_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
