@@ -1231,7 +1231,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLParsing.ParsingTimeTotal2" units="microseconds"
+<histogram name="Blink.HTMLParsing.ParsingTimeTotal3" units="microseconds"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
