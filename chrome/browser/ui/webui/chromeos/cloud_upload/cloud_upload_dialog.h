@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos::cloud_upload {
 
@@ -24,15 +23,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   CloudUploadDialog();
   ~CloudUploadDialog() override;
   bool ShouldShowCloseButton() const override;
-};
-
-// The WebUI for chrome://cloud-upload, used for uploading files to the cloud.
-class CloudUploadDialogUI : public ui::WebDialogUI {
- public:
-  explicit CloudUploadDialogUI(content::WebUI* web_ui);
-  CloudUploadDialogUI(const CloudUploadDialogUI&) = delete;
-  CloudUploadDialogUI& operator=(const CloudUploadDialogUI&) = delete;
-  ~CloudUploadDialogUI() override;
 };
 
 }  // namespace chromeos::cloud_upload

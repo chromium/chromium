@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './cloud_upload_dialog.html.js';
 
 /**
@@ -42,9 +43,11 @@ class CloudUploadDialogElement extends HTMLElement {
     chrome.send('dialogClose');
   }
 
-  private onUploadButtonClick(): void {
+  private async onUploadButtonClick() {
+    const proxy = BrowserProxy.getInstance().handler;
+    const {uploadPath} = await proxy.getUploadPath();
     const uploadLocationElement = this.$('#upload-location') as HTMLElement;
-    uploadLocationElement.innerText = `Upload location: unknown`;
+    uploadLocationElement.innerText = `Upload location: ${uploadPath.path}`;
     uploadLocationElement.toggleAttribute('hidden', false);
   }
 }

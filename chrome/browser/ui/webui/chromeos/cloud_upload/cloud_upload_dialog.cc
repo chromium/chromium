@@ -5,14 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 
 #include "base/logging.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/cloud_upload_resources.h"
-#include "chrome/grit/cloud_upload_resources_map.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_data_source.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace chromeos::cloud_upload {
 
@@ -41,16 +34,5 @@ CloudUploadDialog::~CloudUploadDialog() = default;
 bool CloudUploadDialog::ShouldShowCloseButton() const {
   return false;
 }
-
-CloudUploadDialogUI::CloudUploadDialogUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUICloudUploadHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
-      IDR_CLOUD_UPLOAD_MAIN_HTML);
-}
-
-CloudUploadDialogUI::~CloudUploadDialogUI() = default;
 
 }  // namespace chromeos::cloud_upload
