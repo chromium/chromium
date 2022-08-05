@@ -74589,6 +74589,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="PD Sink"/>
   <int value="15" label="PD Sinking Host"/>
   <int value="16" label="Non-PD Sink"/>
+  <int value="17" label="Power Brick"/>
 </enum>
 
 <enum name="PassiveForcedListenerResultType">
