@@ -59,8 +59,8 @@ strip ./out/Default/Content\ Shell.app/Contents/MacOS/Content\ Shell
 The test runner script is in `third_party/blink/tools/run_web_tests.py`.
 
 To specify which build directory to use (e.g. out/Default, etc.)
-you should pass the `-t` or `--target` parameter. For example, to
-use the build in `out/Default`, use:
+you should pass the `-t` or `--target` parameter. If no directory is specified,
+`out/Release` will be used. To use the build in `out/Default`, use:
 
 ```bash
 third_party/blink/tools/run_web_tests.py -t Default
