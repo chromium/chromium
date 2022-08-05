@@ -2101,11 +2101,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Painting ------------------------------------------------------------------
 
-  // Background
-  std::unique_ptr<Background> background_;
-
   // Border.
   std::unique_ptr<Border> border_;
+
+  // Background may rely on Border, so it must be declared last and destroyed
+  // first.
+  std::unique_ptr<Background> background_;
 
   // Cached output of painting to be reused in future frames until invalidated.
   ui::PaintCache paint_cache_;
