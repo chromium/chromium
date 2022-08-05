@@ -159,11 +159,13 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   for (const char* registration_js : kTestCases) {
     EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
     std::unique_ptr<MockDataHost> data_host;
-    base::RunLoop loop;
+    base::RunLoop loop, disconnect_loop;
     EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
         .WillOnce(
             [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
               data_host = GetRegisteredDataHost(std::move(host));
+              data_host->receiver().set_disconnect_handler(
+                  disconnect_loop.QuitClosure());
               loop.Quit();
             });
 
@@ -176,6 +178,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       loop.Run();
     data_host->WaitForSourceData(/*num_source_data=*/1);
     const auto& source_data = data_host->source_data();
+    // Regression test for crbug.com/1336797. This will timeout flakily if the
+    // data host isn't disconnected promptly.
+    disconnect_loop.Run();
 
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front()->source_event_id, 5UL);

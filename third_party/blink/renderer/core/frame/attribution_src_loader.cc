@@ -170,6 +170,8 @@ class AttributionSrcLoader::ResourceClient
   void HandleResponseHeaders(const ResourceResponse& response,
                              uint64_t request_id);
 
+  void Finish();
+
  private:
   [[nodiscard]] bool CheckReportingOrigin(
       const SecurityOrigin& reporting_origin,
@@ -447,6 +449,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   auto* client = MakeGarbageCollected<ResourceClient>(
       this, src_type, /*associated_with_navigation=*/false);
   client->HandleResponseHeaders(response, resource->InspectorId());
+  client->Finish();
   return true;
 }
 
@@ -479,6 +482,13 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
   } else {
     RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kReceived);
   }
+
+  Finish();
+}
+
+void AttributionSrcLoader::ResourceClient::Finish() {
+  DCHECK(data_host_.is_bound());
+  DCHECK(keep_alive_);
 
   // Eagerly reset the data host so that the receiver is closed and any buffered
   // triggers are flushed as soon as possible. See crbug.com/1336797 for

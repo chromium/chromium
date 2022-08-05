@@ -133,6 +133,10 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
     return trigger_data_;
   }
 
+  mojo::Receiver<blink::mojom::AttributionDataHost>& receiver() {
+    return receiver_;
+  }
+
  private:
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
