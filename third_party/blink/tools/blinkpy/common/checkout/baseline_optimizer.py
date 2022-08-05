@@ -660,9 +660,12 @@ class ResultDigest(object):
 
         assert fs.exists(path), path + "does not exist"
         if path.endswith('.txt'):
-            content = fs.read_text_file(path)
-            self.is_extra_result = not content or is_all_pass_testharness_result(
-                content)
+            try:
+                content = fs.read_text_file(path)
+                self.is_extra_result = not content or is_all_pass_testharness_result(
+                    content)
+            except UnicodeDecodeError as e:
+                self.is_extra_result = False
             # Unfortunately, we may read the file twice, once in text mode
             # and once in binary mode.
             self.sha = fs.sha1(path)
