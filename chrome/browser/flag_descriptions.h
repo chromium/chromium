@@ -2944,9 +2944,6 @@ extern const char kExoGamepadVibrationDescription[];
 extern const char kExoOrdinalMotionName[];
 extern const char kExoOrdinalMotionDescription[];
 
-extern const char kExoPointerLockName[];
-extern const char kExoPointerLockDescription[];
-
 extern const char kExoLockNotificationName[];
 extern const char kExoLockNotificationDescription[];
 

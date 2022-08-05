@@ -179,10 +179,7 @@ class PointerTest : public test::ExoTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class PointerConstraintTest : public PointerTest {
  public:
-  PointerConstraintTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kExoPointerLock);
-  }
-
+  PointerConstraintTest() = default;
   PointerConstraintTest(const PointerConstraintTest&) = delete;
   PointerConstraintTest& operator=(const PointerConstraintTest&) = delete;
 
@@ -232,7 +229,6 @@ class PointerConstraintTest : public PointerTest {
     return shell_surface;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<Pointer> pointer_;
   std::unique_ptr<Seat> seat_;

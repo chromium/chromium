@@ -139,9 +139,7 @@ class UILockControllerTest : public test::ExoTestBase {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<Seat>();
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kExoLockNotification,
-         chromeos::features::kExoPointerLock},
-        {});
+        {chromeos::features::kExoLockNotification}, {});
     WMHelper::GetInstance()->RegisterAppPropertyResolver(
         std::make_unique<TestPropertyResolver>());
   }

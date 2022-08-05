@@ -245,14 +245,6 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   disk_image->set_writable(true);
   disk_image->set_do_mount(false);
 
-  // TODO(b/161952658): Remove this logging when the exo-pointer-lock is fixed,
-  // this is only meant to be temporary.
-  LOG(WARNING) << "Starting Borealis with exo-pointer-lock: "
-               << (base::FeatureList::IsEnabled(
-                       chromeos::features::kExoPointerLock)
-                       ? "enabled"
-                       : "disabled");
-
   if (external_disk) {
     base::ScopedFD fd(external_disk->TakePlatformFile());
     request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
