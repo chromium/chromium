@@ -53,6 +53,10 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OnSodaInstallError() override;
   void OnSodaInstalled() override;
   void OpenFeedbackDialog() const override;
+  void GetVideo(
+      const std::string& video_file_id,
+      const std::string& resource_key,
+      ash::ProjectorAppClient::OnGetVideoCallback callback) const override;
   void SetAnnotatorMessageHandler(
       ash::AnnotatorMessageHandler* handler) override;
   void ResetAnnotatorMessageHandler(

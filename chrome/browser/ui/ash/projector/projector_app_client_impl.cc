@@ -162,6 +162,14 @@ void ProjectorAppClientImpl::OpenFeedbackDialog() const {
   // error string. For now, assume that the dialog has opened successfully.
 }
 
+void ProjectorAppClientImpl::GetVideo(
+    const std::string& video_file_id,
+    const std::string& resource_key,
+    ash::ProjectorAppClient::OnGetVideoCallback callback) const {
+  screencast_manager_.GetVideo(video_file_id, resource_key,
+                               std::move(callback));
+}
+
 void ProjectorAppClientImpl::SetAnnotatorMessageHandler(
     ash::AnnotatorMessageHandler* handler) {
   annotator_message_handler_ = handler;

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
+#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/files/file_path.h"
@@ -19,6 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::_;
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
 const char kVideoFileId[] = "video_file_id";
@@ -566,6 +569,19 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {
+  ProjectorScreencastVideo expected_video;
+  expected_video.file_id = kVideoFileId;
+
+  EXPECT_CALL(mock_app_client(), GetVideo(kVideoFileId, kResourceKey, _))
+      .WillOnce(
+          [&expected_video](const std::string& video_file_id,
+                            const std::string& resource_key,
+                            ProjectorAppClient::OnGetVideoCallback callback) {
+            std::move(callback).Run(
+                std::make_unique<ProjectorScreencastVideo>(expected_video),
+                /*error_message=*/std::string());
+          });
+
   base::ListValue list_args;
   list_args.Append(kGetVideoCallback);
   base::ListValue args;
@@ -585,9 +601,37 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {
   // Expect the callback to be successful.
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(call_data.arg3()->GetDict(), expected_video.ToValue());
+}
 
-  EXPECT_EQ(*dict.FindString("fileId"), kVideoFileId);
+TEST_F(ProjectorMessageHandlerUnitTest, GetVideoFail) {
+  EXPECT_CALL(mock_app_client(), GetVideo(kVideoFileId, _, _))
+      .WillOnce([](const std::string& video_file_id,
+                   const std::string& resource_key,
+                   ProjectorAppClient::OnGetVideoCallback callback) {
+        EXPECT_TRUE(resource_key.empty());
+        std::move(callback).Run(/*video=*/nullptr, /*error_message=*/"error1");
+      });
+
+  base::ListValue list_args;
+  list_args.Append(kGetVideoCallback);
+  base::ListValue args;
+  args.Append(kVideoFileId);
+  args.Append(base::Value());
+  list_args.Append(std::move(args));
+
+  web_ui().HandleReceivedMessage("getVideo", &list_args);
+
+  // We expect that there was only one callback to the WebUI.
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kGetVideoCallback);
+
+  // Expect the callback to fail.
+  EXPECT_FALSE(call_data.arg2()->GetBool());
+  EXPECT_EQ(call_data.arg3()->GetString(), "error1");
 }
 
 class ProjectorStorageDirNameValidationTest

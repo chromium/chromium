@@ -481,18 +481,38 @@ void ProjectorMessageHandler::GetPendingScreencasts(
 }
 
 void ProjectorMessageHandler::GetVideo(const base::Value::List& args) {
-  AllowJavascript();
   // Two arguments. The first is callback id, and the second is the list
   // containing the item id and resource key.
   DCHECK_EQ(args.size(), 2u);
   const auto& func_args = args[1].GetList();
   DCHECK_EQ(func_args.size(), 2u);
 
-  // TODO(b/237089852): Create a launch event with the file.
-  ProjectorScreencastVideo video;
-  video.file_id = func_args[0].GetString();
+  const std::string& js_callback_id = args[0].GetString();
+  const std::string& video_file_id = func_args[0].GetString();
+  std::string resource_key;
+  if (func_args[1].is_string())
+    resource_key = func_args[1].GetString();
 
-  ResolveJavascriptCallback(args[0], video.ToValue());
+  ProjectorAppClient::Get()->GetVideo(
+      video_file_id, resource_key,
+      base::BindOnce(&ProjectorMessageHandler::OnVideoLocated, GetWeakPtr(),
+                     js_callback_id));
+}
+
+void ProjectorMessageHandler::OnVideoLocated(
+    const std::string& js_callback_id,
+    std::unique_ptr<ProjectorScreencastVideo> video,
+    const std::string& error_message) {
+  AllowJavascript();
+
+  if (!error_message.empty()) {
+    RejectJavascriptCallback(base::Value(js_callback_id),
+                             base::Value(error_message));
+    return;
+  }
+  DCHECK(video)
+      << "If there is no error message, then video should not be nullptr";
+  ResolveJavascriptCallback(base::Value(js_callback_id), video->ToValue());
 }
 
 }  // namespace ash

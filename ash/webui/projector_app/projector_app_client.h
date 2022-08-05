@@ -29,9 +29,8 @@ class Value;
 namespace ash {
 
 class AnnotatorMessageHandler;
-
 struct AnnotatorTool;
-
+struct ProjectorScreencastVideo;
 struct NewScreencastPrecondition;
 
 struct PendingScreencast {
@@ -82,6 +81,11 @@ using PendingScreencastSet =
 // ProjectorApp.
 class ProjectorAppClient {
  public:
+  // The callback used by the GetVideo() API.
+  using OnGetVideoCallback =
+      base::OnceCallback<void(std::unique_ptr<ProjectorScreencastVideo> video,
+                              const std::string& error_message)>;
+
   // Interface for observing events on the ProjectorAppClient.
   class Observer : public base::CheckedObserver {
    public:
@@ -148,6 +152,14 @@ class ProjectorAppClient {
 
   // Triggers the opening of the Chrome feedback dialog.
   virtual void OpenFeedbackDialog() const = 0;
+
+  // Launches the given DriveFS video file with `video_file_id` into the
+  // Projector app. The `resource_key` is an additional security token needed to
+  // gain access to link-shared files. Since the `resource_key` is currently
+  // only used by Googlers, the `resource_key` might be empty.
+  virtual void GetVideo(const std::string& video_file_id,
+                        const std::string& resource_key,
+                        OnGetVideoCallback callback) const = 0;
 
   // Registers the AnnotatorMessageHandler that is owned by the WebUI that
   // contains the Projector annotator.
