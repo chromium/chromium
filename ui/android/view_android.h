@@ -169,7 +169,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
       const gfx::Size& size,
       absl::optional<base::TimeDelta> deadline_override = absl::nullopt);
   void OnCursorChanged(const Cursor& cursor);
-  void SetHoverActionStylusWritable(bool stylus_writable);
   void OnBackgroundColorChanged(unsigned int color);
   void OnTopControlsChanged(float top_controls_offset,
                             float top_content_offset,

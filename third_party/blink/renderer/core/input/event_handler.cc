@@ -1130,13 +1130,6 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
       // scrollbar hovering.
       scrollbar->MouseMoved(mev.Event());
     }
-
-    // Set Effective pan action before Pointer cursor is updated.
-    const WebPointerEvent web_pointer_event(WebInputEvent::Type::kPointerMove,
-                                            mev.Event());
-    pointer_event_manager_->SendEffectivePanActionAtPointer(web_pointer_event,
-                                                            mev.InnerNode());
-
     LocalFrameView* view = frame_->View();
     if ((!is_remote_frame || is_portal) && view) {
       absl::optional<ui::Cursor> optional_cursor =

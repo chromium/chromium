@@ -1023,9 +1023,6 @@ TestWidgetInputHandlerHost::BindNewRemote() {
 void TestWidgetInputHandlerHost::SetTouchActionFromMain(
     cc::TouchAction touch_action) {}
 
-void TestWidgetInputHandlerHost::SetPanAction(
-    mojom::blink::PanAction pan_action) {}
-
 void TestWidgetInputHandlerHost::DidOverscroll(
     mojom::blink::DidOverscrollParamsPtr params) {}
 

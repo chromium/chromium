@@ -71,10 +71,8 @@ public class StylusWritingController {
         if (webContents.getViewAndroidDelegate() == null) return;
 
         mCurrentWebContents = webContents;
-        StylusApiOption handler = getHandler();
-        handler.onWebContentsChanged(mContext, webContents);
-        webContents.getViewAndroidDelegate().setStylusWritingCursorHandler(
-                handler.getStylusWritingCursorHandler());
+
+        getHandler().onWebContentsChanged(mContext, webContents);
     }
 
     /**
@@ -88,10 +86,8 @@ public class StylusWritingController {
         StylusApiOption handler = getHandler();
         handler.onWindowFocusChanged(mContext, hasFocus);
 
-        if (mCurrentWebContents == null) return;
-        handler.onWebContentsChanged(mContext, mCurrentWebContents);
-        if (mCurrentWebContents.getViewAndroidDelegate() == null) return;
-        mCurrentWebContents.getViewAndroidDelegate().setStylusWritingCursorHandler(
-                handler.getStylusWritingCursorHandler());
+        if (mCurrentWebContents != null) {
+            handler.onWebContentsChanged(mContext, mCurrentWebContents);
+        }
     }
 }

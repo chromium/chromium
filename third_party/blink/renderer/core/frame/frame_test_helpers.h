@@ -585,7 +585,6 @@ class TestWidgetInputHandlerHost : public mojom::blink::WidgetInputHandlerHost {
   mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> BindNewRemote();
 
   void SetTouchActionFromMain(cc::TouchAction touch_action) override;
-  void SetPanAction(mojom::blink::PanAction pan_action) override;
   void DidOverscroll(mojom::blink::DidOverscrollParamsPtr params) override;
   void DidStartScrollingViewport() override;
   void ImeCancelComposition() override;
