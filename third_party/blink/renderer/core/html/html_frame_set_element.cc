@@ -431,14 +431,23 @@ void HTMLFrameSetElement::ContinueResizing(const LayoutFrameSet::GridAxis& axis,
     return;
   if (!resize_axis.IsResizingSplit())
     return;
-  int current_split_position =
-      SplitPosition(axis, resize_axis.split_being_resized_);
+  const int split_index = resize_axis.split_being_resized_;
+  int current_split_position = SplitPosition(axis, split_index);
   int delta =
       (position - current_split_position) - resize_axis.split_resize_offset_;
   if (!delta)
     return;
-  resize_axis.deltas_[resize_axis.split_being_resized_ - 1] += delta;
-  resize_axis.deltas_[resize_axis.split_being_resized_] -= delta;
+  const int original_size_prev =
+      axis.sizes_[split_index - 1] - resize_axis.deltas_[split_index - 1];
+  const int original_size_next =
+      axis.sizes_[split_index] - resize_axis.deltas_[split_index];
+  if ((original_size_prev != 0 && axis.sizes_[split_index - 1] + delta <= 0) ||
+      (original_size_next != 0 && axis.sizes_[split_index] - delta <= 0)) {
+    resize_axis.deltas_.Fill(0);
+  } else {
+    resize_axis.deltas_[split_index - 1] += delta;
+    resize_axis.deltas_[split_index] -= delta;
+  }
   GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
 }
