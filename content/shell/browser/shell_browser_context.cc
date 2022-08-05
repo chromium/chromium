@@ -87,6 +87,8 @@ void ShellBrowserContext::InitWhileIOAllowed() {
         path_ = base::MakeAbsoluteFilePath(path_);
       if (!path_.empty()) {
         FinishInitWhileIOAllowed();
+        base::PathService::OverrideAndCreateIfNeeded(
+            SHELL_DIR_USER_DATA, path_, /*is_absolute=*/true, /*create=*/false);
         return;
       }
     } else {
