@@ -31,6 +31,7 @@
 #include "ui/base/text/bytes_formatting.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "ui/views/vector_icons.h"
 #endif
 
@@ -96,8 +97,12 @@ const RerouteInfo kTestRerouteInfo = MakeTestRerouteInfo(kTestProvider);
 
 class DownloadItemModelTest : public testing::Test {
  public:
-  DownloadItemModelTest()
-      : model_(&item_) {}
+  DownloadItemModelTest() : model_(&item_) {
+#if !BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitWithFeatures(
+        {}, {enterprise_connectors::kEnterpriseConnectorsEnabled});
+#endif
+  }
 
   ~DownloadItemModelTest() override {}
 
@@ -174,6 +179,8 @@ class DownloadItemModelTest : public testing::Test {
   NiceMock<download::MockDownloadItem> item_;
   DownloadItemModel model_;
   base::SimpleTestClock clock_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DownloadItemModelTest, InterruptedStatus) {
@@ -713,6 +720,134 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(DownloadItemModelTest, DangerousWarningUIInfo) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    bool has_checkbox;
+    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::vector<DownloadCommands::Command> subpage_button_commands;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       false,
+       DownloadCommands::Command::KEEP,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD}},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       false,
+       DownloadCommands::Command::DEEP_SCAN,
+       {DownloadCommands::Command::DEEP_SCAN,
+        DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
+      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
+       false,
+       DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+       {}},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    DownloadUIModel::BubbleUIInfo bubble_ui_info =
+        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+    EXPECT_EQ(bubble_ui_info.has_checkbox, test_case.has_checkbox);
+    EXPECT_EQ(bubble_ui_info.primary_button_command,
+              test_case.primary_button_command);
+    std::vector<DownloadCommands::Command> subpage_commands;
+    for (auto button : bubble_ui_info.subpage_buttons) {
+      subpage_commands.push_back(button.command);
+    }
+    EXPECT_EQ(subpage_commands, test_case.subpage_button_commands);
+  }
+}
+
+TEST_F(DownloadItemModelTest, DangerousWarningUIInfo_BubbleV2Off) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetIsBubbleV2Enabled(false);
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    bool has_checkbox;
+    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::vector<DownloadCommands::Command> subpage_button_commands;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       false,
+       DownloadCommands::Command::KEEP,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       true,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       true,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       true,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       true,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       true,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       false,
+       DownloadCommands::Command::DISCARD,
+       {DownloadCommands::Command::DISCARD, DownloadCommands::Command::KEEP}},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       false,
+       DownloadCommands::Command::DEEP_SCAN,
+       {DownloadCommands::Command::DEEP_SCAN,
+        DownloadCommands::Command::BYPASS_DEEP_SCANNING}},
+      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
+       false,
+       DownloadCommands::Command::BYPASS_DEEP_SCANNING,
+       {}},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    DownloadUIModel::BubbleUIInfo bubble_ui_info =
+        model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
+    EXPECT_EQ(bubble_ui_info.has_checkbox, test_case.has_checkbox);
+    EXPECT_EQ(bubble_ui_info.primary_button_command,
+              test_case.primary_button_command);
+    std::vector<DownloadCommands::Command> subpage_commands;
+    for (auto button : bubble_ui_info.subpage_buttons) {
+      subpage_commands.push_back(button.command);
+    }
+    EXPECT_EQ(subpage_commands, test_case.subpage_button_commands);
+  }
+}
+
 TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
   std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
       download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
@@ -787,7 +922,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
       EXPECT_CALL(item(), CanResume())
           .WillRepeatedly(Return(test_case.can_resume));
 
-      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      DownloadUIModel::BubbleUIInfo bubble_ui_info =
+          model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
       EXPECT_EQ(test_case.expected_warning_summary,
                 base::UTF16ToUTF8(bubble_ui_info.warning_summary));
       EXPECT_EQ(test_case.expected_icon_model_override,
@@ -837,7 +973,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_BubbleV2Off) {
   for (const auto& test_case : kTestCases) {
     for (const auto& interrupt_reason : test_case.interrupt_reasons) {
       SetupInterruptedDownloadItem(interrupt_reason);
-      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      DownloadUIModel::BubbleUIInfo bubble_ui_info =
+          model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
       EXPECT_EQ(test_case.expected_warning_summary,
                 base::UTF16ToUTF8(bubble_ui_info.warning_summary));
       EXPECT_EQ(test_case.expected_icon_model_override,

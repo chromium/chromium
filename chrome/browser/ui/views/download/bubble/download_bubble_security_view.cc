@@ -45,14 +45,14 @@ constexpr auto kCommandToButtons = base::MakeFixedFlatMap<
 enum class DownloadBubbleSubpageAction {
   kShown = 0,
   kShownCheckbox = 1,
-  kShownFirstButton = 2,
-  kShownSecondButton = 3,
+  kShownSecondaryButton = 2,
+  kShownPrimaryButton = 3,
   kPressedBackButton = 4,
   kClosedSubpage = 5,
   kClickedCheckbox = 6,
-  kPressedFirstButton = 7,
-  kPressedSecondButton = 8,
-  kMaxValue = kPressedSecondButton
+  kPressedSecondaryButton = 7,
+  kPressedPrimaryButton = 8,
+  kMaxValue = kPressedPrimaryButton
 };
 const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 }  // namespace
@@ -123,7 +123,8 @@ void DownloadBubbleSecurityView::CloseBubble() {
 }
 
 void DownloadBubbleSecurityView::OnCheckboxClicked() {
-  first_button_->SetEnabled(checkbox_->GetChecked());
+  DCHECK(secondary_button_);
+  secondary_button_->SetEnabled(checkbox_->GetChecked());
   base::UmaHistogramEnumeration(kSubpageActionHistogram,
                                 DownloadBubbleSubpageAction::kClickedCheckbox);
 }
@@ -221,8 +222,8 @@ void DownloadBubbleSecurityView::AddIconAndText() {
 
 void DownloadBubbleSecurityView::ProcessButtonClick(
     DownloadCommands::Command command,
-    bool is_first_button) {
-  RecordWarningActionTime(is_first_button);
+    bool is_secondary_button) {
+  RecordWarningActionTime(is_secondary_button);
   // First open primary dialog, and then execute the command. If a deletion
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
@@ -231,8 +232,8 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
                                                  command);
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
-      is_first_button ? DownloadBubbleSubpageAction::kPressedFirstButton
-                      : DownloadBubbleSubpageAction::kPressedSecondButton);
+      is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
+                          : DownloadBubbleSubpageAction::kPressedPrimaryButton);
 }
 
 views::MdTextButton* DownloadBubbleSecurityView::GetButtonForCommand(
@@ -242,54 +243,62 @@ views::MdTextButton* DownloadBubbleSecurityView::GetButtonForCommand(
                                                   : nullptr;
 }
 
+void DownloadBubbleSecurityView::UpdateButton(
+    DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
+    bool is_secondary_button,
+    bool has_checkbox,
+    SkColor color) {
+  views::MdTextButton* button = GetButtonForCommand(button_info.command);
+  button->SetCallback(base::BindRepeating(
+      &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
+      button_info.command, is_secondary_button));
+  button->SetText(button_info.label);
+  button->SetProminent(button_info.is_prominent);
+  button->SetVisible(true);
+  if (is_secondary_button) {
+    button->SetEnabledTextColors(color);
+    button->SetEnabled(!has_checkbox);
+    secondary_button_ = button;
+  }
+  base::UmaHistogramEnumeration(
+      kSubpageActionHistogram,
+      is_secondary_button ? DownloadBubbleSubpageAction::kShownSecondaryButton
+                          : DownloadBubbleSubpageAction::kShownPrimaryButton);
+}
+
 void DownloadBubbleSecurityView::UpdateButtons() {
   discard_button_->SetVisible(false);
   keep_button_->SetVisible(false);
   deep_scan_button_->SetVisible(false);
   bypass_deep_scan_button_->SetVisible(false);
+  secondary_button_ = nullptr;
   DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
 
   if (ui_info.subpage_buttons.size() > 0) {
-    first_button_ = GetButtonForCommand(ui_info.subpage_buttons[0].command);
-    first_button_->SetCallback(base::BindRepeating(
-        &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
-        ui_info.subpage_buttons[0].command,
-        /*is_first_button=*/true));
-    first_button_->SetText(ui_info.subpage_buttons[0].label);
-    first_button_->SetProminent(ui_info.subpage_buttons[0].is_prominent);
-    first_button_->SetEnabledTextColors(GetColorProvider()->GetColor(
-        download_row_view_->ui_info().secondary_color));
-    first_button_->SetEnabled(!ui_info.has_checkbox);
-    first_button_->SetVisible(true);
-    base::UmaHistogramEnumeration(
-        kSubpageActionHistogram,
-        DownloadBubbleSubpageAction::kShownFirstButton);
+    UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
+                 ui_info.has_checkbox,
+                 GetColorProvider()->GetColor(
+                     download_row_view_->ui_info().secondary_color));
   }
+
   if (ui_info.subpage_buttons.size() > 1) {
-    views::MdTextButton* second_button =
-        GetButtonForCommand(ui_info.subpage_buttons[1].command);
-    second_button->SetCallback(base::BindRepeating(
-        &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
-        ui_info.subpage_buttons[1].command,
-        /*is_first_button=*/false));
-    second_button->SetText(ui_info.subpage_buttons[1].label);
-    second_button->SetVisible(true);
-    second_button->SetProminent(ui_info.subpage_buttons[1].is_prominent);
-    base::UmaHistogramEnumeration(
-        kSubpageActionHistogram,
-        DownloadBubbleSubpageAction::kShownSecondButton);
+    UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
+                 ui_info.has_checkbox,
+                 GetColorProvider()->GetColor(
+                     download_row_view_->ui_info().secondary_color));
   }
 }
 
-void DownloadBubbleSecurityView::RecordWarningActionTime(bool is_first_button) {
+void DownloadBubbleSecurityView::RecordWarningActionTime(
+    bool is_secondary_button) {
   DCHECK(warning_time_.has_value());
   // Example Histogram
-  // Download.Bubble.Subpage.DangerousFile.FirstButtonActionTime
+  // Download.Bubble.Subpage.DangerousFile.SecondaryButtonActionTime
   std::string histogram = base::StrCat(
       {"Download.Bubble.Subpage.",
        download::GetDownloadDangerTypeString(
            download_row_view_->model()->GetDownloadItem()->GetDangerType()),
-       ".", is_first_button ? "First" : "Second", "ButtonActionTime"});
+       ".", is_secondary_button ? "Secondary" : "Primary", "ButtonActionTime"});
   base::UmaHistogramMediumTimes(histogram,
                                 base::Time::Now() - (*warning_time_));
   warning_time_ = absl::nullopt;
