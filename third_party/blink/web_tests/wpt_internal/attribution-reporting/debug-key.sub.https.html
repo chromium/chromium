@@ -12,7 +12,6 @@ const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
     await registerAttributionSrc(t, {
       source: {
-        source_event_id: '1',
         destination: `https://{{host}}`,
         debug_key: forSource ? testCase.debugKey : undefined,
       },

@@ -20,7 +20,6 @@
 attribution_reporting_promise_test(async t => {
   const expectedSourceType = await registerAttributionSrc(t, {
     source: {
-      source_event_id: '1',
       destination: `https://{{host}}`,
     },
     method: 'variant',
@@ -34,7 +33,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(payload.reports.length, 1);
 
   const report = JSON.parse(payload.reports[0].body);
-  assert_equals(report.source_event_id, '1');
+  assert_equals(report.source_event_id, '0');
   assert_equals(report.source_type, expectedSourceType);
 }, 'Source registration succeeds.');
 </script>

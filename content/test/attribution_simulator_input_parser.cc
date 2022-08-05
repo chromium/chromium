@@ -259,7 +259,8 @@ class AttributionSimulatorInputParser {
     if (!ParseAttributionEvent(
             source_dict, "Attribution-Reporting-Register-Source",
             base::BindLambdaForTesting([&](const base::Value::Dict& dict) {
-              source_event_id = ParseRequiredUint64(dict, "source_event_id");
+              source_event_id =
+                  ParseOptionalUint64(dict, "source_event_id").value_or(0);
               destination_origin = ParseOrigin(dict, "destination");
               debug_key = ParseOptionalUint64(dict, "debug_key");
               priority = ParseOptionalInt64(dict, "priority").value_or(0);
@@ -444,11 +445,6 @@ class AttributionSimulatorInputParser {
       *Error() << "must be an int64 formatted as a base-10 string";
 
     return value;
-  }
-
-  uint64_t ParseRequiredUint64(const base::Value::Dict& dict,
-                               base::StringPiece key) {
-    return ParseUint64(dict.FindString(key), key);
   }
 
   absl::optional<uint64_t> ParseOptionalUint64(const base::Value::Dict& dict,

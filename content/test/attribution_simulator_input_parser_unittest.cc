@@ -131,7 +131,6 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "reporting_origin": "https://b.r.test",
       "source_origin": "https://b.s.test",
       "Attribution-Reporting-Register-Source": {
-        "source_event_id": "456",
         "destination": "https://b.d.test"
       }
     },
@@ -192,7 +191,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                        url::Origin::Create(GURL("https://b.r.test")))
                    .SetImpressionOrigin(
                        url::Origin::Create(GURL("https://b.s.test")))
-                   .SetSourceEventId(456)
+                   .SetSourceEventId(0)  // default
                    .SetConversionOrigin(
                        url::Origin::Create(GURL("https://b.d.test")))
                    .SetExpiry(base::Days(30))   // default
@@ -710,18 +709,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "reporting_origin": "https://a.r.test",
           "source_origin": "https://a.s.test",
           "Attribution-Reporting-Register-Source": ""
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "destination": "https://a.d.test"
-          }
         }]})json",
     },
     {

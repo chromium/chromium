@@ -10,7 +10,6 @@ attribution_reporting_promise_test(async t => {
   const trigger_debug_key = '357';
   await registerAttributionSrc(t, {
     source: {
-      source_event_id: '1',
       destination: `https://{{host}}`,
       aggregation_keys: {
         campaignCounts: "0x159",

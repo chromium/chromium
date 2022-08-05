@@ -53,16 +53,6 @@ absl::optional<StorableSource> ParseSourceRegistration(
     url::Origin reporting_origin,
     url::Origin source_origin,
     AttributionSourceType source_type) {
-  uint64_t source_event_id;
-  {
-    const std::string* s = registration.FindString("source_event_id");
-    if (!s)
-      return absl::nullopt;
-
-    if (!base::StringToUint64(*s, &source_event_id))
-      source_event_id = 0;
-  }
-
   url::Origin destination;
   {
     const std::string* s = registration.FindString("destination");
@@ -72,6 +62,12 @@ absl::optional<StorableSource> ParseSourceRegistration(
     destination = url::Origin::Create(GURL(*s));
     if (!network::IsOriginPotentiallyTrustworthy(destination))
       return absl::nullopt;
+  }
+
+  uint64_t source_event_id = 0;
+  if (const std::string* s = registration.FindString("source_event_id")) {
+    if (!base::StringToUint64(*s, &source_event_id))
+      source_event_id = 0;
   }
 
   int64_t priority = ParsePriority(registration);

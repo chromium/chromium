@@ -208,17 +208,6 @@ bool ParseSourceRegistrationHeader(
   if (!object)
     return false;
 
-  String event_id_string;
-  if (!object->GetString("source_event_id", &event_id_string))
-    return false;
-  bool event_id_is_valid = false;
-  uint64_t event_id = event_id_string.ToUInt64Strict(&event_id_is_valid);
-
-  // For source registrations where there is no mechanism to raise an error,
-  // such as on an img element, it is more useful to log the source with
-  // default data so that a reporting origin can learn the failure mode.
-  source_data.source_event_id = event_id_is_valid ? event_id : 0;
-
   String destination_string;
   if (!object->GetString("destination", &destination_string))
     return false;
@@ -228,7 +217,15 @@ bool ParseSourceRegistrationHeader(
     return false;
   source_data.destination = std::move(destination);
 
-  // Treat invalid expiry, priority, and debug key as if they were not set.
+  // Treat invalid source_event_id, expiry, priority, and debug key as if they
+  // were not set.
+
+  if (String s; object->GetString("source_event_id", &s)) {
+    bool valid = false;
+    uint64_t source_event_id = s.ToUInt64Strict(&valid);
+    if (valid)
+      source_data.source_event_id = source_event_id;
+  }
 
   if (String s; object->GetString("priority", &s)) {
     bool valid = false;

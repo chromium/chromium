@@ -40,7 +40,7 @@ struct AttributionSourceData {
   url.mojom.Origin reporting_origin;
 
   // Data that will be sent in attribution reports to identify this source.
-  uint64 source_event_id;
+  uint64 source_event_id = 0;
 
   // Specifies how long this source is eligible for attribution
   mojo_base.mojom.TimeDelta? expiry;

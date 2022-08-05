@@ -22,7 +22,7 @@ JSON schema for the input of the simulator.
 
       // Required dictionary data to register a source.
       "Attribution-Reporting-Register-Source": {
-        // Required uint64 formatted as a base-10 string.
+        // Optional uint64 formatted as a base-10 string. Defaults to 0.
         "source_event_id": "123456789",
 
         // Required site on which the source will be attributed.

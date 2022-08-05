@@ -10,7 +10,6 @@
 attribution_reporting_promise_test(async t => {
   await registerAttributionSrc(t, {
     source: {
-      source_event_id: '1',
       destination: `https://{{host}}`,
     },
     method: 'a',
@@ -43,10 +42,6 @@ attribution_reporting_promise_test(async t => {
     if (a.trigger_data < b.trigger_data) return -1;
     if (a.trigger_data > b.trigger_data) return 1;
     return 0;
-  });
-
-  reports.forEach(report => {
-    assert_equals(report.source_event_id, '1');
   });
 
   assert_equals(reports[0].trigger_data, '3');

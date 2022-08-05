@@ -28,7 +28,6 @@ const trigger_data_cardinality_promise_test = value =>
   attribution_reporting_promise_test(async t => {
     await registerAttributionSrc(t, {
       source: {
-        source_event_id: '999',
         destination: `https://{{host}}`,
       },
       method,
