@@ -20,7 +20,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -196,7 +195,6 @@ class CupsPrintersHandlerTest : public testing::Test {
 };
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
-  DBusThreadManager::Initialize();
   ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
   DebugDaemonClient::InitializeFake();
@@ -228,7 +226,6 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   profile_.reset();
   DebugDaemonClient::Shutdown();
   ConciergeClient::Shutdown();
-  DBusThreadManager::Shutdown();
 }
 
 TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {

@@ -28,7 +28,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -62,10 +61,6 @@ class StorageHandlerTest : public testing::Test {
   ~StorageHandlerTest() override = default;
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
-
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::SpacedClient::InitializeFake();
@@ -140,7 +135,6 @@ class StorageHandlerTest : public testing::Test {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     chromeos::SpacedClient::Shutdown();
     ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
