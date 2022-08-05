@@ -127,16 +127,6 @@ struct CookieSameSiteContext {
   CookieSameSiteContextMetadata schemeful_metadata;
 };
 
-// Computed for every cookie access attempt but is only relevant for SameParty
-// cookies.
-enum SamePartyCookieContextType {
-  // The opposite to kSameParty. Should be the default value.
-  kCrossParty,
-  // If the request URL is in the same First-Party Sets as the top-frame site
-  // and each member of the isolation_info.party_context.
-  kSameParty,
-};
-
 // What rules to apply when determining whether access to a particular cookie is
 // allowed.
 // Keep in sync with net/cookies/cookie_constants.h.
@@ -222,11 +212,6 @@ struct CookieAccessResult {
 struct CookieWithAccessResult {
   CanonicalCookie cookie;
   CookieAccessResult access_result;
-};
-
-// Keep defaults in here in sync with net/cookies/same_party_context.cc.
-struct SamePartyContext {
-  SamePartyCookieContextType context_type = kCrossParty;
 };
 
 // Keep values here in sync with net::CookieChangeCause.
@@ -462,16 +447,4 @@ interface CookieManager {
   // TODO(crbug.com/1296161): Delete this method when the partitioned cookies
   // Origin Trial is over.
   ConvertPartitionedCookiesToUnpartitioned(url.mojom.Url url);
-};
-
-// This struct must match the class fields defined in
-// //net/cookies/first_party_set_metadata.h.
-struct FirstPartySetMetadata {
-  SamePartyContext context;
-  // absl::nullopt indicates that the frame's site is not associated with any
-  // First-Party Set.
-  FirstPartySetEntry? frame_entry;
-  // absl::nullopt indicates that the top frame's site is not associated with
-  // any First-Party Set.
-  FirstPartySetEntry? top_frame_entry;
 };

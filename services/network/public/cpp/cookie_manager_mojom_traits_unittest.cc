@@ -366,18 +366,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   }
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_SamePartyCookieContextType) {
-  using ContextType = net::SamePartyContext::Type;
-  for (ContextType context_type :
-       {ContextType::kCrossParty, ContextType::kSameParty}) {
-    ContextType roundtrip;
-    ASSERT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::SamePartyCookieContextType>(
-            context_type, roundtrip));
-    EXPECT_EQ(context_type, roundtrip);
-  }
-}
-
 TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   auto original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
@@ -456,26 +444,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeyCollection) {
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
                 mojom::CookiePartitionKeyCollection>(original, copied));
     EXPECT_TRUE(copied.ContainsAllKeys());
-  }
-}
-
-TEST(CookieManagerTraitsTest, RoundTrips_SamePartyContext) {
-  {
-    net::SamePartyContext same_party(net::SamePartyContext::Type::kSameParty);
-    net::SamePartyContext copy;
-
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
-        same_party, copy));
-    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kSameParty);
-  }
-
-  {
-    net::SamePartyContext cross_party(net::SamePartyContext::Type::kCrossParty);
-    net::SamePartyContext copy;
-
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
-        cross_party, copy));
-    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kCrossParty);
   }
 }
 
@@ -560,35 +528,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.access_result.access_semantics,
             copied.access_result.access_semantics);
   EXPECT_EQ(original.cause, copied.cause);
-}
-
-TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
-  net::SchemefulSite frame_owner(GURL("https://frame.test"));
-  net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
-
-  net::FirstPartySetEntry frame_entry(frame_owner);
-  net::FirstPartySetEntry top_frame_entry(top_frame_owner);
-
-  auto make_metadata = [&]() {
-    // Use non-default values to ensure serialization/deserialization works
-    // properly.
-    return net::FirstPartySetMetadata(
-        net::SamePartyContext(net::SamePartyContext::Type::kSameParty),
-        &frame_entry, &top_frame_entry);
-  };
-
-  net::FirstPartySetMetadata original = make_metadata();
-  net::FirstPartySetMetadata round_tripped;
-
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              network::mojom::FirstPartySetMetadata>(original, round_tripped));
-
-  EXPECT_EQ(round_tripped.context(),
-            net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
-  EXPECT_EQ(round_tripped.frame_entry(), frame_entry);
-  EXPECT_EQ(round_tripped.top_frame_entry(), top_frame_entry);
-
-  EXPECT_EQ(round_tripped, make_metadata());
 }
 
 // TODO: Add tests for CookiePriority, more extensive CookieOptions ones
