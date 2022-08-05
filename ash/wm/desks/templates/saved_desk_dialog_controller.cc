@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/shell.h"
@@ -304,6 +305,14 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_);
+
+  // Ensure that if ChromeVox is enabled, it focuses on the dialog.
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (accessibility_controller->spoken_feedback().enabled()) {
+    accessibility_controller->SetA11yOverrideWindow(
+        dialog_widget_->GetNativeWindow());
+  }
 }
 
 bool SavedDeskDialogController::CanShowDialog() const {

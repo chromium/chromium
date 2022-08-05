@@ -1755,6 +1755,18 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   sm_.ExpectSpeechPattern("Desk 1");
   sm_.ExpectSpeech("Edit text");
 
+  // Reverse tab to focus back on the template card.
+  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+
+  // Trigger a delete template dialog by pressing Ctrl+W.
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_W); });
+  sm_.ExpectSpeech("Delete template?");
+  sm_.ExpectSpeech("Dialog");
+  sm_.ExpectSpeech("Delete");
+  sm_.ExpectSpeech("default");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Press Search plus Space to activate");
+
   sm_.Replay();
 }
 
