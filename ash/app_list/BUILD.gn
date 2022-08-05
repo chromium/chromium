@@ -170,7 +170,6 @@ source_set("app_list") {
   defines = [ "ASH_IMPLEMENTATION" ]
 
   deps = [
-    "//ash/app_list/resources",
     "//ash/app_menu",
     "//ash/assistant/model",
     "//ash/assistant/ui",

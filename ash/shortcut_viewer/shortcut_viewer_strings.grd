@@ -189,9 +189,6 @@
   <message name="IDS_KSV_SEARCH_BOX_ACCESSIBILITY_NAME" desc="Accessibility name for the search box.">
     Search for keyboard shortcuts
   </message>
-  <message name="IDS_KSV_BACK_ACCESSIBILITY_NAME" desc="Accessibility name for the button that exits search mode.">
-    Exit search mode
-  </message>
   <message name="IDS_KSV_CLEAR_SEARCHBOX_ACCESSIBILITY_NAME" desc="Accessibility name for the button that clears all text from the search box.">
     Clear searchbox text
   </message>

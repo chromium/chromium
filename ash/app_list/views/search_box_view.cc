@@ -15,7 +15,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/resources/grit/app_list_resources.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
@@ -503,20 +502,6 @@ void SearchBoxView::MaybeCreateFocusRing() {
     layer()->parent()->Add(focus_ring_layer_.get());
     layer()->parent()->StackAtBottom(focus_ring_layer_.get());
   }
-}
-
-void SearchBoxView::SetupBackButton() {
-  views::ImageButton* back = back_button();
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  back->SetImage(views::ImageButton::STATE_NORMAL,
-                 rb.GetImageSkiaNamed(IDR_APP_LIST_FOLDER_BACK_NORMAL));
-  back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  back->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  back->SetVisible(false);
-  std::u16string back_button_label(
-      l10n_util::GetStringUTF16(IDS_APP_LIST_BACK));
-  back->SetAccessibleName(back_button_label);
-  back->SetTooltipText(back_button_label);
 }
 
 void SearchBoxView::RecordSearchBoxActivationHistogram(

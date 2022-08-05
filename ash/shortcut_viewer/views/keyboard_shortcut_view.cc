@@ -395,11 +395,6 @@ void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
                      base::Unretained(this), sender->search_box()->GetText()));
 }
 
-void KeyboardShortcutView::BackButtonPressed() {
-  search_box_view_->ClearSearch();
-  search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
-}
-
 void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   const bool is_search_box_active = sender->is_search_box_active();
   is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();

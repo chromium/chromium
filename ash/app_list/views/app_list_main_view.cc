@@ -197,11 +197,6 @@ void AppListMainView::AssistantButtonPressed() {
   delegate_->StartAssistant();
 }
 
-void AppListMainView::BackButtonPressed() {
-  if (!contents_view_->Back())
-    app_list_view_->Dismiss();
-}
-
 void AppListMainView::CloseButtonPressed() {
   // Deactivate the search box.
   search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
