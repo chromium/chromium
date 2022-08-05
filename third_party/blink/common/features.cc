@@ -912,13 +912,6 @@ const base::Feature kWebAppEnableDarkMode{"WebAppEnableDarkMode",
 const base::Feature kWebAppEnableLaunchHandler{
     "WebAppEnableLaunchHandler", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the deprecated syntax for the above "launch_handler": {
-//   "route_to": "existing-client",
-//   "navigate_existing_client: "always" | "never"
-// }
-const base::Feature kWebAppEnableLaunchHandlerV1API{
-    "WebAppEnableLaunchHandlerV1API", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables Unique ID feature in web apps. Controls parsing of "id" field in web
 // app manifests. See explainer for more information:
 // https://github.com/philloooo/pwa-unique-id

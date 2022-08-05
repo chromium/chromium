@@ -135,12 +135,12 @@ class BLINK_COMMON_EXPORT Manifest {
   // when it can support copy/move.
   // See ManifestLaunchHandler for class comments.
   struct BLINK_COMMON_EXPORT LaunchHandler {
-    using RouteTo = mojom::ManifestLaunchHandler_RouteTo;
+    using ClientMode = mojom::ManifestLaunchHandler_ClientMode;
 
     bool operator==(const LaunchHandler& other) const;
     bool operator!=(const LaunchHandler& other) const;
 
-    RouteTo route_to = RouteTo::kAuto;
+    ClientMode client_mode = ClientMode::kAuto;
   };
 
   // Structure containing translations for the translatable manifest fields.

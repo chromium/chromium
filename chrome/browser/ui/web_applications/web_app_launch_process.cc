@@ -199,7 +199,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
 
   // If launch handler is routing to an existing client, we want to use the
   // existing WebContents rather than opening a new tab.
-  if (RouteToExistingClient()) {
+  if (LaunchInExistingClient()) {
     return WindowOpenDisposition::CURRENT_TAB;
   }
 
@@ -210,33 +210,33 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 }
 
-LaunchHandler::RouteTo WebAppLaunchProcess::GetLaunchRouteTo() const {
+LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   DCHECK(web_app_);
   LaunchHandler launch_handler =
       web_app_->launch_handler().value_or(LaunchHandler());
-  if (launch_handler.route_to == LaunchHandler::RouteTo::kAuto)
-    return LaunchHandler::RouteTo::kNewClient;
-  return launch_handler.route_to;
+  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto)
+    return LaunchHandler::ClientMode::kNavigateNew;
+  return launch_handler.client_mode;
 }
 
-bool WebAppLaunchProcess::RouteToExistingClient() const {
-  switch (GetLaunchRouteTo()) {
-    case LaunchHandler::RouteTo::kAuto:
-    case LaunchHandler::RouteTo::kNewClient:
+bool WebAppLaunchProcess::LaunchInExistingClient() const {
+  switch (GetLaunchClientMode()) {
+    case LaunchHandler::ClientMode::kAuto:
+    case LaunchHandler::ClientMode::kNavigateNew:
       return false;
-    case LaunchHandler::RouteTo::kExistingClientNavigate:
-    case LaunchHandler::RouteTo::kExistingClientRetain:
+    case LaunchHandler::ClientMode::kNavigateExisting:
+    case LaunchHandler::ClientMode::kFocusExisting:
       return true;
   }
 }
 
 bool WebAppLaunchProcess::NeverNavigateExistingClients() const {
-  switch (GetLaunchRouteTo()) {
-    case LaunchHandler::RouteTo::kAuto:
-    case LaunchHandler::RouteTo::kNewClient:
-    case LaunchHandler::RouteTo::kExistingClientNavigate:
+  switch (GetLaunchClientMode()) {
+    case LaunchHandler::ClientMode::kAuto:
+    case LaunchHandler::ClientMode::kNavigateNew:
+    case LaunchHandler::ClientMode::kNavigateExisting:
       return false;
-    case LaunchHandler::RouteTo::kExistingClientRetain:
+    case LaunchHandler::ClientMode::kFocusExisting:
       return true;
   }
 }
@@ -268,7 +268,7 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   }
 
   if (!provider_.registrar().IsTabbedWindowModeEnabled(params_.app_id) &&
-      GetLaunchRouteTo() == LaunchHandler::RouteTo::kNewClient) {
+      GetLaunchClientMode() == LaunchHandler::ClientMode::kNavigateNew) {
     return nullptr;
   }
 

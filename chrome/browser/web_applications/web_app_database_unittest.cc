@@ -466,25 +466,31 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   // }
   // ->
   // "launch_handler": {
-  //   "route_to": "existing-client-navigate"
+  //   "client_mode": "navigate-existing"
   // }
   WebAppProto old_navigate_proto(*base_proto);
   old_navigate_proto.mutable_launch_handler()->set_route_to(
-      LaunchHandlerProto_RouteTo_DEPRECATED_EXISTING_CLIENT);
+      LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT);
   old_navigate_proto.mutable_launch_handler()->set_navigate_existing_client(
-      LaunchHandlerProto_NavigateExistingClient_ALWAYS);
+      LaunchHandlerProto_DeprecatedNavigateExistingClient_ALWAYS);
+  old_navigate_proto.mutable_launch_handler()->set_client_mode(
+      LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE);
 
   std::unique_ptr<WebApp> new_navigate_app =
       WebAppDatabase::CreateWebApp(old_navigate_proto);
   EXPECT_EQ(new_navigate_app->launch_handler(),
-            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientNavigate}));
+            (LaunchHandler{LaunchHandler::ClientMode::kNavigateExisting}))
+      << new_navigate_app->launch_handler()->client_mode;
 
   std::unique_ptr<WebAppProto> new_navigate_proto =
       WebAppDatabase::CreateWebAppProto(*new_navigate_app);
   EXPECT_EQ(new_navigate_proto->launch_handler().route_to(),
-            LaunchHandlerProto_RouteTo_EXISTING_CLIENT_NAVIGATE);
-  EXPECT_EQ(new_navigate_proto->launch_handler().navigate_existing_client(),
-            LaunchHandlerProto_NavigateExistingClient_UNSPECIFIED_NAVIGATE);
+            LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
+  EXPECT_EQ(
+      new_navigate_proto->launch_handler().navigate_existing_client(),
+      LaunchHandlerProto_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
+  EXPECT_EQ(new_navigate_proto->launch_handler().client_mode(),
+            LaunchHandlerProto_ClientMode_NAVIGATE_EXISTING);
 
   // "launch_handler": {
   //   "route_to": "existing-client",
@@ -492,25 +498,30 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   // }
   // ->
   // "launch_handler": {
-  //   "route_to": "existing-client-retain"
+  //   "client_mode": "focus-existing"
   // }
-  WebAppProto old_retain_proto(*base_proto);
-  old_retain_proto.mutable_launch_handler()->set_route_to(
-      LaunchHandlerProto_RouteTo_DEPRECATED_EXISTING_CLIENT);
-  old_retain_proto.mutable_launch_handler()->set_navigate_existing_client(
-      LaunchHandlerProto_NavigateExistingClient_NEVER);
+  WebAppProto old_focus_proto(*base_proto);
+  old_focus_proto.mutable_launch_handler()->set_route_to(
+      LaunchHandlerProto_DeprecatedRouteTo_EXISTING_CLIENT);
+  old_focus_proto.mutable_launch_handler()->set_navigate_existing_client(
+      LaunchHandlerProto_DeprecatedNavigateExistingClient_NEVER);
+  old_focus_proto.mutable_launch_handler()->set_client_mode(
+      LaunchHandlerProto_ClientMode_UNSPECIFIED_CLIENT_MODE);
 
-  std::unique_ptr<WebApp> new_retain_app =
-      WebAppDatabase::CreateWebApp(old_retain_proto);
-  EXPECT_EQ(new_retain_app->launch_handler(),
-            (LaunchHandler{LaunchHandler::RouteTo::kExistingClientRetain}));
+  std::unique_ptr<WebApp> new_focus_app =
+      WebAppDatabase::CreateWebApp(old_focus_proto);
+  EXPECT_EQ(new_focus_app->launch_handler(),
+            (LaunchHandler{LaunchHandler::ClientMode::kFocusExisting}));
 
-  std::unique_ptr<WebAppProto> new_retain_proto =
-      WebAppDatabase::CreateWebAppProto(*new_retain_app);
-  EXPECT_EQ(new_retain_proto->launch_handler().route_to(),
-            LaunchHandlerProto_RouteTo_EXISTING_CLIENT_RETAIN);
-  EXPECT_EQ(new_retain_proto->launch_handler().navigate_existing_client(),
-            LaunchHandlerProto_NavigateExistingClient_UNSPECIFIED_NAVIGATE);
+  std::unique_ptr<WebAppProto> new_focus_proto =
+      WebAppDatabase::CreateWebAppProto(*new_focus_app);
+  EXPECT_EQ(new_focus_proto->launch_handler().route_to(),
+            LaunchHandlerProto_DeprecatedRouteTo_UNSPECIFIED_ROUTE);
+  EXPECT_EQ(
+      new_focus_proto->launch_handler().navigate_existing_client(),
+      LaunchHandlerProto_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
+  EXPECT_EQ(new_focus_proto->launch_handler().client_mode(),
+            LaunchHandlerProto_ClientMode_FOCUS_EXISTING);
 }
 
 }  // namespace web_app

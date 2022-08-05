@@ -748,7 +748,7 @@ base::Value WebApp::AsDebugValue() const {
     base::Value& launch_handler_json = *root.SetKey(
         "launch_handler", base::Value(base::Value::Type::DICTIONARY));
     launch_handler_json.SetStringKey(
-        "route_to", ConvertToString(launch_handler_->route_to));
+        "client_mode", ConvertToString(launch_handler_->client_mode));
   } else {
     root.SetKey("launch_handler", base::Value());
   }

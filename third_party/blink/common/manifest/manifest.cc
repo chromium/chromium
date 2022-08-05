@@ -75,7 +75,7 @@ bool Manifest::RelatedApplication::operator==(
 }
 
 bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
-  return route_to == other.route_to;
+  return client_mode == other.client_mode;
 }
 
 bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {

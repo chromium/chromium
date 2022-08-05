@@ -47,7 +47,7 @@ using ui_test_utils::BrowserChangeObserver;
 
 namespace web_app {
 
-using RouteTo = LaunchHandler::RouteTo;
+using ClientMode = LaunchHandler::ClientMode;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -187,12 +187,12 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 // Link capturing with navigate_existing_client: always should navigate existing
 // app windows.
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
-                       RouteToExistingClientFromBrowser) {
+                       NavigateExistingClientFromBrowser) {
   InstallTestApp(
       "/web_apps/get_manifest.html?"
-      "route_to_deprecated_existing_client_navigate_empty.json");
+      "launch_handler_client_mode_navigate_existing.json");
   EXPECT_EQ(GetLaunchHandler(app_id_),
-            (LaunchHandler{RouteTo::kExistingClientNavigate}));
+            (LaunchHandler{ClientMode::kNavigateExisting}));
 
   TurnOnLinkCapturing();
 

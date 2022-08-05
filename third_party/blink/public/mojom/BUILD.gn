@@ -123,6 +123,7 @@ mojom("mojom_platform") {
     "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",
     "manifest/manifest.mojom",
+    "manifest/manifest_launch_handler.mojom",
     "manifest/manifest_manager.mojom",
     "manifest/manifest_observer.mojom",
     "media/capture_handle_config.mojom",

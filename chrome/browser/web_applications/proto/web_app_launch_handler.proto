@@ -12,21 +12,31 @@ package web_app;
 // This mirrors ManifestLaunchHandler in:
 // third_party/blink/public/mojom/manifest/manifest.mojom
 message LaunchHandlerProto {
-  enum RouteTo {
+  enum DeprecatedRouteTo {
     UNSPECIFIED_ROUTE = 0;
-    AUTO = 1;
+    AUTO_ROUTE = 1;
     NEW_CLIENT = 2;
-    DEPRECATED_EXISTING_CLIENT = 3;
+    EXISTING_CLIENT = 3;
     EXISTING_CLIENT_NAVIGATE = 4;
     EXISTING_CLIENT_RETAIN = 5;
   }
 
-  enum NavigateExistingClient {
+  enum DeprecatedNavigateExistingClient {
     UNSPECIFIED_NAVIGATE = 0;
     ALWAYS = 1;
     NEVER = 2;
   }
 
-  optional RouteTo route_to = 1;
-  optional NavigateExistingClient navigate_existing_client = 2;
+  enum ClientMode {
+    UNSPECIFIED_CLIENT_MODE = 0;
+    AUTO = 1;
+    NAVIGATE_NEW = 2;
+    NAVIGATE_EXISTING = 3;
+    FOCUS_EXISTING = 4;
+  }
+
+  optional DeprecatedRouteTo route_to = 1 [deprecated = true];
+  optional DeprecatedNavigateExistingClient navigate_existing_client = 2
+      [deprecated = true];
+  optional ClientMode client_mode = 3;
 }

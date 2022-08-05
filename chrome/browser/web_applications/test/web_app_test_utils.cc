@@ -521,7 +521,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   if (random.next_bool()) {
     app->SetLaunchHandler(
-        LaunchHandler{random.next_enum<LaunchHandler::RouteTo>()});
+        LaunchHandler{random.next_enum<LaunchHandler::ClientMode>()});
   }
 
   const base::Time manifest_update_time =

@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 
 namespace blink {
 
@@ -60,23 +61,8 @@ WebScreenOrientationLockTypeFromString(const std::string& orientation);
 BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
     const std::string& capture_links);
 
-struct BLINK_COMMON_EXPORT ParsedRouteTo {
-  Manifest::LaunchHandler::RouteTo route_to =
-      Manifest::LaunchHandler::RouteTo::kAuto;
-  bool legacy_existing_client_value = false;
-
-  bool operator==(const ParsedRouteTo& other) const;
-  bool operator!=(const ParsedRouteTo& other) const;
-};
-
-BLINK_COMMON_EXPORT absl::optional<ParsedRouteTo> RouteToFromString(
-    const std::string& route_to);
-
-enum NavigateExistingClient { kAlways, kNever };
-
-BLINK_COMMON_EXPORT
-absl::optional<NavigateExistingClient> NavigateExistingClientFromString(
-    const std::string& navigate_existing_client);
+BLINK_COMMON_EXPORT absl::optional<mojom::ManifestLaunchHandler::ClientMode>
+ClientModeFromString(const std::string& client_mode);
 
 }  // namespace blink
 

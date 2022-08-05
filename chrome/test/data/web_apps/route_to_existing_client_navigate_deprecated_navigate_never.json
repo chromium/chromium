@@ -1,9 +1,0 @@
-{
-  "name": "route_to: existing-client-navigate, navigate_existing_client: never",
-  "start_url": "basic.html?route_to=existing-client-navigate&navigate=never",
-  "display": "standalone",
-  "launch_handler": {
-    "route_to": "existing-client-navigate",
-    "navigate_existing_client": "never"
-  }
-}

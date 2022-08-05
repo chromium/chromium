@@ -1,0 +1,8 @@
+{
+  "name": "client_mode: focus-existing",
+  "start_url": "basic.html?client_mode=focus-existing",
+  "display": "standalone",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}

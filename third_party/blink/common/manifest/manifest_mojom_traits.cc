@@ -187,7 +187,7 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                   ::blink::Manifest::LaunchHandler>::
     Read(blink::mojom::ManifestLaunchHandlerDataView data,
          ::blink::Manifest::LaunchHandler* out) {
-  if (!data.ReadRouteTo(&out->route_to))
+  if (!data.ReadClientMode(&out->client_mode))
     return false;
 
   return true;

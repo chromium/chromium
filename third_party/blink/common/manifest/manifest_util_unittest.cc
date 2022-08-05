@@ -100,25 +100,20 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
             CaptureLinksFromString("unknown-value"));
 }
 
-TEST(ManifestUtilTest, RouteToFromString) {
-  using RouteTo = Manifest::LaunchHandler::RouteTo;
-  EXPECT_EQ(absl::nullopt, RouteToFromString(""));
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kAuto}), RouteToFromString("auto"));
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kNewClient}),
-            RouteToFromString("new-client"));
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kExistingClientNavigate}),
-            RouteToFromString("existing-client-navigate"));
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kExistingClientRetain}),
-            RouteToFromString("existing-client-retain"));
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kAuto, true}),
-            RouteToFromString("existing-client"));
+TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
+  using ClientMode = Manifest::LaunchHandler::ClientMode;
+  EXPECT_EQ(absl::nullopt, ClientModeFromString(""));
+  EXPECT_EQ(ClientMode::kAuto, ClientModeFromString("auto"));
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("navigate-new"));
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            ClientModeFromString("navigate-existing"));
+  EXPECT_EQ(ClientMode::kFocusExisting, ClientModeFromString("focus-existing"));
 
   // Uppercase spelling.
-  EXPECT_EQ((ParsedRouteTo{RouteTo::kNewClient}),
-            RouteToFromString("NEW-CLIENT"));
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("NAVIGATE-NEW"));
 
   // Unknown value.
-  EXPECT_EQ(absl::nullopt, RouteToFromString("unknown-value"));
+  EXPECT_EQ(absl::nullopt, ClientModeFromString("unknown-value"));
 }
 
 }  // namespace blink

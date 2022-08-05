@@ -400,7 +400,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "last_badging_time": "1970-01-13 20:12:59.451 UTC",
    "last_launch_time": "1970-01-04 17:38:34.900 UTC",
    "launch_handler": {
-      "route_to": "kExistingClientNavigate"
+      "client_mode": "kNavigateExisting"
    },
    "launch_query_params": "986688382",
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url3206632378",

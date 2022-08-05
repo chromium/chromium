@@ -8,6 +8,7 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -302,27 +303,6 @@ struct ManifestFileHandler {
     kMultipleClients,
   };
   LaunchType launch_type;
-};
-
-// Represents how web app launches should be handled with regard to opening
-// windows or recycling existing ones.
-// Spec: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
-struct ManifestLaunchHandler {
-  // The client to use for app launches.
-  enum RouteTo {
-    // Use whatever the platform would do by default.
-    kAuto,
-    // Create a new client for each app launch.
-    kNewClient,
-    // Use an existing client if available, otherwise create a new one to use.
-    // Navigate the existing client to the launch URL.
-    kExistingClientNavigate,
-    // Use an existing client if available, otherwise create a new one to use.
-    // Do not navigate the client and just enqueue a LaunchParams in the
-    // document's LaunchQueue.
-    kExistingClientRetain,
-  };
-  RouteTo route_to;
 };
 
 // Structure representing the translated manifest fields. Each field corresponds

@@ -29,7 +29,7 @@
 
 namespace web_app {
 
-using RouteTo = LaunchHandler::RouteTo;
+using ClientMode = LaunchHandler::ClientMode;
 
 class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
  public:
@@ -109,10 +109,10 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
-  void ExpectExistingClientNavigateBehaviour(const AppId& app_id,
-                                             const GURL& start_url) {
+  void ExpectNavigateExistingBehaviour(const AppId& app_id,
+                                       const GURL& start_url) {
     EXPECT_EQ(GetLaunchHandler(app_id),
-              (LaunchHandler{RouteTo::kExistingClientNavigate}));
+              (LaunchHandler{ClientMode::kNavigateExisting}));
 
     Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
     content::WebContents* web_contents =
@@ -132,10 +132,10 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url.spec());
   }
 
-  void ExpectExistingClientRetainBehaviour(const AppId& app_id,
-                                           const GURL& start_url) {
+  void ExpectFocusExistingBehaviour(const AppId& app_id,
+                                    const GURL& start_url) {
     EXPECT_EQ(GetLaunchHandler(app_id),
-              (LaunchHandler{RouteTo::kExistingClientRetain}));
+              (LaunchHandler{ClientMode::kFocusExisting}));
 
     Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
     content::WebContents* web_contents =
@@ -204,7 +204,7 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToEmpty) {
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeEmpty) {
   AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
   EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
@@ -214,10 +214,10 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToEmpty) {
   EXPECT_NE(browser_1, browser_2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToAuto) {
-  AppId app_id =
-      InstallTestWebApp("/web_apps/get_manifest.html?route_to_auto.json");
-  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{RouteTo::kAuto}));
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeAuto) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?launch_handler_client_mode_auto.json");
+  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{ClientMode::kAuto}));
 
   std::string start_url = GetWebApp(app_id)->start_url().spec();
 
@@ -230,102 +230,52 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToAuto) {
   EXPECT_NE(browser_1, browser_2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToNewClient) {
-  AppId app_id =
-      InstallTestWebApp("/web_apps/get_manifest.html?route_to_new_client.json");
-  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{RouteTo::kNewClient}));
-
-  std::string start_url = GetWebApp(app_id)->start_url().spec();
-
-  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
-
-  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
-
-  EXPECT_NE(browser_1, browser_2);
-}
-
-// navigate_existing_client: never should have no effect on route_to:
-// new-client.
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToNewClientNavigateNever) {
-  AppId app_id = InstallTestWebApp(
-      "/web_apps/get_manifest.html?route_to_new_client_navigate_never.json");
-  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{RouteTo::kNewClient}));
-
-  std::string start_url = GetWebApp(app_id)->start_url().spec();
-
-  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
-
-  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
-  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
-
-  EXPECT_NE(browser_1, browser_2);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToDeprecatedExistingClient) {
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeNavigateNew) {
   AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
-      "route_to_deprecated_existing_client_navigate_empty.json");
-  ExpectExistingClientNavigateBehaviour(
-      app_id,
-      embedded_test_server()->GetURL(
-          "/web_apps/basic.html?route_to=existing-client&navigate=empty"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToExistingClientNavigate) {
-  // This JSON includes the deprecated "existing_client_navigate": "never" to
-  // verify it has no effect when using the new "route_to":
-  // "existing-client-navigate" syntax.
-  AppId app_id = InstallTestWebApp(
-      "/web_apps/get_manifest.html?"
-      "route_to_existing_client_navigate_deprecated_navigate_never.json");
-  ExpectExistingClientNavigateBehaviour(
-      app_id,
-      embedded_test_server()->GetURL(
-          "/web_apps/"
-          "basic.html?route_to=existing-client-navigate&navigate=never"));
-}
-
-// TODO(crbug.com/1308334): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       DISABLED_RouteToDeprecatedExistingClientNavigateNever) {
-  AppId app_id = InstallTestWebApp(
-      "/web_apps/get_manifest.html?"
-      "route_to_deprecated_existing_client_navigate_never.json");
-  ExpectExistingClientRetainBehaviour(
-      app_id,
-      embedded_test_server()->GetURL(
-          "/web_apps/basic.html?route_to=existing-client&navigate=never"));
-}
-
-// TODO(crbug.com/1308334): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       DISABLED_RouteToExistingClientRetain) {
-  // This JSON includes the deprecated "existing_client_navigate": "always" to
-  // verify it has no effect when using the new "route_to":
-  // "existing-client-retain" syntax.
-  AppId app_id = InstallTestWebApp(
-      "/web_apps/get_manifest.html?"
-      "route_to_existing_client_retain_deprecated_navigate_always.json");
-  ExpectExistingClientRetainBehaviour(
-      app_id,
-      embedded_test_server()->GetURL(
-          "/web_apps/"
-          "basic.html?route_to=existing-client-navigate&navigate=always"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToExistingClientNavigateNeverMultipleLaunches) {
-  AppId app_id = InstallTestWebApp(
-      "/web_apps/"
-      "get_manifest.html?route_to_existing_client_retain.json");
+      "launch_handler_client_mode_navigate_new.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{RouteTo::kExistingClientRetain}));
+            (LaunchHandler{ClientMode::kNavigateNew}));
+
+  std::string start_url = GetWebApp(app_id)->start_url().spec();
+
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
+
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
+
+  EXPECT_NE(browser_1, browser_2);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       ClientModeNavigateExisting) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_existing.json");
+  ExpectNavigateExistingBehaviour(
+      app_id, embedded_test_server()->GetURL("/web_apps/basic.html?"
+                                             "client_mode=navigate-existing"));
+}
+
+// TODO(crbug.com/1308334): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       DISABLED_ClientModeExistingClientRetain) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_focus_existing.json");
+  ExpectFocusExistingBehaviour(
+      app_id, embedded_test_server()->GetURL("/web_apps/basic.html?"
+                                             "client_mode=focus-existing"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       ClientModeFocusExistingMultipleLaunches) {
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_focus_existing.json");
+  EXPECT_EQ(GetLaunchHandler(app_id),
+            (LaunchHandler{ClientMode::kFocusExisting}));
 
   // Launch the app three times in quick succession.
   Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
@@ -338,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   content::WebContents* web_contents =
       browser_1->tab_strip_model()->GetActiveWebContents();
   GURL start_url = embedded_test_server()->GetURL(
-      "/web_apps/basic.html?route_to=existing-client-retain");
+      "/web_apps/basic.html?client_mode=focus-existing");
   const char* script = R"(
       new Promise(resolve => {
         let remaining = 3;
@@ -357,12 +307,12 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToExistingClientNavigateAlwaysMultipleLaunches) {
+                       ClientModeNavigateExistingMultipleLaunches) {
   AppId app_id = InstallTestWebApp(
-      "/web_apps/"
-      "get_manifest.html?route_to_existing_client_navigate.json");
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_existing.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
-            (LaunchHandler{RouteTo::kExistingClientNavigate}));
+            (LaunchHandler{ClientMode::kNavigateExisting}));
 
   // Launch the app three times in quick succession.
   Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
@@ -375,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   content::WebContents* web_contents =
       browser_1->tab_strip_model()->GetActiveWebContents();
   GURL start_url = embedded_test_server()->GetURL(
-      "/web_apps/basic.html?route_to=existing-client-navigate");
+      "/web_apps/basic.html?client_mode=navigate-existing");
   const char* script = R"(
       new Promise(resolve => {
         let targetURLs = [];
@@ -393,9 +343,11 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        LaunchNavigationInterruptedByOutOfScopeNavigation) {
-  AppId app_id =
-      InstallTestWebApp("/web_apps/get_manifest.html?route_to_new_client.json");
-  EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{RouteTo::kNewClient}));
+  AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_new.json");
+  EXPECT_EQ(GetLaunchHandler(app_id),
+            (LaunchHandler{ClientMode::kNavigateNew}));
 
   // Launch the web app and immediately navigate it out of scope during its
   // initial navigation.
@@ -528,8 +480,7 @@ constexpr char kTestManifestBody[] = R"({
     "type": "image/png"
   }],
   "launch_handler": {
-    "route_to": "existing-client",
-    "navigate_existing_client": "never"
+    "client_mode": "focus-existing"
   }
 })";
 
@@ -580,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
   // Origin trial should grant the app access.
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
   EXPECT_EQ(provider.registrar().GetAppById(app_id)->launch_handler(),
-            (LaunchHandler{RouteTo::kExistingClientRetain}));
+            (LaunchHandler{ClientMode::kFocusExisting}));
 
   // Open the page again with the token missing.
   {
