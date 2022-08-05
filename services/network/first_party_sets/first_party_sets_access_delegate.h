@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/first_party_sets/first_party_sets_context_config.h"
@@ -143,6 +144,14 @@ class FirstPartySetsAccessDelegate
 
   mojo::Receiver<mojom::FirstPartySetsAccessDelegate> receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  // Timer starting when the first async query was enqueued, if any. Used for
+  // metrics.
+  absl::optional<base::ElapsedTimer> first_async_query_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer starting when the instance is constructed. Used for metrics.
+  base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

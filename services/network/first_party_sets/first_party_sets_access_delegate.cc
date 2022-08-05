@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_metadata.h"
 
@@ -176,6 +178,20 @@ void FirstPartySetsAccessDelegate::FindOwnersAndInvoke(
 
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  UmaHistogramTimes(
+      "Cookie.FirstPartySets.InitializationDuration."
+      "ContextReadyToServeQueries2",
+      construction_timer_.Elapsed());
+
+  base::UmaHistogramCounts10000(
+      "Cookie.FirstPartySets.ContextDelayedQueriesCount",
+      pending_queries_ ? pending_queries_->size() : 0);
+
+  base::UmaHistogramTimes("Cookie.FirstPartySets.ContextMostDelayedQueryDelta",
+                          first_async_query_timer_.has_value()
+                              ? first_async_query_timer_->Elapsed()
+                              : base::TimeDelta());
   if (!pending_queries_)
     return;
 
@@ -192,6 +208,9 @@ void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
     base::OnceClosure run_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_queries_);
+
+  if (!first_async_query_timer_.has_value())
+    first_async_query_timer_ = {base::ElapsedTimer()};
 
   pending_queries_->push_back(std::move(run_query));
 }
