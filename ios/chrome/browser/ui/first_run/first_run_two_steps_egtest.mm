@@ -51,6 +51,8 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
   FRESigninIntentSigninDisabledByPolicy,
   // FRE with an enterprise policy.
   FRESigninIntentSigninWithPolicy,
+  // FRE with no UMA link in the first screen.
+  FRESigninIntentSigninWithUMAReportingDisabledPolicy,
 };
 
 NSString* const kSyncPassphrase = @"hello";
@@ -121,7 +123,7 @@ id<GREYMatcher> GetSyncSettings() {
   return config;
 }
 
-#pragma mark Tests
+#pragma mark - Tests
 
 // Tests FRE with UMA default value and without sign-in.
 - (void)testWithUMACheckedAndNoSignin {
@@ -720,7 +722,39 @@ id<GREYMatcher> GetSyncSettings() {
   [SigninEarlGrey verifySignedOut];
 }
 
-#pragma mark Helper
+// Tests that the UMA link does not appear in  FRE when UMA is disabled by
+// enterprise policy.
+- (void)testUMADisabledByPolicy {
+  // Configure the policy to disable UMA.
+  [self relaunchAppWithPolicyKey:policy::key::kMetricsReportingEnabled
+                  xmlPolicyValue:"<false/>"];
+  // Add identity.
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify 2 step FRE with no UMA footer.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentSigninWithUMAReportingDisabledPolicy];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept sync.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Check that UMA is off.
+  GREYAssertFalse(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+#pragma mark - Helper
 
 - (void)relaunchAppWithBrowserSigninMode:(BrowserSigninMode)mode {
   std::string xmlPolicyValue("<integer>");
@@ -753,21 +787,32 @@ id<GREYMatcher> GetSyncSettings() {
       assertWithMatcher:grey_notNil()];
   NSString* title = nil;
   NSString* subtitle = nil;
-  NSMutableArray* disclaimerStrings = [NSMutableArray array];
+  NSArray* disclaimerStrings = nil;
   switch (FRESigninIntent) {
     case FRESigninIntentRegular:
       title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
       break;
     case FRESigninIntentSigninForcedByPolicy:
       title =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
-      [disclaimerStrings
-          addObject:l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED)];
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
       break;
     case FRESigninIntentSigninDisabledByPolicy:
       if ([ChromeEarlGrey isIPadIdiom]) {
@@ -779,25 +824,40 @@ id<GREYMatcher> GetSyncSettings() {
       }
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
-      [disclaimerStrings
-          addObject:l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED)];
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
       break;
     case FRESigninIntentSigninWithPolicy:
       title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      [disclaimerStrings
-          addObject:l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED)];
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      subtitle =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+      ];
       break;
   }
-  [disclaimerStrings
-      addObject:l10n_util::GetNSString(
-                    IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE)];
-  [disclaimerStrings
-      addObject:l10n_util::GetNSString(
-                    IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING)];
   // Validate the Title text.
   [[self elementInteractionWithGreyMatcher:grey_allOf(
                                                grey_text(title),
