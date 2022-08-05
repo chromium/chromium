@@ -172,6 +172,8 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test {
   FirstPartySetsAccessDelegate delegate_;
 };
 
+// Since the FPSs is disabled for the context, none of the callbacks
+// should ever be called, and the return values should all be non-nullopt.
 class FirstPartySetsAccessDelegateDisabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
@@ -180,19 +182,37 @@ class FirstPartySetsAccessDelegateDisabledTest
 };
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, ComputeMetadata) {
-  EXPECT_THAT(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
-                                     {kSet1Member1, kSet1Owner})
-                  .context(),
-              net::SamePartyContext(Type::kCrossParty));
+  // Same as the default ctor, but just to be explicit:
+  net::FirstPartySetMetadata expected_metadata(net::SamePartyContext(),
+                                               /*frame_owner=*/nullptr,
+                                               /*top_frame_owner=*/nullptr);
+
+  EXPECT_THAT(delegate().ComputeMetadata(
+                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
+                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
+              Optional(std::ref(expected_metadata)));
 }
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, FindOwner) {
-  EXPECT_FALSE(FindOwnerAndWait(kSet1Owner));
-  EXPECT_FALSE(FindOwnerAndWait(kSet1Member1));
+  EXPECT_THAT(
+      delegate().FindOwner(
+          kSet1Owner,
+          base::BindOnce([](FirstPartySetsManager::OwnerResult) { FAIL(); })),
+      Optional(absl::nullopt));
+
+  EXPECT_THAT(
+      delegate().FindOwner(
+          kSet1Member1,
+          base::BindOnce([](FirstPartySetsManager::OwnerResult) { FAIL(); })),
+      Optional(absl::nullopt));
 }
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, FindOwners) {
-  EXPECT_THAT(FindOwnersAndWait({kSet1Member1, kSet2Member1}), IsEmpty());
+  EXPECT_THAT(
+      delegate().FindOwners(
+          {kSet1Member1, kSet2Member1},
+          base::BindOnce([](FirstPartySetsManager::OwnersResult) { FAIL(); })),
+      Optional(IsEmpty()));
 }
 
 // Test fixture that allows precise control over when the instance gets FPS
