@@ -106,8 +106,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 #endif
 }
 
+// TODO(https://crbug.com/1350300): Flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_VerifyCanvasCapture2DFrames DISABLED_VerifyCanvasCapture2DFrames
+#else
+#define MAYBE_VerifyCanvasCapture2DFrames VerifyCanvasCapture2DFrames
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       VerifyCanvasCapture2DFrames) {
+                       MAYBE_VerifyCanvasCapture2DFrames) {
   MakeTypicalCall("testCanvasCapture(draw2d);", kCanvasCaptureTestHtmlFile);
 }
 
