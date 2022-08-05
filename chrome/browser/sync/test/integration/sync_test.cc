@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -249,9 +250,13 @@ class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
       test_construction_time_(base::Time::Now()),
+      sync_run_loop_timeout(FROM_HERE, TestTimeouts::action_max_timeout()),
       server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
       num_clients_(-1) {
+  // Any RunLoop timeout will by default result in test failure.
+  sync_run_loop_timeout.SetAddGTestFailureOnTimeout();
+
   sync_datatype_helper::AssociateWithTest(this);
   switch (test_type_) {
     case SINGLE_CLIENT: {
