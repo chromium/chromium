@@ -114,6 +114,12 @@ content::WebContents* GetActiveWebContents() {
 
 // Waits for and expects that the correct url is opened.
 void WaitForAppToOpen(const GURL& expected_url) {
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+    return;
+  }
+
   // Start with a number of browsers (may include an incognito browser).
   size_t num_browsers = chrome::GetTotalBrowserCount();
   content::TestNavigationObserver navigation_observer(expected_url);
@@ -125,17 +131,6 @@ void WaitForAppToOpen(const GURL& expected_url) {
   EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   // Help app should have opened at the expected page.
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-}
-
-void ShowGestureEducationHelp(bool post_task) {
-  if (post_task) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(ShowGestureEducationHelp, /*post_task=*/false));
-    return;
-  }
-
-  SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
 }
 
 }  // namespace
@@ -408,14 +403,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                                  kShowHelpAppDiscoverTabNotificationId,
                                  absl::nullopt, absl::nullopt);
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-    EXPECT_EQ(GURL("chrome://help-app/discover"),
-              GetActiveWebContents()->GetVisibleURL());
-  } else {
-    EXPECT_NO_FATAL_FAILURE(
-        WaitForAppToOpen(GURL("chrome://help-app/discover")));
-  }
+  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
 }
 
 // Test that the background page can trigger the release notes notification.
@@ -776,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
-  ShowGestureEducationHelp(/*post_task=*/true);
+  SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
 
   EXPECT_NO_FATAL_FAILURE(
       WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));
