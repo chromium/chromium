@@ -223,6 +223,15 @@ void ShillClientUnittestBase::ExpectStringArgument(
 }
 
 // static
+void ShillClientUnittestBase::ExpectBoolArgument(bool expected_value,
+                                                 dbus::MessageReader* reader) {
+  bool value;
+  ASSERT_TRUE(reader->PopBool(&value));
+  EXPECT_EQ(expected_value, value);
+  EXPECT_FALSE(reader->HasMoreData());
+}
+
+// static
 void ShillClientUnittestBase::ExpectArrayOfStringsArgument(
     const std::vector<std::string>& expected_strings,
     dbus::MessageReader* reader) {

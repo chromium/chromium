@@ -75,6 +75,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                                   const base::Value& properties,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
+  void SetTetheringEnabled(bool enabled,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
+  void CheckTetheringReadiness(StringCallback callback,
+                               ErrorCallback error_callback) override;
 
   ShillManagerClient::TestInterface* GetTestInterface() override;
 
@@ -112,6 +117,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   bool GetFastTransitionStatus() override;
   void SetSimulateConfigurationResult(
       FakeShillSimulatedResult configuration_result) override;
+  void SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult tethering_enable_result) override;
+  void SetSimulateCheckTetheringReadinessResult(
+      FakeShillSimulatedResult tethering_readiness_result,
+      const std::string& readiness_status) override;
   base::Value GetEnabledServiceList() const override;
   void ClearProfiles() override;
   void SetShouldReturnNullProperties(bool value) override;
@@ -178,6 +188,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   FakeShillSimulatedResult simulate_configuration_result_ =
       FakeShillSimulatedResult::kSuccess;
+  FakeShillSimulatedResult simulate_tethering_enable_result_ =
+      FakeShillSimulatedResult::kSuccess;
+  FakeShillSimulatedResult simulate_check_tethering_readiness_result_ =
+      FakeShillSimulatedResult::kSuccess;
+  std::string simulate_tethering_readiness_status_;
 
   bool return_null_properties_;
 

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_client_unittest_base.h"
@@ -183,15 +184,14 @@ TEST_F(ShillManagerClientTest, SetProperty) {
                           shill::kCheckPortalListProperty, &value),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
+  base::RunLoop run_loop;
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->SetProperty(shill::kCheckPortalListProperty, value,
-                       mock_closure.Get(), mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
+                       run_loop.QuitClosure(), mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
   // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShillManagerClientTest, RequestScan) {
@@ -203,15 +203,14 @@ TEST_F(ShillManagerClientTest, RequestScan) {
       base::BindRepeating(&ExpectStringArgument, shill::kTypeWifi),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
+  base::RunLoop run_loop;
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->RequestScan(shill::kTypeWifi, mock_closure.Get(),
+  client_->RequestScan(shill::kTypeWifi, run_loop.QuitClosure(),
                        mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
   // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShillManagerClientTest, EnableTechnology) {
@@ -223,15 +222,14 @@ TEST_F(ShillManagerClientTest, EnableTechnology) {
       base::BindRepeating(&ExpectStringArgument, shill::kTypeWifi),
       response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
+  base::RunLoop run_loop;
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  client_->EnableTechnology(shill::kTypeWifi, mock_closure.Get(),
+  client_->EnableTechnology(shill::kTypeWifi, run_loop.QuitClosure(),
                             mock_error_callback.Get());
-  EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
   // Run the message loop.
-  base::RunLoop().RunUntilIdle();
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShillManagerClientTest, NetworkThrottling) {
@@ -246,16 +244,15 @@ TEST_F(ShillManagerClientTest, NetworkThrottling) {
                                            upload_rate, download_rate),
                        response.get());
   // Call method.
-  base::MockCallback<base::OnceClosure> mock_closure;
+  base::RunLoop run_loop;
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
-  EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
   client_->SetNetworkThrottlingStatus(
       ShillManagerClient::NetworkThrottlingStatus{enabled, upload_rate,
                                                   download_rate},
-      mock_closure.Get(), mock_error_callback.Get());
-  base::RunLoop().RunUntilIdle();
+      run_loop.QuitClosure(), mock_error_callback.Get());
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShillManagerClientTest, DisableTechnology) {
@@ -328,6 +325,49 @@ TEST_F(ShillManagerClientTest, GetService) {
 
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ShillManagerClientTest, SetTetheringEnabled) {
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  PrepareForMethodCall(shill::kSetTetheringEnabledFunction,
+                       base::BindRepeating(&ExpectBoolArgument, true),
+                       response.get());
+  // Call method.
+  base::RunLoop run_loop;
+  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
+  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
+  client_->SetTetheringEnabled(
+      /*enabled=*/true, run_loop.QuitClosure(), mock_error_callback.Get());
+
+  // Run the message loop.
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(ShillManagerClientTest, CheckTetheringReadiness) {
+  const char kReadinessResult[] = "not_ready";
+
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  writer.AppendString(kReadinessResult);
+
+  // Set expectation.
+  PrepareForMethodCall(shill::kCheckTetheringReadinessFunction,
+                       base::BindRepeating(&ExpectNoArgument), response.get());
+  // Call method.
+  base::RunLoop run_loop;
+  base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
+  EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
+  client_->CheckTetheringReadiness(
+      base::BindLambdaForTesting([&](const std::string& readiness_status) {
+        EXPECT_EQ(kReadinessResult, readiness_status);
+        run_loop.QuitClosure();
+      }),
+      mock_error_callback.Get());
+
+  // Run the message loop.
+  run_loop.RunUntilIdle();
 }
 
 }  // namespace chromeos

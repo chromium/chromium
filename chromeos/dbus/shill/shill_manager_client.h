@@ -31,6 +31,7 @@ class ShillPropertyChangedObserver;
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
  public:
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
+  typedef ShillClientHelper::StringCallback StringCallback;
 
   struct NetworkThrottlingStatus {
     // Enable or disable network bandwidth throttling.
@@ -122,6 +123,16 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Makes ConfigureService succeed, fail, or timeout.
     virtual void SetSimulateConfigurationResult(
         FakeShillSimulatedResult configuration_result) = 0;
+
+    // Makes SetTetheringEnabled succeed, fail, or timeout.
+    virtual void SetSimulateTetheringEnableResult(
+        FakeShillSimulatedResult tethering_result) = 0;
+
+    // Makes CheckTetheringReadiness succeed, fail, or timeout and the readiness
+    // status if CheckTetheringReadiness succeeds.
+    virtual void SetSimulateCheckTetheringReadinessResult(
+        FakeShillSimulatedResult check_readiness_result,
+        const std::string& readiness_status) = 0;
 
     // Clears profile list.
     virtual void ClearProfiles() = 0;
@@ -233,6 +244,19 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                           const base::Value& properties,
                                           base::OnceClosure callback,
                                           ErrorCallback error_callback) = 0;
+
+  // Enables or disables tethering hotspot. Only supports cellular as the
+  // upstream technologies and WiFi as the downstream technology.
+  virtual void SetTetheringEnabled(bool enabled,
+                                   base::OnceClosure callback,
+                                   ErrorCallback error_callback) = 0;
+
+  // Checks whether the upstream technology is ready to tether. Returns a status
+  // string indicating the readiness. Returns "allowed" if the readiness check
+  // is completed and upstream is ready for tethering and "not_allowed" if the
+  // readiness check is completed but the upstream is not ready.
+  virtual void CheckTetheringReadiness(StringCallback callback,
+                                       ErrorCallback error_callback) = 0;
 
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;

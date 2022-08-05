@@ -118,6 +118,10 @@ class ShillClientUnittestBase : public testing::Test {
   static void ExpectStringArgument(const std::string& expected_string,
                                    dbus::MessageReader* reader);
 
+  // Expects the reader to have a bool
+  static void ExpectBoolArgument(bool expected_value,
+                                 dbus::MessageReader* reader);
+
   static void ExpectArrayOfStringsArgument(
       const std::vector<std::string>& expected_strings,
       dbus::MessageReader* reader);

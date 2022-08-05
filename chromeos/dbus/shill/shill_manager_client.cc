@@ -201,6 +201,25 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
+  void SetTetheringEnabled(bool enabled,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kSetTetheringEnabledFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    helper_->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
+                                             std::move(error_callback));
+  }
+
+  void CheckTetheringReadiness(StringCallback callback,
+                               ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kCheckTetheringReadinessFunction);
+    helper_->CallStringMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {

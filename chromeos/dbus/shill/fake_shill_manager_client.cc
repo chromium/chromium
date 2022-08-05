@@ -500,6 +500,45 @@ void FakeShillManagerClient::RemovePasspointCredentials(
     base::OnceClosure callback,
     ErrorCallback error_callback) {}
 
+void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
+                                                 base::OnceClosure callback,
+                                                 ErrorCallback error_callback) {
+  switch (simulate_tethering_enable_result_) {
+    case FakeShillSimulatedResult::kSuccess:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(callback));
+      return;
+    case FakeShillSimulatedResult::kFailure:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
+                                    "Simulated failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
+}
+
+void FakeShillManagerClient::CheckTetheringReadiness(
+    StringCallback callback,
+    ErrorCallback error_callback) {
+  switch (simulate_tethering_enable_result_) {
+    case FakeShillSimulatedResult::kSuccess:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    simulate_tethering_readiness_status_));
+      return;
+    case FakeShillSimulatedResult::kFailure:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
+                                    "Simulated failure"));
+      return;
+    case FakeShillSimulatedResult::kTimeout:
+      // No callbacks get executed and the caller should eventually timeout.
+      return;
+  }
+}
+
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
   return this;
 }
@@ -798,6 +837,21 @@ bool FakeShillManagerClient::GetFastTransitionStatus() {
 void FakeShillManagerClient::SetSimulateConfigurationResult(
     FakeShillSimulatedResult configuration_result) {
   simulate_configuration_result_ = configuration_result;
+}
+
+void FakeShillManagerClient::SetSimulateTetheringEnableResult(
+    FakeShillSimulatedResult tethering_enable_result) {
+  simulate_tethering_enable_result_ = tethering_enable_result;
+}
+
+void FakeShillManagerClient::SetSimulateCheckTetheringReadinessResult(
+    FakeShillSimulatedResult tethering_readiness_result,
+    const std::string& readiness_status) {
+  simulate_check_tethering_readiness_result_ = tethering_readiness_result;
+  if (simulate_check_tethering_readiness_result_ ==
+      FakeShillSimulatedResult::kSuccess) {
+    simulate_tethering_readiness_status_ = readiness_status;
+  }
 }
 
 void FakeShillManagerClient::SetupDefaultEnvironment() {
