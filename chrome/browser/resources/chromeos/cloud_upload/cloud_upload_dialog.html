@@ -1,13 +1,29 @@
 <style>
-  cr-dialog::part(dialog) {
+  cr-dialog::part(dialog),
+  cr-dialog::part(wrapper) {
     height: 100%;
+  }
+
+  [slot='button-container'] {
+    margin-block-start: auto;
   }
 </style>
 
-<cr-dialog id="dialog">
+<cr-dialog>
   <!-- TODO: Use localized strings -->
-  <div slot="title">Upload to Drive</div>
+  <div slot="title">
+    Upload to Drive
+  </div>
   <div slot="body">
-    Body
+    Upload your file to Google Drive to open with Google Docs.
+    <div id="upload-location" hidden></div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancel-button" class="cancel-button">
+      Cancel
+    </cr-button>
+    <cr-button id="upload-button" class="action-button">
+      Upload to Drive
+    </cr-button>
   </div>
 </cr-dialog>

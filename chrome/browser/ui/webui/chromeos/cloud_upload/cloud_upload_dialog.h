@@ -26,8 +26,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   bool ShouldShowCloseButton() const override;
 };
 
-// The WebUI for chrome://cloud-upload-dialog, used for uploading files to the
-// cloud.
+// The WebUI for chrome://cloud-upload, used for uploading files to the cloud.
 class CloudUploadDialogUI : public ui::WebDialogUI {
  public:
   explicit CloudUploadDialogUI(content::WebUI* web_ui);
