@@ -12,8 +12,9 @@ template("fuchsia_clang_toolchain") {
     assert(defined(invoker.toolchain_args),
            "toolchain_args must be defined for fuchsia_clang_toolchain()")
 
-    # We want to build and strip binaries, but retain the unstripped binaries
-    # in runtime_deps to make them available for isolates.
+    # While we want use stripped binaries on the device, we need to retain the
+    # unstripped binaries in runtime_deps to make them available for the test
+    # isolates to enable symbolizing on bots.
     strip = rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir)
     use_unstripped_as_runtime_outputs = true
 
