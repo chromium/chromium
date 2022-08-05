@@ -306,15 +306,14 @@ void MessagePumpCFRunLoopBase::OnAttach() {
 
 void MessagePumpCFRunLoopBase::OnDetach() {
   // This function is called on shutdown. This can happen at either
-  // `nesting_level` 1 or 0:
+  // `nesting_level` >=1 or 0:
   //   `nesting_level_ == 0`: When this is detached as part of tear down outside
-  //   of a run loop (e.g. ~TaskEnvironment). `nesting_level_ == 1`: When this
+  //   of a run loop (e.g. ~TaskEnvironment). `nesting_level_ >= 1`: When this
   //   is detached as part of a native shutdown notification ran from the
-  //   message pump itself.
-  // Additional nesting would be surprising as it would imply that unwinding the
-  // nested loop has to go through the detached MessagePump again...
+  //   message pump itself. Nesting levels higher than 1 can happen in
+  //   legitimate nesting situations like the browser being dismissed while
+  //   displaying a long press context menu (CRWContextMenuController).
   CHECK_GE(nesting_level_, 0);
-  CHECK_LE(nesting_level_, 1);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
