@@ -3,5 +3,6 @@ noparent = True
 include_rules = [
   "+base",
   "+device/bluetooth",
+  "+third_party/abseil-cpp/absl/types/variant.h",
   "+testing",
 ]
