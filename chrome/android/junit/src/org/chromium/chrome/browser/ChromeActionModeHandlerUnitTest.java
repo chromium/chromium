@@ -60,7 +60,7 @@ public class ChromeActionModeHandlerUnitTest {
 
     private class TestChromeActionModeCallback extends ChromeActionModeHandler.ActionModeCallback {
         TestChromeActionModeCallback(Tab tab, ActionModeCallbackHelper helper) {
-            super(tab, null, visible -> {}, urlParams -> {}, null);
+            super(tab, null, urlParams -> {}, null, false);
         }
 
         @Override

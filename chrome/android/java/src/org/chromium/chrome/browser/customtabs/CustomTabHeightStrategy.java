@@ -67,4 +67,11 @@ public class CustomTabHeightStrategy {
      * @param scrimFraction Scrim fraction.
      */
     public void setScrimFraction(float scrimFraction) {}
+
+    /**
+     * {@see org.chromium.chrome.browser.ui.RootUiCoordinator#canDrawOutsideScreen()}
+     */
+    public boolean canDrawOutsideScreen() {
+        return false;
+    }
 }

@@ -250,6 +250,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return super.getAppRectInWindow();
     }
 
+    @Override
+    protected boolean canDrawOutsideScreen() {
+        return mCustomTabHeightStrategy.canDrawOutsideScreen();
+    }
+
     /**
      * Delegates changing the background color to the {@link CustomTabHeightStrategy}.
      * Returns {@code true} if any action were taken, {@code false} if not.

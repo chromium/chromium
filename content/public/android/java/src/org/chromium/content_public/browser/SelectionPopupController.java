@@ -52,7 +52,7 @@ public interface SelectionPopupController {
      * Set {@link ActionMode.Callback} used by {@link SelectionPopupController}.
      * @param callback ActionMode.Callback instance.
      */
-    void setActionModeCallback(ActionMode.Callback callback);
+    void setActionModeCallback(ActionMode.Callback2 callback);
 
     /**
      * Set {@link ActionMode.Callback} used by {@link SelectionPopupController} when no text is
