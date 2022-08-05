@@ -99,7 +99,6 @@ max_3d_array_texture_size_1024
 max_copy_texture_chromium_size_1048576
 max_msaa_sample_count_2
 max_msaa_sample_count_4
-max_texture_size_limit_4096
 msaa_is_slow
 msaa_is_slow_2
 multisample_renderbuffer_resize_emulation
@@ -141,3 +140,4 @@ use_unused_standard_shared_blocks
 use_virtualized_gl_contexts
 validate_multisample_buffer_allocation
 wake_up_gpu_before_drawing
+webgl_or_caps_max_texture_size_limit_4096

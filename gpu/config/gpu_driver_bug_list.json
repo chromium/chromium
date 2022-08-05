@@ -1121,7 +1121,7 @@
         "type": "android"
       },
       "features": [
-        "max_texture_size_limit_4096"
+        "webgl_or_caps_max_texture_size_limit_4096"
       ]
     },
     {
@@ -2817,8 +2817,8 @@
       },
       "vendor_id": "0x8086",
       "features": [
-        "max_texture_size_limit_4096",
-        "max_3d_array_texture_size_1024"
+        "max_3d_array_texture_size_1024",
+        "webgl_or_caps_max_texture_size_limit_4096"
       ]
     },
     {
