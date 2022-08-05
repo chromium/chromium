@@ -37,6 +37,9 @@ class TextClassifierModelService
       const optimization_guide::ModelInfo& model_info) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(InternalContextMenuProviderTest,
+                           TCUsedWhenTCModelAvailable);
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::FilePath model_path_;
   // Optimization Guide Service that provides model files for this service.

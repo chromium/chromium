@@ -19,7 +19,22 @@ source_set("text_selection") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",
-    "//ios/public/provider/chrome/browser/text_classifier:text_classifier_api",
-    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "text_classifier_model_service_fake.h",
+    "text_classifier_model_service_fake.mm",
+  ]
+  deps = [
+    ":text_selection",
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/optimization_guide/core",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/optimization_guide",
   ]
 }
