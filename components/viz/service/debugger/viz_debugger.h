@@ -12,13 +12,12 @@
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/service/debugger/rwlock.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -152,22 +151,29 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   scoped_refptr<base::SequencedTaskRunner> gpu_thread_task_runner_;
 
   struct CallSubmitCommon {
-    CallSubmitCommon(int index, int source, DrawOption draw_option)
-        : draw_index(index), source_index(source), option(draw_option) {}
+    CallSubmitCommon() = default;
+    CallSubmitCommon(int index, int source, int thread, DrawOption draw_option)
+        : draw_index(index),
+          source_index(source),
+          thread_id(thread),
+          option(draw_option) {}
     base::DictionaryValue GetDictionaryValue() const;
     int draw_index;
     int source_index;
+    int thread_id;
     VizDebugger::DrawOption option;
   };
 
   struct DrawCall : public CallSubmitCommon {
+    DrawCall() = default;
     DrawCall(int index,
              int source,
+             int thread,
              DrawOption draw_option,
              gfx::Size size,
              gfx::Vector2dF position,
              int buffer_id)
-        : CallSubmitCommon(index, source, draw_option),
+        : CallSubmitCommon(index, source, thread, draw_option),
           obj_size(size),
           pos(position),
           buff_id(buffer_id) {}
@@ -177,12 +183,14 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   };
 
   struct DrawTextCall : public CallSubmitCommon {
+    DrawTextCall() = default;
     DrawTextCall(int index,
                  int source,
+                 int thread,
                  DrawOption draw_option,
                  gfx::Vector2dF position,
                  std::string str)
-        : CallSubmitCommon(index, source, draw_option),
+        : CallSubmitCommon(index, source, thread, draw_option),
           pos(position),
           text(str) {}
     gfx::Vector2dF pos;
@@ -190,8 +198,14 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   };
 
   struct LogCall : public CallSubmitCommon {
-    LogCall(int index, int source, DrawOption draw_option, std::string str)
-        : CallSubmitCommon(index, source, draw_option), value(std::move(str)) {}
+    LogCall() = default;
+    LogCall(int index,
+            int source,
+            int thread,
+            DrawOption draw_option,
+            std::string str)
+        : CallSubmitCommon(index, source, thread, draw_option),
+          value(std::move(str)) {}
     std::string value;
   };
 
@@ -210,12 +224,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     bool enabled = false;
   };
 
-  // Synchronize access to the variables in the block below as it is mutated by
-  // multiple threads.
-  base::Lock common_lock_;
+  // Synchronize access to buffers and variables mutated by multiple threads.
+  rwlock::RWLock read_write_lock_;
+
   // New filters to promoted to cached filters on next frame.
   std::vector<FilterBlock> new_filters_;
   bool apply_new_filters_next_frame_ = false;
+
   // Json is saved out every frame on the call to 'CompleteFrame' but may not be
   // uploaded immediately due to task runner sequencing.
   base::Value json_frame_output_;
@@ -223,16 +238,29 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   // Cached filters to apply filtering to new sources not just on filter update.
   std::vector<FilterBlock> cached_filters_;
-  // Common counter for all submissions.
-  int submission_count_ = 0;
   int buffer_id = 0;
-  std::vector<DrawCall> draw_rect_calls_;
-  std::vector<DrawTextCall> draw_text_calls_;
-  std::vector<LogCall> logs_;
+
+  // Common counter for all submissions. This variable can be accessed by
+  // multiple threads atomically.
+  std::atomic<int> submission_count_ = 0;
+
+  // Default starting size for each buffer/vector.
+  static constexpr int kDefaultBufferSize = 64;
+
+  // Buffers/vectors for each type of debug calls. These vectors can be accessed
+  // and mutated by multiple threads simultaneously or individually.
+  std::vector<DrawCall> draw_rect_calls_{kDefaultBufferSize};
+  std::vector<DrawTextCall> draw_text_calls_{kDefaultBufferSize};
+  std::vector<LogCall> logs_{kDefaultBufferSize};
   std::vector<StaticSource*> sources_;
   std::vector<Buffer> buffers_;
 
-  THREAD_CHECKER(viz_compositor_thread_checker_);
+  // Individual tail indices tracker variables for next insertion index in
+  // each buffer. These variables can be accessed by multiple threads
+  // atomically.
+  std::atomic<int> draw_rect_calls_tail_idx_ = 0;
+  std::atomic<int> draw_text_calls_tail_idx_ = 0;
+  std::atomic<int> logs_tail_idx_ = 0;
 };
 
 }  // namespace viz
