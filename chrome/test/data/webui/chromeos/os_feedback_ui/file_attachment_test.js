@@ -144,7 +144,10 @@ export function fileAttachmentTestSuite() {
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
     // The select file checkbox is checked automatically when a file is
     // selected.
-    assertTrue(getElement('#selectFileCheckbox').checked);
+    const selectFileCheckbox = getElement('#selectFileCheckbox');
+    assertTrue(selectFileCheckbox.checked);
+    assertEquals('Attach file', selectFileCheckbox.ariaDescription);
+
     // The addFileContainer should be invisible.
     assertFalse(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be visible.

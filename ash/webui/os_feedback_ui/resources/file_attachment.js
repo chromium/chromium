@@ -82,6 +82,15 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
     this.hasSelectedAFile_;
   }
 
+  ready() {
+    super.ready();
+    // Set the aria description works the best for screen reader.
+    // It reads the description when the checkbox is focused, and when it is
+    // checked and unchecked.
+    this.$.selectFileCheckbox.ariaDescription =
+        this.i18n('attachFileCheckboxArialLabel');
+  }
+
   /**
    * @returns {boolean}
    * @private
