@@ -165,22 +165,9 @@ void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
   if (run_levels_.empty())
     return;
 
+  DCHECK_NE(run_levels_.top().state(), kRunningWorkItem);
   time_keeper_.RecordEndOfPhase(kIdleWork, lazy_now);
-
-  // This is similar to the logic in OnWorkStarted().
-  if (run_levels_.top().state() == kRunningWorkItem) {
-    // #work-in-work-implies-nested
-    // While OnIdle() isn't typically thought of as a "work item" it is a way
-    // to "do work" and, on platforms like Mac which uses an
-    // |idle_work_source_|, DoIdleWork() can be invoked without DoWork() being
-    // first invoked at this run-level. We need to create a nested kIdle
-    // RunLevel or we break
-    // #done-work-while-not-running-implies-done-nested.
-    run_levels_.emplace(kIdle, true, time_keeper_, lazy_now);
-  } else {
-    // Simply going kIdle at the current run-level.
-    run_levels_.top().UpdateState(kIdle, lazy_now);
-  }
+  run_levels_.top().UpdateState(kIdle, lazy_now);
 }
 
 // static
