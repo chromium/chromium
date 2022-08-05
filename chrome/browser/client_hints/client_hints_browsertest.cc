@@ -509,8 +509,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,"
-        "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
-        "ViewportHeightClientHintHeader",
+        "AcceptCHFrame,PrefersColorSchemeClientHintHeader",
         "");
     return feature_list;
   }
@@ -3027,9 +3026,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,PrefersColorSchemeClientHintHeader,"
-        "ViewportHeightClientHintHeader",
-        "");
+        "UserAgentClientHint,PrefersColorSchemeClientHintHeader", "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
