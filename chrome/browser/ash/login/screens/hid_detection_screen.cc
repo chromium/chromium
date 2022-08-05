@@ -614,8 +614,6 @@ void HIDDetectionScreen::OnHidDetectionStatusChanged(
   view_->SetMouseState(GetDeviceUiState(status.pointer_metadata.state));
   view_->SetPointingDeviceName(status.pointer_metadata.detected_hid_name);
 
-  // TODO(b/232851163): Handle showing pairing dialog.
-
   std::string keyboard_state = GetDeviceUiState(status.keyboard_metadata.state);
 
   // Unlike pointing devices, which can be connected through serial IO or some
@@ -627,6 +625,14 @@ void HIDDetectionScreen::OnHidDetectionStatusChanged(
   view_->SetContinueButtonEnabled(status.touchscreen_detected ||
                                   IsInputConnected(status.pointer_metadata) ||
                                   IsInputConnected(status.keyboard_metadata));
+
+  view_->SetPinDialogVisible(status.pairing_state.has_value());
+  if (status.pairing_state.has_value()) {
+    view_->SetKeyboardPinCode(status.pairing_state.value().code);
+    view_->SetNumKeysEnteredPinCode(
+        status.pairing_state.value().num_keys_entered);
+    return;
+  }
 }
 
 void HIDDetectionScreen::InitializeAdapter(

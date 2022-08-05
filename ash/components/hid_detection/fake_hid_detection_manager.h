@@ -20,6 +20,7 @@ class FakeHidDetectionManager : public HidDetectionManager {
   void SetHidStatusTouchscreenDetected(bool touchscreen_detected);
   void SetHidStatusPointerMetadata(InputMetadata metadata);
   void SetHidStatusKeyboardMetadata(InputMetadata metadata);
+  void SetPairingState(absl::optional<BluetoothHidPairingState> pairing_state);
 
   bool is_hid_detection_active() const { return is_hid_detection_active_; }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "ash/components/hid_detection/fake_hid_detection_manager.h"
 #include "ash/components/hid_detection/hid_detection_manager.h"
 #include "ash/components/hid_detection/hid_detection_utils.h"
@@ -52,12 +53,15 @@ const char kTestBluetoothName[] = "testName";
 const char kTestPointerName[] = "pointer";
 const char kTestKeyboardName[] = "keyboard";
 
+const char kTestPinCode[] = "pincode";
+
 const test::UIPath kHidContinueButton = {"hid-detection",
                                          "hid-continue-button"};
 const test::UIPath kHidTouchscreenEntry = {"hid-detection",
                                            "hid-touchscreen-entry"};
 const test::UIPath kHidMouseTick = {"hid-detection", "mouse-tick"};
 const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
+const test::UIPath kHidPairingDialog = {"hid-detection", "hid-pin-popup"};
 
 InputState GetHidInputState(
     device::mojom::InputDeviceType connected_hid_device_type) {
@@ -261,6 +265,25 @@ class HIDDetectionScreenChromeboxTest
         .WillByDefault(testing::Return(device_type));
 
     hid_detection_screen_->DeviceAdded(/*adapter=*/nullptr, mock_device.get());
+  }
+
+  void SimulatePairingCodeRequired() {
+    // This is not applicable to the legacy screen.
+    if (!GetParam())
+      return;
+
+    fake_hid_detection_manager_->SetPairingState(
+        hid_detection::BluetoothHidPairingState{
+            kTestPinCode, static_cast<uint8_t>(std::strlen(kTestPinCode))});
+  }
+
+  void SimulatePairingCodeNotRequired() {
+    // This is not applicable to the legacy screen.
+    if (!GetParam())
+      return;
+
+    fake_hid_detection_manager_->SetPairingState(
+        /*pairing_state=*/absl::nullopt);
   }
 
   // HID detection must be stopped before HidDetectionManager is destroyed. This
@@ -482,6 +505,40 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
 
   ForceStopHidDetectionIfRevamp();
 };
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
+                       BluetoothPairingDialog) {
+  // This test is not applicable to the legacy screen.
+  if (!GetParam())
+    return;
+
+  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+
+  SimulateBluetoothDeviceDiscovered(device::BluetoothDeviceType::KEYBOARD);
+  EXPECT_EQ("pairing", handler()->keyboard_state_for_test());
+  EXPECT_EQ(kTestKeyboardName, handler()->keyboard_device_name_for_test());
+  EXPECT_FALSE(handler()->num_keys_entered_expected_for_test());
+  EXPECT_EQ(0, handler()->num_keys_entered_pin_code_for_test());
+  EXPECT_TRUE(handler()->keyboard_pin_code_for_test().empty());
+  test::OobeJS().ExpectDialogClosed(kHidPairingDialog);
+
+  SimulatePairingCodeRequired();
+  EXPECT_EQ("pairing", handler()->keyboard_state_for_test());
+  EXPECT_EQ(kTestKeyboardName, handler()->keyboard_device_name_for_test());
+  EXPECT_TRUE(handler()->num_keys_entered_expected_for_test());
+  EXPECT_EQ(static_cast<uint8_t>(std::strlen(kTestPinCode)),
+            handler()->num_keys_entered_pin_code_for_test());
+  EXPECT_EQ(kTestPinCode, handler()->keyboard_pin_code_for_test());
+  test::OobeJS().ExpectDialogOpen(kHidPairingDialog);
+
+  SimulatePairingCodeNotRequired();
+  EXPECT_EQ("pairing", handler()->keyboard_state_for_test());
+  EXPECT_EQ(kTestKeyboardName, handler()->keyboard_device_name_for_test());
+  EXPECT_FALSE(handler()->num_keys_entered_expected_for_test());
+  test::OobeJS().ExpectDialogClosed(kHidPairingDialog);
+
+  ForceStopHidDetectionIfRevamp();
+}
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        AddRemoveDevicesAfterScreen) {

@@ -46,6 +46,12 @@ void FakeHidDetectionManager::SetHidStatusKeyboardMetadata(
   NotifyHidDetectionStatusChanged();
 }
 
+void FakeHidDetectionManager::SetPairingState(
+    absl::optional<BluetoothHidPairingState> pairing_state) {
+  pairing_state_ = std::move(pairing_state);
+  NotifyHidDetectionStatusChanged();
+}
+
 void FakeHidDetectionManager::GetIsHidDetectionRequired(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(IsInputMissing(pointer_metadata_) ||
