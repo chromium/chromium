@@ -1806,7 +1806,8 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
     return;
 
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
-      this, GetRenderFrameHost(),
+      this,
+      content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
       base::BindOnce(&RenderViewContextMenu::OnLinkToTextMenuCompleted,
                      weak_pointer_factory_.GetWeakPtr()));
   if (link_to_text_menu_observer_) {
