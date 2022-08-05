@@ -22,11 +22,9 @@
 
     // Delete the iframe to trigger beacon sending.
     document.body.removeChild(iframe);
-    await wait(1000);
 
     // The iframe should have sent two beacons.
-    const beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 2);
+    await expectBeaconCount(uuid, 2);
   }, "Verify that a discarded document sends its beacons.");
 
   promise_test(async t => {
@@ -41,17 +39,13 @@
       resolve => iframe.onload = () => resolve());
     document.body.appendChild(iframe);
     await iframe_load_promise;
-    await wait(1000);
 
     // The iframe should have sent one beacon.
-    let beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 1);
+    await expectBeaconCount(uuid, 1);
 
     // Delete the document and verify no more beacons are sent.
     document.body.removeChild(iframe);
-    await wait(1000);
-    beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 1);
+    await expectBeaconCount(uuid, 1);
   }, "Verify that a discarded document does not send an already sent beacon.");
 </script>
 </body>

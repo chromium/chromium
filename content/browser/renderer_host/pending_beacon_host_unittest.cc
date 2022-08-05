@@ -252,4 +252,21 @@ TEST_F(BeaconTest, AttemptToSetUnsafeContentTypeAndTerminated) {
   EXPECT_EQ(bad_message, "Unexpected Content-Type from renderer");
 }
 
+TEST_F(BeaconTest, AttemptToSetURLForPostBeaconAndTerminated) {
+  auto beacon_remote =
+      CreateBeaconAndPassRemote(net::HttpRequestHeaders::kPostMethod);
+  // Intercepts Mojo bad-message error.
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error) {
+        ASSERT_TRUE(bad_message.empty());
+        bad_message = error;
+      }));
+
+  beacon_remote->SetRequestURL(GURL("/test_set_url"));
+  beacon_remote.FlushForTesting();
+
+  EXPECT_EQ(bad_message, "Unexpected BeaconMethod from renderer");
+}
+
 }  // namespace content

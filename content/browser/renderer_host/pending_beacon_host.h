@@ -111,6 +111,11 @@ class Beacon : public blink::mojom::PendingBeacon {
   void SetRequestData(scoped_refptr<network::ResourceRequestBody> request_body,
                       const std::string& content_type) override;
 
+  // Sets request url for the pending beacon.
+  // The spec only allows GET beacons to update its own URL. So `BeaconMethod`
+  // must be kGet when calling this.
+  void SetRequestURL(const GURL& url) override;
+
   // Sends the beacon immediately, and deletes it from its containing
   // PendingBeaconHost.
   void SendNow() override;
@@ -139,7 +144,7 @@ class Beacon : public blink::mojom::PendingBeacon {
   // The beacon host that owns this beacon. raw_ptr is safe here as the host's
   // lifetime will always be longer than the individual beacon's.
   raw_ptr<PendingBeaconHost> beacon_host_;
-  const GURL url_;
+  GURL url_;
   [[maybe_unused]] const blink::mojom::BeaconMethod method_;
   [[maybe_unused]] const base::TimeDelta timeout_;
 

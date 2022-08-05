@@ -14,13 +14,10 @@
     const url = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
 
     // Create and send a beacon.
-    const beacon = new PendingBeacon(url, {method: "GET"});
+    const beacon = new PendingGetBeacon(url);
     beacon.sendNow();
-    // Wait for the beacon to have sent.
-    await wait(1000);
 
-    const beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 1);
+    await expectBeaconCount(uuid, 1);
   }, "sendNow() sends a beacon immediately.");
 
   promise_test(async t => {
@@ -28,19 +25,13 @@
     const url = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
 
     // Create and send a beacon.
-    const beacon = new PendingBeacon(url, {method: "GET"});
+    const beacon = new PendingGetBeacon(url);
     beacon.sendNow();
-    // Wait for the beacon to have sent.
-    await wait(1000);
-    let beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 1);
+    await expectBeaconCount(uuid, 1);
 
     // Try to send the beacon again, and verify no beacon arrives.
     beacon.sendNow();
-    // Wait for the beacon to have sent.
-    await wait(1000);
-    beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 1);
+    await expectBeaconCount(uuid, 1);
   }, "sendNow() doesn't send the same beacon twice.");
 
   promise_test(async t => {
@@ -48,17 +39,14 @@
     const url = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
 
     // Create and send 1st beacon.
-    const beacon1 = new PendingBeacon(url, {method: "GET"});
+    const beacon1 = new PendingGetBeacon(url);
     beacon1.sendNow();
 
     // Create and send 2st beacon.
-    const beacon2 = new PendingBeacon(url, {method: "GET"});
+    const beacon2 = new PendingGetBeacon(url);
     beacon2.sendNow();
 
-    // Wait for beacons to have sent.
-    await wait(1000);
-    beaconCount = await getBeaconCount(uuid);
-    assert_equals(beaconCount, 2);
+    await expectBeaconCount(uuid, 2);
   }, "sendNow() sends multiple beacons.");
 </script>
 </body>

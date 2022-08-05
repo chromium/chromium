@@ -52,47 +52,55 @@ function wait(ms) {
   return new Promise(resolve => step_timeout(resolve, ms));
 }
 
-async function getBeaconCount(uuid) {
-  const res = await fetch(
-      `resources/get_beacon_count.py?uuid=${uuid}`, {cache: 'no-store'});
-  const count = await res.json();
-  return count;
+async function poll(f, expected) {
+  const interval = 400;  // milliseconds.
+  while (true) {
+    const result = await f();
+    if (result === expected) {
+      return result;
+    }
+    await new Promise(resolve => setTimeout(resolve, interval));
+  }
 }
 
-async function getBeaconData(uuid) {
-  const res = await fetch(
-      `resources/get_beacon_data.py?uuid=${uuid}`, {cache: 'no-store'});
-  const data = await res.text();
-  return data;
+async function expectBeaconCount(uuid, expected) {
+  poll(async () => {
+    const res = await fetch(
+        `resources/get_beacon_count.py?uuid=${uuid}`, {cache: 'no-store'});
+    return await res.json();
+  }, expected);
 }
 
-// Retrieve beacon data for `uuid`, and perform percent-decoding.
-async function getPercentDecodedBeaconData(uuid) {
-  let data = await getBeaconData(uuid);
-  // application/x-www-form-urlencoded serializer encodes space as '+'
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
-  data = data.replace(/\+/g, '%20');
-  return decodeURIComponent(data);
+async function expectBeaconData(uuid, expected, options) {
+  poll(async () => {
+    const res = await fetch(
+        `resources/get_beacon_count.py?uuid=${uuid}`, {cache: 'no-store'});
+    let data = await res.text();
+    if (options && options.percentDecoded) {
+      // application/x-www-form-urlencoded serializer encodes space as '+'
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+      data = data.replace(/\+/g, '%20');
+      return decodeURIComponent(data);
+    }
+    return data;
+  }, expected);
 }
 
-function beaconSendDataTest(
-    method, dataType, testData, expectEmpty, description) {
+function postBeaconSendDataTest(dataType, testData, expectEmpty, description) {
   parallelPromiseTest(async t => {
     const uuid = token();
     const baseUrl = `${location.protocol}//${location.host}`;
     const url = `${
         baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_data.py?uuid=${
         uuid}`;
-    let beacon = new PendingBeacon(url, {method: method});
+    let beacon = new PendingPostBeacon(url);
+    assert_equals(beacon.method, 'POST');
 
     beacon.setData(makeBeaconData(testData, dataType));
     beacon.sendNow();
-    // Wait for the beacon to have sent.
-    await wait(1000);
 
-    const sentData = dataType === BeaconDataType.URLSearchParams ?
-        await getPercentDecodedBeaconData(uuid) :
-        await getBeaconData(uuid);
-    assert_equals(sentData, expectEmpty ? '<NO-DATA>' : testData);
+    const expected = expectEmpty ? '<NO-DATA>' : testData;
+    const percentDecoded = dataType === BeaconDataType.URLSearchParams;
+    await expectBeaconData(uuid, expected, {percentDecoded: percentDecoded});
   }, `Beacon data of type "${dataType}": ${description}`);
 }

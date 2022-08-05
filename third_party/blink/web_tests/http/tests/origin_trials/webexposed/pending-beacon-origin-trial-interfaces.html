@@ -17,14 +17,32 @@ tools/origin_trials/generate_token.py http://127.0.0.1:8000 PendingBeaconAPI --e
     OriginTrialsHelper.check_properties_exist(this,
       {
         'PendingBeacon': [
-          'deactivate',
           'url',
-          'setData',
-          'sendNow',
           'method',
-          'pageHideTimeout',
-          'isPending',
+          'backgroundTimeout',
+          'timeout',
+          'pending',
+          'deactivate',
+          'sendNow',
         ],
       });
   }, 'PendingBeacon API interfaces and properties in Origin-Trial enabled document.');
+  test(t => {
+    OriginTrialsHelper.check_interfaces_exist(this, ['PendingGetBeacon']);
+    OriginTrialsHelper.check_properties_exist(this,
+      {
+        'PendingGetBeacon': [
+          'setURL',
+        ],
+      });
+  }, 'PendingGetBeacon API interfaces and properties in Origin-Trial enabled document.');
+  test(t => {
+    OriginTrialsHelper.check_interfaces_exist(this, ['PendingPostBeacon']);
+    OriginTrialsHelper.check_properties_exist(this,
+      {
+        'PendingPostBeacon': [
+          'setData',
+        ],
+      });
+  }, 'PendingPostBeacon API interfaces and properties in Origin-Trial enabled document.');
 </script>

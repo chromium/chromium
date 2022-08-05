@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="./resources/pending_beacon-helper.js"></script>
+</head>
+<body>
+<script>
+  const baseUrl = `${location.protocol}//${location.host}`;
+
+  parallelPromiseTest(async t => {
+    const uuid = token();
+    const url = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
+
+    let beacon = new PendingGetBeacon('/');
+
+    beacon.setURL(url);
+    assert_equals(beacon.url, url);
+    beacon.sendNow();
+
+    await expectBeaconCount(uuid, 1);
+  }, "PendingGetBeacon is sent to the updated URL");
+
+  parallelPromiseTest(async t => {
+    const uuid = token();
+    const url = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
+
+    let beacon = new PendingGetBeacon('/0');
+
+    for (let i = 0; i < 10; i++) {
+      const transientUrl = `/${i}`;
+      beacon.setURL(transientUrl);
+      assert_equals(beacon.url, transientUrl);
+    }
+    beacon.setURL(url);
+    assert_equals(beacon.url, url);
+
+    beacon.sendNow();
+
+    await expectBeaconCount(uuid, 1);
+  }, "PendingGetBeacon is sent to the last updated URL");
+</script>
+</body>
+</html>

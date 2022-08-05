@@ -6,14 +6,19 @@
 </head>
 <body>
 <script>
-  test(() => {
-    const beacon = new PendingBeacon('https://www.google.com',
-                        {method: 'GET', pageHideTimeout: 200});
-    assert_true(beacon.isPending);
-    beacon.deactivate();
-    // TODO(https://github.com/WICG/unload-beacon/issues/11): Update once the issue is resolved.
-    assert_true(beacon.isPending);
-  }, "Tests deactivating a pending beacon");
+  const BeaconTypes = [
+    {type: PendingPostBeacon, name: "PendingPostBeacon", expectedMethod: "POST"},
+    {type: PendingGetBeacon, name: "PendingGetBeacon", expectedMethod: "GET"},
+  ];
+
+  for (const beaconType of BeaconTypes) {
+    test(() => {
+      const beacon = new beaconType.type('https://www.google.com');
+      assert_true(beacon.pending);
+      beacon.deactivate();
+      assert_false(beacon.pending);
+    }, `${beaconType.name}: Tests deactivate()`);
+  }
 </script>
 </body>
 </html>

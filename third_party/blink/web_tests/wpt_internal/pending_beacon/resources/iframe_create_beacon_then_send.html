@@ -2,10 +2,9 @@
 <body>
   <script>
       const uuid = window.location.search.split("=")[1]
-      const base_url = `${location.protocol}//${location.host}`;
-      // TODO: The UUID should be part of the beacon's data, not its target URL.
-      const beacon_endpoint = `${base_url}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
-      let beacon = new PendingBeacon(beacon_endpoint, {method: 'GET'});
+      const baseUrl = `${location.protocol}//${location.host}`;
+      const beaconUrl = `${baseUrl}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
+      let beacon = new PendingGetBeacon(beaconUrl);
       beacon.sendNow();
   </script>
 </body>

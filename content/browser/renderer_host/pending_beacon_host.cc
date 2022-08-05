@@ -111,6 +111,15 @@ void Beacon::SetRequestData(
   request_elements_ = std::move(*request_body->elements_mutable());
 }
 
+void Beacon::SetRequestURL(const GURL& url) {
+  // Only GET Beacon is allowed to update its URL after construction.
+  if (method_ != blink::mojom::BeaconMethod::kGet) {
+    mojo::ReportBadMessage("Unexpected BeaconMethod from renderer");
+    return;
+  }
+  url_ = url;
+}
+
 void Beacon::SendNow() {
   beacon_host_->SendBeacon(this);
 }

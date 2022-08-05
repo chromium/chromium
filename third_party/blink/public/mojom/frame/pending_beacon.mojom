@@ -49,6 +49,11 @@ interface PendingBeacon {
   SetRequestData(network.mojom.URLRequestBody request_body,
                  string content_type);
 
+  // Sets request url for the pending beacon.
+  // The spec only allows GET beacons to update its own URL. So the receiving
+  // pending beacon's `BeaconMethod` must be kGet.
+  SetRequestURL(url.mojom.Url url);
+
   // Sends the pending beacon immediately.
   // Calling this will close the message pipe for the interface as well, so no
   // further calls can be made.
