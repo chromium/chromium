@@ -85,10 +85,6 @@ class WPTServe(server_base.ServerBase):
         self.path_to_wpt_support = finder.path_from_chromium_base(
             'third_party', 'wpt_tools')
         path_to_wpt_root = fs.join(self.path_to_wpt_support, 'wpt')
-        path_to_wpt_tests = fs.abspath(
-            fs.join(self._port_obj.web_tests_dir(), 'external', 'wpt'))
-        path_to_ws_handlers = fs.join(path_to_wpt_tests, 'websockets',
-                                      'handlers')
         wpt_script = fs.join(path_to_wpt_root, 'wpt')
         start_cmd = [
             self._port_obj.python3_command(),
@@ -98,11 +94,13 @@ class WPTServe(server_base.ServerBase):
             '--config',
             self._config_file,
             '--doc_root',
-            path_to_wpt_tests,
+            finder.path_from_wpt_tests(),
         ]
 
         # Some users (e.g. run_webdriver_tests.py) do not need WebSocket
         # handlers, so we only add the flag if the directory exists.
+        path_to_ws_handlers = finder.path_from_wpt_tests(
+            'websockets', 'handlers')
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
             start_cmd += ['--ws_doc_root', path_to_ws_handlers]
 

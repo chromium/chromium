@@ -21,6 +21,19 @@ class TestWPTServe(LoggingTestCase):
         self.host.filesystem.write_text_file(
             '/mock-checkout/third_party/wpt_tools/wpt.config.json',
             '{"ports": {}, "aliases": []}')
+        # crbug.com/1308877: `web_test_runner.Worker.__del__` can log:
+        #   worker/0 cleaning up
+        #   worker/0 killing driver
+        # to its module's logger when the worker is garbage collected. Since
+        # this test case asserts the root logger outputs certain numbers of
+        # lines, we temporarily prevent propagation so the expected output is
+        # not polluted.
+        logging.getLogger('blinkpy.web_tests.controllers.'
+                          'web_test_runner').propagate = False
+
+    def tearDown(self):
+        logging.getLogger('blinkpy.web_tests.controllers.'
+                          'web_test_runner').propagate = True
 
     # pylint: disable=protected-access
 
@@ -34,7 +47,7 @@ class TestWPTServe(LoggingTestCase):
             '--config',
             server._config_file,
             '--doc_root',
-            '/test.checkout/wtests/external/wpt',
+            '/mock-checkout/third_party/blink/web_tests/external/wpt',
         ]
         if six.PY3:
             expected_start_cmd.append('--webtransport-h3')
@@ -43,7 +56,8 @@ class TestWPTServe(LoggingTestCase):
 
     def test_init_start_cmd_with_ws_handlers(self):
         self.host.filesystem.maybe_make_directory(
-            '/test.checkout/wtests/external/wpt/websockets/handlers')
+            '/mock-checkout/third_party/blink/web_tests/external/wpt/websockets/handlers'
+        )
         server = WPTServe(self.port, '/foo')
         expected_start_cmd = [
             self.port.python3_command(),
@@ -53,9 +67,9 @@ class TestWPTServe(LoggingTestCase):
             '--config',
             server._config_file,
             '--doc_root',
-            '/test.checkout/wtests/external/wpt',
+            '/mock-checkout/third_party/blink/web_tests/external/wpt',
             '--ws_doc_root',
-            '/test.checkout/wtests/external/wpt/websockets/handlers',
+            '/mock-checkout/third_party/blink/web_tests/external/wpt/websockets/handlers',
         ]
         if six.PY3:
             expected_start_cmd.append('--webtransport-h3')
@@ -82,10 +96,6 @@ class TestWPTServe(LoggingTestCase):
             'local-dir': '/mock-checkout/out/Release/gen'
         })
 
-    @unittest.skipIf(
-        six.PY3,
-        'This test is flaky when run as part of the suite. See crbug.com/1308877'
-    )
     def test_start_with_stale_pid(self):
         # Allow asserting about debug logs.
         self.set_logging_level(logging.DEBUG)
@@ -117,10 +127,6 @@ class TestWPTServe(LoggingTestCase):
         self.assertEqual(logs[-1],
                          'DEBUG: wptserve successfully started (pid = 42)\n')
 
-    @unittest.skipIf(
-        six.PY3,
-        'This test is flaky when run as part of the suite. See crbug.com/1308877'
-    )
     def test_start_with_unkillable_zombie_process(self):
         # Allow asserting about debug logs.
         self.set_logging_level(logging.DEBUG)
