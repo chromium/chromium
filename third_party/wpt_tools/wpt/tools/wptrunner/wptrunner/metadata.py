@@ -10,6 +10,7 @@ from six import ensure_str, ensure_text
 from sys import intern
 
 from . import manifestupdate
+from . import products
 from . import testloader
 from . import wptmanifest
 from . import wpttest
@@ -49,6 +50,72 @@ class RunInfo:
 
     def items(self):
         return list(self.items())
+
+
+def get_properties(properties_file=None, extra_properties=None, config=None, product=None):
+    """Read the list of properties to use for updating metadata.
+
+    :param properties_file: Path to a JSON file containing properties.
+    :param extra_properties: List of extra properties to use
+    :param config: (deprecated) wptrunner config
+    :param Product: (deprecated) product name (requires a config argument to be used)
+    """
+    properties = []
+    dependents = {}
+
+    if properties_file is not None:
+        logger.debug(f"Reading update properties from {properties_file}")
+        try:
+            with open(properties_file) as f:
+                data = json.load(f)
+                msg = None
+                if "properties" not in data:
+                    msg = "Properties file missing 'properties' key"
+                elif not isinstance(data["properties"], list):
+                    msg = "Properties file 'properties' value must be a list"
+                elif not all(isinstance(item, str) for item in data["properties"]):
+                    msg = "Properties file 'properties' value must be a list of strings"
+                elif "dependents" in data:
+                    dependents = data["dependents"]
+                    if not isinstance(dependents, dict):
+                        msg = "Properties file 'dependent_properties' value must be an object"
+                    elif (not all(isinstance(dependents[item], list) and
+                                  all(isinstance(item_value, str)
+                                      for item_value in dependents[item])
+                                  for item in dependents)):
+                        msg = ("Properties file 'dependent_properties' values must be lists of" +
+                               " strings")
+                if msg is not None:
+                    logger.error(msg)
+                    raise ValueError(msg)
+
+                properties = data["properties"]
+        except OSError:
+            logger.critical(f"Error opening properties file {properties_file}")
+            raise
+        except ValueError:
+            logger.critical(f"Error parsing properties file {properties_file}")
+            raise
+    elif product is not None:
+        logger.warning("Falling back to getting metadata update properties from wptrunner browser "
+                       "product file, this will be removed")
+        if config is None:
+            msg = "Must provide a config together with a product"
+            logger.critical(msg)
+            raise ValueError(msg)
+
+        properties, dependents = products.load_product_update(config, product)
+
+    if extra_properties is not None:
+        properties.extend(extra_properties)
+
+    properties_set = set(properties)
+    if any(item not in properties_set for item in dependents.keys()):
+        msg = "All 'dependent' keys must be in 'properties'"
+        logger.critical(msg)
+        raise ValueError(msg)
+
+    return properties, dependents
 
 
 def update_expected(test_paths, log_file_names,
