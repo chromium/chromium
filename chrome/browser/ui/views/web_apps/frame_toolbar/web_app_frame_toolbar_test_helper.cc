@@ -56,6 +56,7 @@ web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   views::NonClientFrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
   frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  root_view_ = browser_view_->GetWidget()->GetRootView();
 
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);
@@ -78,6 +79,7 @@ web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
   views::NonClientFrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
   frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  root_view_ = browser_view_->GetWidget()->GetRootView();
 
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);

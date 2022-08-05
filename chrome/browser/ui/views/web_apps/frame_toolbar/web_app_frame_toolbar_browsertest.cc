@@ -166,8 +166,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
       helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
   EXPECT_EQ(menu_button->parent(), toolbar_right_container);
 
-  // Ensure we initially have abundant space.
-  helper()->frame_view()->SetSize(gfx::Size(1000, 1000));
+  // Ensure we initially have abundant space. Set the size from the root view
+  // which will get propagated to the frame view.
+  helper()->root_view()->SetSize(gfx::Size(1000, 1000));
 
   EXPECT_TRUE(toolbar_left_container->GetVisible());
   const int original_left_container_width = toolbar_left_container->width();
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 
   // The layout should be invalidated, but since we don't have the benefit of
   // the compositor to immediately kick a layout off, we have to do it manually.
-  helper()->frame_view()->Layout();
+  RunScheduledLayouts();
 
   // The page action icons should now take up width, leaving less space on
   // Windows and Linux for the window title. (On Mac, the window title remains
@@ -215,8 +216,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 
   helper()->web_app_frame_toolbar()->SetSize(
       {new_toolbar_width, helper()->web_app_frame_toolbar()->height()});
-  helper()->frame_view()->SetSize(
-      {new_frame_width, helper()->frame_view()->height()});
+  // Set the size of the desired frame width from the root view.
+  helper()->root_view()->SetSize(
+      {new_frame_width, helper()->root_view()->height()});
 
   // The left container (containing Back and Reload) should be hidden.
   EXPECT_FALSE(toolbar_left_container->GetVisible());
@@ -299,9 +301,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
 
   window_title->SetText(std::u16string(30, 't'));
 
-  // Ensure we initially have abundant space.
-  helper()->frame_view()->SetSize(gfx::Size(1000, 1000));
-  helper()->frame_view()->Layout();
+  // Ensure we initially have abundant space. Set the size from the root view
+  // which will get propagated to the frame view.
+  helper()->root_view()->SetSize(gfx::Size(1000, 1000));
   EXPECT_GT(window_title->width(), 0);
   const int original_title_gap = toolbar_right_container->x() -
                                  toolbar_left_container->x() -
@@ -310,15 +312,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   // With a narrow window, we have insufficient space for the full title.
   const int narrow_title_gap =
       window_title->CalculatePreferredSize().width() * 3 / 4;
-  int narrow_frame_width =
+  int narrow_width =
       helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
 #if BUILDFLAG(IS_MAC)
-  // Increase frame width to allow for title padding.
-  narrow_frame_width = base::checked_cast<int>(
-      std::ceil(narrow_frame_width / (1 - 2 * kTitlePaddingWidthFraction)));
+  // Increase width to allow for title padding.
+  narrow_width = base::checked_cast<int>(
+      std::ceil(narrow_width / (1 - 2 * kTitlePaddingWidthFraction)));
 #endif
-  helper()->frame_view()->SetSize(gfx::Size(narrow_frame_width, 1000));
-  helper()->frame_view()->Layout();
+  helper()->root_view()->SetSize(gfx::Size(narrow_width, 1000));
 
   EXPECT_GT(window_title->width(), 0);
   EXPECT_EQ(window_title->GetTooltipHandlerForPoint(gfx::Point(0, 0)),
