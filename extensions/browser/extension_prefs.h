@@ -463,7 +463,7 @@ class ExtensionPrefs : public KeyedService {
   // Returns the granted permission set for the extension with |extension_id|,
   // and NULL if no preferences were found for |extension_id|.
   // This passes ownership of the returned set to the caller.
-  std::unique_ptr<const PermissionSet> GetGrantedPermissions(
+  std::unique_ptr<PermissionSet> GetGrantedPermissions(
       const std::string& extension_id) const;
 
   // Adds |permissions| to the granted permissions set for the extension with
@@ -484,7 +484,7 @@ class ExtensionPrefs : public KeyedService {
   // because the user may have withheld certain permissions, as well as because
   // of possible enterprise policy settings. Use `PermissionsData` to determine
   // the current effective permissions of an extension.
-  std::unique_ptr<const PermissionSet> GetDesiredActivePermissions(
+  std::unique_ptr<PermissionSet> GetDesiredActivePermissions(
       const std::string& extension_id) const;
 
   // Sets the desired active permissions for the given `extension_id` to
@@ -514,7 +514,7 @@ class ExtensionPrefs : public KeyedService {
   // as those granted through the permissions API or the runtime host
   // permissions feature). Note that, similar to granted permissions, this can
   // include permissions granted to the extension, even if they are not active.
-  std::unique_ptr<const PermissionSet> GetRuntimeGrantedPermissions(
+  std::unique_ptr<PermissionSet> GetRuntimeGrantedPermissions(
       const ExtensionId& extension_id) const;
 
   // Adds to the set of runtime-granted permissions.
@@ -824,7 +824,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Interprets |pref_key| in |extension_id|'s preferences as an
   // PermissionSet, and passes ownership of the set to the caller.
-  std::unique_ptr<const PermissionSet> ReadPrefAsPermissionSet(
+  std::unique_ptr<PermissionSet> ReadPrefAsPermissionSet(
       const std::string& extension_id,
       base::StringPiece pref_key) const;
 

@@ -782,7 +782,7 @@ bool ExtensionPrefs::ReadPrefAsBooleanAndReturn(
   return ReadPrefAsBoolean(extension_id, pref_key, &out_value) && out_value;
 }
 
-std::unique_ptr<const PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
+std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
     const std::string& extension_id,
     base::StringPiece pref_key) const {
   if (!GetExtensionPref(extension_id))
@@ -882,9 +882,9 @@ void ExtensionPrefs::AddToPrefPermissionSet(const ExtensionId& extension_id,
                                             const PermissionSet& permissions,
                                             const char* pref_name) {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
-  std::unique_ptr<const PermissionSet> current =
+  std::unique_ptr<PermissionSet> current =
       ReadPrefAsPermissionSet(extension_id, pref_name);
-  std::unique_ptr<const PermissionSet> union_set;
+  std::unique_ptr<PermissionSet> union_set;
   if (current)
     union_set = PermissionSet::CreateUnion(permissions, *current);
   // The new permissions are the union of the already stored permissions and the
@@ -899,7 +899,7 @@ void ExtensionPrefs::RemoveFromPrefPermissionSet(
     const char* pref_name) {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
 
-  std::unique_ptr<const PermissionSet> current =
+  std::unique_ptr<PermissionSet> current =
       ReadPrefAsPermissionSet(extension_id, pref_name);
 
   if (!current)
@@ -1188,7 +1188,7 @@ void ExtensionPrefs::SetActiveBit(const std::string& extension_id,
                       std::make_unique<base::Value>(active));
 }
 
-std::unique_ptr<const PermissionSet> ExtensionPrefs::GetGrantedPermissions(
+std::unique_ptr<PermissionSet> ExtensionPrefs::GetGrantedPermissions(
     const std::string& extension_id) const {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
   return ReadPrefAsPermissionSet(extension_id, kPrefGrantedPermissions);
@@ -1206,8 +1206,7 @@ void ExtensionPrefs::RemoveGrantedPermissions(
                               kPrefGrantedPermissions);
 }
 
-std::unique_ptr<const PermissionSet>
-ExtensionPrefs::GetDesiredActivePermissions(
+std::unique_ptr<PermissionSet> ExtensionPrefs::GetDesiredActivePermissions(
     const std::string& extension_id) const {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
   return ReadPrefAsPermissionSet(extension_id, kPrefDesiredActivePermissions);
@@ -1258,8 +1257,7 @@ bool ExtensionPrefs::HasWithholdingPermissionsSetting(
   return ext && ext->FindKey(kPrefWithholdingPermissions);
 }
 
-std::unique_ptr<const PermissionSet>
-ExtensionPrefs::GetRuntimeGrantedPermissions(
+std::unique_ptr<PermissionSet> ExtensionPrefs::GetRuntimeGrantedPermissions(
     const ExtensionId& extension_id) const {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
   return ReadPrefAsPermissionSet(extension_id, kPrefRuntimeGrantedPermissions);
