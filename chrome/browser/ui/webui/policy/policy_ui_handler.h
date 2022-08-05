@@ -33,8 +33,11 @@
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/policy/status_provider/updater_status_and_value_provider.h"
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 class PrefChangeRegistrar;
-struct GoogleUpdatePoliciesAndState;
 
 namespace policy {
 class PolicyMap;
@@ -93,16 +96,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // metadata is sent.
   void SendPolicies();
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets |updater_policies_| in this instance, updates
-  // |updater_status_provider_| with a new state and refreshes the UI via
-  // SendPolicies.
-  void SetUpdaterPoliciesAndState(
-      std::unique_ptr<GoogleUpdatePoliciesAndState> updater_policies_and_state);
-
-  void ReloadUpdaterPoliciesAndState();
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   // Send the status of cloud policy to the UI.
   void SendStatus();
 
@@ -134,7 +127,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   std::unique_ptr<policy::PolicyStatusProvider> user_status_provider_;
   std::unique_ptr<policy::PolicyStatusProvider> device_status_provider_;
   std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
-  std::unique_ptr<policy::PolicyStatusProvider> updater_status_provider_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<ExtensionPoliciesValueProvider>
@@ -142,7 +134,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::unique_ptr<policy::PolicyMap> updater_policies_;
+  std::unique_ptr<UpdaterStatusAndValueProvider>
+      updater_status_and_value_provider_;
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

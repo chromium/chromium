@@ -71,16 +71,6 @@ class POLICY_EXPORT PolicyConversions {
   // from ArrayPolicyConversions.
   virtual PolicyConversions& EnableExtensionPolicies(bool enabled);
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  virtual PolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies);
-
-  // Sets the updater policy schemas.
-  virtual PolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas);
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   // Returns the policy data as a JSON string;
   virtual std::string ToJSON() = 0;
 
@@ -118,16 +108,6 @@ class POLICY_EXPORT DictionaryPolicyConversions : public PolicyConversions {
   DictionaryPolicyConversions& SetDropDefaultValues(bool enabled) override;
 
   DictionaryPolicyConversions& EnableExtensionPolicies(bool enabled) override;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  DictionaryPolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies) override;
-
-  // Sets the updater policy schemas.
-  DictionaryPolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas) override;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   base::Value::Dict GetExtensionPolicies();
@@ -170,16 +150,6 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
 
   ArrayPolicyConversions& EnableExtensionPolicies(bool enabled) override;
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  ArrayPolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies) override;
-
-  // Sets the updater policy schemas.
-  ArrayPolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas) override;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   std::string ToJSON() override;
 
   base::Value::List ToValueList();
@@ -198,10 +168,6 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
   // Returns extension policies in a list.
   base::Value::List GetExtensionPolicies();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::Value::Dict GetUpdaterPolicies();
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   base::Value::Dict additional_chrome_policies_;

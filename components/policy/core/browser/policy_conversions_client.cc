@@ -61,13 +61,6 @@ void PolicyConversionsClient::SetDropDefaultValues(bool enabled) {
   drop_default_values_enabled_ = enabled;
 }
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void PolicyConversionsClient::SetUpdaterPolicies(
-    std::unique_ptr<PolicyMap> policies) {
-  updater_policies_ = std::move(policies);
-}
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 std::string PolicyConversionsClient::ConvertValueToJSON(
     const Value& value) const {
   std::string json_string;
@@ -433,21 +426,12 @@ bool PolicyConversionsClient::GetUserPoliciesEnabled() const {
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-Value::Dict PolicyConversionsClient::GetUpdaterPolicies() {
-  return updater_policies_
-             ? GetPolicyValues(*updater_policies_, nullptr, PoliciesSet(),
-                               PoliciesSet(), updater_policy_schemas_)
-             : base::Value::Dict();
-}
-
-bool PolicyConversionsClient::PolicyConversionsClient::HasUpdaterPolicies()
-    const {
-  return !!updater_policies_;
-}
-
-void PolicyConversionsClient::SetUpdaterPolicySchemas(
-    PolicyConversions::PolicyToSchemaMap schemas) {
-  updater_policy_schemas_ = std::move(schemas);
+Value::Dict PolicyConversionsClient::ConvertUpdaterPolicies(
+    PolicyMap updater_policies,
+    absl::optional<PolicyConversions::PolicyToSchemaMap>
+        updater_policy_schemas) {
+  return GetPolicyValues(updater_policies, nullptr, PoliciesSet(),
+                         PoliciesSet(), updater_policy_schemas);
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

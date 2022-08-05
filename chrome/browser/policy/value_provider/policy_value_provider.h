@@ -34,6 +34,9 @@ class PolicyValueProvider {
   // Returns the dictionary containing the policy names.
   virtual base::Value::Dict GetNames() = 0;
 
+  // Refreshes the policy values and notifies the observers.
+  virtual void Refresh();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

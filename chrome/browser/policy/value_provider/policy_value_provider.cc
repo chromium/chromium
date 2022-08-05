@@ -14,6 +14,8 @@ PolicyValueProvider::PolicyValueProvider() = default;
 
 PolicyValueProvider::~PolicyValueProvider() = default;
 
+void PolicyValueProvider::Refresh() {}
+
 void PolicyValueProvider::NotifyValueChange() {
   for (auto& observer : observers_)
     observer.OnPolicyValueChanged();
