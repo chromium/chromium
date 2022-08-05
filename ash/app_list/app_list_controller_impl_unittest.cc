@@ -758,13 +758,8 @@ class AppListControllerImplTestWithNotificationBadging
     AppListControllerImpl* controller = Shell::Get()->app_list_controller();
     AccountId account_id = AccountId::FromUserEmail("test@gmail.com");
 
-    apps::mojom::App test_app;
-    test_app.app_id = app_id;
-    if (app_has_badge)
-      test_app.has_badge = apps::mojom::OptionalBool::kTrue;
-    else
-      test_app.has_badge = apps::mojom::OptionalBool::kFalse;
-
+    apps::App test_app(apps::AppType::kArc, app_id);
+    test_app.has_badge = app_has_badge;
     apps::AppUpdate test_update(nullptr, /*delta=*/&test_app, account_id);
     controller->badge_controller_for_test()->OnAppUpdate(test_update);
   }

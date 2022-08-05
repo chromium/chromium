@@ -89,14 +89,9 @@ class ShelfControllerNotificationIndicatorTest : public AshTestBase {
   void SendAppUpdate(bool app_has_badge) {
     ShelfController* controller = Shell::Get()->shelf_controller();
 
-    apps::mojom::App test_app;
-    test_app.app_id = "app_id";
-    if (app_has_badge)
-      test_app.has_badge = apps::mojom::OptionalBool::kTrue;
-    else
-      test_app.has_badge = apps::mojom::OptionalBool::kFalse;
-
-    apps::AppUpdate test_update(nullptr, &test_app /* delta */, account_id_);
+    auto test_app = std::make_unique<apps::App>(apps::AppType::kArc, "app_id");
+    test_app->has_badge = app_has_badge;
+    apps::AppUpdate test_update(nullptr, /*delta=*/test_app.get(), account_id_);
     static_cast<apps::AppRegistryCache::Observer*>(controller)
         ->OnAppUpdate(test_update);
   }

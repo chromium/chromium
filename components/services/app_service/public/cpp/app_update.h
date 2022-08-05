@@ -65,9 +65,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   static void Merge(App* state, const App* delta);
 
   // At most one of |state| or |delta| may be nullptr.
-  AppUpdate(const apps::mojom::App* state,
-            const apps::mojom::App* delta,
-            const AccountId& account_id);
   AppUpdate(const App* state, const App* delta, const AccountId& account_id);
 
   AppUpdate(const AppUpdate&) = delete;
@@ -189,11 +186,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
 
  private:
   friend class AppRegistryCacheTest;
-
-  bool ShouldUseNonMojom() const;
-
-  raw_ptr<const apps::mojom::App> mojom_state_ = nullptr;
-  raw_ptr<const apps::mojom::App> mojom_delta_ = nullptr;
 
   raw_ptr<const apps::App> state_ = nullptr;
   raw_ptr<const apps::App> delta_ = nullptr;

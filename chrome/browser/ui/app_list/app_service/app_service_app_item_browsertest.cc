@@ -30,7 +30,6 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/event_constants.h"
@@ -96,11 +95,10 @@ class AppServiceAppItemBrowserTest : public extensions::PlatformAppBrowserTest {
   }
 
   std::unique_ptr<AppServiceAppItem> CreateUserInstalledChromeApp() {
-    apps::mojom::App app;
-    app.app_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    app.app_type = apps::mojom::AppType::kChromeApp;
-    app.install_reason = apps::mojom::InstallReason::kUser;
-    apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/&app,
+    auto app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
+                                           "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    app->install_reason = apps::InstallReason::kUser;
+    apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/app.get(),
                                EmptyAccountId());
     return std::make_unique<AppServiceAppItem>(
         profile(), /*model_updater=*/nullptr,
@@ -257,9 +255,8 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->FlushMojoCallsForTesting();
 
-  apps::mojom::App help_app;
-  help_app.app_id = app_id;
-  apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/&help_app,
+  auto help_app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
+  apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/help_app.get(),
                              EmptyAccountId());
   AppServiceAppItem app_item(profile, /*model_updater=*/nullptr,
                              /*sync_item=*/nullptr, app_update);

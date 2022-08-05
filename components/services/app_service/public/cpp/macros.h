@@ -65,11 +65,9 @@ namespace apps {
   return delta_ && !delta_->VALUE.CHECK() &&      \
          (!state_ || (delta_->VALUE != state_->VALUE));
 
-#define MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(VALUE)        \
-  if (ShouldUseNonMojom()) {                              \
-    return delta_ && delta_->VALUE.has_value() &&         \
-           (!state_ || (delta_->VALUE != state_->VALUE)); \
-  }
+#define RETURN_OPTIONAL_VALUE_CHANGED(VALUE)    \
+  return delta_ && delta_->VALUE.has_value() && \
+         (!state_ || (delta_->VALUE != state_->VALUE));
 
 #define PRINT_OPTIONAL_VALUE(VALUE) \
   (app.VALUE().has_value() ? (app.VALUE().value() ? "true" : "false") : "null")
