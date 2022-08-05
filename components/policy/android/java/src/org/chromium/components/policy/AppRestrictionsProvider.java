@@ -7,10 +7,7 @@ package org.chromium.components.policy;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.os.UserManager;
-
-import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
@@ -45,19 +42,7 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
 
     @Override
     protected Bundle getApplicationRestrictions(String packageName) {
-        long startTime = SystemClock.elapsedRealtime();
-        Bundle bundle = getApplicationRestrictionsFromUserManager(mUserManager, packageName);
-        long endTime = SystemClock.elapsedRealtime();
-        long duration = endTime - startTime;
-        RecordHistogram.recordTimesHistogram("Enterprise.AppRestrictionLoadTime2", duration);
-        if (bundle.isEmpty()) {
-            RecordHistogram.recordTimesHistogram(
-                    "Enterprise.AppRestrictionLoadTime2.EmptyBundle", duration);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "Enterprise.AppRestrictionLoadTime2.NonEmptyBundle", duration);
-        }
-        return bundle;
+        return getApplicationRestrictionsFromUserManager(mUserManager, packageName);
     }
 
     @Override

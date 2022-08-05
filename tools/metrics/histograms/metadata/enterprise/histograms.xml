@@ -94,36 +94,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.AppRestrictionLoadTime2" units="ms"
-    expires_after="2021-04-04">
-  <owner>twellington@google.com</owner>
-  <owner>tedchcoc@chromium.org</owner>
-  <summary>
-    Records the time it takes to retrieve applicaton restrictions from the
-    system. Android only.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.AppRestrictionLoadTime2.EmptyBundle" units="ms"
-    expires_after="2021-08-09">
-  <owner>twellington@google.com</owner>
-  <owner>tedchcoc@chromium.org</owner>
-  <summary>
-    Records the time it takes to retrieve applicaton restrictions from the
-    system when the retrieved Bundle is empty. Android only.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.AppRestrictionLoadTime2.NonEmptyBundle" units="ms"
-    expires_after="2021-08-09">
-  <owner>twellington@google.com</owner>
-  <owner>tedchcoc@chromium.org</owner>
-  <summary>
-    Records the time it takes to retrieve applicaton restrictions from the
-    system when the retrieved Bundle is not empty. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.AttributesTPMConsistency"
     enum="EnterpriseAttributesTPMConsistencyType" expires_after="never">
 <!-- expires-never: Needed for health check. -->
