@@ -7,6 +7,13 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +34,14 @@ TabsSearchServiceFactory* TabsSearchServiceFactory::GetInstance() {
 TabsSearchServiceFactory::TabsSearchServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "TabsSearchService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ios::HistoryServiceFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
+}
 
 TabsSearchServiceFactory::~TabsSearchServiceFactory() = default;
 
