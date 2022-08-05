@@ -32,7 +32,7 @@ bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
           engine_id + ".physicalKeyboardEnableDiacriticsOnLongpress");
   // If no preference has been set yet by the user then we can assume the
   // default preference as enabled.
-  return diacritics_on_longpress_setting.value_or(false);
+  return diacritics_on_longpress_setting.value_or(true);
 }
 
 }  // namespace input_method
