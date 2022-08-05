@@ -7984,6 +7984,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.ContextMenu.Hosts.PermissionsPageClicked">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked the &quot;Permissions page&quot; option in the runtime host
+    permissions section of an extension's context menu. This is recorded for
+    both keyboard and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.ExtensionDisabled">
   <owner>archanasimha@chromium.org</owner>
   <description>

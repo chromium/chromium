@@ -10,4 +10,8 @@ namespace chrome_extension_constants {
 const char kRuntimeHostPermissionsHelpURL[] =
     "https://support.google.com/chrome?p=enable_extensions";
 
+// The link to the site permissions settings page.
+const char kExtensionsSitePermissionsURL[] =
+    "chrome://extensions/sitePermissions";
+
 }  // namespace chrome_extension_constants

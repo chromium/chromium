@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -49,6 +50,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,6 +146,8 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
       return ContextMenuAction::kPageAccessRunOnSite;
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES:
       return ContextMenuAction::kPageAccessRunOnAllSites;
+    case ExtensionContextMenuModel::PAGE_ACCESS_PERMISSIONS_PAGE:
+      return ContextMenuAction::kPageAccessPermissionsPage;
     case ExtensionContextMenuModel::PAGE_ACCESS_LEARN_MORE:
       return ContextMenuAction::kPageAccessLearnMore;
     case ExtensionContextMenuModel::PAGE_ACCESS_CANT_ACCESS:
@@ -170,6 +174,43 @@ SitePermissionsHelper::SiteAccess CommandIdToSiteAccess(int command_id) {
   }
   NOTREACHED();
   return SitePermissionsHelper::SiteAccess::kOnClick;
+}
+
+// Logs a user action when an option is selected in the page access section of
+// the context menu.
+void LogPageAccessAction(int command_id) {
+  switch (command_id) {
+    case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK:
+      base::RecordAction(base::UserMetricsAction(
+          "Extensions.ContextMenu.Hosts.OnClickClicked"));
+      break;
+    case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE:
+      base::RecordAction(base::UserMetricsAction(
+          "Extensions.ContextMenu.Hosts.OnSiteClicked"));
+      break;
+    case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES:
+      base::RecordAction(base::UserMetricsAction(
+          "Extensions.ContextMenu.Hosts.OnAllSitesClicked"));
+      break;
+    case ExtensionContextMenuModel::PAGE_ACCESS_PERMISSIONS_PAGE:
+      base::RecordAction(base::UserMetricsAction(
+          "Extensions.ContextMenu.Hosts.PermissionsPageClicked"));
+      break;
+    case ExtensionContextMenuModel::PAGE_ACCESS_LEARN_MORE:
+      base::RecordAction(base::UserMetricsAction(
+          "Extensions.ContextMenu.Hosts.LearnMoreClicked"));
+      break;
+    default:
+      NOTREACHED() << "Unknown option: " << command_id;
+      break;
+  }
+}
+
+void OpenUrl(Browser& browser, const GURL& url) {
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  browser.OpenURL(params);
 }
 
 // A stub for the uninstall dialog.
@@ -302,6 +343,7 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
     case PAGE_ACCESS_RUN_ON_ALL_SITES:
+    case PAGE_ACCESS_PERMISSIONS_PAGE:
     case PAGE_ACCESS_LEARN_MORE: {
       return IsPageAccessCommandEnabled(*extension, command_id);
     }
@@ -337,11 +379,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
   switch (command_id) {
     case HOME_PAGE: {
-      content::OpenURLParams params(ManifestURL::GetHomepageURL(extension),
-                                    content::Referrer(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                    ui::PAGE_TRANSITION_LINK, false);
-      browser_->OpenURL(params);
+      OpenUrl(*browser_, ManifestURL::GetHomepageURL(extension));
       break;
     }
     case OPTIONS:
@@ -369,6 +407,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
     case PAGE_ACCESS_RUN_ON_ALL_SITES:
+    case PAGE_ACCESS_PERMISSIONS_PAGE:
     case PAGE_ACCESS_LEARN_MORE:
       HandlePageAccessCommand(command_id, extension);
       break;
@@ -506,6 +545,7 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
 
     case PAGE_ACCESS_SUBMENU:
     case PAGE_ACCESS_LEARN_MORE:
+    case PAGE_ACCESS_PERMISSIONS_PAGE:
       // When these commands are shown, they are always enabled.
       return true;
 
@@ -541,73 +581,115 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
     content::WebContents* web_contents) {
   auto url = web_contents->GetLastCommittedURL();
 
-  // User site setting takes preference over extension settings. Therefore, we
-  // only show the page access submenu with change extension settings options if
-  // the site settings is set to "customize by extension". Otherwise, shows a
-  // message that informs the user about the site setting.
-  auto site_setting = PermissionsManager::Get(profile_)->GetUserSiteSetting(
-      url::Origin::Create(url));
-  switch (site_setting) {
-    case PermissionsManager::UserSiteSetting::kGrantAllExtensions:
-      AddItem(
-          PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
-          l10n_util::GetStringFUTF16(
-              IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
-              GetCurrentSite(web_contents)));
-      AddSeparator(ui::NORMAL_SEPARATOR);
-      AddItemWithStringId(PAGE_ACCESS_LEARN_MORE,
-                          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE);
-      return;
-
-    case PermissionsManager::UserSiteSetting::kBlockAllExtensions:
-      AddItem(
-          PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
-          l10n_util::GetStringFUTF16(
-              IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
-              GetCurrentSite(web_contents)));
-      AddSeparator(ui::NORMAL_SEPARATOR);
-      AddItemWithStringId(PAGE_ACCESS_LEARN_MORE,
-                          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE);
-      return;
-
-    case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
-      // The extension wants site access but cant't run on the page if it does
-      // not have at least "on click" access.
-      if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
-              *extension, url, SitePermissionsHelper::SiteAccess::kOnClick)) {
-        AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
-                            IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
-        return;
-      }
-
-      // The extension wants site access and can ran on the page.  Add the three
-      // options for "on click", "on this site", "on all sites". Though we
-      // always add these three, some may be disabled.
-      const int kRadioGroup = 0;
-      page_access_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
-
-      page_access_submenu_->AddRadioItemWithStringId(
-          PAGE_ACCESS_RUN_ON_CLICK,
-          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK, kRadioGroup);
-      page_access_submenu_->AddRadioItem(
-          PAGE_ACCESS_RUN_ON_SITE,
-          l10n_util::GetStringFUTF16(
-              IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_SITE,
-              GetCurrentSite(web_contents)),
-          kRadioGroup);
-      page_access_submenu_->AddRadioItemWithStringId(
-          PAGE_ACCESS_RUN_ON_ALL_SITES,
-          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES,
-          kRadioGroup);
-
-      page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
-      page_access_submenu_->AddItemWithStringId(
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    auto add_page_access_secondary_buttons = [](ui::SimpleMenuModel* parent) {
+      parent->AddSeparator(ui::NORMAL_SEPARATOR);
+      parent->AddItemWithStringId(
+          PAGE_ACCESS_PERMISSIONS_PAGE,
+          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
+      parent->AddItemWithStringId(
           PAGE_ACCESS_LEARN_MORE,
           IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE);
+    };
 
-      AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
-                             IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS,
-                             page_access_submenu_.get());
+    // User site setting takes preference over extension settings. Therefore, we
+    // only show the page access submenu with change extension settings options
+    // if the site settings is set to "customize by extension". Otherwise, shows
+    // a message that informs the user about the site setting.
+    auto site_setting = PermissionsManager::Get(profile_)->GetUserSiteSetting(
+        url::Origin::Create(url));
+    switch (site_setting) {
+      case PermissionsManager::UserSiteSetting::kGrantAllExtensions:
+        AddItem(
+            PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
+            l10n_util::GetStringFUTF16(
+                IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
+                GetCurrentSite(web_contents)));
+        add_page_access_secondary_buttons(this);
+        return;
+
+      case PermissionsManager::UserSiteSetting::kBlockAllExtensions:
+        AddItem(
+            PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
+            l10n_util::GetStringFUTF16(
+                IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
+                GetCurrentSite(web_contents)));
+        add_page_access_secondary_buttons(this);
+        return;
+
+      case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
+        // The extension wants site access but cant't run on the page if it does
+        // not have at least "on click" access.
+        if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
+                *extension, url, SitePermissionsHelper::SiteAccess::kOnClick)) {
+          AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
+                              IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
+          return;
+        }
+
+        // The extension wants site access and can ran on the page.  Add the
+        // three options for "on click", "on this site", "on all sites". Though
+        // we always add these three, some may be disabled.
+        const int kRadioGroup = 0;
+        page_access_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
+        page_access_submenu_->AddRadioItemWithStringId(
+            PAGE_ACCESS_RUN_ON_CLICK,
+            IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK_V2,
+            kRadioGroup);
+        page_access_submenu_->AddRadioItem(
+            PAGE_ACCESS_RUN_ON_SITE,
+            l10n_util::GetStringFUTF16(
+                IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_SITE_V2,
+                GetCurrentSite(web_contents)),
+            kRadioGroup);
+        page_access_submenu_->AddRadioItemWithStringId(
+            PAGE_ACCESS_RUN_ON_ALL_SITES,
+            IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2,
+            kRadioGroup);
+        add_page_access_secondary_buttons(page_access_submenu_.get());
+
+        AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
+                               IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS,
+                               page_access_submenu_.get());
+    }
+  } else {
+    // The extension wants site access but cant't run on the page if it does
+    // not have at least "on click" access.
+    if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
+            *extension, url, SitePermissionsHelper::SiteAccess::kOnClick)) {
+      AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
+                          IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
+      return;
+    }
+
+    // The extension wants site access and can ran on the page.  Add the three
+    // options for "on click", "on this site", "on all sites". Though we
+    // always add these three, some may be disabled.
+    const int kRadioGroup = 0;
+    page_access_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+    page_access_submenu_->AddRadioItemWithStringId(
+        PAGE_ACCESS_RUN_ON_CLICK,
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK, kRadioGroup);
+    page_access_submenu_->AddRadioItem(
+        PAGE_ACCESS_RUN_ON_SITE,
+        l10n_util::GetStringFUTF16(
+            IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_SITE,
+            GetCurrentSite(web_contents)),
+        kRadioGroup);
+    page_access_submenu_->AddRadioItemWithStringId(
+        PAGE_ACCESS_RUN_ON_ALL_SITES,
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES, kRadioGroup);
+
+    page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
+    page_access_submenu_->AddItemWithStringId(
+        PAGE_ACCESS_LEARN_MORE,
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE);
+
+    AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
+                           IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS,
+                           page_access_submenu_.get());
   }
 }
 
@@ -620,42 +702,20 @@ void ExtensionContextMenuModel::HandlePageAccessCommand(
 
   LogPageAccessAction(command_id);
 
+  if (command_id == PAGE_ACCESS_PERMISSIONS_PAGE) {
+    OpenUrl(*browser_,
+            GURL(chrome_extension_constants::kExtensionsSitePermissionsURL));
+    return;
+  }
   if (command_id == PAGE_ACCESS_LEARN_MORE) {
-    content::OpenURLParams params(
-        GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL),
-        content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_LINK, false);
-    browser_->OpenURL(params);
+    OpenUrl(*browser_,
+            GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL));
     return;
   }
 
   SitePermissionsHelper permissions(profile_);
   permissions.UpdateSiteAccess(*extension, web_contents,
                                CommandIdToSiteAccess(command_id));
-}
-
-void ExtensionContextMenuModel::LogPageAccessAction(int command_id) const {
-  switch (command_id) {
-    case PAGE_ACCESS_LEARN_MORE:
-      base::RecordAction(base::UserMetricsAction(
-          "Extensions.ContextMenu.Hosts.LearnMoreClicked"));
-      break;
-    case PAGE_ACCESS_RUN_ON_CLICK:
-      base::RecordAction(base::UserMetricsAction(
-          "Extensions.ContextMenu.Hosts.OnClickClicked"));
-      break;
-    case PAGE_ACCESS_RUN_ON_SITE:
-      base::RecordAction(base::UserMetricsAction(
-          "Extensions.ContextMenu.Hosts.OnSiteClicked"));
-      break;
-    case PAGE_ACCESS_RUN_ON_ALL_SITES:
-      base::RecordAction(base::UserMetricsAction(
-          "Extensions.ContextMenu.Hosts.OnAllSitesClicked"));
-      break;
-    default:
-      NOTREACHED() << "Unknown option: " << command_id;
-      break;
-  }
 }
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
