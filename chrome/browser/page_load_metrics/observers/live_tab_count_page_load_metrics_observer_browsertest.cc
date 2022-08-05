@@ -18,6 +18,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tab_count_metrics/tab_count_metrics.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using BucketCountArray =
@@ -27,15 +28,26 @@ using TimingField = page_load_metrics::PageLoadMetricsTestWaiter::TimingField;
 
 class LiveTabCountPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  LiveTabCountPageLoadMetricsBrowserTest() = default;
+  LiveTabCountPageLoadMetricsBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &LiveTabCountPageLoadMetricsBrowserTest::GetActiveWebContents,
+            base::Unretained(this))) {}
 
   LiveTabCountPageLoadMetricsBrowserTest(
       const LiveTabCountPageLoadMetricsBrowserTest&) = delete;
   LiveTabCountPageLoadMetricsBrowserTest& operator=(
       const LiveTabCountPageLoadMetricsBrowserTest&) = delete;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -62,6 +74,7 @@ class LiveTabCountPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester histogram_tester_;
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
@@ -144,4 +157,36 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
 
     ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, counts);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
+                       LoadSingleTabWithPrerendering) {
+  BucketCountArray counts = {0};
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // No contribution due to empty page.
+  ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, counts);
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Activate and wait for FCP.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      GetActiveWebContents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  waiter->Wait();
+
+  // Only check existence because the correction of time is difficult to check
+  // in browsertest. Rely on tests of
+  // CorrectEventAsNavigationOrActivationOrigined.
+  size_t live_tab_count = tab_count_metrics::LiveTabCount();
+  EXPECT_EQ(live_tab_count, 1u);
+  ++counts[tab_count_metrics::BucketForTabCount(live_tab_count)];
+  ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, counts);
 }

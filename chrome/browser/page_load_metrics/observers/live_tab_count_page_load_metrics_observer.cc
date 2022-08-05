@@ -55,24 +55,40 @@ LiveTabCountPageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LiveTabCountPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return CONTINUE_OBSERVING;
+}
+
 void LiveTabCountPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+  const base::TimeDelta event =
+      timing.paint_timing->first_contentful_paint.value();
+
+  if (!page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing, event)) {
     return;
   }
 
+  base::TimeDelta corrected =
+      page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+          GetDelegate(), timing, event);
   const size_t bucket = tab_count_metrics::BucketForTabCount(GetLiveTabCount());
   LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(
       std::string(internal::kHistogramPrefixLiveTabCount)
           .append(internal::kHistogramFirstContentfulPaintSuffix),
-      bucket, timing.paint_timing->first_contentful_paint.value());
+      bucket, corrected);
 }
 
 void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
+  const base::TimeDelta event =
+      timing.interactive_timing->first_input_delay.value();
+
+  if (!page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing, event)) {
     return;
   }
 
@@ -83,8 +99,7 @@ void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
   LIVE_TAB_COUNT_HISTOGRAM(
       std::string(internal::kHistogramPrefixLiveTabCount)
           .append(internal::kHistogramFirstInputDelaySuffix),
-      bucket, timing.interactive_timing->first_input_delay.value(),
-      base::Milliseconds(1), base::Seconds(60), 50);
+      bucket, event, base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 size_t LiveTabCountPageLoadMetricsObserver::GetLiveTabCount() const {
