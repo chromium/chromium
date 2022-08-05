@@ -707,10 +707,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
-  if (web_app.current_os_integration_states().has_value()) {
-    local_data->mutable_current_os_integration_states();
-  }
-
   if (web_app.app_size_in_bytes().has_value())
     local_data->set_app_size_in_bytes(web_app.app_size_in_bytes().value());
 
@@ -1305,11 +1301,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       tab_strip.new_tab_button = new_tab_button_params;
     }
     web_app->SetTabStrip(std::move(tab_strip));
-  }
-
-  if (local_data.has_current_os_integration_states()) {
-    web_app->SetCurrentOsIntegrationStates(
-        local_data.current_os_integration_states());
   }
 
   if (local_data.has_app_size_in_bytes()) {

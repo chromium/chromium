@@ -399,12 +399,6 @@ void WebApp::SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip) {
   tab_strip_ = std::move(tab_strip);
 }
 
-void WebApp::SetCurrentOsIntegrationStates(
-    absl::optional<proto::WebAppOsIntegrationState>
-        current_os_integration_states) {
-  current_os_integration_states_ = std::move(current_os_integration_states);
-}
-
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -507,7 +501,7 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
 bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {
     // Keep in order declared in web_app.h.
-    return std::make_tuple(
+    return std::tie(
         // Disable clang-format so diffs are clearer when fields are added.
         // clang-format off
         app.app_id_,
@@ -569,12 +563,11 @@ bool WebApp::operator==(const WebApp& other) const {
         app.data_size_in_bytes_,
         app.management_to_external_config_map_,
         app.tab_strip_,
-        app.always_show_toolbar_in_fullscreen_,
-        app.current_os_integration_states_.value_or(proto::WebAppOsIntegrationState()).SerializeAsString()
+        app.always_show_toolbar_in_fullscreen_
         // clang-format on
     );
   };
-  return (AsTuple(*this) == AsTuple(other));
+  return AsTuple(*this) == AsTuple(other);
 }
 
 bool WebApp::operator!=(const WebApp& other) const {
@@ -883,11 +876,6 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetBoolKey("always_show_toolbar_in_fullscreen",
                   always_show_toolbar_in_fullscreen_);
-
-  if (current_os_integration_states_.has_value()) {
-    root.SetKey("current_os_integration_states", base::Value());
-    // TODO(crbug.com/1295044) : Add logic to parse and show data.
-  }
 
   return root;
 }
