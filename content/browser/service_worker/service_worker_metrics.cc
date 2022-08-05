@@ -240,14 +240,13 @@ void ServiceWorkerMetrics::RecordStartInstalledWorkerStatus(
 void ServiceWorkerMetrics::RecordRunAfterStartWorkerStatus(
     EmbeddedWorkerStatus running_status,
     EventType purpose) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.RunAfterStartWorker.RunningStatus",
+  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MaybeStartWorker.RunningStatus",
                             running_status);
   base::UmaHistogramEnumeration(
-      base::StrCat({"ServiceWorker.RunAfterStartWorker.RunningStatusByPurpose",
+      base::StrCat({"ServiceWorker.MaybeStartWorker.RunningStatusByPurpose",
                     EventTypeToSuffix(purpose)}),
       running_status);
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.RunAfterStartWorker.Purpose",
-                            purpose);
+  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MaybeStartWorker.Purpose", purpose);
 }
 
 void ServiceWorkerMetrics::RecordStartWorkerTime(base::TimeDelta time,
