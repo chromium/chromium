@@ -52,6 +52,7 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
@@ -1130,7 +1131,8 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (BOOL)isUseLensToSearchForImageEnabled {
-  return base::FeatureList::IsEnabled(kUseLensToSearchForImage);
+  return base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
+         ios::provider::IsLensSupported();
 }
 
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
