@@ -2485,6 +2485,11 @@
       },
     },
   },
+  'lacros_all_tast_tests eve': {
+    'remove_from': [
+      'lacros-amd64-generic-rel',
+    ]
+  },
   'maps_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
