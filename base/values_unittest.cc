@@ -1603,13 +1603,6 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
 
   {
     DictionaryValue dict;
-    Value* double_ptr = dict.SetDouble("foo.bar", 3.142);
-    EXPECT_EQ(Value::Type::DOUBLE, double_ptr->type());
-    EXPECT_EQ(3.142, double_ptr->GetDouble());
-  }
-
-  {
-    DictionaryValue dict;
     Value* string_ptr = dict.SetString("foo.bar", "foo");
     EXPECT_EQ(Value::Type::STRING, string_ptr->type());
     EXPECT_EQ("foo", string_ptr->GetString());

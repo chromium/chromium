@@ -1292,10 +1292,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
   // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
   // otherwise.
-  Value* SetDouble(StringPiece path, double in_value);
-  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
-  // otherwise.
   Value* SetString(StringPiece path, StringPiece in_value);
   // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
   // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`

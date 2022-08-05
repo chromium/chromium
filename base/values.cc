@@ -1588,10 +1588,6 @@ Value* DictionaryValue::SetInteger(StringPiece path, int in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-Value* DictionaryValue::SetDouble(StringPiece path, double in_value) {
-  return Set(path, std::make_unique<Value>(in_value));
-}
-
 Value* DictionaryValue::SetString(StringPiece path, StringPiece in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
