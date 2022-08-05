@@ -31,7 +31,6 @@ namespace ash {
 class AnnotatorMessageHandler;
 
 struct AnnotatorTool;
-struct ProjectorScreencast;
 
 struct NewScreencastPrecondition;
 
@@ -83,11 +82,6 @@ using PendingScreencastSet =
 // ProjectorApp.
 class ProjectorAppClient {
  public:
-  // The callback used by the GetScreencast() API.
-  using OnGetScreencastCallback =
-      base::OnceCallback<void(std::unique_ptr<ProjectorScreencast> screencast,
-                              const std::string& error_message)>;
-
   // Interface for observing events on the ProjectorAppClient.
   class Observer : public base::CheckedObserver {
    public:
@@ -154,11 +148,6 @@ class ProjectorAppClient {
 
   // Triggers the opening of the Chrome feedback dialog.
   virtual void OpenFeedbackDialog() const = 0;
-
-  // TODO(b/236857019): Wire up ProjectorMessageHandler.
-  // Populates a screencast object in |callback| for given |screencast_id|.
-  virtual void GetScreencast(const std::string& screencast_id,
-                             OnGetScreencastCallback callback) = 0;
 
   // Registers the AnnotatorMessageHandler that is owned by the WebUI that
   // contains the Projector annotator.

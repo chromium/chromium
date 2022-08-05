@@ -11,7 +11,6 @@
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
-#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -161,12 +160,6 @@ void ProjectorAppClientImpl::OpenFeedbackDialog() const {
                            /*extra_diagnostics=*/std::string());
   // TODO(crbug/1048368): Communicate the dialog failing to open by returning an
   // error string. For now, assume that the dialog has opened successfully.
-}
-
-void ProjectorAppClientImpl::GetScreencast(
-    const std::string& screencast_id,
-    ash::ProjectorAppClient::OnGetScreencastCallback callback) {
-  screencast_manager_.GetScreencast(screencast_id, std::move(callback));
 }
 
 void ProjectorAppClientImpl::SetAnnotatorMessageHandler(

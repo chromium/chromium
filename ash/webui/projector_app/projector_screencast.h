@@ -15,33 +15,7 @@ namespace ash {
 struct ProjectorScreencastVideo {
   base::Value::Dict ToValue() const;
   // TODO(b/236857019): Add thumbnail link and duration millis.
-  std::string src_url;
   std::string file_id;
-};
-
-// Struct of screencast model.
-struct ProjectorScreencast {
-  ProjectorScreencast();
-  ProjectorScreencast(const ProjectorScreencast&);
-  ProjectorScreencast& operator=(const ProjectorScreencast&);
-  ~ProjectorScreencast();
-
-  base::Value::Dict ToValue() const;
-
-  // Only available for screencasts located in DriveFs.
-  std::string container_folder_id;
-
-  std::string name;
-
-  // The Drive server side item id of ".projector" file.
-  std::string metadata_file_id;
-
-  ProjectorScreencastVideo video;
-
-  // TODO(b/236857019): 1 Implement following fields: status, metadata_file_id,
-  // metadata, is_editable, upload_progress.
-  //  2 Replace the PendingScreencast struct defined in ProjectorAppClient with
-  //  this struct.
 };
 
 }  // namespace ash
