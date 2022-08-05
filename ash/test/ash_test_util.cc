@@ -50,6 +50,13 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
   return written_size == data_size;
 }
 
+void GiveItSomeTimeForDebugging(base::TimeDelta time_duration) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), time_duration);
+  run_loop.Run();
+}
+
 bool IsSystemTrayForRootWindowVisible(size_t root_window_index) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   RootWindowController* controller =

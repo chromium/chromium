@@ -9,6 +9,7 @@
 
 namespace base {
 class FilePath;
+class TimeDelta;
 }
 
 namespace ash {
@@ -21,6 +22,11 @@ namespace ash {
 // NOTE: `file_path` must end with the extension '.png'. If there is an existing
 // file matching `file_path`, the existing file will be overwritten.
 bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path);
+
+// Waits for the specified time duration.
+// NOTE: this function should only be used for debugging. It should not be used
+// in tests or product code.
+void GiveItSomeTimeForDebugging(base::TimeDelta time_duration);
 
 // Returns true if the system tray of the root window specified by
 // `root_window_index` is visible.
