@@ -537,8 +537,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+// Disabled due to test failure. http://crbug.com/1350365
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  DISABLED_OnlineSetupFlowSuccessWithCountryCustomization
+#else
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  OnlineSetupFlowSuccessWithCountryCustomization
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowSuccessWithCountryCustomization) {
+                       MAYBE_OnlineSetupFlowSuccessWithCountryCustomization) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
