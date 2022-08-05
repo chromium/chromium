@@ -3365,8 +3365,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-// Flaky, http://crbug.com/1121446
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Flaky, http://crbug.com/1121446, http://crbug.com/1350332
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_CombinedShiftRightArrowPresses \
   DISABLED_CombinedShiftRightArrowPresses
 #else
