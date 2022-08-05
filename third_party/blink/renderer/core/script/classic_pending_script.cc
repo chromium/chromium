@@ -274,6 +274,20 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
                                        options_, cross_origin);
   }
 
+  // <specdef href="https://fetch.spec.whatwg.org/#concept-main-fetch">
+  // <spec step="17">If response is not a network error and any of the following
+  // returns blocked</spec>
+  // <spec step="17.C">should internalResponse to request be blocked due to its
+  // MIME type</spec>
+  // <spec step="17.D">should internalResponse to request be blocked due to
+  // nosniff</spec>
+  // <spec step="17">then set response and internalResponse to a network
+  // error.</spec>
+  auto* fetcher = GetElement()->GetExecutionContext()->Fetcher();
+  const bool mime_type_failure = !AllowedByNosniff::MimeTypeAsScript(
+      fetcher->GetUseCounter(), &fetcher->GetConsoleLogger(),
+      resource->GetResponse(), AllowedByNosniff::MimeTypeCheck::kLaxForElement);
+
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                          "ClassicPendingScript::NotifyFinished", this,
                          TRACE_EVENT_FLAG_FLOW_OUT, "data",
@@ -283,7 +297,10 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
                                GetResource()->Url().GetString());
                          });
 
-  bool error_occurred = GetResource()->ErrorOccurred() || integrity_failure_;
+  // Ordinal ErrorOccurred(), SRI, and MIME check are all considered as network
+  // errors in the Fetch spec.
+  bool error_occurred =
+      GetResource()->ErrorOccurred() || integrity_failure_ || mime_type_failure;
   if (error_occurred) {
     AdvanceReadyState(kErrorOccurred);
     return;
@@ -431,15 +448,6 @@ ClassicScript* ClassicPendingScript::GetSource() const {
   DCHECK(GetResource()->IsLoaded());
   auto* resource = To<ScriptResource>(GetResource());
   RecordThirdPartyRequestWithCookieIfNeeded(resource->GetResponse());
-
-  auto* fetcher = GetElement()->GetExecutionContext()->Fetcher();
-  // If the MIME check fails, which is considered as load failure.
-  if (!AllowedByNosniff::MimeTypeAsScript(
-          fetcher->GetUseCounter(), &fetcher->GetConsoleLogger(),
-          resource->GetResponse(),
-          AllowedByNosniff::MimeTypeCheck::kLaxForElement)) {
-    return nullptr;
-  }
 
   // Check if we can use the script streamer.
   ResourceScriptStreamer* streamer;
