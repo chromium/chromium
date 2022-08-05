@@ -7,10 +7,6 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
 namespace blink {
-
-const unsigned CascadeLayerMap::kImplicitOuterLayerOrder =
-    std::numeric_limits<unsigned>::max();
-
 namespace {
 
 using CanonicalLayerMap =

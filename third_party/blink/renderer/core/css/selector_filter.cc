@@ -120,7 +120,6 @@ inline void CollectDescendantSelectorIdentifierHashes(
 }  // namespace
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
-  DCHECK(ancestor_identifier_filter_);
   DCHECK(parent_stack_.IsEmpty() ||
          parent_stack_.back().element ==
              FlatTreeTraversal::ParentElement(parent));
@@ -132,22 +131,21 @@ void SelectorFilter::PushParentStackFrame(Element& parent) {
   CollectElementIdentifierHashes(parent, parent_frame.identifier_hashes);
   wtf_size_t count = parent_frame.identifier_hashes.size();
   for (wtf_size_t i = 0; i < count; ++i)
-    ancestor_identifier_filter_->Add(parent_frame.identifier_hashes[i]);
+    ancestor_identifier_filter_.Add(parent_frame.identifier_hashes[i]);
 }
 
 void SelectorFilter::PopParentStackFrame() {
   DCHECK(!parent_stack_.IsEmpty());
-  DCHECK(ancestor_identifier_filter_);
   const ParentStackFrame& parent_frame = parent_stack_.back();
   wtf_size_t count = parent_frame.identifier_hashes.size();
   for (wtf_size_t i = 0; i < count; ++i)
-    ancestor_identifier_filter_->Remove(parent_frame.identifier_hashes[i]);
+    ancestor_identifier_filter_.Remove(parent_frame.identifier_hashes[i]);
   parent_stack_.pop_back();
   if (parent_stack_.IsEmpty()) {
 #if DCHECK_IS_ON()
-    DCHECK(ancestor_identifier_filter_->LikelyEmpty());
+    DCHECK(ancestor_identifier_filter_.LikelyEmpty());
 #endif
-    ancestor_identifier_filter_.reset();
+    ancestor_identifier_filter_.Clear();
   }
 }
 
@@ -156,12 +154,12 @@ void SelectorFilter::PushParent(Element& parent) {
   DCHECK(parent.InActiveDocument());
   if (parent_stack_.IsEmpty()) {
     DCHECK_EQ(parent, parent.GetDocument().documentElement());
-    DCHECK(!ancestor_identifier_filter_);
-    ancestor_identifier_filter_ = std::make_unique<IdentifierFilter>();
+#if DCHECK_IS_ON()
+    DCHECK(ancestor_identifier_filter_.IsClear());
+#endif
     PushParentStackFrame(parent);
     return;
   }
-  DCHECK(ancestor_identifier_filter_);
   // We may get invoked for some random elements in some wacky cases during
   // style resolve. Pause maintaining the stack in this case.
   if (parent_stack_.back().element != FlatTreeTraversal::ParentElement(parent))
