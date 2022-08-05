@@ -910,6 +910,7 @@ class WebBundleParser::MetadataParser
       const std::string& message,
       mojom::BundleParseErrorType error_type =
           mojom::BundleParseErrorType::kFormatError) {
+    DLOG(ERROR) << "Parsing web bundle error: " << message;
     mojom::BundleMetadataParseErrorPtr err =
         mojom::BundleMetadataParseError::New(error_type, message);
     std::move(callback_).Run(nullptr, std::move(err));
