@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
@@ -21,7 +22,7 @@ class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 class WritingModeConverter;
 
-struct NGPhysicalAnchorReference
+struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
   NGPhysicalAnchorReference(PhysicalRect rect,
                             const NGPhysicalFragment* fragment)
@@ -33,7 +34,7 @@ struct NGPhysicalAnchorReference
   Member<const NGPhysicalFragment> fragment;
 };
 
-class NGPhysicalAnchorQuery {
+class CORE_EXPORT NGPhysicalAnchorQuery {
   DISALLOW_NEW();
 
  public:
@@ -64,7 +65,7 @@ class NGPhysicalAnchorQuery {
   NGPhysicalAnchorReferenceMap anchor_references_;
 };
 
-struct NGLogicalAnchorReference {
+struct CORE_EXPORT NGLogicalAnchorReference {
   STACK_ALLOCATED();
 
  public:
@@ -72,7 +73,7 @@ struct NGLogicalAnchorReference {
   const NGPhysicalFragment* fragment;
 };
 
-class NGLogicalAnchorQuery {
+class CORE_EXPORT NGLogicalAnchorQuery {
   STACK_ALLOCATED();
 
  public:
