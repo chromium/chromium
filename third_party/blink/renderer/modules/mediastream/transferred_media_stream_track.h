@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/transferred_media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -104,6 +105,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void Trace(Visitor*) const override;
 
  private:
+  // Enumerates function names which can change the state of MediaStreamTrack.
+  enum SetterFunction { APPLY_CONSTRAINTS, SET_CONTENT_HINT };
+
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
 
@@ -125,7 +129,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   Member<MediaStreamTrack> track_;
   using ConstraintsPair =
       std::pair<ScriptPromiseResolver*, const MediaTrackConstraints*>;
-  Vector<ConstraintsPair> constraints_list_;
+  Vector<SetterFunction> setter_call_order_;
+  WTF::Deque<String> content_hint_list_;
+  WTF::Deque<ConstraintsPair> constraints_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;

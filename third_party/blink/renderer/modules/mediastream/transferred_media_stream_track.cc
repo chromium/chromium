@@ -110,9 +110,10 @@ String TransferredMediaStreamTrack::ContentHint() const {
 void TransferredMediaStreamTrack::SetContentHint(const String& content_hint) {
   if (track_) {
     track_->SetContentHint(content_hint);
+    return;
   }
-  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
-  // initialized.
+  setter_call_order_.push_back(SET_CONTENT_HINT);
+  content_hint_list_.push_back(content_hint);
 }
 
 String TransferredMediaStreamTrack::readyState() const {
@@ -188,6 +189,7 @@ ScriptPromise TransferredMediaStreamTrack::applyConstraints(
 void TransferredMediaStreamTrack::applyConstraints(
     ScriptPromiseResolver* resolver,
     const MediaTrackConstraints* constraints) {
+  setter_call_order_.push_back(APPLY_CONSTRAINTS);
   constraints_list_.push_back(std::make_pair(resolver, constraints));
 }
 
@@ -196,10 +198,21 @@ void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   transferred_component_.Clear();
 
   // Replaying mutations which happened before this point.
-  for (auto it : constraints_list_) {
-    track->applyConstraints(it.first, it.second);
+  for (const auto& setter_function : setter_call_order_) {
+    switch (setter_function) {
+      case APPLY_CONSTRAINTS: {
+        const auto& entry = constraints_list_.front();
+        track->applyConstraints(entry.first, entry.second);
+        constraints_list_.pop_front();
+        break;
+      }
+      case SET_CONTENT_HINT: {
+        track->SetContentHint(content_hint_list_.front());
+        content_hint_list_.pop_front();
+        break;
+      }
+    }
   }
-  constraints_list_.clear();
 
   // Set up an EventPropagator helper to forward any events fired on track so
   // that they're re-dispatched to anything that's listening on this.
