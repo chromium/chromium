@@ -689,16 +689,16 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   UpdateDisplay("400x300,800x600");
-  const gfx::Rect original_window_bounds(410, 10, 500, 200);
+  const gfx::Rect kOriginalWindowBounds(410, 10, 500, 200);
 
   // Create and map a toplevel shell surface, with the size larger than 2nd
   // display to test if configure uses the adjusted size.
   auto shell_surface =
-      exo::test::ShellSurfaceBuilder(original_window_bounds.size())
-          .SetOrigin(original_window_bounds.origin())
+      exo::test::ShellSurfaceBuilder(kOriginalWindowBounds.size())
+          .SetOrigin(kOriginalWindowBounds.origin())
           .BuildShellSurface();
   auto* surface = shell_surface->root_surface();
-  EXPECT_EQ(original_window_bounds,
+  EXPECT_EQ(kOriginalWindowBounds,
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
@@ -717,7 +717,6 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
       [&](const gfx::Point& point) { origins.push_back(point); });
 
   // Map shell surface.
-  // surface->Attach(buffer.get());
   shell_surface->set_configure_callback(configure_callback);
   shell_surface->set_origin_change_callback(origin_change_callback);
 
@@ -774,10 +773,10 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   EXPECT_EQ(1u, serial);
   // Upon drop, the window is shrunk horizontally.
   gfx::Rect expected_drop_bounds =
-      gfx::Rect(origins.back(), original_window_bounds.size());
+      gfx::Rect(origins.back(), kOriginalWindowBounds.size());
   expected_drop_bounds.set_width(secondary_display_size.width());
   int offset =
-      (original_window_bounds.width() - expected_drop_bounds.width()) / 2;
+      (kOriginalWindowBounds.width() - expected_drop_bounds.width()) / 2;
   expected_drop_bounds.set_x(expected_drop_bounds.x() + offset);
   EXPECT_EQ(expected_drop_bounds, drop_bounds);
   EXPECT_EQ(expected_drop_bounds,

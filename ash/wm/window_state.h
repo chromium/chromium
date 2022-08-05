@@ -179,7 +179,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void set_is_moving_to_another_display(bool moving) {
     is_moving_to_another_display_ = moving;
   }
-  bool is_moving_to_another_display_ = false;
 
   // Checks if the window can change its state accordingly.
   bool CanMaximize() const;
@@ -586,6 +585,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool autohide_shelf_when_maximized_or_fullscreen_;
   ui::ZOrderLevel cached_z_order_;
   bool allow_set_bounds_direct_ = false;
+  bool is_moving_to_another_display_ = false;
 
   // A property to save the ratio between snapped window width (or height
   // for vertical layout) and display workarea width (or height). The ratio

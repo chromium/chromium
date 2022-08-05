@@ -448,9 +448,8 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
   if (window != widget_->GetNativeWindow())
     return;
   auto* window_state = ash::WindowState::Get(window);
-  if (window_state && window_state->is_moving_to_another_display()) {
-    DCHECK(!old_screen_bounds_for_pending_move_.IsEmpty());
-
+  if (window_state && window_state->is_moving_to_another_display() &&
+      !old_screen_bounds_for_pending_move_.IsEmpty()) {
     gfx::Rect new_bounds_in_screen = window->bounds();
     wm::ConvertRectToScreen(window->parent(), &new_bounds_in_screen);
 
