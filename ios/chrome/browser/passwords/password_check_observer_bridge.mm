@@ -22,8 +22,9 @@ void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
     PasswordCheckState status) {
   // Since password check state update can be called with delay from the
   // background thread, dispatch aync should be used to update main UI thread.
+  __weak id<PasswordCheckObserver> weakDelegate = delegate_;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [delegate_ passwordCheckStateDidChange:status];
+    [weakDelegate passwordCheckStateDidChange:status];
   });
 }
 
