@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Certificate.LeafExtendedKeyUsage.{RootType}"
-    enum="NetCertificateEKUStatus" expires_after="2022-08-11">
+    enum="NetCertificateEKUStatus" expires_after="2023-02-11">
   <owner>mattm@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
