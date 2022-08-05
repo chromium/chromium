@@ -96,7 +96,7 @@ absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
   }
 
   const base::Value* result =
-      pref_service->Get(kFastPairSavedDevicesPref)->FindKey(mac_address);
+      pref_service->GetValue(kFastPairSavedDevicesPref).FindKey(mac_address);
   if (!result || !result->is_string()) {
     return absl::nullopt;
   }
