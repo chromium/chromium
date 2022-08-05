@@ -138,7 +138,9 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   Update();
 
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
-  SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
+  if (!features::IsCalendarViewEnabled())
+    SetEnabled(
+        Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
