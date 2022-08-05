@@ -9,12 +9,26 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-
 #include <pthread.h>
+#endif
 
 namespace base::allocator::dispatcher {
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 pthread_key_t ReentryGuard::entered_key_ = 0;
 
-}  // namespace base::allocator::dispatcher
+void ReentryGuard::InitTLSSlot() {
+  if (entered_key_ == 0) {
+    int error = pthread_key_create(&entered_key_, nullptr);
+    CHECK(!error);
+  }
+
+  DCHECK(entered_key_ != 0);
+}
+
+#else
+
+void ReentryGuard::InitTLSSlot() {}
+
 #endif
+}  // namespace base::allocator::dispatcher

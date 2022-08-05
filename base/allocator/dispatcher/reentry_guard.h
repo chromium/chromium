@@ -25,7 +25,7 @@ namespace base::allocator::dispatcher {
 // Besides that the implementations of thread_local on macOS and Android
 // seem to allocate memory lazily on the first access to thread_local variables.
 // Make use of pthread TLS instead of C++ thread_local there.
-struct ReentryGuard {
+struct BASE_EXPORT ReentryGuard {
   ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
     pthread_setspecific(entered_key_, reinterpret_cast<void*>(true));
   }
@@ -41,10 +41,7 @@ struct ReentryGuard {
   // order to acquire a low TLS slot number because glibc TLS implementation
   // will require a malloc call to allocate storage for a higher slot number
   // (>= PTHREAD_KEY_2NDLEVEL_SIZE == 32).  c.f. heap_profiling::InitTLSSlot.
-  static void Init() {
-    int error = pthread_key_create(&entered_key_, nullptr);
-    CHECK(!error);
-  }
+  static void InitTLSSlot();
 
  private:
   static pthread_key_t entered_key_;
@@ -58,7 +55,7 @@ struct ReentryGuard {
 struct [[maybe_unused]] BASE_EXPORT ReentryGuard {
   constexpr explicit operator bool() const noexcept { return true; }
 
-  static void Init() {}
+  static void InitTLSSlot();
 };
 
 #endif

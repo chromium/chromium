@@ -190,7 +190,7 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
 // static
 void PoissonAllocationSampler::Init() {
   [[maybe_unused]] static bool init_once = []() {
-    ReentryGuard::Init();
+    ReentryGuard::InitTLSSlot();
     return true;
   }();
 }
