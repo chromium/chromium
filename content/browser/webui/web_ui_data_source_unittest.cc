@@ -64,8 +64,8 @@ class WebUIDataSourceTest : public testing::Test {
                               WebContents::Getter(), std::move(callback));
   }
 
-  std::string GetMimeType(const std::string& path) const {
-    return source_->GetMimeType(path);
+  std::string GetMimeTypeForPath(const std::string& path) const {
+    return source_->GetMimeType(GURL("https://any-host/" + path));
   }
 
   void HandleRequest(const std::string& path,
@@ -230,49 +230,49 @@ TEST_F(WebUIDataSourceTest, MimeType) {
   const char* wasm = "application/wasm";
   const char* woff2 = "application/font-woff2";
 
-  EXPECT_EQ(GetMimeType(std::string()), html);
-  EXPECT_EQ(GetMimeType("foo"), html);
-  EXPECT_EQ(GetMimeType("foo.html"), html);
-  EXPECT_EQ(GetMimeType(".js"), js);
-  EXPECT_EQ(GetMimeType("foo.js"), js);
-  EXPECT_EQ(GetMimeType("js"), html);
-  EXPECT_EQ(GetMimeType("foojs"), html);
-  EXPECT_EQ(GetMimeType("foo.jsp"), html);
-  EXPECT_EQ(GetMimeType("foocss"), html);
-  EXPECT_EQ(GetMimeType("foo.css"), css);
-  EXPECT_EQ(GetMimeType(".css.foo"), html);
-  EXPECT_EQ(GetMimeType("foopng"), html);
-  EXPECT_EQ(GetMimeType("foo.png"), png);
-  EXPECT_EQ(GetMimeType(".png.foo"), html);
-  EXPECT_EQ(GetMimeType("foo.svg"), svg);
-  EXPECT_EQ(GetMimeType("foo.js.wasm"), wasm);
-  EXPECT_EQ(GetMimeType("foo.out.wasm"), wasm);
-  EXPECT_EQ(GetMimeType(".woff2"), woff2);
-  EXPECT_EQ(GetMimeType("foo.json"), json);
-  EXPECT_EQ(GetMimeType("foo.pdf"), pdf);
-  EXPECT_EQ(GetMimeType("foo.jpg"), jpg);
-  EXPECT_EQ(GetMimeType("foo.mp4"), mp4);
+  EXPECT_EQ(GetMimeTypeForPath(std::string()), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.html"), html);
+  EXPECT_EQ(GetMimeTypeForPath(".js"), js);
+  EXPECT_EQ(GetMimeTypeForPath("foo.js"), js);
+  EXPECT_EQ(GetMimeTypeForPath("js"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foojs"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.jsp"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foocss"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.css"), css);
+  EXPECT_EQ(GetMimeTypeForPath(".css.foo"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foopng"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.png"), png);
+  EXPECT_EQ(GetMimeTypeForPath(".png.foo"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.svg"), svg);
+  EXPECT_EQ(GetMimeTypeForPath("foo.js.wasm"), wasm);
+  EXPECT_EQ(GetMimeTypeForPath("foo.out.wasm"), wasm);
+  EXPECT_EQ(GetMimeTypeForPath(".woff2"), woff2);
+  EXPECT_EQ(GetMimeTypeForPath("foo.json"), json);
+  EXPECT_EQ(GetMimeTypeForPath("foo.pdf"), pdf);
+  EXPECT_EQ(GetMimeTypeForPath("foo.jpg"), jpg);
+  EXPECT_EQ(GetMimeTypeForPath("foo.mp4"), mp4);
 
   // With query strings.
-  EXPECT_EQ(GetMimeType("foo?abc?abc"), html);
-  EXPECT_EQ(GetMimeType("foo.html?abc?abc"), html);
-  EXPECT_EQ(GetMimeType("foo.css?abc?abc"), css);
-  EXPECT_EQ(GetMimeType("foo.js?abc?abc"), js);
-  EXPECT_EQ(GetMimeType("foo.svg?abc?abc"), svg);
+  EXPECT_EQ(GetMimeTypeForPath("foo?abc?abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.html?abc?abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.css?abc?abc"), css);
+  EXPECT_EQ(GetMimeTypeForPath("foo.js?abc?abc"), js);
+  EXPECT_EQ(GetMimeTypeForPath("foo.svg?abc?abc"), svg);
 
   // With URL fragments.
-  EXPECT_EQ(GetMimeType("foo#abc#abc"), html);
-  EXPECT_EQ(GetMimeType("foo.html#abc#abc"), html);
-  EXPECT_EQ(GetMimeType("foo.css#abc#abc"), css);
-  EXPECT_EQ(GetMimeType("foo.js#abc#abc"), js);
-  EXPECT_EQ(GetMimeType("foo.svg#abc#abc"), svg);
+  EXPECT_EQ(GetMimeTypeForPath("foo#abc#abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.html#abc#abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.css#abc#abc"), css);
+  EXPECT_EQ(GetMimeTypeForPath("foo.js#abc#abc"), js);
+  EXPECT_EQ(GetMimeTypeForPath("foo.svg#abc#abc"), svg);
 
   // With query strings and URL fragments.
-  EXPECT_EQ(GetMimeType("foo?abc#abc"), html);
-  EXPECT_EQ(GetMimeType("foo.html?abc#abc"), html);
-  EXPECT_EQ(GetMimeType("foo.css?abc#abc"), css);
-  EXPECT_EQ(GetMimeType("foo.js?abc#abc"), js);
-  EXPECT_EQ(GetMimeType("foo.svg?abc#abc"), svg);
+  EXPECT_EQ(GetMimeTypeForPath("foo?abc#abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.html?abc#abc"), html);
+  EXPECT_EQ(GetMimeTypeForPath("foo.css?abc#abc"), css);
+  EXPECT_EQ(GetMimeTypeForPath("foo.js?abc#abc"), js);
+  EXPECT_EQ(GetMimeTypeForPath("foo.svg?abc#abc"), svg);
 }
 
 TEST_F(WebUIDataSourceTest, ShouldServeMimeTypeAsContentTypeHeader) {

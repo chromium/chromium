@@ -83,15 +83,6 @@ void GetDataResourceBytesOnWorkerThread(
               resource_id, std::move(callback)));
 }
 
-std::string CleanUpPath(const std::string& path) {
-  // Remove the query string for named resource lookups.
-  std::string clean_path = path.substr(0, path.find_first_of('?'));
-  // Remove a URL fragment (for example #foo) if it exists.
-  clean_path = clean_path.substr(0, path.find_first_of('#'));
-
-  return clean_path;
-}
-
 const int kNonExistentResource = -1;
 
 }  // namespace
@@ -106,8 +97,8 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
 
   // URLDataSource implementation.
   std::string GetSource() override { return parent_->GetSource(); }
-  std::string GetMimeType(const std::string& path) override {
-    return parent_->GetMimeType(path);
+  std::string GetMimeType(const GURL& url) override {
+    return parent_->GetMimeType(url);
   }
   void StartDataRequest(const GURL& url,
                         const WebContents::Getter& wc_getter,
@@ -319,8 +310,8 @@ std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
 }
 
-std::string WebUIDataSourceImpl::GetMimeType(const std::string& path) const {
-  std::string file_path = CleanUpPath(path);
+std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
+  const base::StringPiece file_path = url.path_piece();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII))
     return "text/css";
@@ -378,7 +369,7 @@ void WebUIDataSourceImpl::StartDataRequest(
     }
   }
 
-  int resource_id = PathToIdrOrDefault(CleanUpPath(path));
+  int resource_id = URLToIdrOrDefault(url);
   if (resource_id == kNonExistentResource) {
     std::move(callback).Run(nullptr);
   } else {
@@ -402,7 +393,8 @@ bool WebUIDataSourceImpl::ShouldReplaceI18nInJS() const {
   return should_replace_i18n_in_js_;
 }
 
-int WebUIDataSourceImpl::PathToIdrOrDefault(const std::string& path) const {
+int WebUIDataSourceImpl::URLToIdrOrDefault(const GURL& url) const {
+  const std::string path(url.path_piece().substr(1));
   auto it = path_to_idr_map_.find(path);
   if (it != path_to_idr_map_.end())
     return it->second;
@@ -413,7 +405,7 @@ int WebUIDataSourceImpl::PathToIdrOrDefault(const std::string& path) const {
   // Use GetMimeType() to check for most file requests. It returns text/html by
   // default regardless of the extension if it does not match a different file
   // type, so check for HTML file requests separately.
-  if (GetMimeType(path) != "text/html" ||
+  if (GetMimeType(url) != "text/html" ||
       base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
     return kNonExistentResource;
   }

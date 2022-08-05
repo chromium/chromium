@@ -23,7 +23,7 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
       const WebUIDataSourceImplWithPublicData&) = delete;
 
   using WebUIDataSourceImpl::GetLocalizedStrings;
-  using WebUIDataSourceImpl::PathToIdrOrDefault;
+  using WebUIDataSourceImpl::URLToIdrOrDefault;
 
  protected:
   explicit WebUIDataSourceImplWithPublicData(const std::string& source_name)
@@ -49,8 +49,8 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
     return source_->source()->GetReplacements();
   }
 
-  int PathToIdrOrDefault(const std::string& path) override {
-    return source_->PathToIdrOrDefault(path);
+  int URLToIdrOrDefault(const GURL& url) override {
+    return source_->URLToIdrOrDefault(url);
   }
 
   WebUIDataSource* GetWebUIDataSource() override { return source_.get(); }
