@@ -258,15 +258,6 @@ class AccessibilityPrivateUpdateDictationBubbleFunction
                              ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
 };
 
-// API function that silences ChromeVox.
-class AccessibilityPrivateSilenceSpokenFeedbackFunction
-    : public ExtensionFunction {
-  ~AccessibilityPrivateSilenceSpokenFeedbackFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.silenceSpokenFeedback",
-                             ACCESSIBILITY_PRIVATE_SILENCESPOKENFEEDBACK)
-};
-
 // API function that initiates a Pumpkin download for Dictation.
 class AccessibilityPrivateInstallPumpkinForDictationFunction
     : public ExtensionFunction {
