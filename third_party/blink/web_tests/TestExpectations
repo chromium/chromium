@@ -7068,3 +7068,6 @@ crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tent
 
 # Sheriff 2022-08-03
 crbug.com/1349910 [ Mac ] external/wpt/html/semantics/popups/popup-hover-hide.tentative.html [ Failure Pass ]
+
+# Sheriff 2022-08-06
+crbug.com/1350336 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/visual-viewport.https.html [ Failure Pass ]
