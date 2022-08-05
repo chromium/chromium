@@ -146,8 +146,10 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
       source_texture_id, 0, dest_target, dest_texture_id, dest_level,
       dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
       source_sub_rectangle.y(), source_sub_rectangle.width(),
-      source_sub_rectangle.height(), unpack_flip_y ? GL_FALSE : GL_TRUE,
-      GL_FALSE, unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
+      source_sub_rectangle.height(), unpack_flip_y,
+      /*unpack_premultiply_alpha=*/GL_FALSE,
+      /*unpack_unmultiply_alpha=*/
+      unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
   dest_gl->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
   dest_gl->DeleteTextures(1, &source_texture_id);
 
