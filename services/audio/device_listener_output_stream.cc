@@ -61,7 +61,9 @@ void DeviceListenerOutputStream::GetVolume(double* volume) {
 void DeviceListenerOutputStream::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!source_callback_);
-  stream_->Close();
+  // ExtractAsDangling clears the underlying pointer and returns another raw_ptr
+  // instance that is allowed to dangle.
+  stream_.ExtractAsDangling()->Close();
   // To match a typical AudioOutputStream usage pattern.
   delete this;
 }

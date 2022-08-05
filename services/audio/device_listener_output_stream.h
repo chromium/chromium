@@ -65,7 +65,7 @@ class DeviceListenerOutputStream final
 
   const raw_ptr<media::AudioManager> audio_manager_;
 
-  const raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
+  raw_ptr<media::AudioOutputStream> stream_;
 
   // Callback to process the device change.
   base::OnceClosure on_device_change_callback_;
