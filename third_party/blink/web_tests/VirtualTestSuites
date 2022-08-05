@@ -14,12 +14,6 @@
     "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"]
   },
   {
-    "prefix": "disable-accept-language-header",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/navigation/language"],
-    "args": ["--disable-features=AcceptLanguageHeader"]
-  },
-  {
     "prefix": "gpu",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["fast/canvas"],

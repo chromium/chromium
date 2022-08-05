@@ -588,8 +588,7 @@ void URLRequestHttpJob::AddExtraHeaders() {
     // specified.
     std::string accept_language =
         http_user_agent_settings_->GetAcceptLanguage();
-    if (base::FeatureList::IsEnabled(features::kAcceptLanguageHeader) &&
-        !accept_language.empty()) {
+    if (!accept_language.empty()) {
       request_info_.extra_headers.SetHeaderIfMissing(
           HttpRequestHeaders::kAcceptLanguage,
           accept_language);

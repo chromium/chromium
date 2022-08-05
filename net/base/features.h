@@ -17,10 +17,6 @@
 
 namespace net::features {
 
-// Toggles the `Accept-Language` HTTP request header, which
-// https://github.com/WICG/lang-client-hint proposes that we deprecate.
-NET_EXPORT extern const base::Feature kAcceptLanguageHeader;
-
 // Enables ALPS extension of TLS 1.3 for HTTP/2, see
 // https://vasilvv.github.io/tls-alps/draft-vvv-tls-alps.html and
 // https://vasilvv.github.io/httpbis-alps/draft-vvv-httpbis-alps.html.

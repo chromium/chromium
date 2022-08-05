@@ -1513,14 +1513,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      // Allows the navigator.language and navigator.languages APIs in insecure
-      // contexts, which https://github.com/WICG/lang-client-hint proposes that
-      // we deprecate.
-      name: "NavigatorLanguageInInsecureContext",
-      settable_from_internals: true,
-      status: "stable",
-    },
-    {
       name: "NetInfoDownlinkMax",
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
       status: {

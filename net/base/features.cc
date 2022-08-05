@@ -11,9 +11,6 @@
 
 namespace net::features {
 
-const base::Feature kAcceptLanguageHeader{"AcceptLanguageHeader",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAlpsForHttp2{"AlpsForHttp2",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
