@@ -218,8 +218,6 @@ gridTemplateAreas
 gridTemplateColumns
 gridTemplateRows
 height
-hoverPopUpDelay
-hoverPopUpHideDelay
 hyphens
 imageOrientation
 imageRendering
@@ -339,6 +337,8 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
+popUpHideDelay
+popUpShowDelay
 position
 positionFallback
 prefix

@@ -772,8 +772,8 @@ enum CSSSampleId {
     kAnchorName = 719,
     kPositionFallback = 720,
     kAnchorScroll = 721,
-    kHoverPopUpDelay = 722,
-    kHoverPopUpHideDelay = 723,
+    kPopUpShowDelay = 722,
+    kPopUpHideDelay = 723,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

@@ -3635,7 +3635,7 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
-const CSSValue* HoverPopUpDelay::ParseSingleValue(
+const CSSValue* PopUpShowDelay::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -3643,15 +3643,15 @@ const CSSValue* HoverPopUpDelay::ParseSingleValue(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* HoverPopUpDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* PopUpShowDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(style.HoverPopUpDelay(),
+  return CSSNumericLiteralValue::Create(style.PopUpShowDelay(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 
-const CSSValue* HoverPopUpHideDelay::ParseSingleValue(
+const CSSValue* PopUpHideDelay::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -3659,11 +3659,11 @@ const CSSValue* HoverPopUpHideDelay::ParseSingleValue(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-const CSSValue* HoverPopUpHideDelay::CSSValueFromComputedStyleInternal(
+const CSSValue* PopUpHideDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(style.HoverPopUpHideDelay(),
+  return CSSNumericLiteralValue::Create(style.PopUpHideDelay(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 

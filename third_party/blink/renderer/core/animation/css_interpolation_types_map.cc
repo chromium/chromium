@@ -232,8 +232,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSNumberInterpolationType>(used_property));
         break;
-      case CSSPropertyID::kHoverPopUpDelay:
-      case CSSPropertyID::kHoverPopUpHideDelay:
+      case CSSPropertyID::kPopUpShowDelay:
+      case CSSPropertyID::kPopUpHideDelay:
         applicable_types->push_back(
             std::make_unique<CSSTimeInterpolationType>(used_property));
         break;

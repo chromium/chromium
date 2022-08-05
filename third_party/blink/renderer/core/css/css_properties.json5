@@ -2815,7 +2815,7 @@
       valid_for_position_fallback: true,
     },
     {
-      name: "hover-pop-up-delay",
+      name: "pop-up-show-delay",
       runtime_flag: "HTMLPopupAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
@@ -2828,7 +2828,7 @@
       supports_incremental_style: true,
     },
     {
-      name: "hover-pop-up-hide-delay",
+      name: "pop-up-hide-delay",
       runtime_flag: "HTMLPopupAttribute",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",

@@ -197,8 +197,6 @@ grid-template-areas: none
 grid-template-columns: none
 grid-template-rows: none
 height: auto
-hover-pop-up-delay: 0.5s
-hover-pop-up-hide-delay: infinity * 1s
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto
@@ -281,6 +279,8 @@ paint-order: normal
 perspective: none
 perspective-origin: 50% 50%
 pointer-events: auto
+pop-up-hide-delay: infinity * 1s
+pop-up-show-delay: 0.5s
 position: static
 position-fallback: none
 r: 0px

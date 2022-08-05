@@ -20,21 +20,21 @@
 </style>
 
 <script>
-const hoverPopUpDelay = 100; // The CSS delay setting.
+const popUpShowDelay = 100; // The CSS delay setting.
 const hoverWaitTime = 200; // How long to wait to cover the delay for sure.
 let nextId = 0;
 async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
-  delayMs = delayMs || hoverPopUpDelay;
+  delayMs = delayMs || popUpShowDelay;
   const popUp = Object.assign(document.createElement('div'),{popUp: popUpType, id: `pop-up-${nextId++}`});
   document.body.appendChild(popUp);
   popUp.textContent = 'Pop-up';
   let invoker = document.createElement('div');
   invoker.setAttribute('class','invoker');
   invoker.setAttribute('popuphovertarget',popUp.id);
-  invoker.setAttribute('style',`hover-pop-up-delay: ${delayMs}ms; hover-pop-up-hide-delay: 1000s;`);
+  invoker.setAttribute('style',`pop-up-show-delay: ${delayMs}ms; pop-up-hide-delay: 1000s;`);
   document.body.appendChild(invoker);
-  const actualHoverDelay = Number(getComputedStyle(invoker)['hoverPopUpDelay'].slice(0,-1))*1000;
-  assert_equals(actualHoverDelay,delayMs,'hover-pop-up-delay is incorrect');
+  const actualHoverDelay = Number(getComputedStyle(invoker)['popUpShowDelay'].slice(0,-1))*1000;
+  assert_equals(actualHoverDelay,delayMs,'pop-up-show-delay is incorrect');
   const originalInvoker = invoker;
   const reassignPopupFn = (p) => originalInvoker.setAttribute('popuphovertarget',p.id);
   switch (invokerType) {
@@ -95,12 +95,12 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       await mouseOver(invoker);
       let showing = popUp.matches(':top-layer');
       // See NOTE above.
-      if (msSinceMouseOver() < hoverPopUpDelay)
+      if (msSinceMouseOver() < popUpShowDelay)
         assert_false(showing,'pop-up should not show immediately');
       await waitForHoverTime(hoverWaitTime);
       assert_true(msSinceMouseOver() >= hoverWaitTime,'waitForHoverTime should wait the specified time');
       assert_true(popUp.matches(':top-layer'),'pop-up should show after delay');
-      assert_true(hoverWaitTime > hoverPopUpDelay,'hoverPopUpDelay is the CSS setting, hoverWaitTime should be longer than that');
+      assert_true(hoverWaitTime > popUpShowDelay,'popUpShowDelay is the CSS setting, hoverWaitTime should be longer than that');
       popUp.hidePopUp(); // Cleanup
     },`popuphovertarget attribute shows a pop-up with popup=${type}, invokerType=${invokerType}`);
 
@@ -118,7 +118,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       if (msSinceMouseOver() >= longerHoverDelay)
         return; // The WPT runner was too slow.
       assert_false(showing,'pop-up should not show after not long enough of a delay');
-    },`popuphovertarget hover-pop-up-delay is respected (popup=${type}, invokerType=${invokerType})`);
+    },`hoverpopup pop-up-show-delay is respected (popup=${type}, invokerType=${invokerType})`);
 
     promise_test(async (t) => {
       const {popUp,invoker} = await makePopUpAndInvoker(t,type,invokerType);
@@ -137,7 +137,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       let showing = popUp.matches(':top-layer');
       popUp.remove();
       // See NOTE above.
-      if (msSinceMouseOver() >= hoverPopUpDelay)
+      if (msSinceMouseOver() >= popUpShowDelay)
         return; // The WPT runner was too slow.
       assert_false(showing,'pop-up should not show immediately');
       await waitForHoverTime(hoverWaitTime);
@@ -157,7 +157,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       let eitherShowing = popUp.matches(':top-layer') || popUp2.matches(':top-layer');
       reassignPopupFn(popUp2);
       // See NOTE above.
-      if (msSinceMouseOver() >= hoverPopUpDelay)
+      if (msSinceMouseOver() >= popUpShowDelay)
         return; // The WPT runner was too slow.
       assert_false(eitherShowing,'pop-up should not show immediately');
       await waitForHoverTime(hoverWaitTime);

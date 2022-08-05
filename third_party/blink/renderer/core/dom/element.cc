@@ -3100,7 +3100,7 @@ Element* Element::PopupHoverTargetElement() const {
 // within another pop-up, and the container pop-up is a descendant of this
 // pop_up. For the special case of popup=manual pop-ups, which do not have
 // ancestral relationships, this function checks pure DOM tree descendants of
-// popup=manual pop-ups. This is important for the `hover-pop-up-hide-delay` CSS
+// popup=manual pop-ups. This is important for the `pop-up-hide-delay` CSS
 // property, which works for all pop-up types, and needs to keep pop-ups open
 // when a descendant is hovered.
 bool Element::IsNodePopUpDescendant(const Node& node) const {
@@ -3125,11 +3125,11 @@ bool Element::IsNodePopUpDescendant(const Node& node) const {
 void Element::MaybeQueuePopupHideEvent() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   DCHECK(HasValidPopupAttribute());
-  // If the pop-up isn't showing, or it has an infinite HoverPopUpHideDelay, do
+  // If the pop-up isn't showing, or it has an infinite PopUpHideDelay, do
   // nothing.
   if (GetPopupData()->visibilityState() == PopupVisibilityState::kHidden)
     return;
-  float hide_delay_seconds = GetComputedStyle()->HoverPopUpHideDelay();
+  float hide_delay_seconds = GetComputedStyle()->PopUpHideDelay();
   // If the value is infinite or NaN, don't hide the pop-up.
   if (!std::isfinite(hide_delay_seconds))
     return;
@@ -3194,7 +3194,7 @@ void Element::HandlePopupHovered(bool hovered) {
       auto& hover_tasks = popup_element->GetPopupData()->hoverShowTasks();
       DCHECK(!hover_tasks.Contains(this));
 
-      float hover_delay_seconds = GetComputedStyle()->HoverPopUpDelay();
+      float hover_delay_seconds = GetComputedStyle()->PopUpShowDelay();
       // If the value is infinite or NaN, don't queue a task at all.
       DCHECK_GE(hover_delay_seconds, 0);
       if (std::isfinite(hover_delay_seconds)) {
