@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace content {
 

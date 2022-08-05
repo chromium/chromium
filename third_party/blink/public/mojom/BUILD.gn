@@ -1008,6 +1008,7 @@ mojom("mojom_core") {
     "frame/media_player_action.mojom",
     "frame/pending_beacon.mojom",
     "frame/policy_container.mojom",
+    "frame/remote_frame.mojom",
     "frame/reporting_observer.mojom",
     "frame/sudden_termination_disabler_type.mojom",
     "frame/text_autosizer_page_info.mojom",

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_REMOTE_MAIN_FRAME_HOST_H_
 
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {

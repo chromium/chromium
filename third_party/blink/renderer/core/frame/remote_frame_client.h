@@ -7,8 +7,8 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
