@@ -179,11 +179,6 @@ class LargestContentfulPaintHandler {
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const base::TimeDelta& navigation_start_offset);
-  void RecordMainFrameTimingInternal(
-      const page_load_metrics::mojom::LargestContentfulPaintTiming&
-          largest_contentful_paint,
-      const absl::optional<base::TimeDelta>&
-          first_input_or_scroll_notified_timestamp);
   void UpdateFirstInputOrScrollNotified(
       const absl::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);

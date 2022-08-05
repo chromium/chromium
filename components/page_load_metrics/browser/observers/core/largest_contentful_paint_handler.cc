@@ -216,13 +216,38 @@ LargestContentfulPaintHandler::LargestContentfulPaintHandler()
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
 
+const ContentfulPaintTimingInfo&
+LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
+  const ContentfulPaintTimingInfo& main_frame_timing =
+      main_frame_contentful_paint_.MergeTextAndImageTiming();
+  const ContentfulPaintTimingInfo& subframe_timing =
+      subframe_contentful_paint_.MergeTextAndImageTiming();
+  return MergeTimingsBySizeAndTime(main_frame_timing, subframe_timing);
+}
+
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp) {
-  RecordMainFrameTimingInternal(largest_contentful_paint,
-                                first_input_or_scroll_notified_timestamp);
+  UpdateFirstInputOrScrollNotified(
+      first_input_or_scroll_notified_timestamp,
+      /* navigation_start_offset */ base::TimeDelta());
+  if (IsValid(largest_contentful_paint.largest_text_paint)) {
+    main_frame_contentful_paint_.Text().Reset(
+        largest_contentful_paint.largest_text_paint,
+        largest_contentful_paint.largest_text_paint_size,
+        blink::LargestContentfulPaintType::kNone,
+        /*image_bpp=*/0.0);
+  }
+  if (IsValid(largest_contentful_paint.largest_image_paint)) {
+    main_frame_contentful_paint_.Image().Reset(
+        largest_contentful_paint.largest_image_paint,
+        largest_contentful_paint.largest_image_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        largest_contentful_paint.image_bpp);
+  }
 }
 
 void LargestContentfulPaintHandler::RecordSubFrameTiming(
@@ -247,15 +272,6 @@ void LargestContentfulPaintHandler::RecordSubFrameTiming(
   if (!IsSameSite(subframe_rfh->GetLastCommittedURL(), main_frame_url)) {
     RecordCrossSiteSubframeTiming(largest_contentful_paint, it->second);
   }
-}
-
-const ContentfulPaintTimingInfo&
-LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
-  const ContentfulPaintTimingInfo& main_frame_timing =
-      main_frame_contentful_paint_.MergeTextAndImageTiming();
-  const ContentfulPaintTimingInfo& subframe_timing =
-      subframe_contentful_paint_.MergeTextAndImageTiming();
-  return MergeTimingsBySizeAndTime(main_frame_timing, subframe_timing);
 }
 
 // We handle subframe and main frame differently. For main frame, we directly
@@ -335,31 +351,6 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
   if (IsValid(new_image_candidate.Time())) {
     MergeForSubframesWithAdjustedTime(
         &cross_site_subframe_contentful_paint_.Image(), new_image_candidate);
-  }
-}
-
-void LargestContentfulPaintHandler::RecordMainFrameTimingInternal(
-    const page_load_metrics::mojom::LargestContentfulPaintTiming&
-        largest_contentful_paint,
-    const absl::optional<base::TimeDelta>&
-        first_input_or_scroll_notified_timestamp) {
-  UpdateFirstInputOrScrollNotified(
-      first_input_or_scroll_notified_timestamp,
-      /* navigation_start_offset */ base::TimeDelta());
-  if (IsValid(largest_contentful_paint.largest_text_paint)) {
-    main_frame_contentful_paint_.Text().Reset(
-        largest_contentful_paint.largest_text_paint,
-        largest_contentful_paint.largest_text_paint_size,
-        blink::LargestContentfulPaintType::kNone,
-        /*image_bpp=*/0.0);
-  }
-  if (IsValid(largest_contentful_paint.largest_image_paint)) {
-    main_frame_contentful_paint_.Image().Reset(
-        largest_contentful_paint.largest_image_paint,
-        largest_contentful_paint.largest_image_paint_size,
-        static_cast<blink::LargestContentfulPaintType>(
-            largest_contentful_paint.type),
-        largest_contentful_paint.image_bpp);
   }
 }
 
