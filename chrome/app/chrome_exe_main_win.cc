@@ -33,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/current_module.h"
-#include "base/win/dark_mode_support.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -384,9 +383,6 @@ int main() {
   // Only enable High DPI support for browser and GPU process.
   if (process_type.empty() || process_type == switches::kGpuProcess)
     base::win::EnableHighDPISupport();
-  // Only enable dark mode support for the browser process.
-  if (process_type.empty())
-    base::win::AllowDarkModeForApp(true);
 
   if (AttemptFastNotify(*command_line))
     return 0;
