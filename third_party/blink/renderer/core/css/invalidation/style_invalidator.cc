@@ -183,7 +183,11 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
     ContainerNode& node,
     SiblingData& sibling_data) {
   auto pending_invalidations_iterator = pending_invalidation_map_.find(&node);
-  DCHECK(pending_invalidations_iterator != pending_invalidation_map_.end());
+  if (pending_invalidations_iterator == pending_invalidation_map_.end()) {
+    NOTREACHED() << "We should strictly not have marked an element for "
+                    "invalidation without any pending invalidations.";
+    return;
+  }
   NodeInvalidationSets& pending_invalidations =
       pending_invalidations_iterator->value;
 
