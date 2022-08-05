@@ -152505,6 +152505,19 @@
        {}
       ]
      ],
+     "lang-pseudo-class-across-shadow-boundaries.html": [
+      "f54e8cba6fced83776620ae66d7295aabf410d79",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-and-other-pseudo-elements-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-and-other-pseudo-elements.html": [
       "f393db58fe8a9acd9e52494c4cea56b18c636535",
       [
@@ -233768,6 +233781,21 @@
      }
     },
     "dom": {
+     "directionality": {
+      "bdi-element-invalid-dir.html": [
+       "629cee873883d645b0fe0dbe52cbe12fff07fd80",
+       [
+        null,
+        [
+         [
+          "/html/dom/directionality/bdi-element-invalid-dir-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "elements": {
       "global-attributes": {
        "dir_auto-EN-L.html": [
@@ -284199,6 +284227,10 @@
       "652c8d9d924402da341a019af190513db21771fd",
       []
      ],
+     "lang-pseudo-class-across-shadow-boundaries-ref.html": [
+      "eda713a7eda3f0155b02f62acf432ac337de963d",
+      []
+     ],
      "marker-and-other-pseudo-elements-ref.html": [
       "796acbf75980cd62d30ade419359bda8c666b12e",
       []
@@ -299246,7 +299278,7 @@
     },
     "resources": {
      "custom-elements-helpers.js": [
-      "6f73fe20d0fbf25eed2fbfec530fb516e83cc214",
+      "48775af162ac86f429431a84daacc86e3ef0c140",
       []
      ],
      "empty-html-document.html": [
@@ -299411,7 +299443,7 @@
      []
     ],
     "direct-sockets-disabled-by-permissions-policy.js": [
-     "fd0b100ca5ccab4db741fc9d3b216758e769a649",
+     "a27d1ddf497a7fa0ccd8ecd40b94732a831da97c",
      []
     ]
    },
@@ -309729,6 +309761,12 @@
      }
     },
     "dom": {
+     "directionality": {
+      "bdi-element-invalid-dir-ref.html": [
+       "88ccd4b9b53ee27a8450bd77ec794861fc01a708",
+       []
+      ]
+     },
      "documents": {
       "dom-tree-accessors": {
        "cross-domain.js": [
@@ -335833,7 +335871,7 @@
      []
     ],
     "idlharness.https.window.js.ini": [
-     "0159ec7f7088794b624581769ae9e63906ab58cc",
+     "757d47fbebb7b57deb3be099c6d06e4b10939f0b",
      []
     ],
     "remote-desktop-client-override.tentative.https.html.ini": [
@@ -387856,6 +387894,20 @@
        {}
       ]
      ],
+     "dir-pseudo-on-bdi-element.html": [
+      "434434461ddd1726ddbbad7d7637644648b06bd5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dir-pseudo-on-input-element.html": [
+      "3bb49790e997a6a777bd84904e3dfd0633559fa2",
+      [
+       null,
+       {}
+      ]
+     ],
      "file-selector-button-inherit.html": [
       "4947e5e353914d856e93995b6e5b40c9460cec05",
       [
@@ -402652,6 +402704,13 @@
        {}
       ]
      ],
+     "media-query-matches-in-iframe.html": [
+      "5828936732e7133d4365eb288b99e99cb428fb19",
+      [
+       null,
+       {}
+      ]
+     ],
      "mq-dynamic-empty-children.html": [
       "3edda870efcaa9383c3938fa721a147a98d73eda",
       [
@@ -404765,6 +404824,13 @@
       ]
      ]
     },
+    "perform-microtask-checkpoint-before-construction-xml-parser.xhtml": [
+     "63bb1d143fb98b64f28589331817e57bd695275f",
+     [
+      null,
+      {}
+     ]
+    ],
     "perform-microtask-checkpoint-before-construction.html": [
      "83d823ad9f1b69dad00b7eb8457c0d490bcf2487",
      [
@@ -405191,8 +405257,22 @@
       ]
      }
     },
+    "throw-on-dynamic-markup-insertion-counter-construct-xml-parser.xhtml": [
+     "c0a7f622fbe2e56fba7eab1ea71ffde0fc269fca",
+     [
+      null,
+      {}
+     ]
+    ],
     "throw-on-dynamic-markup-insertion-counter-construct.html": [
      "3e9254e2a50f0ca572b9e9aa1641a4dab5f22e50",
+     [
+      null,
+      {}
+     ]
+    ],
+    "throw-on-dynamic-markup-insertion-counter-reactions-xml-parser.xhtml": [
+     "13f664550be01d7fab3757732634dd02e56c723e",
      [
       null,
       {}
@@ -486277,6 +486357,13 @@
       ]
      },
      "parsing-html-fragments": {
+      "innerHTML-setter-default-namespace.xhtml": [
+       "19f17f1e28ce7dcb19fbe9e374ad412405c28e41",
+       [
+        null,
+        {}
+       ]
+      ],
       "the-input-byte-stream-001.html": [
        "a85682adf933621f3b3eb19f2de17765b99ec11d",
        [
