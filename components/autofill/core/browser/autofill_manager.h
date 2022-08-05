@@ -187,9 +187,10 @@ class AutofillManager
   // Invoked when |form| has been submitted.
   // Processes the submitted |form|, saving any new Autofill data to the user's
   // personal profile.
-  void OnFormSubmitted(const FormData& form,
-                       bool known_success,
-                       mojom::SubmissionSource source);
+  // Virtual for testing.
+  virtual void OnFormSubmitted(const FormData& form,
+                               bool known_success,
+                               mojom::SubmissionSource source);
 
   void FillCreditCardForm(int query_id,
                           const FormData& form,

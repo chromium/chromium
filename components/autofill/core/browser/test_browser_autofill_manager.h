@@ -37,6 +37,34 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   TestAutofillClient* client() { return client_; }
   TestAutofillDriver* driver() { return driver_; }
 
+  // AutofillManager overrides.
+  // The overrides ensure that the thread is blocked until the form has been
+  // parsed (perhaps asynchronously, depending on AutofillParseAsync).
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
+  void OnFormsSeen(const std::vector<FormData>& updated_forms,
+                   const std::vector<FormGlobalId>& removed_forms) override;
+  void OnTextFieldDidChange(const FormData& form,
+                            const FormFieldData& field,
+                            const gfx::RectF& bounding_box,
+                            const base::TimeTicks timestamp) override;
+  void OnDidFillAutofillFormData(const FormData& form,
+                                 const base::TimeTicks timestamp) override;
+  void OnAskForValuesToFill(
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      int query_id,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) override;
+  void OnJavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
+  void OnFormSubmitted(const FormData& form,
+                       const bool known_success,
+                       const mojom::SubmissionSource source) override;
+
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillCreditCardEnabled() const override;
@@ -67,6 +95,17 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
           heuristic_types,
       const std::vector<ServerFieldType>& server_types,
       bool preserve_values_in_form_structure = false);
+
+  void SetSeenFormPredictions(
+      FormGlobalId form_id,
+      const std::vector<ServerFieldType>& heuristic_types,
+      const std::vector<ServerFieldType>& server_types);
+
+  void SetSeenFormPredictions(
+      FormGlobalId form_id,
+      const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+          heuristic_types,
+      const std::vector<ServerFieldType>& server_types);
 
   void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
 

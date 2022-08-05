@@ -7,6 +7,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +31,23 @@ const char kEditPhoneAndEmailFieldScript[] = R"(
     email_input.value = 'abc@def.com';
     email_input.blur();
   )";
+
+class TestAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                      autofill::AutofillClient* client)
+      : BrowserAutofillManager(driver,
+                               client,
+                               "en-US",
+                               EnableDownloadManager(false)) {}
+
+  autofill::TestAutofillManagerWaiter& waiter() { return waiter_; }
+
+ private:
+  autofill::TestAutofillManagerWaiter waiter_{
+      *this,
+      {&AutofillManager::Observer::OnAfterFormsSeen}};
+};
 
 }  // namespace
 
@@ -57,9 +78,14 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        UserDataFieldFilledUseCounter) {
   base::HistogramTester histogram_tester;
 
+  // When loading the page, wait until OnFormsSeen().
+  autofill::TestAutofillManagerInjector<TestAutofillManager>
+      autofill_manager_injector(web_contents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
+  ASSERT_TRUE(
+      autofill_manager_injector.GetForPrimaryMainFrame()->waiter().Wait(1));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));

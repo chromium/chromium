@@ -4,13 +4,16 @@
 
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 
+#include "autofill_test_utils.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "form_structure_test_api.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,6 +32,76 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(
       driver_(driver) {}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
+
+void TestBrowserAutofillManager::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  TestAutofillManagerWaiter waiter(
+      *this, {&AutofillManager::Observer::OnAfterLanguageDetermined});
+  AutofillManager::OnLanguageDetermined(details);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnFormsSeen(
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms) {
+  TestAutofillManagerWaiter waiter(*this, {&Observer::OnAfterFormsSeen});
+  AutofillManager::OnFormsSeen(updated_forms, removed_forms);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnTextFieldDidChange(
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& bounding_box,
+    const base::TimeTicks timestamp) {
+  TestAutofillManagerWaiter waiter(*this,
+                                   {&Observer::OnAfterTextFieldDidChange});
+  AutofillManager::OnTextFieldDidChange(form, field, bounding_box, timestamp);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnDidFillAutofillFormData(
+    const FormData& form,
+    const base::TimeTicks timestamp) {
+  TestAutofillManagerWaiter waiter(*this,
+                                   {&Observer::OnAfterDidFillAutofillFormData});
+  AutofillManager::OnDidFillAutofillFormData(form, timestamp);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnAskForValuesToFill(
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& bounding_box,
+    int query_id,
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
+  TestAutofillManagerWaiter waiter(*this,
+                                   {&Observer::OnAfterAskForValuesToFill});
+  AutofillManager::OnAskForValuesToFill(form, field, bounding_box, query_id,
+                                        autoselect_first_suggestion,
+                                        touch_to_fill_eligible);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  TestAutofillManagerWaiter waiter(
+      *this, {&Observer::OnAfterJavaScriptChangedAutofilledValue});
+  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field, old_value);
+  ASSERT_TRUE(waiter.Wait());
+}
+
+void TestBrowserAutofillManager::OnFormSubmitted(
+    const FormData& form,
+    const bool known_success,
+    const mojom::SubmissionSource source) {
+  TestAutofillManagerWaiter waiter(*this, {&Observer::OnAfterFormsSeen});
+  AutofillManager::OnFormSubmitted(form, known_success, source);
+  ASSERT_TRUE(waiter.Wait());
+}
 
 bool TestBrowserAutofillManager::IsAutofillProfileEnabled() const {
   return autofill_profile_enabled_;
@@ -111,14 +184,8 @@ void TestBrowserAutofillManager::AddSeenForm(
     bool preserve_values_in_form_structure) {
   std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
       all_heuristic_types;
-
-  base::ranges::transform(
-      heuristic_types, std::back_inserter(all_heuristic_types),
-      [](ServerFieldType type)
-          -> std::vector<std::pair<PatternSource, ServerFieldType>> {
-        return {{GetActivePatternSource(), type}};
-      });
-
+  for (ServerFieldType type : heuristic_types)
+    all_heuristic_types.push_back({{GetActivePatternSource(), type}});
   AddSeenForm(form, all_heuristic_types, server_types,
               preserve_values_in_form_structure);
 }
@@ -129,19 +196,35 @@ void TestBrowserAutofillManager::AddSeenForm(
         heuristic_types,
     const std::vector<ServerFieldType>& server_types,
     bool preserve_values_in_form_structure) {
-  FormData form_with_empty_fields = form;
-  for (auto& field : form_with_empty_fields.fields) {
-    field.value = std::u16string();
-  }
-
   auto form_structure = std::make_unique<FormStructure>(
-      preserve_values_in_form_structure ? form : form_with_empty_fields);
-  FormStructureTestApi(form_structure.get())
+      preserve_values_in_form_structure ? form : test::WithoutValues(form));
+  FormGlobalId form_id = form_structure->global_id();
+  AddSeenFormStructure(std::move(form_structure));
+  SetSeenFormPredictions(form_id, heuristic_types, server_types);
+  form_interactions_ukm_logger()->OnFormsParsed(client()->GetUkmSourceId());
+}
+
+void TestBrowserAutofillManager::SetSeenFormPredictions(
+    FormGlobalId form_id,
+    const std::vector<ServerFieldType>& heuristic_types,
+    const std::vector<ServerFieldType>& server_types) {
+  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
+      all_heuristic_types;
+  for (ServerFieldType type : heuristic_types)
+    all_heuristic_types.push_back({{GetActivePatternSource(), type}});
+  SetSeenFormPredictions(form_id, all_heuristic_types, server_types);
+}
+
+void TestBrowserAutofillManager::SetSeenFormPredictions(
+    FormGlobalId form_id,
+    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+        heuristic_types,
+    const std::vector<ServerFieldType>& server_types) {
+  FormStructure* form_structure = FindCachedFormByRendererId(form_id);
+  ASSERT_TRUE(form_structure);
+  FormStructureTestApi(form_structure)
       .SetFieldTypes(heuristic_types, server_types);
   form_structure->identify_sections_for_testing();
-  AddSeenFormStructure(std::move(form_structure));
-
-  form_interactions_ukm_logger()->OnFormsParsed(client()->GetUkmSourceId());
 }
 
 void TestBrowserAutofillManager::AddSeenFormStructure(
@@ -165,9 +248,12 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion,
     TouchToFillEligible touch_to_fill_eligible) {
+  TestAutofillManagerWaiter waiter(
+      *this, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   BrowserAutofillManager::OnAskForValuesToFill(
       form, field, bounding_box, query_id, autoselect_first_suggestion,
       touch_to_fill_eligible);
+  ASSERT_TRUE(waiter.Wait());
 }
 
 void TestBrowserAutofillManager::SetAutofillProfileEnabled(

@@ -14,7 +14,9 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -137,9 +139,13 @@ void GenerateTestAutofillPopup(
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
+  TestAutofillManagerWaiter waiter(
+      *driver->autofill_manager(),
+      {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
                              /*autoselect_first_suggestion=*/false,
                              TouchToFillEligible(false));
+  ASSERT_TRUE(waiter.Wait());
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(

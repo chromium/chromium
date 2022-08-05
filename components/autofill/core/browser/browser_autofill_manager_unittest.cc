@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/test_autofill_download_manager.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -557,6 +558,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormData& form,
                             const FormFieldData& field,
                             int unique_id) {
+    browser_autofill_manager_->OnAskForValuesToFill(
+        form, field, {}, query_id, /*autoselect_first_suggestion=*/true,
+        TouchToFillEligible(false));
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, query_id, form, field, unique_id);
   }
@@ -4756,12 +4760,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   // In one form, rely on the max length attribute to imply US phone number
   // parts. In the other form, rely on the autocomplete type attribute.
   FormData form_with_us_number_max_length;
+  form_with_us_number_max_length.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_us_number_max_length.name = u"MyMaxlengthPhoneForm";
   form_with_us_number_max_length.url =
       GURL("https://myform.com/phone_form.html");
   form_with_us_number_max_length.action =
       GURL("https://myform.com/phone_submit.html");
   FormData form_with_autocompletetype = form_with_us_number_max_length;
+  form_with_autocompletetype.unique_renderer_id = test::MakeFormRendererId();
   form_with_autocompletetype.name = u"MyAutocompletetypePhoneForm";
 
   struct {
@@ -4881,6 +4888,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
+  form_with_multiple_componentized_phone_fields.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_multiple_componentized_phone_fields.url =
       GURL("https://www.foo.com/");
 
@@ -4947,6 +4956,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -4999,6 +5010,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Verify only the first complete number is filled when there are multiple
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
+  form_with_multiple_componentized_phone_fields.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_multiple_componentized_phone_fields.url =
       GURL("https://www.foo.com/");
 
@@ -5070,6 +5083,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_misclassified_extension;
+  form_with_misclassified_extension.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_misclassified_extension.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5133,6 +5148,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_no_complete_number;
+  form_with_no_complete_number.unique_renderer_id = test::MakeFormRendererId();
   form_with_no_complete_number.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5190,6 +5206,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5243,6 +5261,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
+  form_with_multiple_whole_number_fields.unique_renderer_id =
+      test::MakeFormRendererId();
   form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5291,6 +5311,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FormWithHiddenOrPresentationalSelects) {
   FormData form;
+  form.unique_renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -5367,6 +5388,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_sections;
+  form_with_multiple_sections.unique_renderer_id = test::MakeFormRendererId();
   form_with_multiple_sections.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5459,11 +5481,12 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesRemoveField) {
   test::CreateTestFormField("Some", "field", "", "text", &field);
   form.fields.insert(form.fields.begin() + 3, field);
 
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
+  FormsSeen({form});
 
   // Now, after the call to |FormsSeen|, we remove the field before filling.
   form.fields.erase(form.fields.begin() + 3);
+
+  FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   int response_page_id = 0;
@@ -5495,6 +5518,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesAddField) {
   // Now, after the call to |FormsSeen|, we restore the field before filling.
   form.fields.insert(pos, field);
 
+  FormsSeen({form});
+
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   int response_page_id = 0;
   FormData response_data;
@@ -5511,6 +5536,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FormChangesVisibilityOfFields) {
   // Set up our form data.
   FormData form;
+  form.unique_renderer_id = test::MakeFormRendererId();
   form.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
@@ -5562,6 +5588,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // the right fields are getting filled.)
   response_data.fields[3].is_focusable = true;
   response_data.fields[4].is_focusable = true;
+
   FormData later_response_data;
   const char guid2[] = "00000000-0000-0000-0000-000000000002";
   FillAutofillFormDataAndSaveResults(kDefaultPageID, response_data,
@@ -8343,6 +8370,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormFieldData field;
   test::CreateTestFormField("Something", "something", "", "text", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8363,6 +8391,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogAutofillAddressShownMetric) {
   FormData form;
   test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8408,6 +8437,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8452,6 +8482,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Postal Code", "zipcode", "", "text", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8496,6 +8527,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8539,6 +8571,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8582,6 +8615,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8625,6 +8659,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8670,6 +8705,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8720,6 +8756,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8772,6 +8809,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8822,6 +8860,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8876,6 +8915,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8925,6 +8965,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
   form.fields.push_back(field);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8958,6 +8999,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogAutofillCreditCardShownMetric) {
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
+  FormsSeen({form});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
@@ -8986,6 +9028,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        DidSuppressPopup_LogAutofillAddressPopupSuppressed) {
   FormData form;
   test::CreateTestAddressFormData(&form);
+  browser_autofill_manager_->OnFormsSeen({form}, {});
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidSuppressPopup(form, form.fields[0]);
@@ -9005,6 +9048,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
 
+  browser_autofill_manager_->OnFormsSeen({form}, {});
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidSuppressPopup(form, form.fields[0]);
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
@@ -9116,12 +9160,11 @@ class BrowserAutofillManagerTestPageLanguageDetection
       public testing::WithParamInterface<bool> {
  public:
   BrowserAutofillManagerTestPageLanguageDetection() {
-    is_in_active_frame_ = GetParam();
     scoped_features_.InitAndEnableFeature(
         features::kAutofillPageLanguageDetection);
   }
 
-  bool is_in_active_frame_;
+  bool is_in_active_frame() const { return GetParam(); };
 
  private:
   base::test::ScopedFeatureList scoped_features_;
@@ -9140,7 +9183,7 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "hu";
-  autofill_driver_->SetIsInActiveFrame(is_in_active_frame_);
+  autofill_driver_->SetIsInActiveFrame(is_in_active_frame());
   browser_autofill_manager_->OnLanguageDetermined(language_detection_details);
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
@@ -9150,9 +9193,9 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   // Language detection is used only for active frames.
   auto expected_language_code =
-      is_in_active_frame_ ? LanguageCode("hu") : LanguageCode();
+      is_in_active_frame() ? LanguageCode("hu") : LanguageCode();
 
-  ASSERT_EQ(expected_language_code, parsed_form->current_page_language());
+  ASSERT_EQ(*expected_language_code, *parsed_form->current_page_language());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -9179,8 +9222,7 @@ TEST_P(BrowserAutofillManagerProfileMetricsTest,
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
+  FormsSeen({form});
   FormFieldData field = form.fields[0];
   GetAutofillSuggestions(form, field);
 

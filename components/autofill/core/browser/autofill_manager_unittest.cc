@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
@@ -241,7 +242,10 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
   EXPECT_CALL(manager, OnBeforeProcessParsedForms()).Times(num > 0);
   EXPECT_CALL(manager, OnFormProcessed(_, _)).Times(num);
   EXPECT_CALL(manager, OnAfterProcessParsedForms(_)).Times(num > 0);
+  TestAutofillManagerWaiter waiter(
+      manager, {&AutofillManager::Observer::OnAfterFormsSeen});
   manager.OnFormsSeen(updated_forms, removed_forms);
+  ASSERT_TRUE(waiter.Wait());
   EXPECT_THAT(manager.form_structures(), HaveSameFormIdsAs(expectation));
 }
 

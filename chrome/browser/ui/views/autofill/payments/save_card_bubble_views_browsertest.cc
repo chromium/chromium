@@ -43,8 +43,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
@@ -52,6 +54,7 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -132,7 +135,6 @@ namespace autofill {
 
 class SaveCardBubbleViewsFullFormBrowserTest
     : public SyncTest,
-      public AutofillManager::Observer,
       public CreditCardSaveManager::ObserverForTest,
       public SaveCardBubbleControllerImpl::ObserverForTest {
  protected:
@@ -143,16 +145,32 @@ class SaveCardBubbleViewsFullFormBrowserTest
       const SaveCardBubbleViewsFullFormBrowserTest&) = delete;
   SaveCardBubbleViewsFullFormBrowserTest& operator=(
       const SaveCardBubbleViewsFullFormBrowserTest&) = delete;
+  ~SaveCardBubbleViewsFullFormBrowserTest() override = default;
 
  protected:
-  ~SaveCardBubbleViewsFullFormBrowserTest() override = default;
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
+
+    testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
+      return forms_seen_waiter_.Wait(min_num_awaited_calls);
+    }
+
+   private:
+    TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {&AutofillManager::Observer::OnAfterFormsSeen}};
+  };
 
   // Various events that can be waited on by the DialogEventWaiter.
   enum DialogEvent : int {
     OFFERED_LOCAL_SAVE,
     OFFERED_UPLOAD_SAVE,
     REQUESTED_UPLOAD_SAVE,
-    DYNAMIC_FORM_PARSED,
     RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
     SENT_UPLOAD_CARD_REQUEST,
     RECEIVED_UPLOAD_CARD_RESPONSE,
@@ -212,12 +230,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
     credit_card_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
 
-    // Set up this class as the ObserverForTest implementation.
-    AutofillManager* autofill_manager =
-        ContentAutofillDriver::GetForRenderFrameHost(
-            GetActiveWebContents()->GetPrimaryMainFrame())
-            ->autofill_manager();
-    autofill_manager->AddObserver(this);
+    autofill_manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+            GetActiveWebContents());
 
     // Set up the fake geolocation data.
     geolocation_overrider_ =
@@ -225,10 +240,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
   }
 
-  // AutofillManager::Observer
-  void OnFormParsed() override {
-    if (event_waiter_)
-      event_waiter_->OnEvent(DialogEvent::DYNAMIC_FORM_PARSED);
+  // The primary main frame's AutofillManager.
+  TestAutofillManager* GetAutofillManager() {
+    DCHECK(autofill_manager_injector_);
+    return autofill_manager_injector_->GetForPrimaryMainFrame();
   }
 
   // CreditCardSaveManager::ObserverForTest:
@@ -738,6 +753,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+      autofill_manager_injector_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
 
@@ -1410,9 +1427,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Submitting the the dynamic change form, offer to save bubble should be
   // shown.
-  ResetEventWaiterForSequence({DialogEvent::DYNAMIC_FORM_PARSED});
   FillAndChangeForm();
-  WaitForObservedEvent();
+  ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,

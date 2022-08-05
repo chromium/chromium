@@ -651,6 +651,8 @@ static_library("test_support") {
     "test_autofill_driver.h",
     "test_autofill_external_delegate.cc",
     "test_autofill_external_delegate.h",
+    "test_autofill_manager_waiter.cc",
+    "test_autofill_manager_waiter.h",
     "test_autofill_tick_clock.cc",
     "test_autofill_tick_clock.h",
     "test_browser_autofill_manager.cc",
