@@ -73,10 +73,6 @@ void MergeForSubframesWithAdjustedTime(
                       merged_candidate.Type(), merged_candidate.ImageBPP());
 }
 
-bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
-  return subframe_rfh != nullptr && subframe_rfh->GetParent() != nullptr;
-}
-
 void Reset(ContentfulPaintTimingInfo& timing) {
   timing.Reset(absl::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
                /*image_bpp=*/0.0);
@@ -220,17 +216,21 @@ LargestContentfulPaintHandler::LargestContentfulPaintHandler()
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
 
-void LargestContentfulPaintHandler::RecordTiming(
+void LargestContentfulPaintHandler::RecordMainFrameTiming(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint,
+    const absl::optional<base::TimeDelta>&
+        first_input_or_scroll_notified_timestamp) {
+  RecordMainFrameTimingInternal(largest_contentful_paint,
+                                first_input_or_scroll_notified_timestamp);
+}
+
+void LargestContentfulPaintHandler::RecordSubFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const absl::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     content::RenderFrameHost* subframe_rfh) {
-  if (!IsSubframe(subframe_rfh)) {
-    RecordMainFrameTiming(largest_contentful_paint,
-                          first_input_or_scroll_notified_timestamp);
-    return;
-  }
   // For subframes
   const auto it = subframe_navigation_start_offset_.find(
       subframe_rfh->GetFrameTreeNodeId());
@@ -238,8 +238,9 @@ void LargestContentfulPaintHandler::RecordTiming(
     // We received timing information for an untracked load. Ignore it.
     return;
   }
-  RecordSubframeTiming(largest_contentful_paint,
-                       first_input_or_scroll_notified_timestamp, it->second);
+  RecordSubFrameTimingInternal(largest_contentful_paint,
+                               first_input_or_scroll_notified_timestamp,
+                               it->second);
   if (!IsSameSite(subframe_rfh->GetLastCommittedURL(),
                   subframe_rfh->GetMainFrame()->GetLastCommittedURL())) {
     RecordCrossSiteSubframeTiming(largest_contentful_paint, it->second);
@@ -263,7 +264,7 @@ LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
 // should have been able when a large ephemeral element is removed). This is a
 // trade-off we make to keep a simple algorithm, otherwise we will have to
 // track one candidate per subframe.
-void LargestContentfulPaintHandler::RecordSubframeTiming(
+void LargestContentfulPaintHandler::RecordSubFrameTimingInternal(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const absl::optional<base::TimeDelta>&
@@ -335,7 +336,7 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
   }
 }
 
-void LargestContentfulPaintHandler::RecordMainFrameTiming(
+void LargestContentfulPaintHandler::RecordMainFrameTimingInternal(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const absl::optional<base::TimeDelta>&

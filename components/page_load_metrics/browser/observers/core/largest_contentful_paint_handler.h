@@ -118,7 +118,12 @@ class LargestContentfulPaintHandler {
       ContentfulPaintTimingInfo::LargestContentTextOrImage*
           largest_content_type);
 
-  void RecordTiming(
+  void RecordMainFrameTiming(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&
+          largest_contentful_paint,
+      const absl::optional<base::TimeDelta>&
+          first_input_or_scroll_notified_timestamp);
+  void RecordSubFrameTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
@@ -160,7 +165,7 @@ class LargestContentfulPaintHandler {
   void OnSubFrameDeleted(int frame_tree_node_id);
 
  private:
-  void RecordSubframeTiming(
+  void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
@@ -172,7 +177,7 @@ class LargestContentfulPaintHandler {
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const base::TimeDelta& navigation_start_offset);
-  void RecordMainFrameTiming(
+  void RecordMainFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       const absl::optional<base::TimeDelta>&
