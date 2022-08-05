@@ -171,9 +171,7 @@ PaymentMethodViewController::PaymentMethodViewController(
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog),
-      payment_method_list_(dialog),
-      enable_add_card_(!state->is_retry_called() &&
-                       spec->supports_basic_card()) {
+      payment_method_list_(dialog) {
   const std::vector<std::unique_ptr<PaymentApp>>& available_apps =
       state->available_apps();
   for (const auto& app : available_apps) {
@@ -211,21 +209,11 @@ bool PaymentMethodViewController::ShouldShowPrimaryButton() {
 }
 
 bool PaymentMethodViewController::ShouldShowSecondaryButton() {
-  return enable_add_card_;
+  return false;
 }
 
 std::u16string PaymentMethodViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
-}
-
-PaymentRequestSheetController::ButtonCallback
-PaymentMethodViewController::GetSecondaryButtonCallback() {
-  return base::BindRepeating(
-      &PaymentRequestDialogView::ShowCreditCardEditor, dialog(),
-      BackNavigationType::kPaymentSheet, base::RepeatingClosure(),
-      base::BindRepeating(&PaymentRequestState::AddAutofillPaymentApp, state(),
-                          true),
-      nullptr);
 }
 
 int PaymentMethodViewController::GetSecondaryButtonId() {

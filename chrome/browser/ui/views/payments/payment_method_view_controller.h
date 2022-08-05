@@ -36,13 +36,9 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   std::u16string GetSecondaryButtonLabel() override;
-  ButtonCallback GetSecondaryButtonCallback() override;
   int GetSecondaryButtonId() override;
 
   PaymentRequestItemList payment_method_list_;
-
-  // Whether or not adding a new card is allowed.
-  bool enable_add_card_;
 };
 
 }  // namespace payments

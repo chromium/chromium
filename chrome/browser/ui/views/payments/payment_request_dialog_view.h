@@ -22,7 +22,6 @@
 
 namespace autofill {
 class AutofillProfile;
-class CreditCard;
 }  // namespace autofill
 
 class Profile;
@@ -141,17 +140,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void ShowShippingProfileSheet();
   void ShowPaymentMethodSheet();
   void ShowShippingOptionSheet();
-  // |credit_card| is the card to be edited, or nullptr for adding a card.
-  // |on_edited| is called when |credit_card| was successfully edited, and
-  // |on_added| is called when a new credit card was added (the reference is
-  // short-lived; callee should make a copy of the CreditCard object).
-  // |back_navigation_type| identifies the type of navigation to execute once
-  // the editor has completed successfully.
-  void ShowCreditCardEditor(
-      BackNavigationType back_navigation_type,
-      base::OnceClosure on_edited,
-      base::OnceCallback<void(const autofill::CreditCard&)> on_added,
-      autofill::CreditCard* credit_card = nullptr);
   // |profile| is the address to be edited, or nullptr for adding an address.
   // |on_edited| is called when |profile| was successfully edited, and
   // |on_added| is called when a new profile was added (the reference is

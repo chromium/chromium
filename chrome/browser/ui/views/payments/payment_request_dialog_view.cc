@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
-#include "chrome/browser/ui/views/payments/credit_card_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/views/payments/shipping_address_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/features.h"
@@ -368,27 +366,6 @@ void PaymentRequestDialogView::ShowShippingOptionSheet() {
                     /* animate = */ true);
   if (observer_for_testing_)
     observer_for_testing_->OnShippingOptionSectionOpened();
-}
-
-void PaymentRequestDialogView::ShowCreditCardEditor(
-    BackNavigationType back_navigation_type,
-    base::OnceClosure on_edited,
-    base::OnceCallback<void(const autofill::CreditCard&)> on_added,
-    autofill::CreditCard* credit_card) {
-  if (!request_->spec())
-    return;
-
-  view_stack_->Push(
-      CreateViewAndInstallController(
-          std::make_unique<CreditCardEditorViewController>(
-              request_->spec(), request_->state(),
-              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
-              std::move(on_edited), std::move(on_added), credit_card,
-              request_->IsOffTheRecord()),
-          &controller_map_),
-      /* animate = */ true);
-  if (observer_for_testing_)
-    observer_for_testing_->OnCreditCardEditorOpened();
 }
 
 void PaymentRequestDialogView::ShowShippingAddressEditor(

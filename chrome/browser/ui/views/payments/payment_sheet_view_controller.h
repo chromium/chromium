@@ -67,7 +67,6 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   std::unique_ptr<views::View> CreateDataSourceRow();
 
   void AddShippingButtonPressed();
-  void AddPaymentMethodButtonPressed();
   void AddContactInfoButtonPressed();
 };
 
