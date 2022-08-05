@@ -15,6 +15,49 @@ AppDeduplicationService::AppDeduplicationService(Profile* profile) {
 
 AppDeduplicationService::~AppDeduplicationService() = default;
 
+std::vector<Entry> AppDeduplicationService::GetDuplicates(
+    const EntryId& entry_id) {
+  // TODO(b/238394602): Only return installed apps (might need to add a flag in
+  // the interface to indicate).
+  // TODO(b/238394602): Add logic to handle url entry id and web apps.
+  std::vector<Entry> entries;
+
+  auto it = entry_to_group_map_.find(entry_id);
+
+  if (it == entry_to_group_map_.end()) {
+    return entries;
+  }
+  std::string duplication_key = it->second;
+  auto group = duplication_map_.find(duplication_key);
+  if (group == duplication_map_.end()) {
+    return entries;
+  }
+
+  for (const auto& entry : group->second.entries) {
+    entries.push_back(entry);
+  }
+  return entries;
+}
+
+bool AppDeduplicationService::AreDuplicates(const EntryId& entry_id_1,
+                                            const EntryId& entry_id_2) {
+  // TODO(b/238394602): Add logic to handle url entry id and web apps.
+  // TODO(b/238394602): Add interface with more than 2 entry ids.
+  auto it_1 = entry_to_group_map_.find(entry_id_1);
+  if (it_1 == entry_to_group_map_.end()) {
+    return false;
+  }
+  const std::string& duplication_key_1 = it_1->second;
+
+  auto it_2 = entry_to_group_map_.find(entry_id_2);
+  if (it_2 == entry_to_group_map_.end()) {
+    return false;
+  }
+  const std::string& duplication_key_2 = it_2->second;
+
+  return duplication_key_1 == duplication_key_2;
+}
+
 void AppDeduplicationService::OnDuplicatedAppsMapUpdated(
     const proto::DuplicatedAppsMap& duplicated_apps_map) {
   for (auto const& group : duplicated_apps_map.duplicated_apps_map()) {

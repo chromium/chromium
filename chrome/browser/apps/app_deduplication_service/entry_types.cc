@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ostream>
 #include <utility>
 
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
@@ -25,7 +26,7 @@ bool EntryId::operator<(const EntryId& other) const {
   if (entry_type != other.entry_type)
     return entry_type < other.entry_type;
 
-  if (entry_type == EntryType::kApp)
+  if (entry_type == EntryType::kApp && app_type != other.app_type)
     return app_type < other.app_type;
 
   return id < other.id;
@@ -39,6 +40,20 @@ bool Entry::operator==(const Entry& other) const {
 
 bool Entry::operator<(const Entry& other) const {
   return entry_id < other.entry_id;
+}
+
+std::ostream& operator<<(std::ostream& out, const EntryId& entry_id) {
+  out << "EntryType: "
+      << static_cast<std::underlying_type<EntryType>::type>(entry_id.entry_type)
+      << std::endl;
+  out << "Id: " << entry_id.id << std::endl;
+  if (entry_id.app_type.has_value()) {
+    out << "AppType: "
+        << static_cast<std::underlying_type<AppType>::type>(
+               entry_id.app_type.value())
+        << std::endl;
+  }
+  return out;
 }
 
 }  // namespace apps::deduplication

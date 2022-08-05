@@ -45,6 +45,9 @@ struct EntryId {
   absl::optional<AppType> app_type;
 };
 
+// For logging and debugging purposes.
+std::ostream& operator<<(std::ostream& out, const EntryId& entry_id);
+
 // Deduplication entry, each entry represents an app or a web page that could be
 // identified as duplicates with each other.
 struct Entry {

@@ -105,4 +105,34 @@ TEST_F(AppDeduplicationServiceTest, OnDuplicatedAppsMapUpdated) {
                           Entry(EntryId(web_app_id, AppType::kWeb))));
 }
 
+// Test exact match entry ids.
+TEST_F(AppDeduplicationServiceTest, ExactDuplicate) {
+  TestingProfile::Builder profile_builder;
+  auto profile = profile_builder.Build();
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, service);
+
+  std::string binary_pb = "";
+  base::FilePath install_dir("/");
+  apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
+      binary_pb, install_dir);
+
+  std::string arc_app_id = "test_arc_app_id";
+  std::string web_app_id = "test_web_app_id";
+  EntryId arc_entry_id(arc_app_id, apps::AppType::kArc);
+  EntryId web_entry_id(web_app_id, apps::AppType::kWeb);
+
+  EXPECT_THAT(service->GetDuplicates(arc_entry_id),
+              ElementsAre(Entry(arc_entry_id), Entry(web_entry_id)));
+  EXPECT_THAT(service->GetDuplicates(web_entry_id),
+              ElementsAre(Entry(arc_entry_id), Entry(web_entry_id)));
+  EXPECT_TRUE(service->AreDuplicates(arc_entry_id, web_entry_id));
+
+  EntryId not_duplicate_app_id("not_duplicate_app_id", apps::AppType::kWeb);
+  EXPECT_TRUE(service->GetDuplicates(not_duplicate_app_id).empty());
+  EXPECT_FALSE(service->AreDuplicates(not_duplicate_app_id, web_entry_id));
+}
+
 }  // namespace apps::deduplication

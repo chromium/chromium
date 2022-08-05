@@ -27,6 +27,9 @@ class AppDeduplicationService : public KeyedService,
   AppDeduplicationService(const AppDeduplicationService&) = delete;
   AppDeduplicationService& operator=(const AppDeduplicationService&) = delete;
 
+  std::vector<Entry> GetDuplicates(const EntryId& entry_id);
+  bool AreDuplicates(const EntryId& entry_id_1, const EntryId& entry_id_2);
+
  private:
   friend class AppDeduplicationServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
