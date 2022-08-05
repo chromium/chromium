@@ -1377,11 +1377,16 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   if (UNLIKELY(style->PositionFallback())) {
     DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     element = DynamicTo<Element>(node_info.node.GetDOMNode());
-    if (element)
-      next_fallback_style = element->StyleForPositionFallback(0);
+    if (element) {
+      if (const ComputedStyle* fallback_style =
+              element->StyleForPositionFallback(0)) {
+        style = fallback_style;
+        next_fallback_style = element->StyleForPositionFallback(1);
+      }
+    }
   }
 
-  wtf_size_t fallback_index = 0;
+  wtf_size_t fallback_index = 1;
   while (true) {
     const bool test_if_margin_box_fits = next_fallback_style;
     OffsetInfo offset_info;
