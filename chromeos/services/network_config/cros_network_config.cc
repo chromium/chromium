@@ -168,11 +168,19 @@ std::string MojoNetworkTypeToOnc(mojom::NetworkType type) {
 mojom::ConnectionStateType GetMojoConnectionStateType(
     const NetworkState* network) {
   if (network->IsConnectedState()) {
-    if (network->IsCaptivePortal())
-      return mojom::ConnectionStateType::kPortal;
-    if (network->IsOnline())
-      return mojom::ConnectionStateType::kOnline;
-    return mojom::ConnectionStateType::kConnected;
+    auto portal_state = network->GetPortalState();
+    switch (portal_state) {
+      case NetworkState::PortalState::kUnknown:
+        return mojom::ConnectionStateType::kConnected;
+      case NetworkState::PortalState::kOnline:
+        return mojom::ConnectionStateType::kOnline;
+      case NetworkState::PortalState::kPortalSuspected:
+      case NetworkState::PortalState::kPortal:
+      case NetworkState::PortalState::kProxyAuthRequired:
+      case NetworkState::PortalState::kNoInternet:
+        // See PortalState for differentiation of portal states.
+        return mojom::ConnectionStateType::kPortal;
+    }
   }
   if (network->IsConnectingState())
     return mojom::ConnectionStateType::kConnecting;

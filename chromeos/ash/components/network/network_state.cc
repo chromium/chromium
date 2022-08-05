@@ -484,22 +484,6 @@ NetworkState::PortalState NetworkState::GetPortalState() const {
                                                        : shill_portal_state_;
 }
 
-bool NetworkState::IsCaptivePortal() const {
-  PortalState portal_state = GetPortalState();
-  switch (portal_state) {
-    case PortalState::kUnknown:
-    case PortalState::kOnline:
-      return false;
-    case PortalState::kPortalSuspected:
-    case PortalState::kPortal:
-    case PortalState::kProxyAuthRequired:
-    case PortalState::kNoInternet:
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
 bool NetworkState::IsSecure() const {
   return !security_class_.empty() && security_class_ != shill::kSecurityNone;
 }

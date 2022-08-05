@@ -78,14 +78,19 @@ NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
 
 NetworkConnectionState GetNetworkConnectionState(
     const ash::NetworkState* network) {
-  if (network->IsConnectedState() && network->IsCaptivePortal()) {
-    return NetworkConnectionState::PORTAL;
-  }
-  if (network->IsConnectedState() && network->IsOnline()) {
-    return NetworkConnectionState::ONLINE;
-  }
   if (network->IsConnectedState()) {
-    return NetworkConnectionState::CONNECTED;
+    auto portal_state = network->GetPortalState();
+    switch (portal_state) {
+      case ash::NetworkState::PortalState::kUnknown:
+        return NetworkConnectionState::CONNECTED;
+      case ash::NetworkState::PortalState::kOnline:
+        return NetworkConnectionState::ONLINE;
+      case ash::NetworkState::PortalState::kPortalSuspected:
+      case ash::NetworkState::PortalState::kPortal:
+      case ash::NetworkState::PortalState::kProxyAuthRequired:
+      case ash::NetworkState::PortalState::kNoInternet:
+        return NetworkConnectionState::PORTAL;
+    }
   }
   if (network->IsConnectingState()) {
     return NetworkConnectionState::CONNECTING;

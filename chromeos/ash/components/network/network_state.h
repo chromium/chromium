@@ -223,10 +223,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // portal detection results if set.
   PortalState GetPortalState() const;
 
-  // Returns true if GetPortalState is not unknown or online.
-  // TODO(b/207069182): Deprecate and use GetPortalState directly.
-  bool IsCaptivePortal() const;
-
   // Returns true if the security type is non-empty and not 'none'.
   bool IsSecure() const;
 
