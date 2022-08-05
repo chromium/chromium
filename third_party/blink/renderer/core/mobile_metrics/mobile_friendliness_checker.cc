@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/display/screen_info.h"
@@ -78,6 +80,15 @@ void MobileFriendlinessChecker::NotifyPaintBegin() {
               .MaximumScrollOffsetAtScale(initial_scale_)
               .x() == 0;
   is_painting_ = true;
+  viewport_transform_ = &frame_view_->GetLayoutView()
+                             ->FirstFragment()
+                             .ContentsProperties()
+                             .Transform();
+  previous_transform_ = viewport_transform_;
+  current_x_offset_ = 0.0;
+
+  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
+  viewport_width_ = frame_width * viewport_scalar_ / initial_scale_;
 
   if (timer_.IsActive() ||
       base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
@@ -578,44 +589,51 @@ void MobileFriendlinessChecker::UpdateTextAreaSizes(
 }
 
 void MobileFriendlinessChecker::UpdateBeyondViewportAreaSizes(
-    const PhysicalRect& paint_rect) {
+    const PhysicalRect& paint_rect,
+    const TransformPaintPropertyNodeOrAlias& current_transform) {
   DCHECK(is_painting_);
   if (ignore_beyond_viewport_scope_count_ != 0)
     return;
 
-  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
+  if (previous_transform_ != &current_transform) {
+    auto projection = GeometryMapper::SourceToDestinationProjection(
+        current_transform, *viewport_transform_);
+    if (projection.IsIdentityOr2DTranslation()) {
+      current_x_offset_ = projection.Translation2D().x();
+      previous_transform_ = &current_transform;
+    } else {
+      // For now we ignore offsets caused by non-2d-translation transforms.
+      current_x_offset_ = 0;
+    }
+  }
 
-  // TODO(kumagi): Map paint_rect from the local transform space to the viewport
-  // space.
-  PhysicalRect viewport_rect(
-      LayoutUnit(), LayoutUnit(),
-      LayoutUnit(frame_width * viewport_scalar_ / initial_scale_),
-      LayoutUnit(kIntMaxForLayoutUnit));
-  int original_size =
-      ClampTo<int>((paint_rect.Width() * paint_rect.Height()).ToInt());
-  viewport_rect.Intersect(paint_rect);
+  float right = paint_rect.Right() + current_x_offset_;
+  float width = paint_rect.Width();
+  float width_beyond_viewport =
+      std::min(std::max(right - viewport_width_, 0.f), width);
 
   area_sizes_.content_beyond_viewport_area +=
-      original_size -
-      ClampTo<int>((viewport_rect.Width() * viewport_rect.Height()).ToInt());
+      width_beyond_viewport * paint_rect.Height();
 }
 
 void MobileFriendlinessChecker::NotifyPaintTextFragment(
     const PhysicalRect& paint_rect,
-    int font_size) {
+    int font_size,
+    const TransformPaintPropertyNodeOrAlias& current_transform) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
   UpdateTextAreaSizes(paint_rect, font_size);
-  UpdateBeyondViewportAreaSizes(paint_rect);
+  UpdateBeyondViewportAreaSizes(paint_rect, current_transform);
 }
 
 void MobileFriendlinessChecker::NotifyPaintReplaced(
-    const PhysicalRect& paint_rect) {
+    const PhysicalRect& paint_rect,
+    const TransformPaintPropertyNodeOrAlias& current_transform) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsLocalRoot());
 
-  UpdateBeyondViewportAreaSizes(paint_rect);
+  UpdateBeyondViewportAreaSizes(paint_rect, current_transform);
 }
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {

@@ -18,6 +18,7 @@ namespace blink {
 
 class Document;
 class LocalFrameView;
+class TransformPaintPropertyNodeOrAlias;
 struct ViewportDescription;
 
 // Calculates the mobile usability of current page, especially friendliness on
@@ -39,8 +40,13 @@ class CORE_EXPORT MobileFriendlinessChecker
   void NotifyPaintEnd();
   void WillBeRemovedFromFrame();
   void NotifyViewportUpdated(const ViewportDescription&);
-  void NotifyPaintTextFragment(const PhysicalRect& paint_rect, int font_size);
-  void NotifyPaintReplaced(const PhysicalRect& paint_rect);
+  void NotifyPaintTextFragment(
+      const PhysicalRect& paint_rect,
+      int font_size,
+      const TransformPaintPropertyNodeOrAlias& current_transform);
+  void NotifyPaintReplaced(
+      const PhysicalRect& paint_rect,
+      const TransformPaintPropertyNodeOrAlias& current_transform);
 
   void Trace(Visitor* visitor) const override;
 
@@ -87,10 +93,16 @@ class CORE_EXPORT MobileFriendlinessChecker
   int ComputeBadTapTargetsRatio();
 
   void UpdateTextAreaSizes(const PhysicalRect& text_rect, int font_size);
-  void UpdateBeyondViewportAreaSizes(const PhysicalRect& paint_rect);
+  void UpdateBeyondViewportAreaSizes(
+      const PhysicalRect& paint_rect,
+      const TransformPaintPropertyNodeOrAlias& current_transform);
 
  private:
   Member<LocalFrameView> frame_view_;
+  const TransformPaintPropertyNodeOrAlias* viewport_transform_ = nullptr;
+  const TransformPaintPropertyNodeOrAlias* previous_transform_ = nullptr;
+  float current_x_offset_ = 0.0;
+  float viewport_width_ = 0.0;
   HeapTaskRunnerTimer<MobileFriendlinessChecker> timer_;
   double viewport_scalar_;
   double initial_scale_ = 1.0;

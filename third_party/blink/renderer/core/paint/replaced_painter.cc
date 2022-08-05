@@ -82,8 +82,11 @@ ScopedReplacedContentPaintState::ScopedReplacedContentPaintState(
       PhysicalRect content_rect = replaced.ReplacedContentRect();
       content_rect.Move(paint_offset_);
       content_rect.Intersect(PhysicalRect(GetPaintInfo().GetCullRect().Rect()));
-      mf_checker->NotifyPaintReplaced(content_rect);
-
+      mf_checker->NotifyPaintReplaced(content_rect,
+                                      GetPaintInfo()
+                                          .context.GetPaintController()
+                                          .CurrentPaintChunkProperties()
+                                          .Transform());
       mf_ignore_scope_.emplace(*mf_checker);
     }
   }

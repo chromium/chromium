@@ -341,8 +341,11 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
         PhysicalRect clipped_rect = PhysicalRect(visual_rect);
         clipped_rect.Intersect(PhysicalRect(paint_info.GetCullRect().Rect()));
-        mf_checker->NotifyPaintTextFragment(clipped_rect,
-                                            text->StyleRef().FontSize());
+        mf_checker->NotifyPaintTextFragment(
+            clipped_rect, text->StyleRef().FontSize(),
+            paint_info.context.GetPaintController()
+                .CurrentPaintChunkProperties()
+                .Transform());
       }
     }
   }

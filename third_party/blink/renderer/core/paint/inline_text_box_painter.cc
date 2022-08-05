@@ -167,8 +167,11 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       if (const auto* text = DynamicTo<LayoutText>(InlineLayoutObject())) {
         PhysicalRect clipped_rect = PhysicalRect(visual_rect);
         clipped_rect.Intersect(PhysicalRect(paint_info.GetCullRect().Rect()));
-        mf_checker->NotifyPaintTextFragment(clipped_rect,
-                                            text->StyleRef().FontSize());
+        mf_checker->NotifyPaintTextFragment(
+            clipped_rect, text->StyleRef().FontSize(),
+            paint_info.context.GetPaintController()
+                .CurrentPaintChunkProperties()
+                .Transform());
       }
     }
   }

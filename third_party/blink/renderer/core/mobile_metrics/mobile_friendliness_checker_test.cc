@@ -541,7 +541,7 @@ TEST_F(MobileFriendlinessCheckerTest,
     <meta name="viewport" content="width=device-width">
   </head>
   <body>
-    <img style="width:3000px; height:50px">
+    <img style="width:5000px; height:50px">
     <p style="font-size: 12pt">Normal font text.</p>
   </body>
 </html>
@@ -955,23 +955,23 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
         padding: 14px;
       }
     </style>
-    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">f
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
   </head>
-  <body style="font: 40px/1 Ahem; line-height: 1">
-  <div class="scrollmenu">
-    <a href="#1">First text</a>
-    <a href="#2">Second text</a>
-    <a href="#3">Third text</a>
-    <a href="#4">Fourth text</a>
-    <a href="#5">Fifth text</a>
-    <a href="#6">Sixth text</a>
-    <a href="#7">Seventh text</a>
-    <a href="#8">Eighth text</a>
-    <a href="#9">Ninth text</a>
-    <a href="#10">Tenth text</a>
-    <a href="#11">Eleventh text</a>
-    <a href="#12">Twelveth text</a>
-  </div>
+  <body style="font: 40px/1 Ahem; line-height: 1; height: 200px">
+    <div class="scrollmenu">
+      <a href="#1">First text</a>
+      <a href="#2">Second text</a>
+      <a href="#3">Third text</a>
+      <a href="#4">Fourth text</a>
+      <a href="#5">Fifth text</a>
+      <a href="#6">Sixth text</a>
+      <a href="#7">Seventh text</a>
+      <a href="#8">Eighth text</a>
+      <a href="#9">Ninth text</a>
+      <a href="#10">Tenth text</a>
+      <a href="#11">Eleventh text</a>
+      <a href="#12">Twelveth text</a>
+    </div>
   </body>
 </html>
 )");
@@ -1022,6 +1022,277 @@ TEST_F(MobileFriendlinessCheckerTest, SubScroller) {
 )");
   // Fits within the viewport by scrollbar.
   EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerHalfOutByMargin) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+    <style>
+      body {
+        margin: 0px;
+      }
+      div.scrollmenu {
+        margin-left: 240px;
+        width: 480px;
+        height: 800px;
+        background-color: #333;
+        overflow: scroll;
+        white-space: nowrap;
+      }
+      div.scrollmenu a {
+        display: inline-block;
+        color: white;
+        padding: 14px;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 40px/1 Ahem; line-height: 1">
+  <div class="scrollmenu">
+    <a href="#1">First text</a>
+    <a href="#2">Second text</a>
+    <a href="#3">Third text</a>
+    <a href="#4">Fourth text</a>
+    <a href="#5">Fifth text</a>
+    <a href="#6">Sixth text</a>
+    <a href="#7">Seventh text</a>
+    <a href="#8">Eighth text</a>
+    <a href="#9">Ninth text</a>
+    <a href="#10">Tenth text</a>
+    <a href="#11">Eleventh text</a>
+    <a href="#12">Twelveth text</a>
+  </div>
+  </body>
+</html>
+)");
+  // Fits within the viewport by scrollbar.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 50);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerOutByTranslate) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+    <style>
+      body {
+        margin: 0px;
+      }
+      div.scrollmenu {
+        transform: translate(360px, 0px);
+        width: 480px;
+        height: 800px;
+        background-color: #333;
+        overflow: scroll;
+        white-space: nowrap;
+      }
+      div.scrollmenu a {
+        display: inline-block;
+        color: white;
+        padding: 14px;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 40px/1 Ahem; line-height: 1">
+  <div class="scrollmenu">
+    <a href="#1">First text</a>
+    <a href="#2">Second text</a>
+    <a href="#3">Third text</a>
+    <a href="#4">Fourth text</a>
+    <a href="#5">Fifth text</a>
+    <a href="#6">Sixth text</a>
+    <a href="#7">Seventh text</a>
+    <a href="#8">Eighth text</a>
+    <a href="#9">Ninth text</a>
+    <a href="#10">Tenth text</a>
+    <a href="#11">Eleventh text</a>
+    <a href="#12">Twelveth text</a>
+  </div>
+  </body>
+</html>
+)");
+  // Fits within the viewport by scrollbar.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 75);
+}
+
+/*
+ * TODO(kumagi): Get precise paint offset of rtl environment is hard.
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerGoesLeft) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        direction: rtl;
+      }
+      div.scroller {
+        margin-right: 360px;
+        width: 480px;
+        height: 800px;
+        overflow: scroll;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0
+minimum-scale=1.0">
+  </head>
+  <body style="font: 40px/1 Ahem; line-height: 1">
+    <div class="scroller">
+      <img style="width: 9000px; height: 1px">
+    </div>
+  </body>
+</html>
+)");
+  // Right to left language scrollbar goes to left.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 75);
+}
+*/
+
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerFitsWithinViewport) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+      }
+      div.scroller1 {
+        width: 481px;
+        height: 1px;
+        overflow: scroll;
+      }
+      div.scroller2 {
+        width: 10px;
+        height: 800px;
+        overflow: scroll;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 40px/1 Ahem; line-height: 1">
+    <div class="scroller1">
+      <img style="width: 9000px; height: 1px">
+      This div goes out of viewport width 1px.
+    </div>
+    <div class="scroller2">
+      <img style="width: 9000px; height: 1px">
+      This div fits within viewport width.
+    </div>
+  </body>
+</html>
+)");
+  // Only scroller1 gets out of viewport width.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 1);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerTwice) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+      }
+      div.scroller {
+        margin-left: 240px;
+        width: 480px;
+        height: 400px;
+        overflow: scroll;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 40px/1 Ahem; line-height: 1">
+    <div class="scroller">
+      <img style="width: 9000px; height: 1px">
+      hello this is a pen.
+    </div>
+    <div class="scroller">
+      <img style="width: 9000px; height: 1px">
+    </div>
+  </body>
+</html>
+)");
+  // Both of subscrollers get out of viewport width.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 50);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, SubScrollerInSubScroller) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+      }
+      div.scroller {
+        width: 480px;
+        height: 200px;
+        overflow: scroll;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 20px/1; line-height: 1">
+    <div class="scroller" style="margin-left: 240px;">
+      240px*200px gets out of viewport.
+      <img style="width: 9000px; height: 1px">
+    </div>
+    <div class="scroller" style="margin-left: 480px;">
+      480px*200px gets out of viewport.
+      <img style="width: 9000px; height: 1px">
+    </div>
+    <div class="scroller" style="margin-left: 240px;">
+      240px*200px gets out of viewport.
+      <img style="width: 9000px; height: 1px">
+      <div class="scroller">
+        Contents inside of scroller will be ignored from the
+        text_content_outside_viewport_percentage metrics.
+        <img style="width: 9000px; height: 1px">
+      </div>
+    </div>
+    <div class="scroller" style="margin-left: 480px;">
+      480px*200px gets out of viewport.
+      Hereby (240px*2)*400px + (480px*2)*400px gets out of viewport(480px*800px),
+      This is exactly 0.75. Then text_content_outside_viewport_percentage should be 75.
+      <img style="width: 9000px; height: 1px">
+      <div class="scroller">
+        <img style="width: 9000px; height: 1px">
+        <div class="scroller">
+          <img style="width: 9000px; height: 1px">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+)");
+  // Fits within the viewport by scrollbar.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 75);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ScrollableLayoutView) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        width: 960px;
+        height: 800px;
+      }
+    </style>
+    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font: 20px/1; line-height: 1">
+    <img style="width: 600px; height: 800px">
+  </body>
+</html>
+)");
+  // Fits within the viewport by scrollbar.
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 25);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, SingleTapTarget) {

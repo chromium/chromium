@@ -144,16 +144,28 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
 
   if (input_paint_info_.phase == PaintPhase::kForeground) {
     // We treat horizontal-scrollable scrollers like replaced objects.
-    if (auto* scrollable_area = box.GetScrollableArea()) {
-      if (scrollable_area->HasHorizontalScrollbar()) {
-        if (auto* mf_checker =
-                MobileFriendlinessChecker::From(box.GetDocument())) {
-          PhysicalRect content_rect = box.LocalVisualRect();
-          content_rect.Move(paint_offset_);
-          content_rect.Intersect(
-              PhysicalRect(input_paint_info_.GetCullRect().Rect()));
-          mf_checker->NotifyPaintReplaced(content_rect);
-          mf_ignore_scope_.emplace(*mf_checker);
+    if (auto* mf_checker = MobileFriendlinessChecker::From(box.GetDocument())) {
+      if (!box.IsLayoutView()) {
+        if (auto* scrollable_area = box.GetScrollableArea()) {
+          if (scrollable_area->MaximumScrollOffset().x() != 0) {
+            PhysicalRect content_rect = box.LocalVisualRect();
+            content_rect.Move(paint_offset_);
+            content_rect.Intersect(
+                PhysicalRect(input_paint_info_.GetCullRect().Rect()));
+            mf_checker->NotifyPaintReplaced(
+                content_rect, input_paint_info_.context.GetPaintController()
+                                  .CurrentPaintChunkProperties()
+                                  .Transform());
+            mf_ignore_scope_.emplace(*mf_checker);
+          }
+        }
+        // Don't check mobile friendliness for beyond viewport in position:fixed
+        // boxes because they don't scroll in the viewport.
+        if (const auto* properties = fragment_to_paint_->PaintProperties()) {
+          if (const auto* translation = properties->PaintOffsetTranslation()) {
+            if (translation->ScrollTranslationForFixed())
+              mf_ignore_scope_.emplace(*mf_checker);
+          }
         }
       }
     }
