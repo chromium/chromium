@@ -6,6 +6,9 @@ package org.chromium.android_webview.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
@@ -16,7 +19,6 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -118,10 +120,10 @@ public class AwMetricsIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testMetadata_basicInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
-        Assert.assertEquals(ChromeUserMetricsExtension.Product.ANDROID_WEBVIEW,
+        assertEquals(ChromeUserMetricsExtension.Product.ANDROID_WEBVIEW,
                 ChromeUserMetricsExtension.Product.forNumber(log.getProduct()));
-        Assert.assertTrue("Should have some client_id", log.hasClientId());
-        Assert.assertTrue("Should have some session_id", log.hasSessionId());
+        assertTrue("Should have some client_id", log.hasClientId());
+        assertTrue("Should have some session_id", log.hasSessionId());
     }
 
     @Test
@@ -130,9 +132,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_buildInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some build_timestamp", systemProfile.hasBuildTimestamp());
-        Assert.assertTrue("Should have some app_version", systemProfile.hasAppVersion());
-        Assert.assertTrue("Should have some channel", systemProfile.hasChannel());
+        assertTrue("Should have some build_timestamp", systemProfile.hasBuildTimestamp());
+        assertTrue("Should have some app_version", systemProfile.hasAppVersion());
+        assertTrue("Should have some channel", systemProfile.hasChannel());
     }
 
     @Test
@@ -141,19 +143,16 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_miscellaneousSystemProfileInfo() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some uma_enabled_date", systemProfile.hasUmaEnabledDate());
-        Assert.assertTrue("Should have some install_date", systemProfile.hasInstallDate());
+        assertTrue("Should have some uma_enabled_date", systemProfile.hasUmaEnabledDate());
+        assertTrue("Should have some install_date", systemProfile.hasInstallDate());
         // Don't assert application_locale's value, because we don't want to enforce capitalization
         // requirements on the metrics service (ex. in case it switches from "en-US" to "en-us" for
         // some reason).
-        Assert.assertTrue(
-                "Should have some application_locale", systemProfile.hasApplicationLocale());
+        assertTrue("Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        Assert.assertEquals(
-                ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
-        Assert.assertTrue(
-                "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
-        Assert.assertTrue(
+        assertEquals(ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        assertTrue("Should have some low_entropy_source", systemProfile.hasLowEntropySource());
+        assertTrue(
                 "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
     }
 
@@ -163,9 +162,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_osData() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertEquals("Android", systemProfile.getOs().getName());
-        Assert.assertTrue("Should have some os.version", systemProfile.getOs().hasVersion());
-        Assert.assertTrue("Should have some os.build_fingerprint",
+        assertEquals("Android", systemProfile.getOs().getName());
+        assertTrue("Should have some os.version", systemProfile.getOs().hasVersion());
+        assertTrue("Should have some os.build_fingerprint",
                 systemProfile.getOs().hasBuildFingerprint());
     }
 
@@ -175,9 +174,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareMiscellaneous() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.system_ram_mb",
+        assertTrue("Should have some hardware.system_ram_mb",
                 systemProfile.getHardware().hasSystemRamMb());
-        Assert.assertTrue("Should have some hardware.hardware_class",
+        assertTrue("Should have some hardware.hardware_class",
                 systemProfile.getHardware().hasHardwareClass());
     }
 
@@ -187,13 +186,13 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareScreen() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.screen_count",
+        assertTrue("Should have some hardware.screen_count",
                 systemProfile.getHardware().hasScreenCount());
-        Assert.assertTrue("Should have some hardware.primary_screen_width",
+        assertTrue("Should have some hardware.primary_screen_width",
                 systemProfile.getHardware().hasPrimaryScreenWidth());
-        Assert.assertTrue("Should have some hardware.primary_screen_height",
+        assertTrue("Should have some hardware.primary_screen_height",
                 systemProfile.getHardware().hasPrimaryScreenHeight());
-        Assert.assertTrue("Should have some hardware.primary_screen_scale_factor",
+        assertTrue("Should have some hardware.primary_screen_scale_factor",
                 systemProfile.getHardware().hasPrimaryScreenScaleFactor());
     }
 
@@ -203,15 +202,15 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareCpu() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.cpu_architecture",
+        assertTrue("Should have some hardware.cpu_architecture",
                 systemProfile.getHardware().hasCpuArchitecture());
-        Assert.assertTrue("Should have some hardware.cpu.vendor_name",
+        assertTrue("Should have some hardware.cpu.vendor_name",
                 systemProfile.getHardware().getCpu().hasVendorName());
-        Assert.assertTrue("Should have some hardware.cpu.signature",
+        assertTrue("Should have some hardware.cpu.signature",
                 systemProfile.getHardware().getCpu().hasSignature());
-        Assert.assertTrue("Should have some hardware.cpu.num_cores",
+        assertTrue("Should have some hardware.cpu.num_cores",
                 systemProfile.getHardware().getCpu().hasNumCores());
-        Assert.assertTrue("Should have some hardware.cpu.is_hypervisor",
+        assertTrue("Should have some hardware.cpu.is_hypervisor",
                 systemProfile.getHardware().getCpu().hasIsHypervisor());
     }
 
@@ -221,11 +220,11 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareGpu() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.gpu.driver_version",
+        assertTrue("Should have some hardware.gpu.driver_version",
                 systemProfile.getHardware().getGpu().hasDriverVersion());
-        Assert.assertTrue("Should have some hardware.gpu.gl_vendor",
+        assertTrue("Should have some hardware.gpu.gl_vendor",
                 systemProfile.getHardware().getGpu().hasGlVendor());
-        Assert.assertTrue("Should have some hardware.gpu.gl_renderer",
+        assertTrue("Should have some hardware.gpu.gl_renderer",
                 systemProfile.getHardware().getGpu().hasGlRenderer());
     }
 
@@ -235,9 +234,9 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_hardwareDrive() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some hardware.app_drive.has_seek_penalty",
+        assertTrue("Should have some hardware.app_drive.has_seek_penalty",
                 systemProfile.getHardware().getAppDrive().hasHasSeekPenalty());
-        Assert.assertTrue("Should have some hardware.user_data_drive.has_seek_penalty",
+        assertTrue("Should have some hardware.user_data_drive.has_seek_penalty",
                 systemProfile.getHardware().getUserDataDrive().hasHasSeekPenalty());
     }
 
@@ -247,17 +246,17 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_network() throws Throwable {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertTrue("Should have some network.connection_type_is_ambiguous",
+        assertTrue("Should have some network.connection_type_is_ambiguous",
                 systemProfile.getNetwork().hasConnectionTypeIsAmbiguous());
-        Assert.assertTrue("Should have some network.connection_type",
+        assertTrue("Should have some network.connection_type",
                 systemProfile.getNetwork().hasConnectionType());
-        Assert.assertTrue("Should have some network.wifi_phy_layer_protocol_is_ambiguous",
+        assertTrue("Should have some network.wifi_phy_layer_protocol_is_ambiguous",
                 systemProfile.getNetwork().hasWifiPhyLayerProtocolIsAmbiguous());
-        Assert.assertTrue("Should have some network.wifi_phy_layer_protocol",
+        assertTrue("Should have some network.wifi_phy_layer_protocol",
                 systemProfile.getNetwork().hasWifiPhyLayerProtocol());
-        Assert.assertTrue("Should have some network.min_effective_connection_type",
+        assertTrue("Should have some network.min_effective_connection_type",
                 systemProfile.getNetwork().hasMinEffectiveConnectionType());
-        Assert.assertTrue("Should have some network.max_effective_connection_type",
+        assertTrue("Should have some network.max_effective_connection_type",
                 systemProfile.getNetwork().hasMaxEffectiveConnectionType());
     }
 
@@ -272,7 +271,7 @@ public class AwMetricsIntegrationTest {
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                     embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
 
-            Assert.assertEquals("Should have correct stability histogram kPageLoad count", 1,
+            assertEquals("Should have correct stability histogram kPageLoad count", 1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             "Stability.Counts2", StabilityEventType.PAGE_LOAD));
         } finally {
@@ -291,7 +290,7 @@ public class AwMetricsIntegrationTest {
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                     embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
 
-            Assert.assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
+            assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
         } finally {
@@ -318,7 +317,7 @@ public class AwMetricsIntegrationTest {
         helper.waitForCallback(
                 callCount, 1, CallbackHelper.WAIT_TIMEOUT_SECONDS * 5, TimeUnit.SECONDS);
 
-        Assert.assertEquals("Should have correct stability histogram kRendererCrash count", 1,
+        assertEquals("Should have correct stability histogram kRendererCrash count", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Stability.Counts2", StabilityEventType.RENDERER_CRASH));
     }
@@ -329,7 +328,7 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_stability_browserLaunchCount() throws Throwable {
         // This should be triggered simply by initializing the MetricsService. This should be logged
         // (and persisted) even before we start collecting the first metrics log.
-        Assert.assertEquals("Should have correct stability histogram kLaunch count", 1,
+        assertEquals("Should have correct stability histogram kLaunch count", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Stability.Counts2", StabilityEventType.LAUNCH));
     }
@@ -343,7 +342,7 @@ public class AwMetricsIntegrationTest {
         // assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(
+        assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("MemoryAndroid.LowRamDevice"));
     }
 
@@ -356,7 +355,7 @@ public class AwMetricsIntegrationTest {
         // assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(
+        assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("UMA.SamplingRatePerMille"));
     }
 
@@ -369,7 +368,7 @@ public class AwMetricsIntegrationTest {
         // do not assert total count == 0), because this would race with the initial metrics log.
         mPlatformServiceBridge.waitForNextMetricsLog();
 
-        Assert.assertEquals(1,
+        assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Accessibility.Android.ScreenReader.EveryReport"));
     }
@@ -401,7 +400,7 @@ public class AwMetricsIntegrationTest {
 
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
-        Assert.assertEquals(appPackageName, systemProfile.getAppPackageName());
+        assertEquals(appPackageName, systemProfile.getAppPackageName());
     }
 
     private static TypeSafeMatcher<ChromeComponent> matchesChromeComponent(
@@ -450,7 +449,7 @@ public class AwMetricsIntegrationTest {
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
 
-        Assert.assertEquals(
+        assertEquals(
                 "Should have exactly one component", systemProfile.getChromeComponentCount(), 1);
         ChromeComponent expectedAllowlistComponent =
                 ChromeComponent.newBuilder()
@@ -532,7 +531,7 @@ public class AwMetricsIntegrationTest {
                     embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
             helper.waitForCallback(finalMetricsCollectedCount, 2);
 
-            Assert.assertEquals(1,
+            assertEquals(1,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             "Android.SeccompStatus.RendererSandbox"));
         } finally {
@@ -568,15 +567,13 @@ public class AwMetricsIntegrationTest {
 
             int zeroBucketSamples =
                     RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
-            Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
+            assertNotEquals("There should be at least one sample in a non-zero bucket",
                     zeroBucketSamples, totalSamples);
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertEquals(
-                        1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                assertEquals(1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                 mAwContents.onDetachedFromWindow();
-                Assert.assertEquals(
-                        0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                assertEquals(0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
             });
         } finally {
             embeddedTestServer.stopAndDestroyServer();
