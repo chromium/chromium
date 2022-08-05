@@ -84,6 +84,24 @@ enum class ChromePreloadingEligibility {
       static_cast<int>(
           content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
       3,
+
+  // Preloading was ineligible because the default search engine was not set.
+  kSearchEngineNotValid =
+      static_cast<int>(
+          content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
+      4,
+
+  // Preloading can't be started because there are no search terms present.
+  kNoSearchTerms =
+      static_cast<int>(
+          content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
+      5,
+
+  // Preloading was ineligible due to error in the network request.
+  kPreloadingErrorBackOff =
+      static_cast<int>(
+          content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
+      6,
 };
 
 // Helper method to convert ChromePreloadingEligibility to

@@ -19,6 +19,8 @@ class SearchPrefetchURLLoader;
 class StreamingSearchPrefetchURLLoader;
 namespace content {
 class PreloadingAttempt;
+enum class PreloadingTriggeringOutcome;
+enum class PreloadingFailureReason;
 }  // namespace content
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -79,6 +81,7 @@ class SearchPrefetchRequest {
   SearchPrefetchRequest(const std::u16string& prefetch_search_terms,
                         const GURL& prefetch_url,
                         bool navigation_prefetch,
+                        content::PreloadingAttempt* prefetch_preloading_attempt,
                         base::OnceCallback<void(bool)> report_error_callback);
   ~SearchPrefetchRequest();
 
@@ -154,6 +157,10 @@ class SearchPrefetchRequest {
 
   const GURL& prefetch_url() const { return prefetch_url_; }
 
+  // Sets `prefetch_preloading_attempt_` PreloadingFailureReason to `reason` if
+  // exists.
+  void SetPrefetchAttemptFailureReason(content::PreloadingFailureReason reason);
+
  private:
   // Starts and begins processing |resource_request|.
   void StartPrefetchRequestInternal(
@@ -171,6 +178,11 @@ class SearchPrefetchRequest {
 
   // Updates the `current_status_` to status.
   void SetSearchPrefetchStatus(SearchPrefetchStatus status);
+
+  // Sets the PreloadingTriggeringOutcome for `prefetch_preloading_attempt_` to
+  // `outcome`.
+  void SetPrefetchAttemptTriggeringOutcome(
+      content::PreloadingTriggeringOutcome outcome);
 
   // Whether the request has received a servable response. See
   // `CanServePrefetchRequest` in ./streaming_search_prefetch_url_loader.cc for
@@ -199,6 +211,14 @@ class SearchPrefetchRequest {
 
   // The ongoing prefetch request. Null before and after the fetch.
   std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
+
+  // Once set, this is used to log the metrics corresponding to the prefetch
+  // attempt. Please note this is different from `prerender_preloading_attempt_`
+  // which is for corresponding prerender attempt. We store the WeakPtr because
+  // it is possible that the PreloadingAttempt can be deleted (on navigation) or
+  // not created (when no WebContents is present) before search prefetch uses
+  // it.
+  base::WeakPtr<content::PreloadingAttempt> prefetch_preloading_attempt_;
 
   // Called when there is a network/server error on the prefetch request.
   base::OnceCallback<void(bool)> report_error_callback_;

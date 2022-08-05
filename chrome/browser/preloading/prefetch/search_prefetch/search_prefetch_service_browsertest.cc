@@ -12,6 +12,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -40,9 +41,12 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -64,6 +68,10 @@ constexpr char kClientHintsURL[] = "/accept_ch.html";
 constexpr char kThrottleHeader[] = "porgs-header";
 constexpr char kThrottleHeaderValue[] = "porgs-header-value";
 constexpr char kServiceWorkerUrl[] = "/navigation_preload.js";
+
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using ukm::builders::Preloading_Attempt;
+using ukm::builders::Preloading_Prediction;
 
 enum class BlockOnHeaders {
   kBlockOnHeaders = 0,
@@ -232,6 +240,14 @@ class ChangeQueryContentBrowserClient : public ChromeContentBrowserClient {
   }
 };
 
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    SearchPrefetchServingReason reason) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(reason) +
+      static_cast<int>(
+          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
+
 class SearchPrefetchWithoutPrefetchingBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
@@ -239,8 +255,30 @@ class SearchPrefetchWithoutPrefetchingBrowserTest
     feature_list_.InitWithFeatures({}, {kSearchPrefetchServicePrefetching});
   }
 
+  void SetUpOnMainThread() override {
+    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
+    // Initialize PreloadingAttempt for the test suite.
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchWithoutPrefetchingBrowserTest,
@@ -260,6 +298,99 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchWithoutPrefetchingBrowserTest,
           base::ASCIIToUTF16(search_terms));
 
   EXPECT_FALSE(prefetch_status.has_value());
+
+  // Navigate to flush metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    // Check that we don't store any preloading attempts in case prefetch is
+    // disabled.
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 0u);
+  }
+}
+
+class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchHoldbackBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching, {{"prefetch_holdback", "true"}}}},
+        {/* disabled_features */});
+  }
+
+  void SetUpOnMainThread() override {
+    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
+    // Initialize PreloadingAttempt for the test suite.
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchHoldbackBrowserTest,
+                       NoFetchInPrefetchHoldback) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                         GetWebContents()));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+
+  EXPECT_FALSE(prefetch_status.has_value());
+
+  // Navigate to flush metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    // Check that we store one entry corresponding to the preloading attempt
+    // for prefetch.
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that PreloadingHoldbackStatus is set to kHoldback as
+    // prefetch_holdback is set.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kHoldback,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 // General test for standard behavior.  The interface bool represents whether
@@ -289,8 +420,30 @@ class SearchPrefetchServiceEnabledBrowserTest
     return std::get<0>(GetParam()) == BlockOnHeaders::kBlockOnHeaders;
   }
 
+  void SetUpOnMainThread() override {
+    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
+    // Initialize PreloadingAttempt builder for the test suite.
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
 };
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -347,6 +500,37 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  // Navigate to a different URL other than the prefetch URL to flush the
+  // metrics.
+  GURL navigated_url = GURL("https://google.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigated_url));
+  {
+    // Check that we store one entry corresponding to the preloading attempt
+    // for prefetch.
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Since we navigated to a different URL, prefetch attempt should record
+    // kReady status and `is_accurate_triggering` should be false.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kReady,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -372,6 +556,33 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that TriggeringOutcome should be set to kFailure in case of
+    // Throttles.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -615,6 +826,58 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(u"prefetch_4");
   EXPECT_FALSE(prefetch_status.has_value());
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetSearchServerQueryURL("prefetch_1")));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+
+    // Four attempts should be recorded for Prefetch.
+    EXPECT_EQ(attempt_ukm_entries.size(), 4u);
+
+    // Since we only allow maximum three prefetches happen at once, the fourth
+    // prefetch should be marked as Failure.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            ToPreloadingFailureReason(
+                SearchPrefetchServingReason::kNotServedOtherReason),
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kReady,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kReady,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -690,6 +953,33 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that TriggeringOutcome should be marked as kFailure in case of
+    // RequestFailed.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -717,6 +1007,40 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 2u);
+
+    // Check that TriggeringOutcome should be marked as duplicate for the second
+    // attempt to the same url.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kDuplicate,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
@@ -734,6 +1058,34 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that we set PreloadingEligibility to kNoSearchTerms when no search
+    // terms were present.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            ToPreloadingEligibility(
+                ChromePreloadingEligibility::kNoSearchTerms),
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -754,6 +1106,33 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchDisabled, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that we set the eligibility reason to kPreloadingDisabled when
+    // preload is disabled.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kPreloadingDisabled,
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -797,6 +1176,30 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
+
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Prerender should succeed and should be used for the next navigation.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -1267,6 +1670,42 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kErrorBackoff, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 2u);
+
+    // Check that we store two preloading attempts, where the first one fails
+    // due to network request error whereas the second one sets the correct
+    // EligibilityStatus to kPreloadingErrorBackOff.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            ToPreloadingEligibility(
+                ChromePreloadingEligibility::kPreloadingErrorBackOff),
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -1935,6 +2374,33 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that we set the correct EligibilityReason in case prefetch is
+    // ineligibile due to WebKitJavascriptEnabled.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kJavascriptDisabled,
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,

@@ -193,7 +193,6 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            PreloadingType::kPrerender,
             ToPreloadingPredictor(
                 ContentPreloadingPredictor::kSpeculationRules));
     prediction_ukm_entry_builder_ =
@@ -490,8 +489,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kEligible,
-        PreloadingHoldbackStatus::kAllowed,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true);
@@ -541,8 +540,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kEligible,
-        PreloadingHoldbackStatus::kAllowed, PreloadingTriggeringOutcome::kReady,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kReady,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/false);
 
@@ -780,8 +780,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kEligible,
-        PreloadingHoldbackStatus::kAllowed,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         PreloadingTriggeringOutcome::kFailure,
         ToPreloadingFailureReason(
             PrerenderHost::FinalStatus::kLoginAuthRequested),
@@ -1209,8 +1209,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kEligible,
-        PreloadingHoldbackStatus::kAllowed,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true);
@@ -3586,7 +3586,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kLowMemory,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kLowMemory,
         PreloadingHoldbackStatus::kUnspecified,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
@@ -5067,13 +5068,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
 
     std::vector<UkmEntry> expected_entries = {
         attempt_ukm_entry_builder().BuildEntry(
-            ukm_source_id, PreloadingEligibility::kEligible,
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kSuccess,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/true),
         attempt_ukm_entry_builder().BuildEntry(
-            ukm_source_id, PreloadingEligibility::kEligible,
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
             PreloadingTriggeringOutcome::kFailure,
             PreloadingFailureReason::kUnspecified,
@@ -5405,7 +5408,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kCrossOrigin,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kCrossOrigin,
         PreloadingHoldbackStatus::kUnspecified,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
@@ -6437,8 +6441,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingEligibility::kEligible,
-        PreloadingHoldbackStatus::kHoldback,
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
         /*accurate=*/true);

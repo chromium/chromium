@@ -30,12 +30,12 @@ const std::vector<std::string> kPreloadingPredictionUkmMetrics{
 };
 
 PreloadingAttemptUkmEntryBuilder::PreloadingAttemptUkmEntryBuilder(
-    PreloadingType preloading_type,
     PreloadingPredictor predictor)
-    : preloading_type_(preloading_type), predictor_(predictor) {}
+    : predictor_(predictor) {}
 
 UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     ukm::SourceId source_id,
+    PreloadingType preloading_type,
     PreloadingEligibility eligibility,
     PreloadingHoldbackStatus holdback_status,
     PreloadingTriggeringOutcome triggering_outcome,
@@ -45,7 +45,7 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
       source_id,
       {
           {Preloading_Attempt::kPreloadingTypeName,
-           static_cast<int64_t>(preloading_type_)},
+           static_cast<int64_t>(preloading_type)},
           {Preloading_Attempt::kPreloadingPredictorName,
            static_cast<int64_t>(predictor_)},
           {Preloading_Attempt::kEligibilityName,

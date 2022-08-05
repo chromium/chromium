@@ -121,7 +121,6 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingType::kPrerender,
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kOmniboxDirectURLInput));
 
@@ -332,13 +331,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
     std::vector<UkmEntry> expected_entries = {
         ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kRunning,
             content::PreloadingFailureReason::kUnspecified,
             /*accurate=*/false),
         ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
@@ -402,13 +403,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
     std::vector<UkmEntry> expected_entries = {
         ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
             /*accurate=*/true),
         ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kDuplicate,
             content::PreloadingFailureReason::kUnspecified,
@@ -471,7 +474,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
     // PreloadingHoldbackStatus should be set to kHoldback.
     std::vector<UkmEntry> expected_entries = {
         ukm_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kHoldback,
             content::PreloadingTriggeringOutcome::kUnspecified,
             content::PreloadingFailureReason::kUnspecified,
@@ -626,7 +630,6 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     // This test suite only tests for Default Search Engine prerendering.
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingType::kPrerender,
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kDefaultSearchEngine));
     prediction_entry_builder_ =
@@ -935,7 +938,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
     };
     std::vector<UkmEntry> expected_attempt_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
@@ -1016,13 +1020,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
     // activation and for duplicate attempt to the same prerender URL.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
             /*accurate=*/true),
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kDuplicate,
             content::PreloadingFailureReason::kUnspecified,
@@ -1104,13 +1110,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
     // activation with suggestions to the different prerender URLs.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
             ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
             /*accurate=*/false),
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,

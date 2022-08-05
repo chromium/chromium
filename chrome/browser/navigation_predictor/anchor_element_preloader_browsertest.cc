@@ -70,7 +70,6 @@ class AnchorElementPreloaderBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingType::kPreconnect,
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kPointerDownOnAnchor));
     ASSERT_TRUE(loading_predictor);
@@ -178,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
       content::test::kPreloadingAttemptUkmMetrics);
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-      ukm_source_id, content::PreloadingEligibility::kEligible,
+      ukm_source_id, content::PreloadingType::kPreconnect,
+      content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kAllowed,
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
       content::PreloadingFailureReason::kUnspecified,
@@ -212,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
       content::test::kPreloadingAttemptUkmMetrics);
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-      ukm_source_id, content::PreloadingEligibility::kEligible,
+      ukm_source_id, content::PreloadingType::kPreconnect,
+      content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kAllowed,
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
       content::PreloadingFailureReason::kUnspecified,
@@ -250,21 +251,24 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, Duplicates) {
   std::vector<UkmEntry> expected_entries = {
       // Successful preconnect to first origin.
       ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingEligibility::kEligible,
+          ukm_source_id, content::PreloadingType::kPreconnect,
+          content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
           content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/true),
       // Duplicate preconnect to first origin.
       ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingEligibility::kEligible,
+          ukm_source_id, content::PreloadingType::kPreconnect,
+          content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kDuplicate,
           content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/true),
       // Preconnect to first second origin.
       ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingEligibility::kEligible,
+          ukm_source_id, content::PreloadingType::kPreconnect,
+          content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
           content::PreloadingFailureReason::kUnspecified,
@@ -344,7 +348,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
       content::test::kPreloadingAttemptUkmMetrics);
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-      ukm_source_id, content::PreloadingEligibility::kPreloadingDisabled,
+      ukm_source_id, content::PreloadingType::kPreconnect,
+      content::PreloadingEligibility::kPreloadingDisabled,
       content::PreloadingHoldbackStatus::kUnspecified,
       content::PreloadingTriggeringOutcome::kUnspecified,
       content::PreloadingFailureReason::kUnspecified,
@@ -395,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
       content::test::kPreloadingAttemptUkmMetrics);
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-      ukm_source_id, content::PreloadingEligibility::kEligible,
+      ukm_source_id, content::PreloadingType::kPreconnect,
+      content::PreloadingEligibility::kEligible,
       content::PreloadingHoldbackStatus::kHoldback,
       content::PreloadingTriggeringOutcome::kUnspecified,
       content::PreloadingFailureReason::kUnspecified,
@@ -440,14 +446,16 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
   std::vector<UkmEntry> expected_entries = {
       // Successful preconnect to first origin.
       ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingEligibility::kEligible,
+          ukm_source_id, content::PreloadingType::kPreconnect,
+          content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown,
           content::PreloadingFailureReason::kUnspecified,
           /*accurate=*/true),
       // LimitExceeded for second origin.
       ukm_entry_builder().BuildEntry(
-          ukm_source_id, content::PreloadingEligibility::kEligible,
+          ukm_source_id, content::PreloadingType::kPreconnect,
+          content::PreloadingEligibility::kEligible,
           content::PreloadingHoldbackStatus::kAllowed,
           content::PreloadingTriggeringOutcome::kFailure,
           ToFailureReason(AnchorPreloadingFailureReason::kLimitExceeded),

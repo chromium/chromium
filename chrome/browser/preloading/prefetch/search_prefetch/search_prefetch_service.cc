@@ -106,6 +106,50 @@ bool ShouldPrefetch(const AutocompleteMatch& match) {
          BaseSearchProvider::ShouldPrerender(match);
 }
 
+void SetEligibility(content::PreloadingAttempt* preloading_attempt,
+                    content::PreloadingEligibility eligibility) {
+  if (!preloading_attempt)
+    return;
+
+  preloading_attempt->SetEligibility(eligibility);
+}
+
+// Returns true when Prefetch is not in the holdback group.
+bool CheckAndSetPrefetchHoldbackStatus(
+    content::PreloadingAttempt* preloading_attempt) {
+  // Return true as we only set and check for holdback when PreloadingAttempt is
+  // created.
+  if (!preloading_attempt)
+    return true;
+
+  if (base::GetFieldTrialParamByFeatureAsBool(kSearchPrefetchServicePrefetching,
+                                              "prefetch_holdback", false)) {
+    preloading_attempt->SetHoldbackStatus(
+        content::PreloadingHoldbackStatus::kHoldback);
+    return false;
+  } else {
+    preloading_attempt->SetHoldbackStatus(
+        content::PreloadingHoldbackStatus::kAllowed);
+    return true;
+  }
+}
+
+void SetTriggeringOutcome(content::PreloadingAttempt* preloading_attempt,
+                          content::PreloadingTriggeringOutcome outcome) {
+  if (!preloading_attempt)
+    return;
+
+  preloading_attempt->SetTriggeringOutcome(outcome);
+}
+
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    SearchPrefetchServingReason reason) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(reason) +
+      static_cast<int>(
+          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
+
 }  // namespace
 
 struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
@@ -181,20 +225,45 @@ bool SearchPrefetchService::MaybePrefetchURL(
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &search_terms);
 
+  // It is possible that the current page doesn't exist. Don't create
+  // PreloadingAttempt in that case.
+  content::PreloadingAttempt* attempt = nullptr;
+  DCHECK(web_contents);
+  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
+      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents);
+
+  // TODO(crbug.com/1346344): Integrate PreloadingAPIs with
+  // OmniboxSearchPredictor prefetch attempts.
+  if (!navigation_prefetch) {
+    // Create new PreloadingAttempt and pass all the values corresponding to
+    // this DefaultSearchEngine prefetch attempt.
+    attempt = preloading_data->AddPreloadingAttempt(
+        ToPreloadingPredictor(ChromePreloadingPredictor::kDefaultSearchEngine),
+        content::PreloadingType::kPrefetch, same_url_matcher);
+  }
   if (search_terms.size() == 0) {
     recorder.reason_ =
         SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms;
+    SetEligibility(attempt, ToPreloadingEligibility(
+                                ChromePreloadingEligibility::kNoSearchTerms));
     return false;
   }
 
   if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
+    SetEligibility(attempt,
+                   content::PreloadingEligibility::kPreloadingDisabled);
     return false;
   }
 
   if (!profile_->GetPrefs() ||
       !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
+    SetEligibility(attempt,
+                   content::PreloadingEligibility::kJavascriptDisabled);
     return false;
   }
 
@@ -204,6 +273,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
       content_settings->GetContentSetting(
           url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
+    SetEligibility(attempt,
+                   content::PreloadingEligibility::kJavascriptDisabled);
     return false;
   }
 
@@ -211,6 +282,9 @@ bool SearchPrefetchService::MaybePrefetchURL(
       (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
        base::TimeTicks::Now())) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kErrorBackoff;
+    SetEligibility(attempt,
+                   ToPreloadingEligibility(
+                       ChromePreloadingEligibility::kPreloadingErrorBackOff));
     return false;
   }
 
@@ -225,6 +299,12 @@ bool SearchPrefetchService::MaybePrefetchURL(
         status == SearchPrefetchStatus::kPrerendered) {
       recorder.reason_ =
           SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
+      // Prefetch was eligible as it was attempted recently but mark it as a
+      // duplicate attempt.
+      SetEligibility(attempt, content::PreloadingEligibility::kEligible);
+      CheckAndSetPrefetchHoldbackStatus(attempt);
+      SetTriggeringOutcome(attempt,
+                           content::PreloadingTriggeringOutcome::kDuplicate);
       return false;
     }
 
@@ -233,20 +313,43 @@ bool SearchPrefetchService::MaybePrefetchURL(
       DeletePrefetch(search_terms);
   }
 
+  // Prefetch has completed all the eligibility checks. Set the
+  // PreloadingEligibility to kEligible.
+  SetEligibility(attempt, content::PreloadingEligibility::kEligible);
+
+  // Don't trigger prefetch if it is in holdback group. We do this after all the
+  // eligibility checks to ensure we replicate the behaviour between our
+  // experiment groups.
+  if (!CheckAndSetPrefetchHoldbackStatus(attempt))
+    return false;
+
   if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration()) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kMaxAttemptsReached;
+    // The reason we don't consider limit exceeded as an ineligibility
+    // reason is because we can't replicate the behavior in our other
+    // experiment groups for analysis. To prevent this we set
+    // TriggeringOutcome to kFailure and look into the failure reason to
+    // learn more.
+    SetTriggeringOutcome(attempt,
+                         content::PreloadingTriggeringOutcome::kFailure);
     return false;
   }
 
   std::unique_ptr<SearchPrefetchRequest> prefetch_request =
       std::make_unique<SearchPrefetchRequest>(
-          search_terms, url, navigation_prefetch,
+          search_terms, url, navigation_prefetch, attempt,
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
 
   DCHECK(prefetch_request);
   if (!prefetch_request->StartPrefetchRequest(profile_)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
+    // We don't consider Throttled as an ineligibility reason is because we
+    // can't replicate this behaviour in our other experiment group. To prevent
+    // this we set TriggeringOutcome to kFailure and look into the failure
+    // reason to learn more.
+    SetTriggeringOutcome(attempt,
+                         content::PreloadingTriggeringOutcome::kFailure);
     return false;
   }
 
@@ -399,6 +502,9 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
       iter->second->current_status() !=
           SearchPrefetchStatus::kCanBeServedAndUserClicked) {
     recorder.reason_ = SearchPrefetchServingReason::kNotServedOtherReason;
+    // Set the failure reason when prefetch is not served.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kNotServedOtherReason));
     return nullptr;
   }
 
@@ -565,6 +671,8 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
     const AutocompleteMatch& match,
     content::WebContents* web_contents) {
   if (!IsSearchNavigationPrefetchEnabled())
+    return;
+  if (!web_contents)
     return;
   // Assume the user is going back to enter more for now.
   if (index == 0)
@@ -844,7 +952,8 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
 
   const auto& iter = prefetches_.find(search_terms);
 
-  // Check if present is present before checking for other reasons.
+  // Return early if there is no prefetch found before checking for other
+  // reasons.
   if (iter == prefetches_.end()) {
     recorder.reason_ = SearchPrefetchServingReason::kNoPrefetch;
     return prefetches_.end();
@@ -854,6 +963,9 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   if (!profile_->GetPrefs() ||
       !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
     recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kJavascriptDisabled));
     return prefetches_.end();
   }
 
@@ -864,6 +976,9 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
                                           ContentSettingsType::JAVASCRIPT) ==
           CONTENT_SETTING_BLOCK) {
     recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kJavascriptDisabled));
     return prefetches_.end();
   }
 
@@ -875,9 +990,14 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
       url::Origin::Create(iter->second->prefetch_url())) {
     recorder.reason_ =
         SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin));
     return prefetches_.end();
   }
 
+  // No need to update the failure reason as these are marked in
+  // TriggeringOutcome for prefetch attempt.
   switch (iter->second->current_status()) {
     case SearchPrefetchStatus::kRequestCancelled:
       recorder.reason_ = SearchPrefetchServingReason::kRequestWasCancelled;
@@ -899,6 +1019,9 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   if (tentative_resource_request.method !=
       net::HttpRequestHeaders::kGetMethod) {
     recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kPostReloadFormOrLink));
     return prefetches_.end();
   }
 
@@ -909,6 +1032,10 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
       tentative_resource_request.load_flags & net::LOAD_DISABLE_CACHE ||
       tentative_resource_request.load_flags & net::LOAD_VALIDATE_CACHE) {
     recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kPostReloadFormOrLink));
+
     return prefetches_.end();
   }
 
@@ -923,6 +1050,9 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
               tentative_resource_request.transition_type),
           ui::PAGE_TRANSITION_FORM_SUBMIT)) {
     recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
+    // Set the corresponding failure reason.
+    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
+        SearchPrefetchServingReason::kPostReloadFormOrLink));
     return prefetches_.end();
   }
 

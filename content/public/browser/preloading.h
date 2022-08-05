@@ -27,6 +27,12 @@ enum class PreloadingType {
   // origin.
   kPreconnect = 2,
 
+  // Prefetch operation comes after Preresolve and Preconnect. Chrome spends a
+  // significant amount time idle, waiting for the main frame HTML fetch. The
+  // prefetch preloading operation fetches the HTML before the user starts
+  // navigating in order to load the page much faster.
+  kPrefetch = 3,
+
   // This speedup technique comes with the most impact and overhead. We preload
   // and render a page before the user navigates to it. This will make the next
   // page navigation nearly instant as we would activate a fully prepared
@@ -165,6 +171,12 @@ enum class PreloadingTriggeringOutcome {
   // kTriggeredButOutcomeUnknown, meaning that preloading was triggered but we
   // don't know if it was successful.
   kTriggeredButOutcomeUnknown = 7,
+
+  // A preloading feature (e.g., prefetch) completed successfully and was
+  // upgraded to Prerender. For PreloadingType::kPrefetch this is different from
+  // kSuccess reason which only tracks when the navigation directly uses the
+  // Prefetch. Please note that this doesn't ensure Prerender was successful.
+  kTriggeredButUpgradedToPrerender = 8,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

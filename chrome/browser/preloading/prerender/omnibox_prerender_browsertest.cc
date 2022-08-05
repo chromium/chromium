@@ -75,7 +75,6 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingType::kPrerender,
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kOmniboxDirectURLInput));
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -194,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
     EXPECT_EQ(ukm_entries.size(), 1u);
 
     UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-        ukm_source_id, content::PreloadingEligibility::kPreloadingDisabled,
+        ukm_source_id, content::PreloadingType::kPrerender,
+        content::PreloadingEligibility::kPreloadingDisabled,
         content::PreloadingHoldbackStatus::kUnspecified,
         content::PreloadingTriggeringOutcome::kUnspecified,
         content::PreloadingFailureReason::kUnspecified,
@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
     EXPECT_EQ(ukm_entries.size(), 2u);
 
     UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
-        ukm_source_id, content::PreloadingEligibility::kEligible,
+        ukm_source_id, content::PreloadingType::kPrerender,
+        content::PreloadingEligibility::kEligible,
         content::PreloadingHoldbackStatus::kAllowed,
         content::PreloadingTriggeringOutcome::kSuccess,
         content::PreloadingFailureReason::kUnspecified,

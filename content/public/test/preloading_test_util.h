@@ -22,11 +22,11 @@ extern const std::vector<std::string> kPreloadingPredictionUkmMetrics;
 // TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for PreloadingAttempt.
 class PreloadingAttemptUkmEntryBuilder {
  public:
-  PreloadingAttemptUkmEntryBuilder(PreloadingType preloading_type,
-                                   PreloadingPredictor predictor);
+  explicit PreloadingAttemptUkmEntryBuilder(PreloadingPredictor predictor);
 
   ukm::TestUkmRecorder::HumanReadableUkmEntry BuildEntry(
       ukm::SourceId source_id,
+      PreloadingType preloading_type,
       PreloadingEligibility eligibility,
       PreloadingHoldbackStatus holdback_status,
       PreloadingTriggeringOutcome triggering_outcome,
@@ -34,7 +34,6 @@ class PreloadingAttemptUkmEntryBuilder {
       bool accurate) const;
 
  private:
-  PreloadingType preloading_type_;
   PreloadingPredictor predictor_;
 };
 

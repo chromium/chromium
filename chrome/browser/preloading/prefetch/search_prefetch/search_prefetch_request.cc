@@ -25,6 +25,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_loader_throttles.h"
@@ -141,10 +142,15 @@ SearchPrefetchRequest::SearchPrefetchRequest(
     const std::u16string& prefetch_search_terms,
     const GURL& prefetch_url,
     bool navigation_prefetch,
+    content::PreloadingAttempt* prefetch_preloading_attempt,
     base::OnceCallback<void(bool)> report_error_callback)
     : prefetch_search_terms_(prefetch_search_terms),
       prefetch_url_(prefetch_url),
       navigation_prefetch_(navigation_prefetch),
+      prefetch_preloading_attempt_(
+          prefetch_preloading_attempt
+              ? prefetch_preloading_attempt->GetWeakPtr()
+              : nullptr),
       report_error_callback_(std::move(report_error_callback)) {}
 
 SearchPrefetchRequest::~SearchPrefetchRequest() {
@@ -494,6 +500,28 @@ void SearchPrefetchRequest::StopPrerender() {
   }
 }
 
+void SearchPrefetchRequest::SetPrefetchAttemptFailureReason(
+    content::PreloadingFailureReason reason) {
+  if (!prefetch_preloading_attempt_)
+    return;
+
+  prefetch_preloading_attempt_->SetFailureReason(reason);
+
+  // For prefetch it is possible that the prefetch could be used for a different
+  // navigation after failure which is out of scope with Preloading APIs. Reset
+  // the PreloadingAttempt to avoid setting the values for different navigation
+  // than the one we are observing.
+  prefetch_preloading_attempt_.reset();
+}
+
+void SearchPrefetchRequest::SetPrefetchAttemptTriggeringOutcome(
+    content::PreloadingTriggeringOutcome outcome) {
+  if (!prefetch_preloading_attempt_)
+    return;
+
+  prefetch_preloading_attempt_->SetTriggeringOutcome(outcome);
+}
+
 void SearchPrefetchRequest::SetSearchPrefetchStatus(
     SearchPrefetchStatus new_status) {
 #if DCHECK_IS_ON()
@@ -545,6 +573,52 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
                           /*new_state=*/new_status);
 #endif  // DCHECK_IS_ON()
   current_status_ = new_status;
+
+  // Update the PreloadingTriggeringOutcome once we update status.
+  switch (current_status_) {
+    case SearchPrefetchStatus::kNotStarted:
+      // When prefetch is not started, we consider the
+      // PreloadingTriggeringOutcome as kUnspecified. The exact reason why
+      // prefetch is not started is recorded in PreloadingEligibility.
+      return;
+    case SearchPrefetchStatus::kInFlight:
+      // Once prefetch started set TriggeringOutcome to kRunning.
+      SetPrefetchAttemptTriggeringOutcome(
+          content::PreloadingTriggeringOutcome::kRunning);
+      return;
+    case SearchPrefetchStatus::kCanBeServed:
+      // Mark prefetch to ready, once we can serve prefetch. With
+      // PreloadingAttempt, ready means the attempt can be used when needed.
+      SetPrefetchAttemptTriggeringOutcome(
+          content::PreloadingTriggeringOutcome::kReady);
+      return;
+    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
+    case SearchPrefetchStatus::kComplete:
+      // Don't update the TriggeringOutcome here as we have already set the
+      // TriggeringOutcome when the status was updated to kCanServed.
+      return;
+    case SearchPrefetchStatus::kRequestCancelled:
+    case SearchPrefetchStatus::kRequestFailed:
+      // Since we are cancelling prefetch when either request failed or
+      // cancelled we consider it as a failure with PreloadingTriggeringOutcome.
+      SetPrefetchAttemptTriggeringOutcome(
+          content::PreloadingTriggeringOutcome::kFailure);
+      return;
+    case SearchPrefetchStatus::kPrerendered:
+      SetPrefetchAttemptTriggeringOutcome(content::PreloadingTriggeringOutcome::
+                                              kTriggeredButUpgradedToPrerender);
+      return;
+    case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
+      // Once prefetch is served mark it as success.
+      SetPrefetchAttemptTriggeringOutcome(
+          content::PreloadingTriggeringOutcome::kSuccess);
+      return;
+    case SearchPrefetchStatus::kPrerenderedAndClicked:
+    case SearchPrefetchStatus::kPrerenderActivated:
+      // In case of prerender we don't update the triggering outcome to success
+      // because we measure this with prerender attempt.
+      return;
+  }
 }
 
 std::ostream& operator<<(std::ostream& o, const SearchPrefetchStatus& s) {

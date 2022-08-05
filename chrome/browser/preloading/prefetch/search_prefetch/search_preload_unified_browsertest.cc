@@ -136,7 +136,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            content::PreloadingType::kPrerender,
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kDefaultSearchEngine));
     prediction_entry_builder_ =
@@ -560,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Prediction::kEntryName,
         content::test::kPreloadingPredictionUkmMetrics);
-    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries.size(), 2u);
     EXPECT_EQ(prediction_ukm_entries.size(), 1u);
 
     // Prerender should succeed and should be used for the next navigation.
@@ -571,7 +570,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     };
     std::vector<UkmEntry> expected_attempt_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::
+                kTriggeredButUpgradedToPrerender,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
@@ -651,12 +659,28 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 1u);
+    EXPECT_EQ(ukm_entries.size(), 3u);
 
     // Prerender should succeed and should be used for the next navigation.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::
+                kTriggeredButUpgradedToPrerender,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kDuplicate,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kSuccess,
             content::PreloadingFailureReason::kUnspecified,
@@ -802,17 +826,32 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 1u);
+    EXPECT_EQ(ukm_entries.size(), 3u);
 
     // Prerender shouldn't be used for the next navigation as it will be deleted
     // when suggestions change.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
             ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
             /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kReady,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
     };
     EXPECT_THAT(ukm_entries,
                 testing::UnorderedElementsAreArray(expected_entries))
@@ -942,14 +981,23 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 1u);
+    EXPECT_EQ(ukm_entries.size(), 2u);
 
     // DispatchDelayedResponseTask will dispatch DidFailLoadWithError resulting
     // in prerender cancelling with status 123 i.e., =>
     // PrerenderHost::FinalStatus::DidFailLoad.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::
+                kTriggeredButUpgradedToPrerender,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kFailure,
             static_cast<content::PreloadingFailureReason>(123),
@@ -1018,19 +1066,35 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, DoNotRefetchSameTerms) {
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 2u);
+    EXPECT_EQ(ukm_entries.size(), 4u);
 
     ukm::SourceId ukm_source_id =
         GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::
+                kTriggeredButUpgradedToPrerender,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kAllowed,
             content::PreloadingTriggeringOutcome::kReady,
             content::PreloadingFailureReason::kUnspecified,
             /*accurate=*/false),
         attempt_entry_builder().BuildEntry(
-            ukm_source_id,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kDuplicate,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
             ToPreloadingEligibility(
                 ChromePreloadingEligibility::kPrerenderConsumed),
             content::PreloadingHoldbackStatus::kUnspecified,
@@ -1118,12 +1182,27 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedHoldbackBrowserTest,
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(ukm_entries.size(), 1u);
+    EXPECT_EQ(ukm_entries.size(), 3u);
 
     // Prerender should be under holdback and not succeed.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingEligibility::kEligible,
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kDuplicate,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrerender,
+            content::PreloadingEligibility::kEligible,
             content::PreloadingHoldbackStatus::kHoldback,
             content::PreloadingTriggeringOutcome::kUnspecified,
             content::PreloadingFailureReason::kUnspecified,

@@ -62,7 +62,11 @@ std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
 bool IsSearchDestinationMatch(const std::u16string& preloading_search_terms,
                               content::WebContents& web_contents,
                               const GURL& navigation_url) {
-  DCHECK(!preloading_search_terms.empty());
+  // Return false in case search_terms are empty as we only match with valid
+  // search terms.
+  if (preloading_search_terms.empty())
+    return false;
+
   std::u16string matched_search_terms =
       ExtractSearchTermsFromURL(web_contents, navigation_url);
   return matched_search_terms == preloading_search_terms;
