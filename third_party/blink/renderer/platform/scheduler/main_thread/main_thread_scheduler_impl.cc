@@ -642,20 +642,22 @@ void MainThreadSchedulerImpl::ShutdownAllQueues() {
     virtual_time_control_task_queue_->ShutdownTaskQueue();
 }
 
-bool MainThreadSchedulerImpl::IsAnyMainFrameWaitingForFirstMeaningfulPaint()
-    const {
-  return std::any_of(
-      main_thread_only().page_schedulers.begin(),
-      main_thread_only().page_schedulers.end(),
-      std::mem_fn(&PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint));
+bool MainThreadSchedulerImpl::
+    IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const {
+  for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
+    if (ps->IsOrdinary() && ps->IsWaitingForMainFrameMeaningfulPaint())
+      return true;
+  }
+  return false;
 }
 
-bool MainThreadSchedulerImpl::IsAnyMainFrameWaitingForFirstContentfulPaint()
-    const {
-  return std::any_of(
-      main_thread_only().page_schedulers.begin(),
-      main_thread_only().page_schedulers.end(),
-      std::mem_fn(&PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint));
+bool MainThreadSchedulerImpl::
+    IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const {
+  for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
+    if (ps->IsOrdinary() && ps->IsWaitingForMainFrameContentfulPaint())
+      return true;
+  }
+  return false;
 }
 
 void MainThreadSchedulerImpl::Shutdown() {
@@ -2039,10 +2041,14 @@ void MainThreadSchedulerImpl::OnMainFramePaint() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::OnMainFramePaint");
   base::AutoLock lock(any_thread_lock_);
+
+  // The state of a non-ordinary page (e.g. SVG image) shouldn't affect the
+  // scheduler's global UseCase.
   any_thread().waiting_for_any_main_frame_contentful_paint =
-      IsAnyMainFrameWaitingForFirstContentfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
-      IsAnyMainFrameWaitingForFirstMeaningfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
+
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
@@ -2054,9 +2060,9 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   any_thread().user_model.Reset(helper_.NowTicks());
   any_thread().have_seen_a_blocking_gesture = false;
   any_thread().waiting_for_any_main_frame_contentful_paint =
-      IsAnyMainFrameWaitingForFirstContentfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
-      IsAnyMainFrameWaitingForFirstMeaningfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
   any_thread().have_seen_input_since_navigation = false;
   main_thread_only().idle_time_estimator.Clear();
   main_thread_only().have_reported_blocking_intervention_since_navigation =
@@ -2279,9 +2285,9 @@ void MainThreadSchedulerImpl::AddPageScheduler(
 
   base::AutoLock lock(any_thread_lock_);
   any_thread().waiting_for_any_main_frame_contentful_paint =
-      IsAnyMainFrameWaitingForFirstContentfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
-      IsAnyMainFrameWaitingForFirstMeaningfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
@@ -2306,9 +2312,9 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 
   base::AutoLock lock(any_thread_lock_);
   any_thread().waiting_for_any_main_frame_contentful_paint =
-      IsAnyMainFrameWaitingForFirstContentfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
-      IsAnyMainFrameWaitingForFirstMeaningfulPaint();
+      IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 

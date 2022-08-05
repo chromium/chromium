@@ -470,8 +470,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       WebAgentGroupScheduler* next_agent_group_scheduler);
   void EndAgentGroupSchedulerScope();
 
-  bool IsAnyMainFrameWaitingForFirstContentfulPaint() const;
-  bool IsAnyMainFrameWaitingForFirstMeaningfulPaint() const;
+  bool IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const;
+  bool IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const;
 
   class Policy {
     DISALLOW_NEW();

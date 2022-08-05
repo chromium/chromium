@@ -312,15 +312,16 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
   explicit MockPageSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
                                  AgentGroupSchedulerImpl& agent_group_scheduler)
       : PageSchedulerImpl(nullptr, agent_group_scheduler) {
+    ON_CALL(*this, IsWaitingForMainFrameContentfulPaint)
+        .WillByDefault(Return(false));
+    ON_CALL(*this, IsWaitingForMainFrameMeaningfulPaint)
+        .WillByDefault(Return(false));
+    ON_CALL(*this, IsMainFrameLocal).WillByDefault(Return(true));
+    ON_CALL(*this, IsOrdinary).WillByDefault(Return(true));
+
     // This would normally be called by
     // MainThreadSchedulerImpl::CreatePageScheduler.
     main_thread_scheduler->AddPageScheduler(this);
-
-    ON_CALL(*this, IsWaitingForMainFrameContentfulPaint)
-        .WillByDefault(Return(true));
-    ON_CALL(*this, IsWaitingForMainFrameMeaningfulPaint)
-        .WillByDefault(Return(true));
-    ON_CALL(*this, IsMainFrameLocal).WillByDefault(Return(true));
   }
   MockPageSchedulerImpl(const MockPageSchedulerImpl&) = delete;
   MockPageSchedulerImpl& operator=(const MockPageSchedulerImpl&) = delete;
@@ -330,6 +331,7 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
   MOCK_METHOD(bool, IsWaitingForMainFrameContentfulPaint, (), (const));
   MOCK_METHOD(bool, IsWaitingForMainFrameMeaningfulPaint, (), (const));
   MOCK_METHOD(bool, IsMainFrameLocal, (), (const));
+  MOCK_METHOD(bool, IsOrdinary, (), (const));
 };
 
 class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
@@ -419,8 +421,11 @@ class MainThreadSchedulerImplTest : public testing::Test {
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetRandomisedSamplingEnabled(true)
                 .Build())));
-    if (initially_ensure_usecase_none_)
-      EnsureUseCaseNone();
+
+    EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kNone);
+    // Don't count the above policy change.
+    scheduler_->update_policy_count_ = 0;
+    scheduler_->use_cases_.clear();
   }
 
   void CreateTestTaskRunner() {
@@ -946,20 +951,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
     }
   }
 
-  void EnsureUseCaseNone() {
-    // Make sure we're not in UseCase::kLoading.
-    ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
-        .WillByDefault(Return(false));
-    ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
-        .WillByDefault(Return(false));
-
-    EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kNone);
-
-    // Don't count the above policy change.
-    scheduler_->update_policy_count_ = 0;
-    scheduler_->use_cases_.clear();
-  }
-
  protected:
   static base::TimeDelta priority_escalation_after_input_duration() {
     return base::Milliseconds(UserModel::kGestureEstimationLimitMillis);
@@ -1033,7 +1024,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner>
       prioritised_local_frame_task_runner_;
   bool simulate_throttleable_task_ran_;
-  bool initially_ensure_usecase_none_ = true;
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
 };
 
@@ -1183,8 +1173,6 @@ TEST_F(MainThreadSchedulerImplTest, TestDelayedEndIdlePeriodCanceled) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, TestDefaultPolicy) {
-  EnsureUseCaseNone();
-
   Vector<String> run_order;
   PostTestTasks(&run_order, "L1 I1 D1 P1 C1 D2 P2 C2 U1");
 
@@ -1495,12 +1483,14 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
   EXPECT_THAT(run_order, testing::ElementsAre("L1", "T1", "T2"));
 }
 
-class DefaultUseCaseTest : public MainThreadSchedulerImplTest {
- public:
-  DefaultUseCaseTest() { initially_ensure_usecase_none_ = false; }
-};
+TEST_F(MainThreadSchedulerImplTest, InitiallyInEarlyLoadingUseCase) {
+  // `IsWaitingForMainFrame(Contentful|Meaningful)Paint return true for a new
+  // page scheduler in production.
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
+      .WillByDefault(Return(true));
 
-TEST_F(DefaultUseCaseTest, InitiallyInEarlyLoadingUseCase) {
   scheduler_->OnMainFramePaint();
 
   // Should be early loading by default.
@@ -1513,6 +1503,24 @@ TEST_F(DefaultUseCaseTest, InitiallyInEarlyLoadingUseCase) {
 
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(false));
+  scheduler_->OnMainFramePaint();
+  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
+}
+
+TEST_F(MainThreadSchedulerImplTest,
+       NonOrdinaryPageDoesNotTriggerLoadingUseCase) {
+  // `IsWaitingForMainFrame(Contentful|Meaningful)Paint return true for a new
+  // page scheduler in production.
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
+      .WillByDefault(Return(true));
+  ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
+      .WillByDefault(Return(true));
+
+  // Make the page non-ordinary.
+  ON_CALL(*page_scheduler_, IsOrdinary).WillByDefault(Return(false));
+
+  // The UseCase should be `kNone` event if the page is waiting for a first
+  // contentful/meaningful paint.
   scheduler_->OnMainFramePaint();
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
@@ -2627,7 +2635,6 @@ TEST_F(MainThreadSchedulerImplTest, ShutdownPreventsPostingOfNewTasks) {
 
 TEST_F(MainThreadSchedulerImplTest,
        EstimateLongestJankFreeTaskDuration_UseCase_NONE) {
-  EnsureUseCaseNone();
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
   EXPECT_EQ(rails_response_time(),
             scheduler_->EstimateLongestJankFreeTaskDuration());

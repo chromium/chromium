@@ -98,7 +98,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   // An "ordinary" PageScheduler is responsible for a fully-featured page
   // owned by a web view.
-  bool IsOrdinary() const;
+  virtual bool IsOrdinary() const;
 
   MainThreadSchedulerImpl* GetMainThreadScheduler() const;
   AgentGroupSchedulerImpl& GetAgentGroupScheduler() override;
