@@ -193,6 +193,42 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
             min_web_contents_width);
 }
 
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
+  coordinator_->Toggle();
+  const int starting_width = 500;
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  // Shrink browser window enough that side panel should also shrink in
+  // observance of web contents minimum width.
+  gfx::Rect original_bounds(browser_view()->GetBounds());
+  gfx::Size new_size(starting_width, starting_width);
+  gfx::Rect new_bounds(original_bounds);
+  new_bounds.set_size(new_size);
+  // Explicitly restore the browser window on ChromeOS, as it would otherwise
+  // be maximized and the SetBounds call would be a no-op.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  browser_view()->Restore();
+#endif
+  browser_view()->SetBounds(new_bounds);
+  EXPECT_LT(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+  BrowserViewLayout* layout_manager =
+      static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
+  const int min_web_contents_width =
+      layout_manager->GetMinWebContentsWidthForTesting();
+  EXPECT_EQ(browser_view()->contents_web_view()->width(),
+            min_web_contents_width);
+
+  // Return browser window to original size, side panel should also return to
+  // size prior to window resize.
+  browser_view()->SetBounds(original_bounds);
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+}
+
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
