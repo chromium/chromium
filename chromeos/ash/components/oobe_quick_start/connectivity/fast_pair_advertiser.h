@@ -14,6 +14,8 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
+namespace ash::quick_start {
+
 // FastPairAdvertiser broadcasts advertisements with the service UUID
 // 0xFE2C and model ID 0x41C0D9. When the remote device detects this
 // advertisement it will trigger a prompt to begin Quick Start.
@@ -83,5 +85,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   base::OnceClosure stop_callback_;
   base::WeakPtrFactory<FastPairAdvertiser> weak_ptr_factory_{this};
 };
+
+}  // namespace ash::quick_start
 
 #endif  // CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_FAST_PAIR_ADVERTISER_H_

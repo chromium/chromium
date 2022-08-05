@@ -21,6 +21,7 @@ using TargetDeviceConnectionBroker =
     ash::quick_start::TargetDeviceConnectionBroker;
 using TargetDeviceConnectionBrokerImpl =
     ash::quick_start::TargetDeviceConnectionBrokerImpl;
+using FastPairAdvertiser = ash::quick_start::FastPairAdvertiser;
 
 // Allows us to delay returning a Bluetooth adapter until after ReturnAdapter()
 // is called. Used for testing how the connection broker behaves before the

@@ -119,6 +119,8 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
   bool called_unregister_error_callback_ = false;
 };
 
+namespace ash::quick_start {
+
 class FastPairAdvertiserTest : public testing::Test {
  public:
   FastPairAdvertiserTest(const FastPairAdvertiserTest&) = delete;
@@ -302,3 +304,5 @@ TEST_F(FastPairAdvertiserTest, TestGenerateManufacturerMetadata) {
     EXPECT_EQ(random_id_bytes[i], manufacturer_metadata[i]);
   }
 }
+
+}  // namespace ash::quick_start

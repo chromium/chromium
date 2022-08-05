@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 
+namespace ash::quick_start {
+
 namespace {
 
 constexpr const char kFastPairServiceUuid[] =
@@ -161,3 +163,5 @@ std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata(
   std::vector<uint8_t> metadata(std::begin(id), std::end(id));
   return metadata;
 }
+
+}  // namespace ash::quick_start

@@ -10,9 +10,9 @@
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-class FastPairAdvertiser;
-
 namespace ash::quick_start {
+
+class FastPairAdvertiser;
 
 class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
  public:
