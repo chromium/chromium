@@ -291,6 +291,7 @@ void AssistantOptInFlowScreenHandler::ShowNextScreen() {
 void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
     bool opted_in) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(!pending_consent_data_.empty());
   auto data = pending_consent_data_.front();
   pending_consent_data_.pop_front();
   RecordActivityControlConsent(profile, data.ui_audit_key, opted_in,
@@ -298,6 +299,7 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
   if (opted_in) {
     has_opted_in_any_consent_ = true;
     RecordAssistantActivityControlOptInStatus(data.setting_type, opted_in);
+    CHECK(assistant::AssistantSettings::Get());
     assistant::AssistantSettings::Get()->UpdateSettings(
         GetSettingsUiUpdate(data.consent_token).SerializeAsString(),
         base::BindOnce(
@@ -363,6 +365,7 @@ void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
   }
 
   assistant::SettingsUiSelector selector = GetSettingsUiSelector();
+  CHECK(assistant::AssistantSettings::Get());
   assistant::AssistantSettings::Get()->GetSettingsWithHeader(
       selector.SerializeAsString(),
       base::BindOnce(&AssistantOptInFlowScreenHandler::OnGetSettingsResponse,
@@ -373,6 +376,7 @@ void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
 void AssistantOptInFlowScreenHandler::StopSpeakerIdEnrollment() {
   DCHECK(voice_match_enrollment_started_);
   voice_match_enrollment_started_ = false;
+  CHECK(assistant::AssistantSettings::Get());
   assistant::AssistantSettings::Get()->StopSpeakerIdEnrollment();
   // Reset the mojom receiver of |SpeakerIdEnrollmentClient|.
   ResetReceiver();
@@ -614,6 +618,7 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
 
     DCHECK(!voice_match_enrollment_started_);
     voice_match_enrollment_started_ = true;
+    CHECK(assistant::AssistantSettings::Get());
     assistant::AssistantSettings::Get()->StartSpeakerIdEnrollment(
         flow_type_ == ash::FlowType::kSpeakerIdRetrain,
         weak_factory_.GetWeakPtr());
