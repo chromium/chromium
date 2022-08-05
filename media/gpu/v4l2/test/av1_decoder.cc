@@ -603,6 +603,51 @@ void FillGlobalMotionParams(
   }
 }
 
+// Section 5.11. Tile Group OBU syntax
+void FillTileGroupParams(
+    v4l2_ctrl_av1_tile_group* tile_group_params,
+    std::vector<struct v4l2_ctrl_av1_tile_group_entry>*
+        tile_group_entry_vectors,
+    const base::span<const uint8_t> frame_obu_data,
+    const libgav1::TileInfo& tile_info,
+    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
+  // TODO(stevecho): This could happen in rare cases (for example, if there is a
+  // Metadata OBU after the TileGroup OBU). We currently do not have a reason to
+  // handle those cases. This is also the case in libgav1 at the moment.
+  CHECK(!tile_buffers.empty());
+  const size_t tile_columns = tile_info.tile_columns;
+
+  CHECK_GT(tile_columns, 0u);
+  const uint16_t num_tiles = base::checked_cast<uint16_t>(tile_buffers.size());
+
+  conditionally_set_flags(&tile_group_params->flags, num_tiles > 1,
+                          V4L2_AV1_TILE_GROUP_FLAG_START_AND_END_PRESENT);
+
+  if (num_tiles >= 1) {
+    tile_group_params->tg_start = 0;
+    tile_group_params->tg_end = num_tiles - 1;
+  }
+
+  for (uint16_t tile_index = 0; tile_index < num_tiles; ++tile_index) {
+    struct v4l2_ctrl_av1_tile_group_entry tile_group_entry_params = {};
+
+    CHECK(tile_buffers[tile_index].data >= frame_obu_data.data());
+    tile_group_entry_params.tile_offset = base::checked_cast<uint32_t>(
+        tile_buffers[tile_index].data - frame_obu_data.data());
+
+    tile_group_entry_params.tile_size = tile_buffers[tile_index].size;
+
+    // The tiles are row-major. We use the number of columns |tile_columns|
+    // to compute computation of the row and column for a given tile.
+    tile_group_entry_params.tile_row =
+        tile_index / base::checked_cast<uint16_t>(tile_columns);
+    tile_group_entry_params.tile_col =
+        tile_index % base::checked_cast<uint16_t>(tile_columns);
+
+    tile_group_entry_vectors->push_back(tile_group_entry_params);
+  }
+}
+
 }  // namespace
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
@@ -910,6 +955,30 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
                               .size = sizeof(v4l2_frame_params),
                               .ptr = &v4l2_frame_params});
+
+  struct v4l2_ctrl_av1_tile_group tile_group_params = {};
+  std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors;
+
+  FillTileGroupParams(
+      &tile_group_params, &tile_group_entry_vectors,
+      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
+      current_frame_header.tile_info, obu_parser_->tile_buffers());
+
+  // TODO(b/240736764): We are discussing to remove tile group control.
+  // But current MTK driver expects this control with error check, so we need
+  // this setup for the time being. Also, current libgav1 parser doesn't have
+  // information about start & end index of each tile group. Thus, we are
+  // setting up this control only for the 1st tile group. In fact, current tests
+  // don't have cases when 2+ tile groups exist within a frame.
+  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_TILE_GROUP,
+                              .size = sizeof(tile_group_params),
+                              .ptr = &tile_group_params});
+
+  ext_ctrl_vectors.push_back(
+      {.id = V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY,
+       .size = base::checked_cast<__u32>(tile_group_entry_vectors.size()) *
+               sizeof(v4l2_ctrl_av1_tile_group_entry),
+       .ptr = &tile_group_entry_vectors[0]});
 
   struct v4l2_ext_controls ext_ctrls = {.count = base::checked_cast<__u32>(ext_ctrl_vectors.size()),
                                         .controls = &ext_ctrl_vectors[0]};
