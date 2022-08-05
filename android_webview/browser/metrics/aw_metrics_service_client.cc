@@ -170,7 +170,7 @@ AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
   PrefService* local_state = pref_service();
   DCHECK(local_state);
   cached_package_name_record_ = AppPackageNameLoggingRule::FromDictionary(
-      *(local_state->Get(prefs::kMetricsAppPackageNameLoggingRule)));
+      local_state->GetValue(prefs::kMetricsAppPackageNameLoggingRule));
   if (cached_package_name_record_.has_value()) {
     package_name_record_status_ =
         AppPackageNameLoggingRuleStatus::kNotLoadedUseCache;

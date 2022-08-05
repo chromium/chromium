@@ -310,7 +310,7 @@ void AwBrowserContext::MigrateLocalStatePrefs() {
   }
 
   user_pref_service_->Set(cdm::prefs::kMediaDrmStorage,
-                          *(local_state->Get(cdm::prefs::kMediaDrmStorage)));
+                          local_state->GetValue(cdm::prefs::kMediaDrmStorage));
   local_state->ClearPref(cdm::prefs::kMediaDrmStorage);
 }
 
