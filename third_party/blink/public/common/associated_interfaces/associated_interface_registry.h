@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <type_traits>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -58,7 +59,8 @@ class BLINK_COMMON_EXPORT AssociatedInterfaceRegistry {
       base::RepeatingCallback<void(mojo::PendingAssociatedReceiver<Interface>)>;
 
   template <typename Interface>
-  void AddInterface(const ReceiverBinder<Interface>& binder) {
+  void AddInterface(
+      const std::common_type_t<ReceiverBinder<Interface>&> binder) {
     AddInterface(
         Interface::Name_,
         base::BindRepeating(&BindInterfaceReceiver<Interface>, binder));
