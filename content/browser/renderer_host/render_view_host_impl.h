@@ -124,7 +124,6 @@ class CONTENT_EXPORT RenderViewHostImpl
       RenderViewHostDelegate* delegate,
       int32_t routing_id,
       int32_t main_frame_routing_id,
-      bool swapped_out,
       bool has_initialized_audio_host,
       scoped_refptr<BrowsingContextState> main_browsing_context_state);
 

@@ -32,7 +32,6 @@ class RenderViewHostFactory {
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
       int32_t main_frame_routing_id,
-      bool swapped_out,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state);
 
@@ -71,7 +70,6 @@ class RenderViewHostFactory {
       int32_t routing_id,
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
-      bool swapped_out,
       scoped_refptr<BrowsingContextState> main_browsing_context_state) = 0;
 
   // Registers your factory to be called when new RenderViewHosts are created.

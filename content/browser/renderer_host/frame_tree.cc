@@ -599,7 +599,6 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node,
 scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
     SiteInstance* site_instance,
     int32_t main_frame_routing_id,
-    bool swapped_out,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state) {
   if (main_browsing_context_state) {
@@ -609,7 +608,7 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
       static_cast<RenderViewHostImpl*>(RenderViewHostFactory::Create(
           this, static_cast<SiteInstanceImpl*>(site_instance)->group(),
           site_instance->GetStoragePartitionConfig(), render_view_delegate_,
-          render_widget_delegate_, main_frame_routing_id, swapped_out,
+          render_widget_delegate_, main_frame_routing_id,
           renderer_initiated_creation, std::move(main_browsing_context_state)));
   return base::WrapRefCounted(rvh);
 }

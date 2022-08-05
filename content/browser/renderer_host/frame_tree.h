@@ -388,7 +388,6 @@ class CONTENT_EXPORT FrameTree {
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
       SiteInstance* site_instance,
       int32_t main_frame_routing_id,
-      bool swapped_out,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state);
 

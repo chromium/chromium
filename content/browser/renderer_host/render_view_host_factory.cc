@@ -29,7 +29,6 @@ RenderViewHost* RenderViewHostFactory::Create(
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
     int32_t main_frame_routing_id,
-    bool swapped_out,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state) {
   int32_t routing_id = group->process()->GetNextRoutingID();
@@ -38,7 +37,7 @@ RenderViewHost* RenderViewHostFactory::Create(
   if (factory_) {
     return factory_->CreateRenderViewHost(
         frame_tree, group, storage_partition_config, delegate, widget_delegate,
-        routing_id, main_frame_routing_id, widget_routing_id, swapped_out,
+        routing_id, main_frame_routing_id, widget_routing_id,
         std::move(main_browsing_context_state));
   }
 
@@ -47,7 +46,7 @@ RenderViewHost* RenderViewHostFactory::Create(
       RenderWidgetHostFactory::Create(
           frame_tree, widget_delegate, group->GetSafeRef(), widget_routing_id,
           /*hidden=*/true, renderer_initiated_creation),
-      delegate, routing_id, main_frame_routing_id, swapped_out,
+      delegate, routing_id, main_frame_routing_id,
       true /* has_initialized_audio_host */,
       std::move(main_browsing_context_state));
   return view_host;
