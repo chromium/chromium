@@ -42,8 +42,15 @@ void FakeBluetoothHidDetector::SimulatePairingStarted(
   NotifyBluetoothHidDetectionStatusChanged();
 }
 
-void FakeBluetoothHidDetector::SimulatePairingFinished() {
+void FakeBluetoothHidDetector::SetPairingState(
+    absl::optional<BluetoothHidPairingState> pairing_state) {
+  current_pairing_state_ = std::move(pairing_state);
+  NotifyBluetoothHidDetectionStatusChanged();
+}
+
+void FakeBluetoothHidDetector::SimulatePairingSessionEnded() {
   current_pairing_device_.reset();
+  current_pairing_state_.reset();
   NotifyBluetoothHidDetectionStatusChanged();
 }
 

@@ -21,7 +21,7 @@ FakeHidDetectionManager::~FakeHidDetectionManager() = default;
 
 void FakeHidDetectionManager::SetHidStatusTouchscreenDetected(
     bool touchscreen_detected) {
-  hid_detection_status_.touchscreen_detected = touchscreen_detected;
+  touchscreen_detected_ = touchscreen_detected;
   if (!is_hid_detection_active_)
     return;
 
@@ -30,7 +30,7 @@ void FakeHidDetectionManager::SetHidStatusTouchscreenDetected(
 
 void FakeHidDetectionManager::SetHidStatusPointerMetadata(
     InputMetadata metadata) {
-  hid_detection_status_.pointer_metadata = metadata;
+  pointer_metadata_ = metadata;
   if (!is_hid_detection_active_)
     return;
 
@@ -39,7 +39,7 @@ void FakeHidDetectionManager::SetHidStatusPointerMetadata(
 
 void FakeHidDetectionManager::SetHidStatusKeyboardMetadata(
     InputMetadata metadata) {
-  hid_detection_status_.keyboard_metadata = metadata;
+  keyboard_metadata_ = metadata;
   if (!is_hid_detection_active_)
     return;
 
@@ -48,9 +48,8 @@ void FakeHidDetectionManager::SetHidStatusKeyboardMetadata(
 
 void FakeHidDetectionManager::GetIsHidDetectionRequired(
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(
-      IsInputMissing(hid_detection_status_.pointer_metadata) ||
-      IsInputMissing(hid_detection_status_.keyboard_metadata));
+  std::move(callback).Run(IsInputMissing(pointer_metadata_) ||
+                          IsInputMissing(keyboard_metadata_));
 }
 
 void FakeHidDetectionManager::PerformStartHidDetection() {
@@ -66,7 +65,14 @@ void FakeHidDetectionManager::PerformStopHidDetection() {
 
 HidDetectionManager::HidDetectionStatus
 FakeHidDetectionManager::ComputeHidDetectionStatus() const {
-  return hid_detection_status_;
+  absl::optional<BluetoothHidPairingState> pairing_state;
+  if (pairing_state_.has_value()) {
+    pairing_state = BluetoothHidPairingState{
+        pairing_state_.value().code, pairing_state_.value().num_keys_entered};
+  }
+
+  return HidDetectionStatus(pointer_metadata_, keyboard_metadata_,
+                            touchscreen_detected_, std::move(pairing_state));
 }
 
 }  // namespace ash::hid_detection

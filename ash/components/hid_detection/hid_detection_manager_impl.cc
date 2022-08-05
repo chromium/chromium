@@ -72,12 +72,13 @@ HidDetectionManager::HidDetectionStatus
 HidDetectionManagerImpl::ComputeHidDetectionStatus() const {
   BluetoothHidDetector::BluetoothHidDetectionStatus bluetooth_status =
       bluetooth_hid_detector_->GetBluetoothHidDetectionStatus();
-  return HidDetectionManager::HidDetectionStatus{
+  return HidDetectionManager::HidDetectionStatus(
       GetInputMetadata(connected_pointer_id_, BluetoothHidType::kPointer,
                        bluetooth_status.current_pairing_device),
       GetInputMetadata(connected_keyboard_id_, BluetoothHidType::kKeyboard,
                        bluetooth_status.current_pairing_device),
-      connected_touchscreen_id_.has_value()};
+      connected_touchscreen_id_.has_value(),
+      std::move(bluetooth_status.pairing_state));
 }
 
 void HidDetectionManagerImpl::InputDeviceAdded(

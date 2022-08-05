@@ -11,8 +11,6 @@
 
 namespace ash::hid_detection {
 
-// TODO(gordonseto): Move this to HidDetectionManager when that class is
-// created.
 struct BluetoothHidPairingState {
   BluetoothHidPairingState(const std::string& code, uint8_t num_keys_entered);
   BluetoothHidPairingState(BluetoothHidPairingState&& other);
@@ -67,7 +65,8 @@ class BluetoothHidDetector {
     absl::optional<BluetoothHidMetadata> current_pairing_device;
 
     // Set if the current pairing requires a code that should be displayed to
-    // the user to enter.
+    // the user to enter. This will always be null if |current_pairing_device|
+    // is null.
     absl::optional<BluetoothHidPairingState> pairing_state;
   };
 

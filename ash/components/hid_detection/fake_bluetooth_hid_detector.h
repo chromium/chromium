@@ -22,7 +22,8 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
 
   void SimulatePairingStarted(
       BluetoothHidDetector::BluetoothHidMetadata pairing_device);
-  void SimulatePairingFinished();
+  void SetPairingState(absl::optional<BluetoothHidPairingState> pairing_state);
+  void SimulatePairingSessionEnded();
 
   const InputDevicesStatus& input_devices_status() {
     return input_devices_status_;

@@ -33,7 +33,11 @@ class FakeHidDetectionManager : public HidDetectionManager {
       const override;
 
   bool is_hid_detection_active_ = false;
-  HidDetectionManager::HidDetectionStatus hid_detection_status_;
+
+  InputMetadata pointer_metadata_;
+  InputMetadata keyboard_metadata_;
+  bool touchscreen_detected_ = false;
+  absl::optional<BluetoothHidPairingState> pairing_state_;
 };
 
 }  // namespace ash::hid_detection
