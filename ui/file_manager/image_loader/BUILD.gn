@@ -9,6 +9,7 @@ import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "jscomp_error=strictCheckTypes",
                     "js_module_root=gen/ui/file_manager/",
                     "js_module_root=../../ui/file_manager/",
@@ -158,6 +159,7 @@ js_test_type_check("js_test_type_check") {
   ]
 
   closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "js_module_root=./gen/ui",
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=./gen/ui/file_manager/",
