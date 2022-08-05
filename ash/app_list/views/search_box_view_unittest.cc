@@ -21,6 +21,7 @@
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
+#include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
@@ -28,7 +29,6 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
-#include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -279,7 +279,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   }
 
   // Overridden from SearchBoxViewDelegate:
-  void QueryChanged(SearchBoxViewBase* sender) override {}
+  void QueryChanged(const std::u16string& trimmed_query,
+                    bool initiated_by_user) override {}
   void AssistantButtonPressed() override {}
   void CloseButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}

@@ -9,9 +9,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_base.h"
-#include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/metrics/user_metrics.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -34,8 +34,8 @@ constexpr int kBorderThichness = 2;
 
 }  // namespace
 
-KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
-    : ash::SearchBoxViewBase(delegate) {
+KSVSearchBoxView::KSVSearchBoxView(QueryHandler query_handler)
+    : query_handler_(std::move(query_handler)) {
   SetSearchBoxBackgroundCornerRadius(kBorderCornerRadius);
   UpdateBackgroundColor(GetBackgroundColor());
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -59,6 +59,8 @@ KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
   close_button->SetAccessibleName(close_button_label);
   close_button->SetTooltipText(close_button_label);
 }
+
+KSVSearchBoxView::~KSVSearchBoxView() = default;
 
 void KSVSearchBoxView::Initialize() {
   ash::SearchBoxViewBase::InitParams params;
@@ -112,6 +114,11 @@ void KSVSearchBoxView::SetAccessibleValue(const std::u16string& value) {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
+void KSVSearchBoxView::HandleQueryChange(const std::u16string& query,
+                                         bool initiated_by_user) {
+  query_handler_.Run(query);
+}
+
 void KSVSearchBoxView::UpdateSearchBoxBorder() {
   // TODO(wutao): Rename this function or create another function in base class.
   // It updates many things in addition to the border.
@@ -127,6 +134,13 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
   SetBorder(views::CreateRoundedRectBorder(
       kBorderThichness, kBorderCornerRadius, GetBorderColor()));
   UpdateBackgroundColor(GetBackgroundColor());
+}
+
+void KSVSearchBoxView::OnSearchBoxActiveChanged(bool active) {
+  if (active) {
+    base::RecordAction(
+        base::UserMetricsAction("KeyboardShortcutViewer.Search"));
+  }
 }
 
 void KSVSearchBoxView::UpdatePlaceholderTextStyle() {

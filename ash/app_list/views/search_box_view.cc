@@ -18,6 +18,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
+#include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -28,7 +29,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
-#include "ash/search_box/search_box_view_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_functions.h"
@@ -206,7 +206,7 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
 SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              AppListViewDelegate* view_delegate,
                              AppListView* app_list_view)
-    : SearchBoxViewBase(delegate),
+    : delegate_(delegate),
       view_delegate_(view_delegate),
       app_list_view_(app_list_view),
       is_app_list_bubble_(!app_list_view_),
@@ -306,18 +306,6 @@ void SearchBoxView::UpdateSearchTextfieldAccessibleNodeData(
   }
 }
 
-void SearchBoxView::ClearSearch() {
-  SearchBoxViewBase::ClearSearch();
-  current_query_.clear();
-  // Peeking/fullscreen launcher needs explicit state changes.
-  if (app_list_view_) {
-    app_list_view_->SetStateFromSearchBoxView(
-        /*search_box_is_empty=*/true, /*triggered_by_contents_change=*/false);
-  }
-  NotifyQueryChanged();
-  view_delegate_->StartSearch(u"");
-}
-
 void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   if (located_event->type() == ui::ET_MOUSEWHEEL) {
     // TODO(crbug.com/1216082): Forward scroll events for bubble launcher.
@@ -361,25 +349,28 @@ void SearchBoxView::UpdateKeyboardVisibility() {
   keyboard_controller->HideKeyboardByUser();
 }
 
-void SearchBoxView::UpdateModel(bool initiated_by_user) {
-  auto new_query = search_box()->GetText();
-  SearchBoxModel* const search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-
+void SearchBoxView::HandleQueryChange(const std::u16string& query,
+                                      bool initiated_by_user) {
   // Randomly select a new placeholder text when we get an empty new query.
-  if (new_query.empty() && features::IsProductivityLauncherEnabled())
+  if (query.empty() && features::IsProductivityLauncherEnabled())
     UpdatePlaceholderTextAndAccessibleName();
 
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+
+  // Update autocomplete text highlight range to track user typed text.
+  if (ShouldProcessAutocomplete())
+    ResetHighlightRange();
+
   if (initiated_by_user) {
-    const std::u16string& previous_query = search_box_model->text();
     const base::TimeTicks current_time = base::TimeTicks::Now();
-    if (previous_query.empty() && !new_query.empty()) {
+    if (current_query_.empty() && !query.empty()) {
+      base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
       // Set 'user_initiated_model_update_time_' when initiating a new query.
       user_initiated_model_update_time_ = current_time;
-    } else if (!previous_query.empty() && new_query.empty()) {
+    } else if (!current_query_.empty() && query.empty()) {
       // Reset 'user_initiated_model_update_time_' when clearing the search_box.
       user_initiated_model_update_time_ = base::TimeTicks();
-    } else if (new_query != previous_query &&
+    } else if (query != current_query_ &&
                !user_initiated_model_update_time_.is_null()) {
       if (is_tablet_mode_) {
         UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.TabletMode",
@@ -391,16 +382,35 @@ void SearchBoxView::UpdateModel(bool initiated_by_user) {
       user_initiated_model_update_time_ = current_time;
     }
   }
+
+  std::u16string trimmed_query;
+  base::TrimWhitespace(query, base::TrimPositions::TRIM_ALL, &trimmed_query);
+  const bool query_empty_changed =
+      trimmed_query.empty() != IsTrimmedQueryEmpty(current_query_);
+
+  current_query_ = query;
+
+  // The search box background depens on whether the query is empty, so schedule
+  // repaint when this changes.
+  if (query_empty_changed)
+    SchedulePaint();
+
   // Temporarily remove from observer to ignore notifications caused by us.
   search_box_model_observer_.Reset();
 
-  search_box_model->Update(new_query, initiated_by_user);
+  SearchBoxModel* const search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+
+  search_box_model->Update(query, initiated_by_user);
   search_box_model_observer_.Observe(search_box_model);
 
-  // Ask the controller to start the search if the change was initiated by the
-  // user.
-  if (initiated_by_user)
-    view_delegate_->StartSearch(new_query);
+  delegate_->QueryChanged(trimmed_query, initiated_by_user);
+
+  // Don't reinitiate zero state search if the previous query was already empty
+  // (to avoid issuing zero state search twice in a row while clearing up search
+  // - see http://crbug.com/979594).
+  if (initiated_by_user || !trimmed_query.empty() || query_empty_changed)
+    view_delegate_->StartSearch(query);
 }
 
 void SearchBoxView::UpdatePlaceholderTextStyle() {
@@ -554,6 +564,8 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
       UpdatePlaceholderTextAndAccessibleName();
     }
   }
+
+  delegate_->ActiveChanged(this);
 }
 
 void SearchBoxView::UpdateSearchBoxFocusPaint() {
@@ -579,7 +591,7 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
       (IsUnhandledArrowKeyEvent(*evt) || evt->key_code() == ui::VKEY_TAB)) {
     search_box()->RequestFocus();
 
-    if (delegate()->CanSelectSearchResults() &&
+    if (delegate_->CanSelectSearchResults() &&
         result_selection_controller_->MoveSelection(*evt) ==
             ResultSelectionController::MoveResult::kResultChanged) {
       UpdateSearchBoxForSelectedResult(
@@ -590,7 +602,7 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
     return;
   }
 
-  delegate()->OnSearchBoxKeyEvent(evt);
+  delegate_->OnSearchBoxKeyEvent(evt);
 }
 
 bool SearchBoxView::OnMouseWheel(const ui::MouseWheelEvent& event) {
@@ -839,11 +851,11 @@ int SearchBoxView::GetSearchBoxButtonSize() {
 }
 
 void SearchBoxView::CloseButtonPressed() {
-  delegate()->CloseButtonPressed();
+  delegate_->CloseButtonPressed();
 }
 
 void SearchBoxView::AssistantButtonPressed() {
-  delegate()->AssistantButtonPressed();
+  delegate_->AssistantButtonPressed();
 }
 
 void SearchBoxView::UpdateSearchIcon() {
@@ -977,32 +989,6 @@ void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
     SetA11yActiveDescendant(absl::nullopt);
 }
 
-void SearchBoxView::ContentsChanged(views::Textfield* sender,
-                                    const std::u16string& new_contents) {
-  bool current_query_empty = IsTrimmedQueryEmpty(current_query_);
-  bool new_contents_empty = IsTrimmedQueryEmpty(new_contents);
-  if (current_query_empty && !new_contents_empty) {
-    // User enters a new search query. Record the action.
-    base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
-  }
-
-  // Schedule paint to update the focus bar, a part of the search box background
-  // that is dependent on whether the query is empty.
-  if (current_query_empty != new_contents_empty)
-    SchedulePaint();
-
-  current_query_ = new_contents;
-
-  // Update autocomplete text highlight range to track user typed text.
-  if (ShouldProcessAutocomplete())
-    ResetHighlightRange();
-  SearchBoxViewBase::ContentsChanged(sender, new_contents);
-  if (app_list_view_) {
-    app_list_view_->SetStateFromSearchBoxView(
-        IsSearchBoxTrimmedQueryEmpty(), true /*triggered_by_contents_change*/);
-  }
-}
-
 void SearchBoxView::SetAutocompleteText(
     const std::u16string& autocomplete_text) {
   if (!ShouldProcessAutocomplete())
@@ -1091,7 +1077,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
   // Nothing to do if no results are available (the rest of the method handles
   // result actions and result traversal). This might happen if zero state
   // suggestions are not enabled, and search box textfield is empty.
-  if (!delegate()->CanSelectSearchResults())
+  if (!delegate_->CanSelectSearchResults())
     return false;
 
   // When search box is active, the focus cycles between close button and the
@@ -1266,10 +1252,13 @@ void SearchBoxView::UpdateSearchBoxForSelectedResult(
 }
 
 void SearchBoxView::Update() {
-  search_box()->SetText(
-      AppListModelProvider::Get()->search_model()->search_box()->text());
+  const std::u16string text =
+      AppListModelProvider::Get()->search_model()->search_box()->text();
+  search_box()->SetText(text);
   UpdateButtonsVisibility();
-  NotifyQueryChanged();
+  std::u16string trimmed_text;
+  base::TrimWhitespace(text, base::TrimPositions::TRIM_ALL, &trimmed_text);
+  delegate_->QueryChanged(trimmed_text, false);
 }
 
 void SearchBoxView::SearchEngineChanged() {

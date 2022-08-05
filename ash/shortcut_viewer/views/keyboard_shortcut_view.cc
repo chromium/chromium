@@ -374,11 +374,14 @@ void KeyboardShortcutView::OnThemeChanged() {
   UpdateActiveAndInactiveFrameColor();
 }
 
-void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
-  const bool query_empty = sender->IsSearchBoxTrimmedQueryEmpty();
+void KeyboardShortcutView::QueryChanged(const std::u16string& query) {
+  std::u16string trimmed_query;
+  base::TrimWhitespace(query, base::TRIM_ALL, &trimmed_query);
+
+  const bool query_empty = trimmed_query.empty();
   if (is_search_box_empty_ != query_empty) {
     is_search_box_empty_ = query_empty;
-    UpdateViewsLayout(/*is_search_box_active=*/true);
+    UpdateViewsLayout();
   }
 
   debounce_timer_.Stop();
@@ -389,24 +392,9 @@ void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
   // TODO(wutao): This timeout value is chosen based on subjective search
   // latency tests on Minnie. Objective method or UMA is desired.
   constexpr base::TimeDelta kTimeOut(base::Milliseconds(250));
-  debounce_timer_.Start(
-      FROM_HERE, kTimeOut,
-      base::BindOnce(&KeyboardShortcutView::ShowSearchResults,
-                     base::Unretained(this), sender->search_box()->GetText()));
-}
-
-void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
-  const bool is_search_box_active = sender->is_search_box_active();
-  is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();
-  if (is_search_box_active) {
-    base::RecordAction(
-        base::UserMetricsAction("KeyboardShortcutViewer.Search"));
-  }
-  UpdateViewsLayout(is_search_box_active);
-}
-
-bool KeyboardShortcutView::CanSelectSearchResults() {
-  return true;
+  debounce_timer_.Start(FROM_HERE, kTimeOut,
+                        base::BindOnce(&KeyboardShortcutView::ShowSearchResults,
+                                       base::Unretained(this), query));
 }
 
 KeyboardShortcutView::KeyboardShortcutView() {
@@ -422,7 +410,8 @@ KeyboardShortcutView::KeyboardShortcutView() {
 void KeyboardShortcutView::InitViews() {
   TRACE_EVENT0("shortcut_viewer", "InitViews");
   // Init search box view.
-  auto search_box_view = std::make_unique<KSVSearchBoxView>(this);
+  auto search_box_view = std::make_unique<KSVSearchBoxView>(base::BindRepeating(
+      &KeyboardShortcutView::QueryChanged, base::Unretained(this)));
   search_box_view->Initialize();
   search_box_view_ = AddChildView(std::move(search_box_view));
 
@@ -544,15 +533,11 @@ void KeyboardShortcutView::InitCategoriesTabbedPane(
   tab_contents->InvalidateLayout();
 }
 
-void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
-  // 1. Search box is not active: show |categories_tabbed_pane_| and focus on
+void KeyboardShortcutView::UpdateViewsLayout() {
+  // 1. Search box is empty: show |categories_tabbed_pane_| and focus on
   //    active tab.
-  // 2. Search box is active and empty: show |categories_tabbed_pane_| but focus
-  //    on search box.
-  // 3. Search box is not empty, show |search_results_container_|. Focus is on
-  //    search box.
-  const bool should_show_search_results =
-      is_search_box_active && !is_search_box_empty_;
+  // 2. Search box is not empty, show |search_results_container_|.
+  const bool should_show_search_results = !is_search_box_empty_;
   if (!should_show_search_results) {
     // Remove all child views, including horizontal separator lines, to prepare
     // for showing search results next time.

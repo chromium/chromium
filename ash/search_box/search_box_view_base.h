@@ -32,7 +32,6 @@ class Textfield;
 namespace ash {
 
 class SearchBoxImageButton;
-class SearchBoxViewDelegate;
 class SearchIconImageView;
 
 // These are used in histograms, do not remove/renumber entries. If you're
@@ -52,7 +51,7 @@ enum class ActivationSource {
 class SearchBoxViewBase : public views::View,
                           public views::TextfieldController {
  public:
-  explicit SearchBoxViewBase(SearchBoxViewDelegate* delegate);
+  SearchBoxViewBase();
 
   SearchBoxViewBase(const SearchBoxViewBase&) = delete;
   SearchBoxViewBase& operator=(const SearchBoxViewBase&) = delete;
@@ -85,6 +84,14 @@ class SearchBoxViewBase : public views::View,
   views::ImageButton* close_button();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
+
+  // Called when the query in the search box textfield changes. The search box
+  // implementation is expected to handle the new query.
+  // `query` the new search box query.
+  // `initiated_by_user` whether the query changes was a result of the user
+  // typing.
+  virtual void HandleQueryChange(const std::u16string& query,
+                                 bool initiated_by_user) = 0;
 
   // Sets contents for the title and category labels used for ghost text
   // autocomplete.
@@ -124,7 +131,7 @@ class SearchBoxViewBase : public views::View,
   virtual void UpdateSearchTextfieldAccessibleNodeData(
       ui::AXNodeData* node_data);
 
-  virtual void ClearSearch();
+  void ClearSearch();
 
   // Called when the search box active state changes.
   virtual void OnSearchBoxActiveChanged(bool active);
@@ -158,12 +165,6 @@ class SearchBoxViewBase : public views::View,
 
   void Init(const InitParams& params);
 
-  // Fires query change notification.
-  void NotifyQueryChanged();
-
-  // Nofifies the active status change.
-  void NotifyActiveChanged();
-
   // Updates the visibility of the close and assistant buttons.
   void UpdateButtonsVisibility();
 
@@ -184,8 +185,6 @@ class SearchBoxViewBase : public views::View,
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
-  SearchBoxViewDelegate* delegate() { return delegate_; }
-
   views::BoxLayoutView* box_layout_view() { return content_container_; }
 
   void SetSearchBoxBackgroundCornerRadius(int corner_radius);
@@ -204,9 +203,6 @@ class SearchBoxViewBase : public views::View,
   // Shows/hides the virtual keyboard if the search box is active.
   virtual void UpdateKeyboardVisibility() {}
 
-  // Updates model text and selection model with current Textfield info.
-  virtual void UpdateModel(bool initiated_by_user) {}
-
   // Updates the color and alignment of the placeholder text.
   virtual void UpdatePlaceholderTextStyle() {}
 
@@ -218,8 +214,6 @@ class SearchBoxViewBase : public views::View,
 
  private:
   void OnEnabledChanged();
-
-  SearchBoxViewDelegate* const delegate_;
 
   // Owned by views hierarchy.
   views::BoxLayoutView* content_container_;

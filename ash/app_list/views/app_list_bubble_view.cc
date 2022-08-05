@@ -611,10 +611,10 @@ void AppListBubbleView::Layout() {
   }
 }
 
-void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
-  DCHECK_EQ(sender, search_box_view_);
+void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
+                                     bool initiated_by_user) {
   if (current_page_ != AppListBubblePage::kNone) {
-    if (search_box_view_->HasValidQuery())
+    if (!trimmed_query.empty())
       ShowPage(AppListBubblePage::kSearch);
     else
       ShowPage(AppListBubblePage::kApps);

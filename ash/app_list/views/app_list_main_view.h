@@ -6,8 +6,8 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_
 
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/ash_export.h"
-#include "ash/search_box/search_box_view_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
@@ -63,7 +63,8 @@ class ASH_EXPORT AppListMainView : public views::View,
   PaginationModel* GetAppsPaginationModel();
 
   // Overridden from SearchBoxViewDelegate:
-  void QueryChanged(SearchBoxViewBase* sender) override;
+  void QueryChanged(const std::u16string& trimmed_query,
+                    bool initiated_by_user) override;
   void AssistantButtonPressed() override;
   void CloseButtonPressed() override;
   void ActiveChanged(SearchBoxViewBase* sender) override;

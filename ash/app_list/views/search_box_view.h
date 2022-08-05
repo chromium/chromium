@@ -32,6 +32,7 @@ class AppListView;
 class AppListViewDelegate;
 class ContentsView;
 class ResultSelectionController;
+class SearchBoxViewDelegate;
 class SearchResultBaseView;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
@@ -86,10 +87,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxViewBase:
   void UpdateSearchTextfieldAccessibleNodeData(
       ui::AXNodeData* node_data) override;
-  void ClearSearch() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void UpdateKeyboardVisibility() override;
-  void UpdateModel(bool initiated_by_user) override;
+  void HandleQueryChange(const std::u16string& query,
+                         bool initiated_by_user) override;
   void UpdatePlaceholderTextStyle() override;
   void UpdateSearchBoxBorder() override;
   void RecordSearchBoxActivationHistogram(ui::EventType event_type) override;
@@ -209,8 +210,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from views::TextfieldController:
   void OnBeforeUserAction(views::Textfield* sender) override;
-  void ContentsChanged(views::Textfield* sender,
-                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,
@@ -247,6 +246,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The key most recently pressed.
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
+  SearchBoxViewDelegate* const delegate_;
   AppListViewDelegate* const view_delegate_;
 
   // Owned by views hierarchy. May be null for bubble launcher.

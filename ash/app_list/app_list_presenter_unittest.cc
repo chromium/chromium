@@ -1681,13 +1681,6 @@ TEST_P(AppListBubbleAndTabletTest, NoDuplicateSearchRequests) {
   EnsureLauncherShown();
   EnableTabletMode(tablet_mode_param());
 
-  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
-  // Closing the bubble launcher clears search.
-  if (tablet_mode_param() && productivity_launcher_param()) {
-    EXPECT_EQ(std::vector<std::u16string>({u""}),
-              client->GetAndResetPastSearchQueries());
-  }
-
   EnsureLauncherShown();
 
   // Type a character into the textfield and verify this issues a single search
@@ -1696,6 +1689,7 @@ TEST_P(AppListBubbleAndTabletTest, NoDuplicateSearchRequests) {
   generator->PressKey(ui::VKEY_A, 0);
   EXPECT_TRUE(AppListSearchResultPageVisible());
 
+  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
   EXPECT_EQ(std::vector<std::u16string>({u"a"}),
             client->GetAndResetPastSearchQueries());
   generator->PressKey(ui::VKEY_B, 0);
@@ -1716,13 +1710,6 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
   EnsureLauncherShown();
   EnableTabletMode(tablet_mode_param());
 
-  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
-  // Closing the bubble launcher clears search.
-  if (tablet_mode_param() && productivity_launcher_param()) {
-    EXPECT_EQ(std::vector<std::u16string>({u""}),
-              client->GetAndResetPastSearchQueries());
-  }
-
   EnsureLauncherShown();
 
   // Type a character into the textfield and verify this issues a single search
@@ -1731,6 +1718,7 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
   generator->PressKey(ui::VKEY_A, 0);
   EXPECT_TRUE(AppListSearchResultPageVisible());
 
+  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
   EXPECT_EQ(std::vector<std::u16string>({u"a"}),
             client->GetAndResetPastSearchQueries());
   generator->PressKey(ui::VKEY_B, 0);

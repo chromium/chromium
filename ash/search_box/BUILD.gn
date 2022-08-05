@@ -11,7 +11,6 @@ source_set("search_box") {
     "search_box_constants.h",
     "search_box_view_base.cc",
     "search_box_view_base.h",
-    "search_box_view_delegate.h",
   ]
 
   deps = [

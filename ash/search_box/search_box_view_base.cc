@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/search_box/search_box_view_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -370,9 +369,8 @@ SearchBoxViewBase::InitParams::InitParams() = default;
 
 SearchBoxViewBase::InitParams::~InitParams() = default;
 
-SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
-    : delegate_(delegate), search_box_(new SearchBoxTextfield(this)) {
-  DCHECK(delegate_);
+SearchBoxViewBase::SearchBoxViewBase()
+    : search_box_(new SearchBoxTextfield(this)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const int between_child_spacing =
@@ -570,8 +568,6 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   UpdateButtonsVisibility();
   OnSearchBoxActiveChanged(active);
 
-  NotifyActiveChanged();
-
   content_container_->Layout();
   UpdateSearchBoxFocusPaint();
   SchedulePaint();
@@ -648,34 +644,14 @@ void SearchBoxViewBase::UpdateSearchTextfieldAccessibleNodeData(
     ui::AXNodeData* node_data) {}
 
 void SearchBoxViewBase::ClearSearch() {
-  if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
-  }
-  // Avoid setting |search_box_| text to empty if it is already empty.
-  if (search_box_->GetText() == std::u16string())
-    return;
-
   search_box_->SetText(std::u16string());
   UpdateButtonsVisibility();
-  // Updates model and fires query changed manually because SetText() above
-  // does not generate ContentsChanged() notification.
-  UpdateModel(false);
-  NotifyQueryChanged();
+  HandleQueryChange(u"", /*initiated_by_user=*/false);
 }
 
 void SearchBoxViewBase::OnSearchBoxActiveChanged(bool active) {}
 
 void SearchBoxViewBase::UpdateSearchBoxFocusPaint() {}
-
-void SearchBoxViewBase::NotifyQueryChanged() {
-  DCHECK(delegate_);
-  delegate_->QueryChanged(this);
-}
-
-void SearchBoxViewBase::NotifyActiveChanged() {
-  DCHECK(delegate_);
-  delegate_->ActiveChanged(this);
-}
 
 void SearchBoxViewBase::UpdateButtonsVisibility() {
   DCHECK(close_button_);
@@ -748,12 +724,10 @@ void SearchBoxViewBase::ContentsChanged(views::Textfield* sender,
                                         const std::u16string& new_contents) {
   // Set search box focused when query changes.
   search_box_->RequestFocus();
-  UpdateModel(true);
-  NotifyQueryChanged();
+  HandleQueryChange(new_contents, /*initiated_by_user=*/true);
   if (!new_contents.empty())
     SetSearchBoxActive(true, ui::ET_KEY_PRESSED);
   UpdateButtonsVisibility();
-  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
 bool SearchBoxViewBase::HandleMouseEvent(views::Textfield* sender,

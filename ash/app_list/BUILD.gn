@@ -133,6 +133,7 @@ source_set("app_list") {
     "views/scrollable_apps_grid_view.h",
     "views/search_box_view.cc",
     "views/search_box_view.h",
+    "views/search_box_view_delegate.h",
     "views/search_result_actions_view.cc",
     "views/search_result_actions_view.h",
     "views/search_result_actions_view_delegate.h",

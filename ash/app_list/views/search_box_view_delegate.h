@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
-#define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
+#ifndef ASH_APP_LIST_VIEWS_SEARCH_BOX_VIEW_DELEGATE_H_
+#define ASH_APP_LIST_VIEWS_SEARCH_BOX_VIEW_DELEGATE_H_
+
+#include <string>
 
 namespace ui {
 class KeyEvent;
@@ -15,8 +17,13 @@ class SearchBoxViewBase;
 
 class SearchBoxViewDelegate {
  public:
-  // Invoked when query text has changed by the user.
-  virtual void QueryChanged(SearchBoxViewBase* sender) = 0;
+  // Invoked when query text in the search box changes.
+  // `trimmed_query` - the search boxt textfiled contents with whitespace
+  // trimmed (which will generally match the query sent to search providers).
+  // `initiated_by_user` - whether the query changed as a result of user input
+  // (as opposed to the search box getting cleared).
+  virtual void QueryChanged(const std::u16string& trimmed_query,
+                            bool initiated_by_user) = 0;
 
   // Invoked when the back button has been pressed.
   virtual void AssistantButtonPressed() = 0;
@@ -42,4 +49,4 @@ class SearchBoxViewDelegate {
 
 }  // namespace ash
 
-#endif  // ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
+#endif  // ASH_APP_LIST_VIEWS_SEARCH_BOX_VIEW_DELEGATE_H_
