@@ -434,7 +434,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   // with the WebContents.
   HWND hwnd = nullptr;
   content::RenderWidgetHostView* host_view =
-      web_contents_->GetRenderWidgetHostView();
+      web_contents_->GetTopLevelRenderWidgetHostView();
   if (host_view) {
     ui::AXPlatformNode* platform_node =
         ui::AXPlatformNode::FromNativeViewAccessible(
