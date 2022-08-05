@@ -573,8 +573,9 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
   RunScrollbarThumbDragLatencyTest();
 }
 
+// Disabled due to flakiness https://crbug.com/1188553
 IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
-                       ScrollbarThumbDragDeviceChange) {
+                       DISABLED_ScrollbarThumbDragDeviceChange) {
 #if !BUILDFLAG(IS_ANDROID)
   LoadURL();
 
