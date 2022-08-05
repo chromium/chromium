@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
@@ -36,10 +35,6 @@ struct LocalDeviceNameInfo {
 };
 
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::string GetChromeOSDeviceNameFromType();
-#endif
 
 // Returns the personalizable device name. This may contain
 // personally-identifiable information - e.g. Alex's MacbookPro.

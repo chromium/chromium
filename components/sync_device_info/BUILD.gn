@@ -54,11 +54,15 @@ static_library("sync_device_info") {
     sources += [ "local_device_info_util_android.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "local_device_info_util_chromeos.cc" ]
+  }
+
   if (is_ios) {
     sources += [ "local_device_info_util_ios.mm" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     sources += [ "local_device_info_util_linux.cc" ]
   }
 
@@ -78,8 +82,7 @@ static_library("sync_device_info") {
     sources += [ "local_device_info_util_win.cc" ]
   }
 
-  if (is_chromeos_ash) {
-    # Required by device_info_util_linux.cc on Chrome OS.
+  if (is_chromeos) {
     deps += [
       "//chromeos/constants",
       "//chromeos/system",

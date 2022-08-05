@@ -22,6 +22,13 @@
 
 namespace syncer {
 
+// Declared here but defined in platform-specific files.
+std::string GetPersonalizableDeviceNameInternal();
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::string GetChromeOSDeviceNameFromType();
+#endif
+
 LocalDeviceNameInfo::LocalDeviceNameInfo() = default;
 LocalDeviceNameInfo::LocalDeviceNameInfo(const LocalDeviceNameInfo& other) =
     default;
@@ -39,7 +46,7 @@ void OnHardwareInfoReady(LocalDeviceNameInfo* name_info_ptr,
                          base::ScopedClosureRunner done_closure,
                          base::SysInfo::HardwareInfo hardware_info) {
   name_info_ptr->manufacturer_name = std::move(hardware_info.manufacturer);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // For ChromeOS the returned model values are product code names like Eve. We
   // want to use generic names like Chromebook.
   name_info_ptr->model_name = GetChromeOSDeviceNameFromType();
@@ -68,13 +75,10 @@ void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
 
 }  // namespace
 
-// Declared here but defined in platform-specific files.
-std::string GetPersonalizableDeviceNameInternal();
-
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return sync_pb::SyncEnums_DeviceType_TYPE_CROS;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
