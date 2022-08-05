@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -82,9 +81,6 @@ class CORE_EXPORT AttributionSrcLoader
   bool UrlCanRegisterAttribution(const KURL& url,
                                  HTMLElement* element,
                                  absl::optional<uint64_t> request_id);
-
-  void RegisterTrigger(
-      mojom::blink::AttributionTriggerDataPtr trigger_data) const;
 
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,

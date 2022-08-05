@@ -450,17 +450,6 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   return true;
 }
 
-void AttributionSrcLoader::RegisterTrigger(
-    mojom::blink::AttributionTriggerDataPtr trigger_data) const {
-  mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
-  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      &conversion_host);
-
-  mojo::Remote<mojom::blink::AttributionDataHost> data_host;
-  conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver());
-  data_host->TriggerDataAvailable(std::move(trigger_data));
-}
-
 String AttributionSrcLoader::ResourceClient::DebugName() const {
   return "AttributionSrcLoader::ResourceClient";
 }
