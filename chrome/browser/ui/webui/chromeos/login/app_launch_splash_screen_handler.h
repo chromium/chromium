@@ -53,7 +53,8 @@ class AppLaunchSplashScreenView {
     kShowingNetworkConfigureUI,
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"app-launch-splash"};
+  inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
+                                                       "AppLaunchSplashScreen"};
 
   virtual ~AppLaunchSplashScreenView() {}
 
@@ -106,7 +107,6 @@ class AppLaunchSplashScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
@@ -135,7 +135,6 @@ class AppLaunchSplashScreenHandler
 
   Delegate* delegate_ = nullptr;
   bool is_shown_ = false;
-  bool show_on_init_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;

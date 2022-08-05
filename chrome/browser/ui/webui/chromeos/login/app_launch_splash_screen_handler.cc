@@ -40,8 +40,6 @@ std::string GetNetworkName(const std::string& service_path) {
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId AppLaunchSplashScreenView::kScreenId;
-
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
@@ -69,19 +67,7 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
-}
-
 void AppLaunchSplashScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   is_shown_ = true;
 
   base::Value::Dict data;
@@ -124,10 +110,7 @@ void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
     return;
 
   state_ = state;
-  if (IsJavascriptAllowed()) {
-    SetLaunchText(
-        l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-  }
+  SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
 
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
@@ -243,7 +226,7 @@ void AppLaunchSplashScreenHandler::PopulateAppInfo(
 }
 
 void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
-  CallJS("login.AppLaunchSplashScreen.updateMessage", text);
+  CallExternalAPI("updateMessage", text);
 }
 
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
@@ -285,7 +268,7 @@ void AppLaunchSplashScreenHandler::ContinueAppLaunch() {
 }
 
 void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {
-  CallJS("login.AppLaunchSplashScreen.toggleNetworkConfig", visible);
+  CallExternalAPI("toggleNetworkConfig", visible);
 }
 
 }  // namespace chromeos
