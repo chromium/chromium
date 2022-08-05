@@ -6,17 +6,14 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
-#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/selection/experimental_group_recorder.h"
@@ -108,8 +105,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
   // Read selected segment from prefs.
   const auto& selected_segment =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
-  std::string trial_name =
-      stats::SegmentationKeyToTrialName(config_->segmentation_key);
+  const std::string& trial_name = config_->GetSegmentationFilterName();
   std::string group_name;
   if (selected_segment.has_value()) {
     selected_segment_last_session_.segment = selected_segment->segment_id;
@@ -118,8 +114,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
         config_->segmentation_key,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
 
-    group_name = stats::OptimizationTargetToSegmentGroupName(
-        selected_segment->segment_id);
+    group_name = config_->GetSegmentUmaName(selected_segment->segment_id);
   } else {
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key, stats::SegmentationSelectionFailureReason::
@@ -149,11 +144,11 @@ void SegmentSelectorImpl::OnPlatformInitialized(
   // TODO(ssid): Store the scores in prefs so that this can be recorded earlier
   // in startup.
   if (selected_segment_last_session_.is_ready) {
-    for (const SegmentId segment_id : config_->segment_ids) {
+    for (const auto& segment_id : config_->segments) {
       experimental_group_recorder_.emplace_back(
           std::make_unique<ExperimentalGroupRecorder>(
-              segment_result_provider_.get(), field_trial_register_,
-              config_->segmentation_key, segment_id));
+              segment_result_provider_.get(), field_trial_register_, *config_,
+              segment_id.first));
     }
   }
 }
@@ -181,7 +176,7 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   DCHECK(segment_result_provider_);
 
   // If the |segment_id| is not in config, then skip any updates early.
-  if (!base::Contains(config_->segment_ids, segment_id))
+  if (!base::Contains(config_->segments, segment_id))
     return;
 
   if (!IsPreviousSelectionInvalid())
@@ -227,18 +222,18 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     std::unique_ptr<SegmentRanks> ranks,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
-  for (SegmentId needed_segment : config_->segment_ids) {
-    if (ranks->count(needed_segment) == 0) {
+  for (const auto& needed_segment : config_->segments) {
+    if (ranks->count(needed_segment.first) == 0) {
       auto options =
           std::make_unique<SegmentResultProvider::GetResultOptions>();
-      options->segment_id = needed_segment;
+      options->segment_id = needed_segment.first;
       options->segmentation_key = config_->segmentation_key;
       options->ignore_db_scores = config_->on_demand_execution;
       options->input_context = input_context;
-      options->callback =
-          base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(ranks),
-                         input_context, std::move(callback), needed_segment);
+      options->callback = base::BindOnce(
+          &SegmentSelectorImpl::OnGetResultForSegmentSelection,
+          weak_ptr_factory_.GetWeakPtr(), std::move(ranks), input_context,
+          std::move(callback), needed_segment.first);
 
       segment_result_provider_->GetSegmentResult(std::move(options));
       return;

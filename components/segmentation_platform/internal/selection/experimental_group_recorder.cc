@@ -7,27 +7,26 @@
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
-#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
-
-#include "base/logging.h"
 
 namespace segmentation_platform {
 
 ExperimentalGroupRecorder::ExperimentalGroupRecorder(
     SegmentResultProvider* result_provider,
     FieldTrialRegister* field_trial_register,
-    const std::string& segmentation_key,
-    proto::SegmentId selected_segment)
+    const Config& config,
+    proto::SegmentId segment_id)
     : field_trial_register_(field_trial_register),
-      segmentation_key_(segmentation_key),
-      segment_id_(selected_segment) {
+      subsegment_trial_name_(
+          base::StrCat({config.GetSegmentationFilterName(), "_",
+                        config.GetSegmentUmaName(segment_id)})),
+      segment_id_(segment_id) {
   auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
   options->segmentation_key =
-      base::StrCat({segmentation_key, kSubsegmentDiscreteMappingSuffix});
-  options->segment_id = selected_segment;
+      base::StrCat({config.segmentation_key, kSubsegmentDiscreteMappingSuffix});
+  options->segment_id = segment_id;
   options->callback = base::BindOnce(&ExperimentalGroupRecorder::OnGetSegment,
                                      weak_ptr_factory_.GetWeakPtr());
   options->ignore_db_scores = false;
@@ -38,8 +37,6 @@ ExperimentalGroupRecorder::~ExperimentalGroupRecorder() = default;
 
 void ExperimentalGroupRecorder::OnGetSegment(
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
-  const std::string trial_name = stats::SegmentationKeyToSubsegmentTrialName(
-      segmentation_key_, segment_id_);
   int rank = 0;
   if (result && result->rank) {
     rank = *result->rank;
@@ -48,7 +45,7 @@ void ExperimentalGroupRecorder::OnGetSegment(
   // Can be nullptr in tests.
   if (field_trial_register_) {
     field_trial_register_->RegisterSubsegmentFieldTrialIfNeeded(
-        trial_name, segment_id_, rank);
+        subsegment_trial_name_, segment_id_, rank);
   }
 }
 
