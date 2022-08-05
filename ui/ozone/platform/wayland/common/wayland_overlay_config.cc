@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "ui/gfx/color_space.h"
 
 namespace wl {
 
@@ -16,6 +17,7 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
                                            BufferId buffer_id,
                                            float scale_factor)
     : z_order(data.z_order),
+      color_space(data.color_space),
       transform(data.plane_transform),
       buffer_id(buffer_id),
       surface_scale_factor(scale_factor),

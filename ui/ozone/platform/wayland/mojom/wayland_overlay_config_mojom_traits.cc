@@ -24,6 +24,9 @@ bool StructTraits<wl::mojom::WaylandOverlayConfigDataView,
          wl::WaylandOverlayConfig* out) {
   out->z_order = data.z_order();
 
+  if (!data.ReadColorSpace(&out->color_space))
+    return false;
+
   if (!data.ReadTransform(&out->transform))
     return false;
 
