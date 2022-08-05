@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/gpu/gpu_disk_cache_factory.h"
 
-#include "gpu/ipc/host/shader_disk_cache.h"
+#include "gpu/ipc/host/gpu_disk_cache.h"
 
 namespace content {
 

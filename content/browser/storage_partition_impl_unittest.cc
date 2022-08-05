@@ -54,7 +54,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"

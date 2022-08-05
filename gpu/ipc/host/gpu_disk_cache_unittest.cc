@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/host/shader_disk_cache.h"
+#include "gpu/ipc/host/gpu_disk_cache.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
@@ -84,16 +84,18 @@ TEST_F(ShaderDiskCacheTest, ClearByPathTriggersCallback) {
   InitCache();
   factory()->Get(kDefaultClientId)->Cache(kCacheKey, kCacheValue);
   net::TestCompletionCallback test_callback;
-  factory()->ClearByPath(cache_path(), base::Time(), base::Time::Max(),
-      base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); } ));
+  factory()->ClearByPath(
+      cache_path(), base::Time(), base::Time::Max(),
+      base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); }));
   ASSERT_TRUE(test_callback.WaitForResult());
 }
 
 // Important for clearing in-memory profiles.
 TEST_F(ShaderDiskCacheTest, ClearByPathWithEmptyPathTriggersCallback) {
   net::TestCompletionCallback test_callback;
-  factory()->ClearByPath(base::FilePath(), base::Time(), base::Time::Max(),
-      base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); } ));
+  factory()->ClearByPath(
+      base::FilePath(), base::Time(), base::Time::Max(),
+      base::BindLambdaForTesting([&]() { test_callback.callback().Run(1); }));
   ASSERT_TRUE(test_callback.WaitForResult());
 }
 

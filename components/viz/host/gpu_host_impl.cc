@@ -23,7 +23,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
-#include "gpu/ipc/host/shader_disk_cache.h"
+#include "gpu/ipc/host/gpu_disk_cache.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/gfx/font_render_params.h"
 

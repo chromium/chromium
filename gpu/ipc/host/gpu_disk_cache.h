@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_HOST_SHADER_DISK_CACHE_H_
-#define GPU_IPC_HOST_SHADER_DISK_CACHE_H_
+#ifndef GPU_IPC_HOST_GPU_DISK_CACHE_H_
+#define GPU_IPC_HOST_GPU_DISK_CACHE_H_
 
 #include <stdint.h>
 
@@ -166,4 +166,4 @@ class ShaderCacheFactory : public base::ThreadChecker {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_HOST_SHADER_DISK_CACHE_H_
+#endif  // GPU_IPC_HOST_GPU_DISK_CACHE_H_

@@ -589,7 +589,7 @@ test("gpu_unittests") {
     "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
     "ipc/common/gpu_memory_buffer_impl_test_template.h",
     "ipc/common/mojom_traits_unittest.cc",
-    "ipc/host/shader_disk_cache_unittest.cc",
+    "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/service/gpu_channel_manager_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
     "ipc/service/gpu_channel_test_common.h",

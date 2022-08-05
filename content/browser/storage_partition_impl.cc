@@ -67,7 +67,7 @@
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/font_access/font_access_manager.h"
-#include "content/browser/gpu/shader_cache_factory.h"
+#include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/host_zoom_level_context.h"
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
