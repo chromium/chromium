@@ -114,8 +114,6 @@ target(link_target_type, "renderer") {
     "render_process_impl.h",
     "render_thread_impl.cc",
     "render_thread_impl.h",
-    "render_view_impl.cc",
-    "render_view_impl.h",
     "renderer_blink_platform_impl.cc",
     "renderer_blink_platform_impl.h",
     "renderer_main.cc",

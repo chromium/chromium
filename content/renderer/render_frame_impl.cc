@@ -98,7 +98,6 @@
 #include "content/renderer/policy_container_util.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/service_worker_network_provider_for_frame.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"
@@ -171,6 +170,7 @@
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
+#include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
@@ -2536,7 +2536,7 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
     SCOPED_CRASH_KEY_BOOL(
         "old_page_info", "old_is_hidden",
         old_page_info->new_lifecycle_state_for_old_page->visibility ==
-            PageVisibilityState::kHidden);
+            blink::mojom::PageVisibilityState::kHidden);
     SCOPED_CRASH_KEY_BOOL(
         "old_page_info", "old_pagehide_dispatch",
         old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch ==
@@ -2546,7 +2546,7 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
     return;
   }
   DCHECK_EQ(old_page_info->new_lifecycle_state_for_old_page->visibility,
-            PageVisibilityState::kHidden);
+            blink::mojom::PageVisibilityState::kHidden);
   DCHECK_NE(old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch,
             blink::mojom::PagehideDispatch::kNotDispatched);
   WebFrame* old_main_web_frame = old_main_render_frame->GetWebFrame();
@@ -3985,7 +3985,7 @@ void RenderFrameImpl::StartDelayedSyncTimer() {
     SendUpdateState();
     return;
   } else if (GetWebView()->GetVisibilityState() !=
-             PageVisibilityState::kVisible)
+             blink::mojom::PageVisibilityState::kVisible)
     delay = kDelaySecondsForContentStateSyncHidden;
   else
     delay = kDelaySecondsForContentStateSync;
@@ -6293,21 +6293,17 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
 
-  RenderViewImpl* view = RenderViewImpl::Create(
-      agent_scheduling_group_, std::move(view_params),
-      /*was_created_by_renderer=*/true,
-      GetWebFrame()->GetTaskRunner(blink::TaskType::kInternalDefault));
+  WebView* web_view =
+      agent_scheduling_group_.CreateWebView(std::move(view_params),
+                                            /*was_created_by_renderer=*/true);
 
   if (reply->wait_for_debugger) {
-    blink::WebFrameWidget* frame_widget = view->GetWebView()
-                                              ->MainFrame()
-                                              ->ToWebLocalFrame()
-                                              ->LocalRoot()
-                                              ->FrameWidget();
+    blink::WebFrameWidget* frame_widget =
+        web_view->MainFrame()->ToWebLocalFrame()->LocalRoot()->FrameWidget();
     frame_widget->WaitForDebuggerWhenShown();
   }
 
-  return view->GetWebView();
+  return web_view;
 }
 
 }  // namespace content

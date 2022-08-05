@@ -31,6 +31,10 @@ class Message;
 class SyncChannel;
 }  // namespace IPC
 
+namespace blink {
+class WebView;
+}  // namespace blink
+
 namespace content {
 class RenderThread;
 
@@ -71,6 +75,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
   blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler() {
     return *agent_group_scheduler_;
   }
+
+  // Create a new WebView in this AgentSchedulingGroup.
+  blink::WebView* CreateWebView(mojom::CreateViewParamsPtr params,
+                                bool was_created_by_renderer);
 
  protected:
   // mojom::AgentSchedulingGroup:

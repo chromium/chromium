@@ -51,7 +51,6 @@
 #include "content/renderer/document_state.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/render_process.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/service_worker/service_worker_network_provider_for_frame.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"

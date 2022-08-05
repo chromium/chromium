@@ -34,7 +34,6 @@
 #include "content/renderer/mock_agent_scheduling_group.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
 #include "content/test/test_content_client.h"
@@ -510,18 +509,16 @@ void RenderViewTest::SetUp() {
   view_params->hidden = false;
   view_params->never_composited = false;
 
-  RenderViewImpl* view = RenderViewImpl::Create(
-      *agent_scheduling_group_, std::move(view_params),
-      /*was_created_by_renderer=*/false, base::ThreadTaskRunnerHandle::Get());
+  web_view_ =
+      agent_scheduling_group_->CreateWebView(std::move(view_params),
+                                             /*was_created_by_renderer=*/false);
 
-  RenderFrameWasShownWaiter waiter(RenderFrame::FromWebFrame(
-      view->GetWebView()->MainFrame()->ToWebLocalFrame()));
+  RenderFrameWasShownWaiter waiter(
+      RenderFrame::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame()));
   render_widget_host_->widget_remote_for_testing()->WasShown(
       /*was_evicted=*/false,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   waiter.Wait();
-
-  web_view_ = view->GetWebView();
 }
 
 void RenderViewTest::TearDown() {
