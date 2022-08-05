@@ -47,7 +47,7 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource(
   source->AddResourcePath("annotator/ink.js", IDR_MEDIA_APP_INK_JS);
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
-  // Provide a list of specific script resources(javascript files and inlined
+  // Provide a list of specific script resources (javascript files and inlined
   // scripts inside html) or their sha-256 hashes to allow to be executed.
   // "wasm-eval" is added to allow wasm.
   source->OverrideContentSecurityPolicy(
@@ -76,6 +76,8 @@ content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource(
   // cross-origin.
   source->OverrideCrossOriginResourcePolicy("cross-origin");
 
+  // Loading WASM in chrome-untrusted://projector-annotator/annotator/ink.js is
+  // not compatible with trusted types.
   source->DisableTrustedTypesCSP();
 
   source->AddFrameAncestor(GURL(kChromeUITrustedAnnotatorUrl));
