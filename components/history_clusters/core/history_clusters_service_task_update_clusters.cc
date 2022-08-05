@@ -32,6 +32,7 @@ HistoryClustersServiceTaskUpdateClusters::
 
 void HistoryClustersServiceTaskUpdateClusters::Start() {
   if (!backend_ || continuation_params_.exhausted_all_visits) {
+    done_ = true;
     std::move(callback_).Run();
     return;
   }
@@ -52,6 +53,7 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
     QueryClustersContinuationParams continuation_params) {
   if (annotated_visits.empty()) {
     DCHECK(continuation_params.exhausted_all_visits);
+    done_ = true;
     std::move(callback_).Run();
     return;
   }

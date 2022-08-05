@@ -20,6 +20,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -166,11 +167,14 @@ class HistoryClustersService : public base::SupportsUserData,
                 QueryClustersContinuationParams continuation_params,
                 QueryClustersCallback callback);
 
+  // Invokes `UpdateClusters()` after a short delay, then again periodically.
+  // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,
+  // then every 1 hour afterwards.
+  void RepeatedlyUpdateClusters();
+
   // Entrypoint to the `HistoryClustersServiceTaskUpdateClusters`. Updates the
   // persisted clusters in the history DB and invokes `callback` when done.
-  // TODO(manukh): This isn't invoked yet. It should be invoked periodically,
-  //  e.g., every N hours checked on a timer, omnibox input, or navigation.
-  void UpdateClusters(base::OnceClosure callback);
+  void UpdateClusters();
 
   // Returns matched keyword data from cache synchronously if `query` matches a
   // cluster keyword. This ignores clusters with only one visit to avoid
@@ -256,6 +260,14 @@ class HistoryClustersService : public base::SupportsUserData,
   // `update_clusters_task_.Done()` will be true if there is no ongoing task.
   std::unique_ptr<HistoryClustersServiceTaskUpdateClusters>
       update_clusters_task_;
+
+  // Used to invoke `UpdateClusters()` on startup after a short delay. See
+  // `RepeatedlyUpdateClusters()`'s comment.
+  base::OneShotTimer update_clusters_after_startup_delay_timer_;
+
+  // Used to invoke `UpdateClusters()` periodically. See
+  // `RepeatedlyUpdateClusters()`'s comment.
+  base::RepeatingTimer update_clusters_period_timer_;
 
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;

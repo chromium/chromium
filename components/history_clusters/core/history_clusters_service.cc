@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -70,6 +71,8 @@ HistoryClustersService::HistoryClustersService(
   backend_ = std::make_unique<OnDeviceClusteringBackend>(
       entity_metadata_provider, engagement_score_provider,
       optimization_guide_decider, JourneysMidBlocklist());
+
+  RepeatedlyUpdateClusters();
 }
 
 HistoryClustersService::~HistoryClustersService() = default;
@@ -170,16 +173,34 @@ HistoryClustersService::QueryClusters(
       continuation_params, std::move(callback));
 }
 
-void HistoryClustersService::UpdateClusters(base::OnceClosure callback) {
-  DCHECK(history_service_);
+void HistoryClustersService::RepeatedlyUpdateClusters() {
   if (!GetConfig().persist_clusters_in_history_db)
     return;
+  // Update clusters, both periodically and once after startup because:
+  // 1) To avoid having very stale (up to 90 days) clusters for the initial
+  //    period after startup.
+  // 2) Likewise, to avoid having very stale keywords.
+  // 3) Some users might not keep chrome running for the period.
+  update_clusters_after_startup_delay_timer_.Start(
+      FROM_HERE,
+      base::Minutes(
+          GetConfig()
+              .persist_clusters_in_history_db_after_startup_delay_minutes),
+      this, &HistoryClustersService::UpdateClusters);
+  update_clusters_period_timer_.Start(
+      FROM_HERE,
+      base::Minutes(GetConfig().persist_clusters_in_history_db_period_minutes),
+      this, &HistoryClustersService::UpdateClusters);
+}
+
+void HistoryClustersService::UpdateClusters() {
+  DCHECK(history_service_);
   if (update_clusters_task_ && !update_clusters_task_->Done())
     return;
   update_clusters_task_ =
       std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
           incomplete_visit_context_annotations_, backend_.get(),
-          history_service_, std::move(callback));
+          history_service_, base::DoNothing());
 }
 
 absl::optional<history::ClusterKeywordData>

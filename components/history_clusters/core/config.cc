@@ -44,6 +44,18 @@ Config::Config() {
       internal::kJourneys, "JourneysPersistClustersInHistoryDb",
       persist_clusters_in_history_db);
 
+  persist_clusters_in_history_db_after_startup_delay_minutes =
+      base::GetFieldTrialParamByFeatureAsInt(
+          internal::kJourneys,
+          "JourneysPersistClustersInHistoryDbAfterStartupDelayMinutes",
+          persist_clusters_in_history_db_after_startup_delay_minutes);
+
+  persist_clusters_in_history_db_period_minutes =
+      base::GetFieldTrialParamByFeatureAsInt(
+          internal::kJourneys,
+          "JourneysPersistClustersInHistoryDbPeriodMinutes",
+          persist_clusters_in_history_db_period_minutes);
+
   min_score_to_always_show_above_the_fold =
       base::GetFieldTrialParamByFeatureAsDouble(
           internal::kJourneys, "JourneysMinScoreToAlwaysShowAboveTheFold",

@@ -44,7 +44,17 @@ struct Config {
   // and accessing clusters will retrieve them from the history DB. If disabled,
   // updating clusters is a no-op and accessing clusters will generate and
   // return new clusters without persisting them.
-  bool persist_clusters_in_history_db = false;
+  bool persist_clusters_in_history_db = true;
+
+  // No effect if `persist_clusters_in_history_db` is disabled. Determines how
+  // soon to update clusters after startup in minutes. E.g., by default, will
+  // update clusters 5 minutes after startup.
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
+
+  // No effect if `persist_clusters_in_history_db` is disabled. Determines how
+  // often to update clusters in minutes. E.g., by default, will update clusters
+  // every hour.
+  int persist_clusters_in_history_db_period_minutes = 60;
 
   // Enables the on-device clustering backend. Enabled by default, since this is
   // the production mode of the whole feature. The backend is only in official

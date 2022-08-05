@@ -401,7 +401,9 @@ void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
 
 void VisitAnnotationsDatabase::AddClusters(
     const std::vector<Cluster>& clusters) {
-  DCHECK(!clusters.empty());
+  if (clusters.empty())
+    return;
+
   sql::Statement clusters_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO clusters"
