@@ -82,7 +82,7 @@
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1631385268983122904">ఇప్పుడే పరికరాన్ని అసెంబుల్ చేయవద్దు</translation>
-<translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
+<translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -258,7 +258,7 @@
 <translation id="3336855445806447827">ఖచ్చితంగా తెలియదు</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
-<translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
+<translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ హిస్టరీ మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
 <translation id="3383751554789092165">అవసరానికి తగినట్లు పరికర సమాచారాన్ని మార్చండి.</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3404770484521709967">భాగాలు సరిగ్గా ఇన్‌స్టాల్ చేయబడ్డాయి.</translation>
@@ -304,7 +304,7 @@
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
 <translation id="3774059845329307709">సీరియల్ నంబర్</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
-<translation id="38114475217616659">చరిత్ర మొత్తాన్ని క్లియర్ చేయండి</translation>
+<translation id="38114475217616659">హిస్టరీ మొత్తాన్ని క్లియర్ చేయండి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
 <translation id="385051799172605136">వెనుకకు</translation>

@@ -562,7 +562,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4283888303416325161">Ingresa la contraseña para más seguridad</translation>
-<translation id="4285498937028063278">No fijar</translation>
+<translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="430191667033048642">Se movió <ph name="MOVED_APP_NAME" /> a la carpeta <ph name="FOLDER_NAME" />.</translation>

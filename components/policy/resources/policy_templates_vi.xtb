@@ -5571,7 +5571,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="7002040773317582266">Tính năng kiểm tra các URL trong khung chính theo thời gian thực đang bật.</translation>
 <translation id="7003746348783715221">Tùy chọn <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Một cờ boolean cho biết liệu bạn có phải đặt trình xử lý giao thức làm tùy chọn mặc định hay không.</translation>
-<translation id="7008308728445338159">Đã bật các tùy chọn kiểm tra chặn hệ thống tên miền (DNS)</translation>
+<translation id="7008308728445338159">Đã bật chế độ kiểm tra việc chặn DNS</translation>
 <translation id="7010006999849135962">Bật chế độ xác thực không cần mã PIN đối với máy chủ truy cập từ xa</translation>
 <translation id="7016736684656067099">Nếu bạn đặt chính sách này thành 1, thì tất cả trang web có thể hiển thị hình ảnh. Nếu bạn đặt chính sách này thành 2, thì không trang web nào có thể hiển thị hình ảnh.
 
