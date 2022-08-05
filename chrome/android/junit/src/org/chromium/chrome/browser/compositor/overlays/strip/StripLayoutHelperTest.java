@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -127,6 +128,8 @@ public class StripLayoutHelperTest {
             mStripLayoutHelper.stopReorderModeForTesting();
             mStripLayoutHelper.setTabAtPositionForTesting(null);
         }
+
+        TabUiFeatureUtilities.setTabMinWidthForTesting(null);
     }
 
     /**
@@ -1049,6 +1052,63 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    public void testReorder_SetBackgroundTabsDimmed() {
+        // Mock 5 tabs.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+
+        // Start reorder mode on first tab.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify background tabs are dimmed.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        float expectedNotDimmed = StripLayoutHelper.BACKGROUND_TAB_BRIGHTNESS_DEFAULT;
+        float expectedDimmed = StripLayoutHelper.BACKGROUND_TAB_BRIGHTNESS_DIMMED;
+        assertEquals("Selected tab should not dim.", expectedNotDimmed, tabs[0].getBrightness(),
+                EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[1].getBrightness(), EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[2].getBrightness(), EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[3].getBrightness(), EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[4].getBrightness(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testReorder_SetSelectedTabGroupNotDimmed() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        groupTabs(0, 2);
+
+        // Start reorder mode on third tab. Drag to hover over the tab group.
+        // -100 < -marginWidth = -95
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = -100f;
+        float startX = mStripLayoutHelper.getLastReorderX();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+
+        // Verify background tabs are dimmed, while interacting tab and hovered group are not.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        float expectedNotDimmed = StripLayoutHelper.BACKGROUND_TAB_BRIGHTNESS_DEFAULT;
+        float expectedDimmed = StripLayoutHelper.BACKGROUND_TAB_BRIGHTNESS_DIMMED;
+        assertEquals("Tab in hovered group should not dim.", expectedNotDimmed,
+                tabs[0].getBrightness(), EPSILON);
+        assertEquals("Tab in hovered group should not dim.", expectedNotDimmed,
+                tabs[1].getBrightness(), EPSILON);
+        assertEquals("Selected tab should not dim.", expectedNotDimmed, tabs[2].getBrightness(),
+                EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[3].getBrightness(), EPSILON);
+        assertEquals(
+                "Background tab should dim.", expectedDimmed, tabs[4].getBrightness(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
     public void testReorder_NoGroups() {
         // Mock 5 tabs.
         initializeTest(false, false, 0, 5);
@@ -1159,6 +1219,44 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
         // Verify reordering, since we have dragged past the tab group.
         assertEquals("First tab should now be the fourth tab.", firstTab.getId(), tabs[3].getId());
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testReorder_MergeToGroup() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        StripLayoutTab thirdTab = tabs[2];
+        groupTabs(0, 2);
+
+        // Start reorder mode on third tab. Drag between tabs in group.
+        // -300 < -(tabWidth + marginWidth) = -(190 + 95) = -285
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = -300f;
+        float startX = mStripLayoutHelper.getLastReorderX();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+
+        // Verify state has not yet changed.
+        tabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals("Third tab should not have moved.", thirdTab, tabs[2]);
+        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt());
+        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+
+        // Wait minimum time to trigger merge.
+        // -10 > -(dropMaxDragOffset) = -36
+        dragDistance = -10;
+        startX = mStripLayoutHelper.getLastReorderX();
+        long timeDelta = StripLayoutHelper.DROP_INTO_GROUP_MS;
+        mStripLayoutHelper.drag(
+                TIMESTAMP + timeDelta, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+
+        // Verify interacting tab was merged into group at the second index.
+        tabs = mStripLayoutHelper.getStripLayoutTabs();
+        // assertEquals("Third tab should now be second tab.", thirdTab, tabs[1]);
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getId()), eq(tabs[0].getId()), eq(true));
     }
 
     @Test

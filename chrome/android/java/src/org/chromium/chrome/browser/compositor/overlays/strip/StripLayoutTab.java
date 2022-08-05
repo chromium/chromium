@@ -172,6 +172,7 @@ public class StripLayoutTab implements VirtualView {
     private CompositorAnimator mButtonOpacityAnimation;
 
     private float mLoadingSpinnerRotationDegrees;
+    private float mBrightness = 1.f;
 
     // Preallocated
     private final RectF mClosePlacement = new RectF();
@@ -419,6 +420,20 @@ public class StripLayoutTab implements VirtualView {
      */
     public void loadingFinished() {
         mLoadTracker.loadingFinished();
+    }
+
+    /**
+     * @param brightness The fraction (from 0.f to 1.f) of how bright the tab should be.
+     */
+    public void setBrightness(float brightness) {
+        mBrightness = brightness;
+    }
+
+    /**
+     * @return The fraction (from 0.f to 1.f) of how bright the tab should be.
+     */
+    public float getBrightness() {
+        return mBrightness;
     }
 
     /**

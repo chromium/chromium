@@ -622,6 +622,17 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void mergeTabToGroup_SkipUpdateTabModel() {
+        List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab5, mTab6));
+
+        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId(), true);
+
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+        assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab5.getId()).toArray(),
+                expectedGroup.toArray());
+    }
+
+    @Test
     public void mergeOneTabToTab_Forward() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =

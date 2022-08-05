@@ -328,6 +328,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     jfloat close_button_alpha,
     jboolean is_loading,
     jfloat spinner_rotation,
+    jfloat brightness,
     const JavaParamRef<jobject>& jlayer_title_cache,
     const JavaParamRef<jobject>& jresource_manager) {
   LayerTitleCache* layer_title_cache =
@@ -348,7 +349,7 @@ void TabStripSceneLayer::PutStripTabLayer(
                        tab_handle_outline_resource, foreground, close_pressed,
                        toolbar_width, x, y, width, height, content_offset_x,
                        close_button_alpha, is_loading, spinner_rotation,
-                       background_tab_brightness_);
+                       brightness);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
