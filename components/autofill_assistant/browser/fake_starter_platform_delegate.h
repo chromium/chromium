@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/fake_common_dependencies.h"
-#include "components/autofill_assistant/browser/fake_platform_dependencies.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -64,7 +63,6 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
 
   // Intentionally public to give tests direct access.
   FakeCommonDependencies fake_common_dependencies_;
-  FakePlatformDependencies fake_platform_dependencies_;
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
       trigger_script_ui_delegate_;
   std::unique_ptr<ServiceRequestSender> trigger_script_request_sender_for_test_;

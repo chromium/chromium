@@ -113,9 +113,10 @@ class ControllerTest : public testing::Test {
     mock_runtime_manager_ = std::make_unique<MockRuntimeManager>();
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
-        mock_runtime_manager_->GetWeakPtr(), std::move(service),
-        std::move(web_controller), &ukm_recorder_,
+        mock_runtime_manager_->GetWeakPtr(), std::move(service), &ukm_recorder_,
         &mock_annotate_dom_model_service_);
+
+    SetWebControllerForTest(controller_.get(), std::move(web_controller));
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
       controller_->SetUiShown(true);
@@ -2303,13 +2304,11 @@ TEST_F(ControllerTest, FlowFinishedMetricFailedRoundtrip) {
 
 TEST_F(ControllerTest, FlowFinishedMetricControllerDestroyedMidFlow) {
   auto service = std::make_unique<NiceMock<MockService>>();
-  auto web_controller = std::make_unique<NiceMock<MockWebController>>();
   auto* service_ptr = service.get();
 
   auto controller = std::make_unique<Controller>(
       web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
-      mock_runtime_manager_->GetWeakPtr(), std::move(service),
-      std::move(web_controller), &ukm_recorder_,
+      mock_runtime_manager_->GetWeakPtr(), std::move(service), &ukm_recorder_,
       /* annotate_dom_model_service= */ nullptr);
   SetWebControllerForTest(controller.get(),
                           std::make_unique<NiceMock<MockWebController>>());

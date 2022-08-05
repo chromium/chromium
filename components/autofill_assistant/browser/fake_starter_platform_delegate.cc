@@ -142,7 +142,7 @@ FakeStarterPlatformDelegate::GetCommonDependencies() const {
 
 const PlatformDependencies*
 FakeStarterPlatformDelegate::GetPlatformDependencies() const {
-  return &fake_platform_dependencies_;
+  return nullptr;
 }
 
 base::WeakPtr<StarterPlatformDelegate>

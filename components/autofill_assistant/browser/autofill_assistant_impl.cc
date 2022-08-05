@@ -7,10 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/time/default_tick_clock.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
-#include "components/autofill_assistant/browser/headless/client_headless.h"
 #include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
@@ -21,7 +19,6 @@
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
-#include "components/autofill_assistant/browser/starter.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "net/http/http_status_code.h"
@@ -143,20 +140,8 @@ AutofillAssistantImpl::CreateHeadlessScriptController(
     content::WebContents* web_contents,
     ExternalActionDelegate* action_extension_delegate,
     WebsiteLoginManager* website_login_manager) {
-  auto* starter = Starter::FromWebContents(web_contents);
-  if (!starter) {
-    return nullptr;
-  }
-
-  auto client = std::make_unique<ClientHeadless>(
-      web_contents, starter->GetCommonDependencies(), action_extension_delegate,
-      website_login_manager, base::DefaultTickClock::GetInstance(),
-      RuntimeManager::GetForWebContents(web_contents)->GetWeakPtr(),
-      ukm::UkmRecorder::Get(),
-      starter->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
-          web_contents->GetBrowserContext()));
-  return std::make_unique<HeadlessScriptControllerImpl>(web_contents, starter,
-                                                        std::move(client));
+  return std::make_unique<HeadlessScriptControllerImpl>(
+      web_contents, action_extension_delegate, website_login_manager);
 }
 
 }  // namespace autofill_assistant

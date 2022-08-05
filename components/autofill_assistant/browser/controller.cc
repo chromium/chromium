@@ -75,7 +75,6 @@ Controller::Controller(content::WebContents* web_contents,
                        const base::TickClock* tick_clock,
                        base::WeakPtr<RuntimeManager> runtime_manager,
                        std::unique_ptr<Service> service,
-                       std::unique_ptr<WebController> web_controller,
                        ukm::UkmRecorder* ukm_recorder,
                        AnnotateDomModelService* annotate_dom_model_service)
     : content::WebContentsObserver(web_contents),
@@ -85,7 +84,6 @@ Controller::Controller(content::WebContents* web_contents,
       service_(service ? std::move(service)
                        : ServiceImpl::Create(web_contents->GetBrowserContext(),
                                              client_)),
-      web_controller_(std::move(web_controller)),
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
       ukm_recorder_(ukm_recorder),
       annotate_dom_model_service_(annotate_dom_model_service) {}
