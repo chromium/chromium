@@ -342,9 +342,8 @@ bool HasValidHostPrefixAttributes(const GURL& url,
 // TODO(crbug.com/1296161): Determine if we need to delete this function.
 bool HasValidAttributesForPartitioned(const GURL& url,
                                       bool secure,
-                                      const std::string& path,
                                       bool is_same_party) {
-  return url.SchemeIsCryptographic() && secure && path == "/" && !is_same_party;
+  return url.SchemeIsCryptographic() && secure && !is_same_party;
 }
 
 }  // namespace
@@ -815,7 +814,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
-  if (!IsCookiePartitionedValid(url, secure, cookie_path,
+  if (!IsCookiePartitionedValid(url, secure,
                                 /*is_partitioned=*/partition_key.has_value(),
                                 /*is_same_party=*/same_party,
                                 /*partition_has_nonce=*/
@@ -1461,7 +1460,7 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   if (IsPartitioned()) {
     if (CookiePartitionKey::HasNonce(partition_key_))
       return true;
-    if (!secure_ || path_ != "/" || same_party_) {
+    if (!secure_ || same_party_) {
       return false;
     }
   }
@@ -1640,7 +1639,6 @@ bool CanonicalCookie::IsCookiePartitionedValid(
     bool partition_has_nonce) {
   return IsCookiePartitionedValid(
       url, /*secure=*/parsed_cookie.IsSecure(),
-      parsed_cookie.HasPath() ? parsed_cookie.Path() : "",
       /*is_partitioned=*/parsed_cookie.IsPartitioned(),
       /*is_same_party=*/parsed_cookie.IsSameParty(), partition_has_nonce);
 }
@@ -1648,7 +1646,6 @@ bool CanonicalCookie::IsCookiePartitionedValid(
 // static
 bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
                                                bool secure,
-                                               const std::string& path,
                                                bool is_partitioned,
                                                bool is_same_party,
                                                bool partition_has_nonce) {
@@ -1656,8 +1653,7 @@ bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
     return true;
   if (partition_has_nonce)
     return true;
-  bool result =
-      HasValidAttributesForPartitioned(url, secure, path, is_same_party);
+  bool result = HasValidAttributesForPartitioned(url, secure, is_same_party);
   DLOG_IF(WARNING, !result)
       << "CanonicalCookie has invalid Partitioned attribute";
   return result;
