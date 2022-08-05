@@ -28,7 +28,7 @@ if ((new Date(2009, 9, 1)).toString().match("PDT")) {
     testCases.push([new Date(0), 97, 98]);
 
     // Added more special cases. These dates match the recent DST changes in the US.
-    // These tests check that the new changes are correctly propogated to the past and
+    // These tests check that the new changes are correctly propagated to the past and
     // all of the tests should show DST occurring on the same date.
     testCases.push([new Date(1970, 0,0,0,0,0,0), 98, 99]);
     testCases.push([new Date(1998, 0,0,0,0,0,0), 98, 99]);

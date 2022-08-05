@@ -724,7 +724,7 @@ void LayerTreeHostImpl::CommitComplete() {
 
   // Start animations before UpdateDrawProperties and PrepareTiles, as they can
   // change the results. When doing commit to the active tree, this must happen
-  // after ActivateAnimations() in order for this ticking to be propogated
+  // after ActivateAnimations() in order for this ticking to be propagated
   // to layers on the active tree.
   if (CommitToActiveTree())
     Animate();

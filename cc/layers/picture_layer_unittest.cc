@@ -444,7 +444,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
   layer->SetNeedsDisplayRect(invalidation_bounds);
   layer->Update();
 
-  // Once the recording scale is set and propogated to the recording source,
+  // Once the recording scale is set and propagated to the recording source,
   // the solid color analysis should work as expected and return false.
   EXPECT_FALSE(recording_source->is_solid_color());
 }

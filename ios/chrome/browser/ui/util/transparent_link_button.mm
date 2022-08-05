@@ -50,7 +50,7 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
                        lineHeight:(CGFloat)lineHeight NS_DESIGNATED_INITIALIZER;
 
 // Sets the properties, propogating state to its adjacent link buttons.
-// `sender` is the TransparentLinkButon whose state is being propogated to
+// `sender` is the TransparentLinkButon whose state is being propagated to
 // `self`.
 - (void)setHighlighted:(BOOL)highlighted sender:(TransparentLinkButton*)sender;
 - (void)setSelected:(BOOL)selected sender:(TransparentLinkButton*)sender;

@@ -359,7 +359,7 @@ void PluginDispatcher::OnMsgSetPreferences(const Preferences& prefs) {
   // the default fonts and such in the middle of a running plugin could be
   // confusing to it. As a result, we never allow the preferences to be changed
   // once they're set. The user will have to restart to get new font prefs
-  // propogated to plugins.
+  // propagated to plugins.
   if (!received_preferences_) {
     received_preferences_ = true;
     preferences_ = prefs;

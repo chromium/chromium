@@ -115,6 +115,6 @@ promise_test (async () => {
   await conditionHolds(() => { return notScrolled(); });
   assert_equals(scrollEventsOccurred, expectedScrollEventsOccurred);
 }, 'This tests that a page cannot be scrolled vertically with touch if its ' +
-   'body has style overflow-y:hidden and the scroll event is propogated ' +
+   'body has style overflow-y:hidden and the scroll event is propagated ' +
    'from a scrollable child div.');
 </script>

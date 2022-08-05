@@ -680,7 +680,7 @@ TEST_F(CupsPrintersManagerTest, GetPrintersUserNativePrintersDisabled) {
 // SavePrinter() will simply do nothing.
 TEST_F(CupsPrintersManagerTest, SavePrinterUserNativePrintersDisabled) {
   // Start by installing a saved printer to be used to test than any
-  // changes made to the printer will not be propogated.
+  // changes made to the printer will not be propagated.
   Printer existing_saved("Saved");
   synced_printers_manager_.AddSavedPrinters({existing_saved});
   usb_detector_->AddDetections({MakeDiscoveredPrinter("Discovered")});

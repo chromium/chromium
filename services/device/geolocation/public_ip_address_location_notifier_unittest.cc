@@ -282,7 +282,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, MutipleWaitingQueries) {
   ExpectValidPosition(query_3.position(), 2.0f);
 }
 
-// Tests that server error is propogated to the client.
+// Tests that server error is propagated to the client.
 TEST_F(PublicIpAddressLocationNotifierTest, ServerError) {
   // Make query.
   TestPositionQuery query;

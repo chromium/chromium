@@ -97,7 +97,7 @@
 //
 // This now allows code using the client implementation to access properties
 // in a type-safe manner, and assuming the PropertyChanged callback is
-// propogated up to observers, be notified of changes. A typical access of
+// propagated up to observers, be notified of changes. A typical access of
 // the current value of the name property would be:
 //
 //   ExampleClient::Properties* p = example_client->GetProperties(object_path);

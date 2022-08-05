@@ -279,7 +279,7 @@ public class NativeUiUtils {
 
     /**
      * Clicks on a UI element as if done via a controller and waits until all resulting
-     * animations have finished and propogated to the point of being visible in screenshots.
+     * animations have finished and propagated to the point of being visible in screenshots.
      *
      * @param elementName The UserFriendlyElementName that will be clicked on.
      * @param position A PointF specifying where on the element to send the click relative to a

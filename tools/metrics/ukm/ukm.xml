@@ -10593,7 +10593,7 @@ be describing additional metrics about the same event.
       Reflects the current status of user gesture/activation. This is a bit
       field with the following values: - 0b0001 if there is a user gesture on
       the stack; - 0b0010 if there was a user gesture on the page (ie. was
-      activated); - 0b0100 if there was a user gesture propogated after a
+      activated); - 0b0100 if there was a user gesture propagated after a
       navigation.
     </summary>
   </metric>

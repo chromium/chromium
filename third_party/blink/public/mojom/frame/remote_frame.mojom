@@ -126,7 +126,7 @@ struct OpenURLParams {
 // content/common/frame.mojom if enough code is moved to Blink.
 interface RemoteFrameHost {
   // Notifies that an effective touch action has been calculated from an
-  // ancestor of the associated RemoteFrame and should be propogated to
+  // ancestor of the associated RemoteFrame and should be propagated to
   // the associated LocalFrame in the other render process.
   SetInheritedEffectiveTouchAction(cc.mojom.TouchAction touch_action);
 

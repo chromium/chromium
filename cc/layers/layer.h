@@ -720,7 +720,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
-  // propogated to the compositor thread for the next commit, and return true
+  // propagated to the compositor thread for the next commit, and return true
   // if there is anything new to commit. If all layers return false, the commit
   // may be aborted.
   virtual bool Update();
