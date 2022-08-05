@@ -80,7 +80,10 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     super.ready();
     this.setPrivacyNote_();
     this.setSysInfoCheckboxLabelAndAttributes_();
-    this.$.screenshotCheckbox.ariaLabel =
+    // Set the aria description works the best for screen reader.
+    // It reads the description when the checkbox is focused, and when it is
+    // checked and unchecked.
+    this.$.screenshotCheckbox.ariaDescription =
         this.i18n('attachScreenshotCheckboxAriaLabel');
     this.$.imageButton.ariaLabel = this.i18n(
         'previewImageAriaLabel', this.$.screenshotCheckLabel.textContent);

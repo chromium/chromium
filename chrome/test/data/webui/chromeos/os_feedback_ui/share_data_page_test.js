@@ -147,7 +147,7 @@ export function shareDataPageTestSuite() {
     const screenshotCheckbox = getElement('#screenshotCheckbox');
     assertTrue(!!screenshotCheckbox);
     assertTrue(page.i18nExists('attachScreenshotCheckboxAriaLabel'));
-    assertEquals('Attach screenshot', screenshotCheckbox.ariaLabel);
+    assertEquals('Attach screenshot', screenshotCheckbox.ariaDescription);
 
     assertTrue(page.i18nExists('attachScreenshotLabel'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
