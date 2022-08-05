@@ -19,8 +19,8 @@ namespace chromeos {
 
 namespace {
 
-constexpr int kDialogHeightDp = 512;
-constexpr int kDialogWidthDp = 462;
+constexpr int kDialogHeightDp = 526;
+constexpr int kDialogWidthDp = 600;
 
 }  // namespace
 
