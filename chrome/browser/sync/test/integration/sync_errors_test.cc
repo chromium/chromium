@@ -345,8 +345,16 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   }
 }
 
+// Disabled on Mac due to flakiness crbug.com/1350373
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
+  DISABLED_ShouldResendUncommittedEntitiesAfterBrowserRestart
+#else
+#define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
+  ShouldResendUncommittedEntitiesAfterBrowserRestart
+#endif
 IN_PROC_BROWSER_TEST_F(SyncErrorTest,
-                       ShouldResendUncommittedEntitiesAfterBrowserRestart) {
+                       MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
