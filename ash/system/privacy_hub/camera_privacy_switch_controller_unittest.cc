@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -42,7 +43,8 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
     auto mock_switch = std::make_unique<::testing::NiceMock<MockSwitchAPI>>();
     mock_switch_ = mock_switch.get();
 
-    controller_ = Shell::Get()->camera_privacy_switch_controller();
+    controller_ =
+        Shell::Get()->privacy_hub_controller()->CameraControllerForTest();
     controller_->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
   }
 

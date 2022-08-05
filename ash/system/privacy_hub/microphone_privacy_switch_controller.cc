@@ -36,7 +36,6 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
       base::BindRepeating(
           &MicrophonePrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
-
   // Manually set the system input mute state to the value of the user
   // preference when creating the controller during the browser initialization
   // after creating the user profile.
@@ -44,17 +43,17 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
 }
 
 void MicrophonePrivacySwitchController::OnInputMuteChanged(bool mute_on) {
-  // `pref_change_registrar_` is only initialized after a user logs in. If
-  // OnInputMuteChanged is called when `pref_change_registrar_` is null, we
-  // should simply ignore those events.
-  if (pref_change_registrar_ == nullptr)
+  // `pref_change_registrar_` is only initialized after a user logs in.
+  if (pref_change_registrar_ == nullptr) {
     return;
+  }
+
+  PrefService* prefs = pref_change_registrar_->prefs();
+  DCHECK(prefs);
 
   const bool microphone_allowed = !mute_on;
-  if (pref_change_registrar_->prefs()->GetBoolean(
-          prefs::kUserMicrophoneAllowed) != microphone_allowed) {
-    pref_change_registrar_->prefs()->SetBoolean(prefs::kUserMicrophoneAllowed,
-                                                microphone_allowed);
+  if (prefs->GetBoolean(prefs::kUserMicrophoneAllowed) != microphone_allowed) {
+    prefs->SetBoolean(prefs::kUserMicrophoneAllowed, microphone_allowed);
   }
 }
 
@@ -63,6 +62,8 @@ void MicrophonePrivacySwitchController::OnPreferenceChanged() {
 }
 
 void MicrophonePrivacySwitchController::SetSystemMute() {
+  DCHECK(pref_change_registrar_);
+
   const bool microphone_allowed = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kUserMicrophoneAllowed);
   const bool microphone_muted = !microphone_allowed;

@@ -80,6 +80,7 @@ CameraSWPrivacySwitchSetting
 CameraPrivacySwitchController::GetUserSwitchPreference() {
   const bool allowed =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kUserCameraAllowed);
+
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
 };
