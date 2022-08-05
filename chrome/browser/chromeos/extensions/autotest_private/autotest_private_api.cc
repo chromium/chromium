@@ -494,11 +494,11 @@ std::unique_ptr<bool> ConvertOptionalBool(absl::optional<bool> optional) {
                               : nullptr;
 }
 
-// Helper function to set whitelisted user pref based on |pref_name| with any
+// Helper function to set allowed user pref based on |pref_name| with any
 // specific pref validations. Returns error messages if any.
-std::string SetWhitelistedPref(Profile* profile,
-                               const std::string& pref_name,
-                               const base::Value& value) {
+std::string SetAllowedPref(Profile* profile,
+                           const std::string& pref_name,
+                           const base::Value& value) {
   // Special case for the preference that is stored in the "Local State"
   // profile.
   if (pref_name == prefs::kEnableAdbSideloadingRequested) {
@@ -572,7 +572,7 @@ std::string SetWhitelistedPref(Profile* profile,
   } else if (pref_name == quick_answers::prefs::kQuickAnswersConsentStatus) {
     DCHECK(value.is_int());
   } else {
-    return "The pref " + pref_name + " is not whitelisted.";
+    return "The pref " + pref_name + " is not allowed.";
   }
 
   // Set value for the specified user pref after validation.
@@ -1875,7 +1875,7 @@ AutotestPrivateSetPlayStoreEnabledFunction::Run() {
     }
     // kArcLocationServiceEnabled and kArcBackupRestoreEnabled are prefs that
     // set together with enabling ARC. That is why we set it here not using
-    // SetWhitelistedPref. At this moment, we don't distinguish the actual
+    // SetAllowedPref. At this moment, we don't distinguish the actual
     // values and set kArcLocationServiceEnabled to true and leave
     // kArcBackupRestoreEnabled unmodified, which is acceptable for autotests
     // currently.
@@ -3221,8 +3221,8 @@ AutotestPrivateSetAssistantEnabledFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg =
-      SetWhitelistedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
-                         base::Value(params->enabled));
+      SetAllowedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
+                     base::Value(params->enabled));
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));
 
@@ -3299,8 +3299,8 @@ AutotestPrivateEnableAssistantAndWaitForReadyFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg =
-      SetWhitelistedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
-                         base::Value(true));
+      SetAllowedPref(profile, chromeos::assistant::prefs::kAssistantEnabled,
+                     base::Value(true));
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));
 
@@ -3607,6 +3607,32 @@ AutotestPrivateIsArcPackageListInitialRefreshedFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSetAllowedPrefFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateSetAllowedPrefFunction::
+    ~AutotestPrivateSetAllowedPrefFunction() = default;
+
+ExtensionFunction::ResponseAction AutotestPrivateSetAllowedPrefFunction::Run() {
+  DVLOG(1) << "AutotestPrivateSetAllowedPrefFunction";
+
+  std::unique_ptr<api::autotest_private::SetAllowedPref::Params> params(
+      api::autotest_private::SetAllowedPref::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::string& pref_name = params->pref_name;
+  const base::Value& value = *(params->value);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  const std::string& err_msg = SetAllowedPref(profile, pref_name, value);
+
+  if (!err_msg.empty())
+    return RespondNow(Error(err_msg));
+
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateSetWhitelistedPrefFunction
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3617,15 +3643,15 @@ ExtensionFunction::ResponseAction
 AutotestPrivateSetWhitelistedPrefFunction::Run() {
   DVLOG(1) << "AutotestPrivateSetWhitelistedPrefFunction";
 
-  std::unique_ptr<api::autotest_private::SetWhitelistedPref::Params> params(
-      api::autotest_private::SetWhitelistedPref::Params::Create(args()));
+  std::unique_ptr<api::autotest_private::SetAllowedPref::Params> params(
+      api::autotest_private::SetAllowedPref::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& pref_name = params->pref_name;
   const base::Value& value = *(params->value);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string& err_msg = SetWhitelistedPref(profile, pref_name, value);
+  const std::string& err_msg = SetAllowedPref(profile, pref_name, value);
 
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));

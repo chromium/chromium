@@ -359,20 +359,20 @@ var defaultTests = [
   },
   // This test verifies the error message when trying to set Assistant-related
   // preferences without enabling Assistant service first.
-  function setWhitelistedPref() {
-    chrome.autotestPrivate.setWhitelistedPref(
+  function setAllowedPref() {
+    chrome.autotestPrivate.setAllowedPref(
         'settings.voice_interaction.hotword.enabled' /* pref_name */,
         true /* value */,
         chrome.test.callbackFail(
             'Unable to set the pref because Assistant has not been enabled.'));
-    chrome.autotestPrivate.setWhitelistedPref(
+    chrome.autotestPrivate.setAllowedPref(
         'settings.voice_interaction.context.enabled' /* pref_name */,
         true /* value */,
         chrome.test.callbackFail(
             'Unable to set the pref because Assistant has not been enabled.'));
     // Note that onboarding pref is a counter that can be set without
     // enabling Assistant at the same time.
-    chrome.autotestPrivate.setWhitelistedPref(
+    chrome.autotestPrivate.setAllowedPref(
         'ash.assistant.num_sessions_where_onboarding_shown' /* pref_name */,
         3 /* value */, chrome.test.callbackPass());
   },

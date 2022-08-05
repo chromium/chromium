@@ -851,6 +851,17 @@ class AutotestPrivateIsArcPackageListInitialRefreshedFunction
 };
 
 // Set user pref value in the pref tree.
+class AutotestPrivateSetAllowedPrefFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.setAllowedPref",
+                             AUTOTESTPRIVATE_SETALLOWEDPREF)
+
+ private:
+  ~AutotestPrivateSetAllowedPrefFunction() override;
+  ResponseAction Run() override;
+};
+
+// Set user pref value in the pref tree.
 class AutotestPrivateSetWhitelistedPrefFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.setWhitelistedPref",

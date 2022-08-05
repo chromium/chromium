@@ -35232,6 +35232,7 @@ Called by update_extension_histograms.py.-->
   <int value="1693" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME"/>
   <int value="1694" label="FILEMANAGERPRIVATE_SHOWDLPRESTRICTIONDETAILS"/>
   <int value="1695" label="ACCESSIBILITY_PRIVATE_SILENCESPOKENFEEDBACK"/>
+  <int value="1696" label="AUTOTESTPRIVATE_SETALLOWEDPREF"/>
 </enum>
 
 <enum name="ExtensionIconState">

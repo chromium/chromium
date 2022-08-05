@@ -1065,6 +1065,12 @@ namespace autotestPrivate {
         IsArcPackageListInitialRefreshedCallback callback);
 
     // Set value for the specified user pref in the pref tree.
+    [supportsPromises] static void setAllowedPref(DOMString pref_name,
+                                                  any value,
+                                                  VoidCallback callback);
+
+    // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
+    // Set value for the specified user pref in the pref tree.
     [supportsPromises] static void setWhitelistedPref(DOMString pref_name,
                                                       any value,
                                                       VoidCallback callback);
