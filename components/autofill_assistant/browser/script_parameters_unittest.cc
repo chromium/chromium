@@ -68,7 +68,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                                   {"FALLBACK_BUNDLE_ID", "fallback_id"},
                                   {"key_b", "value_b"},
                                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-                                  {"INTENT", "FAKE_INTENT"}}};
+                                  {"INTENT", "FAKE_INTENT"},
+                                  {"CAPABILITIES_REQUEST_ID", "123456789"}}};
 
   EXPECT_THAT(
       parameters.ToProto(/* only_non_sensitive_allowlisted = */ false),
@@ -80,7 +81,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
            {"FALLBACK_BUNDLE_ID", "fallback_id"},
            {"key_b", "value_b"},
            {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-           {"INTENT", "FAKE_INTENT"}})));
+           {"INTENT", "FAKE_INTENT"},
+           {"CAPABILITIES_REQUEST_ID", "123456789"}})));
 
   EXPECT_THAT(
       parameters.ToProto(/* only_non_sensitive_allowlisted = */ true),
@@ -90,7 +92,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
            {"DEBUG_SOCKET_ID", "678"},
            {"FALLBACK_BUNDLE_ID", "fallback_id"},
            {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-           {"INTENT", "FAKE_INTENT"}})));
+           {"INTENT", "FAKE_INTENT"},
+           {"CAPABILITIES_REQUEST_ID", "123456789"}})));
 }
 
 TEST(ScriptParametersTest, SpecialScriptParameters) {

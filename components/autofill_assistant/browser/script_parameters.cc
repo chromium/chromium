@@ -80,13 +80,14 @@ const char kSendAnnotateDomModelVersion[] = "SEND_ANNOTATE_DOM_MODEL_VERSION";
 // to send to the backend i.e., they do not require explicit approval in the
 // autofill-assistant onboarding. Even so, please always reach out to Chrome
 // privacy when you plan to make use of this list, and/or adjust it.
-constexpr std::array<const char*, 6> kNonSensitiveScriptParameters = {
+constexpr std::array<const char*, 7> kNonSensitiveScriptParameters = {
     public_script_parameters::kDebugBundleIdParameterName,
     "DEBUG_BUNDLE_VERSION",
     public_script_parameters::kDebugSocketIdParameterName,
     "FALLBACK_BUNDLE_ID",
     "FALLBACK_BUNDLE_VERSION",
-    public_script_parameters::kIntentParameterName};
+    public_script_parameters::kIntentParameterName,
+    "CAPABILITIES_REQUEST_ID"};
 
 // Parameters to specify details before the first backend roundtrip.
 const char kDetailsShowInitialParameterName[] = "DETAILS_SHOW_INITIAL";
