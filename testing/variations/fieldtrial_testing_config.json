@@ -1930,6 +1930,42 @@
                     "enable_features": [
                         "BackForwardCacheMemoryControls"
                     ]
+                },
+                {
+                    "name": "Enabled_1000",
+                    "params": {
+                        "memory_threshold_for_back_forward_cache_in_mb": "1000"
+                    },
+                    "enable_features": [
+                        "BackForwardCacheMemoryControls"
+                    ]
+                },
+                {
+                    "name": "Enabled_1300",
+                    "params": {
+                        "memory_threshold_for_back_forward_cache_in_mb": "1300"
+                    },
+                    "enable_features": [
+                        "BackForwardCacheMemoryControls"
+                    ]
+                },
+                {
+                    "name": "Enabled_1500",
+                    "params": {
+                        "memory_threshold_for_back_forward_cache_in_mb": "1500"
+                    },
+                    "enable_features": [
+                        "BackForwardCacheMemoryControls"
+                    ]
+                },
+                {
+                    "name": "Enabled_1700",
+                    "params": {
+                        "memory_threshold_for_back_forward_cache_in_mb": "1700"
+                    },
+                    "enable_features": [
+                        "BackForwardCacheMemoryControls"
+                    ]
                 }
             ]
         }
