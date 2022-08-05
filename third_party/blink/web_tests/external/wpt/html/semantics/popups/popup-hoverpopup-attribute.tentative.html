@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
-<title>The hoverpopup attribute</title>
+<title>The popuphovertarget attribute</title>
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <meta name="timeout" content="long">
@@ -30,13 +30,13 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
   popUp.textContent = 'Pop-up';
   let invoker = document.createElement('div');
   invoker.setAttribute('class','invoker');
-  invoker.setAttribute('hoverpopup',popUp.id);
+  invoker.setAttribute('popuphovertarget',popUp.id);
   invoker.setAttribute('style',`hover-pop-up-delay: ${delayMs}ms; hover-pop-up-hide-delay: 1000s;`);
   document.body.appendChild(invoker);
   const actualHoverDelay = Number(getComputedStyle(invoker)['hoverPopUpDelay'].slice(0,-1))*1000;
   assert_equals(actualHoverDelay,delayMs,'hover-pop-up-delay is incorrect');
   const originalInvoker = invoker;
-  const reassignPopupFn = (p) => originalInvoker.setAttribute('hoverpopup',p.id);
+  const reassignPopupFn = (p) => originalInvoker.setAttribute('popuphovertarget',p.id);
   switch (invokerType) {
     case 'plain':
       // Invoker is just a div.
@@ -48,8 +48,8 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       child1.textContent = 'Invoker';
       break;
     case 'nested-offset':
-      // Invoker is a child of the element wearing the 'hoverpopup' attribute,
-      // and is not contained within the bounds of the hoverpopup element.
+      // Invoker is a child of the element wearing the 'popuphovertarget' attribute,
+      // and is not contained within the bounds of the popuphovertarget element.
       invoker.textContent = 'Invoker';
       // Reassign invoker to the child:
       invoker = invoker.appendChild(document.createElement('div'));
@@ -102,7 +102,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       assert_true(popUp.matches(':top-layer'),'pop-up should show after delay');
       assert_true(hoverWaitTime > hoverPopUpDelay,'hoverPopUpDelay is the CSS setting, hoverWaitTime should be longer than that');
       popUp.hidePopUp(); // Cleanup
-    },`hoverpopup attribute shows a pop-up with popup=${type}, invokerType=${invokerType}`);
+    },`popuphovertarget attribute shows a pop-up with popup=${type}, invokerType=${invokerType}`);
 
     promise_test(async (t) => {
       const longerHoverDelay = hoverWaitTime*2;
@@ -118,7 +118,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       if (msSinceMouseOver() >= longerHoverDelay)
         return; // The WPT runner was too slow.
       assert_false(showing,'pop-up should not show after not long enough of a delay');
-    },`hoverpopup hover-pop-up-delay is respected (popup=${type}, invokerType=${invokerType})`);
+    },`popuphovertarget hover-pop-up-delay is respected (popup=${type}, invokerType=${invokerType})`);
 
     promise_test(async (t) => {
       const {popUp,invoker} = await makePopUpAndInvoker(t,type,invokerType);
@@ -129,7 +129,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       await waitForHoverTime(hoverWaitTime);
       assert_true(popUp.matches(':top-layer'),'pop-up should stay showing after delay');
       popUp.hidePopUp(); // Cleanup
-    },`hoverpopup attribute does nothing when pop-up is already showing (popup=${type}, invokerType=${invokerType})`);
+    },`popuphovertarget attribute does nothing when pop-up is already showing (popup=${type}, invokerType=${invokerType})`);
 
     promise_test(async (t) => {
       const {popUp,invoker} = await makePopUpAndInvoker(t,type,invokerType);
@@ -146,7 +146,7 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
       document.body.appendChild(popUp);
       await waitForHoverTime(hoverWaitTime);
       assert_false(popUp.matches(':top-layer'),'pop-up should not show even when returned to the document');
-    },`hoverpopup attribute does nothing when pop-up is moved out of the document (popup=${type}, invokerType=${invokerType})`);
+    },`popuphovertarget attribute does nothing when pop-up is moved out of the document (popup=${type}, invokerType=${invokerType})`);
 
     promise_test(async (t) => {
       const {popUp,invoker,reassignPopupFn} = await makePopUpAndInvoker(t,type,invokerType);
@@ -161,9 +161,9 @@ async function makePopUpAndInvoker(test, popUpType, invokerType, delayMs) {
         return; // The WPT runner was too slow.
       assert_false(eitherShowing,'pop-up should not show immediately');
       await waitForHoverTime(hoverWaitTime);
-      assert_false(popUp.matches(':top-layer'),'pop-up #1 should not show since hoverpopup was reassigned');
-      assert_false(popUp2.matches(':top-layer'),'pop-up #2 should not show since hoverpopup was reassigned');
-    },`hoverpopup attribute does nothing when target changes (popup=${type}, invokerType=${invokerType})`);
+      assert_false(popUp.matches(':top-layer'),'pop-up #1 should not show since popuphovertarget was reassigned');
+      assert_false(popUp2.matches(':top-layer'),'pop-up #2 should not show since popuphovertarget was reassigned');
+    },`popuphovertarget attribute does nothing when target changes (popup=${type}, invokerType=${invokerType})`);
   });
 });
 </script>

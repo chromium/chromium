@@ -2919,7 +2919,7 @@ const Element* NearestOpenAncestralPopupRecursive(
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
       recurse_and_update(form_control->popupTargetElement().element);
     }
-    if (auto* hover_popup_element = element->HoverPopupElement())
+    if (auto* hover_popup_element = element->PopupHoverTargetElement())
       recurse_and_update(hover_popup_element);
     // Include the anchor elements for all showing pop-ups.
     if (anchors_to_popups.Contains(element)) {
@@ -3084,12 +3084,12 @@ Element* Element::anchorElement() const {
   return GetTreeScope().getElementById(anchor_id);  // may be null
 }
 
-Element* Element::HoverPopupElement() const {
+Element* Element::PopupHoverTargetElement() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!FastHasAttribute(html_names::kHoverpopupAttr))
+  if (!FastHasAttribute(html_names::kPopuphovertargetAttr))
     return nullptr;
   Element* popup_element = GetTreeScope().getElementById(
-      FastGetAttribute(html_names::kHoverpopupAttr));
+      FastGetAttribute(html_names::kPopuphovertargetAttr));
   if (!popup_element || !popup_element->HasValidPopupAttribute())
     return nullptr;
   return popup_element;
@@ -3139,9 +3139,9 @@ void Element::MaybeQueuePopupHideEvent() {
       FROM_HERE,
       WTF::Bind(
           [](Element* pop_up) {
-            // Always remove this element from hoverPopupTasks.
+            // Always remove this element from hoverShowTasks.
             if (pop_up->GetPopupData())
-              pop_up->GetPopupData()->hoverPopupTasks().erase(pop_up);
+              pop_up->GetPopupData()->hoverShowTasks().erase(pop_up);
             if (pop_up->popupOpen()) {
               DCHECK(pop_up->IsInTreeScope());
               pop_up->HidePopUpInternal(
@@ -3188,17 +3188,17 @@ void Element::HandlePopupHovered(bool hovered) {
     return;
   if (hovered) {
     // If we've just hovered an element (or the descendant of an element), see
-    // if it has a hoverpopup attribute that points to a valid pop-up element.
-    // If so, queue a task to show the pop-up after a timeout.
-    if (Element* popup_element = HoverPopupElement()) {
-      auto& hover_tasks = popup_element->GetPopupData()->hoverPopupTasks();
+    // if it has a popuphovertarget attribute that points to a valid pop-up
+    // element. If so, queue a task to show the pop-up after a timeout.
+    if (Element* popup_element = PopupHoverTargetElement()) {
+      auto& hover_tasks = popup_element->GetPopupData()->hoverShowTasks();
       DCHECK(!hover_tasks.Contains(this));
 
       float hover_delay_seconds = GetComputedStyle()->HoverPopUpDelay();
       // If the value is infinite or NaN, don't queue a task at all.
       DCHECK_GE(hover_delay_seconds, 0);
       if (std::isfinite(hover_delay_seconds)) {
-        // It's possible that multiple nested elements have hoverpopup
+        // It's possible that multiple nested elements have popuphovertarget
         // attributes pointing to the same pop-up, and in that case, we want to
         // trigger on the first of them that reaches its timeout threshold.
         hover_tasks.insert(
@@ -3212,18 +3212,18 @@ void Element::HandlePopupHovered(bool hovered) {
                       if (!popup_element ||
                           !popup_element->HasValidPopupAttribute())
                         return;
-                      // Remove this element from hoverPopupTasks always.
-                      popup_element->GetPopupData()->hoverPopupTasks().erase(
+                      // Remove this element from hoverShowTasks always.
+                      popup_element->GetPopupData()->hoverShowTasks().erase(
                           trigger_element);
-                      // Only trigger the pop-up if the hoverpopup attribute
-                      // still points to the same pop-up, and the pop-up is in
-                      // the tree and still not showing.
+                      // Only trigger the pop-up if the popuphovertarget
+                      // attribute still points to the same pop-up, and the
+                      // pop-up is in the tree and still not showing.
                       if (popup_element->IsInTreeScope() &&
                           !popup_element->popupOpen() &&
                           popup_element ==
                               trigger_element->GetTreeScope().getElementById(
                                   trigger_element->FastGetAttribute(
-                                      html_names::kHoverpopupAttr))) {
+                                      html_names::kPopuphovertargetAttr))) {
                         popup_element->InvokePopup(trigger_element);
                       }
                     },
@@ -3233,12 +3233,13 @@ void Element::HandlePopupHovered(bool hovered) {
       }
     }
   } else {
-    // If we have a hoverpopup task still waiting, cancel it. Based on this
-    // logic, if you hover a hoverpopup element, then remove the hoverpopup
-    // attribute, there will be no way to stop the pop-up from being shown after
-    // the delay, even if you subsequently de-hover the element.
-    if (Element* hover_pop_up = HoverPopupElement()) {
-      auto& hover_tasks = hover_pop_up->GetPopupData()->hoverPopupTasks();
+    // If we have a hover show task still waiting, cancel it. Based on this
+    // logic, if you hover a popuphovertarget element, then remove the
+    // popuphovertarget attribute, there will be no way to stop the pop-up from
+    // being shown after the delay, even if you subsequently de-hover the
+    // element.
+    if (Element* hover_pop_up = PopupHoverTargetElement()) {
+      auto& hover_tasks = hover_pop_up->GetPopupData()->hoverShowTasks();
       if (hover_tasks.Contains(this))
         hover_tasks.Take(this).Cancel();
     }

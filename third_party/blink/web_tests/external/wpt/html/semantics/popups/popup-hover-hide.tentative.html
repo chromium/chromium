@@ -16,7 +16,7 @@
     top:100px;
     hover-pop-up-hide-delay: 100ms;
   }
-  [hoverpopup] {
+  [popuphovertarget] {
     top:200px;
     hover-pop-up-delay: 100ms;
   }
@@ -29,7 +29,7 @@
 <div id=unrelated>Unrelated element</div>
 
 <div popup id=example1>Pop-up</div>
-<div hoverpopup=example1 id=invoker1>Hover me</div>
+<div popuphovertarget=example1 id=invoker1>Hover me</div>
 
 <script>
 const hoverDelays = 100; // This needs to match the style block above.
@@ -99,7 +99,7 @@ promise_test(async (t) => {
   await mouseOver(unrelated);
   await waitForHoverTime(hoverWaitTime);
   assert_false(popUp.matches(':top-layer'),'Moving hover to unrelated should finally hide the pop-up');
-},`hovering a hoverpopup invoking element keeps the pop-up from being hidden`);
+},`hovering a popuphovertarget invoking element keeps the pop-up from being hidden`);
 </script>
 
 <div popup id=example2>Pop-up</div>

@@ -459,7 +459,7 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::ReparseAttribute},
       {html_names::kPopupAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
-      {html_names::kHoverpopupAttr, kNoWebFeature, kNoEvent,
+      {html_names::kPopuphovertargetAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,

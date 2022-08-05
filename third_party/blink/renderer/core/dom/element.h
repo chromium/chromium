@@ -603,7 +603,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                  HidePopupFocusBehavior,
                                  HidePopupForcingLevel,
                                  HidePopupIndependence);
-  Element* HoverPopupElement() const;
+  Element* PopupHoverTargetElement() const;
   bool IsNodePopUpDescendant(const Node& node) const;
   void MaybeQueuePopupHideEvent();
   static void HoveredElementChanged(Element* old_element, Element* new_element);
