@@ -10,6 +10,8 @@
             "headless_lib_strings.pak",
             "icudtl.dat",
             "icudtl.dat.hash",
+            "libEGL.so",
+            "libGLESv2.so",
             "metadata.json",
             "nacl_helper",
             "nacl_helper_bootstrap",

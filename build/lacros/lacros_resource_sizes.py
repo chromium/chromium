@@ -105,6 +105,8 @@ _TRACKED_GROUPS = [
            title='File: chrome_crashpad_handler'),
     _Group(paths=['icudtl.dat'], title='File: icudtl.dat'),
     _Group(paths=['icudtl.dat.hash'], title='File: icudtl.dat.hash'),
+    _Group(paths=['libEGL.so'], title='File: libEGL.so'),
+    _Group(paths=['libGLESv2.so'], title='File: libGLESv2.so'),
     _Group(paths=['nacl_helper'], title='File: nacl_helper'),
     _Group(paths=['resources.pak'], title='File: resources.pak'),
     _Group(paths=[
