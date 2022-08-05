@@ -230,6 +230,12 @@ void HTMLFrameSetElement::ParseAttribute(
   }
 }
 
+int HTMLFrameSetElement::Border(const ComputedStyle& style) const {
+  if (!HasFrameBorder() || border_ == 0)
+    return 0;
+  return std::max(ClampTo<int>(border_ * style.EffectiveZoom()), 1);
+}
+
 FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
   FrameEdgeInfo result(NoResize(), true);
 
@@ -321,7 +327,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
       frameborder_ = frameset->HasFrameBorder();
     if (frameborder_) {
       if (!border_set_)
-        border_ = frameset->Border();
+        border_ = frameset->HasFrameBorder() ? frameset->border_ : 0;
       if (!border_color_set_)
         border_color_set_ = frameset->HasBorderColor();
     }
@@ -442,7 +448,7 @@ int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
   if (GetLayoutObject()->NeedsLayout())
     return 0;
 
-  int border_thickness = Border();
+  int border_thickness = Border(GetLayoutObject()->StyleRef());
 
   int size = axis.sizes_.size();
   if (!size)
@@ -469,7 +475,7 @@ int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
   if (GetLayoutObject()->NeedsLayout())
     return ResizeAxis::kNoSplit;
 
-  int border_thickness = Border();
+  int border_thickness = Border(GetLayoutObject()->StyleRef());
   if (border_thickness <= 0)
     return ResizeAxis::kNoSplit;
 

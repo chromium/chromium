@@ -53,7 +53,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   wtf_size_t TotalCols() const {
     return std::max<wtf_size_t>(1, col_lengths_.size());
   }
-  int Border() const { return HasFrameBorder() ? border_ : 0; }
+  int Border(const ComputedStyle& style) const;
   FrameEdgeInfo EdgeInfo() const;
   void CollectEdgeInfo();
 

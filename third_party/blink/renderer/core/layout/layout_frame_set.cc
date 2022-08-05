@@ -316,7 +316,7 @@ void LayoutFrameSet::UpdateLayout() {
     cols_.Resize(cols);
   }
 
-  LayoutUnit border_thickness(FrameSet()->Border());
+  LayoutUnit border_thickness(FrameSet()->Border(StyleRef()));
   LayOutAxis(rows_, FrameSet()->RowLengths(), rows_deltas,
              (Size().Height() - (rows - 1) * border_thickness).ToInt());
   LayOutAxis(cols_, FrameSet()->ColLengths(), cols_deltas,
@@ -353,7 +353,7 @@ void LayoutFrameSet::PositionFrames() {
   int rows = FrameSet()->TotalRows();
   int cols = FrameSet()->TotalCols();
 
-  int border_thickness = FrameSet()->Border();
+  int border_thickness = FrameSet()->Border(StyleRef());
   LayoutSize size;
   LayoutPoint position;
   for (int r = 0; r < rows; r++) {
