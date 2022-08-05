@@ -336,7 +336,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mToolbar.getMenu()
                     .findItem(R.id.optout_menu_id)
                     .setTitle(R.string.history_clusters_enable_menu_item_label);
-            if (mContentView == mHistoryClustersCoordinator.getActivityContentView()) {
+            if (isHistoryClustersUIShowing()) {
                 swapContentView();
             }
             mShowHistoryClustersToggleSupplier.set(false);
@@ -503,13 +503,15 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private void swapContentView() {
         if (shouldShowIncognitoPlaceholder()) {
             return;
-        } else if (mContentView == mSelectableListLayout && mHistoryClustersCoordinator != null) {
-            mContentView = mHistoryClustersCoordinator.getActivityContentView();
-            mHistoryClustersCoordinator.onToggled(true);
-        } else {
+        } else if (isHistoryClustersUIShowing()) {
             mHistoryClustersCoordinator.onToggled(false);
             mContentView = mSelectableListLayout;
             mContentManager.startLoadingItems();
+        } else {
+            assert mHistoryClustersCoordinator
+                    != null : "swapContentView() shouldn't be called if HistoryClusters is off";
+            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            mHistoryClustersCoordinator.onToggled(true);
         }
 
         Transition transition = new AutoTransition();
@@ -517,6 +519,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         Scene scene = new Scene(mRootView, mContentView);
         TransitionManager.go(scene, transition);
         mContentView.requestFocus();
+    }
+
+    private boolean isHistoryClustersUIShowing() {
+        return mHistoryClustersCoordinator != null
+                && mContentView == mHistoryClustersCoordinator.getActivityContentView();
     }
 
     /**
@@ -546,7 +553,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         if (shouldShowIncognitoPlaceholder() || mSelectableListLayout == null) {
             // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
             return false;
+        } else if (isHistoryClustersUIShowing()) {
+            return mHistoryClustersCoordinator.onBackPressed();
         }
+
         return mSelectableListLayout.onBackPressed();
     }
 

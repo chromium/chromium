@@ -147,6 +147,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         return mActivityContentView;
     }
 
+    /** Handles a back button press event, returning true if the event is handled. */
+    public boolean onBackPressed() {
+        return mSelectableListLayout.onBackPressed();
+    }
+
     void inflateActivityView() {
         mAdapter = new SimpleRecyclerViewAdapter(mModelList);
         mAdapter.registerType(
