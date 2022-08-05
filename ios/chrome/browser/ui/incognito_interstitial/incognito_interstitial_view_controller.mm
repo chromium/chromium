@@ -6,6 +6,7 @@
 #import "base/check.h"
 #import "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
 #import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -42,6 +43,9 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      kIncognitoInterstitialAccessibilityIdentifier;
+
   self.bannerName = @"incognito_interstitial_screen_banner";
   self.isTallBanner = YES;
   self.shouldBannerFillTopSpace = YES;
@@ -76,6 +80,8 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self.delegate
                            action:@selector(didTapCancelButton)];
+  cancelButton.accessibilityIdentifier =
+      kIncognitoInterstitialCancelButtonAccessibilityIdentifier;
 
   UINavigationItem* navigationRootItem =
       [[UINavigationItem alloc] initWithTitle:@""];

@@ -19,23 +19,27 @@
   std::vector<GURL> _URLs;
 }
 
-- (void)dismissModalsAndOpenSelectedTabInMode:
+- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
             (ApplicationModeForTabOpening)targetMode
-                            withUrlLoadParams:
-                                (const UrlLoadParams&)urlLoadParams
-                               dismissOmnibox:(BOOL)dismissOmnibox
-                                   completion:(ProceduralBlock)completion {
+                                 withUrlLoadParams:
+                                     (const UrlLoadParams&)urlLoadParams
+                                    dismissOmnibox:(BOOL)dismissOmnibox
+                                        completion:(ProceduralBlock)completion {
+  if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
+    // Falling back to `NORMAL`.
+    targetMode = ApplicationModeForTabOpening::NORMAL;
+  }
+
   _urlLoadParams = urlLoadParams;
   _applicationMode = targetMode;
   _completionBlock = [completion copy];
   _URLs.push_back(urlLoadParams.web_params.url);
 }
 
-- (void)dismissModalsAndOpenMultipleTabsInMode:
-            (ApplicationModeForTabOpening)targetMode
-                                          URLs:(const std::vector<GURL>&)URLs
-                                dismissOmnibox:(BOOL)dismissOmnibox
-                                    completion:(ProceduralBlock)completion {
+- (void)dismissModalsAndOpenMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
+                                 inIncognitoMode:(BOOL)incognitoMode
+                                  dismissOmnibox:(BOOL)dismissOmnibox
+                                      completion:(ProceduralBlock)completion {
   _URLs = URLs;
 }
 

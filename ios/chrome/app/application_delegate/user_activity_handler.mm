@@ -323,13 +323,13 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
         [tabOpener URLIsOpenedInRegularMode:webpageGURL]) {
       // Record metric.
     }
-    [tabOpener dismissModalsAndOpenSelectedTabInMode:targetMode
-                                   withUrlLoadParams:params
-                                      dismissOmnibox:YES
-                                          completion:^{
-                                            [connectionInformation
-                                                setStartupParameters:nil];
-                                          }];
+    [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                        withUrlLoadParams:params
+                                           dismissOmnibox:YES
+                                               completion:^{
+                                                 [connectionInformation
+                                                     setStartupParameters:nil];
+                                               }];
     return YES;
   }
 
@@ -349,11 +349,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 + (void)openMultipleTabsWithConnectionInformation:
             (id<ConnectionInformation>)connectionInformation
                                         tabOpener:(id<TabOpening>)tabOpener {
-  ApplicationModeForTabOpening mode =
-      connectionInformation.startupParameters.launchInIncognito
-          ? ApplicationModeForTabOpening::INCOGNITO
-          : ApplicationModeForTabOpening::NORMAL;
-
+  BOOL incognitoMode =
+      connectionInformation.startupParameters.launchInIncognito;
   BOOL dismissOmnibox = [[connectionInformation startupParameters]
                             postOpeningAction] != FOCUS_OMNIBOX;
 
@@ -367,13 +364,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   __weak id<ConnectionInformation> weakConnectionInfo = connectionInformation;
 
   [tabOpener
-      dismissModalsAndOpenMultipleTabsInMode:mode
-                                        URLs:weakConnectionInfo
-                                                 .startupParameters.URLs
-                              dismissOmnibox:dismissOmnibox
-                                  completion:^{
-                                    weakConnectionInfo.startupParameters = nil;
-                                  }];
+      dismissModalsAndOpenMultipleTabsWithURLs:weakConnectionInfo
+                                                   .startupParameters.URLs
+                               inIncognitoMode:incognitoMode
+                                dismissOmnibox:dismissOmnibox
+                                    completion:^{
+                                      weakConnectionInfo.startupParameters =
+                                          nil;
+                                    }];
 }
 
 + (BOOL)continueUserActivityURLs:(const std::vector<GURL>&)webpageURLs
@@ -515,7 +513,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     // The app is already active so the applicationDidBecomeActive: method
     // will never be called. Open the requested URL after all modal UIs have
     // been dismissed. `_startupParameters` must be retained until all deferred
-    // modal UIs are dismissed and tab opened with requested URL.
+    // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
+    // with requested URL.
     ApplicationModeForTabOpening targetMode =
         [[connectionInformation startupParameters] applicationMode];
     GURL URL;
@@ -556,16 +555,17 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       // Record metric.
     }
 
-    [tabOpener dismissModalsAndOpenSelectedTabInMode:targetMode
-                                   withUrlLoadParams:params
-                                      dismissOmnibox:[[connectionInformation
-                                                         startupParameters]
-                                                         postOpeningAction] !=
-                                                     FOCUS_OMNIBOX
-                                          completion:^{
-                                            [connectionInformation
-                                                setStartupParameters:nil];
-                                          }];
+    [tabOpener
+        dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                 withUrlLoadParams:params
+                                    dismissOmnibox:[[connectionInformation
+                                                       startupParameters]
+                                                       postOpeningAction] !=
+                                                   FOCUS_OMNIBOX
+                                        completion:^{
+                                          [connectionInformation
+                                              setStartupParameters:nil];
+                                        }];
   }
 }
 

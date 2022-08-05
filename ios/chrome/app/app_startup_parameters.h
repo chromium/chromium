@@ -11,7 +11,13 @@
 #include <string>
 #include <vector>
 
-enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
+// Input format for the `TabOpening` protocol.
+enum class ApplicationModeForTabOpening {
+  NORMAL,
+  INCOGNITO,
+  CURRENT,
+  UNDETERMINED
+};
 
 enum TabOpeningPostOpeningAction {
   // No action should be done
@@ -50,9 +56,13 @@ class GURL;
     externalURLParams;
 
 // Boolean to track if the app should launch in incognito mode.
-@property(nonatomic, readwrite, assign) BOOL launchInIncognito;
-// The mode in which the tab must be opened.
-@property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
+// Explicitly setting this to YES or NO will either set `applicationMode`
+// to INCOGNITO in the first case, or to NORMAL in the second case.
+@property(nonatomic, assign) BOOL launchInIncognito;
+// The mode in which the tab must be opened. Defaults to NORMAL, unless the flag
+// `kIOS3PIntentsInIncognito` is enabled, in which case it is UNDETERMINED.
+// TODO(crbug.com/1318750): Change this comment when flag is enabled by default.
+@property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
 // Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
     TabOpeningPostOpeningAction postOpeningAction;

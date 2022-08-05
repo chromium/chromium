@@ -30,6 +30,7 @@ source_set("app") {
   deps = [
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
     "//net",
     "//url",
   ]

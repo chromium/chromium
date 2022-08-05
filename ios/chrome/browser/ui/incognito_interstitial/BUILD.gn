@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_interstitial_constants.h",
+    "incognito_interstitial_constants.mm",
+  ]
+}
+
 source_set("incognito_interstitial_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -10,6 +18,7 @@ source_set("incognito_interstitial_ui") {
     "incognito_interstitial_view_controller_delegate.h",
   ]
   deps = [
+    ":constants",
     "resources:incognito_interstitial_screen_banner",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
@@ -41,6 +50,25 @@ source_set("incognito_interstitial") {
     "//ios/chrome/browser/ui/ntp:ntp_internal",
     "//ios/chrome/browser/url_loading:url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "incognito_interstitial_egtest.mm" ]
+  deps = [
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }

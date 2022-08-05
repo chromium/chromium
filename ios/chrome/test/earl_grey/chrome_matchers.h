@@ -536,6 +536,34 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 // Returns a matcher to the add button in the toolbar in the settings view.
 id<GREYMatcher> SettingsToolbarAddButton();
 
+#pragma mark - Promo style view controller
+
+// Returns matcher for the primary action button.
+id<GREYMatcher> PromoStylePrimaryActionButtonMatcher();
+
+// Returns matcher for the secondary action button.
+id<GREYMatcher> PromoStyleSecondaryActionButtonMatcher();
+
+#pragma mark - Incognito Interstitial
+
+// Returns a matcher for the Incognito Interstitial view controller.
+id<GREYMatcher> IncognitoInterstitialMatcher();
+
+// Returns a matcher for the subtitle of the Incognito Interstitial,
+// as it should appear when `URL` was given to the Interstitial.
+id<GREYMatcher> IncognitoInterstitialSubtitleForURL(const std::string& url);
+
+// Returns a matcher for the primary action button in the Incognito
+// Interstitial.
+id<GREYMatcher> IncognitoInterstitialOpenInChromeIncognitoButton();
+
+// Returns a matcher for the secondary action button in the Incognito
+// Interstitial.
+id<GREYMatcher> IncognitoInterstitialOpenInChromeButton();
+
+// Returns a matcher for the Cancel button in the Incognito Interstitial.
+id<GREYMatcher> IncognitoInterstitialCancelButton();
+
 #pragma mark - Manual Fallback
 
 // Returns a matcher for the scroll view in keyboard accessory bar.

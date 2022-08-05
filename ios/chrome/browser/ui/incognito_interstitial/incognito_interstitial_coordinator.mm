@@ -65,14 +65,14 @@
 - (void)didTapPrimaryActionButton {
   // Dismiss modals (including interstitial) and open link in incognito tab.
   __weak __typeof(self) weakSelf = self;
-  UrlLoadParams params = self.urlLoadParams;
-  BOOL dismissOmnibox = self.shouldDismissOmnibox;
+  UrlLoadParams copyOfUrlLoadParams = self.urlLoadParams;
   void (^dismissModalsAndOpenTab)() = ^{
-    [weakSelf.tabOpener dismissModalsAndOpenSelectedTabInMode:
-                            ApplicationModeForTabOpening::INCOGNITO
-                                            withUrlLoadParams:params
-                                               dismissOmnibox:dismissOmnibox
-                                                   completion:nil];
+    [weakSelf.tabOpener
+        dismissModalsAndMaybeOpenSelectedTabInMode:
+            ApplicationModeForTabOpening::INCOGNITO
+                                 withUrlLoadParams:copyOfUrlLoadParams
+                                    dismissOmnibox:YES
+                                        completion:nil];
   };
 
   SceneState* sceneState =
@@ -93,11 +93,11 @@
 
 - (void)didTapSecondaryActionButton {
   // Dismiss modals (including interstitial) and open link in regular tab.
-  [self.tabOpener
-      dismissModalsAndOpenSelectedTabInMode:ApplicationModeForTabOpening::NORMAL
-                          withUrlLoadParams:self.urlLoadParams
-                             dismissOmnibox:self.shouldDismissOmnibox
-                                 completion:nil];
+  [self.tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:
+                      ApplicationModeForTabOpening::NORMAL
+                                           withUrlLoadParams:self.urlLoadParams
+                                              dismissOmnibox:YES
+                                                  completion:nil];
 }
 
 - (void)didTapCancelButton {
@@ -108,11 +108,12 @@
 
 - (void)loadURLInTab:(const GURL&)URL {
   [self.tabOpener
-      dismissModalsAndOpenSelectedTabInMode:ApplicationModeForTabOpening::
-                                                INCOGNITO
-                          withUrlLoadParams:UrlLoadParams::InCurrentTab(URL)
-                             dismissOmnibox:YES
-                                 completion:nil];
+      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                     INCOGNITO
+                               withUrlLoadParams:UrlLoadParams::InCurrentTab(
+                                                     URL)
+                                  dismissOmnibox:YES
+                                      completion:nil];
 }
 
 @end

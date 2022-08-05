@@ -13,6 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
+#import "base/test/with_feature_override.h"
 #include "components/handoff/handoff_utility.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_connection_information.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -90,9 +92,10 @@ typedef void (^startupParameterBlock)(id,
 // A block that takes a BOOL argument and returns nothing.
 typedef void (^conditionBlock)(BOOL);
 
-class UserActivityHandlerTest : public PlatformTest {
+class UserActivityHandlerTest : public base::test::WithFeatureOverride,
+                                public PlatformTest {
  public:
-  UserActivityHandlerTest() {
+  UserActivityHandlerTest() : WithFeatureOverride(kIOS3PIntentsInIncognito) {
     interfaceProvider_ = [[StubBrowserInterfaceProvider alloc] init];
   }
 
@@ -160,7 +163,7 @@ class UserActivityHandlerTest : public PlatformTest {
 
 // Tests that Chrome notifies the user if we are passing a correct
 // userActivityType.
-TEST_F(UserActivityHandlerTest, WillContinueUserActivityCorrectActivity) {
+TEST_P(UserActivityHandlerTest, WillContinueUserActivityCorrectActivity) {
   EXPECT_TRUE([UserActivityHandler
       willContinueUserActivityWithType:handoff::kChromeHandoffActivityType]);
 
@@ -172,7 +175,7 @@ TEST_F(UserActivityHandlerTest, WillContinueUserActivityCorrectActivity) {
 
 // Tests that Chrome does not notifies the user if we are passing an incorrect
 // userActivityType.
-TEST_F(UserActivityHandlerTest, WillContinueUserActivityIncorrectActivity) {
+TEST_P(UserActivityHandlerTest, WillContinueUserActivityIncorrectActivity) {
   EXPECT_FALSE([UserActivityHandler
       willContinueUserActivityWithType:[handoff::kChromeHandoffActivityType
                                            stringByAppendingString:@"test"]]);
@@ -187,7 +190,7 @@ TEST_F(UserActivityHandlerTest, WillContinueUserActivityIncorrectActivity) {
 
 // Tests that Chrome does not continue the activity is the activity type is
 // random.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityFromGarbage) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityFromGarbage) {
   // Setup.
   NSString* handoffWithSuffix =
       [handoff::kChromeHandoffActivityType stringByAppendingString:@"test"];
@@ -226,7 +229,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityFromGarbage) {
 
 // Tests that Chrome does not continue the activity if the webpage url is not
 // set.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityNoWebpage) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityNoWebpage) {
   // Setup.
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:handoff::kChromeHandoffActivityType];
@@ -254,7 +257,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityNoWebpage) {
 
 // Tests that Chrome does not continue the activity if the activity is a
 // Spotlight action of an unknown type.
-TEST_F(UserActivityHandlerTest,
+TEST_P(UserActivityHandlerTest,
        ContinueUserActivitySpotlightActionFromGarbage) {
   // Only test Spotlight if it is enabled and available on the device.
   if (!spotlight::IsSpotlightAvailable()) {
@@ -297,7 +300,7 @@ TEST_F(UserActivityHandlerTest,
 
 // Tests that Chrome continues the activity if the application is in background
 // by saving the url to startupParameters.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityBackground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityBackground) {
   // Setup.
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:handoff::kChromeHandoffActivityType];
@@ -337,7 +340,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityBackground) {
 
 // Tests that Chrome continues the activity if the application is in foreground
 // by opening a new tab.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityForeground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityForeground) {
   // Setup.
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:handoff::kChromeHandoffActivityType];
@@ -373,7 +376,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityForeground) {
 }
 
 // Tests that a new tab is created when application is started via handoff.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
   NSUserActivity* userActivity = [[NSUserActivity alloc]
       initWithActivityType:NSUserActivityTypeBrowsingWeb];
   // This URL is passed to application by iOS but is not used in this part
@@ -408,7 +411,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
 
 // Tests that continueUserActivity sets startupParameters accordingly to the
 // Spotlight action used.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityShortcutActions) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityShortcutActions) {
   // Only test Spotlight if it is enabled and available on the device.
   if (!spotlight::IsSpotlightAvailable()) {
     return;
@@ -476,7 +479,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityShortcutActions) {
 }
 
 // Tests that Chrome responds to open in incognito intent in the background
-TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
   NSURL* url1 = [[NSURL alloc] initWithString:@"http://www.google.com"];
   NSURL* url2 = [[NSURL alloc] initWithString:@"http://www.apple.com"];
   NSURL* url3 = [[NSURL alloc] initWithString:@"http://www.espn.com"];
@@ -534,7 +537,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
 }
 
 // Tests that Chrome responds to open intents in the background.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
   NSUserActivity* userActivity =
       [[NSUserActivity alloc] initWithActivityType:@"OpenInChromeIntent"];
   OpenInChromeIntent* intent = [[OpenInChromeIntent alloc] init];
@@ -589,7 +592,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
 }
 
 // Test that Chrome respond to open in incognito intent in the foreground.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
   NSURL* url1 = [[NSURL alloc] initWithString:@"http://www.google.com"];
   NSURL* url2 = [[NSURL alloc] initWithString:@"http://www.apple.com"];
   NSURL* url3 = [[NSURL alloc] initWithString:@"http://www.espn.com"];
@@ -660,7 +663,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
 }
 
 // Tests that Chrome responds to open intents in the foreground.
-TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
+TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
   NSUserActivity* userActivity =
       [[NSUserActivity alloc] initWithActivityType:@"OpenInChromeIntent"];
   OpenInChromeIntent* intent = [[OpenInChromeIntent alloc] init];
@@ -726,7 +729,7 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
 
 // Tests that handleStartupParameters with a file url. "external URL" gets
 // rewritten to chrome://URL, while "complete URL" remains full local file URL.
-TEST_F(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
+TEST_P(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
   // Setup.
   GURL externalURL("chrome://test.pdf");
   GURL completeURL("file://test.pdf");
@@ -776,7 +779,7 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
 }
 
 // Tests that handleStartupParameters with a non-U2F url opens a new tab.
-TEST_F(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
+TEST_P(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
   // Setup.
   GURL gurl("http://www.google.com");
 
@@ -821,7 +824,7 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
 }
 
 // Tests that handleStartupParameters with a U2F url opens in the correct tab.
-TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
+TEST_P(UserActivityHandlerTest, HandleStartupParamsU2F) {
   // Setup.
   base::test::TaskEnvironment task_enviroment_;
 
@@ -895,7 +898,7 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
 #define MAYBE_PerformActionForShortcutItemWithRealShortcut \
   DISABLED_PerformActionForShortcutItemWithRealShortcut
 #endif
-TEST_F(UserActivityHandlerTest,
+TEST_P(UserActivityHandlerTest,
        MAYBE_PerformActionForShortcutItemWithRealShortcut) {
   // Setup.
   GURL gurlNewTab("chrome://newtab/");
@@ -949,7 +952,7 @@ TEST_F(UserActivityHandlerTest,
 
 // Tests that performActionForShortcutItem just executes the completionHandler
 // with NO if the firstRunUI is present.
-TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithFirstRunUI) {
+TEST_P(UserActivityHandlerTest, PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
@@ -982,3 +985,5 @@ TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithFirstRunUI) {
   EXPECT_FALSE(completionHandlerArgument());
   EXPECT_FALSE(getHandleStartupParametersHasBeenCalled());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(UserActivityHandlerTest);

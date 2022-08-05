@@ -37,13 +37,12 @@ struct UrlLoadParams;
             withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
                    completion:(ProceduralBlock)completion;
 
-// Open the list of URLs contained in |URLs| in mode specified by
-// |tabOpeningTargetMode|. |completion| is executed after all the tabs are
+// Open the list of URLs contained in |URLs| in Incognito mode if
+// |inIncognitoMode| is YES. |completion| is executed after all the tabs are
 // opened.
-- (void)openMultipleTabsInMode:
-            (ApplicationModeForTabOpening)tabOpeningTargetMode
-                          URLs:(const std::vector<GURL>&)URLs
-                    completion:(ProceduralBlock)completion;
+- (void)openMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
+                 inIncognitoMode:(BOOL)incognitoMode
+                      completion:(ProceduralBlock)completion;
 
 // Opens a new tab as if originating from |originPoint| and |focusOmnibox|.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint

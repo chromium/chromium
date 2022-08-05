@@ -112,11 +112,13 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       }
 
       [tabOpener
-          dismissModalsAndOpenSelectedTabInMode:targetMode
-                              withUrlLoadParams:urlLoadParams
-                                 dismissOmnibox:[params postOpeningAction] !=
-                                                FOCUS_OMNIBOX
-                                     completion:tabOpenedCompletion];
+          dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                   withUrlLoadParams:urlLoadParams
+                                      dismissOmnibox:[params
+                                                         postOpeningAction] !=
+                                                     FOCUS_OMNIBOX
+                                          completion:tabOpenedCompletion];
+
       return YES;
     }
     return NO;

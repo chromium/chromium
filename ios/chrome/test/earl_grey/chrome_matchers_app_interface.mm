@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
+#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -60,6 +61,7 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/app/window_test_util.h"
@@ -1090,6 +1092,52 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsActionButton {
   return grey_accessibilityID(kToolsMenuSettingsActionId);
+}
+
+#pragma mark - Promo style view controller
+
+// Returns matcher for the primary action button.
++ (id<GREYMatcher>)promoStylePrimaryActionButtonMatcher {
+  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+}
+
+// Returns matcher for the secondary action button.
++ (id<GREYMatcher>)promoStyleSecondaryActionButtonMatcher {
+  return grey_accessibilityID(
+      kPromoStyleSecondaryActionAccessibilityIdentifier);
+}
+
+#pragma mark - Incognito Interstitial
+
++ (id<GREYMatcher>)incognitoInterstitial {
+  return grey_accessibilityID(kIncognitoInterstitialAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)incognitoInterstitialSubtitleForURL:(NSString*)url {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier),
+      grey_accessibilityLabel(url), nullptr);
+}
+
++ (id<GREYMatcher>)incognitoInterstitialOpenInChromeIncognitoButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface promoStylePrimaryActionButtonMatcher],
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO)),
+      nullptr);
+}
+
++ (id<GREYMatcher>)incognitoInterstitialOpenInChromeButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface promoStyleSecondaryActionButtonMatcher],
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME)),
+      nullptr);
+}
+
++ (id<GREYMatcher>)incognitoInterstitialCancelButton {
+  return grey_accessibilityID(
+      kIncognitoInterstitialCancelButtonAccessibilityIdentifier);
 }
 
 #pragma mark - Manual Fallback

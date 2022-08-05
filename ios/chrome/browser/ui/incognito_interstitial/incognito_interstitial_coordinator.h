@@ -25,10 +25,6 @@
 // URL load parameters associated with the external intent.
 @property(nonatomic, assign) UrlLoadParams urlLoadParams;
 
-// Whether to ask the tab opener to also dismiss the omnibox before opening a
-// new tab.
-@property(nonatomic, assign) BOOL shouldDismissOmnibox;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // Stops the coordinator and dismisses the Incognito interstitial with

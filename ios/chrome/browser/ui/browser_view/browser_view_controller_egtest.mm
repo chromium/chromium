@@ -9,7 +9,10 @@
 #import "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -242,6 +245,24 @@
                              inWindowWithNumber:0];
   [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
                              inWindowWithNumber:1];
+}
+
+@end
+
+@interface BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
+    : BrowserViewControllerTestCase
+@end
+
+@implementation BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kTrendingQueriesModule);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

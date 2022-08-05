@@ -4,7 +4,9 @@
 
 #import "ios/chrome/app/app_startup_parameters.h"
 
+#import "base/feature_list.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -21,7 +23,7 @@
 
 @synthesize externalURLParams = _externalURLParams;
 @synthesize postOpeningAction = _postOpeningAction;
-@synthesize launchInIncognito = _launchInIncognito;
+@synthesize applicationMode = _applicationMode;
 // TODO(crbug.com/1021752): Remove this stub.
 @synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
@@ -40,6 +42,9 @@
   if (self) {
     _externalURL = externalURL;
     _completeURL = completeURL;
+    if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+      _applicationMode = ApplicationModeForTabOpening::UNDETERMINED;
+    }
   }
   return self;
 }
@@ -57,7 +62,6 @@
   }
   return self;
 }
-
 
 - (NSString*)description {
   NSMutableString* description =
@@ -88,9 +92,16 @@
   return description;
 }
 
-- (ApplicationModeForTabOpening)applicationMode {
-  return self.launchInIncognito ? ApplicationModeForTabOpening::INCOGNITO
-                                : ApplicationModeForTabOpening::NORMAL;
+- (BOOL)launchInIncognito {
+  return _applicationMode == ApplicationModeForTabOpening::INCOGNITO;
+}
+
+- (void)setLaunchInIncognito:(BOOL)launchInIncognito {
+  if (launchInIncognito) {
+    _applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+  } else {
+    _applicationMode = ApplicationModeForTabOpening::NORMAL;
+  }
 }
 
 - (void)setPostOpeningAction:(TabOpeningPostOpeningAction)action {

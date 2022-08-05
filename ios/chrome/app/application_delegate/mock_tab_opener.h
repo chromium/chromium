@@ -12,12 +12,14 @@
 struct UrlLoadParams;
 
 // Mocks a class adopting the TabOpening protocol. It saves the arguments of
-// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+// -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:. Can also save the arguments of
 // -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
+// This mock assumes the Incognito interstitial setting is disabled, so it
+// falls back to `NORMAL` mode if `targetMode` is `UNDETERMINED`.
 @interface MockTabOpener : NSObject<TabOpening>
 // Arguments for
-// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+// -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:.
 @property(nonatomic, readonly) UrlLoadParams urlLoadParams;
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
