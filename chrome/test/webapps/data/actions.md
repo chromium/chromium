@@ -122,7 +122,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_window_color_correct | Site |  | 77 | Not Implemented | The color of the window is correct. | P3 |
 | check_window_icon_correct |  |  | 78 | Not Implemented |  | P3 |
 | create_shortcuts | Site |  | 72 | Not Implemented | "create shortcuts" in chrome://apps | P2 |
-| delete_platform_shortcut | Site |  | 74 | Not Implemented | Delete the shortcut that lives on the operating system | P2 |
+| delete_platform_shortcut | Site |  | 74 | Implemented | Delete the shortcut that lives on the operating system. Win/Mac/Linux only. | P2 |
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | # Launching |
 | launch_from_chrome_apps | Site |  | 34 | Implemented | Launch the web app by navigating to chrome://apps, and then clicking on the app icon. |  |

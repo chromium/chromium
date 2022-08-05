@@ -125,8 +125,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install | delete_profile | check_app_list_empty | 
 | WMLC | install | delete_profile | check_app_not_in_list | 
 | WMLC | install_with_shortcut | delete_profile | check_platform_shortcut_not_exists | 
-| WMLC | install_tabbed | delete_platform_shortcut | create_shortcuts | launch_from_platform_shortcut | check_tab_created | 
-| WMLC | install_windowed | delete_platform_shortcut | create_shortcuts | launch_from_platform_shortcut | check_window_created | 
+| WMLC | install_with_shortcut | delete_platform_shortcut | create_shortcuts | launch_from_platform_shortcut | check_tab_created | 
+| WMLC | install_no_shortcut | create_shortcuts | launch_from_platform_shortcut | check_window_created | 
 | WMLC | install_by_user_windowed | open_in_chrome | check_tab_created | 
 | WMLC | install_by_user_windowed | navigate_pwa_site_a_to(SiteB) | open_in_chrome | check_tab_created |
 | WML | install_windowed | open_app_settings | check_browser_navigation_is_app_settings | 
