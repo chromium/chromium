@@ -123,8 +123,25 @@ TEST(PolicyService, DefaultPolicyValue) {
   std::string version_prefix;
   EXPECT_FALSE(
       policy_service->GetTargetVersionPrefix("", nullptr, &version_prefix));
+
   int last_check = 0;
-  EXPECT_FALSE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
+  EXPECT_TRUE(policy_service->GetLastCheckPeriodMinutes(nullptr, &last_check));
+  EXPECT_EQ(last_check, 14430);
+
+  int install_policy = 0;
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppInstalls(
+      "test1", nullptr, &install_policy));
+  EXPECT_EQ(install_policy, 1);
+
+  int update_policy = 0;
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates("test1", nullptr,
+                                                              &update_policy));
+  EXPECT_EQ(update_policy, 1);
+
+  bool rollback_allowed = true;
+  EXPECT_TRUE(policy_service->IsRollbackToTargetVersionAllowed(
+      "test1", nullptr, &rollback_allowed));
+  EXPECT_EQ(rollback_allowed, false);
 }
 
 TEST(PolicyService, SinglePolicyManager) {
@@ -356,10 +373,14 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(update_policy, 3);
 
   PolicyStatus<int> app2_update_status;
-  EXPECT_FALSE(policy_service->GetEffectivePolicyForAppUpdates(
+  EXPECT_TRUE(policy_service->GetEffectivePolicyForAppUpdates(
       "app2", &app2_update_status, &update_policy));
-  EXPECT_FALSE(app2_update_status.effective_policy());
+  EXPECT_TRUE(app2_update_status.effective_policy());
   EXPECT_FALSE(app2_update_status.conflict_policy());
+  const PolicyStatus<int>::Entry& app2_update_status_policy =
+      app2_update_status.effective_policy().value();
+  EXPECT_EQ(app2_update_status_policy.source, "default");
+  EXPECT_EQ(app2_update_status_policy.policy, 1);
 
   PolicyStatus<std::string> download_preference_status;
   std::string download_preference;

@@ -44,15 +44,13 @@
 #include "chrome/updater/linux/net/network.h"
 #endif
 
+namespace updater {
+
 namespace {
 
-// Default time constants.
 const int kDelayOneMinute = 60;
-const int kDelayOneHour = kDelayOneMinute * 60;
 
 }  // namespace
-
-namespace updater {
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants)
@@ -78,9 +76,8 @@ int Configurator::ServerKeepAliveSeconds() const {
 
 int Configurator::NextCheckDelay() const {
   int minutes = 0;
-  return policy_service_->GetLastCheckPeriodMinutes(nullptr, &minutes)
-             ? minutes * kDelayOneMinute
-             : 4 * kDelayOneHour + 30 * kDelayOneMinute;
+  CHECK(policy_service_->GetLastCheckPeriodMinutes(nullptr, &minutes));
+  return minutes * kDelayOneMinute;
 }
 
 int Configurator::OnDemandDelay() const {

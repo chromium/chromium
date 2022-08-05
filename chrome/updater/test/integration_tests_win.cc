@@ -1000,6 +1000,28 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   DeleteAppClientKey(scope, appid);
 }
 
+namespace {
+
+void ExpectPolicyStatusValues(
+    Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value,
+    const std::wstring& expected_source,
+    const std::wstring& expected_value,
+    VARIANT_BOOL expected_has_conflict) {
+  base::win::ScopedBstr source;
+  base::win::ScopedBstr value;
+  VARIANT_BOOL has_conflict = VARIANT_FALSE;
+
+  ASSERT_NE(policy_status_value.Get(), nullptr);
+  EXPECT_HRESULT_SUCCEEDED(policy_status_value->get_source(source.Receive()));
+  EXPECT_EQ(source.Get(), expected_source);
+  EXPECT_HRESULT_SUCCEEDED(policy_status_value->get_value(value.Receive()));
+  EXPECT_EQ(value.Get(), expected_value);
+  EXPECT_HRESULT_SUCCEEDED(policy_status_value->get_hasConflict(&has_conflict));
+  EXPECT_EQ(has_conflict, expected_has_conflict);
+}
+
+}  // namespace
+
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
   ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
@@ -1008,6 +1030,7 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
   Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
   ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+
   base::win::ScopedBstr updater_version;
   ASSERT_HRESULT_SUCCEEDED(
       policy_status2->get_updaterVersion(updater_version.Receive()));
@@ -1016,6 +1039,31 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   DATE last_checked = 0;
   EXPECT_HRESULT_SUCCEEDED(policy_status2->get_lastCheckedTime(&last_checked));
   EXPECT_GT(static_cast<int>(last_checked), 0);
+
+  Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value;
+  ASSERT_HRESULT_SUCCEEDED(
+      policy_status2->get_lastCheckPeriodMinutes(&policy_status_value));
+  ExpectPolicyStatusValues(policy_status_value, L"default", L"14430",
+                           VARIANT_FALSE);
+
+  const base::win::ScopedBstr test_app(L"test1");
+  policy_status_value.Reset();
+  ASSERT_HRESULT_SUCCEEDED(policy_status2->get_effectivePolicyForAppInstalls(
+      test_app.Get(), &policy_status_value));
+  ExpectPolicyStatusValues(policy_status_value, L"default", L"1",
+                           VARIANT_FALSE);
+
+  policy_status_value.Reset();
+  ASSERT_HRESULT_SUCCEEDED(policy_status2->get_effectivePolicyForAppUpdates(
+      test_app.Get(), &policy_status_value));
+  ExpectPolicyStatusValues(policy_status_value, L"default", L"1",
+                           VARIANT_FALSE);
+
+  policy_status_value.Reset();
+  ASSERT_HRESULT_SUCCEEDED(policy_status2->get_isRollbackToTargetVersionAllowed(
+      test_app.Get(), &policy_status_value));
+  ExpectPolicyStatusValues(policy_status_value, L"default", L"false",
+                           VARIANT_FALSE);
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {
