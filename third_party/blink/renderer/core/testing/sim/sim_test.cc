@@ -8,6 +8,7 @@
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -45,7 +46,6 @@ void SimTest::SetUp() {
   compositor_ = std::make_unique<SimCompositor>();
   web_frame_client_ =
       std::make_unique<frame_test_helpers::TestWebFrameClient>();
-  web_view_client_ = std::make_unique<frame_test_helpers::TestWebViewClient>();
   page_ = std::make_unique<SimPage>();
   web_view_helper_ =
       std::make_unique<frame_test_helpers::WebViewHelper>(base::BindRepeating(
@@ -55,8 +55,8 @@ void SimTest::SetUp() {
   // set up don't test / need code caches. Disable code caches for these tests.
   DocumentLoader::DisableCodeCacheForTesting();
 
-  web_view_helper_->Initialize(web_frame_client_.get(), web_view_client_.get());
-  compositor_->SetWebView(WebView(), *web_view_client_);
+  web_view_helper_->Initialize(web_frame_client_.get());
+  compositor_->SetWebView(WebView());
   page_->SetPage(WebView().GetPage());
   local_frame_root_ = WebView().MainFrameImpl();
   compositor_->SetLayerTreeHost(
@@ -78,7 +78,6 @@ void SimTest::TearDown() {
   // consistent, and before the subclass tears down.
   web_view_helper_.reset();
   page_.reset();
-  web_view_client_.reset();
   web_frame_client_.reset();
   compositor_.reset();
   network_.reset();
@@ -88,7 +87,7 @@ void SimTest::TearDown() {
 
 void SimTest::InitializeRemote() {
   web_view_helper_->InitializeRemote();
-  compositor_->SetWebView(WebView(), *web_view_client_);
+  compositor_->SetWebView(WebView());
   page_->SetPage(WebView().GetPage());
   web_frame_client_ =
       std::make_unique<frame_test_helpers::TestWebFrameClient>();
@@ -105,7 +104,7 @@ void SimTest::InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
                                          /*view_client=*/nullptr,
                                          /*update_settings_func=*/nullptr,
                                          mode);
-  compositor_->SetWebView(WebView(), *web_view_client_);
+  compositor_->SetWebView(WebView());
   page_->SetPage(WebView().GetPage());
   web_frame_client_ =
       std::make_unique<frame_test_helpers::TestWebFrameClient>();
@@ -147,10 +146,6 @@ WebLocalFrameImpl& SimTest::MainFrame() {
 
 WebLocalFrameImpl& SimTest::LocalFrameRoot() {
   return *local_frame_root_;
-}
-
-frame_test_helpers::TestWebViewClient& SimTest::WebViewClient() {
-  return *web_view_client_;
 }
 
 frame_test_helpers::TestWebFrameClient& SimTest::WebFrameClient() {

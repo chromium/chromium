@@ -616,6 +616,17 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
+  blink::WebView* CreateNewWindow(
+      const blink::WebURLRequest& request,
+      const blink::WebWindowFeatures& features,
+      const blink::WebString& frame_name,
+      blink::WebNavigationPolicy policy,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+      bool& consumed_user_gesture,
+      const absl::optional<blink::Impression>& impression,
+      const absl::optional<blink::WebPictureInPictureWindowOptions>&
+          pip_options) override;
 
   // Dispatches the current state of selection on the webpage to the browser if
   // it has changed or if the forced flag is passed. The forced flag is used

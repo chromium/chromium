@@ -286,22 +286,22 @@ Page* ChromeClientImpl::CreateWindowDelegate(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture) {
-  DCHECK(web_view_);
-  if (!web_view_->Client())
+  if (!frame->GetPage() || frame->GetPage()->Paused())
     return nullptr;
 
-  if (!frame->GetPage() || frame->GetPage()->Paused())
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
+  if (!web_frame)
     return nullptr;
 
   NotifyPopupOpeningObservers();
   const AtomicString& frame_name =
       !EqualIgnoringASCIICase(name, "_blank") ? name : g_empty_atom;
-  WebViewImpl* new_view = To<WebViewImpl>(web_view_->Client()->CreateView(
-      WebLocalFrameImpl::FromFrame(frame),
-      WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
-      static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()), sandbox_flags,
-      session_storage_namespace_id, consumed_user_gesture, r.Impression(),
-      r.GetPictureInPictureWindowOptions()));
+  WebViewImpl* new_view =
+      static_cast<WebViewImpl*>(web_frame->Client()->CreateNewWindow(
+          WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
+          static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()),
+          sandbox_flags, session_storage_namespace_id, consumed_user_gesture,
+          r.Impression(), r.GetPictureInPictureWindowOptions()));
   if (!new_view)
     return nullptr;
   return new_view->GetPage();

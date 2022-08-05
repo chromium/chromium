@@ -43,14 +43,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/surface/transport_dib.h"
 
-namespace blink {
-class WebURLRequest;
-struct WebWindowFeatures;
-}  // namespace blink
-
 namespace content {
 class AgentSchedulingGroup;
-class RenderFrameImpl;
 class RenderViewImplTest;
 class RenderViewTest;
 
@@ -90,18 +84,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
 
   // blink::WebViewClient implementation --------------------------------------
 
-  blink::WebView* CreateView(
-      blink::WebLocalFrame* creator,
-      const blink::WebURLRequest& request,
-      const blink::WebWindowFeatures& features,
-      const blink::WebString& frame_name,
-      blink::WebNavigationPolicy policy,
-      network::mojom::WebSandboxFlags sandbox_flags,
-      const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture,
-      const absl::optional<blink::Impression>& impression,
-      const absl::optional<blink::WebPictureInPictureWindowOptions>&
-          pip_options) override;
   void OnDestruct() override;
 
   blink::WebView* GetWebView();
@@ -115,11 +97,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   friend class RenderViewImplTest;
   friend class RenderViewTest;
 
-  // TODO(nasko): Temporarily friend RenderFrameImpl, so we don't duplicate
-  // utility functions needed in both classes, while we move frame specific
-  // code away from this class.
-  friend class RenderFrameImpl;
-
   RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
                  const mojom::CreateViewParams& params);
   ~RenderViewImpl() override;
@@ -131,9 +108,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   void Initialize(mojom::CreateViewParamsPtr params,
                   bool was_created_by_renderer,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  static WindowOpenDisposition NavigationPolicyToDisposition(
-      blink::WebNavigationPolicy policy);
 
   // ---------------------------------------------------------------------------
   // ADDING NEW FUNCTIONS? Please keep private functions alphabetized and put

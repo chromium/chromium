@@ -409,7 +409,7 @@ WebViewHelper::~WebViewHelper() {
 WebViewImpl* WebViewHelper::InitializeWithOpener(
     WebFrame* opener,
     TestWebFrameClient* web_frame_client,
-    TestWebViewClient* web_view_client,
+    WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*),
     absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
   Reset();
@@ -448,7 +448,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
 
 WebViewImpl* WebViewHelper::Initialize(
     TestWebFrameClient* web_frame_client,
-    TestWebViewClient* web_view_client,
+    WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*)) {
   return InitializeWithOpener(nullptr, web_frame_client, web_view_client,
                               update_settings_func);
@@ -462,7 +462,7 @@ WebViewImpl* WebViewHelper::InitializeWithSettings(
 WebViewImpl* WebViewHelper::InitializeAndLoad(
     const std::string& url,
     TestWebFrameClient* web_frame_client,
-    TestWebViewClient* web_view_client,
+    WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*)) {
   DocumentLoader::DisableCodeCacheForTesting();
   Initialize(web_frame_client, web_view_client, update_settings_func);
@@ -474,14 +474,14 @@ WebViewImpl* WebViewHelper::InitializeAndLoad(
 
 WebViewImpl* WebViewHelper::InitializeRemote(
     scoped_refptr<SecurityOrigin> security_origin,
-    TestWebViewClient* web_view_client) {
+    WebViewClient* web_view_client) {
   return InitializeRemoteWithOpener(nullptr, security_origin, web_view_client);
 }
 
 WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     WebFrame* opener,
     scoped_refptr<SecurityOrigin> security_origin,
-    TestWebViewClient* web_view_client) {
+    WebViewClient* web_view_client) {
   Reset();
 
   InitializeWebView(web_view_client, nullptr, absl::nullopt);
@@ -620,14 +620,18 @@ void WebViewHelper::Reset() {
       << "Platform::Current() should be the same for the life of a test, "
          "including shutdown.";
 
-  if (test_web_view_client_)
-    test_web_view_client_->DestroyChildViews();
   if (web_view_) {
+    // Prune opened windows before this helper resets.
+    if (auto* local_main_frame =
+            DynamicTo<WebLocalFrameImpl>(web_view_->MainFrame())) {
+      static_cast<TestWebFrameClient*>(local_main_frame->Client())
+          ->DestroyChildViews();
+    }
+
     DCHECK(!TestWebFrameClient::IsLoading());
     web_view_->Close();
     web_view_ = nullptr;
   }
-  test_web_view_client_ = nullptr;
 }
 
 cc::LayerTreeHost* WebViewHelper::GetLayerTreeHost() const {
@@ -655,13 +659,13 @@ void WebViewHelper::Resize(const gfx::Size& size) {
 }
 
 void WebViewHelper::InitializeWebView(
-    TestWebViewClient* web_view_client,
+    WebViewClient* web_view_client,
     class WebView* opener,
     absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
-  test_web_view_client_ =
-      CreateDefaultClientIfNeeded(web_view_client, owned_test_web_view_client_);
+  web_view_client =
+      CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
   web_view_ = To<WebViewImpl>(
-      WebView::Create(test_web_view_client_,
+      WebView::Create(web_view_client,
                       /*is_hidden=*/false,
                       /*is_prerendering=*/false,
                       /*is_inside_portal=*/false,
@@ -838,6 +842,26 @@ void TestWebFrameClient::DidMeaningfulLayout(
   }
 }
 
+WebView* TestWebFrameClient::CreateNewWindow(
+    const WebURLRequest&,
+    const WebWindowFeatures&,
+    const WebString& name,
+    WebNavigationPolicy,
+    network::mojom::blink::WebSandboxFlags,
+    const SessionStorageNamespaceId&,
+    bool& consumed_user_gesture,
+    const absl::optional<Impression>&,
+    const absl::optional<WebPictureInPictureWindowOptions>&) {
+  auto webview_helper = std::make_unique<WebViewHelper>();
+  WebView* result = webview_helper->InitializeWithOpener(frame_);
+  child_web_views_.push_back(std::move(webview_helper));
+  return result;
+}
+
+void TestWebFrameClient::DestroyChildViews() {
+  child_web_views_.clear();
+}
+
 TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
   if (!widget_input_handler_host_)
     widget_input_handler_host_ = std::make_unique<TestWidgetInputHandlerHost>();
@@ -988,27 +1012,6 @@ void TestWebFrameWidgetHost::BindWidgetHost(
         frame_receiver) {
   receiver_.Bind(std::move(receiver));
   frame_receiver_.Bind(std::move(frame_receiver));
-}
-
-void TestWebViewClient::DestroyChildViews() {
-  child_web_views_.clear();
-}
-
-WebView* TestWebViewClient::CreateView(
-    WebLocalFrame* opener,
-    const WebURLRequest&,
-    const WebWindowFeatures&,
-    const WebString& name,
-    WebNavigationPolicy,
-    network::mojom::blink::WebSandboxFlags,
-    const SessionStorageNamespaceId&,
-    bool& consumed_user_gesture,
-    const absl::optional<Impression>&,
-    const absl::optional<WebPictureInPictureWindowOptions>&) {
-  auto webview_helper = std::make_unique<WebViewHelper>();
-  WebView* result = webview_helper->InitializeWithOpener(opener);
-  child_web_views_.push_back(std::move(webview_helper));
-  return result;
 }
 
 mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost>

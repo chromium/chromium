@@ -190,7 +190,6 @@ class RootScrollerTest : public testing::Test,
 
   String base_url_;
   frame_test_helpers::CreateTestWebFrameWidgetCallback create_widget_callback_;
-  std::unique_ptr<frame_test_helpers::TestWebViewClient> view_client_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> helper_;
   RuntimeEnabledFeatures::Backup features_backup_;
 };

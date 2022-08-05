@@ -25,11 +25,8 @@ SimCompositor::SimCompositor() {
 
 SimCompositor::~SimCompositor() = default;
 
-void SimCompositor::SetWebView(
-    WebViewImpl& web_view,
-    frame_test_helpers::TestWebViewClient& view_client) {
+void SimCompositor::SetWebView(WebViewImpl& web_view) {
   web_view_ = &web_view;
-  test_web_view_client_ = &view_client;
 }
 
 SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,

@@ -83,7 +83,6 @@ class WidgetInputHandlerManager;
 
 namespace frame_test_helpers {
 class TestWebFrameClient;
-class TestWebViewClient;
 class TestWidgetInputHandlerHost;
 class WebViewHelper;
 
@@ -309,30 +308,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   mojom::blink::DidOverscrollParamsPtr last_overscroll_;
 };
 
-class TestWebViewClient : public WebViewClient {
- public:
-  TestWebViewClient() = default;
-  ~TestWebViewClient() override = default;
-
-  void DestroyChildViews();
-
-  // WebViewClient overrides.
-  WebView* CreateView(
-      WebLocalFrame* opener,
-      const WebURLRequest&,
-      const WebWindowFeatures&,
-      const WebString& name,
-      WebNavigationPolicy,
-      network::mojom::blink::WebSandboxFlags,
-      const SessionStorageNamespaceId&,
-      bool& consumed_user_gesture,
-      const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&) override;
-
- private:
-  WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
-};
-
 using CreateTestWebFrameWidgetCallback =
     base::RepeatingCallback<TestWebFrameWidget*(
         base::PassKey<WebLocalFrame>,
@@ -373,14 +348,14 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializeWithOpener(
       WebFrame* opener,
       TestWebFrameClient* = nullptr,
-      TestWebViewClient* = nullptr,
+      WebViewClient* = nullptr,
       void (*update_settings_func)(WebSettings*) = nullptr,
       absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode =
           absl::nullopt);
 
   // Same as InitializeWithOpener(), but always sets the opener to null.
   WebViewImpl* Initialize(TestWebFrameClient* = nullptr,
-                          TestWebViewClient* = nullptr,
+                          WebViewClient* = nullptr,
                           void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Same as InitializeWithOpener(), but passes null for everything but the
@@ -393,12 +368,12 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializeAndLoad(
       const std::string& url,
       TestWebFrameClient* = nullptr,
-      TestWebViewClient* = nullptr,
+      WebViewClient* = nullptr,
       void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Same as InitializeRemoteWithOpener(), but always sets the opener to null.
   WebViewImpl* InitializeRemote(scoped_refptr<SecurityOrigin> = nullptr,
-                                TestWebViewClient* = nullptr);
+                                WebViewClient* = nullptr);
 
   // Creates and initializes the WebView with a main WebRemoteFrame. Passing
   // nullptr as the SecurityOrigin results in a frame with a unique security
@@ -406,7 +381,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializeRemoteWithOpener(
       WebFrame* opener,
       scoped_refptr<SecurityOrigin> = nullptr,
-      TestWebViewClient* = nullptr);
+      WebViewClient* = nullptr);
 
   // Helper for creating a local child frame of a remote parent frame.
   WebLocalFrameImpl* CreateLocalChild(
@@ -483,7 +458,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
 
  private:
   void InitializeWebView(
-      TestWebViewClient*,
+      WebViewClient*,
       class WebView* opener,
       absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode);
   void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
@@ -492,8 +467,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
 
   WebViewImpl* web_view_;
 
-  std::unique_ptr<TestWebViewClient> owned_test_web_view_client_;
-  TestWebViewClient* test_web_view_client_ = nullptr;
+  std::unique_ptr<WebViewClient> owned_web_view_client_;
 
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
@@ -551,6 +525,16 @@ class TestWebFrameClient : public WebLocalFrameClient {
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;
   void DidMeaningfulLayout(WebMeaningfulLayout) override;
+  WebView* CreateNewWindow(
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override;
 
   int VisuallyNonEmptyLayoutCount() const {
     return visually_non_empty_layout_count_;
@@ -564,6 +548,8 @@ class TestWebFrameClient : public WebLocalFrameClient {
   network::mojom::WebSandboxFlags sandbox_flags() const {
     return sandbox_flags_;
   }
+
+  void DestroyChildViews();
 
  private:
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
@@ -590,6 +576,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
   network::mojom::WebSandboxFlags sandbox_flags_ =
       network::mojom::WebSandboxFlags::kNone;
 
+  WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
 };
 

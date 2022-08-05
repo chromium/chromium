@@ -76,6 +76,7 @@
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
+#include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/accessibility/aom_content_ax_tree.h"
 #include "content/renderer/accessibility/ax_tree_distiller.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
@@ -214,6 +215,7 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_document.h"
@@ -229,6 +231,7 @@
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/blink/public/web/web_window_features.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/events/base_event_utils.h"
 #include "url/origin.h"
@@ -1130,6 +1133,39 @@ void LogCommitHistograms(base::TimeTicks commit_sent, bool is_main_frame) {
         base::StrCat({"Navigation.RendererCommitProcessWaitTime.", frame_type}),
         run_loop_start_time - commit_sent);
   }
+}
+
+content::mojom::WindowContainerType WindowFeaturesToContainerType(
+    const blink::WebWindowFeatures& window_features) {
+  if (window_features.background) {
+    if (window_features.persistent)
+      return content::mojom::WindowContainerType::PERSISTENT;
+    else
+      return content::mojom::WindowContainerType::BACKGROUND;
+  } else {
+    return content::mojom::WindowContainerType::NORMAL;
+  }
+}
+
+WindowOpenDisposition NavigationPolicyToDisposition(
+    WebNavigationPolicy policy) {
+  switch (policy) {
+    case blink::kWebNavigationPolicyDownload:
+      return WindowOpenDisposition::SAVE_TO_DISK;
+    case blink::kWebNavigationPolicyCurrentTab:
+      return WindowOpenDisposition::CURRENT_TAB;
+    case blink::kWebNavigationPolicyNewBackgroundTab:
+      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    case blink::kWebNavigationPolicyNewForegroundTab:
+      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case blink::kWebNavigationPolicyNewWindow:
+      return WindowOpenDisposition::NEW_WINDOW;
+    case blink::kWebNavigationPolicyNewPopup:
+    case blink::kWebNavigationPolicyPictureInPicture:
+      return WindowOpenDisposition::NEW_POPUP;
+  }
+  NOTREACHED() << "Unexpected WebNavigationPolicy";
+  return WindowOpenDisposition::IGNORE_ACTION;
 }
 
 }  // namespace
@@ -5343,7 +5379,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   params->referrer = blink::mojom::Referrer::New(
       blink::WebStringToGURL(info->url_request.ReferrerString()),
       info->url_request.GetReferrerPolicy());
-  params->disposition = RenderViewImpl::NavigationPolicyToDisposition(policy);
+  params->disposition = NavigationPolicyToDisposition(policy);
   params->triggering_event_info = info->triggering_event_info;
   params->blob_url_token = CloneBlobURLToken(info->blob_url_token);
   params->should_replace_current_entry =
@@ -6097,6 +6133,181 @@ bool RenderFrameImpl::DeferMediaLoad(bool has_played_media_before,
 
   return GetContentClient()->renderer()->DeferMediaLoad(
       this, has_played_media_before, std::move(closure));
+}
+
+WebView* RenderFrameImpl::CreateNewWindow(
+    const WebURLRequest& request,
+    const blink::WebWindowFeatures& features,
+    const WebString& frame_name,
+    WebNavigationPolicy policy,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+    bool& consumed_user_gesture,
+    const absl::optional<blink::Impression>& impression,
+    const absl::optional<blink::WebPictureInPictureWindowOptions>&
+        pip_options) {
+  consumed_user_gesture = false;
+  mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
+
+  // The user activation check is done at the browser process through
+  // |frame_host->CreateNewWindow()| call below.  But the extensions case
+  // handled through the following |if| is an exception.
+  params->allow_popup = false;
+  if (GetContentClient()->renderer()->AllowPopup())
+    params->allow_popup = true;
+
+  params->window_container_type = WindowFeaturesToContainerType(features);
+
+  params->session_storage_namespace_id = session_storage_namespace_id;
+  if (!features.noopener) {
+    params->clone_from_session_storage_namespace_id =
+        GetWebView()->GetSessionStorageNamespaceId();
+  }
+
+  const std::string& frame_name_utf8 = frame_name.Utf8(
+      WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+  params->frame_name = frame_name_utf8;
+  params->opener_suppressed = features.noopener;
+  params->disposition = NavigationPolicyToDisposition(policy);
+  if (!request.IsNull()) {
+    params->target_url = request.Url();
+    params->referrer = blink::mojom::Referrer::New(
+        blink::WebStringToGURL(request.ReferrerString()),
+        request.GetReferrerPolicy());
+  }
+  params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
+
+  params->is_form_submission = request.IsFormSubmission();
+  params->form_submission_post_data =
+      blink::GetRequestBodyForWebURLRequest(request);
+  params->form_submission_post_content_type = request.HttpContentType().Utf8();
+
+  params->impression = impression;
+
+  if (pip_options) {
+    CHECK_EQ(policy, blink::kWebNavigationPolicyPictureInPicture);
+    auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
+    pip_mojom_opts->initial_aspect_ratio = pip_options->initial_aspect_ratio;
+    pip_mojom_opts->lock_aspect_ratio = pip_options->lock_aspect_ratio;
+    params->pip_options = std::move(pip_mojom_opts);
+  }
+
+  params->download_policy.ApplyDownloadFramePolicy(
+      /*is_opener_navigation=*/false, request.HasUserGesture(),
+      // `openee_can_access_opener_origin` only matters for opener navigations,
+      // so its value here is irrelevant.
+      /*openee_can_access_opener_origin=*/true,
+      !GetWebFrame()->IsAllowedToDownload(), GetWebFrame()->IsAdFrame());
+
+  // We preserve this information before sending the message since |params| is
+  // moved on send.
+  bool is_background_tab =
+      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+
+  mojom::CreateNewWindowStatus status;
+  mojom::CreateNewWindowReplyPtr reply;
+  auto* frame_host = GetFrameHost();
+  if (!frame_host->CreateNewWindow(std::move(params), &status, &reply)) {
+    // The sync IPC failed, e.g. maybe the render process is in the middle of
+    // shutting down. Can't create a new window without the browser process,
+    // so just bail out.
+    return nullptr;
+  }
+
+  // If creation of the window was blocked (e.g. because this frame doesn't
+  // have user activation), return before consuming user activation. A frame
+  // that isn't allowed to open a window  shouldn't be able to consume the
+  // activation for the rest of the frame tree.
+  if (status == mojom::CreateNewWindowStatus::kBlocked)
+    return nullptr;
+
+  // For Android WebView, we support a pop-up like behavior for window.open()
+  // even if the embedding app doesn't support multiple windows. In this case,
+  // window.open() will return "window" and navigate it to whatever URL was
+  // passed. We also don't need to consume user gestures to protect against
+  // multiple windows being opened, because, well, the app doesn't support
+  // multiple windows.
+  // TODO(dcheng): It's awkward that this is plumbed into Blink but not really
+  // used much in Blink, except to enable web testing... perhaps this should
+  // be checked directly in the browser side.
+  if (status == mojom::CreateNewWindowStatus::kReuse)
+    return GetWebView();
+
+  // Consume the transient user activation in the current renderer.
+  consumed_user_gesture = GetWebFrame()->ConsumeTransientUserActivation(
+      blink::UserActivationUpdateSource::kBrowser);
+
+  // If we should ignore the new window (e.g. because of `noopener`), return
+  // now that user activation was consumed.
+  if (status == mojom::CreateNewWindowStatus::kIgnore)
+    return nullptr;
+
+  DCHECK(reply);
+  DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
+  DCHECK_NE(MSG_ROUTING_NONE, reply->widget_params->routing_id);
+
+  // While this view may be a background extension page, it can spawn a visible
+  // render view. So we just assume that the new one is not another background
+  // page instead of passing on our own value.
+  // TODO(vangelis): Can we tell if the new view will be a background page?
+  bool never_composited = false;
+
+  // The initial hidden state for the RenderViewImpl here has to match what the
+  // browser will eventually decide for the given disposition. Since we have to
+  // return from this call synchronously, we just have to make our best guess
+  // and rely on the browser sending a WasHidden / WasShown message if it
+  // disagrees.
+  mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
+
+  view_params->opener_frame_token = GetWebFrame()->GetFrameToken();
+  view_params->window_was_opened_by_another_window = true;
+  view_params->renderer_preferences = GetWebView()->GetRendererPreferences();
+  view_params->web_preferences = GetWebView()->GetWebPreferences();
+
+  view_params->replication_state = blink::mojom::FrameReplicationState::New();
+  view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
+  view_params->replication_state->name = frame_name_utf8;
+  view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
+
+  auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
+  main_frame_params->token = reply->main_frame_token;
+  main_frame_params->routing_id = reply->main_frame_route_id;
+  main_frame_params->frame = std::move(reply->frame);
+  main_frame_params->interface_broker =
+      std::move(reply->main_frame_interface_broker);
+  main_frame_params->policy_container = std::move(reply->policy_container);
+  main_frame_params->associated_interface_provider_remote =
+      std::move(reply->associated_interface_provider);
+  main_frame_params->widget_params = std::move(reply->widget_params);
+  main_frame_params->subresource_loader_factories =
+      base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(
+          CloneLoaderFactories()->Clone().release()));
+
+  view_params->main_frame =
+      mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
+  view_params->blink_page_broadcast = std::move(reply->page_broadcast);
+  view_params->session_storage_namespace_id =
+      reply->cloned_session_storage_namespace_id;
+  DCHECK(!view_params->session_storage_namespace_id.empty())
+      << "Session storage namespace must be populated.";
+  view_params->hidden = is_background_tab;
+  view_params->never_composited = never_composited;
+
+  RenderViewImpl* view = RenderViewImpl::Create(
+      agent_scheduling_group_, std::move(view_params),
+      /*was_created_by_renderer=*/true,
+      GetWebFrame()->GetTaskRunner(blink::TaskType::kInternalDefault));
+
+  if (reply->wait_for_debugger) {
+    blink::WebFrameWidget* frame_widget = view->GetWebView()
+                                              ->MainFrame()
+                                              ->ToWebLocalFrame()
+                                              ->LocalRoot()
+                                              ->FrameWidget();
+    frame_widget->WaitForDebuggerWhenShown();
+  }
+
+  return view->GetWebView();
 }
 
 }  // namespace content

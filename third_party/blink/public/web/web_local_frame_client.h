@@ -42,6 +42,7 @@
 #include "media/mojo/mojom/audio_processing.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
@@ -126,12 +127,17 @@ class WebServiceWorkerProvider;
 class WebSocketHandshakeThrottle;
 class WebString;
 class WebURL;
+class WebURLRequest;
 class WebURLResponse;
+class WebView;
 struct FramePolicy;
+struct Impression;
 struct MobileFriendliness;
 struct WebConsoleMessage;
 struct ContextMenuData;
+struct WebPictureInPictureWindowOptions;
 struct WebPluginParams;
+struct WebWindowFeatures;
 
 enum class SyncCondition {
   kNotForced,  // Sync only if the value has changed since the last call.
@@ -760,6 +766,26 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Called when script in the frame (and it subframes) wishes to be printed via
   // a window.print() call.
   virtual void ScriptedPrint() {}
+
+  // Create a new related WebView.  This method must clone its session storage
+  // so any subsequent calls to createSessionStorageNamespace conform to the
+  // WebStorage specification.
+  // The request parameter is only for the client to check if the request
+  // could be fulfilled.  The client should not load the request.
+  // The policy parameter indicates how the new view will be displayed in
+  // LocalMainFrameHost::ShowCreatedWidget.
+  virtual WebView* CreateNewWindow(
+      const WebURLRequest& request,
+      const WebWindowFeatures& features,
+      const WebString& name,
+      WebNavigationPolicy policy,
+      network::mojom::WebSandboxFlags,
+      const SessionStorageNamespaceId& session_storage_namespace_id,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>& pip_options) {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

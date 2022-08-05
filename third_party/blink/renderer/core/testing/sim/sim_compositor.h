@@ -31,13 +31,7 @@ class SimCompositor final {
 
   // When the compositor asks for a main frame, this WebViewImpl will have its
   // lifecycle updated and be painted.
-  // The WebWidget client is overridden (via the WebViewClient) to control
-  // BeginMainFrame scheduling since this test suite does not use the
-  // compositor's scheduler. The SimCompositor wants to monitor and verify
-  // expectations around this scheduling, so receives the WebViewClient. We
-  // pass it here explicitly to provide type safety, though it is the client
-  // available on the WebViewImpl as well.
-  void SetWebView(WebViewImpl&, frame_test_helpers::TestWebViewClient&);
+  void SetWebView(WebViewImpl&);
 
   // Set the LayerTreeHost that the compositor is associated with.
   void SetLayerTreeHost(cc::LayerTreeHost*);
@@ -89,7 +83,6 @@ class SimCompositor final {
   SimCanvas::Commands PaintFrame();
 
   WebViewImpl* web_view_ = nullptr;
-  frame_test_helpers::TestWebViewClient* test_web_view_client_ = nullptr;
   cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
   base::TimeTicks last_frame_time_;

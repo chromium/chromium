@@ -99,6 +99,7 @@
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -976,8 +977,8 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_request.SetMode(network::mojom::RequestMode::kNavigate);
   popup_request.SetRedirectMode(network::mojom::RedirectMode::kManual);
   popup_request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
-  blink::WebView* new_web_view = web_view_->Client()->CreateView(
-      GetMainFrame(), popup_request, blink::WebWindowFeatures(), "foo",
+  blink::WebView* new_web_view = frame()->CreateNewWindow(
+      popup_request, blink::WebWindowFeatures(), "foo",
       blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,

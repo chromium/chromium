@@ -31,6 +31,7 @@ namespace blink {
 namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
+struct RendererPreferences;
 class WebLocalFrame;
 class WebMouseEvent;
 }

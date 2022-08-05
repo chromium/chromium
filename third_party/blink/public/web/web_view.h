@@ -467,9 +467,6 @@ class WebView {
   // Returns whether this WebView represents a fenced frame root or not.
   virtual bool IsFencedFrameRoot() const = 0;
 
-  // Return the Client associated with this WebView.
-  virtual WebViewClient* Client() = 0;
-
   // Misc -------------------------------------------------------------
 
   // Returns the number of live WebView instances in this process.

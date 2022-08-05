@@ -203,7 +203,7 @@ class TestData {
   WebViewImpl* web_view_;
 };
 
-class AutoResizeWebViewClient : public frame_test_helpers::TestWebViewClient {
+class AutoResizeWebViewClient : public WebViewClient {
  public:
   // WebViewClient methods
   void DidAutoResize(const gfx::Size& new_size) override {
@@ -464,7 +464,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
 TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   // Note: this test doesn't use WebViewHelper since it intentionally runs
   // initialization code between WebView and WebLocalFrame creation.
-  frame_test_helpers::TestWebViewClient web_view_client;
+  WebViewClient web_view_client;
   WebViewImpl* web_view = To<WebViewImpl>(
       WebView::Create(&web_view_client,
                       /*is_hidden=*/false,
@@ -3811,13 +3811,11 @@ TEST_F(WebViewTest,
   frame->SetAutofillClient(nullptr);
 }
 
-class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
+class ViewCreatingWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
  public:
-  ViewCreatingWebViewClient() : did_focus_called_(false) {}
-
-  // WebViewClient overrides.
-  WebView* CreateView(
-      WebLocalFrame* opener,
+  // WebLocalFrameClient overrides.
+  WebView* CreateNewWindow(
       const WebURLRequest&,
       const WebWindowFeatures&,
       const WebString& name,
@@ -3827,22 +3825,32 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
       bool& consumed_user_gesture,
       const absl::optional<Impression>&,
       const absl::optional<WebPictureInPictureWindowOptions>&) override {
-    return web_view_helper_.InitializeWithOpener(opener);
+    return web_view_helper_.InitializeWithOpener(Frame());
   }
-  void DidFocus() override { did_focus_called_ = true; }
-
-  bool DidFocusCalled() const { return did_focus_called_; }
   WebView* CreatedWebView() const { return web_view_helper_.GetWebView(); }
 
  private:
   frame_test_helpers::WebViewHelper web_view_helper_;
-  bool did_focus_called_;
+};
+
+class ViewCreatingWebViewClient : public WebViewClient {
+ public:
+  ViewCreatingWebViewClient() = default;
+
+  void DidFocus() override { did_focus_called_ = true; }
+
+  bool DidFocusCalled() const { return did_focus_called_; }
+
+ private:
+  bool did_focus_called_ = false;
 };
 
 TEST_F(WebViewTest, DoNotFocusCurrentFrameOnNavigateFromLocalFrame) {
+  ViewCreatingWebFrameClient frame_client;
   ViewCreatingWebViewClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl = web_view_helper.Initialize(nullptr, &client);
+  WebViewImpl* web_view_impl =
+      web_view_helper.Initialize(&frame_client, &client);
 
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(
@@ -3866,9 +3874,11 @@ TEST_F(WebViewTest, DoNotFocusCurrentFrameOnNavigateFromLocalFrame) {
 }
 
 TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
+  ViewCreatingWebFrameClient frame_client;
   ViewCreatingWebViewClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl = web_view_helper.Initialize(nullptr, &client);
+  WebViewImpl* web_view_impl =
+      web_view_helper.Initialize(&frame_client, &client);
   WebLocalFrameImpl* frame = web_view_impl->MainFrameImpl();
   frame->SetName("_start");
 
@@ -3878,7 +3888,7 @@ TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
   To<LocalFrame>(web_view_impl->GetPage()->MainFrame())
       ->Tree()
       .FindOrCreateFrameForNavigation(request, "_blank");
-  ASSERT_TRUE(client.CreatedWebView());
+  ASSERT_TRUE(frame_client.CreatedWebView());
   EXPECT_FALSE(client.DidFocusCalled());
 
   // Make a request from the new window that will navigate the original window.
@@ -3886,7 +3896,7 @@ TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
   WebURLRequest web_url_request_with_target_start(KURL("about:blank"));
   FrameLoadRequest request_with_target_start(
       nullptr, web_url_request_with_target_start.ToResourceRequest());
-  To<LocalFrame>(static_cast<WebViewImpl*>(client.CreatedWebView())
+  To<LocalFrame>(static_cast<WebViewImpl*>(frame_client.CreatedWebView())
                      ->GetPage()
                      ->MainFrame())
       ->Tree()
@@ -3896,13 +3906,13 @@ TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
   web_view_helper.Reset();  // Remove dependency on locally scoped client.
 }
 
-class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
+class ViewReusingWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
  public:
-  ViewReusingWebViewClient() = default;
+  ViewReusingWebFrameClient() = default;
 
-  // WebViewClient methods
-  WebView* CreateView(
-      WebLocalFrame*,
+  // WebLocalFrameClient methods
+  WebView* CreateNewWindow(
       const WebURLRequest&,
       const WebWindowFeatures&,
       const WebString& name,
@@ -3923,11 +3933,10 @@ class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
 
 TEST_F(WebViewTest,
        ReuseExistingWindowOnCreateViewUsesCorrectNavigationPolicy) {
-  ViewReusingWebViewClient view_client;
+  ViewReusingWebFrameClient frame_client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl =
-      web_view_helper.Initialize(nullptr, &view_client);
-  view_client.SetWebView(web_view_impl);
+  WebViewImpl* web_view_impl = web_view_helper.Initialize(&frame_client);
+  frame_client.SetWebView(web_view_impl);
   LocalFrame* frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
 
   // Request a new window, but the WebViewClient will decline to and instead

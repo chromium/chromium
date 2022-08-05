@@ -46,7 +46,6 @@ class SimTest : public testing::Test {
   WebViewImpl& WebView();
   WebLocalFrameImpl& MainFrame();
   WebLocalFrameImpl& LocalFrameRoot();
-  frame_test_helpers::TestWebViewClient& WebViewClient();
   frame_test_helpers::TestWebFrameClient& WebFrameClient();
   SimWebFrameWidget& GetWebFrameWidget();
   SimCompositor& Compositor();
@@ -100,7 +99,6 @@ class SimTest : public testing::Test {
   std::unique_ptr<SimNetwork> network_;
   std::unique_ptr<SimCompositor> compositor_;
   std::unique_ptr<frame_test_helpers::TestWebFrameClient> web_frame_client_;
-  std::unique_ptr<frame_test_helpers::TestWebViewClient> web_view_client_;
   std::unique_ptr<SimPage> page_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   UntracedMember<WebLocalFrameImpl> local_frame_root_;

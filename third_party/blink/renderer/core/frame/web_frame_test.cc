@@ -7499,29 +7499,6 @@ TEST_F(WebFrameTest, SiteForCookiesForRedirect) {
                   .IsEquivalent(net::SiteForCookies::FromUrl(GURL(redirect))));
 }
 
-class TestNewWindowWebViewClient
-    : public frame_test_helpers::TestWebViewClient {
- public:
-  TestNewWindowWebViewClient() = default;
-  ~TestNewWindowWebViewClient() override = default;
-
-  // frame_test_helpers::TestWebFrameClient:
-  WebView* CreateView(
-      WebLocalFrame*,
-      const WebURLRequest&,
-      const WebWindowFeatures&,
-      const WebString&,
-      WebNavigationPolicy,
-      network::mojom::blink::WebSandboxFlags,
-      const SessionStorageNamespaceId&,
-      bool& consumed_user_gesture,
-      const absl::optional<Impression>&,
-      const absl::optional<WebPictureInPictureWindowOptions>&) override {
-    EXPECT_TRUE(false);
-    return nullptr;
-  }
-};
-
 class TestNewWindowWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
@@ -7537,6 +7514,20 @@ class TestNewWindowWebFrameClient
     TestWebFrameClient::BeginNavigation(std::move(info));
   }
 
+  WebView* CreateNewWindow(
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString&,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override {
+    EXPECT_TRUE(false);
+    return nullptr;
+  }
+
   int BeginNavigationCallCount() const { return begin_navigation_call_count_; }
   void IgnoreNavigations() { ignore_navigations_ = true; }
 
@@ -7550,11 +7541,10 @@ TEST_F(WebFrameTest, ModifiedClickNewWindow) {
   // but instead goes to client to decide the navigation policy.
   RegisterMockedHttpURLLoad("ctrl_click.html");
   RegisterMockedHttpURLLoad("hello_world.html");
-  TestNewWindowWebViewClient web_view_client;
   TestNewWindowWebFrameClient web_frame_client;
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "ctrl_click.html",
-                                    &web_frame_client, &web_view_client);
+                                    &web_frame_client);
 
   auto* frame =
       To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
