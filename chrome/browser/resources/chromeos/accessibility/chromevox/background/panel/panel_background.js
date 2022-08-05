@@ -106,6 +106,9 @@ export class PanelBackground {
    * @private
    */
   createAllNodeMenuBackgrounds_(opt_activateMenuTitleId) {
+    if (!this.savedNode_) {
+      return;
+    }
     for (const data of ALL_NODE_MENU_DATA) {
       const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
       const menuBackground =
@@ -258,7 +261,9 @@ export class PanelBackground {
 
   /** @private */
   saveCurrentNode_() {
-    this.savedNode_ = ChromeVoxState.instance.currentRange.start.node;
+    if (ChromeVoxState.instance.currentRange) {
+      this.savedNode_ = ChromeVoxState.instance.currentRange.start.node;
+    }
   }
 
   /**
