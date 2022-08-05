@@ -27,12 +27,22 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
   AutofillOfferData offer1 = test::GetCardLinkedOfferData1();
   AutofillOfferData offer2 = test::GetCardLinkedOfferData2();
   AutofillOfferData offer3 = test::GetPromoCodeOfferData();
+  AutofillOfferData offer4 = test::GetPromoCodeOfferData();
+
+  // Add the test case of having several cards linked to an offer.
   offer2.SetEligibleInstrumentIdForTesting({222222, 999999, 888888});
+
+  // Add the test case of having two merchant origins related to an offer.
   offer2.SetMerchantOriginForTesting(
       {GURL("http://www.example2.com"), GURL("https://www.example3.com/")});
+
+  // Add the test case of having no merchant origins related to an offer.
+  offer4.SetMerchantOriginForTesting({});
+
   offers.push_back(std::make_unique<AutofillOfferData>(offer1));
   offers.push_back(std::make_unique<AutofillOfferData>(offer2));
   offers.push_back(std::make_unique<AutofillOfferData>(offer3));
+  offers.push_back(std::make_unique<AutofillOfferData>(offer4));
 
   base::HistogramTester histogram_tester;
 
@@ -43,14 +53,37 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
   };
 
   // Validate the count metrics.
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount.CardLinkedOffer"),
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount2.CardLinkedOffer"),
               BucketsAre(Bucket(2, 1)));
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount.GPayPromoCodeOffer"),
-              BucketsAre(Bucket(1, 1)));
-  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedMerchantCount"),
-              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount2.GPayPromoCodeOffer"),
+              BucketsAre(Bucket(2, 1)));
+  EXPECT_THAT(
+      SamplesOf(
+          "Autofill.Offer.StoredOfferRelatedMerchantCount.CardLinkedOffer"),
+      BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+  EXPECT_THAT(
+      SamplesOf(
+          "Autofill.Offer.StoredOfferRelatedMerchantCount.GPayPromoCodeOffer"),
+      BucketsAre(Bucket(0, 1), Bucket(1, 1)));
   EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferRelatedCardCount"),
               BucketsAre(Bucket(1, 1), Bucket(3, 1)));
+}
+
+TEST_F(OffersMetricsTest, LogStoredOfferMetrics_NoOffers) {
+  base::HistogramTester histogram_tester;
+
+  autofill_metrics::LogStoredOfferMetrics(
+      std::vector<std::unique_ptr<AutofillOfferData>>());
+
+  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
+    return histogram_tester.GetAllSamples(metric);
+  };
+
+  // Validate the count metrics.
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount2.CardLinkedOffer"),
+              BucketsAre(Bucket(0, 1)));
+  EXPECT_THAT(SamplesOf("Autofill.Offer.StoredOfferCount2.GPayPromoCodeOffer"),
+              BucketsAre(Bucket(0, 1)));
 }
 
 }  // namespace autofill::autofill_metrics
