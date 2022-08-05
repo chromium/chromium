@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
-#include "chrome/browser/ui/views/extensions/constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -71,18 +71,29 @@ content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
 }
 
 void ExtensionsMenuButton::UpdateState() {
-  SetImage(Button::STATE_NORMAL,
-           controller_->GetIcon(GetCurrentWebContents(), kMenuExtensionIconSize)
-               .AsImageSkia());
+  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const int icon_size =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+  SetImage(Button::STATE_NORMAL, controller_
+                                     ->GetIcon(GetCurrentWebContents(),
+                                               gfx::Size(icon_size, icon_size))
+                                     .AsImageSkia());
+
   SetText(controller_->GetActionName());
   SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));
   SetEnabled(controller_->IsEnabled(GetCurrentWebContents()));
+
+  // The vertical insets need to take into account the icon spacing, since this
+  // button's icon is larger, to align with others buttons heights.
+  const int vertical_inset =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
   // The horizontal insets reasonably align the extension icons with text inside
-  // the dialog. Note that |kIconSize| also contains space for badging, so we
-  // can't trivially use dialog-text insets (empty space inside the icon).
-  constexpr auto kBorderInsets = gfx::Insets::VH(
-      (kMenuItemHeightDp - kMenuExtensionIconSize.height()) / 2, 12);
-  SetBorder(views::CreateEmptyBorder(kBorderInsets));
+  // the dialog with the default button margin.
+  const int horizontal_inset =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(vertical_inset, horizontal_inset)));
 }
 
 void ExtensionsMenuButton::ShowContextMenuAsFallback() {

@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/extensions/constants.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/site_settings_expand_button.h"
@@ -39,11 +38,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -438,10 +439,11 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
     return;
 
   auto current_site = GetCurrentSite(web_contents);
-  const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-  const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_CONTROL_LIST_VERTICAL);
+  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const int button_margin =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+  const int icon_spacing =
+      provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
 
   auto create_section_builder =
       [=](ExtensionsTabbedMenuView::SiteAccessSection* section) {
@@ -460,9 +462,8 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                         .SetTextContext(
                             ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                        .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-                            vertical_spacing, horizontal_spacing,
-                            vertical_spacing, horizontal_spacing))),
+                        .SetBorder(views::CreateEmptyBorder(
+                            gfx::Insets(button_margin))),
                     // Empty section for the menu items. Items
                     // will be populated later.
                     views::Builder<views::BoxLayoutView>()
@@ -486,22 +487,25 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
               views::Builder<views::Label>()
                   .CopyAddressTo(&site_access_message_)
                   .SetVisible(false)
-                  .SetBorder(views::CreateEmptyBorder(
-                      gfx::Insets::TLBR(vertical_spacing, horizontal_spacing,
-                                        vertical_spacing, horizontal_spacing)))
+                  .SetBorder(
+                      views::CreateEmptyBorder(gfx::Insets(button_margin)))
                   .SetTextContext(
                       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL))
 
           .Build();
 
   const auto create_radio_button_builder =
-      [this, current_site](UserSiteSetting site_settings, int label_id) {
+      [this, current_site, button_margin, icon_spacing](
+          UserSiteSetting site_settings, int label_id) {
         auto label = ((site_settings == UserSiteSetting::kGrantAllExtensions) ||
                       (site_settings == UserSiteSetting::kBlockAllExtensions))
                          ? l10n_util::GetStringFUTF16(label_id, current_site)
                          : l10n_util::GetStringUTF16(label_id);
         return views::Builder<views::RadioButton>(
                    std::make_unique<views::RadioButton>(label, kGroupId))
+            // Space between image and label includes icon spacing to align with
+            // other buttons in the menu.
+            .SetImageLabelSpacing(button_margin + icon_spacing)
             .SetCallback(base::BindRepeating(
                 &ExtensionsTabbedMenuView::OnSiteSettingSelected,
                 base::Unretained(this), site_settings));
@@ -511,6 +515,9 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .AddChildren(
+              // TODO(emiliapaz): Don't show separator when
+              // site_settings_button_ is hidden.
+              views::Builder<views::Separator>(),
               // The following bind is safe because the button will be owned by
               // the parent views and therefore callback can only happen if the
               // button exists and can be clicked.
@@ -519,11 +526,21 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                       SiteSettingsExpandButton>(base::BindRepeating(
                       &ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed,
                       base::Unretained(this))))
-                  .CopyAddressTo(&site_settings_button_),
+                  .CopyAddressTo(&site_settings_button_)
+                  // Right margin includes icon spacing to align with other
+                  // buttons in the menu.
+                  .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+                      button_margin, button_margin + icon_spacing,
+                      button_margin, button_margin))),
               views::Builder<views::BoxLayoutView>()
                   .CopyAddressTo(&site_settings_)
                   .SetOrientation(views::BoxLayout::Orientation::kVertical)
                   .SetVisible(show_site_settings_)
+                  // Right margin includes icon spacing to align with other
+                  // buttons in the menu.
+                  .SetBorder(views::CreateEmptyBorder(
+                      gfx::Insets::TLBR(0, button_margin + icon_spacing,
+                                        button_margin, button_margin)))
                   .AddChildAt(
                       create_radio_button_builder(
                           UserSiteSetting::kGrantAllExtensions,
@@ -556,7 +573,9 @@ void ExtensionsTabbedMenuView::CreateExtensionsTab() {
       ui::ImageModel::FromResourceId(IDR_WEBSTORE_ICON_16));
   auto open_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kOpenInNewIcon, ui::kColorIcon, kMenuIconSize));
+          vector_icons::kOpenInNewIcon, ui::kColorIcon,
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
 
   auto installed_tab_footer =
       views::Builder<HoverButton>(

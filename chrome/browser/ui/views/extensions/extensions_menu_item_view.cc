@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
-#include "chrome/browser/ui/views/extensions/constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -45,9 +45,6 @@
 
 namespace {
 
-// Set secondary item insets to get to square buttons.
-constexpr gfx::Insets kSecondaryButtonInsets =
-    gfx::Insets((kMenuItemHeightDp - kMenuIconSize) / 2);
 constexpr int EXTENSION_CONTEXT_MENU = 13;
 constexpr int EXTENSION_PINNING = 14;
 
@@ -55,11 +52,12 @@ void SetButtonIconWithColor(HoverButton* button,
                             const gfx::VectorIcon& icon,
                             SkColor icon_color,
                             SkColor disabled_icon_color) {
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   button->SetImage(views::Button::STATE_NORMAL,
-                   gfx::CreateVectorIcon(icon, kMenuIconSize, icon_color));
-  button->SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, kMenuIconSize, disabled_icon_color));
+                   gfx::CreateVectorIcon(icon, icon_size, icon_color));
+  button->SetImage(views::Button::STATE_DISABLED,
+                   gfx::CreateVectorIcon(icon, icon_size, disabled_icon_color));
 }
 
 }  // namespace
@@ -158,7 +156,9 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
                       views::Button::PressedCallback(), std::u16string()))
                   .CopyAddressTo(&context_menu_button_)
                   .SetID(EXTENSION_CONTEXT_MENU)
-                  .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets))
+                  .SetBorder(views::CreateEmptyBorder(
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
                   .SetTooltipText(l10n_util::GetStringUTF16(
                       IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)));
 
@@ -172,7 +172,9 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
                 std::u16string()))
             .CopyAddressTo(&pin_button_)
             .SetID(EXTENSION_PINNING)
-            .SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets)),
+            .SetBorder(views::CreateEmptyBorder(
+                ChromeLayoutProvider::Get()->GetDistanceMetric(
+                    DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN))),
         1);
   }
 

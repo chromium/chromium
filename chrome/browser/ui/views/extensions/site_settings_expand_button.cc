@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/site_settings_expand_button.h"
+
 #include <memory>
 
 #include "base/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,24 +21,31 @@
 #include "ui/views/layout/flex_layout.h"
 
 SiteSettingsExpandButton::SiteSettingsExpandButton(PressedCallback callback)
-    : HoverButton(std::move(callback), std::u16string()) {
-  const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_CONTROL_LIST_VERTICAL) /
-                               2;
-  const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-
+    : HoverButton(std::move(callback),
+                  ui::ImageModel::FromVectorIcon(
+                      kWebIcon,
+                      ui::kColorIcon,
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)),
+                  std::u16string()) {
   views::Builder<SiteSettingsExpandButton>(this)
       .SetAccessibleName(l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_TITLE))
-      .SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::VH(vertical_spacing, horizontal_spacing)))
       .AddChild(
           views::Builder<views::StyledLabel>()
               .SetText(l10n_util::GetStringUTF16(
                   IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_TITLE))
               // Hover the whole button when hovering the styled label.
               .SetCanProcessEventsWithinSubtree(false)
+              // Space between hover button icon and the styled label includes
+              // icon spacing to align with other buttons in the menu.
+              .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+                  0,
+                  ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) +
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_EXTENSIONS_MENU_ICON_SPACING),
+                  0, 0)))
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
                                views::MinimumFlexSizeRule::kScaleToZero,
