@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
+    name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonNum}ButtonActionTime"
     units="ms" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -124,13 +124,11 @@ chromium-metrics-reviews@google.com.
     shown, and one of the buttons being acted upon. The warning subpage is shown
     when the user sees a download warning on the full or the partial view, and
     navigates to the subpage for more actions. Recorded only for Desktop
-    platforms, where Download Bubble is enabled. In M105, FirstButtonActionTime
-    is replaced with SecondaryButtonActionTime, SecondButtonActionTime is
-    replaced with PrimaryButtonActionTime.
+    platforms, where Download Bubble is enabled.
   </summary>
-  <token key="ButtonType">
-    <variant name="Primary"/>
-    <variant name="Secondary"/>
+  <token key="ButtonNum">
+    <variant name="First"/>
+    <variant name="Second"/>
   </token>
   <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
 </histogram>

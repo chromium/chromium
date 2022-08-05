@@ -161,9 +161,6 @@ class DownloadUIModel {
                                   ui::ColorId color_id);
     BubbleUIInfo& AddPrimaryButton(DownloadCommands::Command command);
     BubbleUIInfo& AddCheckbox(const std::u16string& label);
-    // Add button to the subpage. Only two buttons are supported.
-    // The first one added is the primary, and the second one the secondary.
-    // The checkbox, if present, controls the secondary.
     BubbleUIInfo& AddSubpageButton(const std::u16string& label,
                                    DownloadCommands::Command command,
                                    bool is_prominent);
@@ -493,11 +490,10 @@ class DownloadUIModel {
                               DownloadCommands::Command command);
 
   // Gets the information about the download bubbles subpage.
-  BubbleUIInfo GetBubbleUIInfo(bool is_download_bubble_v2) const;
+  BubbleUIInfo GetBubbleUIInfo() const;
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
-  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete(
-      bool is_download_bubble_v2) const;
+  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
 
   // Returns |true| if this download should be displayed in the download bubble.
   virtual bool ShouldShowInBubble() const;
