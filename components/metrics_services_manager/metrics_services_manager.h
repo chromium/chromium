@@ -74,9 +74,9 @@ class MetricsServicesManager {
   // Returns true iff UKM is allowed for all profiles.
   bool IsUkmAllowedForAllProfiles();
 
-  // Returns the default entropy provider.
+  // Returns a low entropy provider.
   std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateEntropyProviderForTesting();
+  CreateLowEntropyProviderForTesting();
 
  private:
   // Returns the MetricsServiceClient, creating it if it hasn't been
