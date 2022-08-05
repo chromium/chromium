@@ -738,7 +738,9 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, MAYBE_AutoReload) {
   EXPECT_EQ(kRequestsToFail + 1, interceptor_requests());
 }
 
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, ManualReloadNotSuppressed) {
+// TODO(crbug.com/1350295): Test is flaky.
+IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
+                       DISABLED_ManualReloadNotSuppressed) {
   GURL test_url("http://error.page.auto.reload");
   const int32_t kRequestsToFail = 3;
   InstallInterceptor(test_url, kRequestsToFail);
