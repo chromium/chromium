@@ -1737,7 +1737,7 @@ TEST_F(WebSocketChannelEventInterfaceTest,
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*event_interface_, OnClosingHandshake());
     EXPECT_CALL(*event_interface_,
-                OnDropChannel(false, kWebSocketErrorAbnormalClosure, _))
+                OnDropChannel(true, kWebSocketNormalClosure, _))
         .WillOnce(InvokeClosure(&completion));
   }
   CreateChannelAndConnectSuccessfully();

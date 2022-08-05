@@ -16,9 +16,7 @@ async_test(t => {
     // Chromium closes the connection after waiting 2 seconds. This is not
     // standardised.
     assert_less_than(elapsed, 3000, 'browser should have closed connection');
-
-    // TODO(ricea): Change this to true to align with other browsers.
-    assert_false(evt.wasClean, 'wasClean should be correct');
+    assert_true(evt.wasClean, 'wasClean should be correct');
   });
 }, 'verify that the browser closes TCP connections when the server is slow');
 </script>
