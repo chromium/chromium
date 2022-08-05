@@ -2,27 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("audio") {
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media" ]
-
-  deps = [
-    "//base",
-    "//media/base",
-    "//media/filters",
-    "//media/fuchsia/cdm",
-    "//media/fuchsia/common",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.audio",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-  ]
-
-  configs += [ "//media:subcomponent_config" ]
-
-  sources = [
-    "fuchsia_audio_output_device.cc",
-    "fuchsia_audio_output_device.h",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   deps = [ "//testing/gtest" ]
@@ -52,19 +31,4 @@ source_set("test_support_components") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
   ]
   deps = [ "//testing/gtest" ]
-}
-
-source_set("unittests") {
-  testonly = true
-
-  deps = [
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//media",
-    "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.audio",
-  ]
-
-  sources = [ "fuchsia_audio_output_device_test.cc" ]
 }

@@ -334,7 +334,6 @@ media_subcomponent_deps = [
 
 if (is_fuchsia) {
   media_subcomponent_deps += [
-    "//media/fuchsia/audio",
     "//media/fuchsia/cdm",
     "//media/fuchsia/common",
   ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/audio/fuchsia_audio_output_device.h"
+#include "fuchsia_web/webengine/renderer/web_engine_audio_output_device.h"
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -15,16 +15,18 @@
 #include "media/fuchsia/audio/fake_audio_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace {
 
 constexpr int kSampleRate = 44100;
-constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
 constexpr int kNumChannels = 2;
 constexpr uint64_t kTestSessionId = 42;
 constexpr base::TimeDelta kPeriod = base::Milliseconds(10);
 constexpr int kFramesPerPeriod = 441;
 
-class TestRenderer : public AudioRendererSink::RenderCallback {
+}  // namespace
+
+class TestRenderer : public media::AudioRendererSink::RenderCallback {
  public:
   TestRenderer() = default;
   ~TestRenderer() override = default;
@@ -33,7 +35,7 @@ class TestRenderer : public AudioRendererSink::RenderCallback {
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
              int prior_frames_skipped,
-             AudioBus* dest) override {
+             media::AudioBus* dest) override {
     EXPECT_EQ(dest->channels(), kNumChannels);
     frames_skipped_ += prior_frames_skipped;
     frames_rendered_ += dest->frames();
@@ -64,31 +66,31 @@ class TestRenderer : public AudioRendererSink::RenderCallback {
   base::TimeTicks last_presentation_time_;
 };
 
-class FuchsiaAudioOutputDeviceTest : public testing::Test {
+class WebEngineAudioOutputDeviceTest : public testing::Test {
  public:
-  FuchsiaAudioOutputDeviceTest() {
+  WebEngineAudioOutputDeviceTest() {
     fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer;
-    fake_audio_consumer_ = std::make_unique<FakeAudioConsumer>(
+    fake_audio_consumer_ = std::make_unique<media::FakeAudioConsumer>(
         kTestSessionId, audio_consumer.NewRequest());
 
-    output_device_ = FuchsiaAudioOutputDevice::Create(
+    output_device_ = WebEngineAudioOutputDevice::Create(
         std::move(audio_consumer), base::ThreadTaskRunnerHandle::Get());
   }
 
-  ~FuchsiaAudioOutputDeviceTest() override {
+  ~WebEngineAudioOutputDeviceTest() override {
     // Stop() must be called before destruction to release resources.
     output_device_->Stop();
-    // FuchsiaAudioOutputDevice::Stop() posts a task to run StopOnAudioThread()
-    // on `task_runner_`. RunUntilIdle() ensures the request to stop is
-    // fulfilled.
+    // WebEngineAudioOutputDevice::Stop() posts a task to run
+    // StopOnAudioThread() on `task_runner_`. RunUntilIdle() ensures the request
+    // to stop is fulfilled.
     task_environment_.RunUntilIdle();
   }
 
  protected:
   void Initialize() {
     output_device_->Initialize(
-        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, kChannelLayout,
-                        kSampleRate, kFramesPerPeriod),
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               kChannelLayout, kSampleRate, kFramesPerPeriod),
         &renderer_);
 
     task_environment_.RunUntilIdle();
@@ -98,7 +100,7 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
   void InitializeAndStart() {
     Initialize();
 
-    // As soon as Start() is processed FuchsiaAudioOutputDevice is expected to
+    // As soon as Start() is processed WebEngineAudioOutputDevice is expected to
     // start rendering some samples.
     output_device_->Start();
     task_environment_.RunUntilIdle();
@@ -113,25 +115,25 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
   void ValidatePresentationTime() {
     // Verify that the current renderer lead time is in the
     // [min_lead_time, min_lead_time + 30ms] range. 30ms is chosen to allow
-    // FuchsiaAudioOutputDevice to pre-render slightely ahead of the target
+    // WebEngineAudioOutputDevice to pre-render slightely ahead of the target
     // time, while keeping latency reasonably low.
     auto lead_time =
         renderer_.last_presentation_time() - base::TimeTicks::Now();
-    EXPECT_GT(lead_time, FakeAudioConsumer::kMinLeadTime);
+    EXPECT_GT(lead_time, media::FakeAudioConsumer::kMinLeadTime);
     EXPECT_LT(lead_time,
-              FakeAudioConsumer::kMinLeadTime + base::Milliseconds(30));
+              media::FakeAudioConsumer::kMinLeadTime + base::Milliseconds(30));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<FakeAudioConsumer> fake_audio_consumer_;
+  std::unique_ptr<media::FakeAudioConsumer> fake_audio_consumer_;
   TestRenderer renderer_;
-  scoped_refptr<FuchsiaAudioOutputDevice> output_device_;
+  scoped_refptr<WebEngineAudioOutputDevice> output_device_;
 };
 
-TEST_F(FuchsiaAudioOutputDeviceTest, Start) {
+TEST_F(WebEngineAudioOutputDeviceTest, Start) {
   Initialize();
 
   // Verify that playback doesn't start before Start().
@@ -146,12 +148,12 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Start) {
   ValidatePresentationTime();
 }
 
-TEST_F(FuchsiaAudioOutputDeviceTest, StartAndPlay) {
+TEST_F(WebEngineAudioOutputDeviceTest, StartAndPlay) {
   InitializeAndStart();
 
   renderer_.reset_frames_rendered();
 
-  // Try advancing time and verify that FuchsiaAudioOutputDevice keeps calling
+  // Try advancing time and verify that WebEngineAudioOutputDevice keeps calling
   // Render().
   for (int i = 0; i < 3; ++i) {
     task_environment_.FastForwardBy(kPeriod);
@@ -161,12 +163,12 @@ TEST_F(FuchsiaAudioOutputDeviceTest, StartAndPlay) {
   }
 }
 
-TEST_F(FuchsiaAudioOutputDeviceTest, Pause) {
+TEST_F(WebEngineAudioOutputDeviceTest, Pause) {
   InitializeAndStart();
 
   renderer_.reset_frames_rendered();
 
-  // Advancing time and verify that FuchsiaAudioOutputDevice keeps calling
+  // Advancing time and verify that WebEngineAudioOutputDevice keeps calling
   // Render().
   task_environment_.FastForwardBy(kPeriod);
   EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod);
@@ -185,13 +187,13 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Pause) {
   EXPECT_EQ(renderer_.frames_skipped(), 0);
 }
 
-TEST_F(FuchsiaAudioOutputDeviceTest, Underflow) {
+TEST_F(WebEngineAudioOutputDeviceTest, Underflow) {
   InitializeAndStart();
 
   renderer_.reset_frames_rendered();
 
   // Missing the timer once should not cause any issues. Timer tasks can't
-  // always run at the exact scheduled time. FuchsiaAudioOutputDevice should
+  // always run at the exact scheduled time. WebEngineAudioOutputDevice should
   // be resilient to small delays.
   task_environment_.AdvanceClock(kPeriod * 2);
   task_environment_.RunUntilIdle();
@@ -209,7 +211,7 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Underflow) {
   ValidatePresentationTime();
 }
 
-TEST_F(FuchsiaAudioOutputDeviceTest, Error) {
+TEST_F(WebEngineAudioOutputDeviceTest, Error) {
   InitializeAndStart();
 
   renderer_.reset_frames_rendered();
@@ -221,7 +223,7 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Error) {
   EXPECT_EQ(renderer_.frames_rendered(), 0);
 }
 
-TEST_F(FuchsiaAudioOutputDeviceTest, Stop) {
+TEST_F(WebEngineAudioOutputDeviceTest, Stop) {
   InitializeAndStart();
 
   renderer_.reset_frames_rendered();
@@ -232,5 +234,3 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Stop) {
   CallPumpSamples();
   EXPECT_EQ(renderer_.frames_rendered(), 0);
 }
-
-}  // namespace media

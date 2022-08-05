@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/audio/fuchsia_audio_output_device.h"
+#include "fuchsia_web/webengine/renderer/web_engine_audio_output_device.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
@@ -12,8 +12,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_timestamp_helper.h"
-
-namespace media {
 
 namespace {
 
@@ -34,7 +32,7 @@ constexpr base::TimeDelta kLeadTimeExtra = base::Milliseconds(20);
 
 class DefaultAudioThread {
  public:
-  DefaultAudioThread() : thread_("FuchsiaAudioOutputDevice") {
+  DefaultAudioThread() : thread_("WebEngineAudioOutputDevice") {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     options.thread_type = base::ThreadType::kRealtimeAudio;
     thread_.StartWithOptions(std::move(options));
@@ -57,34 +55,36 @@ scoped_refptr<base::SingleThreadTaskRunner> GetDefaultAudioTaskRunner() {
 }  // namespace
 
 // static
-scoped_refptr<FuchsiaAudioOutputDevice> FuchsiaAudioOutputDevice::Create(
+scoped_refptr<WebEngineAudioOutputDevice> WebEngineAudioOutputDevice::Create(
     fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer_handle,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  scoped_refptr<FuchsiaAudioOutputDevice> result(
-      new FuchsiaAudioOutputDevice(task_runner));
+  scoped_refptr<WebEngineAudioOutputDevice> result(
+      new WebEngineAudioOutputDevice(task_runner));
   task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::BindAudioConsumerOnAudioThread,
-                     result, std::move(audio_consumer_handle)));
+      base::BindOnce(
+          &WebEngineAudioOutputDevice::BindAudioConsumerOnAudioThread, result,
+          std::move(audio_consumer_handle)));
   return result;
 }
 
 // static
-scoped_refptr<FuchsiaAudioOutputDevice>
-FuchsiaAudioOutputDevice::CreateOnDefaultThread(
+scoped_refptr<WebEngineAudioOutputDevice>
+WebEngineAudioOutputDevice::CreateOnDefaultThread(
     fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
         audio_consumer_handle) {
   return Create(std::move(audio_consumer_handle), GetDefaultAudioTaskRunner());
 }
 
-FuchsiaAudioOutputDevice::FuchsiaAudioOutputDevice(
+WebEngineAudioOutputDevice::WebEngineAudioOutputDevice(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)) {}
 
-FuchsiaAudioOutputDevice::~FuchsiaAudioOutputDevice() = default;
+WebEngineAudioOutputDevice::~WebEngineAudioOutputDevice() = default;
 
-void FuchsiaAudioOutputDevice::Initialize(const AudioParameters& params,
-                                          RenderCallback* callback) {
+void WebEngineAudioOutputDevice::Initialize(
+    const media::AudioParameters& params,
+    RenderCallback* callback) {
   DCHECK(callback);
 
   // Save |callback| synchronously here to handle the case when Stop() is called
@@ -97,17 +97,17 @@ void FuchsiaAudioOutputDevice::Initialize(const AudioParameters& params,
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::InitializeOnAudioThread, this,
+      base::BindOnce(&WebEngineAudioOutputDevice::InitializeOnAudioThread, this,
                      params));
 }
 
-void FuchsiaAudioOutputDevice::Start() {
+void WebEngineAudioOutputDevice::Start() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::StartOnAudioThread, this));
+      base::BindOnce(&WebEngineAudioOutputDevice::StartOnAudioThread, this));
 }
 
-void FuchsiaAudioOutputDevice::Stop() {
+void WebEngineAudioOutputDevice::Stop() {
   {
     base::AutoLock auto_lock(callback_lock_);
     callback_ = nullptr;
@@ -115,62 +115,62 @@ void FuchsiaAudioOutputDevice::Stop() {
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::StopOnAudioThread, this));
+      base::BindOnce(&WebEngineAudioOutputDevice::StopOnAudioThread, this));
 }
 
-void FuchsiaAudioOutputDevice::Pause() {
+void WebEngineAudioOutputDevice::Pause() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::PauseOnAudioThread, this));
+      base::BindOnce(&WebEngineAudioOutputDevice::PauseOnAudioThread, this));
 }
 
-void FuchsiaAudioOutputDevice::Play() {
+void WebEngineAudioOutputDevice::Play() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::PlayOnAudioThread, this));
+      base::BindOnce(&WebEngineAudioOutputDevice::PlayOnAudioThread, this));
 }
 
-void FuchsiaAudioOutputDevice::Flush() {
+void WebEngineAudioOutputDevice::Flush() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::FlushOnAudioThread, this));
+      base::BindOnce(&WebEngineAudioOutputDevice::FlushOnAudioThread, this));
 }
 
-bool FuchsiaAudioOutputDevice::SetVolume(double volume) {
+bool WebEngineAudioOutputDevice::SetVolume(double volume) {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FuchsiaAudioOutputDevice::SetVolumeOnAudioThread, this,
+      base::BindOnce(&WebEngineAudioOutputDevice::SetVolumeOnAudioThread, this,
                      volume));
   return true;
 }
 
-OutputDeviceInfo FuchsiaAudioOutputDevice::GetOutputDeviceInfo() {
+media::OutputDeviceInfo WebEngineAudioOutputDevice::GetOutputDeviceInfo() {
   // AudioConsumer doesn't provider any information about the output device.
   //
   // TODO(crbug.com/852834): Update this method when that functionality is
   // implemented.
-  return OutputDeviceInfo(
-      std::string(), OUTPUT_DEVICE_STATUS_OK,
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO, 48000, 480));
+  return media::OutputDeviceInfo(
+      std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::CHANNEL_LAYOUT_STEREO, 48000, 480));
 }
 
-void FuchsiaAudioOutputDevice::GetOutputDeviceInfoAsync(
+void WebEngineAudioOutputDevice::GetOutputDeviceInfoAsync(
     OutputDeviceInfoCB info_cb) {
   std::move(info_cb).Run(GetOutputDeviceInfo());
 }
 
-bool FuchsiaAudioOutputDevice::IsOptimizedForHardwareParameters() {
+bool WebEngineAudioOutputDevice::IsOptimizedForHardwareParameters() {
   // AudioConsumer doesn't provide device parameters (since target device may
   // change).
   return false;
 }
 
-bool FuchsiaAudioOutputDevice::CurrentThreadIsRenderingThread() {
+bool WebEngineAudioOutputDevice::CurrentThreadIsRenderingThread() {
   return task_runner_->BelongsToCurrentThread();
 }
 
-void FuchsiaAudioOutputDevice::BindAudioConsumerOnAudioThread(
+void WebEngineAudioOutputDevice::BindAudioConsumerOnAudioThread(
     fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
         audio_consumer_handle) {
   DCHECK(CurrentThreadIsRenderingThread());
@@ -183,19 +183,19 @@ void FuchsiaAudioOutputDevice::BindAudioConsumerOnAudioThread(
   });
 }
 
-void FuchsiaAudioOutputDevice::InitializeOnAudioThread(
-    const AudioParameters& params) {
+void WebEngineAudioOutputDevice::InitializeOnAudioThread(
+    const media::AudioParameters& params) {
   DCHECK(CurrentThreadIsRenderingThread());
 
   params_ = params;
-  audio_bus_ = AudioBus::Create(params_);
+  audio_bus_ = media::AudioBus::Create(params_);
 
   UpdateVolume();
 
   WatchAudioConsumerStatus();
 }
 
-void FuchsiaAudioOutputDevice::StartOnAudioThread() {
+void WebEngineAudioOutputDevice::StartOnAudioThread() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (!audio_consumer_)
@@ -212,7 +212,7 @@ void FuchsiaAudioOutputDevice::StartOnAudioThread() {
   // will then call SchedulePumpSamples() to start sending audio packets.
 }
 
-void FuchsiaAudioOutputDevice::StopOnAudioThread() {
+void WebEngineAudioOutputDevice::StopOnAudioThread() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (!audio_consumer_)
@@ -226,7 +226,7 @@ void FuchsiaAudioOutputDevice::StopOnAudioThread() {
   volume_control_.Unbind();
 }
 
-void FuchsiaAudioOutputDevice::PauseOnAudioThread() {
+void WebEngineAudioOutputDevice::PauseOnAudioThread() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (!audio_consumer_)
@@ -237,7 +237,7 @@ void FuchsiaAudioOutputDevice::PauseOnAudioThread() {
   pump_samples_timer_.Stop();
 }
 
-void FuchsiaAudioOutputDevice::PlayOnAudioThread() {
+void WebEngineAudioOutputDevice::PlayOnAudioThread() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (!audio_consumer_)
@@ -247,7 +247,7 @@ void FuchsiaAudioOutputDevice::PlayOnAudioThread() {
   audio_consumer_->SetRate(1.0);
 }
 
-void FuchsiaAudioOutputDevice::FlushOnAudioThread() {
+void WebEngineAudioOutputDevice::FlushOnAudioThread() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (!stream_sink_)
@@ -256,7 +256,7 @@ void FuchsiaAudioOutputDevice::FlushOnAudioThread() {
   stream_sink_->DiscardAllPacketsNoReply();
 }
 
-void FuchsiaAudioOutputDevice::SetVolumeOnAudioThread(double volume) {
+void WebEngineAudioOutputDevice::SetVolumeOnAudioThread(double volume) {
   DCHECK(CurrentThreadIsRenderingThread());
 
   volume_ = volume;
@@ -264,12 +264,12 @@ void FuchsiaAudioOutputDevice::SetVolumeOnAudioThread(double volume) {
     UpdateVolume();
 }
 
-void FuchsiaAudioOutputDevice::CreateStreamSink() {
+void WebEngineAudioOutputDevice::CreateStreamSink() {
   DCHECK(CurrentThreadIsRenderingThread());
   DCHECK(audio_consumer_);
 
   // Allocate buffers for the StreamSink.
-  size_t buffer_size = params_.GetBytesPerBuffer(kSampleFormatF32);
+  size_t buffer_size = params_.GetBytesPerBuffer(media::kSampleFormatF32);
   stream_sink_buffers_.reserve(kNumBuffers);
   available_buffers_indices_.clear();
   std::vector<zx::vmo> vmos_for_stream_sink;
@@ -308,7 +308,7 @@ void FuchsiaAudioOutputDevice::CreateStreamSink() {
   });
 }
 
-void FuchsiaAudioOutputDevice::UpdateVolume() {
+void WebEngineAudioOutputDevice::UpdateVolume() {
   DCHECK(CurrentThreadIsRenderingThread());
   DCHECK(audio_consumer_);
   if (!volume_control_) {
@@ -320,13 +320,13 @@ void FuchsiaAudioOutputDevice::UpdateVolume() {
   volume_control_->SetVolume(volume_);
 }
 
-void FuchsiaAudioOutputDevice::WatchAudioConsumerStatus() {
+void WebEngineAudioOutputDevice::WatchAudioConsumerStatus() {
   DCHECK(CurrentThreadIsRenderingThread());
   audio_consumer_->WatchStatus(fit::bind_member(
-      this, &FuchsiaAudioOutputDevice::OnAudioConsumerStatusChanged));
+      this, &WebEngineAudioOutputDevice::OnAudioConsumerStatusChanged));
 }
 
-void FuchsiaAudioOutputDevice::OnAudioConsumerStatusChanged(
+void WebEngineAudioOutputDevice::OnAudioConsumerStatusChanged(
     fuchsia::media::AudioConsumerStatus status) {
   DCHECK(CurrentThreadIsRenderingThread());
 
@@ -358,7 +358,7 @@ void FuchsiaAudioOutputDevice::OnAudioConsumerStatusChanged(
   WatchAudioConsumerStatus();
 }
 
-void FuchsiaAudioOutputDevice::SchedulePumpSamples() {
+void WebEngineAudioOutputDevice::SchedulePumpSamples() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   if (paused_ || timeline_reference_time_.is_null() ||
@@ -367,8 +367,8 @@ void FuchsiaAudioOutputDevice::SchedulePumpSamples() {
   }
 
   // Current position in the stream.
-  auto media_pos = AudioTimestampHelper::FramesToTime(media_pos_frames_,
-                                                      params_.sample_rate());
+  auto media_pos = media::AudioTimestampHelper::FramesToTime(
+      media_pos_frames_, params_.sample_rate());
 
   // Calculate expected playback time for the next sample based on the
   // presentation timeline provided by the AudioConsumer.
@@ -389,11 +389,11 @@ void FuchsiaAudioOutputDevice::SchedulePumpSamples() {
   base::TimeDelta delay = target_time - now;
   pump_samples_timer_.Start(
       FROM_HERE, delay,
-      base::BindOnce(&FuchsiaAudioOutputDevice::PumpSamples, this,
+      base::BindOnce(&WebEngineAudioOutputDevice::PumpSamples, this,
                      playback_time));
 }
 
-void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
+void WebEngineAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
   DCHECK(CurrentThreadIsRenderingThread());
 
   auto now = base::TimeTicks::Now();
@@ -406,8 +406,8 @@ void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
   if (lead_time < min_lead_time_) {
     auto new_playback_time = now + min_lead_time_;
     auto skipped_time = new_playback_time - playback_time;
-    skipped_frames =
-        AudioTimestampHelper::TimeToFrames(skipped_time, params_.sample_rate());
+    skipped_frames = media::AudioTimestampHelper::TimeToFrames(
+        skipped_time, params_.sample_rate());
     media_pos_frames_ += skipped_frames;
     playback_time += skipped_time;
   }
@@ -430,14 +430,14 @@ void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
     int buffer_index = available_buffers_indices_.back();
     available_buffers_indices_.pop_back();
 
-    audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
+    audio_bus_->ToInterleaved<media::Float32SampleTypeTraitsNoClip>(
         frames_filled,
         static_cast<float*>(stream_sink_buffers_[buffer_index].memory()));
 
     fuchsia::media::StreamPacket packet;
     packet.payload_buffer_id = buffer_index;
-    packet.pts = AudioTimestampHelper::FramesToTime(media_pos_frames_,
-                                                    params_.sample_rate())
+    packet.pts = media::AudioTimestampHelper::FramesToTime(
+                     media_pos_frames_, params_.sample_rate())
                      .InNanoseconds();
     packet.payload_offset = 0;
     packet.payload_size = frames_filled * sizeof(float) * params_.channels();
@@ -452,14 +452,14 @@ void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
   SchedulePumpSamples();
 }
 
-void FuchsiaAudioOutputDevice::OnStreamSendDone(size_t buffer_index) {
+void WebEngineAudioOutputDevice::OnStreamSendDone(size_t buffer_index) {
   DCHECK(CurrentThreadIsRenderingThread());
 
   available_buffers_indices_.push_back(buffer_index);
   SchedulePumpSamples();
 }
 
-void FuchsiaAudioOutputDevice::ReportError() {
+void WebEngineAudioOutputDevice::ReportError() {
   DCHECK(CurrentThreadIsRenderingThread());
 
   audio_consumer_.Unbind();
@@ -472,5 +472,3 @@ void FuchsiaAudioOutputDevice::ReportError() {
       callback_->OnRenderError();
   }
 }
-
-}  // namespace media

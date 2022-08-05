@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_OUTPUT_DEVICE_H_
-#define MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_OUTPUT_DEVICE_H_
+#ifndef FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_AUDIO_OUTPUT_DEVICE_H_
+#define FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_AUDIO_OUTPUT_DEVICE_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 
@@ -15,38 +15,35 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "fuchsia_web/webengine/web_engine_export.h"
 #include "media/base/audio_renderer_sink.h"
-#include "media/base/media_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 class WritableSharedMemoryMapping;
 }  // namespace base
 
-namespace media {
-
-// AudioRendererSink implementation for Fuchsia. It sends audio to AudioConsumer
-// provided by the OS. Unlike AudioOutputDevice (used by default on other
-// platforms) this class sends to the system directly from the renderer process,
-// without additional IPC layer to the audio service.
-// All work is performed on the TaskRunner passed to Create(). It must be an IO
-// thread to allow FIDL usage. AudioRendererSink can be used on a different
-// thread.
-class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
+// AudioRendererSink implementation for WebEngine. It sends audio to
+// AudioConsumer provided by the OS. Unlike AudioOutputDevice this class sends
+// to the system directly from the renderer process. All work is performed on
+// the TaskRunner passed to Create(). It must be an IO thread to allow FIDL
+// usage. AudioRendererSink can be used on a different thread.
+class WEB_ENGINE_EXPORT WebEngineAudioOutputDevice
+    : public media::AudioRendererSink {
  public:
-  static scoped_refptr<FuchsiaAudioOutputDevice> Create(
+  static scoped_refptr<WebEngineAudioOutputDevice> Create(
       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
           audio_consumer_handle,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // Same as above, but creates a FuchsiaAudioOutputDevice that runs on the
+  // Same as above, but creates a WebEngineAudioOutputDevice that runs on the
   // default audio thread.
-  static scoped_refptr<FuchsiaAudioOutputDevice> CreateOnDefaultThread(
+  static scoped_refptr<WebEngineAudioOutputDevice> CreateOnDefaultThread(
       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
           audio_consumer_handle);
 
   // AudioRendererSink implementation.
-  void Initialize(const AudioParameters& params,
+  void Initialize(const media::AudioParameters& params,
                   RenderCallback* callback) override;
   void Start() override;
   void Stop() override;
@@ -54,24 +51,24 @@ class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
   void Play() override;
   void Flush() override;
   bool SetVolume(double volume) override;
-  OutputDeviceInfo GetOutputDeviceInfo() override;
+  media::OutputDeviceInfo GetOutputDeviceInfo() override;
   void GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) override;
   bool IsOptimizedForHardwareParameters() override;
   bool CurrentThreadIsRenderingThread() override;
 
  private:
-  friend class FuchsiaAudioOutputDeviceTest;
+  friend class WebEngineAudioOutputDeviceTest;
 
-  explicit FuchsiaAudioOutputDevice(
+  explicit WebEngineAudioOutputDevice(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  ~FuchsiaAudioOutputDevice() override;
+  ~WebEngineAudioOutputDevice() override;
 
   void BindAudioConsumerOnAudioThread(
       fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
           audio_consumer_handle);
 
   // AudioRendererSink handlers for the audio thread.
-  void InitializeOnAudioThread(const AudioParameters& params);
+  void InitializeOnAudioThread(const media::AudioParameters& params);
   void StartOnAudioThread();
   void StopOnAudioThread();
   void PauseOnAudioThread();
@@ -114,7 +111,7 @@ class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
   fuchsia::media::StreamSinkPtr stream_sink_;
   fuchsia::media::audio::VolumeControlPtr volume_control_;
 
-  AudioParameters params_;
+  media::AudioParameters params_;
 
   // Lock used to control access to |callback_|.
   base::Lock callback_lock_;
@@ -162,9 +159,7 @@ class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
 
   // AudioBus used in PumpSamples(). Stored here to avoid re-allocating it for
   // every packet.
-  std::unique_ptr<AudioBus> audio_bus_;
+  std::unique_ptr<media::AudioBus> audio_bus_;
 };
 
-}  // namespace media
-
-#endif  // MEDIA_FUCHSIA_AUDIO_FUCHSIA_AUDIO_OUTPUT_DEVICE_H_
+#endif  // FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_AUDIO_OUTPUT_DEVICE_H_

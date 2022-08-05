@@ -9,8 +9,8 @@
 #include "base/check.h"
 #include "content/public/renderer/render_frame.h"
 #include "fuchsia_web/webengine/mojom/web_engine_media_resource_provider.mojom.h"
+#include "fuchsia_web/webengine/renderer/web_engine_audio_output_device.h"
 #include "media/base/audio_renderer_sink.h"
-#include "media/fuchsia/audio/fuchsia_audio_output_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -92,6 +92,6 @@ WebEngineAudioDeviceFactory::NewAudioRendererSink(
   fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer;
   media_resource_provider->CreateAudioConsumer(audio_consumer.NewRequest());
 
-  return media::FuchsiaAudioOutputDevice::CreateOnDefaultThread(
+  return WebEngineAudioOutputDevice::CreateOnDefaultThread(
       std::move(audio_consumer));
 }

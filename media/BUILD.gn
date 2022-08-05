@@ -215,7 +215,6 @@ test("media_unittests") {
 
   if (is_fuchsia) {
     deps += [
-      "//media/fuchsia/audio:unittests",
       "//media/fuchsia/cdm/service:unittests",
       "//media/fuchsia/video:unittests",
     ]
