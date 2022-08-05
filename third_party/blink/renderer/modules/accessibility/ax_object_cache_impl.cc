@@ -3468,10 +3468,14 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   if (!DoesEventListenerImpactIgnoredState(event_type))
     return;
 
-  // If the |event_type| may affect the ignored state of |node|, which means
-  // that the parent's children may have changed.
+  // Adding/removing a listener may affect the ignored state of node's AXObject.
   modification_count_++;
   MarkElementDirty(&node);
+  // If the ignored state changes, the parent's children may have changed.
+  if (AXObject* obj = SafeGet(&node)) {
+    if (obj->CachedParentObject())
+      ChildrenChanged(obj->CachedParentObject());
+  }
 }
 
 void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {

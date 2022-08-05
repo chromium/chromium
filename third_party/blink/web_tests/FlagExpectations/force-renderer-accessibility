@@ -8,7 +8,6 @@
 virtual/* [ Skip ]
 
 # Unintentional failure
-external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Skip ]
 external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Skip ]
 external/wpt/css/css-display/display-contents-shadow-dom-1.html [ Skip ]
@@ -37,8 +36,6 @@ external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-co
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-unregister.https.html [ Skip ]
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/storage-events.html [ Skip ]
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/timers.html [ Skip ]
-external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Skip ]
-external/wpt/inert/dynamic-inert-on-focused-element.html [ Skip ]
 external/wpt/inert/inert-iframe-hittest.html [ Skip ]
 external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Skip ]
 external/wpt/mimesniff/media/media-sniff.window.html [ Skip ]
@@ -78,7 +75,6 @@ virtual/css-highlight-overlay-painting/external/wpt/css/css-pseudo/highlight-pai
 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-descendant-selector.html [ Skip ]
 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-in-flow.html [ Skip ]
 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/dont-share-style-to-top-layer.html [ Skip ]
-virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Skip ]
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Skip ]
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Skip ]
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Skip ]

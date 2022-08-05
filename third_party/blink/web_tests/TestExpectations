@@ -7101,8 +7101,3 @@ crbug.com/1349910 [ Mac ] external/wpt/html/semantics/popups/popup-hover-hide.te
 crbug.com/1350336 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/visual-viewport.https.html [ Failure Pass ]
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/1350341 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/direction-and-fill/fill-mode-missing-from-to-keyframes.html [ Failure Pass ]
-
-# Sheriff 2022-08-05
-crbug.com/1350400 external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Skip ]
-crbug.com/1350400 external/wpt/inert/dynamic-inert-on-focused-element.html [ Skip ]
-crbug.com/1350400 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Skip ]

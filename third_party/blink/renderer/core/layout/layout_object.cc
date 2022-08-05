@@ -2691,16 +2691,19 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         cache->LocationChanged(this);
     }
 
+    if (visibility_changed || style_->IsInert() != new_style.IsInert()) {
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        cache->ChildrenChanged(Parent());
+        cache->ChildrenChanged(this);
+      }
+    }
+
     // Keep layer hierarchy visibility bits up to date if visibility changes.
     if (visibility_changed) {
       // We might not have an enclosing layer yet because we might not be in the
       // tree.
       if (PaintLayer* layer = EnclosingLayer())
         layer->DirtyVisibleContentStatus();
-      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        cache->ChildrenChanged(Parent());
-        cache->ChildrenChanged(this);
-      }
       GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
           *this);
     }
