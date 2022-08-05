@@ -27,7 +27,7 @@
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
-#include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
+#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/ui_throughput_recorder_lacros.h"
 #include "chrome/browser/lacros/vpn_extension_tracker_lacros.h"
@@ -37,45 +37,15 @@
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
-#include "components/sync/base/features.h"
 #include "extensions/common/features/feature_session_type.h"
 
 namespace {
-
-// Creates SyncExplicitPassphraseClientLacros for |profile| if preconditions
-// are met, returns nullptr otherwise. Preconditions are:
-// 1. Sync passphrase sharing feature is enabled.
-// 2. |profile| is the main profile.
-// 3. SyncService crosapi is available.
-// 4. Lacros SyncService exists (can be not created due to command line config).
-std::unique_ptr<SyncExplicitPassphraseClientLacros>
-MaybeCreateSyncExplicitPassphraseClient(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncChromeOSExplicitPassphraseSharing)) {
-    return nullptr;
-  }
-
-  if (!profile->IsMainProfile())
-    return nullptr;
-
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsAvailable<crosapi::mojom::SyncService>())
-    return nullptr;
-
-  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
-    return nullptr;
-
-  return std::make_unique<SyncExplicitPassphraseClientLacros>(
-      sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
-}
 
 extensions::mojom::FeatureSessionType GetExtSessionType() {
   using extensions::mojom::FeatureSessionType;
@@ -209,10 +179,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
-  if (!sync_explicit_passphrase_client_) {
-    sync_explicit_passphrase_client_ =
-        MaybeCreateSyncExplicitPassphraseClient(profile);
-  }
+  sync_crosapi_manager_.PostProfileInit(profile);
 
   // The setup below is intended to run for only the initial profile.
   if (!is_initial_profile)

@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
+
 class ArcIconCache;
 class AutomationManagerLacros;
 class BrowserServiceLacros;
@@ -26,7 +28,6 @@ class FieldTrialObserver;
 class NetworkChangeManagerBridge;
 class QuickAnswersController;
 class StandaloneBrowserTestController;
-class SyncExplicitPassphraseClientLacros;
 class TabletModePageBehavior;
 class UiThroughputRecorderLacros;
 class VpnExtensionTrackerLacros;
@@ -142,10 +143,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   std::unique_ptr<content::ScreenOrientationDelegate>
       screen_orientation_delegate_;
 
-  // Responsible for sharing sync explicit passphrase between Ash and Lacros.
-  std::unique_ptr<SyncExplicitPassphraseClientLacros>
-      sync_explicit_passphrase_client_;
-
   // Handles WebAuthn request id generation.
   std::unique_ptr<WebAuthnRequestRegistrarLacros>
       webauthn_request_registrar_lacros_;
@@ -161,6 +158,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Records UI metrics such as dropped frame percentage.
   std::unique_ptr<UiThroughputRecorderLacros> ui_throughput_recorder_;
+
+  // Controls sync-related Crosapi clients.
+  SyncCrosapiManagerLacros sync_crosapi_manager_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
