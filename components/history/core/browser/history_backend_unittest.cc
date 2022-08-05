@@ -3632,6 +3632,33 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
 }
 
+TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
+  ASSERT_TRUE(backend_);
+
+  GURL url("http://www.google.com/");
+  const ContextID context_id = reinterpret_cast<ContextID>(0x1);
+  const int navigation_entry_id = 2;
+  HistoryAddPageArgs request(
+      url, base::Time::Now(), context_id, navigation_entry_id, GURL(), {},
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
+  backend_->AddPage(request);
+  URLRow url_row;
+  ASSERT_TRUE(backend_->GetURL(url, &url_row));
+
+  VisitVector visits;
+  ASSERT_TRUE(backend_->GetVisitsForURL(
+      backend_->db_->GetRowForURL(url, nullptr), &visits));
+  ASSERT_EQ(1u, visits.size());
+
+  const VisitID visit_id = visits[0].visit_id;
+  EXPECT_EQ(visit_id, backend_->visit_tracker().GetLastVisit(
+                          context_id, navigation_entry_id, url));
+
+  backend_->RemoveVisits(visits);
+  EXPECT_EQ(0, backend_->visit_tracker().GetLastVisit(
+                   context_id, navigation_entry_id, url));
+}
+
 TEST_F(HistoryBackendTest, AnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   const auto add_url_and_visit = [&](std::string url) {
@@ -3733,6 +3760,42 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
 }
 
+TEST_F(HistoryBackendTest, ReplaceClusters) {
+  {
+    SCOPED_TRACE("Add clusters");
+    AddAnnotatedVisit(0);
+    AddAnnotatedVisit(1);
+
+    backend_->ReplaceClusters({}, CreateClusters({{1, 2}, {1, 2}, {}, {1}}));
+    VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
+                                                   base::Time::Max(), 10),
+                   {
+                       {1, {2, 1}},
+                       // Shouldn't check duplicates clusters.
+                       {2, {2, 1}},
+                       // Shouldn't return empty clusters.
+                       // The empty cluster shouldn't increment `cluster_id`.
+                       {3, {1}},
+                   });
+  }
+
+  {
+    SCOPED_TRACE("Replace clusters");
+    AddAnnotatedVisit(2);
+    AddAnnotatedVisit(3);
+
+    backend_->ReplaceClusters({2, 4}, CreateClusters({{1, 3}, {4}}));
+    VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
+                                                   base::Time::Max(), 10),
+                   {
+                       {5, {4}},
+                       {4, {3, 1}},
+                       {1, {2, 1}},
+                       {3, {1}},
+                   });
+  }
+}
+
 TEST_F(HistoryBackendTest, GetMostRecentClusters) {
   // Setup some visits and clusters.
   AddAnnotatedVisit(1);
@@ -3773,31 +3836,30 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
   }
 }
 
-TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
-  ASSERT_TRUE(backend_);
+TEST_F(HistoryBackendTest, GetCluster) {
+  AddAnnotatedVisit(0);
+  AddAnnotatedVisit(1);
 
-  GURL url("http://www.google.com/");
-  const ContextID context_id = reinterpret_cast<ContextID>(0x1);
-  const int navigation_entry_id = 2;
-  HistoryAddPageArgs request(
-      url, base::Time::Now(), context_id, navigation_entry_id, GURL(), {},
-      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
-  backend_->AddPage(request);
-  URLRow url_row;
-  ASSERT_TRUE(backend_->GetURL(url, &url_row));
+  ClusterVisit visit_1;
+  visit_1.annotated_visit.visit_row.visit_id = 1;
+  // Verify the cluster visits are being flushed out.
+  visit_1.url_for_display = u"url_for_display";
+  ClusterVisit visit_2;
+  visit_2.annotated_visit.visit_row.visit_id = 2;
+  // A cluster visit without a corresponding annotated visit shouldn't be
+  // returned.
+  ClusterVisit visit_3;
+  visit_3.annotated_visit.visit_row.visit_id = 3;
+  backend_->db_->AddClusters(
+      {{0, {visit_1, visit_2, visit_3}, {}, false, u"label"}});
 
-  VisitVector visits;
-  ASSERT_TRUE(backend_->GetVisitsForURL(
-      backend_->db_->GetRowForURL(url, nullptr), &visits));
-  ASSERT_EQ(1u, visits.size());
+  const auto cluster = backend_->GetCluster(1);
+  VerifyCluster(cluster, {1, {2, 1}});
+  EXPECT_EQ(cluster.cluster_id, 1);
+  EXPECT_EQ(cluster.label, u"label");
+  EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
 
-  const VisitID visit_id = visits[0].visit_id;
-  EXPECT_EQ(visit_id, backend_->visit_tracker().GetLastVisit(
-                          context_id, navigation_entry_id, url));
-
-  backend_->RemoveVisits(visits);
-  EXPECT_EQ(0, backend_->visit_tracker().GetLastVisit(
-                   context_id, navigation_entry_id, url));
+  VerifyCluster(backend_->GetCluster(3), {3});
 }
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
@@ -3963,68 +4025,6 @@ TEST_F(HistoryBackendTest, GetRedirectChain) {
   EXPECT_EQ(chain3[0].visit_id, chain3_ids[0]);
   EXPECT_EQ(chain3[1].visit_id, chain3_ids[1]);
   EXPECT_EQ(chain3[2].visit_id, chain3_ids[2]);
-}
-
-TEST_F(HistoryBackendTest, GetCluster) {
-  AddAnnotatedVisit(0);
-  AddAnnotatedVisit(1);
-
-  ClusterVisit visit_1;
-  visit_1.annotated_visit.visit_row.visit_id = 1;
-  // Verify the cluster visits are being flushed out.
-  visit_1.url_for_display = u"url_for_display";
-  ClusterVisit visit_2;
-  visit_2.annotated_visit.visit_row.visit_id = 2;
-  // A cluster visit without a corresponding annotated visit shouldn't be
-  // returned.
-  ClusterVisit visit_3;
-  visit_3.annotated_visit.visit_row.visit_id = 3;
-  backend_->db_->AddClusters(
-      {{0, {visit_1, visit_2, visit_3}, {}, false, u"label"}});
-
-  const auto cluster = backend_->GetCluster(1);
-  VerifyCluster(cluster, {1, {2, 1}});
-  EXPECT_EQ(cluster.cluster_id, 1);
-  EXPECT_EQ(cluster.label, u"label");
-  EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
-
-  VerifyCluster(backend_->GetCluster(3), {3});
-}
-
-TEST_F(HistoryBackendTest, ReplaceClusters) {
-  {
-    SCOPED_TRACE("Add clusters");
-    AddAnnotatedVisit(0);
-    AddAnnotatedVisit(1);
-
-    backend_->ReplaceClusters({}, CreateClusters({{1, 2}, {1, 2}, {}, {1}}));
-    VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
-                                                   base::Time::Max(), 10),
-                   {
-                       {1, {2, 1}},
-                       // Shouldn't check duplicates clusters.
-                       {2, {2, 1}},
-                       // Shouldn't return empty clusters.
-                       // The empty cluster shouldn't increment `cluster_id`.
-                       {3, {1}},
-                   });
-  }
-
-  {
-    SCOPED_TRACE("Replace clusters");
-    AddAnnotatedVisit(2);
-    AddAnnotatedVisit(3);
-
-    backend_->ReplaceClusters({2, 4}, CreateClusters({{1, 3}, {4}}));
-    VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
-                                                   base::Time::Max(), 10),
-                   {
-                       {5, {4}},
-                       {4, {3, 1}},
-                       {1, {2, 1}},
-                       {3, {1}},
-                   });
-  }
 }
 
 }  // namespace history
