@@ -92,8 +92,14 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
   base::DiscardableMemoryAllocator* discardable_memory_allocator_;
 };
 
+// Flaky.  http://crbug.com/1350563
+#if defined(THREAD_SANITIZER)
+#define MAYBE_LockDiscardableMemory DISABLED_LockDiscardableMemory
+#else
+#define MAYBE_LockDiscardableMemory LockDiscardableMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       LockDiscardableMemory) {
+                       MAYBE_LockDiscardableMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =
@@ -148,8 +154,14 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 }
 #endif
 
+// Flaky.  http://crbug.com/1350563
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ReleaseFreeDiscardableMemory DISABLED_ReleaseFreeDiscardableMemory
+#else
+#define MAYBE_ReleaseFreeDiscardableMemory ReleaseFreeDiscardableMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       ReleaseFreeDiscardableMemory) {
+                       MAYBE_ReleaseFreeDiscardableMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
@@ -208,8 +220,14 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   EXPECT_EQ(0U, discardable_memory_allocator()->GetBytesAllocated());
 }
 
+// Flaky.  http://crbug.com/1350563
+#if defined(THREAD_SANITIZER)
+#define MAYBE_CheckReleaseMemory DISABLED_CheckReleaseMemory
+#else
+#define MAYBE_CheckReleaseMemory CheckReleaseMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       CheckReleaseMemory) {
+                       MAYBE_CheckReleaseMemory) {
   std::vector<std::unique_ptr<base::DiscardableMemory>> all_memory;
   auto* allocator =
       static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(
