@@ -7,6 +7,5 @@ import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Screen AI service is still not supported on other platforms.
-  enable_screen_ai_service =
-      is_linux || is_mac || is_chromeos_ash || is_chromeos_lacros
+  enable_screen_ai_service = is_linux || is_mac || is_chromeos
 }
