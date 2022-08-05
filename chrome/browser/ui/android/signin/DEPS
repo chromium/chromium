@@ -12,4 +12,7 @@ specific_include_rules = {
   "SigninPromoController.java": [
   "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java"
   ],
+  "SyncPromoController.java": [
+  "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java"
+  ],
 }
