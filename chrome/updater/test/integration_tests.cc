@@ -345,11 +345,7 @@ TEST_F(IntegrationTest, InstallUninstall) {
   Uninstall();
 }
 
-#if BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, OverinstallWorking) {
-#else
-TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
-#endif
   SetupRealUpdaterLowerVersion();
   WaitForUpdaterExit();
   ExpectVersionNotActive(kUpdaterVersion);
@@ -363,12 +359,7 @@ TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
   Uninstall();
 }
 
-// TODO(https://crbug.com/1344846): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-TEST_F(IntegrationTest, DISABLED_OverinstallBroken) {
-#else
-TEST_F(IntegrationTest, DISABLED_OverinstallBroken) {
-#endif
+TEST_F(IntegrationTest, OverinstallBroken) {
   SetupRealUpdaterLowerVersion();
   WaitForUpdaterExit();
   DeleteUpdaterDirectory();
@@ -722,11 +713,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-#if BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
-#else
-TEST_F(IntegrationTest, DISABLED_SelfUpdateFromOldReal) {
-#endif
   ScopedServer test_server(test_commands_);
 
   SetupRealUpdaterLowerVersion();

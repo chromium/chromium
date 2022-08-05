@@ -634,7 +634,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': 'RBRqNIwSXHjdZf4BVjWk8enaKIHw58aQGFDVNozlbWIC',
+          'version': 'jGg_naPD5ghuLToPE3ClG72iDs9GqSPF6M1LM2OhVAwC',
         },
       ],
   },
@@ -645,7 +645,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'tqlS-vFYsn2LVSJMwipq84EKLmwKa1XJb760NnpQL2gC',
+          'version': 'SEYmLOH4UqiO4plPuX52Olw1fYjReimhu8AGkSu0o6YC',
         },
       ],
   },
@@ -656,7 +656,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': 'RthX5RzppvSV7uq2P6pm2bnv6-dvoHpUIOsZFk57ZMEC',
+          'version': 'DlaEyhCmLI4fzB57R1aWxX9QkHXpbYK4ooGqiNLPX5AC',
         },
       ],
   },
@@ -668,7 +668,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': '7MvxvS-pmZP1iAXQoCiLI7nv4UkDiyw8PC1ycwpYWbYC',
+          'version': 'ekvYgaz0Q8adDlksn73Gh-sUisY5m76_4lr_0c1woM0C',
         },
       ],
   },
@@ -680,7 +680,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': 'd5lN7fzV07O4-Mu_T8TshrGQtlR9F508p9cdhchcLpYC',
+          'version': 'ekvYgaz0Q8adDlksn73Gh-sUisY5m76_4lr_0c1woM0C',
         },
       ],
   },
@@ -691,7 +691,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': '8zehx-DVmaf_FplPe23acLAStf3Z7anQ3CY9LXBfvD0C',
+          'version': 'cotzeTxkTmIASM9Gv4ZgbdXS8yJTvhEm8foupSnIEdkC',
         },
       ],
   },
@@ -702,7 +702,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 'KE8JnjZFOyHxUhVdRkm0IMVqlZIaYPnAOI-zxtUD4zUC',
+          'version': 'esNCd2d4_kSQlID8kAeNQDJgiTaXuVJ3oiky_Ma2mFUC',
         },
       ],
   },
