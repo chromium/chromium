@@ -267,6 +267,20 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
         response.substr(error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
     RegistrationRequest::Status status = GetStatusFromError(error);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/1327973): Temporarily log additional information for
+    // INVALID_SENDER errors. Remove once the investigation is complete!
+    if (status == RegistrationRequest::Status::INVALID_SENDER) {
+      SCOPED_CRASH_KEY_STRING64("gcm_registration", "url",
+                                source->GetFinalURL().spec());
+      SCOPED_CRASH_KEY_STRING256("gcm_registration", "request_body",
+                                 request_body);
+      SCOPED_CRASH_KEY_STRING256("gcm_registration", "response_body", response);
+      base::debug::DumpWithoutCrashing(FROM_HERE,
+                                       /*time_between_dumps=*/base::Hours(12));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return status;
   }
 
