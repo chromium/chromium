@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -66,6 +67,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
+    private final Supplier<CustomTabActivityTabController> mTabController;
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
@@ -107,6 +109,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param customTabToolbarCoordinator Coordinates the custom tab toolbar.
      * @param customTabNavigationController Controls the custom tab navigation.
      * @param intentDataProvider Contains intent information used to start the Activity.
+     * @param tabController Activity tab controller.
      */
     public BaseCustomTabRootUiCoordinator(@NonNull AppCompatActivity activity,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
@@ -140,7 +143,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CustomTabActivityNavigationController> customTabNavigationController,
             @NonNull Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @NonNull Supplier<CustomTabActivityTabController> tabController) {
         // clang-format off
         super(activity, null, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
@@ -166,6 +170,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 && !intentDataProvider.get().isIncognito()) {
             mBrandingController = new BrandingController();
         }
+        mTabController = tabController;
     }
 
     @Override
@@ -183,12 +188,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
+        if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
+            Runnable softInputCallback =
+                    ((PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
+            mTabController.get().registerTabObserver(
+                    new PartialCustomTabTabObserver(softInputCallback));
+        }
     }
 
     @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
-
         if (!ReengagementNotificationController.isEnabled()) return;
         new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
             assert profile != null : "Unexpectedly null profile from TabModel.";

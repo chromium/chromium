@@ -458,6 +458,10 @@ public class CustomTabActivityTabController implements InflationObserver {
         prepareTabBackground(tab);
     }
 
+    public void registerTabObserver(TabObserver observer) {
+        mTabObserverRegistrar.registerTabObserver(observer);
+    }
+
     /** Sets the initial background color for the Tab, shown before the page content is ready. */
     private void prepareTabBackground(final Tab tab) {
         if (!CustomTabIntentDataProvider.isTrustedCustomTab(mIntent, mSession)) return;

@@ -563,6 +563,22 @@ public class PartialCustomTabHeightStrategyTest {
         verify(mSpinnerView).setVisibility(View.GONE);
     }
 
+    @Test
+    public void expandToFullHeightOnShowingKeyboard() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        strategy.onShowSoftInput();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        final int length = mAttributeResults.size();
+        assertTrue(length > 1);
+
+        // Verify that the tab expands to full height.
+        assertEquals(0, mAttributeResults.get(length - 1).y);
+    }
+
     private void verifyWindowFlagsSet() {
         verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

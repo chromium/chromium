@@ -378,6 +378,18 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mPositionUpdater.run();
     }
 
+    public void onShowSoftInput() {
+        if (isFullHeight() || mStatus != HeightStatus.INITIAL_HEIGHT) return;
+
+        // Expands to full height.
+        int start = mActivity.getWindow().getAttributes().y;
+        int end = getFullyExpandedYCoordinateWithAdjustment();
+        mAnimator.setIntValues(start, end);
+        mStatus = HeightStatus.TRANSITION;
+        mTargetStatus = HeightStatus.TOP;
+        mAnimator.start();
+    }
+
     private void updatePosition() {
         if (mContentFrame == null) return;
 
