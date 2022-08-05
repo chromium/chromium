@@ -11,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -29,6 +30,8 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -98,6 +101,7 @@ constexpr char kNumCookies[] = "numCookies";
 constexpr char kHasPermissionSettings[] = "hasPermissionSettings";
 constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
+constexpr char kFpsOwner[] = "fpsOwner";
 constexpr char kZoom[] = "zoom";
 // Placeholder value for ETLD+1 until a valid origin is added. If an ETLD+1
 // only has placeholder, then create an ETLD+1 origin.
@@ -260,9 +264,9 @@ void UpdateDataForOrigin(const GURL& url,
 }
 
 // Converts |etld_plus1| into an origin representation by adding HTTP scheme.
-std::string ConvertEtldToOrigin(const std::string etld_plus1) {
-  return std::string(url::kHttpScheme) + url::kStandardSchemeSeparator +
-         etld_plus1 + "/";
+std::string ConvertEtldToOrigin(const std::string etld_plus1, bool secure) {
+  return std::string(secure ? url::kHttpsScheme : url::kHttpScheme) +
+         url::kStandardSchemeSeparator + etld_plus1 + "/";
 }
 
 // Converts a given |site_group_map| to a list of base::Value::Dicts, adding
@@ -274,6 +278,9 @@ void ConvertSiteGroupMapToList(
     base::Value::List* list_value,
     Profile* profile) {
   DCHECK(profile);
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(profile);
+  auto first_party_sets = privacy_sandbox_service->GetFirstPartySets();
   base::flat_set<std::string> installed_origins =
       GetInstalledAppOrigins(profile);
   site_engagement::SiteEngagementService* engagement_service =
@@ -290,8 +297,8 @@ void ConvertSiteGroupMapToList(
       base::Value::Dict origin_object;
       // If origin is placeholder, create a http ETLD+1 origin for it.
       if (origin == kPlaceholder) {
-        origin_object.Set("origin",
-                          base::Value(ConvertEtldToOrigin(entry.first)));
+        origin_object.Set("origin", base::Value(ConvertEtldToOrigin(
+                                        entry.first, /*secure=*/false)));
       } else {
         origin_object.Set("origin", base::Value(origin));
       }
@@ -315,6 +322,14 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kHasInstalledPWA, base::Value(has_installed_pwa));
     site_group.Set(kNumCookies, base::Value(0));
     site_group.Set(kOriginList, std::move(origin_list));
+    if (first_party_sets.size()) {
+      auto site = net::SchemefulSite(
+          GURL(ConvertEtldToOrigin(entry.first, /*secure=*/true)));
+
+      if (first_party_sets.count(site)) {
+        site_group.Set(kFpsOwner, (first_party_sets)[site].Serialize());
+      }
+    }
     list_value->Append(std::move(site_group));
   }
 }
@@ -1768,7 +1783,7 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
         // eTLD+1 itself should be converted to an origin, the same as it would
         // have been for display.
         origin_is_partitioned.first == kPlaceholder
-            ? GURL(ConvertEtldToOrigin(etld_plus1))
+            ? GURL(ConvertEtldToOrigin(etld_plus1, /*secure=*/false))
             : GURL(origin_is_partitioned.first)));
   }
 

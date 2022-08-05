@@ -30,6 +30,8 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -90,6 +92,8 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #endif
 
+using ::testing::Return;
+
 namespace {
 
 constexpr char kCallbackId[] = "test-callback-id";
@@ -117,6 +121,34 @@ const struct PatternContentTypeTestCase {
     {{"http://google.com", "location"}, {false, "Origin must be secure"}},
     {{"http://127.0.0.1", "location"}, {true, ""}},  // Localhost is secure.
     {{"http://[::1]", "location"}, {true, ""}}};
+
+// Converts |etld_plus1| into an HTTPS SchemefulSite.
+net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
+  return net::SchemefulSite(GURL(std::string(url::kHttpsScheme) +
+                                 url::kStandardSchemeSeparator + etld_plus1 +
+                                 "/"));
+}
+
+// Validates that the list of sites are aligned with the first party sets
+// mapping.
+void ValidateSitesWithFps(
+    const base::Value::List& storage_and_cookie_list,
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>& first_party_sets) {
+  for (const base::Value& site_group : storage_and_cookie_list) {
+    std::string etld_plus1 = *site_group.GetDict().FindString("etldPlus1");
+    auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
+
+    if (first_party_sets.count(schemeful_site)) {
+      // Ensure that the `fpsOwner` is set correctly and aligned with
+      // |first_party_sets| mapping of site group owners.
+      ASSERT_EQ(first_party_sets[schemeful_site].Serialize(),
+                *site_group.GetDict().FindString("fpsOwner"));
+    } else {
+      // The site doesn't have `fpsOwner` set, `FindString` should return null.
+      ASSERT_FALSE(site_group.GetDict().FindString("fpsOwner"));
+    }
+  }
+}
 
 apps::AppPtr MakeApp(const std::string& app_id,
                      apps::AppType app_type,
@@ -216,6 +248,9 @@ class SiteSettingsHandlerTest : public testing::Test,
               return mock_browsing_topics_service;
             }));
 
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockPrivacySandboxService)));
     handler_ = std::make_unique<SiteSettingsHandler>(profile_.get());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
@@ -240,6 +275,9 @@ class SiteSettingsHandlerTest : public testing::Test,
   SiteSettingsHandler* handler() { return handler_.get(); }
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return mock_browsing_topics_service_;
+  }
+  MockPrivacySandboxService* mock_privacy_sandbox_service() {
+    return mock_privacy_sandbox_service_.get();
   }
 
   void ValidateBlockAutoplay(bool expected_value, bool expected_enabled) {
@@ -595,6 +633,7 @@ class SiteSettingsHandlerTest : public testing::Test,
 #endif
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
       mock_browsing_topics_service_;
+  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
 // True if testing for handle clear unpartitioned usage with HTTPS scheme URL.
@@ -2901,4 +2940,31 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
             browsing_data_remover->GetLastUsedOriginTypeMaskForTesting());
 }
 
+TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
+      {ConvertEtldToSchemefulSite("google.com"),
+       ConvertEtldToSchemefulSite("google.com")},
+      {ConvertEtldToSchemefulSite("google.com.au"),
+       ConvertEtldToSchemefulSite("google.com")},
+  };
+  EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
+      .WillOnce(Return(first_party_sets));
+
+  SetUpCookiesTreeModel();
+
+  handler()->ClearAllSitesMapForTesting();
+
+  handler()->OnStorageFetched();
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ("onStorageListFetched", data.arg1()->GetString());
+
+  ASSERT_TRUE(data.arg2()->is_list());
+  const base::Value::List& storage_and_cookie_list = data.arg2()->GetList();
+  EXPECT_EQ(4U, storage_and_cookie_list.size());
+
+  ValidateSitesWithFps(storage_and_cookie_list, first_party_sets);
+}
 }  // namespace settings
