@@ -9,3 +9,9 @@
 
 # TODO(crbug.com/1347608)
 -SecurityExploitBrowserTest.PostMessageSourceOrigin
+
+# TODO(crbug.com/1349961)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadCredentialled/7
+
+# TODO(crbug.com/1349978)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadHasNoSameSiteCookies/7
