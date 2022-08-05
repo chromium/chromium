@@ -37,10 +37,24 @@ message StorageKey {
   // this will simply signify that one should be created.
   enum UnguessableToken { CREATE = 0; }
 
+  message AncestorChainBit {
+    // The AncestorChainBit can either be same-site or cross-site.
+    enum BitType {
+      SAME_SITE = 0;
+      CROSS_SITE = 1;
+    }
+
+    optional BitType bit = 1 [default = SAME_SITE];
+  }
+
   required Origin origin = 1;
 
   oneof OneOf {
     TopLevelSite top_level_site = 2;
     UnguessableToken unguessable_token = 3;
   }
+
+  // The AncestorChainBit was added after the StorageKey proto was in use, so
+  // for backwards compatibility, it must be optional.
+  optional AncestorChainBit ancestor_chain_bit = 4;
 }

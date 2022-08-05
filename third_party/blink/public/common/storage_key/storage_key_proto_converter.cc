@@ -45,6 +45,22 @@ url::Origin MakeOrigin(
                                                 origin_proto.port());
 }
 
+blink::mojom::AncestorChainBit MakeAncestorChainBit(
+    const storage_key_proto::StorageKey::AncestorChainBit& bit_proto) {
+  using BitType = storage_key_proto::StorageKey::AncestorChainBit::BitType;
+
+  blink::mojom::AncestorChainBit final_bit;
+  switch (bit_proto.bit()) {
+    case BitType::StorageKey_AncestorChainBit_BitType_SAME_SITE:
+      final_bit = blink::mojom::AncestorChainBit::kSameSite;
+      break;
+    case BitType::StorageKey_AncestorChainBit_BitType_CROSS_SITE:
+      final_bit = blink::mojom::AncestorChainBit::kCrossSite;
+      break;
+  }
+  return final_bit;
+}
+
 blink::StorageKey Convert(const storage_key_proto::StorageKey& storage_key) {
   url::Origin origin = MakeOrigin(storage_key.origin());
 
@@ -62,13 +78,11 @@ blink::StorageKey Convert(const storage_key_proto::StorageKey& storage_key) {
     StorageKey::TopLevelSite top_level_site_proto =
         storage_key.top_level_site();
     url::Origin top_level_site = MakeOrigin(top_level_site_proto.origin());
-
-    switch (top_level_site_proto.url_type()) {
-      case UrlType::StorageKey_TopLevelSite_UrlType_ORIGIN:
-        return blink::StorageKey(origin, top_level_site);
-      case UrlType::StorageKey_TopLevelSite_UrlType_SCHEMEFUL_SITE:
-        return blink::StorageKey(origin, net::SchemefulSite(top_level_site));
-    }
+    blink::mojom::AncestorChainBit ancestor_chain_bit =
+        MakeAncestorChainBit(storage_key.ancestor_chain_bit());
+    return blink::StorageKey::CreateWithOptionalNonce(
+        origin, net::SchemefulSite(top_level_site), nullptr,
+        ancestor_chain_bit);
   }
 
   return blink::StorageKey();
