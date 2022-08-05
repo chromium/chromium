@@ -22,6 +22,12 @@ constexpr char kFeedbackAppViewedScreenshot[] =
     "Feedback.ChromeOSApp.ViewedScreenshot";
 constexpr char kFeedbackAppCanContactUser[] =
     "Feedback.ChromeOSApp.CanContactUser";
+constexpr char kFeedbackAppIncludedFile[] = "Feedback.ChromeOSApp.IncludedFile";
+constexpr char kFeedbackAppIncludedEmail[] =
+    "Feedback.ChromeOSApp.IncludedEmail";
+constexpr char kFeedbackAppIncludedUrl[] = "Feedback.ChromeOSApp.IncludedUrl";
+constexpr char kFeedbackAppIncludedSystemInfo[] =
+    "Feedback.ChromeOSApp.IncludedSystemInfo";
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
@@ -43,6 +49,14 @@ void EmitFeedbackAppIncludedScreenshot(bool included_screenshot);
 
 void EmitFeedbackAppCanContactUser(
     FeedbackAppContactUserConsentType contact_user_consent);
+
+void EmitFeedbackAppIncludedFile(bool included_file);
+
+void EmitFeedbackAppIncludedEmail(bool included_email);
+
+void EmitFeedbackAppIncludedUrl(bool included_url);
+
+void EmitFeedbackAppIncludedSystemInfo(bool included_system_info);
 
 }  // namespace ash::os_feedback_ui::metrics
 

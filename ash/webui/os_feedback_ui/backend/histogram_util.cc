@@ -32,4 +32,21 @@ void EmitFeedbackAppCanContactUser(
                                 contact_user_consent);
 }
 
+void EmitFeedbackAppIncludedFile(bool included_file) {
+  base::UmaHistogramBoolean(kFeedbackAppIncludedFile, included_file);
+}
+
+void EmitFeedbackAppIncludedEmail(bool included_email) {
+  base::UmaHistogramBoolean(kFeedbackAppIncludedEmail, included_email);
+}
+
+void EmitFeedbackAppIncludedUrl(bool included_url) {
+  base::UmaHistogramBoolean(kFeedbackAppIncludedUrl, included_url);
+}
+
+void EmitFeedbackAppIncludedSystemInfo(bool included_system_info) {
+  base::UmaHistogramBoolean(kFeedbackAppIncludedSystemInfo,
+                            included_system_info);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

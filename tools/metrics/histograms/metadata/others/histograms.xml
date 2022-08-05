@@ -5778,6 +5778,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether the email is included when the feedback report is submitted.
+    Fires when user's feedback report is being sent.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.IncludedFile" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether attached file is included when the feedback report is
+    submitted. Fires when user's feedback report is being sent.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedScreenshot" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>
@@ -5786,6 +5808,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the screenshot is included when the feedback report is
     submitted. Fires when a user's feedback report is successfully sent.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.IncludedSystemInfo" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether the system and information is included when the feedback
+    report is submitted. Fires when a user's feedback report is being sent.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ChromeOSApp.IncludedUrl" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether the page url is included when the feedback report is
+    submitted. Fires when user's feedback report is being sent.
   </summary>
 </histogram>
 

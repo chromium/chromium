@@ -224,6 +224,11 @@ void ChromeOsFeedbackDelegate::SendReport(
     // by posting a task to thread pool. The |feedback_data| will manage waiting
     // for all tasks to complete.
     feedback_data->AttachAndCompressFileData(std::move(file_data));
+    // Records whether the file is included when the feedback report is
+    // submitted.
+    ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedFile(true);
+  } else {
+    ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedFile(false);
   }
 
   // Handle Feedback Metrics
@@ -231,6 +236,18 @@ void ChromeOsFeedbackDelegate::SendReport(
   // submitted.
   ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedScreenshot(
       report->include_screenshot);
+  // Records whether the email is included when the feedback report is
+  // submitted.
+  ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedEmail(
+      feedback_context->email.has_value());
+  // Records whether the page url is included when the feedback report is
+  // submitted.
+  ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedUrl(
+      feedback_context->page_url.has_value());
+  // Records whether the system and information is included when the feedback
+  // report is submitted.
+  ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedSystemInfo(
+      report->include_system_logs_and_histograms);
 
   feedback_service_->SendFeedback(
       feedback_params, feedback_data,
