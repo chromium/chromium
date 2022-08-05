@@ -618,7 +618,6 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   if (!invoked_in_browser) {
     CommonEarlyInitialization();
     return absl::nullopt;
-    ;
   }
 
 #if BUILDFLAG(IS_WIN)
