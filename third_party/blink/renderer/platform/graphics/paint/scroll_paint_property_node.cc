@@ -29,6 +29,7 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
     const State& other) const {
   if (container_rect != other.container_rect ||
       contents_size != other.contents_size ||
+      overflow_clip_node != other.overflow_clip_node ||
       user_scrollable_horizontal != other.user_scrollable_horizontal ||
       user_scrollable_vertical != other.user_scrollable_vertical ||
       prevent_viewport_scrolling_from_inner !=
@@ -58,6 +59,10 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
     json->SetString("containerRect", String(state_.container_rect.ToString()));
   if (!state_.contents_size.IsEmpty())
     json->SetString("contentsSize", String(state_.contents_size.ToString()));
+  if (state_.overflow_clip_node) {
+    json->SetString("overflowClipNode",
+                    String::Format("%p", state_.overflow_clip_node));
+  }
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(
         "userScrollable",

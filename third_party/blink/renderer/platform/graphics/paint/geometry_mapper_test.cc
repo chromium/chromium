@@ -751,15 +751,13 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
 TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   auto above_viewport = CreateTransform(t0(), TransformationMatrix());
   auto viewport = CreateTransform(*above_viewport, TransformationMatrix());
-  auto scroll_translation = CreateScrollTranslation(
-      *viewport, -100, -200, gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800),
-      CompositingReason::kOverflowScrolling);
-
-  auto fixed_translate = TransformationMatrix().Translate(100, 0);
+  auto scroll_state = CreateCompositedScrollTranslationState(
+      PropertyTreeState(*viewport, c0(), e0()), -100, -200,
+      gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
 
   const gfx::Vector2dF fixed_offset(200, 200);
   TransformPaintPropertyNode::State fixed_state{fixed_offset, nullptr,
-                                                scroll_translation};
+                                                &scroll_state.Transform()};
   fixed_state.direct_compositing_reasons = CompositingReason::kFixedPosition;
   auto fixed_transform =
       TransformPaintPropertyNode::Create(*viewport, std::move(fixed_state));

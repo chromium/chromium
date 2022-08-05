@@ -2356,6 +2356,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.container_rect = ToPixelSnappedRect(clip_rect);
       state.contents_size =
           scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
+      state.overflow_clip_node = properties_->OverflowClip();
 
       state.user_scrollable_horizontal =
           scrollable_area->UserInputScrollable(kHorizontalScrollbar);

@@ -21,6 +21,8 @@
 
 namespace blink {
 
+class ClipPaintPropertyNode;
+
 using MainThreadScrollingReasons = uint32_t;
 
 // A scroll node contains auxiliary scrolling information which includes how far
@@ -44,6 +46,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   struct PLATFORM_EXPORT State {
     gfx::Rect container_rect;
     gfx::Size contents_size;
+    const ClipPaintPropertyNode* overflow_clip_node = nullptr;
     bool user_scrollable_horizontal = false;
     bool user_scrollable_vertical = false;
 
