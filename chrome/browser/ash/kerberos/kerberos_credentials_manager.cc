@@ -723,11 +723,11 @@ void KerberosCredentialsManager::NotifyEnabledStateChanged() {
 }
 
 const std::string& KerberosCredentialsManager::GetActivePrincipalName() const {
-  // Using Get()->GetString() instead of GetString() directly to prevent a
+  // Using GetValue().GetString() instead of GetString() directly to prevent a
   // string copy.
   return primary_profile_->GetPrefs()
-      ->Get(prefs::kKerberosActivePrincipalName)
-      ->GetString();
+      ->GetValue(prefs::kKerberosActivePrincipalName)
+      .GetString();
 }
 
 void KerberosCredentialsManager::SetActivePrincipalName(
