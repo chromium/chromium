@@ -702,14 +702,16 @@ class ChromiumDepGraph {
         // Use a background thread to avoid slowing down main thread.
         // Saves about 80 seconds currently.
         new Thread().start(() -> {
-            HttpURLConnection http = new URL(url).openConnection();
-            http.setRequestMethod("HEAD");
-            if (http.getResponseCode() != 200) {
-                new RuntimeException("Resolved POM but could not resolve $url").printStackTrace();
+            HttpURLConnection http = new URL(url).openConnection()
+            http.requestMethod = 'HEAD'
+            if (http.responseCode != 200) {
+                /* groovylint-disable-next-line PrintStackTrace */
+                new RuntimeException("Resolved POM but could not resolve $url").printStackTrace()
                 // Exception is logged and ignored if thrown, so explicitly exit.
-                System.exit(1);
-              }
-            http.disconnect();
+                /* groovylint-disable-next-line SystemExit */
+                System.exit(1)
+            }
+            http.disconnect()
         });
     }
 

@@ -31,8 +31,6 @@ _IGNORE_WARNINGS = (
     r'Type `sun.misc.SharedSecrets` was not found',
     # Caused by jacoco code coverage:
     r'Type `java.lang.management.ManagementFactory` was not found',
-    # TODO(wnwen): Remove this after R8 version 3.0.26-dev:
-    r'Missing class sun.misc.Unsafe',
     # Caused when the test apk and the apk under test do not having native libs.
     r'Missing class org.chromium.build.NativeLibraries',
     # Caused by internal annotation: https://crbug.com/1180222
@@ -181,7 +179,7 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     # }
     output = re.sub(
         r'Rule matches the static final field `java\.lang\.String '
-        'com\.google\.protobuf.*\{\n.*?\n\}\n?',
+        r'com\.google\.protobuf.*\{\n.*?\n\}\n?',
         '',
         output,
         flags=re.DOTALL)
@@ -529,7 +527,7 @@ def main(args):
       lambda changes: _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd),
       options,
       input_paths=input_paths,
-      input_strings=dex_cmd + [bool(options.incremental_dir)],
+      input_strings=dex_cmd + [str(bool(options.incremental_dir))],
       output_paths=output_paths,
       pass_changes=True,
       track_subpaths_allowlist=track_subpaths_allowlist,

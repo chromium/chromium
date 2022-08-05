@@ -1361,14 +1361,27 @@ if (!is_component_build) {
     depfile = "$target_gen_dir/$target_name.d"
     _zip_file = "$target_gen_dir/$target_name.zip"
     outputs = [ _zip_file ]
-    _annotations_jar = "$root_out_dir/lib.java/third_party/androidx/androidx_annotation_annotation.jar"
     _src_jar = "$_package_dir/cronet_api-src.jar"
+
+    _annotations_dep =
+        "//third_party/androidx:androidx_annotation_annotation_java"
+    _build_config_dep = "$_annotations_dep$build_config_target_suffix"
+    _build_config =
+        get_label_info(_annotations_dep, "target_gen_dir") + "/" +
+        get_label_info(_annotations_dep, "name") + ".build_config.json"
+
+    deps = [
+      ":jar_cronet_api_source",
+      _annotations_dep,
+      _build_config_dep,
+    ]
     inputs = [
-      _annotations_jar,
       _src_jar,
       android_sdk_jar,
+      _build_config,
     ]
 
+    _rebased_build_config = rebase_path(_build_config, root_build_dir)
     args = [
       "--output-dir",
       rebase_path(_package_dir, root_build_dir),
@@ -1384,16 +1397,12 @@ if (!is_component_build) {
       rebase_path(_zip_file, root_build_dir),
       "--android-sdk-jar",
       rebase_path(android_sdk_jar, root_build_dir),
-      "--support-annotations-jar",
-      rebase_path(_annotations_jar, root_build_dir),
+      "--support-annotations-jar=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
+      "--classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
 
       # JavaDoc is generated from Cronet's API source jar.
       "--input-src-jar",
       rebase_path(_src_jar, root_build_dir),
-    ]
-    deps = [
-      ":jar_cronet_api_source",
-      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

@@ -322,7 +322,7 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.7.0.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.7.10.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
   supports_android = true
   deps = [
@@ -627,7 +627,7 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.7.0.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.7.10.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
   supports_android = true
 
@@ -1200,6 +1200,9 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     ]
+
+    # Needed until next material update, see crbug.com/1349521.
+    enable_bytecode_checks = false
 
     # Reduce binary size. https:crbug.com/954584
     ignore_proguard_configs = true

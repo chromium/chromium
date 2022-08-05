@@ -689,6 +689,9 @@ class BuildConfigGenerator extends DefaultTask {
             case 'com_google_android_material_material':
                 sb.with {
                     append('\n')
+                    append('  # Needed until next material update, see crbug.com/1349521.\n')
+                    append('  enable_bytecode_checks = false\n')
+                    append('\n')
                     append('  # Reduce binary size. https:crbug.com/954584\n')
                     append('  ignore_proguard_configs = true\n')
                     append('  proguard_configs = ["material_design.flags"]\n')

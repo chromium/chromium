@@ -42,8 +42,8 @@ class CronetPostprocessor(Postprocessor):
 
 class CronetExtension(Extension):
   def extendMarkdown(self, md, md_globals):
-    md.postprocessors.add('CronetPostprocessor',
-                          CronetPostprocessor(md), '_end')
+    md.postprocessors.add('CronetPostprocessor', CronetPostprocessor(md),
+                          '_end')
 
 
 def GenerateJavadoc(args, src_dir, output_dir):
@@ -52,36 +52,47 @@ def GenerateJavadoc(args, src_dir, output_dir):
 
   android_sdk_jar = args.android_sdk_jar
   if not android_sdk_jar:
-    android_sdk_jar = os.path.join(
-        SDK_DIR, 'platforms', 'android-27', 'android.jar')
+    android_sdk_jar = os.path.join(SDK_DIR, 'platforms', 'android-27',
+                                   'android.jar')
 
   build_utils.DeleteDirectory(output_dir)
   build_utils.MakeDirectory(output_dir)
+  classpath = ([android_sdk_jar, args.support_annotations_jar] +
+               args.classpath_jars)
   javadoc_cmd = [
-    os.path.abspath(JAVADOC_PATH),
-    '-d', output_dir,
-    '-quiet',
-    '-overview', overview_file,
-    '-doclet', 'com.google.doclava.Doclava',
-    '-docletpath',
-    '%s:%s' % (os.path.join(DOCLAVA_DIR, 'jsilver.jar'),
-               os.path.join(DOCLAVA_DIR, 'doclava.jar')),
-    '-title', 'Cronet API',
-    '-federate', 'Android', 'https://developer.android.com/',
-    '-federationapi', 'Android', os.path.join(DOCLAVA_DIR, 'current.txt'),
-    '-classpath',
-    '%s:%s' % (os.path.abspath(android_sdk_jar),
-               os.path.abspath(args.support_annotations_jar)),
+      os.path.abspath(JAVADOC_PATH),
+      '-d',
+      output_dir,
+      '-quiet',
+      '-overview',
+      overview_file,
+      '-doclet',
+      'com.google.doclava.Doclava',
+      '-docletpath',
+      '%s:%s' % (os.path.join(DOCLAVA_DIR, 'jsilver.jar'),
+                 os.path.join(DOCLAVA_DIR, 'doclava.jar')),
+      '-title',
+      'Cronet API',
+      '-federate',
+      'Android',
+      'https://developer.android.com/',
+      '-federationapi',
+      'Android',
+      os.path.join(DOCLAVA_DIR, 'current.txt'),
+      '-classpath',
+      ':'.join(os.path.abspath(p) for p in classpath),
   ]
   for subdir, _, files in os.walk(src_dir):
     for filename in files:
       if filename.endswith(".java"):
         javadoc_cmd += [os.path.join(subdir, filename)]
   try:
+
     def stderr_filter(stderr):
       return stderr.replace(JAVADOC_WARNING, '')
 
-    build_utils.CheckOutput(javadoc_cmd, cwd=working_dir,
+    build_utils.CheckOutput(javadoc_cmd,
+                            cwd=working_dir,
                             stderr_filter=stderr_filter)
   except build_utils.CalledProcessError:
     build_utils.DeleteDirectory(output_dir)
@@ -92,11 +103,12 @@ def GenerateJavadoc(args, src_dir, output_dir):
   with open(os.path.join(output_dir, 'reference', 'index.html'), 'r') as \
       old_index, open(os.path.join(output_dir, 'index.html'), 'w') as new_index:
     for line in old_index:
-      new_index.write(line.replace('classes.html',
-                                   os.path.join('reference', 'classes.html')))
+      new_index.write(
+          line.replace('classes.html', os.path.join('reference',
+                                                    'classes.html')))
 
 
-def main():
+def main(argv):
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
   parser.add_argument('--output-dir', help='Directory to put javadoc')
@@ -107,20 +119,27 @@ def main():
   parser.add_argument('--zip-file', help='Path to ZIP archive of javadocs.')
   parser.add_argument('--android-sdk-jar', help='Path to android.jar')
   parser.add_argument('--support-annotations-jar',
-                    help='Path to support-annotations-$VERSION.jar')
-
-  args, _ = parser.parse_known_args()
+                      help='Path to support-annotations-$VERSION.jar')
+  parser.add_argument('--classpath-jars',
+                      help='Paths to jars needed by support-annotations-jar.')
+  expanded_argv = build_utils.ExpandFileArgs(argv)
+  args, _ = parser.parse_known_args(expanded_argv)
+  args.classpath_jars = build_utils.ParseGnList(args.classpath_jars)
   # A temporary directory to put the output of cronet api source jar files.
   unzipped_jar_path = tempfile.mkdtemp(dir=args.output_dir)
   if os.path.exists(args.input_src_jar):
-    jar_cmd = [os.path.relpath(JAR_PATH, unzipped_jar_path), 'xf',
-               os.path.abspath(args.input_src_jar)]
+    jar_cmd = [
+        os.path.relpath(JAR_PATH, unzipped_jar_path), 'xf',
+        os.path.abspath(args.input_src_jar)
+    ]
     build_utils.CheckOutput(jar_cmd, cwd=unzipped_jar_path)
   else:
     raise Exception('Jar file does not exist: %s' % args.input_src_jar)
 
-  net_docs.ProcessDocs([args.readme_file], args.input_dir,
-                       args.output_dir, extensions=[CronetExtension()])
+  net_docs.ProcessDocs([args.readme_file],
+                       args.input_dir,
+                       args.output_dir,
+                       extensions=[CronetExtension()])
 
   output_dir = os.path.abspath(os.path.join(args.output_dir, 'javadoc'))
   GenerateJavadoc(args, os.path.abspath(unzipped_jar_path), output_dir)
@@ -133,11 +152,16 @@ def main():
     deps = []
     for root, _, filenames in os.walk(args.input_dir):
       # Ignore .pyc files here, it might be re-generated during build.
-      deps.extend(os.path.join(root, f) for f in filenames
-                  if not f.endswith('.pyc'))
+      deps.extend(
+          os.path.join(root, f) for f in filenames if not f.endswith('.pyc'))
+    if args.support_annotations_jar:
+      deps.append(args.support_annotations_jar)
+    if args.classpath_jars:
+      deps.extend(args.classpath_jars)
     build_utils.WriteDepfile(args.depfile, args.zip_file, deps)
   # Clean up temporary output directory.
   build_utils.DeleteDirectory(unzipped_jar_path)
 
+
 if __name__ == '__main__':
-  sys.exit(main())
+  sys.exit(main(sys.argv[1:]))
