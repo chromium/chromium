@@ -36,7 +36,7 @@ build_webui("build") {
   if (is_chromeos_lacros) {
     static_files += [ "enterprise_profile_welcome/images/lacros_enterprise_profile_welcome_illustration.svg" ]
   }
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos) {
     static_files += [ "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg" ]
   }
   if (enable_dice_support) {
