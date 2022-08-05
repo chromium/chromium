@@ -78,8 +78,6 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
 
   if ((event.phase & kWheelEventPhaseNoEventMask) ||
       (event.momentum_phase & kWheelEventPhaseNoEventMask)) {
-    // Filter wheel events with zero deltas and reset the wheel_target_ node.
-    DCHECK(!event.delta_x && !event.delta_y);
     return WebInputEventResult::kNotHandled;
   }
 
