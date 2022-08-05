@@ -242,22 +242,20 @@ constexpr size_t kSuperPageAlignment = kSuperPageSize;
 constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
-// GigaCage is split into two pools, one which supports BackupRefPtr (BRP) and
-// one that doesn't.
+// GigaCage is generally split into two pools, one which supports BackupRefPtr
+// (BRP) and one that doesn't.
 #if defined(PA_HAS_64_BITS_POINTERS)
-// The Configurable Pool is only available in 64-bit mode
+// The 3rd, Configurable Pool is only available in 64-bit mode.
 constexpr size_t kNumPools = 3;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Special-case macOS. Contrary to other platforms, there is no sandbox limit
-// there, meaning that a single renderer could "happily" consume >8GiB. So the
-// 8GiB pool size is a regression. Make the limit higher on this platform only
-// to be consistent with previous behavior. See crbug.com/1232567 for details.
-//
-// On Linux, reserving memory is not costly, and we have cases where heaps can
-// grow to more than 8GiB without being a memory leak.
-constexpr size_t kPoolMaxSize = 16 * kGiB;
-#else
+// Maximum GigaCage pool size. With exception of Configurable Pool, it is also
+// the actual size, unless PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE is set, which
+// allows to choose a different size at initialization time for certain
+// configurations.
+#if BUILDFLAG(IS_ANDROID)
+// Special-case Android, which incurs test failures with larger GigaCage.
 constexpr size_t kPoolMaxSize = 8 * kGiB;
+#else
+constexpr size_t kPoolMaxSize = 16 * kGiB;
 #endif
 #else  // defined(PA_HAS_64_BITS_POINTERS)
 constexpr size_t kNumPools = 2;
