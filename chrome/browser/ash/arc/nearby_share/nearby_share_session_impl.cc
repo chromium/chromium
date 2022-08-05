@@ -72,8 +72,8 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
   }
 }
 
-void DoDeleteShareCacheFilePaths(base::FilePath profile_path,
-                                 base::FilePath user_cache_file_path) {
+void DoDeleteShareCacheFilePaths(const base::FilePath& profile_path,
+                                 const base::FilePath& user_cache_file_path) {
   // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
   // We should remove this obsolete directory path if it is still present.
   base::FilePath cache_base_path;
@@ -86,7 +86,7 @@ void DoDeleteShareCacheFilePaths(base::FilePath profile_path,
 
 // Calculate the amount of disk space, in bytes, needed in |share_dir| to
 // stream |total_file_size| bytes from Android to the Chrome OS file system.
-static int64_t CalculateRequiredSpace(const base::FilePath share_dir,
+static int64_t CalculateRequiredSpace(const base::FilePath& share_dir,
                                       const uint64_t total_file_size) {
   DVLOG(1) << __func__;
   int64_t free_disk_space = base::SysInfo::AmountOfFreeDiskSpace(share_dir);
