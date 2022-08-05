@@ -41,7 +41,6 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
             PageActionIconType::kSaveCard);
     save_card_icon->SetVisible(true);
     save_card_icon->InstallLoadingIndicatorForTesting();
-    container->Layout();
 
     EXPECT_EQ(container->uses_highlight(), expect_highlight);
     EXPECT_FALSE(IsHighlighted(container));
