@@ -364,4 +364,67 @@ TEST(DrmOverlayManagerTest, ObservingHardwareCapabilities) {
   EXPECT_EQ(secondary_calls, 4);
 }
 
+TEST(DrmOverlayManagerTest, SingleClipRectUnderlaySupport) {
+  TestDrmOverlayManager manager;
+
+  // Candidates for output surface and underlay quad.
+  std::vector<OverlaySurfaceCandidate> candidates = {
+      CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
+      CreateCandidate(gfx::Rect(10, 10, 20, 20), -1)};
+
+  // Set a clip rect that imposes a restriction on |display_rect|.
+  candidates[1].clip_rect = gfx::Rect(10, 10, 15, 15);
+
+  for (int i = 0; i < 4; i++)
+    manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+
+  EXPECT_EQ(manager.requests().size(), 1u);
+  EXPECT_TRUE(manager.requests()[0][1].overlay_handled);
+
+  manager.requests().clear();
+  // Now make the overlay candidate a single-on-top overlay. Single-on-top
+  // overlays with restrictive clip rects are not supported.
+  candidates[1].plane_z_order = 1;
+  for (int i = 0; i < 4; i++)
+    manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+
+  EXPECT_EQ(manager.requests().size(), 1u);
+  EXPECT_FALSE(manager.requests()[0][1].overlay_handled);
+}
+
+TEST(DrmOverlayManagerTest, MultiClipRectUnderlaySupport) {
+  TestDrmOverlayManager manager;
+
+  // Two underlay quads who's |display_rect| overlap. The order here is
+  // important; even though the -2 underlay comes first in the list it will be
+  // occluded by the -1 underlay and when -1 clipped the -2 underlay should
+  // fail.
+  std::vector<OverlaySurfaceCandidate> candidates = {
+      CreateCandidate(gfx::Rect(0, 0, 100, 100), 0),
+      CreateCandidate(gfx::Rect(10, 10, 20, 20), -2),
+      CreateCandidate(gfx::Rect(20, 20, 20, 20), -1)};
+
+  // Set a clip rect that imposes a restriction on |display_rect|.
+  candidates[1].clip_rect = gfx::Rect(10, 10, 15, 15);
+  candidates[2].clip_rect = gfx::Rect(20, 20, 15, 15);
+
+  for (int i = 0; i < 4; i++)
+    manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+
+  EXPECT_EQ(manager.requests().size(), 1u);
+  EXPECT_FALSE(manager.requests()[0][1].overlay_handled);
+  EXPECT_TRUE(manager.requests()[0][2].overlay_handled);
+
+  manager.requests().clear();
+  // Now remove the clipping constraint on the -1 underlay which should allow
+  // the -2 underlay to be handled.
+  candidates[2].clip_rect = gfx::Rect(20, 20, 50, 50);
+  for (int i = 0; i < 4; i++)
+    manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
+
+  EXPECT_EQ(manager.requests().size(), 1u);
+  EXPECT_TRUE(manager.requests()[0][1].overlay_handled);
+  EXPECT_TRUE(manager.requests()[0][2].overlay_handled);
+}
+
 }  // namespace ui

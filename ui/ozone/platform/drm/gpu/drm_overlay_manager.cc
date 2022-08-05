@@ -91,9 +91,54 @@ void DrmOverlayManager::CheckOverlaySupport(
     return;
   }
 
+  struct OverlayReindexZOrder {
+    size_t index;
+    int plane_z_order;
+  };
+
+  std::vector<OverlayReindexZOrder> overlay_reindex;
+  for (size_t i = 0; i < candidates->size(); i++) {
+    overlay_reindex.emplace_back(
+        (OverlayReindexZOrder{i, (*candidates)[i].plane_z_order}));
+  }
+  // Create a mapping for sorted z order to candidate index.
+  std::sort(overlay_reindex.begin(), overlay_reindex.end(),
+            [](const auto& a, const auto& b) {
+              return a.plane_z_order > b.plane_z_order;
+            });
+
+  // Active |display_rect| occluders that have a clip. This list is in z plane
+  // order.
+  std::vector<gfx::RectF> display_rect_with_clip;
+  // List of underlays that have failed by being occluded by an underlay with a
+  // clip rect. This list is in |candidate| ordering.
+  std::vector<bool> underlay_fail_clip;
+  underlay_fail_clip.resize(candidates->size());
+  for (auto& reindex : overlay_reindex) {
+    const auto& candidate = (*candidates)[reindex.index];
+
+    if (candidate.plane_z_order < 0) {
+      for (auto& rect : display_rect_with_clip) {
+        if (rect.Intersects(candidate.display_rect)) {
+          underlay_fail_clip[reindex.index] = true;
+          break;
+        }
+      }
+    }
+
+    if (candidate.plane_z_order < 0 && candidate.clip_rect &&
+        !gfx::RectF(*candidate.clip_rect).Contains(candidate.display_rect)) {
+      // This underlay has a clip that is incompatible with all future
+      // intersecting underlays.
+      display_rect_with_clip.emplace_back(candidate.display_rect);
+    }
+  }
+
   std::vector<OverlaySurfaceCandidate> result_candidates;
-  for (auto& candidate : *candidates) {
-    bool can_handle = CanHandleCandidate(candidate, widget);
+  for (size_t i = 0; i < candidates->size(); i++) {
+    auto& candidate = (*candidates)[i];
+    bool can_handle =
+        !underlay_fail_clip[i] && CanHandleCandidate(candidate, widget);
 
     // CanHandleCandidate() should never return false if the candidate is
     // the primary plane.
@@ -202,8 +247,9 @@ bool DrmOverlayManager::CanHandleCandidate(
     return false;
   }
 
-  if (candidate.clip_rect && !candidate.clip_rect->Contains(
-                                 gfx::ToNearestRect(candidate.display_rect))) {
+  if (candidate.plane_z_order >= 0 && candidate.clip_rect &&
+      !candidate.clip_rect->Contains(
+          gfx::ToNearestRect(candidate.display_rect))) {
     VLOG(3) << "Overlay Rejected: clip_rect=" << candidate.clip_rect->ToString()
             << ", display_rect=" << candidate.display_rect.ToString();
     return false;
