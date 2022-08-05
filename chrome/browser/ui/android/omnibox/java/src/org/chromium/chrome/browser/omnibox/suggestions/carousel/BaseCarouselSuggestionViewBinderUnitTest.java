@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,8 +30,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,8 +49,10 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_DYNAMIC_SPACING})
 public class BaseCarouselSuggestionViewBinderUnitTest {
     static final int SUGGESTION_VERTICAL_PADDING = 123;
+    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     @Mock
     BaseCarouselSuggestionView mView;

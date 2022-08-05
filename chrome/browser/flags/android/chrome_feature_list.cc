@@ -349,6 +349,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kAdaptiveSuggestionsCount,
     &omnibox::kAndroidAuxiliarySearch,
     &omnibox::kMostVisitedTiles,
+    &omnibox::kMostVisitedTilesDynamicSpacing,
     &omnibox::kMostVisitedTilesTitleWrapAround,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxRemoveSuggestionHeaderCapitalization,
