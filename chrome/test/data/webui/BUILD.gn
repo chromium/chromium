@@ -39,6 +39,10 @@ if (include_js_tests) {
       sources += [ "signin/local_profile_customization_interactive_ui_test.js" ]
     }
 
+    if (enable_webui_tab_strip) {
+      sources += [ "tab_strip/tab_strip_interactive_ui_tests.js" ]
+    }
+
     gen_include_files = [
       "polymer_browser_test_base.js",
       "polymer_interactive_ui_test.js",
