@@ -87,7 +87,7 @@ void AppIconSource::StartDataRequest(
   if (query_position != std::string::npos)
     size_param = size_param.substr(0, query_position);
   int size_in_dip = 0;
-  if (!base::StringToInt(size_param, &size_in_dip)) {
+  if (!base::StringToInt(size_param, &size_in_dip) || size_in_dip < 1) {
     LoadDefaultImage(std::move(callback));
     return;
   }
