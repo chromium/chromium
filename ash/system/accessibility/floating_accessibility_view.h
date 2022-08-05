@@ -58,6 +58,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     kDictation = 3,
     kSelectToSpeak = 4,
     kVirtualKeyboard = 5,
+    kIme = 6,
   };
   class Delegate {
    public:
@@ -87,6 +88,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
  private:
   void OnA11yTrayButtonPressed();
   void OnPositionButtonPressed();
+  void OnImeButtonPressed();
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -100,6 +102,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   FloatingMenuButton* a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
   FloatingMenuButton* position_button_ = nullptr;
+  // Button to list all available keyboard languages.
+  FloatingMenuButton* ime_button_ = nullptr;
 
   Delegate* const delegate_;
 };

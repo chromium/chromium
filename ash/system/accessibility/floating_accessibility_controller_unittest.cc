@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -112,6 +113,25 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
     controller()->on_layout_change_ = std::move(closure);
   }
 };
+
+TEST_F(FloatingAccessibilityControllerTest, ImeButtonNotShowWhenDisabled) {
+  SetUpVisibleMenu();
+
+  views::View* button =
+      GetMenuButton(FloatingAccessibilityView::ButtonId::kIme);
+  EXPECT_FALSE(button);
+}
+
+TEST_F(FloatingAccessibilityControllerTest, ImeButtonShowWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kKioskEnableImeButton);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kKioskEnableImeButton));
+  SetUpVisibleMenu();
+
+  views::View* button =
+      GetMenuButton(FloatingAccessibilityView::ButtonId::kIme);
+  EXPECT_TRUE(button);
+}
 
 TEST_F(FloatingAccessibilityControllerTest, MenuIsNotShownWhenNotEnabled) {
   accessibility_controller()->ShowFloatingMenuIfEnabled();
