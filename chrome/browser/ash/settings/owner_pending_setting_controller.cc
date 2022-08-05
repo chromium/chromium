@@ -178,7 +178,7 @@ OwnerPendingSettingController::GetOwnerSettingsService(Profile* profile) {
 absl::optional<base::Value> OwnerPendingSettingController::GetPendingValue()
     const {
   if (local_state_->HasPrefPath(pending_pref_name_)) {
-    return local_state_->Get(pending_pref_name_)->Clone();
+    return local_state_->GetValue(pending_pref_name_).Clone();
   }
   return absl::nullopt;
 }
