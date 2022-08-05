@@ -7,6 +7,7 @@ Autoclick*
 BrowserAppShelfControllerBrowserTest*
 ChromeVox*
 DemoAshRequiresLacrosTest*
+DesksTemplatesClientLacrosTest*
 Dictation*
 SelectToSpeak*
 SwitchAccess*

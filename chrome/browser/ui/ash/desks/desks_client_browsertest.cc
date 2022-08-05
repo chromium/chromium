@@ -67,6 +67,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -2460,7 +2461,119 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
   loop2.Run();
 }
 
-// TODO(crbug.com/1333965): Add some tests to launch LaCros browser.
+class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
+ public:
+  DesksTemplatesClientLacrosTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kDesksTemplates},
+        /*disabled_features=*/{ash::features::kDeskTemplateSync});
+  }
+  DesksTemplatesClientLacrosTest(const DesksTemplatesClientLacrosTest&) =
+      delete;
+  DesksTemplatesClientLacrosTest& operator=(
+      const DesksTemplatesClientLacrosTest&) = delete;
+  ~DesksTemplatesClientLacrosTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    if (!ash_starter_.HasLacrosArgument())
+      return;
+
+    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
+  }
+
+  void SetUpOnMainThread() override {
+    if (!ash_starter_.HasLacrosArgument())
+      return;
+
+    // `StartLacros()` will bring up one lacros browser. There will also be one
+    // classic browser from `InProcessBrowserTest` that can be accessed with
+    // `browser()`.
+    LacrosWindowWaiter waiter;
+    ash_starter_.StartLacros(this);
+    std::ignore = waiter.Wait(/*expected_count=*/1u);
+  }
+
+ protected:
+  // Helper class which waits for lacros windows to become visible.
+  class LacrosWindowWaiter : public aura::WindowObserver {
+   public:
+    LacrosWindowWaiter() {
+      window_observation_.Observe(ash::Shell::GetPrimaryRootWindow());
+    }
+    LacrosWindowWaiter(const LacrosWindowWaiter&) = delete;
+    LacrosWindowWaiter& operator=(const LacrosWindowWaiter&) = delete;
+    ~LacrosWindowWaiter() override = default;
+
+    // Spins the loop and waits for `expected_count` number of lacros windows to
+    // become visible.
+    aura::Window::Windows Wait(size_t expected_count) {
+      DCHECK(windows_.empty());
+      DCHECK_GT(expected_count, 0u);
+
+      expected_count_ = expected_count;
+      run_loop_.Run();
+      return windows_;
+    }
+
+    // aura::WindowObserver::
+    void OnWindowVisibilityChanged(aura::Window* window,
+                                   bool visible) override {
+      if (!visible || !crosapi::browser_util::IsLacrosWindow(window))
+        return;
+
+      windows_.push_back(window);
+      if (windows_.size() < expected_count_)
+        return;
+
+      run_loop_.Quit();
+    }
+
+   private:
+    size_t expected_count_ = 0u;
+
+    // The vector of lacros windows that where shown while waiting.
+    aura::Window::Windows windows_;
+
+    base::RunLoop run_loop_;
+
+    base::ScopedObservation<aura::Window, aura::WindowObserver>
+        window_observation_{this};
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  test::AshBrowserTestStarter ash_starter_;
+};
+
+// Tests launching a template with a browser window.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
+  if (!ash_starter_.HasLacrosArgument())
+    return;
+
+  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+
+  // Enter overview and save the current desk as a template. The current desk
+  // has one lacros browser, and one regular browser.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskAsTemplateButton();
+
+  // Launch the saved desk template. We expect two launched lacros windows,
+  // since the regular browser window was saved and will be launched as a lacros
+  // window. Check the launched windows will have data in
+  // `app_restore::kWindowInfoKey`, otherwise ash does not know that they are
+  // launched from desk templates. See https://crbug.com/1333965 for more
+  // details.
+  LacrosWindowWaiter waiter;
+  ClickFirstTemplateItem();
+  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/2u);
+  ASSERT_EQ(2u, launched_windows.size());
+  for (auto* window : launched_windows)
+    EXPECT_TRUE(window->GetProperty(app_restore::kWindowInfoKey));
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+}
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
