@@ -432,8 +432,9 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 };
 
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       ShowConfirmationDialogAndProceed) {
+                       DISABLED_ShowConfirmationDialogAndProceed) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
@@ -444,15 +445,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ShowConfirmationDialogAndCancel \
-  DISABLED_ShowConfirmationDialogAndCancel
-#else
-#define MAYBE_ShowConfirmationDialogAndCancel ShowConfirmationDialogAndCancel
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_ShowConfirmationDialogAndCancel) {
+                       DISABLED_ShowConfirmationDialogAndCancel) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
@@ -464,13 +459,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectHiddenPath(kDemoPreferencesScreen);
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_InvokeWithTaps DISABLED_InvokeWithTaps
-#else
-#define MAYBE_InvokeWithTaps InvokeWithTaps
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_InvokeWithTaps) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_InvokeWithTaps) {
   // Use fake time to avoid flakiness.
   SetFakeTimeForMultiTapDetector(base::Time::UnixEpoch());
   IsConfirmationDialogHidden();
@@ -479,16 +469,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_InvokeWithTaps) {
   IsConfirmationDialogShown();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DoNotInvokeWithNonConsecutiveTaps \
-  DISABLED_DoNotInvokeWithNonConsecutiveTaps
-#else
-#define MAYBE_DoNotInvokeWithNonConsecutiveTaps \
-  DoNotInvokeWithNonConsecutiveTaps
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_DoNotInvokeWithNonConsecutiveTaps) {
+                       DISABLED_DoNotInvokeWithNonConsecutiveTaps) {
   // Use fake time to avoid flakiness.
   const base::Time kFakeTime = base::Time::UnixEpoch();
   SetFakeTimeForMultiTapDetector(kFakeTime);
@@ -505,14 +488,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   IsConfirmationDialogHidden();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OnlineSetupFlowSuccess DISABLED_OnlineSetupFlowSuccess
-#else
-#define MAYBE_OnlineSetupFlowSuccess OnlineSetupFlowSuccess
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OnlineSetupFlowSuccess) {
+                       DISABLED_OnlineSetupFlowSuccess) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -537,16 +515,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// Disabled due to test failure. http://crbug.com/1350365
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
-  DISABLED_OnlineSetupFlowSuccessWithCountryCustomization
-#else
-#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
-  OnlineSetupFlowSuccessWithCountryCustomization
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OnlineSetupFlowSuccessWithCountryCustomization) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(
+    DemoSetupArcSupportedTest,
+    DISABLED_OnlineSetupFlowSuccessWithCountryCustomization) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -572,8 +544,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   SelectFranceAndFinishSetup();
 }
 
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowSuccessWithRetailerAndStoreId) {
+                       DISABLED_OnlineSetupFlowSuccessWithRetailerAndStoreId) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -612,7 +585,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       DISABLED_OnlineSetupFlowErrorDefault) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -641,16 +616,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OnlineSetupFlowErrorPowerwashRequired \
-  DISABLED_OnlineSetupFlowErrorPowerwashRequired
-#else
-#define MAYBE_OnlineSetupFlowErrorPowerwashRequired \
-  OnlineSetupFlowErrorPowerwashRequired
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OnlineSetupFlowErrorPowerwashRequired) {
+                       DISABLED_OnlineSetupFlowErrorPowerwashRequired) {
   // Simulate online setup failure that requires powerwash.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -678,17 +646,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1150349, crbug.com/1324447): Flaky on ChromeOS ASAN and on
-// builder "linux-chromeos-dbg".
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-#define MAYBE_OnlineSetupFlowCrosComponentFailure \
-  DISABLED_OnlineSetupFlowCrosComponentFailure
-#else
-#define MAYBE_OnlineSetupFlowCrosComponentFailure \
-  OnlineSetupFlowCrosComponentFailure
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OnlineSetupFlowCrosComponentFailure) {
+                       DISABLED_OnlineSetupFlowCrosComponentFailure) {
   // Simulate failure to load demo resources CrOS component.
   // There is no enrollment attempt, as process fails earlier.
   enrollment_helper_.ExpectNoEnrollment();
@@ -715,14 +675,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// Flake on ASAN: crbug.com/1234593
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OfflineDemoModeUnavailable DISABLED_OfflineDemoModeUnavailable
-#else
-#define MAYBE_OfflineDemoModeUnavailable OfflineDemoModeUnavailable
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OfflineDemoModeUnavailable) {
+                       DISABLED_OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -730,14 +685,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 }
 
-// Flake on ASAN: crbug.com/1234593
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ClickNetworkOnNetworkScreen DISABLED_ClickNetworkOnNetworkScreen
-#else
-#define MAYBE_ClickNetworkOnNetworkScreen ClickNetworkOnNetworkScreen
-#endif
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_ClickNetworkOnNetworkScreen) {
+                       DISABLED_ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::WaitForNetworkSelectionScreen();
 
@@ -756,8 +706,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   }
 }
 
+// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       ClickConnectedNetworkOnNetworkScreen) {
+                       DISABLED_ClickConnectedNetworkOnNetworkScreen) {
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -779,7 +730,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       DISABLED_BackOnNetworkScreen) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
 
@@ -789,15 +742,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-// TODO(crbug.com/1350105,crbug.com/1341234,crbug.com/1350117): Flaky on
-// ubuntu and chromeos
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_BackOnTermsScreen DISABLED_BackOnTermsScreen
-#else
-#define MAYBE_BackOnTermsScreen BackOnTermsScreen
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnTermsScreen) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnTermsScreen) {
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -820,13 +766,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnTermsScreen) {
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_BackOnErrorScreen DISABLED_BackOnErrorScreen
-#else
-#define MAYBE_BackOnErrorScreen BackOnErrorScreen
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnErrorScreen) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -849,13 +790,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnErrorScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_RetryOnErrorScreen DISABLED_RetryOnErrorScreen
-#else
-#define MAYBE_RetryOnErrorScreen RetryOnErrorScreen
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
+// TODO(crbug.com/1341234): flaky.
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_RetryOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
