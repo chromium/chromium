@@ -122,6 +122,16 @@ function initializeOobe() {
     const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
     addScreensToMainContainer(isOobeFlow ? oobeScreensList : loginScreensList);
 
+    // The default is to have the class 'oobe-display' in <body> for the OOBE
+    // flow. For the 'Add Person' flow, we remove it.
+    if (!isOobeFlow) {
+      document.body.classList.remove('oobe-display');
+    } else {
+      assert(
+          document.body.classList.contains('oobe-display'),
+          'The body of the document must contain oobe-display as a class for the OOBE flow!');
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeOobe);
       } else {
