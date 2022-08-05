@@ -637,6 +637,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
             : resource->GetResourceRequest().Url());
     ResourceResponse final_response = resource->GetResponse();
     final_response.SetResourceLoadTiming(nullptr);
+    final_response.SetEncodedDataLength(0);
     info->SetFinalResponse(final_response);
     info->SetLoadResponseEnd(info->InitialTime());
     if (render_blocking_behavior == RenderBlockingBehavior::kBlocking)
