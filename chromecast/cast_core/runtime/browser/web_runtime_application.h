@@ -35,6 +35,7 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                             CastWebContents* outer_contents) override;
   void PageStateChanged(PageState page_state) override;
   void PageStopped(PageState page_state, int32_t error_code) override;
+  void MediaPlaybackChanged(bool media_playing) override;
 
   void OnAllBindingsReceived(
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);

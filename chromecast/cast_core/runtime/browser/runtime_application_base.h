@@ -46,8 +46,8 @@ class RuntimeApplicationBase : public RuntimeApplication,
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
-  virtual void StopApplication(
-      cast::v2::ApplicationStatusRequest::StopReason stop_reason);
+  virtual void StopApplication(cast::common::StopReason::Type stop_reason,
+                               int32_t net_error_code);
 
   // Returns current TaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
@@ -104,8 +104,16 @@ class RuntimeApplicationBase : public RuntimeApplication,
 
   // Loads the page at the given |url| in the CastWebContents.
   void LoadPage(const GURL& url);
-  // Notifies the application has launched.
-  void OnApplicationLaunched();
+  // Called by the actual implementation as Cast application page has loaded.
+  void OnPageLoaded();
+
+  // Notifies Cast Core that application has started.
+  void NotifyApplicationStarted();
+  // Notifies Cast Core that application has stopped.
+  void NotifyApplicationStopped(cast::common::StopReason::Type stop_reason,
+                                int32_t net_error_code);
+  // Notifies Cast Core about media playback state changed.
+  void NotifyMediaPlaybackChanged(bool playing);
 
  private:
   // RuntimeApplicationService handlers:

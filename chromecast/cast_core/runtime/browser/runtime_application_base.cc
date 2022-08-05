@@ -312,12 +312,30 @@ void RuntimeApplicationBase::LoadPage(const GURL& url) {
   // Start loading the URL while JS visibility is disabled and no window is
   // created. This way users won't see the progressive UI updates as the page is
   // formed and styles are applied. The actual window will be created in
-  // OnApplicationLaunched when application is fully launched.
+  // OnApplicationStarted when application is fully launched.
   GetCastWebContents()->LoadUrl(url);
 
   // This needs to be called to get the PageState::LOADED event as it's fully
   // loaded.
   GetCastWebContents()->SetWebVisibilityAndPaint(false);
+}
+
+void RuntimeApplicationBase::OnPageLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO) << "Application started: " << *this;
+
+  // Create the window and show the web view.
+  cast_web_view_->window()->AddObserver(this);
+  if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
+    LOG(INFO) << "Loading application in full screen: " << *this;
+    cast_web_view_->window()->GrantScreenAccess();
+    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
+                                           VisibilityPriority::STICKY_ACTIVITY);
+  } else {
+    LOG(INFO) << "Loading application in background: " << *this;
+    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
+                                           VisibilityPriority::HIDDEN);
+  }
 }
 
 void RuntimeApplicationBase::HandlePostMessage(
@@ -375,31 +393,6 @@ void RuntimeApplicationBase::HandleSetVisibility(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetVisibility(request.visibility());
   reactor->Write(cast::v2::SetVisibilityResponse());
-}
-
-void RuntimeApplicationBase::OnApplicationLaunched() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(INFO) << "Application is launched: " << *this;
-
-  // Create the window and show the web view.
-  cast_web_view_->window()->AddObserver(this);
-  if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
-    LOG(INFO) << "Loading application in full screen: " << *this;
-    cast_web_view_->window()->GrantScreenAccess();
-    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
-                                           VisibilityPriority::STICKY_ACTIVITY);
-  } else {
-    LOG(INFO) << "Loading application in background: " << *this;
-    cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
-                                           VisibilityPriority::HIDDEN);
-  }
-
-  // Notify Cast Core.
-  auto call = core_app_stub_->CreateCall<
-      cast::v2::CoreApplicationServiceStub::SetApplicationStatus>();
-  call.request().set_cast_session_id(GetCastSessionId());
-  call.request().set_state(cast::v2::ApplicationStatusRequest::STARTED);
-  std::move(call).InvokeAsync(base::DoNothing());
 }
 
 CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
@@ -487,26 +480,15 @@ void RuntimeApplicationBase::SetVisibility(
 }
 
 void RuntimeApplicationBase::StopApplication(
-    cast::v2::ApplicationStatusRequest::StopReason stop_reason) {
+    cast::common::StopReason::Type stop_reason,
+    int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(grpc_server_);
-
-  LOG(INFO) << "Stopping application: " << *this;
 
   if (!is_application_running_) {
     return;
   }
   is_application_running_ = false;
-
-  if (core_app_stub_) {
-    // Notify application has stopped.
-    auto call = core_app_stub_->CreateCall<
-        cast::v2::CoreApplicationServiceStub::SetApplicationStatus>();
-    call.request().set_cast_session_id(GetCastSessionId());
-    call.request().set_state(cast::v2::ApplicationStatusRequest::STOPPED);
-    call.request().set_stop_reason(stop_reason);
-    std::move(call).InvokeAsync(base::DoNothing());
-  }
 
   if (cast_web_view_) {
     GetCastWebContents()->ClosePage();
@@ -516,9 +498,16 @@ void RuntimeApplicationBase::StopApplication(
     }
   }
 
+  if (core_app_stub_) {
+    NotifyApplicationStopped(stop_reason, net_error_code);
+  }
+
   grpc_server_->Stop();
   grpc_server_.reset();
-  LOG(INFO) << "Application is stopped: " << *this;
+
+  LOG(INFO) << "Application is stopped: stop_reason="
+            << cast::common::StopReason::Type_Name(stop_reason) << ", "
+            << *this;
 }
 
 void RuntimeApplicationBase::OnVisibilityChange(
@@ -530,14 +519,67 @@ void RuntimeApplicationBase::OnVisibilityChange(
       LOG(INFO) << "Application is visible now: " << *this;
       GetCastWebContents()->SetWebVisibilityAndPaint(true);
       break;
+
     default:
       LOG(INFO) << "Application is hidden now: " << *this;
       GetCastWebContents()->SetWebVisibilityAndPaint(false);
       break;
   }
+}
 
-  // TODO(vigeni): Record the metrics?
-  // RecordAppEvent(is_visible_ ? "AppShown" : "AppHidden");
+void RuntimeApplicationBase::NotifyApplicationStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(core_app_stub_);
+
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreApplicationServiceStub::ApplicationStarted>();
+  call.request().set_cast_session_id(GetCastSessionId());
+  std::move(call).InvokeAsync(base::BindOnce(
+      [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStartedResponse>
+             response_or) {
+        LOG_IF(ERROR, !response_or.ok())
+            << "Failed to report that application started: "
+            << response_or.ToString();
+      }));
+}
+
+void RuntimeApplicationBase::NotifyApplicationStopped(
+    cast::common::StopReason::Type stop_reason,
+    int32_t net_error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(core_app_stub_);
+
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
+  call.request().set_cast_session_id(GetCastSessionId());
+  call.request().set_stop_reason(stop_reason);
+  call.request().set_error_code(net_error_code);
+  std::move(call).InvokeAsync(base::BindOnce(
+      [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStoppedResponse>
+             response_or) {
+        LOG_IF(ERROR, !response_or.ok())
+            << "Failed to report that application stopped: "
+            << response_or.ToString();
+      }));
+}
+
+void RuntimeApplicationBase::NotifyMediaPlaybackChanged(bool playing) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(core_app_stub_);
+
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreApplicationServiceStub::MediaPlaybackChanged>();
+  call.request().set_cast_session_id(GetCastSessionId());
+  call.request().set_media_playback_state(
+      playing ? cast::common::MediaPlaybackState::PLAYING
+              : cast::common::MediaPlaybackState::STOPPED);
+  std::move(call).InvokeAsync(base::BindOnce(
+      [](cast::utils::GrpcStatusOr<cast::v2::MediaPlaybackChangedResponse>
+             response_or) {
+        LOG_IF(ERROR, !response_or.ok())
+            << "Failed to report media playback changed state: "
+            << response_or.ToString();
+      }));
 }
 
 }  // namespace chromecast

@@ -29,7 +29,7 @@ WebRuntimeApplication::WebRuntimeApplication(
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::v2::ApplicationStatusRequest::USER_REQUEST);
+  StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
 }
 
 cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
@@ -103,11 +103,11 @@ void WebRuntimeApplication::PageStateChanged(PageState page_state) {
       return;
 
     case PageState::LOADED:
-      OnApplicationLaunched();
+      OnPageLoaded();
       return;
 
     case PageState::ERROR:
-      StopApplication(cast::v2::ApplicationStatusRequest::HTTP_ERROR);
+      StopApplication(cast::common::StopReason::HTTP_ERROR, net::ERR_FAILED);
       return;
   }
 }
@@ -116,7 +116,14 @@ void WebRuntimeApplication::PageStopped(PageState page_state,
                                         int32_t error_code) {
   LOG(INFO) << "Page stopped: page_state=" << page_state
             << ", error_code=" << error_code << ", " << *this;
-  StopApplication(cast::v2::ApplicationStatusRequest::APPLICATION_REQUEST);
+  StopApplication(cast::common::StopReason::APPLICATION_REQUEST, error_code);
+}
+
+void WebRuntimeApplication::MediaPlaybackChanged(bool media_playing) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO) << "Media playback state changed: "
+            << (media_playing ? "playing" : "stopped");
+  NotifyMediaPlaybackChanged(media_playing);
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
@@ -124,7 +131,7 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!response_or.ok()) {
     LOG(ERROR) << "Failed to get all bindings: " << response_or.ToString();
-    StopApplication(cast::v2::ApplicationStatusRequest::RUNTIME_ERROR);
+    StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
     return;
   }
 

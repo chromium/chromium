@@ -142,6 +142,9 @@ class CastWebContents : public mojom::CastWebContents {
     // Notify the page stopped.
     virtual void PageStopped(PageState page_state, int32_t error_code) {}
 
+    // Notify media playback state changes for the underlying WebContents.
+    virtual void MediaPlaybackChanged(bool media_playing) {}
+
     // Sets |cast_web_contents_| to |nullptr| but does not remove the Observer
     // from the ObserverList. Called for each Observer during CastWebContents
     // destruction; we don't use Observe(nullptr) since it would mutate the

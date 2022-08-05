@@ -37,8 +37,8 @@ class StreamingRuntimeApplication final
   cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
       cast::web::Message message) override;
   void LaunchApplication() override;
-  void StopApplication(
-      cast::v2::ApplicationStatusRequest::StopReason stop_reason) override;
+  void StopApplication(cast::common::StopReason::Type stop_reason,
+                       int32_t net_error_code) override;
   bool IsStreamingApplication() const override;
 
   // StreamingReceiverSessionClient::Handler implementation:

@@ -1000,6 +1000,11 @@ void CastWebContentsImpl::MediaStartedPlaying(
   for (auto& observer : observers_) {
     observer->MediaPlaybackChanged(true /* media_playing */);
   }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.MediaPlaybackChanged(true /* media_playing */);
+  }
 }
 
 void CastWebContentsImpl::MediaStoppedPlaying(
@@ -1010,6 +1015,11 @@ void CastWebContentsImpl::MediaStoppedPlaying(
   metrics::CastMetricsHelper::GetInstance()->LogMediaPause();
   for (auto& observer : observers_) {
     observer->MediaPlaybackChanged(false /* media_playing */);
+  }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.MediaPlaybackChanged(false /* media_playing */);
   }
 }
 

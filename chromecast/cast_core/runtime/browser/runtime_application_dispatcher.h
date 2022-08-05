@@ -87,7 +87,7 @@ class RuntimeApplicationDispatcher final {
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
       grpc::Status status);
-  void OnApplicationLaunched(
+  void OnApplicationLaunching(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
       grpc::Status status);

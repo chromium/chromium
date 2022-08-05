@@ -208,7 +208,7 @@ void RuntimeApplicationDispatcher::HandleLaunchApplication(
       std::move(request),
       base::BindPostTask(
           task_runner_,
-          base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLaunched,
+          base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLaunching,
                          weak_factory_.GetWeakPtr(), std::move(session_id),
                          std::move(reactor))));
 }
@@ -319,7 +319,7 @@ void RuntimeApplicationDispatcher::OnApplicationLoaded(
   reactor->Write(std::move(response));
 }
 
-void RuntimeApplicationDispatcher::OnApplicationLaunched(
+void RuntimeApplicationDispatcher::OnApplicationLaunching(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
     grpc::Status status) {
@@ -339,7 +339,7 @@ void RuntimeApplicationDispatcher::OnApplicationLaunched(
     return;
   }
 
-  LOG(INFO) << "Application launched: " << *app;
+  LOG(INFO) << "Application is starting: " << *app;
   reactor->Write(cast::runtime::LaunchApplicationResponse());
 }
 

@@ -14,6 +14,7 @@
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
@@ -53,7 +54,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::v2::ApplicationStatusRequest::USER_REQUEST);
+  StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
 }
 
 cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
@@ -64,13 +65,13 @@ StreamingRuntimeApplication::HandlePortMessage(cast::web::Message message) {
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnApplicationLaunched();
+  OnPageLoaded();
 }
 
 void StreamingRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
-  StopApplication(cast::v2::ApplicationStatusRequest::RUNTIME_ERROR);
+  StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
 }
 
 void StreamingRuntimeApplication::StartAvSettingsQuery(
@@ -118,7 +119,8 @@ void StreamingRuntimeApplication::LaunchApplication() {
 }
 
 void StreamingRuntimeApplication::StopApplication(
-    cast::v2::ApplicationStatusRequest::StopReason stop_reason) {
+    cast::common::StopReason::Type stop_reason,
+    int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receiver_session_client_) {
     DLOG(INFO) << "Streaming session never started prior to " << *this
@@ -126,7 +128,7 @@ void StreamingRuntimeApplication::StopApplication(
   }
 
   receiver_session_client_.reset();
-  RuntimeApplicationBase::StopApplication(stop_reason);
+  RuntimeApplicationBase::StopApplication(stop_reason, net_error_code);
   message_port_service_.reset();
 }
 
