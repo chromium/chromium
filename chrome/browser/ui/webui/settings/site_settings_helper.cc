@@ -785,14 +785,14 @@ void GetPolicyAllowedUrls(
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
-  const base::Value* policy_urls =
-      prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
-                         ? prefs::kAudioCaptureAllowedUrls
-                         : prefs::kVideoCaptureAllowedUrls);
+  const base::Value::List& policy_urls =
+      prefs->GetValueList(type == ContentSettingsType::MEDIASTREAM_MIC
+                              ? prefs::kAudioCaptureAllowedUrls
+                              : prefs::kVideoCaptureAllowedUrls);
 
   // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
   std::vector<ContentSettingsPattern> patterns;
-  for (const auto& entry : policy_urls->GetListDeprecated()) {
+  for (const auto& entry : policy_urls) {
     const std::string* url = entry.GetIfString();
     if (!url)
       continue;

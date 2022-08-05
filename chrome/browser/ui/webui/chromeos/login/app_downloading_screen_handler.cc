@@ -18,8 +18,7 @@ int GetNumberOfUserSelectedApps() {
   const Profile* profile = ProfileManager::GetActiveUserProfile();
   const PrefService* pref_service = profile->GetPrefs();
   return static_cast<int>(
-      pref_service->Get(arc::prefs::kArcFastAppReinstallPackages)
-          ->GetListDeprecated()
+      pref_service->GetValueList(arc::prefs::kArcFastAppReinstallPackages)
           .size());
 }
 
