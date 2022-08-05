@@ -50,6 +50,17 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+
+    # Context: https://crbug.com/1349920 and https://crbug.com/1349521
+    ('androidx_appcompat_appcompat/appcompat-1.6.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/8811104/artifacts/repository/'
+     'androidx/appcompat/appcompat/1.5.0-SNAPSHOT/'
+     'appcompat-1.5.0-20220708.124951-1.aar'),
+    ('androidx_appcompat_appcompat_resources/'
+     'appcompat-resources-1.6.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/8811104/artifacts/repository/'
+     'androidx/appcompat/appcompat-resources/1.5.0-SNAPSHOT/'
+     'appcompat-resources-1.5.0-20220708.124951-1.aar'),
 ]
 
 
