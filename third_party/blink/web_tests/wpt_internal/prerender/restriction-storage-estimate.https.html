@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Access to the Storage API is deferred</title>
+<title>Access to storage.estimate() is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -19,7 +19,7 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/storage.https.html?uid=${uid}`;
+  const url = `resources/storage-estimate.https.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
@@ -47,7 +47,7 @@ promise_test(async t => {
 
   // Send a close signal to PrerenderEventCollector on the prerendered page.
   new PrerenderChannel('close', uid).postMessage('');
-}, `the access to the Storage API should be deferred until the prerendered
+}, `the access to storage.estimate() should be deferred until the prerendered
     page is activated`);
 
 </script>
