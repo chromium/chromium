@@ -164,7 +164,7 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     //  visits.
     const bool is_clustered =
         GetConfig().persist_clusters_in_history_db
-            ? db->IsVisitClustered(visit.visit_row.visit_id)
+            ? db->GetClusterIdContainingVisit(visit.visit_row.visit_id) > 0
             : false;
     if (is_clustered && recent_first_)
       continuation_params_.exhausted_unclustered_visits = true;

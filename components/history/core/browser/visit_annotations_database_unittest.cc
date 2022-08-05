@@ -331,7 +331,8 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
             std::vector<int64_t>({3}));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetVisitIdsInCluster_IsVisitClustered) {
+TEST_F(VisitAnnotationsDatabaseTest,
+       GetVisitIdsInCluster_GetClusterIdContainingVisit) {
   // Add unclustered visits.
   AddVisitWithTime(IntToTime(0));
   AddVisitWithTime(IntToTime(2));
@@ -345,43 +346,57 @@ TEST_F(VisitAnnotationsDatabaseTest, GetVisitIdsInCluster_IsVisitClustered) {
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 6));
 
-  // IsVisitClustered
-  EXPECT_FALSE(IsVisitClustered(1));
-  EXPECT_FALSE(IsVisitClustered(2));
-  EXPECT_FALSE(IsVisitClustered(3));
-  EXPECT_TRUE(IsVisitClustered(4));
-  EXPECT_TRUE(IsVisitClustered(5));
-  EXPECT_TRUE(IsVisitClustered(6));
-  EXPECT_TRUE(IsVisitClustered(7));
+  // GetClusterIdContainingVisit
+  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
+  EXPECT_EQ(GetClusterIdContainingVisit(2), 0);
+  EXPECT_EQ(GetClusterIdContainingVisit(3), 0);
+  EXPECT_EQ(GetClusterIdContainingVisit(4), 1);
+  EXPECT_EQ(GetClusterIdContainingVisit(5), 2);
+  EXPECT_EQ(GetClusterIdContainingVisit(6), 3);
+  EXPECT_EQ(GetClusterIdContainingVisit(7), 3);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
-  // Add content annotations for 1 visit.
-  VisitID visit_id = 1;
-  VisitContentModelAnnotations model_annotations = {
-      0.5f,
-      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
-      123,
-      {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
-  std::vector<std::string> related_searches{"related searches",
-                                            "búsquedas relacionadas"};
-  VisitContentAnnotationFlags annotation_flags =
-      VisitContentAnnotationFlag::kNone;
-  VisitContentAnnotations content_annotations{
-      annotation_flags, model_annotations,
-      related_searches, GURL("http://pagewithvisit.com?q=search"),
-      u"search",        "Alternative title"};
-  AddContentAnnotationsForVisit(visit_id, content_annotations);
+  // Add a cluster with 2 visits.
+  AddContentAnnotationsForVisit(1, {});
+  AddContextAnnotationsForVisit(1, {});
+  AddContentAnnotationsForVisit(2, {});
+  AddContextAnnotationsForVisit(2, {});
+  AddCluster({1, 2});
 
   VisitContentAnnotations got_content_annotations;
-  // First make sure the annotations are there.
-  EXPECT_TRUE(
-      GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
+  VisitContextAnnotations got_context_annotations;
+  // First make sure the annotation and cluster tables are populated.
+  EXPECT_TRUE(GetContentAnnotationsForVisit(1, &got_content_annotations));
+  EXPECT_TRUE(GetContextAnnotationsForVisit(1, &got_context_annotations));
+  EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
+  EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
+  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(1, 2));
+  EXPECT_EQ(GetClusterIdContainingVisit(1), 1);
+  EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
+  EXPECT_EQ(GetCluster(1).cluster_id, 1);
 
-  // Delete annotations and make sure we cannot query for it.
-  DeleteAnnotationsForVisit(visit_id);
-  EXPECT_FALSE(
-      GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
+  // Delete 1 visit. Make sure the tables are updated, but the cluster remains.
+  DeleteAnnotationsForVisit(1);
+  EXPECT_FALSE(GetContentAnnotationsForVisit(1, &got_content_annotations));
+  EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
+  EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
+  EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
+  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(2));
+  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
+  EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
+  EXPECT_EQ(GetCluster(1).cluster_id, 1);
+
+  // Delete the 2nd visit. Make sure the cluster is removed.
+  DeleteAnnotationsForVisit(2);
+  EXPECT_FALSE(GetContentAnnotationsForVisit(1, &got_content_annotations));
+  EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
+  EXPECT_FALSE(GetContentAnnotationsForVisit(2, &got_content_annotations));
+  EXPECT_FALSE(GetContextAnnotationsForVisit(2, &got_context_annotations));
+  EXPECT_TRUE(GetVisitIdsInCluster(1).empty());
+  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
+  EXPECT_EQ(GetClusterIdContainingVisit(2), 0);
+  EXPECT_EQ(GetCluster(1).cluster_id, 0);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {

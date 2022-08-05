@@ -388,6 +388,17 @@ void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
              << "visit_id = " << visit_id;
   }
 
+  auto cluster_id = GetClusterIdContainingVisit(visit_id);
+  if (cluster_id > 0 && GetVisitIdsInCluster(cluster_id).size() == 1) {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "DELETE FROM clusters WHERE cluster_id=?"));
+    statement.BindInt64(0, cluster_id);
+    if (!statement.Run()) {
+      DVLOG(0) << "Failed to execute clusters delete statement:  "
+               << "visit_id = " << visit_id << ", cluster_id = " << cluster_id;
+    }
+  }
+
   statement.Assign(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM clusters_and_visits WHERE visit_id=?"));
   statement.BindInt64(0, visit_id);
@@ -395,8 +406,6 @@ void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
     DVLOG(0) << "Failed to execute clusters_and_visits delete statement:  "
              << "visit_id = " << visit_id;
   }
-
-  // TODO(manukh): Delete `Cluster`s that are now empty.
 }
 
 void VisitAnnotationsDatabase::AddClusters(
@@ -570,16 +579,19 @@ ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
   return cluster_visit;
 }
 
-bool VisitAnnotationsDatabase::IsVisitClustered(VisitID visit_id) {
+int64_t VisitAnnotationsDatabase::GetClusterIdContainingVisit(
+    VisitID visit_id) {
   DCHECK_GT(visit_id, 0);
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "SELECT 1 "
+                                 "SELECT cluster_id "
                                  "FROM clusters_and_visits "
                                  "WHERE visit_id=? "
                                  "LIMIT 1"));
   statement.BindInt64(0, visit_id);
-  return statement.Step();
+  if (statement.Step())
+    return statement.ColumnInt64(0);
+  return 0;
 }
 
 void VisitAnnotationsDatabase::DeleteClusters(
