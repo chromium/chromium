@@ -92,17 +92,15 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
                                                  const std::string& label) {
   PrefService* pref_service = profile_->GetPrefs();
   ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
-  base::Value* all_ports = update.Get();
-  base::Value new_port_metadata(base::Value::Type::DICTIONARY);
-  new_port_metadata.SetIntKey(kPortNumberKey, key.port_number);
-  new_port_metadata.SetIntKey(kPortProtocolKey,
-                              static_cast<int>(key.protocol_type));
-  new_port_metadata.SetStringKey(kPortLabelKey, label);
-  new_port_metadata.SetStringKey(guest_os::prefs::kVmNameKey,
-                                 key.container_id.vm_name);
-  new_port_metadata.SetStringKey(guest_os::prefs::kContainerNameKey,
-                                 key.container_id.container_name);
-  all_ports->Append(std::move(new_port_metadata));
+  base::Value::List& all_ports = update.Get()->GetList();
+  base::Value::Dict new_port_metadata;
+  new_port_metadata.Set(kPortNumberKey, key.port_number);
+  new_port_metadata.Set(kPortProtocolKey, static_cast<int>(key.protocol_type));
+  new_port_metadata.Set(kPortLabelKey, label);
+  new_port_metadata.Set(guest_os::prefs::kVmNameKey, key.container_id.vm_name);
+  new_port_metadata.Set(guest_os::prefs::kContainerNameKey,
+                        key.container_id.container_name);
+  all_ports.Append(std::move(new_port_metadata));
 }
 
 bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
@@ -363,8 +361,8 @@ void CrostiniPortForwarder::RemoveAllPorts(
   DeactivateAllActivePorts(container_id);
 }
 
-base::ListValue CrostiniPortForwarder::GetActivePorts() {
-  base::ListValue forwarded_ports_list;
+base::Value::List CrostiniPortForwarder::GetActivePorts() {
+  base::Value::List forwarded_ports_list;
   for (const auto& port : forwarded_ports_) {
     base::Value::Dict port_info;
     port_info.Set(kPortNumberKey, port.first.port_number);

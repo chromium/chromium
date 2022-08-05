@@ -102,7 +102,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handles a request for removing all ports.
   void HandleRemoveAllCrostiniPortForwards(const base::Value::List& args);
   // CrostiniPortForwarder::Observer.
-  void OnActivePortsChanged(const base::ListValue& activePorts) override;
+  void OnActivePortsChanged(const base::Value::List& activePorts) override;
   // Handles a request for activating an existing port.
   void HandleActivateCrostiniPortForward(const base::Value::List& args);
   // Handles a request for deactivating an existing port.

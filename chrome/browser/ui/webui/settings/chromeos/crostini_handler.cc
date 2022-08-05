@@ -243,28 +243,27 @@ void CrostiniHandler::HandleRequestRemoveCrostini(
 
 namespace {
 
-base::Value CrostiniDiskInfoToValue(
+base::Value::Dict CrostiniDiskInfoToValue(
     std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
-  base::Value disk_value(base::Value::Type::DICTIONARY);
+  base::Value::Dict disk_value;
   if (!disk_info) {
-    disk_value.SetBoolKey("succeeded", false);
+    disk_value.Set("succeeded", false);
     return disk_value;
   }
-  disk_value.SetBoolKey("succeeded", true);
-  disk_value.SetBoolKey("canResize", disk_info->can_resize);
-  disk_value.SetBoolKey("isUserChosenSize", disk_info->is_user_chosen_size);
-  disk_value.SetBoolKey("isLowSpaceAvailable",
-                        disk_info->is_low_space_available);
-  disk_value.SetIntKey("defaultIndex", disk_info->default_index);
-  base::Value ticks(base::Value::Type::LIST);
+  disk_value.Set("succeeded", true);
+  disk_value.Set("canResize", disk_info->can_resize);
+  disk_value.Set("isUserChosenSize", disk_info->is_user_chosen_size);
+  disk_value.Set("isLowSpaceAvailable", disk_info->is_low_space_available);
+  disk_value.Set("defaultIndex", disk_info->default_index);
+  base::Value::List ticks;
   for (const auto& tick : disk_info->ticks) {
-    base::Value t(base::Value::Type::DICTIONARY);
-    t.SetDoubleKey("value", static_cast<double>(tick->value));
-    t.SetStringKey("ariaValue", tick->aria_value);
-    t.SetStringKey("label", tick->label);
+    base::Value::Dict t;
+    t.Set("value", static_cast<double>(tick->value));
+    t.Set("ariaValue", tick->aria_value);
+    t.Set("label", tick->label);
     ticks.Append(std::move(t));
   }
-  disk_value.SetKey("ticks", std::move(ticks));
+  disk_value.Set("ticks", std::move(ticks));
   return disk_value;
 }
 }  // namespace
@@ -479,7 +478,8 @@ void CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest(
   OnContainerOsReleaseChanged(crostini::DefaultContainerId(), can_upgrade);
 }
 
-void CrostiniHandler::OnActivePortsChanged(const base::ListValue& activePorts) {
+void CrostiniHandler::OnActivePortsChanged(
+    const base::Value::List& activePorts) {
   // Other side listens with cr.addWebUIListener
   FireWebUIListener("crostini-port-forwarder-active-ports-changed",
                     activePorts);
@@ -781,8 +781,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
     container_info_list.Append(std::move(container_info_value));
   }
 
-  FireWebUIListener("crostini-container-info",
-                    base::Value(std::move(container_info_list)));
+  FireWebUIListener("crostini-container-info", container_info_list);
 }
 
 void CrostiniHandler::HandleSetContainerBadgeColor(
