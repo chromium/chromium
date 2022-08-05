@@ -3,6 +3,10 @@
 # Expectations for --force-renderer-accessibility
 # crbug.com/1138028 tracks the removal of these failure expectations
 
+# To save time in linux-blink-web-tests-force-accessibility-rel builder, do not
+# run virtual test suites.
+virtual/* [ Skip ]
+
 # Unintentional failure
 external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Skip ]
 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Skip ]
