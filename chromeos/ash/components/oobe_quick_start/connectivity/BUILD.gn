@@ -9,7 +9,10 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 source_set("connectivity") {
   deps = [
     "//base",
+    "//components/cbor",
+    "//crypto",
     "//device/bluetooth",
+    "//url",
   ]
   sources = [
     "fast_pair_advertiser.cc",
@@ -22,10 +25,6 @@ source_set("connectivity") {
     "target_device_connection_broker_impl.h",
     "target_fido_controller.cc",
     "target_fido_controller.h",
-    "target_fido_controller_factory.cc",
-    "target_fido_controller_factory.h",
-    "target_fido_controller_impl.cc",
-    "target_fido_controller_impl.h",
   ]
 }
 
@@ -45,11 +44,13 @@ source_set("unit_tests") {
     ":connectivity",
     "//base",
     "//base/test:test_support",
+    "//components/cbor",
     "//device/bluetooth:mocks",
+    "//url",
   ]
   sources = [
     "fast_pair_advertiser_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
-    "target_fido_controller_impl_unittest.cc",
+    "target_fido_controller_unittest.cc",
   ]
 }

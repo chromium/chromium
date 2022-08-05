@@ -2,7 +2,10 @@ noparent = True
 
 include_rules = [
   "+base",
+  "+components/cbor",
+  "+crypto",
   "+device/bluetooth",
   "+third_party/abseil-cpp/absl/types/variant.h",
   "+testing",
+  "+url",
 ]

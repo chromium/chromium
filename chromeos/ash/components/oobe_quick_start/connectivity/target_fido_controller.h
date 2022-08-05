@@ -5,9 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_FIDO_CONTROLLER_H_
 #define CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_FIDO_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/callback.h"
+#include "components/cbor/values.h"
+#include "url/origin.h"
 
 namespace ash::quick_start {
+
+class NearbyConnectionsManager;
+class TargetFidoControllerTest;
 
 // TargetFidoController initializes the FidoDeviceAuthenticator and the
 // GetAssertionRequestHandler to begin the FIDO CTAP2 Assertion Flow. This class
@@ -17,12 +24,30 @@ class TargetFidoController {
  public:
   using ResultCallback = base::OnceCallback<void(bool success)>;
 
-  TargetFidoController() = default;
+  explicit TargetFidoController(
+      NearbyConnectionsManager* nearby_connections_manager);
+  TargetFidoController(const TargetFidoController&) = delete;
+  TargetFidoController& operator=(const TargetFidoController&) = delete;
+  ~TargetFidoController();
 
-  virtual ~TargetFidoController() = default;
+  void RequestAssertion(const std::string& challenge_b64url,
+                        ResultCallback callback);
 
-  virtual void RequestAssertion(const std::string& challenge_bytes,
-                                ResultCallback callback) = 0;
+ private:
+  friend class TargetFidoControllerTest;
+
+  cbor::Value GenerateGetAssertionRequest(const std::string& challenge_b64url);
+
+  std::vector<uint8_t> CBOREncodeGetAssertionRequest(
+      const cbor::Value& request);
+
+  std::string CreateClientDataJson(const url::Origin& orgin,
+                                   const std::string& challenge_b64url);
+
+  // TODO(b/234655072): Remove maybe_unused tag after NearbyConnectionsManager
+  // defined.
+  [[maybe_unused]] const base::raw_ptr<NearbyConnectionsManager>
+      nearby_connections_manager_;
 };
 
 }  // namespace ash::quick_start
