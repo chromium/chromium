@@ -20,10 +20,11 @@ std::string GetCapabilityTypeStr(rgbkbd::RgbKeyboardCapabilities capabilities) {
       return "IndividualKey";
     case rgbkbd::RgbKeyboardCapabilities::kFourZoneTwelveLed:
       return "FourZoneTwelveLed";
-    case rgbkbd::RgbKeyboardCapabilities::kFourZoneFifteenLed:
-      return "FourZoneFifteenLed";
+    case rgbkbd::RgbKeyboardCapabilities::kFourZoneFourLed:
+      return "FourZoneFourLed";
   }
 }
+
 void EmitRgbKeyboardCapabilityType(
     rgbkbd::RgbKeyboardCapabilities capabilities) {
   base::UmaHistogramEnumeration(kRgbKeyboardCapabilityTypeHistogramName,

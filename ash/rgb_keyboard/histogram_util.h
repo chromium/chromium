@@ -26,8 +26,8 @@ enum class RgbKeyboardCapabilityType {
   kIndividualKey = 1,
   kFourZoneFortyLed = 2,
   kFourZoneTwelveLed = 3,
-  kFourZoneFifteenLed = 4,
-  kMaxValue = kFourZoneFifteenLed,
+  kFourZoneFourLed = 4,
+  kMaxValue = kFourZoneFourLed,
 };
 
 enum class RgbKeyboardBacklightChangeType {

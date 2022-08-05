@@ -103,9 +103,9 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneTwelveLed,
                        ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
                            kFourZoneTwelveLed),
-        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneFifteenLed,
+        std::make_pair(rgbkbd::RgbKeyboardCapabilities::kFourZoneFourLed,
                        ash::rgb_keyboard::metrics::RgbKeyboardCapabilityType::
-                           kFourZoneFifteenLed)));
+                           kFourZoneFourLed)));
 
 TEST_P(KeyboardCapabilityHistogramEmittedTest,
        KeyboardCapabilityHistogramEmitted) {
@@ -130,7 +130,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(rgbkbd::RgbKeyboardCapabilities::kIndividualKey,
                     rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed,
                     rgbkbd::RgbKeyboardCapabilities::kFourZoneTwelveLed,
-                    rgbkbd::RgbKeyboardCapabilities::kFourZoneFifteenLed));
+                    rgbkbd::RgbKeyboardCapabilities::kFourZoneFourLed));
 
 TEST_P(RgbChangeTypeHistogramEmittedTest, RgbChangeTypeHistogramEmitted) {
   base::HistogramTester histogram_tester;
