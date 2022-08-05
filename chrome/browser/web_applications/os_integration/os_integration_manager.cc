@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -23,8 +24,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -110,7 +113,10 @@ OsIntegrationManager::OsIntegrationManager(
       shortcut_manager_(std::move(shortcut_manager)),
       file_handler_manager_(std::move(file_handler_manager)),
       protocol_handler_manager_(std::move(protocol_handler_manager)),
-      url_handler_manager_(std::move(url_handler_manager)) {}
+      url_handler_manager_(std::move(url_handler_manager)) {
+  // Add sub_manager unique_ptrs to the sub_manager vector.
+  // Also ensure each sub_manager gets started before Synchronize is called.
+}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
@@ -153,6 +159,39 @@ void OsIntegrationManager::Start() {
   file_handler_manager_->Start();
   if (protocol_handler_manager_)
     protocol_handler_manager_->Start();
+
+  // Start all sub managers that need to be started.
+  for (const auto& sm : sub_managers_) {
+    sm->Start();
+  }
+}
+
+void OsIntegrationManager::Synchronize(const AppId& app_id,
+                                       SubManagerCompletedCallback callback) {
+  if (registrar_->GetAppById(app_id)->is_uninstalling()) {
+    // For uninstallation purposes, we perform unregistration directly without
+    // doing reads and writes from the DB.
+    auto uninstall_barrier = base::BarrierClosure(
+        sub_managers_.size(),
+        base::BindOnce(&OsIntegrationManager::OnSynchronizationComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    for (const auto& sm : sub_managers_) {
+      sm->Unregister(app_id, uninstall_barrier);
+    }
+  } else {
+    proto::WebAppOsIntegrationState desired_state;
+    const absl::optional<proto::WebAppOsIntegrationState> current_state =
+        registrar_->GetAppById(app_id)->current_os_integration_states();
+    auto configure_barrier = base::BarrierClosure(
+        sub_managers_.size(),
+        base::BindOnce(
+            &OsIntegrationManager::ExecuteAllSubManagerConfigurations,
+            weak_ptr_factory_.GetWeakPtr(), app_id, desired_state,
+            current_state, std::move(callback)));
+    for (const auto& sm : sub_managers_) {
+      sm->Configure(app_id, desired_state, configure_barrier);
+    }
+  }
 }
 
 void OsIntegrationManager::InstallOsHooks(
@@ -721,6 +760,38 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
     const AppId& app_id) {
   DCHECK(shortcut_manager_);
   return shortcut_manager_->BuildShortcutInfo(app_id);
+}
+
+void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
+    const AppId& app_id,
+    const proto::WebAppOsIntegrationState& desired_state,
+    const absl::optional<proto::WebAppOsIntegrationState>& current_state,
+    SubManagerCompletedCallback callback) {
+  auto execution_barrier = base::BarrierClosure(
+      sub_managers_.size(),
+      base::BindOnce(&OsIntegrationManager::WriteStateToDB,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, desired_state,
+                     std::move(callback)));
+  for (const auto& sm : sub_managers_) {
+    sm->Execute(app_id, desired_state, current_state, execution_barrier);
+  }
+}
+
+void OsIntegrationManager::WriteStateToDB(
+    const AppId& app_id,
+    const proto::WebAppOsIntegrationState& desired_state,
+    SubManagerCompletedCallback callback) {
+  {
+    ScopedRegistryUpdate update(sync_bridge_);
+    WebApp* web_app = update->UpdateApp(app_id);
+    web_app->SetCurrentOsIntegrationStates(desired_state);
+  }
+  OnSynchronizationComplete(std::move(callback));
+}
+
+void OsIntegrationManager::OnSynchronizationComplete(
+    SubManagerCompletedCallback callback) {
+  std::move(callback).Run(OsHooksErrors());
 }
 
 void OsIntegrationManager::OnShortcutsCreated(

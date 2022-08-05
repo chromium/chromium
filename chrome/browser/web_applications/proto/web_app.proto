@@ -7,6 +7,7 @@ syntax = "proto2";
 import "components/sync/protocol/web_app_specifics.proto";
 import "chrome/browser/ash/system_web_apps/types/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
+import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
 
@@ -350,4 +351,9 @@ message WebAppProto {
   // Only used on Mac OS, stores whether the app should always show the
   // toolbar when in fullscreen mode.
   optional bool always_show_toolbar_in_fullscreen = 58;
+
+  // Contains the os_integration_state currently deployed for a web_app.
+  // This will be populated from the fields in this proto when ran for the first
+  // time after OS hooks have been registered.
+  optional proto.WebAppOsIntegrationState current_os_integration_states = 59;
 }

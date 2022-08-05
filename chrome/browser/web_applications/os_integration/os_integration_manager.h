@@ -16,11 +16,14 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -58,6 +61,7 @@ struct InstallOsHooksOptions {
   bool add_to_quick_launch_bar = false;
 };
 
+// Retire these 3 once the sub-manager project is done.
 // Callback made after InstallOsHooks is finished.
 using InstallOsHooksCallback =
     base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
@@ -68,6 +72,10 @@ using UninstallOsHooksCallback =
 
 // Callback made after UpdateOsHooks is finished.
 using UpdateOsHooksCallback =
+    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
+
+// Callback made when sub-managers are called
+using SubManagerCompletedCallback =
     base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
 using BarrierCallback =
@@ -103,6 +111,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
                      WebAppIconManager* icon_manager);
 
   void Start();
+
+  virtual void Synchronize(const AppId& app_id,
+                           SubManagerCompletedCallback callback);
 
   // Install all needed OS hooks for the web app.
   // If provided |web_app_info| is a nullptr, it will read icons data from disk,
@@ -275,6 +286,20 @@ class OsIntegrationManager : public AppRegistrarObserver {
  private:
   class OsHooksBarrier;
 
+  virtual void ExecuteAllSubManagerConfigurations(
+      const AppId& app_id,
+      const proto::WebAppOsIntegrationState& desired_state,
+      const absl::optional<proto::WebAppOsIntegrationState>& expected_state,
+      SubManagerCompletedCallback callback);
+
+  virtual void WriteStateToDB(
+      const AppId& app_id,
+      const proto::WebAppOsIntegrationState& desired_state,
+      SubManagerCompletedCallback done_callback);
+
+  virtual void OnSynchronizationComplete(
+      SubManagerCompletedCallback done_callback);
+
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebAppInstallInfo> web_app_info,
                           InstallOsHooksOptions options,
@@ -309,6 +334,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
+
+  std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
