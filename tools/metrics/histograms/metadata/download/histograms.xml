@@ -61,9 +61,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2020-03-08">
+    expires_after="2023-02-02">
   <owner>dtrainor@chromium.org</owner>
-  <summary>Downloads extension API function calls.</summary>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Downloads extension API function calls. Warning: this histogram was expired
+    from 2020-03-08 to 2022-08-02; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Download.AttachmentServices.Duration" units="ms"
