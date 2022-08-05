@@ -270,6 +270,14 @@ void TabStripPageHandler::OnTabStripModelChanged(
   if (tab_strip_model->empty())
     return;
 
+  // The context menu model is created when the menu is first shown. However, if
+  // the tab strip model changes, the context menu model may not longer reflect
+  // the current state of the tab strip. Actions then taken from the context
+  // menu may leave the tab strip in an inconsistent state, or result in DCHECK
+  // crashes. To ensure this does not occur close the context menu on a tab
+  // strip model change.
+  embedder_->CloseContextMenu();
+
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
       for (const auto& contents : change.GetInsert()->contents) {
