@@ -23,9 +23,6 @@ class DeviceInfoSyncClient {
   virtual ~DeviceInfoSyncClient();
 
   virtual std::string GetSigninScopedDeviceId() const = 0;
-  // TODO(crbug.com/1324936): This only returns false for one embedder, it can
-  // be replaced with a check for whether send-tab-to-self is "enabled"
-  // (preconditions met?).
   virtual bool GetSendTabToSelfReceivingEnabled() const = 0;
   virtual absl::optional<DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const = 0;

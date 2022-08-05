@@ -23,6 +23,10 @@
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif
+
 namespace browser_sync {
 
 DeviceInfoSyncClientImpl::DeviceInfoSyncClientImpl(Profile* profile)
@@ -51,9 +55,15 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  // Always true starting with M101, see crbug.com/1299833. Older clients and
-  // clients from other embedders might still return false.
+  // TODO(crbug.com/1286405): Current logic allows to disable receiving tabs
+  // in Ash, while sending is still enabled - this seems to be the best solution
+  // for Lacros-Primary. Once Lacros-Only is the only available option, this
+  // should simply check whether SendTabToSelf datatype is enabled.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return !crosapi::browser_util::IsLacrosPrimaryBrowser();
+#else
   return true;
+#endif
 }
 
 // syncer::DeviceInfoSyncClient:
