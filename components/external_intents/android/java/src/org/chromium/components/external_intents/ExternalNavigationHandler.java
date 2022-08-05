@@ -1519,7 +1519,8 @@ public class ExternalNavigationHandler {
                     }
                     return false;
                 case IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER:
-                    if (params.getRedirectHandler() != null && isGoogleReferrer()) {
+                    if (params.getRedirectHandler() != null
+                            && isAutofillAssistantGoogleReferrer(params)) {
                         if (DEBUG) {
                             Log.i(TAG, "Autofill Assistant passed in favour of App later.");
                         }
@@ -1533,8 +1534,8 @@ public class ExternalNavigationHandler {
             }
         }
 
-        if (mDelegate.handleWithAutofillAssistant(
-                    params, targetIntent, browserFallbackUrl, isGoogleReferrer())) {
+        if (mDelegate.handleWithAutofillAssistant(params, targetIntent, browserFallbackUrl,
+                    isAutofillAssistantGoogleReferrer(params))) {
             if (DEBUG) Log.i(TAG, "Handled with Autofill Assistant.");
         } else {
             if (DEBUG) Log.i(TAG, "Not handled with Autofill Assistant.");
@@ -2452,15 +2453,38 @@ public class ExternalNavigationHandler {
         return UrlUtilitiesJni.get().isGoogleSearchUrl(referrerUrl.getSpec());
     }
 
-    /**
-     * @return whether this navigation is from a Google domain.
-     */
-    @VisibleForTesting
-    protected boolean isGoogleReferrer() {
+    private boolean isInitiatorOriginGoogleReferrer(ExternalNavigationParams params) {
+        Origin initiatorOrigin = params.getInitiatorOrigin();
+        String url = String.format("%s://%s:%s", initiatorOrigin.getScheme(),
+                initiatorOrigin.getHost(), initiatorOrigin.getPort());
+        return UrlUtilitiesJni.get().isGoogleSubDomainUrl(url);
+    }
+
+    @Deprecated
+    private boolean isLastCommittedUrlGoogleReferrer() {
         GURL referrerUrl = getLastCommittedUrl();
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl.getSpec());
+    }
+
+    /**
+     * @return whether this navigation is from a Google domain.
+     */
+    @VisibleForTesting
+    protected boolean isAutofillAssistantGoogleReferrer(ExternalNavigationParams params) {
+        if (!ExternalIntentsFeatures.AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK.isEnabled()) {
+            return isLastCommittedUrlGoogleReferrer();
+        }
+
+        // We check that there were no previous redirects and that the navigation originated on
+        // a valid google.<TLD> (top level domain).
+        RedirectHandler redirectHandler = params.getRedirectHandler();
+        if (redirectHandler == null || !redirectHandler.isOnFirstLoadInNavigationChain()) {
+            return false;
+        }
+
+        return isInitiatorOriginGoogleReferrer(params);
     }
 
     /**

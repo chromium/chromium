@@ -2341,7 +2341,7 @@ public class ExternalNavigationHandlerTest {
         RedirectHandler redirectHandler = RedirectHandler.create();
         redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, true, true);
 
-        mUrlHandler.mIsGoogleReferrer = true;
+        mUrlHandler.mIsAutofillAssistantGoogleReferrer = true;
         mDelegate.setIsIntentToAutofillAssistant(true);
         mDelegate.setAutofillAssistantAllowAppOverrideResult(
                 IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER);
@@ -2852,7 +2852,7 @@ public class ExternalNavigationHandlerTest {
         public String defaultSmsPackageName;
         public GURL mLastCommittedUrl;
         public boolean mIsSerpReferrer;
-        public boolean mIsGoogleReferrer;
+        public boolean mIsAutofillAssistantGoogleReferrer;
         public boolean mShouldRequestFileAccess;
         public String mNewUrlAfterClobbering;
         public String mReferrerUrlForClobbering;
@@ -2909,8 +2909,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected boolean isGoogleReferrer() {
-            return mIsGoogleReferrer;
+        protected boolean isAutofillAssistantGoogleReferrer(ExternalNavigationParams params) {
+            return mIsAutofillAssistantGoogleReferrer;
         }
 
         @Override
@@ -3159,7 +3159,8 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         public boolean handleWithAutofillAssistant(ExternalNavigationParams params,
-                Intent targetIntent, GURL browserFallbackUrl, boolean isGoogleReferrer) {
+                Intent targetIntent, GURL browserFallbackUrl,
+                boolean isAutofillAssistantGoogleReferrer) {
             return mHandleWithAutofillAssistant;
         }
 
