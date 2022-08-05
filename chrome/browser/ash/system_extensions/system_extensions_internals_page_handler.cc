@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_internals_page_handler.h"
 
 #include "base/debug/stack_trace.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 
 namespace ash {
@@ -28,8 +29,13 @@ void SystemExtensionsInternalsPageHandler::
   }
 
   base::FilePath downloads_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
-                              &downloads_path)) {
+  // Return a different path when we are running ChromeOS on Linux, where the
+  // Downloads folder is different than on a real device. This is to make
+  // development on ChromeOS on Linux easier.
+  auto path_enum = base::SysInfo::IsRunningOnChromeOS()
+                       ? chrome::DIR_DEFAULT_DOWNLOADS_SAFE
+                       : chrome::DIR_DEFAULT_DOWNLOADS;
+  if (!base::PathService::Get(path_enum, &downloads_path)) {
     std::move(callback).Run(false);
     return;
   }
