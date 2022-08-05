@@ -20,6 +20,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +62,14 @@
 namespace shell_integration {
 
 namespace {
+
+const base::Feature kWin10UnattendedDefault{"Win10UnattendedDefault",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool CanSetAsDefaultDirectly() {
+  return base::win::GetVersion() >= base::win::Version::WIN10 &&
+         base::FeatureList::IsEnabled(kWin10UnattendedDefault);
+}
 
 // Helper function for GetAppId to generates profile id
 // from profile path. "profile_id" is composed of sanitized basenames of
@@ -720,8 +729,12 @@ bool SetAsDefaultBrowser() {
   }
 
   // From UI currently we only allow setting default browser for current user.
-  if (!ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
-                                    true /* elevate_if_not_admin */)) {
+  if (!(CanSetAsDefaultDirectly()
+            ? ShellUtil::MakeChromeDefaultDirectly(
+                  ShellUtil::CURRENT_USER, chrome_exe,
+                  true /* elevate_if_not_admin */)
+            : ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
+                                           true /* elevate_if_not_admin */))) {
     LOG(ERROR) << "Chrome could not be set as default browser.";
     return false;
   }
@@ -759,8 +772,10 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
     return SET_DEFAULT_NOT_ALLOWED;
   if (ShellUtil::CanMakeChromeDefaultUnattended())
     return SET_DEFAULT_UNATTENDED;
-  // Windows 8 and 10 both introduced a new way to set the default web client
-  // which require user interaction.
+  if (CanSetAsDefaultDirectly())
+    return SET_DEFAULT_UNATTENDED;
+  // Setting the default web client generally requires user interaction in
+  // Windows 8+ with permitted exceptions above.
   return SET_DEFAULT_INTERACTIVE;
 }
 
