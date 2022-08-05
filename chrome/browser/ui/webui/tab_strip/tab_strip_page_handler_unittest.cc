@@ -32,6 +32,7 @@
 
 using testing::_;
 using testing::AtLeast;
+using testing::InSequence;
 using testing::Truly;
 
 namespace {
@@ -268,23 +269,82 @@ TEST_F(TabStripPageHandlerTest, GroupTab) {
 TEST_F(TabStripPageHandlerTest, MoveGroup) {
   AddTab(browser(), GURL("http://foo/1"));
   AddTab(browser(), GURL("http://foo/2"));
-  tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+  const int moved_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      tab_strip_model->GetWebContentsAt(0));
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({0});
   web_ui()->ClearTrackedCalls();
 
   // Move the group to index 1.
-  int new_index = 1;
-  handler()->MoveGroup(group_id.ToString(), new_index);
+  constexpr int kMoveIndex = 1;
+  handler()->MoveGroup(group_id.ToString(), kMoveIndex);
 
-  gfx::Range tabs_in_group = browser()
-                                 ->tab_strip_model()
-                                 ->group_model()
-                                 ->GetTabGroup(group_id)
-                                 ->ListTabs();
-  ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.start()));
-  ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.end()) - 1);
+  gfx::Range tabs_in_group =
+      tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
+  ASSERT_EQ(kMoveIndex, static_cast<int>(tabs_in_group.start()));
+  ASSERT_EQ(kMoveIndex, static_cast<int>(tabs_in_group.end()) - 1);
 
-  EXPECT_CALL(page_, TabGroupMoved(group_id.ToString(), new_index));
+  EXPECT_CALL(page_, TabMoved(moved_tab_id, kMoveIndex, false));
+  EXPECT_CALL(page_, TabGroupMoved(group_id.ToString(), kMoveIndex));
+}
+
+class MockTabStripModelObserver : public TabStripModelObserver {
+ public:
+  MOCK_METHOD(void,
+              OnTabStripModelChanged,
+              (TabStripModel*,
+               const TabStripModelChange&,
+               const TabStripSelectionChange&),
+              (override));
+  MOCK_METHOD(void, OnTabGroupChanged, (const TabGroupChange&), (override));
+};
+
+// Tests the event order from a multi-tab group move. The WebUI event handling
+// implementation relies on this order of events. If it ever changes the WebUI
+// implementation should also change.
+TEST_F(TabStripPageHandlerTest, ValidateTabGroupEventStream) {
+  MockTabStripModelObserver mock_observer_;
+  auto* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->AddObserver(&mock_observer_);
+
+  AddTab(browser(), GURL("http://foo/1"));
+  AddTab(browser(), GURL("http://foo/2"));
+  AddTab(browser(), GURL("http://foo/3"));
+  AddTab(browser(), GURL("http://foo/4"));
+  AddTab(browser(), GURL("http://foo/5"));
+
+  // Group tabs {0, 1, 2} together.
+  std::vector<int> tab_group_indicies = {0, 1, 2};
+  tab_groups::TabGroupId group_id =
+      tab_strip_model->AddToNewGroup(tab_group_indicies);
+
+  // Moving tabs {0, 1, 2} to index 4 will result in the first tab in the group
+  // being at index 2 after the move.
+  constexpr int kMoveIndex = 4;
+  constexpr int kNewGroupStartIndex = 2;
+  {
+    InSequence s;
+    EXPECT_CALL(mock_observer_,
+                OnTabStripModelChanged(
+                    _, Truly([&](const TabStripModelChange& change) {
+                      auto* move = change.GetMove();
+                      return change.type() == TabStripModelChange::kMoved &&
+                             move->to_index == kMoveIndex;
+                    }),
+                    _))
+        .Times(3);
+    EXPECT_CALL(
+        mock_observer_,
+        OnTabGroupChanged(Truly([&](const TabGroupChange& change) {
+          TabGroupModel* group_model = tab_strip_model->group_model();
+          const int start_tab =
+              group_model->GetTabGroup(change.group)->ListTabs().start();
+          return change.type == TabGroupChange::kMoved &&
+                 change.group == group_id && start_tab == kNewGroupStartIndex;
+        })));
+  }
+  tab_strip_model->MoveGroupTo(group_id, kMoveIndex);
 }
 
 TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {

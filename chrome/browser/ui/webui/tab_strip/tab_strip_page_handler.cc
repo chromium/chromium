@@ -151,17 +151,6 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
   const int tab_index_;
 };
 
-bool IsSortedAndContiguous(base::span<const int> sequence) {
-  if (sequence.size() < 2)
-    return true;
-
-  if (!std::is_sorted(sequence.begin(), sequence.end()))
-    return false;
-
-  return sequence.back() ==
-         sequence.front() + static_cast<int>(sequence.size()) - 1;
-}
-
 }  // namespace
 
 TabStripPageHandler::~TabStripPageHandler() {
@@ -297,32 +286,6 @@ void TabStripPageHandler::OnTabStripModelChanged(
     }
     case TabStripModelChange::kMoved: {
       auto* move = change.GetMove();
-
-      absl::optional<tab_groups::TabGroupId> tab_group_id =
-          tab_strip_model->GetTabGroupForTab(move->to_index);
-      if (tab_group_id.has_value()) {
-        const gfx::Range tabs_in_group = tab_strip_model->group_model()
-                                             ->GetTabGroup(tab_group_id.value())
-                                             ->ListTabs();
-
-        const ui::ListSelectionModel::SelectedIndices& sel =
-            selection.new_model.selected_indices();
-        const auto& selected_tabs = std::vector<int>(sel.begin(), sel.end());
-        const bool all_tabs_in_group =
-            IsSortedAndContiguous(base::make_span(selected_tabs)) &&
-            selected_tabs.front() == static_cast<int>(tabs_in_group.start()) &&
-            selected_tabs.size() == tabs_in_group.length();
-
-        if (all_tabs_in_group) {
-          // If the selection includes all the tabs within the changed tab's
-          // group, it is an indication that the entire group is being moved.
-          // To prevent sending multiple events for each tab in the group,
-          // ignore these tabs moving as entire group moves will be handled by
-          // TabGroupChange::kMoved.
-          break;
-        }
-      }
-
       page_->TabMoved(extensions::ExtensionTabUtil::GetTabId(move->contents),
                       move->to_index,
                       tab_strip_model->IsTabPinned(move->to_index));

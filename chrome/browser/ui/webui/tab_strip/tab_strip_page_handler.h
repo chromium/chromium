@@ -79,6 +79,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroup);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupAcrossProfiles);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupAcrossWindows);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupMultipleTabs);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTabAcrossProfiles);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTabAcrossWindows);
