@@ -59,6 +59,33 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
 
 
 @pytest.mark.asyncio
+async def test_navigateToPageWithHash_contextInfoUpdated(
+      websocket,
+      context_id):
+    url = "data:text/html,<h2>test</h2>"
+    url_with_hash_1 = url + "#1"
+
+    # Initial navigation.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    assert result == {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1}]}
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsReturned(
       websocket, context_id):
     nested_iframe = 'data:text/html,<h1>CHILD_PAGE</h1>'
@@ -387,8 +414,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(websocket,
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_navigated(
-      websocket,
-      context_id):
+      websocket, context_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
@@ -433,6 +459,19 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
         'navigation': None,
         'url': url_with_hash_1}
 
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": context_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1}]},
+        result)
+
     resp = await execute_command(websocket, {
         "method": "browsingContext.navigate",
         "params": {
@@ -442,6 +481,19 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
     assert resp == {
         'navigation': None,
         'url': url_with_hash_2}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": context_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_2}]},
+        result)
 
     # Navigate back and forth in the same document with `wait:complete`.
     resp = await execute_command(websocket, {
@@ -454,6 +506,19 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
         'navigation': None,
         'url': url_with_hash_1}
 
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": context_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1}]},
+        result)
+
     resp = await execute_command(websocket, {
         "method": "browsingContext.navigate",
         "params": {
@@ -463,6 +528,19 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
     assert resp == {
         'navigation': None,
         'url': url_with_hash_2}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": context_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_2}]},
+        result)
 
 
 @pytest.mark.asyncio

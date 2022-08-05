@@ -146,7 +146,20 @@ export class BrowsingContextProcessor {
         if (!Context.hasKnownContext(contextId)) {
           return;
         }
-        Context.getKnownContext(contextId).setUrl(params.frame.url);
+        Context.getKnownContext(contextId).setUrl(
+          params.frame.url + (params.frame.urlFragment ?? '')
+        );
+      }
+    );
+
+    sessionCdpClient.Page.on(
+      'navigatedWithinDocument',
+      async function (params: Protocol.Page.NavigatedWithinDocumentEvent) {
+        const contextId = params.frameId;
+        if (!Context.hasKnownContext(contextId)) {
+          return;
+        }
+        Context.getKnownContext(contextId).setUrl(params.url);
       }
     );
   }

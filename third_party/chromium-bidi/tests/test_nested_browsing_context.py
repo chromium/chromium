@@ -17,6 +17,34 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
+async def test_iframe_navigateToPageWithHash_contextInfoUpdated(websocket,
+      iframe_id):
+    url = "data:text/html,<h2>test</h2>"
+    url_with_hash_1 = url + "#1"
+
+    # Initial navigation.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "complete",
+            "context": iframe_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": iframe_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": any_string,
+            "url": url_with_hash_1}]},
+        result)
+
+
+@pytest.mark.asyncio
 async def test_iframe_navigateWaitNone_navigated(websocket, iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
@@ -135,3 +163,134 @@ async def test_iframe_navigateWaitComplete_navigated(websocket, iframe_id):
         "params": {
             "context": iframe_id,
             "navigation": navigation_id}}
+
+
+@pytest.mark.asyncio
+async def test_iframe_navigateSameDocumentNavigation_navigated(
+      websocket, iframe_id):
+    url = "data:text/html,<h2>test</h2>"
+    url_with_hash_1 = url + "#1"
+    url_with_hash_2 = url + "#2"
+
+    # Initial navigation.
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url,
+            "wait": "complete",
+            "context": iframe_id}})
+
+    # Navigate back and forth in the same document with `wait:none`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "none",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "none",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
+
+    # Navigate back and forth in the same document with `wait:interactive`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "interactive",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": iframe_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": any_string,
+            "url": url_with_hash_1}]},
+        result)
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "interactive",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": iframe_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": any_string,
+            "url": url_with_hash_2}]},
+        result)
+
+    # Navigate back and forth in the same document with `wait:complete`.
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_1,
+            "wait": "complete",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": iframe_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": any_string,
+            "url": url_with_hash_1}]},
+        result)
+
+    resp = await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url_with_hash_2,
+            "wait": "complete",
+            "context": iframe_id}})
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {
+            "root": iframe_id}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": any_string,
+            "url": url_with_hash_2}]},
+        result)
