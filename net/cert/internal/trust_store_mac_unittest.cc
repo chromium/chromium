@@ -128,6 +128,12 @@ class TrustStoreMacImplTest
                                                IsKnownRootTestOrder,
                                                TrustStoreMac::TrustDomains>> {};
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 // Test the trust store using known test certificates in a keychain.  Tests
 // that issuer searching returns the expected certificates, and that none of
 // the certificates are trusted.
@@ -146,6 +152,8 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   ASSERT_EQ(errSecSuccess, status);
   ASSERT_TRUE(keychain);
   test_keychain_search_list->AddKeychain(keychain);
+
+#pragma clang diagnostic pop
 
   const TrustStoreMac::TrustImplType trust_impl = std::get<0>(GetParam());
   const IsKnownRootTestOrder is_known_root_test_order = std::get<1>(GetParam());

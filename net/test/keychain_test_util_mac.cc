@@ -38,6 +38,12 @@ base::ScopedCFTypeRef<SecIdentityRef> GetSecIdentityRefForCertificate(
 ScopedTestKeychain::ScopedTestKeychain() = default;
 ScopedTestKeychain::~ScopedTestKeychain() = default;
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 bool ScopedTestKeychain::Initialize() {
   if (!keychain_dir_.CreateUniqueTempDir())
     return false;
@@ -46,6 +52,8 @@ bool ScopedTestKeychain::Initialize() {
   return SecKeychainCreate(keychain_path.value().c_str(), 0, "", FALSE, nullptr,
                            keychain_.InitializeInto()) == noErr;
 }
+
+#pragma clang diagnostic pop
 
 base::ScopedCFTypeRef<SecIdentityRef> ImportCertAndKeyToKeychain(
     const X509Certificate* cert,

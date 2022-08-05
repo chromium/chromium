@@ -84,11 +84,6 @@ component("crypto") {
         # target if possible.
         "mock_apple_keychain_mac.cc",
       ]
-
-      # TODO(crbug.com/1348251) Disable SecKeychain is deprecated errors.
-      if (target_os == "ios") {
-        cflags = [ "-Wno-deprecated-declarations" ]
-      }
     }
     if (is_ios) {
       sources += [

@@ -41,6 +41,12 @@ class OptionalOutParameter {
 
 }  // namespace
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 namespace crypto {
 
 AppleKeychain::AppleKeychain() = default;
@@ -108,5 +114,7 @@ ScopedKeychainUserInteractionAllowed::~ScopedKeychainUserInteractionAllowed() {
     SecKeychainSetUserInteractionAllowed(*was_allowed_);
   }
 }
+
+#pragma clang diagnostic pop
 
 }  // namespace crypto

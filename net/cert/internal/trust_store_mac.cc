@@ -614,6 +614,12 @@ class KeychainTrustSettingsChangedNotifier {
  private:
   friend base::NoDestructor<KeychainTrustSettingsChangedNotifier>;
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   KeychainTrustSettingsChangedNotifier() {
     DCHECK(GetNetworkNotificationThreadMac()->RunsTasksInCurrentSequence());
     OSStatus status = SecKeychainAddCallback(
@@ -622,6 +628,8 @@ class KeychainTrustSettingsChangedNotifier {
     if (status != noErr)
       OSSTATUS_LOG(ERROR, status) << "SecKeychainAddCallback failed";
   }
+
+#pragma clang diagnostic pop
 
   ~KeychainTrustSettingsChangedNotifier() = delete;
 
@@ -1265,6 +1273,12 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
     }
   }
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   if (domains == TrustDomains::kAll) {
     // If a TestKeychainSearchList is present, it will have already set
     // |scoped_alternate_keychain_search_list|, which will be used as the
@@ -1302,6 +1316,8 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
     }
     CFArrayAppendValue(mutable_keychain_search_list, roots_keychain);
   }
+
+#pragma clang diagnostic pop
 
   if (scoped_alternate_keychain_search_list) {
     CFDictionarySetValue(query, kSecMatchSearchList,

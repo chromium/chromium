@@ -40,6 +40,12 @@ class CertDatabase::Notifier {
         FROM_HERE, base::BindOnce(&Notifier::Init, base::Unretained(this)));
   }
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   // Should be called from the |task_runner_|'s sequence. Use Shutdown()
   // to shutdown on arbitrary sequence.
   ~Notifier() {
@@ -48,6 +54,8 @@ class CertDatabase::Notifier {
     if (registered_ && task_runner_->RunsTasksInCurrentSequence())
       SecKeychainRemoveCallback(&Notifier::KeychainCallback);
   }
+
+#pragma clang diagnostic pop
 
   void Shutdown() {
     called_shutdown_ = true;
@@ -59,6 +67,12 @@ class CertDatabase::Notifier {
     }
   }
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
  private:
   void Init() {
     SecKeychainEventMask event_mask =
@@ -68,6 +82,8 @@ class CertDatabase::Notifier {
     if (status == noErr)
       registered_ = true;
   }
+
+#pragma clang diagnostic pop
 
   // SecKeychainCallback function that receives notifications from securityd
   // and forwards them to the |cert_db_|.

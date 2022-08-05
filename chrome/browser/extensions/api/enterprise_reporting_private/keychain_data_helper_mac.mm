@@ -15,6 +15,12 @@
 namespace extensions {
 namespace {
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 // Creates an access for a generic password item to share it with other Google
 // applications with teamid:EQHXZ8M8AV (taken from the signing certificate).
 OSStatus CreateTargetAccess(NSString* service_name, SecAccessRef* access_ref) {
@@ -115,5 +121,7 @@ OSStatus VerifyDefaultKeychainUnlocked(bool* unlocked) {
 
   return VerifyKeychainUnlocked(keychain, unlocked);
 }
+
+#pragma clang diagnostic pop
 
 }  // namespace extensions

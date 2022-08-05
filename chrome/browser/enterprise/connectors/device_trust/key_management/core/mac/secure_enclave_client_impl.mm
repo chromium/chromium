@@ -28,6 +28,12 @@ namespace enterprise_connectors {
 
 namespace {
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 // Issues the SecAccessCreate API to create the ACL for the secure key.
 // This ACL allows all Chrome applications access to modify this key
 // so all Chrome applications can perform the mac key rotation process.
@@ -45,6 +51,8 @@ base::ScopedCFTypeRef<SecAccessRef> CreateACL() {
                   nullptr, access_ref.InitializeInto());
   return access_ref;
 }
+
+#pragma clang diagnostic pop
 
 // Creates and returns the secure enclave private key attributes used
 // for key creation.
