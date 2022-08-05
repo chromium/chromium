@@ -505,30 +505,50 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       SecurityOrigin::Create(response.CurrentRequestUrl());
 
   const auto& headers = response.HttpHeaderFields();
+  const AtomicString& source_json =
+      headers.Get(http_names::kAttributionReportingRegisterSource);
+  const AtomicString& trigger_json =
+      headers.Get(http_names::kAttributionReportingRegisterTrigger);
 
   // TODO(apaseltiner): Report a DevTools issue when `type_` and `headers` do
   // not correspond correctly.
 
-  // TODO(johnidel): Consider surfacing an error when source and trigger headers
-  // are present together.
+  switch (type_) {
+    case SrcType::kSource:
+      if (!source_json.IsNull()) {
+        HandleSourceRegistration(source_json, std::move(reporting_origin),
+                                 request_id);
+      }
+      break;
+    case SrcType::kTrigger:
+      if (!trigger_json.IsNull()) {
+        HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
+                                  request_id);
+      }
+      break;
+    case SrcType::kUndetermined:
+      if (!source_json.IsNull() && !trigger_json.IsNull()) {
+        LogAuditIssue(loader_->local_frame_->DomWindow(),
+                      AttributionReportingIssueType::kSourceAndTriggerHeaders,
+                      /*element=*/nullptr, request_id,
+                      /*invalid_parameter=*/String());
+        return;
+      }
 
-  if (type_ == SrcType::kUndetermined || type_ == SrcType::kSource) {
-    const AtomicString& json =
-        headers.Get(http_names::kAttributionReportingRegisterSource);
-    if (!json.IsNull()) {
-      type_ = SrcType::kSource;
-      HandleSourceRegistration(json, std::move(reporting_origin), request_id);
-      return;
-    }
-  }
+      if (!source_json.IsNull()) {
+        type_ = SrcType::kSource;
+        HandleSourceRegistration(source_json, std::move(reporting_origin),
+                                 request_id);
+        return;
+      }
 
-  if (type_ == SrcType::kUndetermined || type_ == SrcType::kTrigger) {
-    const AtomicString& json =
-        headers.Get(http_names::kAttributionReportingRegisterTrigger);
-    if (!json.IsNull()) {
-      type_ = SrcType::kTrigger;
-      HandleTriggerRegistration(json, std::move(reporting_origin), request_id);
-    }
+      if (!trigger_json.IsNull()) {
+        type_ = SrcType::kTrigger;
+        HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
+                                  request_id);
+      }
+
+      break;
   }
 }
 

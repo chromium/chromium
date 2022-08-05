@@ -1,0 +1,11 @@
+Test that an attributionsrc request that is eligible for sources and triggers triggers an issue when it tries to register a source and trigger together.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : SourceAndTriggerHeaders
+        }
+    }
+}
+

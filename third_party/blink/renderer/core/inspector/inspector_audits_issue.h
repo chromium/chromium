@@ -111,6 +111,7 @@ enum class AttributionReportingIssueType {
   kInvalidRegisterTriggerHeader,
   kInvalidEligibleHeader,
   kTooManyConcurrentRequests,
+  kSourceAndTriggerHeaders,
 };
 
 enum class SharedArrayBufferIssueType {
