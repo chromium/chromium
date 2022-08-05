@@ -126,7 +126,7 @@ crbug.com/1129879 [ fuchsia ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 
 # WebGPU canvas capture hang on mac ASAN bot (also see crbug.com/1213170)
 crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
-crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture [ Skip ]
+crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture* [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -200,9 +200,6 @@ crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]
 crbug.com/852089 [ linux ] WebGPUTraceTest_* [ Skip ]
 crbug.com/852089 [ chromeos ] WebGPUTraceTest_* [ Skip ]
 crbug.com/852089 [ fuchsia ] WebGPUTraceTest_* [ Skip ]
-
-# one copy feature is only supported on mac for now.
-crbug.com/1298812 [ win ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

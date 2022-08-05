@@ -13,9 +13,16 @@
     var g_swapsBeforeAck = 15;
     var g_videoFrameReceived = false;
 
+    const parsedString = new URLSearchParams(window.location.search);
+
     async function main() {
+      const has_alpha_string = parsedString.get('has_alpha');
+
+      has_alpha = (has_alpha_string != null) ?
+        has_alpha_string == 'true' : false;
+
       const gpuCanvas = document.getElementById('canvas_gpu');
-      const [device, swapChain] = await webGpuUtils.init(gpuCanvas, /*has_alpha=*/false);
+      const [device, swapChain] = await webGpuUtils.init(gpuCanvas, /*has_alpha=*/has_alpha);
       if (!device || !swapChain) {
         console.error("Failed to initialize WebGPU - skipping test");
         domAutomationController.send("FAILURE");

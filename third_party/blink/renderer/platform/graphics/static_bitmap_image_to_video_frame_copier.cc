@@ -105,6 +105,8 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
                                        : kBottomLeft_GrSurfaceOrigin,
               image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {
+        TRACE_EVENT1("blink", "StaticBitmapImageToVideoFrameCopier::Convert",
+                     "accelerated_frame_pool_copy", true);
         // Early out on success, otherwise fallback to ReadYUVPixelsAsync path.
         return;
       }
@@ -115,6 +117,9 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
     ReadARGBPixelsAsync(image, context_provider->ContextProvider(),
                         std::move(callback));
   }
+
+  TRACE_EVENT1("blink", "StaticBitmapImageToVideoFrameCopier::Convert",
+               "accelerated_frame_pool_copy", false);
 }
 
 void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsSync(

@@ -680,10 +680,11 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   gpu::SyncToken sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
-                           reservation.id, reservation.generation,
-                           WGPUTextureUsage_CopyDst,
-                           reinterpret_cast<const GLbyte*>(&dst_mailbox));
+  webgpu->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation,
+      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment,
+      reinterpret_cast<const GLbyte*>(&dst_mailbox));
   WGPUImageCopyTexture source = {
       .nextInChain = nullptr,
       .texture = texture,
@@ -770,11 +771,10 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     const WGPUTexture& texture,
     const gfx::Size& size) const {
-  const auto info =
-      SkImageInfo::Make(size.width(), size.height(),
-                        viz::ResourceFormatToClosestSkColorType(
-                            /*gpu_compositing=*/true, swap_buffers_->Format()),
-                        kPremul_SkAlphaType);
+  const auto canvas_context_color = CanvasRenderingContextSkColorInfo();
+  const auto info = SkImageInfo::Make(size.width(), size.height(),
+                                      canvas_context_color.colorType(),
+                                      canvas_context_color.alphaType());
   // We tag the SharedImage inside the WebGPUImageProvider with display usage
   // since there are uncommon paths which may use this snapshot for compositing.
   // These paths are usually related to either printing or either video and

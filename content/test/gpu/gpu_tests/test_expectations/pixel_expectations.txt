@@ -220,7 +220,7 @@ crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pix
 
 # WebGPU canvas capture hang on mac ASAN bot (also see crbug.com/1213170)
 crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasOneCopyCapture [ Skip ]
-crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasDisableOneCopyCapture [ Skip ]
+crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasDisableOneCopyCapture* [ Skip ]
 
 ###################
 # Failures/Flakes #

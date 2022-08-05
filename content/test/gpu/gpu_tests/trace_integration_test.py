@@ -113,6 +113,9 @@ _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
     'HTMLCanvasElement::NotifyListenersCanvasChanged'
 
+_STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME =\
+    'StaticBitmapImageToVideoFrameCopier::Convert'
+
 
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
@@ -561,27 +564,48 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _EvaluateSuccess_CheckWebGPUCanvasCapture(self, category: str,
                                                 event_iterator: Iterator,
                                                 other_args: dict) -> None:
-    expected_one_copy = other_args.get('one_copy', False)
+    expected_one_copy = other_args.get('one_copy', None)
+    expected_accelerated_two_copy = other_args.get('accelerated_two_copy', None)
+    if expected_one_copy and expected_accelerated_two_copy:
+      self.fail('one_copy and accelerated_two_copy are mutually exclusive')
+
     found_one_copy_event = False
+    found_accelerated_two_copy_event = False
     # Verify expectations through captured trace events.
     for event in event_iterator:
       if event.category != category:
         continue
-      if event.name != _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME:
-        continue
-      detected_one_copy = event.args.get('OneCopyCanvasCapture', None)
-      if detected_one_copy is None:
-        detected_one_copy = False
-      else:
-        found_one_copy_event = True
 
-      if expected_one_copy != detected_one_copy:
-        self.fail('OneCopyCanvasCapture mismatch, expected %s got %s' %
-                  (expected_one_copy, detected_one_copy))
+      if (expected_one_copy is not None and event.name ==
+          _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME):
+        detected_one_copy = event.args.get('one_copy_canvas_capture', None)
 
-    if expected_one_copy and found_one_copy_event is False:
-      self.fail('%s events with OneCopyCanvasCapture were not found' %
+        if detected_one_copy is not None:
+          found_one_copy_event = True
+          if expected_one_copy != detected_one_copy:
+            self.fail('one_copy_canvas_capture mismatch, expected %s got %s' %
+                      (expected_one_copy, detected_one_copy))
+
+      elif (expected_accelerated_two_copy is not None
+            and event.name == _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME):
+        detected_accelerated_two_copy = event.args.get(
+            'accelerated_frame_pool_copy', None)
+
+        if detected_accelerated_two_copy is not None:
+          found_accelerated_two_copy_event = True
+          if expected_accelerated_two_copy != detected_accelerated_two_copy:
+            self.fail(
+                'accelerated_frame_pool_copy mismatch, expected %s got %s' %
+                (expected_accelerated_two_copy, detected_accelerated_two_copy))
+
+    if expected_one_copy is not None and found_one_copy_event is False:
+      self.fail('%s events with one_copy_canvas_capture were not found' %
                 _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME)
+
+    if (expected_accelerated_two_copy is not None
+        and found_accelerated_two_copy_event is False):
+      self.fail('%s events with accelerated_frame_pool_copy were not found' %
+                _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME)
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:

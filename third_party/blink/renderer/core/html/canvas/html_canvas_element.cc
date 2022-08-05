@@ -747,13 +747,16 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
               kBackBuffer, gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {
         TRACE_EVENT1("blink", "HTMLCanvasElement::NotifyListenersCanvasChanged",
-                     "OneCopyCanvasCapture", true);
+                     "one_copy_canvas_capture", true);
         continue;
       }
     }
 
     // If that fails, then create a StaticBitmapImage for the contents of
     // the RenderingContext.
+    TRACE_EVENT1("blink", "HTMLCanvasElement::NotifyListenersCanvasChanged",
+                 "one_copy_canvas_capture", false);
+
     if (!source_image) {
       SourceImageStatus status;
       source_image = GetSourceImageForCanvasInternal(&status);

@@ -501,25 +501,43 @@ class PixelTestPages():
     browser_args_canvas_disable_one_copy_capture = webgpu_args + [
         '--disable-features=OneCopyCanvasCapture'
     ]
-    other_args_canvas_disable_one_copy_capture = {'one_copy': False}
+    other_args_canvas_accelerated_two_copy = {
+        'one_copy': False,
+        'accelerated_two_copy': True
+    }
+    other_args_canvas_cpu_two_copy = {
+        'one_copy': False,
+        'accelerated_two_copy': False
+    }
 
     # Setting grace_period_end to monitor the affects on bots for 2 weeks
     # without making the bots red unexpectedly.
     return [
+        # Enabled OneCopyCapture
         PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
                       base_name + '_WebGPUCanvasOneCopyCapture',
                       test_rect=[0, 0, 400, 200],
                       matching_algorithm=GENERAL_MP4_ALGO,
                       browser_args=browser_args_canvas_one_copy_capture,
-                      other_args=other_args_canvas_one_copy_capture,
-                      grace_period_end=date(2022, 7, 30)),
-        PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
-                      base_name + '_WebGPUCanvasDisableOneCopyCapture',
-                      test_rect=[0, 0, 400, 200],
-                      matching_algorithm=GENERAL_MP4_ALGO,
-                      browser_args=browser_args_canvas_disable_one_copy_capture,
-                      other_args=other_args_canvas_disable_one_copy_capture,
-                      grace_period_end=date(2022, 7, 30)),
+                      other_args=other_args_canvas_one_copy_capture),
+        # Disabled OneCopyCapture + canvas is opaque
+        PixelTestPage(
+            'pixel_webgpu_canvas_capture_to_video.html?has_alpha=false',
+            base_name + '_WebGPUCanvasDisableOneCopyCapture_Accelerated',
+            test_rect=[0, 0, 400, 200],
+            matching_algorithm=GENERAL_MP4_ALGO,
+            browser_args=browser_args_canvas_disable_one_copy_capture,
+            other_args=other_args_canvas_accelerated_two_copy,
+            grace_period_end=date(2022, 8, 30)),
+        # Disabled OneCopyCapture + canvas has alpha
+        PixelTestPage(
+            'pixel_webgpu_canvas_capture_to_video.html?has_alpha=true',
+            base_name + '_WebGPUCanvasDisableOneCopyCapture_CpuReadback',
+            test_rect=[0, 0, 400, 200],
+            matching_algorithm=GENERAL_MP4_ALGO,
+            browser_args=browser_args_canvas_disable_one_copy_capture,
+            other_args=other_args_canvas_cpu_two_copy,
+            grace_period_end=date(2022, 8, 30)),
     ]
 
 
