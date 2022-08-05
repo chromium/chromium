@@ -25,8 +25,11 @@ class PolicyValueProvider {
   PolicyValueProvider& operator=(const PolicyValueProvider&) = delete;
   virtual ~PolicyValueProvider();
 
-  // Returns the list of available policy values.
-  virtual base::Value::List GetValues() = 0;
+  // Appends the policy values at the end of `out_policy_values` if they're
+  // available.
+  // TODO(b/233209041): Update GetValues function to return a base::Value::Dict
+  // instead.
+  virtual void GetValues(base::Value::List& out_policy_values) = 0;
 
   // Returns the dictionary containing the policy names.
   virtual base::Value::Dict GetNames() = 0;

@@ -129,21 +129,6 @@
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-namespace {
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Appends the contents of `from_list` to end of `to_list`. Moves contents of
-// `from_list` while appending.
-void AppendList(base::Value::List& to_list, base::Value::List&& from_list) {
-  for (auto& value : from_list) {
-    to_list.Append(std::move(value));
-  }
-  from_list.clear();
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-}  // namespace
-
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
@@ -495,8 +480,7 @@ base::Value::List PolicyUIHandler::GetPolicyValues() {
                                         .ToValueList();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Append the extension policy values.
-  AppendList(policy_values, extension_policies_value_provider_->GetValues());
+  extension_policies_value_provider_->GetValues(policy_values);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return policy_values;

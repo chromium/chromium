@@ -56,23 +56,22 @@ ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-base::Value::List ExtensionPoliciesValueProvider::GetValues() {
+void ExtensionPoliciesValueProvider::GetValues(
+    base::Value::List& out_policy_values) {
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
-  base::Value::List extension_policies;
   if (client->HasUserPolicies()) {
     for (auto& policy :
          client->GetExtensionPolicies(policy::POLICY_DOMAIN_EXTENSIONS)) {
-      extension_policies.Append(std::move(policy));
+      out_policy_values.Append(std::move(policy));
     }
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& policy :
        client->GetExtensionPolicies(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
-    extension_policies.Append(std::move(policy));
+    out_policy_values.Append(std::move(policy));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return extension_policies;
 }
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetNames() {
