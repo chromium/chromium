@@ -6792,6 +6792,7 @@
                 "android",
                 "android_weblayer",
                 "android_webview",
+                "linux",
                 "windows"
             ],
             "experiments": [
