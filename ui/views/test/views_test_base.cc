@@ -114,6 +114,19 @@ void ViewsTestBase::RunPendingMessages() {
   run_loop.RunUntilIdle();
 }
 
+void ViewsTestBase::RunScheduledLayout(View* view) {
+  DCHECK(view);
+  Widget* widget = view->GetWidget();
+  if (widget) {
+    widget->LayoutRootViewIfNecessary();
+    return;
+  }
+  View* parent_view = view;
+  while (parent_view->parent())
+    parent_view = parent_view->parent();
+  parent_view->Layout();
+}
+
 Widget::InitParams ViewsTestBase::CreateParams(Widget::InitParams::Type type) {
   Widget::InitParams params(type);
   params.context = GetContext();

@@ -90,8 +90,12 @@ class LabelButtonTest : public test::WidgetTest {
     // Windows is platform-dependent.
     test_widget_->Show();
 
-    button_ = test_widget_->GetContentsView()->AddChildView(
-        std::make_unique<TestLabelButton>());
+    // Place the button into a separate container view which itself does no
+    // layouts. This will isolate the button from the client view which does
+    // a fill layout by default.
+    auto* container =
+        test_widget_->client_view()->AddChildView(std::make_unique<View>());
+    button_ = container->AddChildView(std::make_unique<TestLabelButton>());
 
     // Establish the expected text colors for testing changes due to state.
     themed_normal_text_color_ =
@@ -425,12 +429,12 @@ TEST_F(LabelButtonTest, ImageAlignmentWithMultilineLabel) {
   button_->SetImage(Button::STATE_NORMAL, image);
 
   button_->SetBoundsRect(gfx::Rect(button_->GetPreferredSize()));
-  button_->Layout();
+  RunScheduledLayout(button_);
   int y_origin_centered = button_->image()->origin().y();
 
   button_->SetBoundsRect(gfx::Rect(button_->GetPreferredSize()));
   button_->SetImageCentered(false);
-  button_->Layout();
+  RunScheduledLayout(button_);
   int y_origin_not_centered = button_->image()->origin().y();
 
   EXPECT_LT(y_origin_not_centered, y_origin_centered);
@@ -463,17 +467,17 @@ TEST_F(LabelButtonTest, LabelAndImage) {
   gfx::Size button_size = button_->GetPreferredSize();
   button_size.Enlarge(50, 0);
   button_->SetSize(button_size);
-  button_->Layout();
+  RunScheduledLayout(button_);
   EXPECT_LT(button_->image()->bounds().right(), button_->label()->bounds().x());
   int left_align_label_midpoint = button_->label()->bounds().CenterPoint().x();
   button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  button_->Layout();
+  RunScheduledLayout(button_);
   EXPECT_LT(button_->image()->bounds().right(), button_->label()->bounds().x());
   int center_align_label_midpoint =
       button_->label()->bounds().CenterPoint().x();
   EXPECT_LT(left_align_label_midpoint, center_align_label_midpoint);
   button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  button_->Layout();
+  RunScheduledLayout(button_);
   EXPECT_LT(button_->label()->bounds().right(), button_->image()->bounds().x());
 
   button_->SetText(std::u16string());
@@ -521,7 +525,7 @@ TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
   gfx::Size preferred_size = button_->GetPreferredSize();
   preferred_size.set_height(button_->GetHeightForWidth(preferred_size.width()));
   button_->SetSize(preferred_size);
-  button_->Layout();
+  RunScheduledLayout(button_);
 
   EXPECT_EQ(preferred_size.width(),
             image.width() + image_spacing + text_wrap_width);
@@ -631,7 +635,7 @@ TEST_F(LabelButtonTest, ChangeTextSize) {
   // is increased.
   button_->SetText(longer_text);
   EXPECT_TRUE(ViewTestApi(button_).needs_layout());
-  button_->Layout();
+  RunScheduledLayout(button_);
   EXPECT_GT(button_->label()->bounds().width(), original_label_width * 2);
   EXPECT_GT(button_->GetPreferredSize().width(), original_width * 2);
 
@@ -639,7 +643,7 @@ TEST_F(LabelButtonTest, ChangeTextSize) {
   // text is restored.
   button_->SetText(text);
   EXPECT_TRUE(ViewTestApi(button_).needs_layout());
-  button_->Layout();
+  RunScheduledLayout(button_);
   EXPECT_EQ(original_label_width, button_->label()->bounds().width());
   EXPECT_EQ(original_width, button_->GetPreferredSize().width());
 }
@@ -723,7 +727,7 @@ TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
   // The border size + the content height is more than button's preferred size.
   button_->SetBorder(CreateEmptyBorder(
       gfx::Insets::TLBR(image_size / 2, 0, image_size / 2, 0)));
-  button_->Layout();
+  RunScheduledLayout(button_);
 
   // Ensure that content (image and label) doesn't get clipped by the border.
   EXPECT_GE(button_->image()->height(), image_size);

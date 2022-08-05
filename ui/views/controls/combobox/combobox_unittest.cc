@@ -542,7 +542,7 @@ TEST_F(ComboboxTest, Click) {
   TestComboboxListener listener(combobox_);
   combobox_->SetCallback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
-  combobox_->Layout();
+  RunScheduledLayout(combobox_);
 
   // Click the left side. The menu is shown.
   EXPECT_EQ(0, menu_show_count_);
@@ -559,7 +559,7 @@ TEST_F(ComboboxTest, ClickButDisabled) {
   combobox_->SetCallback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
-  combobox_->Layout();
+  RunScheduledLayout(combobox_);
   combobox_->SetEnabled(false);
 
   // Click the left side, but nothing happens since the combobox is disabled.
@@ -637,7 +637,7 @@ TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   combobox_->SetCallback(base::BindRepeating(
       &TestComboboxListener::OnPerformAction, base::Unretained(&listener)));
 
-  combobox_->Layout();
+  RunScheduledLayout(combobox_);
 
   // Click the right side (arrow button). The menu is shown.
   const gfx::Point right_point(combobox_->x() + combobox_->width() - 1,

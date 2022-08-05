@@ -173,9 +173,9 @@ class WebViewUnitTest : public views::test::WidgetTest {
     top_level_widget_->SetBounds(gfx::Rect(0, 10, 100, 100));
     View* const contents_view =
         top_level_widget_->SetContentsView(std::make_unique<View>());
-    web_view_ = new WebView(browser_context_.get());
-    web_view_->SetBoundsRect(gfx::Rect(contents_view->size()));
-    contents_view->AddChildView(web_view_.get());
+    auto web_view = std::make_unique<WebView>(browser_context_.get());
+    web_view->SetBoundsRect(gfx::Rect(contents_view->size()));
+    web_view_ = contents_view->AddChildView(std::move(web_view));
     top_level_widget_->Show();
     ASSERT_EQ(gfx::Rect(0, 0, 100, 100), web_view_->bounds());
   }
@@ -231,8 +231,8 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
   EXPECT_FALSE(observer1.was_shown());
 
   web_view()->SetWebContents(web_contents1.get());
-  // Layout() is normally async, call it now to ensure visibility is updated.
-  web_view()->Layout();
+  // Layout is normally async, ensure it runs now so visibility is updated.
+  RunScheduledLayout(web_view());
   EXPECT_TRUE(observer1.was_shown());
 #if defined(USE_AURA)
   EXPECT_TRUE(web_contents1->GetNativeView()->IsVisible());
@@ -251,8 +251,8 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
 
   // Setting the new WebContents should hide the existing one.
   web_view()->SetWebContents(web_contents2.get());
-  // Layout() is normally async, call it now to ensure visibility is updated.
-  web_view()->Layout();
+  // Layout is normally async, ensure it runs now so visibility is updated.
+  RunScheduledLayout(web_view());
   EXPECT_FALSE(observer1.was_shown());
   EXPECT_TRUE(observer2.was_shown());
   EXPECT_TRUE(observer2.valid_root_while_shown());
@@ -270,8 +270,8 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
 
   EXPECT_EQ(1, observer1.shown_count());
   web_view()->SetWebContents(web_contents1.get());
-  // Layout() is normally async, call it now to ensure visibility is updated.
-  web_view()->Layout();
+  // Layout is normally async, ensure it runs now so visibility is updated.
+  RunScheduledLayout(web_view());
   EXPECT_EQ(1, observer1.shown_count());
 
   // Nothing else should change.

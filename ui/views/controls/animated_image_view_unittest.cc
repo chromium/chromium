@@ -58,10 +58,8 @@ class AnimatedImageViewTest : public ViewsTestBase {
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_.Init(std::move(params));
 
-    auto view = std::make_unique<AnimatedImageView>();
-    view->SetUseDefaultFillLayout(true);
-    view_ = view.get();
-    widget_.SetContentsView(std::move(view));
+    view_ = widget_.SetContentsView(std::make_unique<AnimatedImageView>());
+    view_->SetUseDefaultFillLayout(true);
 
     widget_.Show();
   }
@@ -97,7 +95,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAnimatedImage(CreateAnimationWithSize(gfx::Size(80, 80)));
   view_->SetVerticalAlignment(ImageViewBase::Alignment::kCenter);
   view_->SetHorizontalAlignment(ImageViewBase::Alignment::kCenter);
-  widget_.GetContentsView()->Layout();
+  RunScheduledLayout(view_);
   view_->Play();
 
   static constexpr float kExpectedDefaultOrigin =

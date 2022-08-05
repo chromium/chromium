@@ -102,7 +102,7 @@ TEST_P(ImageViewTest, CenterAlignment) {
   bitmap.allocN32Pixels(kImageSkiaSize, kImageSkiaSize);
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   image_view()->SetImage(image_skia);
-  widget()->GetContentsView()->Layout();
+  RunScheduledLayout(image_view());
   EXPECT_NE(gfx::Size(), image_skia.size());
 
   // With no changes to the size / padding of |image_view|, the origin of
@@ -112,11 +112,11 @@ TEST_P(ImageViewTest, CenterAlignment) {
   // Test insets are always respected in LTR and RTL.
   constexpr int kInset = 5;
   image_view()->SetBorder(CreateEmptyBorder(kInset));
-  widget()->GetContentsView()->Layout();
+  RunScheduledLayout(image_view());
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
   SetRTL(true);
-  widget()->GetContentsView()->Layout();
+  RunScheduledLayout(image_view());
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
   // Check this still holds true when the insets are asymmetrical.
@@ -124,11 +124,11 @@ TEST_P(ImageViewTest, CenterAlignment) {
   constexpr int kTrailingInset = 6;
   image_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
       kLeadingInset, kLeadingInset, kTrailingInset, kTrailingInset)));
-  widget()->GetContentsView()->Layout();
+  RunScheduledLayout(image_view());
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
 
   SetRTL(false);
-  widget()->GetContentsView()->Layout();
+  RunScheduledLayout(image_view());
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
 }
 
