@@ -5,7 +5,6 @@
 /**
  * @fileoverview Base class for Text-to-Speech engines that actually transform
  * text to speech.
- *
  */
 
 import {Msgs} from './msgs.js';
@@ -71,7 +70,7 @@ export class AbstractTts {
   /**
    * @param {string} textString
    * @param {QueueMode} queueMode
-   * @param {Object=} properties
+   * @param {TtsSpeechProperties=} properties
    * @override
    */
   speak(textString, queueMode, properties) {
@@ -192,9 +191,12 @@ export class AbstractTts {
     if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
       if (localStorage['capitalStrategy'] === 'increasePitch') {
-        for (const prop in AbstractTts.PERSONALITY_CAPITAL) {
+        // Closure doesn't allow the use of for..in or [] with structs, so
+        // convert to a pure JSON object.
+        const PERSONALITY_CAPITAL = AbstractTts.PERSONALITY_CAPITAL.toJSON();
+        for (const prop in PERSONALITY_CAPITAL) {
           if (properties[prop] === undefined) {
-            properties[prop] = AbstractTts.PERSONALITY_CAPITAL[prop];
+            properties[prop] = PERSONALITY_CAPITAL[prop];
           }
         }
       } else if (localStorage['capitalStrategy'] === 'announceCapitals') {
@@ -349,104 +351,97 @@ AbstractTts.PAUSE = 'pause';
 /**
  * TTS personality for annotations - text spoken by ChromeVox that
  * elaborates on a user interface element but isn't displayed on-screen.
- * @type {!Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_ANNOTATION = {
+AbstractTts.PERSONALITY_ANNOTATION = new TtsSpeechProperties({
   'relativePitch': -0.25,
   // TODO:(rshearer) Added this color change for I/O presentation.
   'color': 'yellow',
   'punctuationEcho': 'none',
-};
+});
 
 
 /**
  * TTS personality for announcements - text spoken by ChromeVox that
  * isn't tied to any user interface elements.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_ANNOUNCEMENT = {
+AbstractTts.PERSONALITY_ANNOUNCEMENT = new TtsSpeechProperties({
   'punctuationEcho': 'none',
-};
+});
 
 /**
  * TTS personality for alerts from the system, such as battery level
  * warnings.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_SYSTEM_ALERT = {
+AbstractTts.PERSONALITY_SYSTEM_ALERT = new TtsSpeechProperties({
   'punctuationEcho': 'none',
   'doNotInterrupt': true,
-};
+});
 
 /**
  * TTS personality for an aside - text in parentheses.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_ASIDE = {
+AbstractTts.PERSONALITY_ASIDE = new TtsSpeechProperties({
   'relativePitch': -0.1,
   'color': '#669',
-};
-
+});
 
 /**
  * TTS personality for capital letters.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_CAPITAL = {
+AbstractTts.PERSONALITY_CAPITAL = new TtsSpeechProperties({
   'relativePitch': 0.2,
-};
-
+});
 
 /**
  * TTS personality for deleted text.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_DELETED = {
+AbstractTts.PERSONALITY_DELETED = new TtsSpeechProperties({
   'punctuationEcho': 'none',
   'relativePitch': -0.6,
-};
-
+});
 
 /**
  * TTS personality for quoted text.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_QUOTE = {
+AbstractTts.PERSONALITY_QUOTE = new TtsSpeechProperties({
   'relativePitch': 0.1,
   'color': '#b6b',
   'fontWeight': 'bold',
-};
-
+});
 
 /**
  * TTS personality for strong or bold text.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_STRONG = {
+AbstractTts.PERSONALITY_STRONG = new TtsSpeechProperties({
   'relativePitch': 0.1,
   'color': '#b66',
   'fontWeight': 'bold',
-};
-
+});
 
 /**
  * TTS personality for emphasis or italicized text.
- * @type {Object}
+ * @type {!TtsSpeechProperties}
  */
-AbstractTts.PERSONALITY_EMPHASIS = {
+AbstractTts.PERSONALITY_EMPHASIS = new TtsSpeechProperties({
   'relativeVolume': 0.1,
   'relativeRate': -0.1,
   'color': '#6bb',
   'fontWeight': 'bold',
-};
-
+});
 
 /**
  * Flag indicating if the TTS is being debugged.
  * @type {boolean}
  */
 AbstractTts.DEBUG = true;
-
 
 /**
  * Character dictionary. These symbols are replaced with their human readable
@@ -496,14 +491,11 @@ AbstractTts.CHARACTER_DICTIONARY = {
   '\u25a0': 'square_bullet',
 };
 
-
 /**
  * Pronunciation dictionary regexp.
- * @type {RegExp};
- * @private
+ * @private {RegExp}
  */
 AbstractTts.pronunciationDictionaryRegexp_;
-
 
 /**
  * Substitution dictionary. These symbols or patterns are ALWAYS substituted
@@ -557,19 +549,15 @@ AbstractTts.SUBSTITUTION_DICTIONARY = {
   '£': 'pound sterling',
 };
 
-
 /**
  * Substitution dictionary regexp.
- * @type {RegExp};
- * @private
+ * @private {RegExp}
  */
 AbstractTts.substitutionDictionaryRegexp_;
 
-
 /**
  * repetition filter regexp.
- * @type {RegExp}
- * @private
+ * @private {RegExp}
  */
 AbstractTts.repetitionRegexp_ =
     /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022\u25e6\u25a0])\1{2,}/g;
@@ -579,8 +567,7 @@ AbstractTts.PHONETIC_CHARACTERS = 'phoneticCharacters';
 
 /**
  * Regexp filter for negative dollar and pound amounts.
- * @type {RegExp}
- * @private
+ * @private {RegExp}
  */
 AbstractTts.negativeCurrencyAmountRegexp_ =
     /-[£\$](\d{1,3})(\d+|(,\d{3})*)(\.\d{1,})?/g;

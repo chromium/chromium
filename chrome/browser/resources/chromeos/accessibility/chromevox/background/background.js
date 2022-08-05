@@ -233,14 +233,14 @@ export class Background extends ChromeVoxState {
    * Navigate to the given range - it both sets the range and outputs it.
    * @param {!CursorRange} range The new range.
    * @param {boolean=} opt_focus Focus the range; defaults to true.
-   * @param {Object=} opt_speechProps Speech properties.
+   * @param {TtsSpeechProperties=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
    *     the selection, otherwise it does by default.
    * @override
    */
   navigateToRange(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
     opt_focus = opt_focus === undefined ? true : opt_focus;
-    opt_speechProps = opt_speechProps || {};
+    opt_speechProps = opt_speechProps || new TtsSpeechProperties();
     opt_skipSettingSelection = opt_skipSettingSelection || false;
     const prevRange = this.currentRange_;
 

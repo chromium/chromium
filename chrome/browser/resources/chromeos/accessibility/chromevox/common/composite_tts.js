@@ -34,14 +34,13 @@ export class CompositeTts {
   /**
    * @param {string} textString
    * @param {QueueMode} queueMode
-   * @param {Object=} properties
+   * @param {TtsSpeechProperties=} properties
    * @return {TtsInterface}
    * @override
    */
   speak(textString, queueMode, properties) {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.speak(textString, queueMode, properties);
-    });
+    this.ttsEngines_.forEach(
+        engine => engine.speak(textString, queueMode, properties));
     return this;
   }
 

@@ -217,7 +217,8 @@ export class ChromeVoxBackground {
 
       this.tts.speak(
           msg['text'],
-          /** QueueMode */ msg['queueMode'], msg['properties']);
+          /** QueueMode */ msg['queueMode'],
+          new TtsSpeechProperties(msg['properties']));
     } else if (msg['action'] === 'stop') {
       this.tts.stop();
     } else if (msg['action'] === 'increaseOrDecrease') {
@@ -276,7 +277,7 @@ export class ChromeVoxBackground {
   onIntroduceChromeVox() {
     ChromeVox.tts.speak(
         Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
-        {doNotInterrupt: true});
+        new TtsSpeechProperties({doNotInterrupt: true}));
     ChromeVox.braille.write(NavBraille.fromText(Msgs.getMsg('intro_brl')));
   }
 

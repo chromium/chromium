@@ -66,39 +66,36 @@ const StateType = chrome.automation.StateType;
 export class Output {
   constructor() {
     // TODO(dtseng): Include braille specific rules.
-    /** @type {!Array<!Spannable>} @private */
+    /** @private {!Array<!Spannable>} */
     this.speechBuffer_ = [];
-    /** @type {!Array<!Spannable>} @private */
+    /** @private {!Array<!Spannable>} */
     this.brailleBuffer_ = [];
-    /** @type {!Array<!Object>} @private */
+    /** @private {!Array<!Object>} */
     this.locations_ = [];
-    /** @type {function(?)} @private */
+    /** @private {function(boolean=)} */
     this.speechEndCallback_;
 
     // Store output rules.
-    /** @type {!OutputRulesStr} @private */
+    /** @private {!OutputRulesStr} */
     this.speechRulesStr_ = new OutputRulesStr('enableSpeechLogging');
-    /** @type {!OutputRulesStr} @private */
+    /** @private {!OutputRulesStr} */
     this.brailleRulesStr_ = new OutputRulesStr('enableBrailleLogging');
 
     /**
      * Current global options.
-     * @type {{speech: boolean, braille: boolean, auralStyle: boolean}}
-     * @private
+     * @private {{speech: boolean, braille: boolean, auralStyle: boolean}}
      */
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
 
     /**
      * The speech category for the generated speech utterance.
-     * @type {TtsCategory}
-     * @private
+     * @private {TtsCategory}
      */
     this.speechCategory_ = TtsCategory.NAV;
 
     /**
      * The speech queue mode for the generated speech utterance.
-     * @type {QueueMode}
-     * @private
+     * @private {QueueMode}
      */
     this.queueMode_;
 
@@ -111,8 +108,8 @@ export class Output {
     /** @private {boolean} */
     this.enableHints_ = true;
 
-    /** @private {!Object} */
-    this.initialSpeechProps_ = {};
+    /** @private {!TtsSpeechProperties} */
+    this.initialSpeechProps_ = new TtsSpeechProperties();
 
     /** @private {boolean} */
     this.drawFocusRing_ = true;
@@ -379,7 +376,7 @@ export class Output {
 
   /**
    * Supply initial speech properties that will be applied to all output.
-   * @param {!Object} speechProps
+   * @param {!TtsSpeechProperties} speechProps
    * @return {!Output}
    */
   withInitialSpeechProperties(speechProps) {
@@ -470,11 +467,12 @@ export class Output {
    * @return {!Output}
    */
   onSpeechEnd(callback) {
-    this.speechEndCallback_ = function(opt_cleanupOnly) {
-      if (!opt_cleanupOnly) {
-        callback();
-      }
-    }.bind(this);
+    this.speechEndCallback_ =
+        /** @type {function(boolean=)} */ (function(opt_cleanupOnly) {
+          if (!opt_cleanupOnly) {
+            callback();
+          }
+        }.bind(this));
     return this;
   }
 
@@ -503,7 +501,7 @@ export class Output {
         continue;
       }
 
-      let speechProps = {};
+      let speechProps;
       const speechPropsInstance = /** @type {OutputSpeechProperties} */ (
           buff.getSpanInstanceOf(OutputSpeechProperties));
 
@@ -515,14 +513,14 @@ export class Output {
             speechPropsInstance.properties[key] = value;
           }
         }
-        speechProps = speechPropsInstance.properties;
+        speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
       }
 
       speechProps.category = this.speechCategory_;
 
       (function() {
         const scopedBuff = buff;
-        speechProps['startCallback'] = function() {
+        speechProps.startCallback = function() {
           const actions = scopedBuff.getSpansInstanceOf(OutputAction);
           if (actions) {
             actions.forEach(function(a) {
@@ -533,7 +531,7 @@ export class Output {
       }());
 
       if (i === this.speechBuffer_.length - 1) {
-        speechProps['endCallback'] = this.speechEndCallback_;
+        speechProps.endCallback = this.speechEndCallback_;
       }
       let finalSpeech = buff.toString();
       for (const text in this.replacements_) {

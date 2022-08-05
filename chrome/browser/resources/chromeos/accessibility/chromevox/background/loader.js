@@ -27,6 +27,7 @@ goog.require('TreeLog');
 goog.require('TreePathRecoveryStrategy');
 goog.require('TtsCategory');
 goog.require('TtsInterface');
+goog.require('TtsSpeechProperties');
 
 goog.require('constants');
 goog.require('goog.i18n.MessageFormat');

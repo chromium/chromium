@@ -418,7 +418,7 @@ export class CommandHandler extends CommandHandlerInterface {
     let rootPred = AutomationPredicate.rootOrEditableRoot;
     let unit = null;
     let shouldWrap = true;
-    const speechProps = {};
+    const speechProps = new TtsSpeechProperties();
     let skipSync = false;
     let didNavigate = false;
     let tryScrolling = true;
@@ -427,14 +427,14 @@ export class CommandHandler extends CommandHandlerInterface {
     switch (command) {
       case 'nextCharacter':
         didNavigate = true;
-        speechProps['phoneticCharacters'] = true;
+        speechProps.phoneticCharacters = true;
         unit = CursorUnit.CHARACTER;
         current = current.move(CursorUnit.CHARACTER, Dir.FORWARD);
         break;
       case 'previousCharacter':
         dir = Dir.BACKWARD;
         didNavigate = true;
-        speechProps['phoneticCharacters'] = true;
+        speechProps.phoneticCharacters = true;
         unit = CursorUnit.CHARACTER;
         current = current.move(CursorUnit.CHARACTER, dir);
         break;

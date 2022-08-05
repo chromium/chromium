@@ -119,7 +119,8 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
     // allow interruption of this announcement which can occur in a slew of
     // events (e.g. typing).
     new Output()
-        .withInitialSpeechProperties({doNotInterrupt: true})
+        .withInitialSpeechProperties(
+            new TtsSpeechProperties({doNotInterrupt: true}))
         .formatForSpeech('@hint_details')
         .go();
   }
