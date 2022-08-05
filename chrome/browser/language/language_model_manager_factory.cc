@@ -70,6 +70,15 @@ void RecordULPInitMetrics(Profile* profile,
   logger.RecordInitiationAcceptLanguagesULPOverlap(
       logger.ULPLanguagesInAcceptLanguagesRatio(accept_languages,
                                                 ulp_languages));
+
+  std::vector<std::string> never_languages_not_in_ulp =
+      logger.RemoveULPLanguages(
+          translate::TranslatePrefs(pref_service).GetNeverTranslateLanguages(),
+          ulp_languages);
+  logger.RecordInitiationNeverLanguagesMissingFromULP(
+      never_languages_not_in_ulp);
+  logger.RecordInitiationNeverLanguagesMissingFromULPCount(
+      never_languages_not_in_ulp.size());
 }
 
 void CreateAndAddULPLanguageModel(Profile* profile,
