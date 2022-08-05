@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/default_tick_clock.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/display_strings_util.h"
@@ -45,10 +44,18 @@ ClientHeadless::ClientHeadless(
     content::WebContents* web_contents,
     const CommonDependencies* common_dependencies,
     ExternalActionDelegate* action_extension_delegate,
-    WebsiteLoginManager* website_login_manager)
+    WebsiteLoginManager* website_login_manager,
+    const base::TickClock* tick_clock,
+    base::WeakPtr<RuntimeManager> runtime_manager,
+    ukm::UkmRecorder* ukm_recorder,
+    AnnotateDomModelService* annotate_dom_model_service)
     : web_contents_(web_contents),
       common_dependencies_(common_dependencies),
-      website_login_manager_(website_login_manager) {
+      website_login_manager_(website_login_manager),
+      tick_clock_(tick_clock),
+      runtime_manager_(runtime_manager),
+      ukm_recorder_(ukm_recorder),
+      annotate_dom_model_service_(annotate_dom_model_service) {
   headless_ui_controller_ =
       std::make_unique<HeadlessUiController>(action_extension_delegate);
 }
@@ -58,6 +65,8 @@ ClientHeadless::~ClientHeadless() = default;
 void ClientHeadless::Start(
     const GURL& url,
     std::unique_ptr<TriggerContext> trigger_context,
+    std::unique_ptr<Service> service,
+    std::unique_ptr<WebController> web_controller,
     base::OnceCallback<void(Metrics::DropOutReason reason)>
         script_ended_callback) {
   // Ignore the call if a script is already running.
@@ -66,12 +75,9 @@ void ClientHeadless::Start(
   }
   script_ended_callback_ = std::move(script_ended_callback);
   controller_ = std::make_unique<Controller>(
-      web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
-      RuntimeManager::GetForWebContents(web_contents_)->GetWeakPtr(),
-      /* service= */ nullptr, ukm::UkmRecorder::Get(),
-      /* annotate_dom_model_service= */
-      common_dependencies_->GetOrCreateAnnotateDomModelService(
-          GetWebContents()->GetBrowserContext()));
+      web_contents_, /* client= */ this, tick_clock_, runtime_manager_,
+      std::move(service), std::move(web_controller), ukm_recorder_,
+      annotate_dom_model_service_);
   controller_->AddObserver(headless_ui_controller_.get());
   controller_->Start(url, std::move(trigger_context));
 }
