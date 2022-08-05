@@ -398,7 +398,7 @@ bool SyncServiceImplHarness::AwaitQuiescence(
   }
 
   std::vector<SyncServiceImpl*> services;
-  for (const SyncServiceImplHarness* harness : clients) {
+  for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }
   return QuiesceStatusChangeChecker(services).Wait();

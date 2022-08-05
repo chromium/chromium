@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/as_const.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -518,6 +519,7 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
       // may be destroyed soon. It may not exist for browsers added during
       // tests using AddBrowser().
       if (i < clients_.size()) {
+        CheckForDataTypeFailures(/*client_index=*/i);
         clients_[i].reset();
       }
       break;
@@ -534,6 +536,11 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
 #endif
 
 SyncServiceImplHarness* SyncTest::GetClient(int index) {
+  return const_cast<SyncServiceImplHarness*>(
+      base::as_const(*this).GetClient(index));
+}
+
+const SyncServiceImplHarness* SyncTest::GetClient(int index) const {
   if (clients_.empty()) {
     LOG(FATAL) << "SetupClients() has not yet been called.";
   }
@@ -954,13 +961,7 @@ void SyncTest::TearDownOnMainThread() {
       // This may happen if the last tab and hence a browser has been closed.
       continue;
     }
-    if (GetClient(client_index)->service()->HasAnyDatatypeErrorForTest()) {
-      ADD_FAILURE() << "Data types failed during tests: "
-                    << GetClient(client_index)
-                           ->service()
-                           ->GetTypeStatusMapForDebugging()
-                           ->DebugString();
-    }
+    CheckForDataTypeFailures(client_index);
   }
 
   // Workaround for https://crbug.com/801569: |prefs::kProfileLastUsed| stores
@@ -1382,4 +1383,15 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
   }
 
   return true;
+}
+
+void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
+  DCHECK(GetClient(client_index));
+  if (GetClient(client_index)->service()->HasAnyDatatypeErrorForTest()) {
+    ADD_FAILURE() << "Data types failed during tests: "
+                  << GetClient(client_index)
+                         ->service()
+                         ->GetTypeStatusMapForDebugging()
+                         ->DebugString();
+  }
 }

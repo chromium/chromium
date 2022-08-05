@@ -241,7 +241,8 @@ SyncCycleSnapshot TestSyncService::GetLastCycleSnapshotForDebugging() const {
   return last_cycle_snapshot_;
 }
 
-std::unique_ptr<base::Value> TestSyncService::GetTypeStatusMapForDebugging() {
+std::unique_ptr<base::Value> TestSyncService::GetTypeStatusMapForDebugging()
+    const {
   return std::make_unique<base::ListValue>();
 }
 

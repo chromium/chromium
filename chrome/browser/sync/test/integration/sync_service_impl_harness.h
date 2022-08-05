@@ -157,7 +157,8 @@ class SyncServiceImplHarness {
   bool AwaitSyncTransportActive();
 
   // Returns the SyncServiceImpl member of the sync client.
-  syncer::SyncServiceImpl* service() const { return service_; }
+  syncer::SyncServiceImpl* service() { return service_; }
+  const syncer::SyncServiceImpl* service() const { return service_; }
 
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }

@@ -51,7 +51,7 @@ class FakeSyncService : public SyncService {
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() override;
+  std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
       const override;

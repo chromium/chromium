@@ -186,6 +186,7 @@ class SyncTest : public PlatformBrowserTest {
   // Returns a pointer to a particular sync client. Callee owns the object
   // and manages its lifetime.
   SyncServiceImplHarness* GetClient(int index);
+  const SyncServiceImplHarness* GetClient(int index) const;
 
   // Returns a list of the collection of sync clients.
   std::vector<SyncServiceImplHarness*> GetSyncClients();
@@ -407,6 +408,10 @@ class SyncTest : public PlatformBrowserTest {
   // up sync engine. This is used to prevent starting another sync cycle after
   // SetupSync() call which might be unexpected in several tests.
   bool WaitForAsyncChangesToBeCommitted(size_t profile_index) const;
+
+  // Verifies that there are no data type failures for the given |client_index|.
+  // Otherwise, causes test failure. A corresponding client must exist.
+  void CheckForDataTypeFailures(size_t client_index) const;
 
   // Used to differentiate between single-client and two-client tests.
   const TestType test_type_;

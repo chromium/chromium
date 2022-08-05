@@ -408,7 +408,7 @@ class SyncService : public KeyedService {
   // chrome://sync-internals page.  It returns a ListValue rather than a
   // DictionaryValue in part to make it easier to iterate over its elements when
   // constructing that page.
-  virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() = 0;
+  virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() const = 0;
 
   // Retrieves the TypeEntitiesCount for all registered data types.
   virtual void GetEntityCountsForDebugging(

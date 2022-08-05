@@ -101,7 +101,7 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(std::unique_ptr<base::Value>,
               GetTypeStatusMapForDebugging,
               (),
-              (override));
+              (const override));
   MOCK_METHOD(void,
               GetEntityCountsForDebugging,
               (base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)>),
