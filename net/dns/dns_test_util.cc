@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -785,7 +784,7 @@ void MockDnsClient::SetTransactionFactoryForTesting(
   NOTREACHED();
 }
 
-absl::optional<AddressList> MockDnsClient::GetPresetAddrs(
+absl::optional<std::vector<IPEndPoint>> MockDnsClient::GetPresetAddrs(
     const url::SchemeHostPort& endpoint) const {
   EXPECT_THAT(preset_endpoint_, testing::Optional(endpoint));
   return preset_addrs_;

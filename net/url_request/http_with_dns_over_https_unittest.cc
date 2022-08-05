@@ -74,7 +74,7 @@ class TestHostResolverProc : public HostResolverProc {
               AddressList* addrlist,
               int* os_error) override {
     insecure_queries_served_++;
-    *addrlist = AddressList::CreateFromIPAddress(IPAddress(127, 0, 0, 1), 443);
+    *addrlist = AddressList::CreateFromIPAddress(IPAddress(127, 0, 0, 1), 0);
     return OK;
   }
 

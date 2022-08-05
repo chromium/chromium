@@ -568,6 +568,9 @@ class NET_EXPORT HostResolverManager
 // gets exercised indirectly through HostResolverManager.
 NET_EXPORT_PRIVATE bool ResolveLocalHostname(base::StringPiece host,
                                              AddressList* address_list);
+NET_EXPORT_PRIVATE bool ResolveLocalHostname(
+    base::StringPiece host,
+    std::vector<IPEndPoint>* address_list);
 
 }  // namespace net
 

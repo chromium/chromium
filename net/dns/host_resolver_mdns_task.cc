@@ -219,16 +219,12 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
       return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::A:
       return HostCache::Entry(
-          OK,
-          AddressList(
-              IPEndPoint(parsed->rdata<net::ARecordRdata>()->address(), 0)),
-          HostCache::Entry::SOURCE_UNKNOWN);
+          OK, {IPEndPoint(parsed->rdata<net::ARecordRdata>()->address(), 0)},
+          /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::AAAA:
       return HostCache::Entry(
-          OK,
-          AddressList(
-              IPEndPoint(parsed->rdata<net::AAAARecordRdata>()->address(), 0)),
-          HostCache::Entry::SOURCE_UNKNOWN);
+          OK, {IPEndPoint(parsed->rdata<net::AAAARecordRdata>()->address(), 0)},
+          /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::TXT:
       return HostCache::Entry(OK, parsed->rdata<net::TxtRecordRdata>()->texts(),
                               HostCache::Entry::SOURCE_UNKNOWN);

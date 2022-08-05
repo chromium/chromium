@@ -552,8 +552,8 @@ DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
       DnsQueryTypeToQtype(query_type));
 }
 
-AddressList FilterAddresses(AddressList addresses,
-                            DnsQueryTypeSet query_types) {
+std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
+                                        DnsQueryTypeSet query_types) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
   DCHECK(!query_types.Empty());
 
@@ -564,7 +564,7 @@ AddressList FilterAddresses(AddressList addresses,
     return addresses;
 
   // Keep only the endpoints that match `want_family`.
-  addresses.endpoints().erase(
+  addresses.erase(
       base::ranges::remove_if(
           addresses,
           [want_family](AddressFamily family) { return family != want_family; },
@@ -580,11 +580,17 @@ AddressList FilterAddresses(AddressList addresses,
 bool ResolveLocalHostname(base::StringPiece host, AddressList* address_list) {
   address_list->clear();
 
+  return ResolveLocalHostname(host, &address_list->endpoints());
+}
+
+bool ResolveLocalHostname(base::StringPiece host,
+                          std::vector<IPEndPoint>* address_list) {
+  address_list->clear();
   if (!IsLocalHostname(host))
     return false;
 
-  address_list->push_back(IPEndPoint(IPAddress::IPv6Localhost(), 0));
-  address_list->push_back(IPEndPoint(IPAddress::IPv4Localhost(), 0));
+  address_list->emplace_back(IPAddress::IPv6Localhost(), 0);
+  address_list->emplace_back(IPAddress::IPv4Localhost(), 0);
 
   return true;
 }
@@ -829,10 +835,14 @@ class HostResolverManager::RequestImpl
         DCHECK(results_.value().aliases());
         fixed_up_dns_alias_results_ = *results_.value().aliases();
 
-        // Expect `aliases()` results to already be fixed up.
-        DCHECK(dns_alias_utility::FixUpDnsAliases(
-                   fixed_up_dns_alias_results_.value()) ==
-               fixed_up_dns_alias_results_.value());
+        if (parameters().include_canonical_name) {
+          DCHECK_LE(fixed_up_dns_alias_results_.value().size(), 1u);
+        } else {
+          // Expect `aliases()` results to already be fixed up.
+          DCHECK(dns_alias_utility::FixUpDnsAliases(
+                     fixed_up_dns_alias_results_.value()) ==
+                 fixed_up_dns_alias_results_.value());
+        }
 
         legacy_address_results_ = HostResolver::EndpointResultToAddressList(
             endpoint_results_.value(), fixed_up_dns_alias_results_.value());
@@ -2635,16 +2645,22 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     if (net_error == OK)
       ttl = base::Seconds(kCacheEntryTTLSeconds);
 
+    auto aliases = std::set<std::string>(addr_list.dns_aliases().begin(),
+                                         addr_list.dns_aliases().end());
+
+    if (!(key_.flags & HOST_RESOLVER_CANONNAME)) {
+      aliases = dns_alias_utility::FixUpDnsAliases(aliases);
+    }
+
     // Source unknown because the system resolver could have gotten it from a
     // hosts file, its own cache, a DNS lookup or somewhere else.
     // Don't store the |ttl| in cache since it's not obtained from the server.
     CompleteRequests(
-        HostCache::Entry(net_error,
-                         net_error == OK
-                             ? AddressList::CopyWithPort(addr_list, 0)
-                             : AddressList(),
-                         HostCache::Entry::SOURCE_UNKNOWN),
-        ttl, true /* allow_cache */, false /* secure */);
+        HostCache::Entry(
+            net_error,
+            net_error == OK ? addr_list.endpoints() : std::vector<IPEndPoint>(),
+            std::move(aliases), HostCache::Entry::SOURCE_UNKNOWN),
+        ttl, /*allow_cache=*/true, /*secure=*/false);
   }
 
   void InsecureCacheLookup() {
@@ -3619,10 +3635,11 @@ HostCache::Entry HostResolverManager::ResolveAsIP(DnsQueryTypeSet query_types,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
 
-  AddressList addresses = AddressList::CreateFromIPAddress(ip_address, 0);
-  if (resolve_canonname)
-    addresses.SetDefaultCanonicalName();
-  return HostCache::Entry(OK, std::move(addresses),
+  std::set<std::string> aliases;
+  if (resolve_canonname) {
+    aliases = {ip_address.ToString()};
+  }
+  return HostCache::Entry(OK, {IPEndPoint(ip_address, 0)}, std::move(aliases),
                           HostCache::Entry::SOURCE_UNKNOWN);
 }
 
@@ -3673,17 +3690,17 @@ absl::optional<HostCache::Entry> HostResolverManager::MaybeReadFromConfig(
   DCHECK(HasAddressType(key.query_types));
   if (!absl::holds_alternative<url::SchemeHostPort>(key.host))
     return absl::nullopt;
-  absl::optional<AddressList> preset_addrs =
+  absl::optional<std::vector<IPEndPoint>> preset_addrs =
       dns_client_->GetPresetAddrs(absl::get<url::SchemeHostPort>(key.host));
   if (!preset_addrs)
     return absl::nullopt;
 
-  AddressList filtered_addresses =
+  std::vector<IPEndPoint> filtered_addresses =
       FilterAddresses(std::move(*preset_addrs), key.query_types);
   if (filtered_addresses.empty())
     return absl::nullopt;
 
-  return HostCache::Entry(OK, std::move(filtered_addresses),
+  return HostCache::Entry(OK, std::move(filtered_addresses), /*aliases=*/{},
                           HostCache::Entry::SOURCE_CONFIG);
 }
 
@@ -3728,7 +3745,7 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
   // flexibility, but lose implicit ordering.
   // We prefer IPv6 because "happy eyeballs" will fall back to IPv4 if
   // necessary.
-  AddressList addresses;
+  std::vector<IPEndPoint> addresses;
   if (query_types.Has(DnsQueryType::AAAA)) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV6));
     if (it != hosts->end())
@@ -3752,12 +3769,11 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
     return ServeFromHosts(hostname, query_types, false, tasks);
   }
 
-  if (!addresses.empty()) {
-    return HostCache::Entry(OK, std::move(addresses),
-                            HostCache::Entry::SOURCE_HOSTS);
-  }
+  if (addresses.empty())
+    return absl::nullopt;
 
-  return absl::nullopt;
+  return HostCache::Entry(OK, std::move(addresses),
+                          /*aliases=*/{}, HostCache::Entry::SOURCE_HOSTS);
 }
 
 absl::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
@@ -3766,7 +3782,7 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
     bool default_family_due_to_no_ipv6) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
 
-  AddressList resolved_addresses;
+  std::vector<IPEndPoint> resolved_addresses;
   if (!HasAddressType(query_types) ||
       !ResolveLocalHostname(hostname, &resolved_addresses)) {
     return absl::nullopt;
@@ -3778,9 +3794,9 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
     // (See SystemHostResolverCall for rationale).
     query_types.Put(DnsQueryType::AAAA);
   }
-  AddressList filtered_addresses =
+  std::vector<IPEndPoint> filtered_addresses =
       FilterAddresses(std::move(resolved_addresses), query_types);
-  return HostCache::Entry(OK, std::move(filtered_addresses),
+  return HostCache::Entry(OK, std::move(filtered_addresses), /*aliases=*/{},
                           HostCache::Entry::SOURCE_UNKNOWN);
 }
 

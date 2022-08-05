@@ -80,11 +80,10 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
       break;
     case DnsQueryType::A:
     case DnsQueryType::AAAA:
-      DCHECK(parsed_entry.legacy_addresses());
-      DCHECK_EQ(1u, parsed_entry.legacy_addresses().value().size());
-      delegate_->OnAddressResult(
-          ConvertUpdateType(update), query_type_,
-          parsed_entry.legacy_addresses().value().front());
+      DCHECK(parsed_entry.ip_endpoints());
+      DCHECK_EQ(1u, parsed_entry.ip_endpoints()->size());
+      delegate_->OnAddressResult(ConvertUpdateType(update), query_type_,
+                                 parsed_entry.ip_endpoints()->front());
       break;
     case DnsQueryType::TXT:
       DCHECK(parsed_entry.text_records());

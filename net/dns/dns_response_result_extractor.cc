@@ -323,11 +323,11 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
     }
     ip_endpoints.emplace_back(address, /*port=*/0);
   }
+  int error_result = ip_endpoints.empty() ? ERR_NAME_NOT_RESOLVED : OK;
 
-  HostCache::Entry results(ip_endpoints.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-                           std::move(ip_endpoints),
-                           HostCache::Entry::SOURCE_DNS, response_ttl);
-  results.set_aliases(std::move(aliases));
+  HostCache::Entry results(error_result, std::move(ip_endpoints),
+                           std::move(aliases), HostCache::Entry::SOURCE_DNS,
+                           response_ttl);
 
   if (!canonical_name.empty()) {
     results.set_canonical_names(std::set<std::string>({canonical_name}));

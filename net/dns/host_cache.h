@@ -142,6 +142,13 @@ class NET_EXPORT HostCache {
     Entry(int error, T&& results, Source source)
         : Entry(error, std::forward<T>(results), source, absl::nullopt) {}
 
+    // Use for address entries.
+    Entry(int error,
+          std::vector<IPEndPoint> ip_endpoints,
+          std::set<std::string> aliases,
+          Source source,
+          absl::optional<base::TimeDelta> ttl = absl::nullopt);
+
     // For errors with no |results|.
     Entry(int error,
           Source source,
@@ -289,9 +296,6 @@ class NET_EXPORT HostCache {
 
     void PrepareForCacheInsertion();
 
-    void SetResult(std::vector<IPEndPoint> ip_endpoints) {
-      ip_endpoints_ = std::move(ip_endpoints);
-    }
     void SetResult(
         std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
             endpoint_metadatas) {

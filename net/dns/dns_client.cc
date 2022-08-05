@@ -14,7 +14,6 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/address_sorter.h"
@@ -177,7 +176,7 @@ class DnsClientImpl : public DnsClient {
     return &config->hosts;
   }
 
-  absl::optional<AddressList> GetPresetAddrs(
+  absl::optional<std::vector<IPEndPoint>> GetPresetAddrs(
       const url::SchemeHostPort& endpoint) const override {
     DCHECK(endpoint.IsValid());
     if (!session_)
@@ -199,7 +198,7 @@ class DnsClientImpl : public DnsClient {
         combined.emplace_back(ip, endpoint.port());
       }
     }
-    return AddressList(std::move(combined));
+    return combined;
   }
 
   DnsTransactionFactory* GetTransactionFactory() override {

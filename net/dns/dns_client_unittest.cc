@@ -306,7 +306,8 @@ TEST_F(DnsClientTest, GetPresetAddrs) {
   EXPECT_FALSE(client_->GetPresetAddrs(
       url::SchemeHostPort("https", "www.doh.com", 9999)));
 
-  AddressList expected({{{4, 3, 2, 1}, 443}, {{4, 3, 2, 2}, 443}});
+  std::vector<IPEndPoint> expected({{{4, 3, 2, 1}, 443}, {{4, 3, 2, 2}, 443}});
+
   EXPECT_THAT(
       client_->GetPresetAddrs(url::SchemeHostPort("https", "www.doh.com", 443)),
       testing::Optional(expected));

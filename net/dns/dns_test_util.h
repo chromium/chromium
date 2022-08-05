@@ -18,8 +18,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "net/base/address_list.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/ip_endpoint.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_response.h"
@@ -417,7 +417,7 @@ class MockDnsClient : public DnsClient {
   DnsConfigOverrides GetConfigOverridesForTesting() const override;
   void SetTransactionFactoryForTesting(
       std::unique_ptr<DnsTransactionFactory> factory) override;
-  absl::optional<AddressList> GetPresetAddrs(
+  absl::optional<std::vector<IPEndPoint>> GetPresetAddrs(
       const url::SchemeHostPort& endpoint) const override;
 
   // Completes all DnsTransactions that were delayed by a rule.
@@ -438,7 +438,7 @@ class MockDnsClient : public DnsClient {
     preset_endpoint_ = std::move(endpoint);
   }
 
-  void set_preset_addrs(AddressList preset_addrs) {
+  void set_preset_addrs(std::vector<IPEndPoint> preset_addrs) {
     preset_addrs_ = std::move(preset_addrs);
   }
 
@@ -470,7 +470,7 @@ class MockDnsClient : public DnsClient {
   std::unique_ptr<MockDnsTransactionFactory> factory_;
   std::unique_ptr<AddressSorter> address_sorter_;
   absl::optional<url::SchemeHostPort> preset_endpoint_;
-  absl::optional<AddressList> preset_addrs_;
+  absl::optional<std::vector<IPEndPoint>> preset_addrs_;
 };
 
 }  // namespace net

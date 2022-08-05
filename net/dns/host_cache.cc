@@ -413,6 +413,19 @@ HostCache::Entry& HostCache::Entry::operator=(const Entry& entry) = default;
 
 HostCache::Entry& HostCache::Entry::operator=(Entry&& entry) = default;
 
+HostCache::Entry::Entry(int error,
+                        std::vector<IPEndPoint> ip_endpoints,
+                        std::set<std::string> aliases,
+                        Source source,
+                        absl::optional<base::TimeDelta> ttl)
+    : error_(error),
+      ip_endpoints_(std::move(ip_endpoints)),
+      aliases_(std::move(aliases)),
+      source_(source),
+      ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
+  DCHECK(!ttl || ttl.value() >= base::TimeDelta());
+}
+
 HostCache::Entry::Entry(const HostCache::Entry& entry,
                         base::TimeTicks now,
                         base::TimeDelta ttl,

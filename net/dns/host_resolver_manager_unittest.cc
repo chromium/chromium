@@ -2651,6 +2651,27 @@ TEST_F(HostResolverManagerTest, IncludeCanonicalName) {
   EXPECT_THAT(response_no_flag.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
 }
 
+TEST_F(HostResolverManagerTest, FixupCanonicalName) {
+  proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42", /*flags=*/0,
+                               "CANON.name");
+  proc_->SignalMultiple(1u);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("just.testing", 80), NetworkIsolationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              testing::ElementsAre(CreateExpected("192.168.1.42", 80)));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::UnorderedElementsAre(ExpectEndpointResult(
+          testing::ElementsAre(CreateExpected("192.168.1.42", 80))))));
+  EXPECT_THAT(response.request()->GetDnsAliasResults(),
+              testing::Pointee(testing::UnorderedElementsAre("canon.name")));
+}
+
 TEST_F(HostResolverManagerTest, IncludeCanonicalNameButNotReceived) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42",
                                HOST_RESOLVER_CANONNAME);
@@ -15057,10 +15078,9 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
       {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
        {192, 0, 2, 1}},
       {});
-  const AddressList kBootstrapAddrs = AddressList::CreateFromIPAddressList(
-      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-       {192, 0, 2, 2}},
-      {});
+  const std::vector<IPEndPoint> kBootstrapAddrs = {
+      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}, 0},
+      {{192, 0, 2, 2}, 0}};
   // The mock DNS client always returns localhost.
   const AddressList kRemoteAddrs = AddressList::CreateFromIPAddressList(
       {IPAddress::IPv6Localhost(), IPAddress::IPv4Localhost()},
