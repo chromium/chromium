@@ -19,13 +19,9 @@
 
 namespace extensions {
 
-// The PermissionSet is an immutable class that encapsulates an
-// extension's permissions. The class exposes set operations for combining and
-// manipulating the permissions.
-// TODO(sashab): PermissionIDSet should be called PermissionSet. Once
-// PermissionMessageProvider::GetPermissionMessages() is the only
-// method used for generating permission messages, find the other users of this
-// class and deprecate or rename it as appropriate.
+// The PermissionSet is a class that encapsulates extension permissions of
+// different types (manifest permissions, API permissions, explicit hosts, and
+// scriptable hosts).
 class PermissionSet {
  public:
   // Creates an empty permission set (e.g. default permissions).
@@ -48,7 +44,7 @@ class PermissionSet {
   PermissionSet& operator=(PermissionSet&& other);
 
   // Creates a new permission set equal to |set1| - |set2|.
-  static std::unique_ptr<const PermissionSet> CreateDifference(
+  static std::unique_ptr<PermissionSet> CreateDifference(
       const PermissionSet& set1,
       const PermissionSet& set2);
 
@@ -56,16 +52,15 @@ class PermissionSet {
   // |set2|.
   // TODO(https://crbug.com/867549): Audit callers of CreateIntersection() and
   // have them determine the proper intersection behavior.
-  static std::unique_ptr<const PermissionSet> CreateIntersection(
+  static std::unique_ptr<PermissionSet> CreateIntersection(
       const PermissionSet& set1,
       const PermissionSet& set2,
       URLPatternSet::IntersectionBehavior intersection_behavior =
           URLPatternSet::IntersectionBehavior::kPatternsContainedByBoth);
 
   // Creates a new permission set equal to the union of |set1| and |set2|.
-  static std::unique_ptr<const PermissionSet> CreateUnion(
-      const PermissionSet& set1,
-      const PermissionSet& set2);
+  static std::unique_ptr<PermissionSet> CreateUnion(const PermissionSet& set1,
+                                                    const PermissionSet& set2);
 
   bool operator==(const PermissionSet& rhs) const;
   bool operator!=(const PermissionSet& rhs) const;
@@ -119,16 +114,18 @@ class PermissionSet {
   // Returns true if this permission set includes effective access to |url|.
   bool HasEffectiveAccessToURL(const GURL& url) const;
 
-  const APIPermissionSet& apis() const { return apis_; }
+  // Sets the different permissions on the PermissionSet.
+  void SetAPIPermissions(APIPermissionSet new_apis);
+  void SetManifestPermissions(ManifestPermissionSet new_manifest_permissions);
+  void SetExplicitHosts(URLPatternSet new_explicit_hosts);
+  void SetScriptableHosts(URLPatternSet new_scriptable_hosts);
 
+  const APIPermissionSet& apis() const { return apis_; }
   const ManifestPermissionSet& manifest_permissions() const {
       return manifest_permissions_;
   }
-
   const URLPatternSet& effective_hosts() const { return effective_hosts_; }
-
   const URLPatternSet& explicit_hosts() const { return explicit_hosts_; }
-
   const URLPatternSet& scriptable_hosts() const { return scriptable_hosts_; }
 
  private:
@@ -137,6 +134,10 @@ class PermissionSet {
 
   // Deliberate copy constructor for cloning the set.
   PermissionSet(const PermissionSet& permission_set);
+
+  // Cleans up any explicit host paths - explicit hosts require the path to be
+  // "/*", and we implicitly make this change.
+  void CleanExplicitHostPaths();
 
   // Adds permissions implied independently of other context.
   void InitImplicitPermissions();
@@ -158,11 +159,9 @@ class PermissionSet {
   ManifestPermissionSet manifest_permissions_;
 
   // The list of hosts that can be accessed directly from the extension.
-  // TODO(jstritar): Rename to "hosts_"?
   URLPatternSet explicit_hosts_;
 
   // The list of hosts that can be scripted by content scripts.
-  // TODO(jstritar): Rename to "user_script_hosts_"?
   URLPatternSet scriptable_hosts_;
 
   // The list of hosts this effectively grants access to.

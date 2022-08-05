@@ -1807,4 +1807,88 @@ TEST(PermissionsTest, IsPrivilegeIncrease_DeclarativeWebRequest) {
       permissions, permissions_dwr, extension->GetType()));
 }
 
+// Exercises setting different members in the PermissionSet. Due to varying
+// amounts of initialization, these can be non-trivial and have side-effects.
+TEST(PermissionsTest, SettingMembers) {
+  URLPattern first_host(URLPattern::SCHEME_ALL, "http://first.example/*");
+  URLPattern second_host(URLPattern::SCHEME_ALL, "http://second.example/*");
+  URLPattern third_host(URLPattern::SCHEME_ALL, "http://third.example/*");
+  URLPattern all_hosts(URLPattern::SCHEME_ALL, "<all_urls>");
+
+  {
+    // Setting explicit hosts also sets effective hosts.
+    PermissionSet set(APIPermissionSet(), ManifestPermissionSet(),
+                      URLPatternSet({first_host}),
+                      URLPatternSet({second_host}));
+    set.SetExplicitHosts(URLPatternSet({third_host}));
+    EXPECT_EQ(URLPatternSet({third_host}), set.explicit_hosts());
+    EXPECT_EQ(URLPatternSet({second_host}), set.scriptable_hosts());
+    EXPECT_EQ(URLPatternSet({second_host, third_host}), set.effective_hosts());
+  }
+
+  {
+    // Setting scriptable hosts also sets effective hosts.
+    PermissionSet set(APIPermissionSet(), ManifestPermissionSet(),
+                      URLPatternSet({first_host}),
+                      URLPatternSet({second_host}));
+    set.SetScriptableHosts(URLPatternSet({third_host}));
+    EXPECT_EQ(URLPatternSet({first_host}), set.explicit_hosts());
+    EXPECT_EQ(URLPatternSet({third_host}), set.scriptable_hosts());
+    EXPECT_EQ(URLPatternSet({first_host, third_host}), set.effective_hosts());
+  }
+
+  {
+    // Setting explicit hosts recalculates whether to warn for all URLs.
+    PermissionSet set(APIPermissionSet(), ManifestPermissionSet(),
+                      URLPatternSet({first_host}),
+                      URLPatternSet({second_host}));
+    EXPECT_FALSE(set.ShouldWarnAllHosts());
+    set.SetExplicitHosts(URLPatternSet({all_hosts}));
+    EXPECT_TRUE(set.ShouldWarnAllHosts());
+  }
+
+  {
+    // Setting scriptable hosts recalculates whether to warn for all URLs.
+    PermissionSet set(APIPermissionSet(), ManifestPermissionSet(),
+                      URLPatternSet({first_host}),
+                      URLPatternSet({second_host}));
+    EXPECT_FALSE(set.ShouldWarnAllHosts());
+    set.SetExplicitHosts(URLPatternSet({all_hosts}));
+    EXPECT_TRUE(set.ShouldWarnAllHosts());
+  }
+
+  {
+    // Newly-set explicit hosts have their paths set to "/*".
+    PermissionSet set(APIPermissionSet(), ManifestPermissionSet(),
+                      URLPatternSet({first_host}),
+                      URLPatternSet({second_host}));
+    URLPattern custom_path(URLPattern::SCHEME_ALL, "https://path.example/path");
+    URLPattern cleaned_path(URLPattern::SCHEME_ALL, "https://path.example/*");
+    set.SetExplicitHosts(URLPatternSet({custom_path}));
+    EXPECT_EQ(URLPatternSet({cleaned_path}), set.explicit_hosts());
+  }
+
+  {
+    // Setting API permissions recalculates whether to warn for all URLs.
+    APIPermissionSet apis;
+    apis.insert(APIPermissionID::kTab);
+    PermissionSet set(std::move(apis), ManifestPermissionSet(), URLPatternSet(),
+                      URLPatternSet());
+    EXPECT_FALSE(set.ShouldWarnAllHosts());
+    APIPermissionSet new_apis;
+    new_apis.insert(APIPermissionID::kDebugger);
+    set.SetAPIPermissions(std::move(new_apis));
+    EXPECT_TRUE(set.ShouldWarnAllHosts());
+  }
+
+  {
+    // Setting API permissions adds implicit permissions.
+    PermissionSet set;
+    APIPermissionSet new_apis;
+    new_apis.insert(APIPermissionID::kFileBrowserHandler);
+    set.SetAPIPermissions(std::move(new_apis));
+    EXPECT_TRUE(set.HasAPIPermission(APIPermissionID::kFileBrowserHandler));
+  }
+}
+
 }  // namespace extensions
