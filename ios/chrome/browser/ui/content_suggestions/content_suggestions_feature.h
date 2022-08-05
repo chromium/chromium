@@ -25,6 +25,7 @@ extern const base::Feature kTrendingQueriesModule;
 extern const char kTrendingQueriesHideShortcutsParam[];
 extern const char kTrendingQueriesDisabledFeedParam[];
 extern const char kTrendingQueriesSignedOutParam[];
+extern const char kTrendingQueriesNeverShowModuleParam[];
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
@@ -49,5 +50,9 @@ bool ShouldOnlyShowTrendingQueriesForDisabledFeed();
 
 // Whether the Trending Queries module should only be shown to signed out users.
 bool ShouldOnlyShowTrendingQueriesForSignedOut();
+
+// Whether the Trending Queries module should not be shown even if the feature
+// is enabled.
+bool ShouldNeverShowTrendingQueriesModule();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

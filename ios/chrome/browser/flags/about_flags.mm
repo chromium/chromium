@@ -417,6 +417,12 @@ const FeatureEntry::FeatureParam kTrendingQueriesEnableSignedOut[] = {
     {kTrendingQueriesHideShortcutsParam, "true"},
     {kTrendingQueriesDisabledFeedParam, "false"},
     {kTrendingQueriesSignedOutParam, "true"}};
+const FeatureEntry::FeatureParam
+    kTrendingQueriesEnableNeverShowHideShortcuts[] = {
+        {kTrendingQueriesHideShortcutsParam, "true"},
+        {kTrendingQueriesDisabledFeedParam, "false"},
+        {kTrendingQueriesSignedOutParam, "false"},
+        {kTrendingQueriesNeverShowModuleParam, "true"}};
 
 const FeatureEntry::FeatureVariation kTrendingQueriesModuleVariations[] = {
     {"Enabled All Users", kTrendingQueriesEnableAllUsers,
@@ -428,6 +434,10 @@ const FeatureEntry::FeatureVariation kTrendingQueriesModuleVariations[] = {
      std::size(kTrendingQueriesEnableFeedDisabled), nullptr},
     {"Enabled Signed Out", kTrendingQueriesEnableSignedOut,
      std::size(kTrendingQueriesEnableSignedOut), nullptr},
+    {"Enabled Never Show and Hide Shortcuts",
+     kTrendingQueriesEnableNeverShowHideShortcuts,
+     std::size(kTrendingQueriesEnableNeverShowHideShortcuts), nullptr},
+
 };
 
 const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {

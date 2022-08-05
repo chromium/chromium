@@ -28,6 +28,7 @@ const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
 const char kTrendingQueriesHideShortcutsParam[] = "hide_shortcuts";
 const char kTrendingQueriesDisabledFeedParam[] = "disabled_feed_only";
 const char kTrendingQueriesSignedOutParam[] = "signed_out_only";
+const char kTrendingQueriesNeverShowModuleParam[] = "never_show_module";
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
@@ -42,7 +43,8 @@ bool IsContentSuggestionsUIModuleRefreshEnabled() {
 }
 
 bool IsTrendingQueriesModuleEnabled() {
-  return base::FeatureList::IsEnabled(kTrendingQueriesModule);
+  return base::FeatureList::IsEnabled(kTrendingQueriesModule) &&
+         !ShouldNeverShowTrendingQueriesModule();
 }
 
 bool ShouldHideShortcutsForTrendingQueries() {
@@ -58,4 +60,9 @@ bool ShouldOnlyShowTrendingQueriesForDisabledFeed() {
 bool ShouldOnlyShowTrendingQueriesForSignedOut() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesSignedOutParam, false);
+}
+
+bool ShouldNeverShowTrendingQueriesModule() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false);
 }
