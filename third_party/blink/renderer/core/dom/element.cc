@@ -2815,17 +2815,17 @@ void Element::SetPopupFocusOnShow() {
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
 
   Element* control = nullptr;
-  if (IsAutofocusable() || hasAttribute(html_names::kDelegatesfocusAttr)) {
-    // If the popup has autofocus or delegatesfocus, focus it.
+  if (IsAutofocusable()) {
+    // If the popup has autofocus, focus it.
     control = this;
   } else {
     // Otherwise, look for a child control that has the autofocus attribute.
     control = GetPopupFocusableArea(/*autofocus_only=*/true);
   }
 
-  // If the popup does not use autofocus or delegatesfocus, then the focus
-  // should remain on the currently active element.
-  // https://open-ui.org/components/popup.research.explainer#autofocus-logic
+  // If the popup does not use autofocus, then the focus should remain on the
+  // currently active element.
+  // https://open-ui.org/components/popup.research.explainer#focus-management
   if (!control)
     return;
 
@@ -5693,15 +5693,6 @@ void Element::Focus(const FocusParams& params) {
   if (frame_owner_element && frame_owner_element->contentDocument() &&
       frame_owner_element->contentDocument()->UnloadStarted())
     return;
-
-  if (HasValidPopupAttribute() &&
-      hasAttribute(html_names::kDelegatesfocusAttr)) {
-    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-    if (auto* node_to_focus = GetPopupFocusableArea(/*autofocus_only=*/false)) {
-      node_to_focus->Focus(params);
-    }
-    return;
-  }
 
   // Ensure we have clean style (including forced display locks).
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);

@@ -49,49 +49,6 @@
   <button autofocus>second autofocus button</button>
 </div>
 
-<div popup delegatesfocus data-test='delegatesfocus pop-up'>
-  <p>This is a pop-up</p>
-  <button class=should-be-focused>first button should be focused</button>
-  <button>second button</button>
-</div>
-
-<div popup delegatesfocus data-test='delegatesfocus takes precedence over autofocus'>
-  <p>This is a pop-up</p>
-  <button class=should-be-focused>first button</button>
-  <button autofocus>autofocus button should NOT be focused</button>
-</div>
-
-<div popup delegatesfocus autofocus data-test='delegatesfocus takes precedence over autofocus 2'>
-  <p>This is a pop-up</p>
-  <button class=should-be-focused>first button</button>
-  <button>autofocus button should NOT be focused</button>
-</div>
-
-<div popup delegatesfocus data-test='delegatesfocus on empty pop-up has no effect' data-no-focus></div>
-
-<div popup data-test='delegatesfocus on child has no effect' data-no-focus>
-  <p>This is a pop-up</p>
-  <button delegatesfocus>first button</button>
-</div>
-
-<div popup delegatesfocus data-test='delegatesfocus skips contained pop-ups'>
-  <p>This is a pop-up</p>
-  <div popup>
-    <button>Contained pop-up button</button>
-  </div>
-  <button class=should-be-focused>first button</button>
-  <button>autofocus button should NOT be focused</button>
-</div>
-
-<div popup delegatesfocus data-test='delegatesfocus skips contained dialogs'>
-  <p>This is a pop-up</p>
-  <dialog>
-    <button>Contained dialog button</button>
-  </dialog>
-  <button class=should-be-focused>first button</button>
-  <button>autofocus button should NOT be focused</button>
-</div>
-
 <style>
   [popup] {
     border: 2px solid black;
