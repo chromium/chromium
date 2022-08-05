@@ -130,6 +130,10 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return gfx::Rect(state_.container_rect.origin(), state_.contents_size);
   }
 
+  const ClipPaintPropertyNode* OverflowClipNode() const {
+    return state_.overflow_clip_node;
+  }
+
   bool UserScrollableHorizontal() const {
     return state_.user_scrollable_horizontal;
   }

@@ -219,6 +219,17 @@ inline scoped_refptr<TransformPaintPropertyNode> Create2DTranslation(
       parent, TransformPaintPropertyNode::State{gfx::Vector2dF(x, y)});
 }
 
+inline scoped_refptr<TransformPaintPropertyNode> CreateFixedPositionTranslation(
+    const TransformPaintPropertyNodeOrAlias& parent,
+    float offset_x,
+    float offset_y,
+    const TransformPaintPropertyNode& scroll_translation_for_fixed) {
+  TransformPaintPropertyNode::State state{gfx::Vector2dF(offset_x, offset_y)};
+  state.scroll_translation_for_fixed = &scroll_translation_for_fixed;
+  state.direct_compositing_reasons = CompositingReason::kFixedPosition;
+  return TransformPaintPropertyNode::Create(parent, std::move(state));
+}
+
 inline scoped_refptr<TransformPaintPropertyNode> CreateTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const TransformationMatrix& matrix,

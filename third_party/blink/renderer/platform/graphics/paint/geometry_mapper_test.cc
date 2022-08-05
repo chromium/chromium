@@ -45,6 +45,24 @@ class GeometryMapperTest : public testing::Test,
             local_state.Unalias(), ancestor_state.Unalias(), mapping_rect);
   }
 
+  bool MightOverlapForCompositing(const gfx::RectF& rect1,
+                                  const PropertyTreeState& state1,
+                                  const gfx::RectF& rect2,
+                                  const PropertyTreeState& state2) {
+    bool result = GeometryMapper::MightOverlapForCompositing(rect1, state1,
+                                                             rect2, state2);
+    EXPECT_EQ(result, GeometryMapper::MightOverlapForCompositing(
+                          rect2, state2, rect1, state1));
+    return result;
+  }
+
+  // For any rect |r|, MightOverlapForCompositing(rect1, state1, r, state2) is
+  // expected to be true iff |r| intersects |rect2| in |state2|.
+  void CheckOverlap(const gfx::RectF& rect1,
+                    const PropertyTreeState& state1,
+                    const gfx::RectF& rect2,
+                    const PropertyTreeState& state2);
+
   void CheckMappings();
   void CheckLocalToAncestorVisualRect();
   void CheckLocalToAncestorClipRect();
@@ -156,6 +174,53 @@ void GeometryMapperTest::CheckMappings() {
     CheckSourceToDestinationProjection();
   }
   CheckCachedClip();
+}
+
+void GeometryMapperTest::CheckOverlap(const gfx::RectF& rect1,
+                                      const PropertyTreeState& state1,
+                                      const gfx::RectF& rect2,
+                                      const PropertyTreeState& state2) {
+  // How to debug: If anything fail, keep only the following line, and examine
+  // whether the two visual rects from VisualRectForCompositingOverlap() are
+  // equal. If not, examine the test data and GeometryMapper code.
+  EXPECT_TRUE(MightOverlapForCompositing(rect1, state1, rect2, state2));
+
+  // Test four 1x1 rects around each corner.
+  gfx::RectF top_left(rect2.origin(), gfx::SizeF(1, 1));
+  EXPECT_TRUE(MightOverlapForCompositing(rect1, state1, top_left, state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, top_left - gfx::Vector2dF(1, 0), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, top_left - gfx::Vector2dF(1, 1), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, top_left - gfx::Vector2dF(0, 1), state2));
+
+  gfx::RectF top_right(rect2.top_right(), gfx::SizeF(1, 1));
+  EXPECT_FALSE(MightOverlapForCompositing(rect1, state1, top_right, state2));
+  EXPECT_TRUE(MightOverlapForCompositing(
+      rect1, state1, top_right - gfx::Vector2dF(1, 0), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, top_right - gfx::Vector2dF(1, 1), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, top_right - gfx::Vector2dF(0, 1), state2));
+
+  gfx::RectF bottom_right(rect2.bottom_right(), gfx::SizeF(1, 1));
+  EXPECT_FALSE(MightOverlapForCompositing(rect1, state1, bottom_right, state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, bottom_right - gfx::Vector2dF(1, 0), state2));
+  EXPECT_TRUE(MightOverlapForCompositing(
+      rect1, state1, bottom_right - gfx::Vector2dF(1, 1), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, bottom_right - gfx::Vector2dF(0, 1), state2));
+
+  gfx::RectF bottom_left(rect2.bottom_left(), gfx::SizeF(1, 1));
+  EXPECT_FALSE(MightOverlapForCompositing(rect1, state1, bottom_left, state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, bottom_left - gfx::Vector2dF(1, 0), state2));
+  EXPECT_FALSE(MightOverlapForCompositing(
+      rect1, state1, bottom_left - gfx::Vector2dF(1, 1), state2));
+  EXPECT_TRUE(MightOverlapForCompositing(
+      rect1, state1, bottom_left - gfx::Vector2dF(0, 1), state2));
 }
 
 TEST_P(GeometryMapperTest, Root) {
@@ -749,23 +814,20 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
+  // With ScrollUpdateOptimizations, we don't expand visual rect for fixed in
+  // LocalToAncestorVisualRectInternal(), but check overlap before it.
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
+    return;
+
   auto above_viewport = CreateTransform(t0(), TransformationMatrix());
   auto viewport = CreateTransform(*above_viewport, TransformationMatrix());
   auto scroll_state = CreateCompositedScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -100, -200,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
 
-  const gfx::Vector2dF fixed_offset(200, 200);
-  TransformPaintPropertyNode::State fixed_state{fixed_offset, nullptr,
-                                                &scroll_state.Transform()};
-  fixed_state.direct_compositing_reasons = CompositingReason::kFixedPosition;
-  auto fixed_transform =
-      TransformPaintPropertyNode::Create(*viewport, std::move(fixed_state));
-
-  const gfx::Vector2dF child_of_fixed_offset(50, 50);
-  TransformPaintPropertyNode::State child_of_fixed_state{child_of_fixed_offset};
-  auto child_of_fixed = TransformPaintPropertyNode::Create(
-      *fixed_transform, std::move(child_of_fixed_state));
+  auto fixed_transform = CreateFixedPositionTranslation(
+      *viewport, 200, 200, scroll_state.Transform());
+  auto child_of_fixed = Create2DTranslation(*fixed_transform, 50, 50);
 
   local_state.SetTransform(*child_of_fixed);
   ancestor_state.SetTransform(*viewport);
@@ -773,7 +835,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   const gfx::SizeF child_of_fixed_size(100, 100);
   input_rect = gfx::RectF(child_of_fixed_size);
 
-  const gfx::Vector2dF descendant_offset = fixed_offset + child_of_fixed_offset;
+  const gfx::Vector2dF descendant_offset(250, 250);
   expected_translation_2d = descendant_offset;
   expected_transformed_rect = gfx::RectF(
       gfx::PointAtOffsetFromOrigin(descendant_offset), child_of_fixed_size);
@@ -1045,7 +1107,7 @@ TEST_P(GeometryMapperTest, Precision) {
       GeometryMapper::SourceToDestinationProjection(*t2, *t3).IsIdentity());
 }
 
-TEST(GeometryMapperTest, VisualRectsMightOverlap) {
+TEST_P(GeometryMapperTest, MightOverlap) {
   auto t2 = Create2DTranslation(t0(), 99, 0);
   auto t3 = Create2DTranslation(t0(), 100, 0);
   auto t4 =
@@ -1057,17 +1119,13 @@ TEST(GeometryMapperTest, VisualRectsMightOverlap) {
   PropertyTreeState s3(*t3, c0(), e0());
   PropertyTreeState s4(*t4, c0(), e0());
 
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s1));
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s2));
-  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s3));
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s4));
-
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s1));
-  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s1));
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s4, r, s1));
+  EXPECT_TRUE(MightOverlapForCompositing(r, s1, r, s1));
+  EXPECT_TRUE(MightOverlapForCompositing(r, s1, r, s2));
+  EXPECT_FALSE(MightOverlapForCompositing(r, s1, r, s3));
+  EXPECT_TRUE(MightOverlapForCompositing(r, s1, r, s4));
 }
 
-TEST(GeometryMapperTest, VisualRectsMightOverlapCommonClipAncestor) {
+TEST_P(GeometryMapperTest, MightOverlapCommonClipAncestor) {
   auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 1, 1));
   auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
   auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
@@ -1079,13 +1137,120 @@ TEST(GeometryMapperTest, VisualRectsMightOverlapCommonClipAncestor) {
   PropertyTreeState s2(t0(), *c2, e0());
   PropertyTreeState s3(t0(), *c3, e0());
 
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s2));
-  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s3));
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s3));
+  EXPECT_TRUE(MightOverlapForCompositing(r, s1, r, s2));
+  EXPECT_FALSE(MightOverlapForCompositing(r, s1, r, s3));
+  EXPECT_TRUE(MightOverlapForCompositing(r, s2, r, s3));
+}
 
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s1));
-  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s1));
-  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s2));
+TEST_P(GeometryMapperTest, MightOverlapFixed) {
+  auto viewport = CreateTransform(t0(), TransformationMatrix());
+  auto scroll_state1 = CreateScrollTranslationState(
+      PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
+      gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
+  auto fixed_transform = CreateFixedPositionTranslation(
+      *viewport, 100, 200, scroll_state1.Transform());
+  PropertyTreeState fixed_state(*fixed_transform, scroll_state1.Clip(), e0());
+
+  // A visual rect (0, 0, 100, 100) under fixed_transform (with a (100, 200)
+  // 2d translation) is expanded to (100, 200, 100 + 2400 -800, 100 + 1800 -600)
+  // which is (100, 200, 1700, 1300) in the scrolling space.
+  {
+    SCOPED_TRACE("fixed_state and scroll_state1");
+    CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
+                 gfx::RectF(100, 200, 1700, 1300),
+                 scroll_state1.GetPropertyTreeState());
+  }
+
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+    auto scroll_state2 = CreateScrollTranslationState(
+        scroll_state1.GetPropertyTreeState(), -2345, -678,
+        gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
+    // The result is false because the container rect of scroll_state2 doesn't
+    // intersect with the expanded fixed-position rect in scroll_state1.
+    EXPECT_FALSE(MightOverlapForCompositing(
+        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
+        scroll_state2.GetPropertyTreeState()));
+
+    auto scroll_state3 = CreateScrollTranslationState(
+        scroll_state1.GetPropertyTreeState(), -234, -567,
+        gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
+    EXPECT_TRUE(MightOverlapForCompositing(
+        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
+        scroll_state3.GetPropertyTreeState()));
+  }
+}
+
+TEST_P(GeometryMapperTest, MightOverlapScroll) {
+  // This test applies only if ScrollUpdateOptimizationsEnabled.
+  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
+    return;
+
+  auto viewport = CreateTransform(t0(), TransformationMatrix());
+  auto scroll_state1 = CreateScrollTranslationState(
+      PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
+      gfx::Rect(10, 20, 100, 200), gfx::Size(2400, 1800));
+  auto scroll_state2 = CreateScrollTranslationState(
+      scroll_state1.GetPropertyTreeState(), -2345, -678,
+      gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
+
+  auto transform_outside = Create2DTranslation(*viewport, 100, 200);
+  PropertyTreeState state_outside(*transform_outside, c0(), e0());
+
+  auto transform_under_scroll1 =
+      Create2DTranslation(scroll_state1.Transform(), 34, 56);
+  PropertyTreeState state_under_scroll1(
+      *transform_under_scroll1, scroll_state1.Clip(), scroll_state1.Effect());
+
+  auto transform_under_scroll2 =
+      Create2DTranslation(scroll_state2.Transform(), 45, 67);
+  PropertyTreeState state_under_scroll2(
+      *transform_under_scroll2, scroll_state2.Clip(), scroll_state2.Effect());
+
+  // For any rect directly or indirectly under scroll_state1, we should use
+  // the outer scroller's container rect to check overlap with any rect outside
+  // of the scroll_state1.
+  gfx::RectF outer_container_rect1_in_state_outside(-90, -180, 100, 200);
+  {
+    SCOPED_TRACE("scroll_state1 and state_outside");
+    CheckOverlap(gfx::RectF(1, 2, 3, 4), scroll_state1.GetPropertyTreeState(),
+                 outer_container_rect1_in_state_outside, state_outside);
+  }
+  {
+    SCOPED_TRACE("state_under_scroll1 and state_outside");
+    CheckOverlap(gfx::RectF(1, 2, 3, 4), state_under_scroll1,
+                 outer_container_rect1_in_state_outside, state_outside);
+  }
+  {
+    SCOPED_TRACE("scroll_state2 and state_outside");
+    CheckOverlap(gfx::RectF(3, 4, 5, 6), scroll_state2.GetPropertyTreeState(),
+                 outer_container_rect1_in_state_outside, state_outside);
+  }
+  {
+    SCOPED_TRACE("state_under_scroll2 and state_outside");
+    CheckOverlap(gfx::RectF(3, 4, 5, 6), state_under_scroll2,
+                 outer_container_rect1_in_state_outside, state_outside);
+  }
+
+  // For any rect under scroll_state2, we should use the inner scroller's
+  // container rect to check overlap with any rect between scroll_state1 and
+  // scroll_state2.
+  {
+    SCOPED_TRACE("scroll_state2 and scroll_state1");
+    CheckOverlap(gfx::RectF(5, 6, 7, 8), scroll_state2.GetPropertyTreeState(),
+                 gfx::RectF(20, 10, 200, 100),
+                 scroll_state1.GetPropertyTreeState());
+  }
+  {
+    SCOPED_TRACE("state_under_scroll2 and scroll_state1");
+    CheckOverlap(gfx::RectF(5, 6, 7, 8), state_under_scroll2,
+                 gfx::RectF(20, 10, 200, 100),
+                 scroll_state1.GetPropertyTreeState());
+  }
+  {
+    SCOPED_TRACE("state_under_scroll2 and state_under_scroll1");
+    CheckOverlap(gfx::RectF(7, 8, 9, 10), state_under_scroll2,
+                 gfx::RectF(-14, -46, 200, 100), state_under_scroll1);
+  }
 }
 
 }  // namespace blink
