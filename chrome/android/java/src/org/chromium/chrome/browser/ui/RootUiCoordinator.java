@@ -669,6 +669,7 @@ public class RootUiCoordinator
         initAppMenu();
         initDirectActionInitializer();
         initBottomSheetObserver();
+        initSnackbarObserver();
         if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
             mModalDialogManagerObserver = new ModalDialogManagerObserver() {
                 @Override
@@ -1154,13 +1155,6 @@ public class RootUiCoordinator
                 mMicStateObserver = voiceToolbarButtonController::updateMicButtonState;
                 voiceRecognitionHandler.addObserver(mMicStateObserver);
             }
-
-            mSnackbarManagerSupplier.get().isShowingSupplier().addObserver((Boolean isShowing) -> {
-                if (isShowing && mPageZoomCoordinator != null) {
-                    // On show snackbar, hide page zoom dialog
-                    mPageZoomCoordinator.hide();
-                }
-            });
         }
     }
 
@@ -1492,6 +1486,18 @@ public class RootUiCoordinator
             }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
+    }
+
+    /**
+     * Initialize logic for hiding page zoom slider when snackbar is showiung
+     */
+    private void initSnackbarObserver() {
+        mSnackbarManagerSupplier.get().isShowingSupplier().addObserver((Boolean isShowing) -> {
+            if (isShowing && mPageZoomCoordinator != null) {
+                // On show snackbar, hide page zoom dialog
+                mPageZoomCoordinator.hide();
+            }
+        });
     }
 
     public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {
