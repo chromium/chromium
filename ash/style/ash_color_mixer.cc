@@ -80,15 +80,14 @@ void AddControlsColors(ui::ColorMixer& mixer,
   mixer[kColorAshControlBackgroundColorInactive] =
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x1A))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0D));
-  mixer[kColorAshControlBackgroundColorAlert] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleRed300)
-                     : ui::ColorTransform(gfx::kGoogleRed600);
+  mixer[kColorAshControlBackgroundColorAlert] = {cros_tokens::kColorAlert};
+  // TOOD(skau): Replace with kColorWarning when it's determined that light can
+  // be Yellow900 instead.
   mixer[kColorAshControlBackgroundColorWarning] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleYellow300)
                      : ui::ColorTransform(gfx::kGoogleYellow600);
-  mixer[kColorAshControlBackgroundColorPositive] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
-                     : ui::ColorTransform(gfx::kGoogleGreen600);
+  mixer[kColorAshControlBackgroundColorPositive] = {
+      cros_tokens::kColorPositive};
   mixer[kColorAshFocusAuraColor] =
       ui::SetAlpha(cros_tokens::kColorProminent, 0x3D);
   mixer[ui::kColorAshFocusRing] = {cros_tokens::kColorProminent};
@@ -111,15 +110,9 @@ void AddContentColors(ui::ColorMixer& mixer,
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
   mixer[kColorAshTextColorPrimary] = {cros_tokens::kColorPrimary};
   mixer[kColorAshTextColorSecondary] = {cros_tokens::kColorSecondary};
-  mixer[kColorAshTextColorAlert] = use_dark_color
-                                       ? ui::ColorTransform(gfx::kGoogleRed300)
-                                       : ui::ColorTransform(gfx::kGoogleRed600);
-  mixer[kColorAshTextColorWarning] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleYellow300)
-                     : ui::ColorTransform(gfx::kGoogleYellow900);
-  mixer[kColorAshTextColorPositive] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
-                     : ui::ColorTransform(gfx::kGoogleGreen600);
+  mixer[kColorAshTextColorAlert] = {cros_tokens::kColorAlert};
+  mixer[kColorAshTextColorWarning] = {cros_tokens::kColorWarning};
+  mixer[kColorAshTextColorPositive] = {cros_tokens::kColorPositive};
   mixer[kColorAshTextColorURL] = {cros_tokens::kColorProminent};
   mixer[kColorAshIconColorPrimary] = {kColorAshTextColorPrimary};
   mixer[kColorAshIconColorSecondary] = {kColorAshTextColorSecondary};
@@ -368,7 +361,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {
       cros_tokens::kColorProminentDark};
-  mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
+  mixer[ui::kColorAshActionLabelFocusRingError] = {
+      cros_tokens::kColorAlertDark};
   mixer[ui::kColorAshActionLabelFocusRingHover] =
       ui::SetAlpha(cros_tokens::kColorPrimaryDark, 0x60);
 
