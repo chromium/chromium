@@ -346,6 +346,16 @@ gen_web_component_files = [
   "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
 ]
 
+mojom_webui_files = [
+  "mojom-webui/routes.mojom-webui.js",
+  "mojom-webui/setting.mojom-webui.js",
+  "mojom-webui/search/search.mojom-webui.js",
+  "mojom-webui/search/search_result_icon.mojom-webui.js",
+  "mojom-webui/search/user_action_recorder.mojom-webui.js",
+  "mojom-webui/personalization/search.mojom-webui.js",
+  "mojom-webui/audio/cros_audio_config.mojom-webui.js",
+]
+
 # Files sourced from their checked-in version under src
 # TODO(crbug/1315757) JS files here are available for TS conversion
 src_ts_files = non_web_component_files + web_component_files
