@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
-#define CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
+#ifndef BASE_POWER_MONITOR_BATTERY_LEVEL_PROVIDER_H_
+#define BASE_POWER_MONITOR_BATTERY_LEVEL_PROVIDER_H_
 
 #include <stdint.h>
 #include <memory>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#define HAS_BATTERY_LEVEL_PROVIDER_IMPL() \
-  (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+namespace base {
 
 // BatteryLevelProvider provides an interface for querying battery state.
 // A platform specific implementation is obtained with
 // BatteryLevelProvider::Create().
-class BatteryLevelProvider {
+class BASE_EXPORT BatteryLevelProvider {
  public:
   // The three possible units of data returned by OS battery query functions,
   // kMWh and kMAh are self-explanatory and the desired state of things, while
@@ -96,6 +96,8 @@ class BatteryLevelProvider {
       const std::vector<BatteryDetails>& battery_details);
 };
 
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+}  // namespace base
 
-#endif  // CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+
+#endif  // BASE_POWER_MONITOR_BATTERY_LEVEL_PROVIDER_H_

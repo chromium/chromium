@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "base/power_monitor/battery_level_provider.h"
 
 #define INITGUID
 #include <windows.h>  // Must be in front of other Windows header files.
@@ -22,6 +22,7 @@
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
 
+namespace base {
 namespace {
 
 // Returns a handle to the battery interface identified by |interface_data|, or
@@ -63,7 +64,7 @@ base::win::ScopedHandle GetBatteryHandle(
 // no battery present in this interface or nullopt on retrieval error.
 // See
 // https://docs.microsoft.com/en-us/windows/win32/power/ioctl-battery-query-tag
-absl::optional<uint64_t> GetBatteryTag(HANDLE battery) {
+absl::optional<ULONG> GetBatteryTag(HANDLE battery) {
   ULONG battery_tag = 0;
   ULONG wait = 0;
   DWORD bytes_returned = 0;
@@ -88,9 +89,8 @@ absl::optional<uint64_t> GetBatteryTag(HANDLE battery) {
 // Returns BATTERY_INFORMATION structure containing battery information, given
 // battery handle and tag, or nullopt if the request failed. Battery handle and
 // tag are obtained with GetBatteryHandle() and GetBatteryTag(), respectively.
-absl::optional<BATTERY_INFORMATION> GetBatteryInformation(
-    HANDLE battery,
-    uint64_t battery_tag) {
+absl::optional<BATTERY_INFORMATION> GetBatteryInformation(HANDLE battery,
+                                                          ULONG battery_tag) {
   BATTERY_QUERY_INFORMATION query_information = {};
   query_information.BatteryTag = battery_tag;
   query_information.InformationLevel = BatteryInformation;
@@ -109,7 +109,7 @@ absl::optional<BATTERY_INFORMATION> GetBatteryInformation(
 // handle and tag, or nullopt if the request failed. Battery handle and tag are
 // obtained with GetBatteryHandle() and GetBatteryTag(), respectively.
 absl::optional<BATTERY_STATUS> GetBatteryStatus(HANDLE battery,
-                                                uint64_t battery_tag) {
+                                                ULONG battery_tag) {
   BATTERY_WAIT_STATUS wait_status = {};
   wait_status.BatteryTag = battery_tag;
   BATTERY_STATUS battery_status;
@@ -153,8 +153,9 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   // TaskRunner used to run blocking `GetBatteryStateImpl()` queries, sequenced
   // to avoid the performance cost of concurrent calls.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
-    base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})};
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(),
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})};
 
   base::WeakPtrFactory<BatteryLevelProviderWin> weak_ptr_factory_{this};
 };
@@ -186,7 +187,7 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
   // https://docs.microsoft.com/en-us/windows/win32/power/enumerating-battery-devices
   // Limit search to 8 batteries max. A system may have several battery slots
   // and each slot may hold an actual battery.
-  for (int device_index = 0; device_index < 8; ++device_index) {
+  for (DWORD device_index = 0; device_index < 8; ++device_index) {
     SP_DEVICE_INTERFACE_DATA interface_data = {};
     interface_data.cbSize = sizeof(interface_data);
 
@@ -206,7 +207,7 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
     if (!battery.IsValid())
       return absl::nullopt;
 
-    absl::optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
+    absl::optional<ULONG> battery_tag = GetBatteryTag(battery.Get());
     if (!battery_tag.has_value()) {
       return absl::nullopt;
     } else if (battery_tag.value() == BATTERY_TAG_INVALID) {
@@ -238,3 +239,5 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
 
   return MakeBatteryState(battery_details_list);
 }
+
+}  // namespace base

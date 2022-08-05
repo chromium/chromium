@@ -535,6 +535,8 @@ mixed_component("base") {
     "pending_task.h",
     "pickle.cc",
     "pickle.h",
+    "power_monitor/battery_level_provider.cc",
+    "power_monitor/battery_level_provider.h",
     "power_monitor/moving_average.cc",
     "power_monitor/moving_average.h",
     "power_monitor/power_monitor.cc",
@@ -1499,6 +1501,7 @@ mixed_component("base") {
     ":logging_buildflags",
     ":orderfile_buildflags",
     ":parsing_buildflags",
+    ":power_monitor_buildflags",
     ":profiler_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
@@ -2059,6 +2062,7 @@ mixed_component("base") {
       "files/file_enumerator_win.cc",
       "memory/platform_shared_memory_mapper_win.cc",
       "memory/platform_shared_memory_region_win.cc",
+      "power_monitor/battery_level_provider_win.cc",
       "power_monitor/power_monitor_device_source_win.cc",
       "power_monitor/speed_limit_observer_win.cc",
       "power_monitor/speed_limit_observer_win.h",
@@ -2116,6 +2120,7 @@ mixed_component("base") {
       "memory/platform_shared_memory_region_mac.cc",
       "message_loop/message_pump_kqueue.cc",
       "message_loop/message_pump_kqueue.h",
+      "power_monitor/battery_level_provider_mac.mm",
       "power_monitor/power_monitor_device_source_mac.mm",
       "power_monitor/thermal_state_observer_mac.h",
       "power_monitor/thermal_state_observer_mac.mm",
@@ -2632,6 +2637,14 @@ buildflag_header("profiler_buildflags") {
     "IOS_STACK_PROFILER_ENABLED=$ios_stack_profiler_enabled",
     "USE_ANDROID_UNWINDER_V2=$use_android_unwinder_v2",
   ]
+}
+
+buildflag_header("power_monitor_buildflags") {
+  header = "power_monitor_buildflags.h"
+  header_dir = "base/power_monitor"
+  _has_battery_provider_impl = is_win || is_mac
+
+  flags = [ "HAS_BATTERY_LEVEL_PROVIDER_IMPL=$_has_battery_provider_impl" ]
 }
 
 # This is the subset of files from base that should not be used with a dynamic
@@ -3189,6 +3202,7 @@ test("base_unittests") {
     "parameter_pack_unittest.cc",
     "path_service_unittest.cc",
     "pickle_unittest.cc",
+    "power_monitor/battery_level_provider_unittest.cc",
     "power_monitor/moving_average_unittest.cc",
     "power_monitor/power_monitor_device_source_unittest.cc",
     "power_monitor/power_monitor_unittest.cc",

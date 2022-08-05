@@ -29,7 +29,7 @@
 
 namespace {
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 
@@ -87,10 +87,10 @@ PowerMetricsReporter::PowerMetricsReporter(
     ProcessMonitor* process_monitor,
     UsageScenarioDataStore* short_usage_scenario_data_store,
     UsageScenarioDataStore* long_usage_scenario_data_store
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
     ,
-    std::unique_ptr<BatteryLevelProvider> battery_level_provider
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+    std::unique_ptr<base::BatteryLevelProvider> battery_level_provider
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 #if BUILDFLAG(IS_MAC)
     ,
     std::unique_ptr<CoalitionResourceUsageProvider>
@@ -100,10 +100,10 @@ PowerMetricsReporter::PowerMetricsReporter(
     : process_monitor_(process_monitor),
       short_usage_scenario_data_store_(short_usage_scenario_data_store),
       long_usage_scenario_data_store_(long_usage_scenario_data_store)
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
       ,
       battery_level_provider_(std::move(battery_level_provider))
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 #if BUILDFLAG(IS_MAC)
       ,
       coalition_resource_usage_provider_(
@@ -124,7 +124,7 @@ PowerMetricsReporter::PowerMetricsReporter(
 
   interval_begin_ = base::TimeTicks::Now();
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Unretained() is safe here because |this| outlive |battery_level_provider_|.
   battery_level_provider_->GetBatteryState(
       base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
@@ -150,13 +150,14 @@ int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
   return GetBucketForSample(value);
 }
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 void PowerMetricsReporter::OnFirstBatteryStateSampled(
-    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   battery_state_ = battery_state;
 }
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 void PowerMetricsReporter::StartNextLongInterval() {
 #if BUILDFLAG(IS_MAC)
@@ -213,7 +214,7 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
   // Finally, retrieve the battery state before reporting the metrics. On
   // platform without a BatteryLevelProvider implementation, skip straight to
   // reporting the metrics.
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Note: The use of `Unretained()` is safe here because |this| outlives
   //       |battery_level_provider_|.
   battery_level_provider_->GetBatteryState(base::BindOnce(
@@ -225,12 +226,12 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 #endif
 }
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
     base::TimeTicks battery_sample_begin_time,
-    const absl::optional<BatteryLevelProvider::BatteryState>&
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -248,12 +249,12 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   ReportMetrics(interval_duration, aggregated_process_metrics,
                 battery_discharge);
 }
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 void PowerMetricsReporter::ReportMetrics(
     base::TimeDelta interval_duration,
     const ProcessMonitor::Metrics& aggregated_process_metrics
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
     ,
     BatteryDischarge battery_discharge
 #endif
@@ -276,7 +277,7 @@ void PowerMetricsReporter::ReportMetrics(
   base::UmaHistogramEnumeration("PerformanceMonitor.UsageScenario.LongInterval",
                                 long_interval_scenario_params.scenario);
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Report UKMs.
   ReportUKMs(long_interval_data, aggregated_process_metrics, interval_duration,
              battery_discharge);
@@ -294,7 +295,7 @@ void PowerMetricsReporter::ReportMetrics(
   }
   ReportBatteryHistograms(interval_duration, battery_discharge,
                           long_interval_suffixes);
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #if BUILDFLAG(IS_MAC)
   // Sample coalition resource usage rate.
@@ -333,7 +334,7 @@ void PowerMetricsReporter::ReportMetrics(
   StartNextLongInterval();
 }
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 void PowerMetricsReporter::ReportUKMs(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const ProcessMonitor::Metrics& metrics,
@@ -406,7 +407,7 @@ void PowerMetricsReporter::ReportUKMs(
 
   builder.Record(ukm_recorder);
 }
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #if BUILDFLAG(IS_MAC)
 void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(

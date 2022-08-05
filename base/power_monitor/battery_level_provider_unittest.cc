@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "base/power_monitor/battery_level_provider.h"
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
 namespace {
 
 class FakeBatteryLevelProvider : public BatteryLevelProvider {
@@ -89,4 +90,6 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
   EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+}  // namespace base
+
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)

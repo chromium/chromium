@@ -8,10 +8,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/power_monitor/battery_level_provider.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/power/usage_scenario.h"
@@ -56,11 +56,11 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
       ProcessMonitor* process_monitor,
       UsageScenarioDataStore* short_usage_scenario_data_store = nullptr,
       UsageScenarioDataStore* long_usage_scenario_data_store = nullptr
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
       ,
-      std::unique_ptr<BatteryLevelProvider> battery_level_provider =
-          BatteryLevelProvider::Create()
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+      std::unique_ptr<base::BatteryLevelProvider> battery_level_provider =
+          base::BatteryLevelProvider::Create()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 #if BUILDFLAG(IS_MAC)
           ,
       std::unique_ptr<CoalitionResourceUsageProvider>
@@ -72,21 +72,22 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   PowerMetricsReporter& operator=(const PowerMetricsReporter& rhs) = delete;
   ~PowerMetricsReporter() override;
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
-  absl::optional<BatteryLevelProvider::BatteryState>&
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+  absl::optional<base::BatteryLevelProvider::BatteryState>&
   battery_state_for_testing() {
     return battery_state_;
   }
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
 
  private:
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Called when the initial battery state is obtained.
   void OnFirstBatteryStateSampled(
-      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state);
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
   // Starts the timer for the long interval. On Mac, this will fire for the
   // beginning of the short interval instead, which upon completion will mark
@@ -109,32 +110,32 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void OnAggregatedMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics) override;
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       base::TimeTicks battery_sample_begin_time,
-      const absl::optional<BatteryLevelProvider::BatteryState>&
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
           new_battery_state);
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
   // Called when the long interval (and the short one on Mac) ends.
   void ReportMetrics(base::TimeDelta interval_duration,
                      const ProcessMonitor::Metrics& aggregated_process_metrics
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
                      ,
                      BatteryDischarge battery_discharge
 #endif
   );
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Report the UKMs for the past interval.
   static void ReportUKMs(
       const UsageScenarioDataStore::IntervalData& interval_data,
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       BatteryDischarge battery_discharge);
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #if BUILDFLAG(IS_MAC)
   // Emit trace event when CPU usage is high for 10 secondes or more.
@@ -155,11 +156,11 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   std::unique_ptr<UsageScenarioTracker> long_usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> long_usage_scenario_data_store_;
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
-  std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+  std::unique_ptr<base::BatteryLevelProvider> battery_level_provider_;
 
-  absl::optional<BatteryLevelProvider::BatteryState> battery_state_;
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+  absl::optional<base::BatteryLevelProvider::BatteryState> battery_state_;
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
   base::TimeTicks interval_begin_;
 

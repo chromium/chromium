@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "base/power_monitor/battery_level_provider.h"
 
 #import <Foundation/Foundation.h>
 #include <IOKit/IOKitLib.h>
@@ -12,6 +12,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
+namespace base {
 namespace {
 
 // Returns the value corresponding to |key| in the dictionary |description|.
@@ -131,3 +132,5 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
       .full_charged_capacity = static_cast<uint64_t>(max_capacity.value()),
       .charge_unit = BatteryLevelUnit::kMAh}});
 }
+
+}  // namespace base

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "base/power_monitor/battery_level_provider.h"
 
 #include "base/ranges/algorithm.h"
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+
+namespace base {
 
 BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
     const std::vector<BatteryDetails>& battery_details) {
@@ -35,4 +37,6 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
   return state;
 }
 
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+}  // namespace base
+
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)

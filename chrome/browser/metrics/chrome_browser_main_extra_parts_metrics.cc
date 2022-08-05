@@ -31,7 +31,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"

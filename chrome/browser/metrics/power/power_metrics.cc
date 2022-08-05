@@ -16,12 +16,12 @@
 
 namespace {
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode2";
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
@@ -63,11 +63,12 @@ void ReportAggregatedProcessMetricsHistograms(
   }
 }
 
-#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 BatteryDischarge GetBatteryDischargeDuringInterval(
-    const absl::optional<BatteryLevelProvider::BatteryState>&
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
         previous_battery_state,
-    const absl::optional<BatteryLevelProvider::BatteryState>& new_battery_state,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state,
     base::TimeDelta interval_duration) {
   if (!previous_battery_state.has_value() || !new_battery_state.has_value()) {
     return {BatteryDischargeMode::kRetrievalError, absl::nullopt};
@@ -88,9 +89,9 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
     return {BatteryDischargeMode::kMultipleBatteries, absl::nullopt};
   }
   if ((previous_battery_state->charge_unit ==
-       BatteryLevelProvider::BatteryLevelUnit::kRelative) ||
+       base::BatteryLevelProvider::BatteryLevelUnit::kRelative) ||
       (new_battery_state->charge_unit ==
-       BatteryLevelProvider::BatteryLevelUnit::kRelative)) {
+       base::BatteryLevelProvider::BatteryLevelUnit::kRelative)) {
     return {BatteryDischargeMode::kInsufficientResolution, absl::nullopt};
   }
 
@@ -152,7 +153,7 @@ void ReportBatteryHistograms(base::TimeDelta interval_duration,
     }
   }
 }
-#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(
