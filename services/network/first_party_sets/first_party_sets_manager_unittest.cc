@@ -895,58 +895,6 @@ TEST_F(PopulatedFirstPartySetsManagerTest, FindOwners) {
                            net::SchemefulSite(GURL("https://foo.test"))))));
 }
 
-class DisabledContextFirstPartySetsManagerTest
-    : public PopulatedFirstPartySetsManagerTest {
- public:
-  DisabledContextFirstPartySetsManagerTest() {
-    SetFirstPartySetsContextConfig(
-        false,
-        // Should not have effect when FPS is disabled for the context.
-        {
-            {net::SchemefulSite(GURL("https://example.test")),
-             absl::make_optional(net::FirstPartySetEntry(
-                 net::SchemefulSite(GURL("https://foo.test"))))},
-            // Below are the owner self mappings.
-            {net::SchemefulSite(GURL("https://foo.test")),
-             absl::make_optional(net::FirstPartySetEntry(
-                 net::SchemefulSite(GURL("https://foo.test"))))},
-        });
-  }
-};
-
-TEST_F(DisabledContextFirstPartySetsManagerTest, FindOwners) {
-  EXPECT_THAT(
-      FindOwnersAndWait({net::SchemefulSite(GURL("https://example.test"))}),
-      IsEmpty());
-}
-
-TEST_F(DisabledContextFirstPartySetsManagerTest, FindOwner) {
-  EXPECT_FALSE(
-      FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))));
-  EXPECT_FALSE(
-      FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
-}
-
-TEST_F(DisabledContextFirstPartySetsManagerTest, ComputeMetadata) {
-  net::SchemefulSite member(GURL("https://member1.test"));
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite wss_member(GURL("wss://member1.test"));
-
-  // Works if the site is provided with WSS scheme instead of HTTPS.
-  EXPECT_THAT(
-      ComputeMetadataAndWait(wss_member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty));
-
-  EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-
-  EXPECT_THAT(
-      ComputeMetadataAndWait(member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty));
-}
-
 class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
  public:
   OverrideSetsFirstPartySetsManagerTest() {

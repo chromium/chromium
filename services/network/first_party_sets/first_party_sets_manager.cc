@@ -123,6 +123,8 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
     const FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+  DCHECK(fps_context_config.is_enabled());
+
   const base::ElapsedTimer timer;
 
   net::SamePartyContext::Type context_type =
@@ -150,6 +152,7 @@ FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
     const FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
+  DCHECK(fps_context_config.is_enabled());
   const base::ElapsedTimer timer;
 
   net::SchemefulSite normalized_site = site;
@@ -157,7 +160,7 @@ FirstPartySetsManager::OwnerResult FirstPartySetsManager::FindOwnerInternal(
 
   FirstPartySetsManager::OwnerResult entry;
 
-  if (fps_context_config.is_enabled() && is_enabled()) {
+  if (is_enabled()) {
     // Check if `normalized_site` can be found in the customizations first.
     // If not, fall back to look up in `sets_`.
     if (const auto it =
@@ -246,9 +249,7 @@ FirstPartySetsManager::OwnersResult FirstPartySetsManager::FindOwnersInternal(
     const FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
-
-  if (!fps_context_config.is_enabled())
-    return {};
+  DCHECK(fps_context_config.is_enabled());
 
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
       sites_to_entries;

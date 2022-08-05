@@ -50,6 +50,10 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!context_config_.is_enabled()) {
+    return {net::FirstPartySetMetadata()};
+  }
   if (pending_queries_) {
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
@@ -71,6 +75,11 @@ FirstPartySetsAccessDelegate::FindOwner(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnerResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!context_config_.is_enabled()) {
+    return absl::make_optional<FirstPartySetsManager::OwnerResult>(
+        absl::nullopt);
+  }
   if (pending_queries_) {
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
@@ -90,6 +99,10 @@ FirstPartySetsAccessDelegate::FindOwners(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!context_config_.is_enabled())
+    return {{}};
+
   if (pending_queries_) {
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
@@ -109,6 +122,8 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context_config_.is_enabled());
+
   std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
             base::OnceCallback<void(net::FirstPartySetMetadata)>>
       callbacks = base::SplitOnceCallback(std::move(callback));
@@ -127,6 +142,8 @@ void FirstPartySetsAccessDelegate::FindOwnerAndInvoke(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnerResult)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context_config_.is_enabled());
+
   std::pair<base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnerResult)>,
             base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnerResult)>>
       callbacks = base::SplitOnceCallback(std::move(callback));
@@ -143,6 +160,8 @@ void FirstPartySetsAccessDelegate::FindOwnersAndInvoke(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context_config_.is_enabled());
+
   std::pair<
       base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>,
       base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>>
