@@ -793,7 +793,7 @@ void MetricsService::PushPendingLogsToPersistentStorage() {
     return;  // We didn't and still don't have time to get plugin list etc.
 
   CloseCurrentLog();
-  log_store()->TrimAndPersistUnsentLogs();
+  log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 }
 
 //------------------------------------------------------------------------------
@@ -894,7 +894,7 @@ bool MetricsService::PrepareInitialStabilityLog(
 
   // Store unsent logs, including the stability log that was just saved, so
   // that they're not lost in case of a crash before upload time.
-  log_store()->TrimAndPersistUnsentLogs();
+  log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   return true;
 }
@@ -932,7 +932,7 @@ void MetricsService::PrepareInitialMetricsLog() {
 
   // Store unsent logs, including the initial log that was just saved, so
   // that they're not lost in case of a crash before upload time.
-  log_store()->TrimAndPersistUnsentLogs();
+  log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   state_ = SENDING_LOGS;
 }

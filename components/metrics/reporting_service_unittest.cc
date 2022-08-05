@@ -72,7 +72,7 @@ class TestLogStore : public LogStore {
     staged_log_hash_.clear();
   }
   void MarkStagedLogAsSent() override {}
-  void TrimAndPersistUnsentLogs() override {}
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override {}
   void LoadPersistedUnsentLogs() override {}
 
  private:

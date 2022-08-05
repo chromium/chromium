@@ -309,7 +309,8 @@ void UkmService::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialize_complete_)
     BuildAndStoreLog();
-  reporting_service_.ukm_log_store()->TrimAndPersistUnsentLogs();
+  reporting_service_.ukm_log_store()->TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/true);
 }
 
 void UkmService::Purge() {

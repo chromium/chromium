@@ -47,6 +47,83 @@ std::string DecodeFromBase64(const std::string& to_convert) {
   return result;
 }
 
+// Used to write unsent logs to prefs.
+class LogsPrefWriter {
+ public:
+  // Create a writer that will write unsent logs to |list_value|. |list_value|
+  // should be a base::Value::List representing a pref. Clears the contents of
+  // |list_value|.
+  explicit LogsPrefWriter(base::Value::List* list_value)
+      : list_value_(list_value) {
+    DCHECK(list_value);
+    list_value->clear();
+  };
+
+  LogsPrefWriter(const LogsPrefWriter&) = delete;
+  LogsPrefWriter& operator=(const LogsPrefWriter&) = delete;
+
+  ~LogsPrefWriter() { DCHECK(finished_); }
+
+  // Persists |log| by appending it to |list_value_|.
+  void WriteLogEntry(UnsentLogStore::LogInfo* log) {
+    DCHECK(!finished_);
+
+    base::Value dict_value{base::Value::Type::DICTIONARY};
+    dict_value.SetStringKey(kLogHashKey, EncodeToBase64(log->hash));
+    dict_value.SetStringKey(kLogSignatureKey, EncodeToBase64(log->signature));
+    dict_value.SetStringKey(kLogDataKey,
+                            EncodeToBase64(log->compressed_log_data));
+    dict_value.SetStringKey(kLogTimestampKey, log->timestamp);
+
+    auto user_id = log->log_metadata.user_id;
+    if (user_id.has_value()) {
+      dict_value.SetStringKey(
+          kLogUserIdKey, EncodeToBase64(base::NumberToString(user_id.value())));
+    }
+    list_value_->Append(std::move(dict_value));
+
+    auto samples_count = log->log_metadata.samples_count;
+    if (samples_count.has_value()) {
+      unsent_samples_count_ += samples_count.value();
+    }
+    unsent_persisted_size_ += log->compressed_log_data.length();
+    ++unsent_logs_count_;
+  }
+
+  // Indicates to this writer that it is finished, and that it should not write
+  // any more logs. This also reverses |list_value_| in order to maintain the
+  // original order of the logs that were written.
+  void Finish() {
+    DCHECK(!finished_);
+    finished_ = true;
+    std::reverse(list_value_->begin(), list_value_->end());
+  }
+
+  base::HistogramBase::Count unsent_samples_count() const {
+    return unsent_samples_count_;
+  }
+
+  size_t unsent_persisted_size() const { return unsent_persisted_size_; }
+
+  size_t unsent_logs_count() const { return unsent_logs_count_; }
+
+ private:
+  // The list where the logs will be written to. This should represent a pref.
+  raw_ptr<base::Value::List> list_value_;
+
+  // Whether or not this writer has finished writing to pref.
+  bool finished_ = false;
+
+  // The total number of histogram samples written so far.
+  base::HistogramBase::Count unsent_samples_count_ = 0;
+
+  // The total size of logs written so far.
+  size_t unsent_persisted_size_ = 0;
+
+  // The total number of logs written so far.
+  size_t unsent_logs_count_ = 0;
+};
+
 }  // namespace
 
 UnsentLogStore::LogInfo::LogInfo() = default;
@@ -177,10 +254,75 @@ void UnsentLogStore::MarkStagedLogAsSent() {
     total_samples_sent_ += samples_count.value();
 }
 
-void UnsentLogStore::TrimAndPersistUnsentLogs() {
+void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   ListPrefUpdate update(local_state_, log_data_pref_name_);
-  TrimLogs();
-  WriteLogsToPrefList(update.Get());
+  LogsPrefWriter writer(&update->GetList());
+
+  std::vector<std::unique_ptr<LogInfo>> trimmed_list;
+  size_t bytes_used = 0;
+
+  // The distance of the staged log from the end of the list of logs, which is
+  // usually 0 (end of list). This is used in case there is currently a staged
+  // log, which may or may not get trimmed. We want to keep track of the new
+  // position of the staged log after trimming so that we can update
+  // |staged_log_index_|.
+  absl::optional<size_t> staged_index_distance;
+
+  // Reverse order, so newest ones are prioritized.
+  for (int i = list_.size() - 1; i >= 0; --i) {
+    size_t log_size = list_[i]->compressed_log_data.length();
+    // Hit the caps, we can stop moving the logs.
+    if (bytes_used >= min_log_bytes_ &&
+        writer.unsent_logs_count() >= min_log_count_) {
+      break;
+    }
+    // Omit overly large individual logs.
+    if (log_size > max_log_size_) {
+      metrics_->RecordDroppedLogSize(log_size);
+      continue;
+    }
+
+    bytes_used += log_size;
+
+    if (staged_log_index_ == i) {
+      staged_index_distance = writer.unsent_logs_count();
+    }
+
+    // Append log to prefs.
+    writer.WriteLogEntry(list_[i].get());
+    if (overwrite_in_memory_store)
+      trimmed_list.emplace_back(std::move(list_[i]));
+  }
+
+  writer.Finish();
+
+  if (overwrite_in_memory_store) {
+    // We went in reverse order, but appended entries. So reverse list to
+    // correct.
+    std::reverse(trimmed_list.begin(), trimmed_list.end());
+
+    size_t dropped_logs_count = list_.size() - trimmed_list.size();
+    if (dropped_logs_count > 0)
+      metrics_->RecordDroppedLogsNum(dropped_logs_count);
+
+    // Put the trimmed list in the correct place.
+    list_.swap(trimmed_list);
+
+    // We may need to adjust the staged index since the number of logs may be
+    // reduced.
+    if (staged_index_distance.has_value()) {
+      staged_log_index_ = list_.size() - 1 - staged_index_distance.value();
+    } else {
+      // Set |staged_log_index_| to -1. It might already be -1. E.g., at the
+      // time we are trimming logs, there was no staged log. However, it is also
+      // possible that we trimmed away the staged log, so we need to update the
+      // index to -1.
+      staged_log_index_ = -1;
+    }
+  }
+
+  WriteToMetricsPref(writer.unsent_samples_count(), total_samples_sent_,
+                     writer.unsent_persisted_size());
 }
 
 void UnsentLogStore::LoadPersistedUnsentLogs() {
@@ -284,94 +426,6 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value& list_value) {
   }
 
   metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::RECALL_SUCCESS);
-}
-
-void UnsentLogStore::TrimLogs() {
-  std::vector<std::unique_ptr<LogInfo>> trimmed_list;
-  size_t bytes_used = 0;
-
-  // The distance of the staged log from the end of the list of logs, which is
-  // usually 0 (end of list). This is used in case there is currently a staged
-  // log, which may or may not get trimmed. We want to keep track of the new
-  // position of the staged log after trimming so that we can update
-  // |staged_log_index_|.
-  absl::optional<size_t> staged_index_distance;
-
-  // Reverse order, so newest ones are prioritized.
-  for (int i = list_.size() - 1; i >= 0; --i) {
-    size_t log_size = list_[i]->compressed_log_data.length();
-    // Hit the caps, we can stop moving the logs.
-    if (bytes_used >= min_log_bytes_ && trimmed_list.size() >= min_log_count_) {
-      break;
-    }
-    // Omit overly large individual logs.
-    if (log_size > max_log_size_) {
-      metrics_->RecordDroppedLogSize(log_size);
-      continue;
-    }
-
-    bytes_used += log_size;
-
-    if (staged_log_index_ == i) {
-      staged_index_distance = trimmed_list.size();
-    }
-
-    trimmed_list.emplace_back(std::move(list_[i]));
-  }
-
-  // We went in reverse order, but appended entries. So reverse list to correct.
-  std::reverse(trimmed_list.begin(), trimmed_list.end());
-
-  size_t dropped_logs_count = list_.size() - trimmed_list.size();
-  if (dropped_logs_count > 0)
-    metrics_->RecordDroppedLogsNum(dropped_logs_count);
-
-  // Put the trimmed list in the correct place.
-  list_.swap(trimmed_list);
-
-  // We may need to adjust the staged index since the number of logs may be
-  // reduced. However, we want to make sure not to change the index if there is
-  // no log staged.
-  if (staged_index_distance.has_value()) {
-    staged_log_index_ = list_.size() - 1 - staged_index_distance.value();
-  } else {
-    // Set |staged_log_index_| to -1. It might already be -1. E.g., at the time
-    // we are trimming logs, there was no staged log. However, it is also
-    // possible that we trimmed away the staged log, so we need to update the
-    // index to -1.
-    staged_log_index_ = -1;
-  }
-}
-
-void UnsentLogStore::WriteLogsToPrefList(base::Value* list_value) const {
-  list_value->ClearList();
-
-  base::HistogramBase::Count unsent_samples_count = 0;
-  size_t unsent_persisted_size = 0;
-
-  for (auto& log : list_) {
-    base::Value dict_value{base::Value::Type::DICTIONARY};
-    dict_value.SetStringKey(kLogHashKey, EncodeToBase64(log->hash));
-    dict_value.SetStringKey(kLogSignatureKey, EncodeToBase64(log->signature));
-    dict_value.SetStringKey(kLogDataKey,
-                            EncodeToBase64(log->compressed_log_data));
-    dict_value.SetStringKey(kLogTimestampKey, log->timestamp);
-
-    auto user_id = log->log_metadata.user_id;
-    if (user_id.has_value()) {
-      dict_value.SetStringKey(
-          kLogUserIdKey, EncodeToBase64(base::NumberToString(user_id.value())));
-    }
-    list_value->Append(std::move(dict_value));
-
-    auto samples_count = log->log_metadata.samples_count;
-    if (samples_count.has_value()) {
-      unsent_samples_count += samples_count.value();
-    }
-    unsent_persisted_size += log->compressed_log_data.length();
-  }
-  WriteToMetricsPref(unsent_samples_count, total_samples_sent_,
-                     unsent_persisted_size);
 }
 
 void UnsentLogStore::WriteToMetricsPref(

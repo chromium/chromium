@@ -124,7 +124,7 @@ void ReportingService::SendNextLog() {
       !client_->ShouldUploadMetricsForUserId(staged_user_id.value())) {
     // Remove the log and update list to disk.
     log_store()->DiscardStagedLog();
-    log_store()->TrimAndPersistUnsentLogs();
+    log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
     // Notify the scheduler that the next log should be uploaded. If there are
     // no more logs, then stop the scheduler.
@@ -222,7 +222,7 @@ void ReportingService::OnLogUploadComplete(int response_code,
 
       log_store()->DiscardStagedLog();
       // Store the updated list to disk now that the removed log is uploaded.
-      log_store()->TrimAndPersistUnsentLogs();
+      log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
     }
   }
 

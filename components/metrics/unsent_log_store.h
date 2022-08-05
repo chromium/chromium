@@ -61,6 +61,44 @@ class UnsentLogStore : public LogStore {
 
   ~UnsentLogStore() override;
 
+  struct LogInfo {
+    LogInfo();
+    LogInfo(const LogInfo& other);
+    ~LogInfo();
+
+    // Initializes the members based on uncompressed |log_data|,
+    // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
+    // serialized log protobuf. A hash and a signature are computed from
+    // |log_data|. The signature is produced using |signing_key|. |log_data|
+    // will be compressed and stored in |compressed_log_data|. |log_timestamp|
+    // is stored as is. |log_metadata| is any optional metadata that will be
+    // attached to the log.
+    // |metrics| is the parent's metrics_ object, and should not be held.
+    void Init(UnsentLogStoreMetrics* metrics,
+              const std::string& log_data,
+              const std::string& log_timestamp,
+              const std::string& signing_key,
+              const LogMetadata& log_metadata);
+
+    // Compressed log data - a serialized protobuf that's been gzipped.
+    std::string compressed_log_data;
+
+    // The SHA1 hash of the log. Computed in Init and stored to catch errors
+    // from memory corruption.
+    std::string hash;
+
+    // The HMAC-SHA256 signature of the log, used to validate the log came from
+    // Chrome. It's computed in Init and stored, instead of computed on demand,
+    // to catch errors from memory corruption.
+    std::string signature;
+
+    // The timestamp of when the log was created as a time_t value.
+    std::string timestamp;
+
+    // Properties of the log.
+    LogMetadata log_metadata;
+  };
+
   // LogStore:
   bool has_unsent_logs() const override;
   bool has_staged_log() const override;
@@ -71,7 +109,7 @@ class UnsentLogStore : public LogStore {
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;
-  void TrimAndPersistUnsentLogs() override;
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
   // Adds a UMA log to the list. |log_metadata| refers to metadata associated
@@ -105,14 +143,6 @@ class UnsentLogStore : public LogStore {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnsentLogStoreTest, UnsentLogMetadataMetrics);
-
-  // Keep the most recent logs which are smaller than |max_log_size_|.
-  // We keep at least |min_log_bytes_| and |min_log_count_| of logs before
-  // discarding older logs.
-  void TrimLogs();
-
-  // Writes the list of logs to |list|.
-  void WriteLogsToPrefList(base::Value* list) const;
 
   // Reads the list of logs from |list|.
   void ReadLogsFromPrefList(const base::Value& list);
@@ -153,43 +183,6 @@ class UnsentLogStore : public LogStore {
   // authentic.
   const std::string signing_key_;
 
-  struct LogInfo {
-    LogInfo();
-    LogInfo(const LogInfo& other);
-    ~LogInfo();
-
-    // Initializes the members based on uncompressed |log_data|,
-    // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
-    // serialized log protobuf. A hash and a signature are computed from
-    // |log_data|. The signature is produced using |signing_key|. |log_data|
-    // will be compressed and stored in |compressed_log_data|. |log_timestamp|
-    // is stored as is. |log_metadata| is any optional metadata that will be
-    // attached to the log.
-    // |metrics| is the parent's metrics_ object, and should not be held.
-    void Init(UnsentLogStoreMetrics* metrics,
-              const std::string& log_data,
-              const std::string& log_timestamp,
-              const std::string& signing_key,
-              const LogMetadata& log_metadata);
-
-    // Compressed log data - a serialized protobuf that's been gzipped.
-    std::string compressed_log_data;
-
-    // The SHA1 hash of the log. Computed in Init and stored to catch errors
-    // from memory corruption.
-    std::string hash;
-
-    // The HMAC-SHA256 signature of the log, used to validate the log came from
-    // Chrome. It's computed in Init and stored, instead of computed on demand,
-    // to catch errors from memory corruption.
-    std::string signature;
-
-    // The timestamp of when the log was created as a time_t value.
-    std::string timestamp;
-
-    // Properties of the log.
-    LogMetadata log_metadata;
-  };
   // A list of all of the stored logs, stored with SHA1 hashes to check for
   // corruption while they are stored in memory.
   std::vector<std::unique_ptr<LogInfo>> list_;

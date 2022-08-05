@@ -137,7 +137,7 @@ class TestUnsentLogStore : public UnsentLogStore {
 TEST_F(UnsentLogStoreTest, EmptyLogList) {
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
 
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
   EXPECT_EQ(0U, prefs_.GetValueList(kTestPrefName).size());
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
@@ -151,7 +151,7 @@ TEST_F(UnsentLogStoreTest, SingleElementLogList) {
 
   LogMetadata log_metadata;
   unsent_log_store.StoreLog("Hello world!", log_metadata);
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();
@@ -181,7 +181,7 @@ TEST_F(UnsentLogStoreTest, LongButTinyLogList) {
     unsent_log_store.StoreLog("x", log_metadata);
 
   EXPECT_EQ(log_count, unsent_log_store.size());
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
   EXPECT_EQ(log_count, unsent_log_store.size());
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
@@ -221,7 +221,7 @@ TEST_F(UnsentLogStoreTest, LongButSmallLogList) {
   unsent_log_store.StoreLog(last_kept, log_metadata);
 
   size_t original_size = unsent_log_store.size();
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
   // New size has been reduced.
   EXPECT_EQ(original_size - 2, unsent_log_store.size());
 
@@ -250,7 +250,7 @@ TEST_F(UnsentLogStoreTest, ShortButLargeLogList) {
   for (size_t i = 0; i < log_count; ++i) {
     unsent_log_store.StoreLog(log_data, log_metadata);
   }
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();
@@ -281,7 +281,7 @@ TEST_F(UnsentLogStoreTest, LongAndLargeLogList) {
       unsent_log_store.StoreLog(log_data, log_metadata);
   }
 
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();
@@ -319,7 +319,7 @@ TEST_F(UnsentLogStoreTest, TrimStagedLog) {
   }
 
   EXPECT_EQ(kLogCountLimit + 1, unsent_log_store.size());
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   // Verify that the first log (the staged one) was trimmed away, and that the
   // log store does not consider to have any staged log anymore. The other logs
@@ -331,6 +331,86 @@ TEST_F(UnsentLogStoreTest, TrimStagedLog) {
   while (unsent_log_store.size() > 0) {
     unsent_log_store.ExpectNextLog(log_data);
   }
+}
+
+// Verifies that when calling TrimAndPersistUnsentLogs() with
+// |overwrite_in_memory_store| set to false, the in memory log store is
+// unaffected.
+TEST_F(UnsentLogStoreTest,
+       TrimAndPersistUnsentLogs_DoNotOverwriteInMemoryStore) {
+  TestUnsentLogStore unsent_log_store(
+      std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_, kLogByteLimit);
+
+  LogMetadata log_metadata;
+  std::string log_data = GenerateLogWithMinCompressedSize(kLogByteLimit + 1);
+  unsent_log_store.StoreLog(log_data, log_metadata);
+  unsent_log_store.TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/false);
+
+  // Verify that the log store still contains the log.
+  EXPECT_EQ(1U, unsent_log_store.size());
+  unsent_log_store.ExpectNextLog(log_data);
+
+  // Verify that the log was trimmed when persisted to memory.
+  TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
+  result_unsent_log_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(0U, result_unsent_log_store.size());
+}
+
+// Verifies that TrimAndPersistUnsentLogs() maintains the log order.
+TEST_F(UnsentLogStoreTest, TrimAndPersistUnsentLogs_MaintainsLogOrder) {
+  TestUnsentLogStore unsent_log_store(
+      std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_, kLogByteLimit);
+
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog("1", log_metadata);
+  unsent_log_store.StoreLog(GenerateLogWithMinCompressedSize(kLogByteLimit + 1),
+                            log_metadata);
+  unsent_log_store.StoreLog("2", log_metadata);
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  // Verify that only the second log was trimmed (since it was over the max log
+  // size), and that the log order was maintained. I.e., "2" should be the most
+  // recent log, followed by "1".
+  EXPECT_EQ(2U, unsent_log_store.size());
+  unsent_log_store.ExpectNextLog("2");
+  unsent_log_store.ExpectNextLog("1");
+
+  // Similarly, verify that the order was also maintained in persistent memory.
+  TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
+  result_unsent_log_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(2U, result_unsent_log_store.size());
+  result_unsent_log_store.ExpectNextLog("2");
+  result_unsent_log_store.ExpectNextLog("1");
+}
+
+// Verifies that calling TrimAndPersistUnsentLogs() clears the pref list before
+// writing the trimmed logs list.
+TEST_F(UnsentLogStoreTest, TrimAndPersistUnsentLogs_OverwritesPrefs) {
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog("Hello world!", log_metadata);
+  // Call TrimAndPersistUnsentLogs(). The log should not be trimmed.
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
+  result_unsent_log_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(1U, result_unsent_log_store.size());
+
+  // Verify that the result log matches the initial log.
+  result_unsent_log_store.ExpectNextLog("Hello world!");
+
+  // Call TrimAndPersistUnsentLogs() and load the persisted logs once again.
+  // There should still only be one log.
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  TestUnsentLogStore result_unsent_log_store2(&prefs_, kLogByteLimit);
+  result_unsent_log_store2.LoadPersistedUnsentLogs();
+  EXPECT_EQ(1U, result_unsent_log_store2.size());
+
+  // Verify that the result log matches the initial log.
+  result_unsent_log_store2.ExpectNextLog("Hello world!");
 }
 
 // Check that the store/stage/discard functions work as expected.
@@ -372,7 +452,7 @@ TEST_F(UnsentLogStoreTest, DiscardOrder) {
   unsent_log_store.StageNextLog();
   unsent_log_store.StoreLog("two", log_metadata);
   unsent_log_store.DiscardStagedLog();
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();
@@ -451,7 +531,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithUserId) {
   EXPECT_EQ(Compress(foo_text), unsent_log_store.staged_log());
   EXPECT_EQ(unsent_log_store.staged_log_user_id().value(), user_id);
 
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   // Reads persisted logs from new log store.
   TestUnsentLogStore read_unsent_log_store(&prefs_, kLogByteLimit);
@@ -475,7 +555,7 @@ TEST_F(UnsentLogStoreTest, StoreLogWithLargeUserId) {
   EXPECT_EQ(Compress(foo_text), unsent_log_store.staged_log());
   EXPECT_EQ(unsent_log_store.staged_log_user_id().value(), large_user_id);
 
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   // Reads persisted logs from new log store.
   TestUnsentLogStore read_unsent_log_store(&prefs_, kLogByteLimit);
@@ -525,7 +605,7 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   LogMetadata log_metadata_foo_bar_sample(kFooBarSampleCount, absl::nullopt);
   unsent_log_store.StoreLog(foobar_log, log_metadata_foo_bar_sample);
 
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   unsent_log_store.RecordMetaDataMetrics();
   // The |oversize_log| was ignored, the kNoSampleLog won't be counted to
@@ -538,7 +618,7 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   unsent_log_store.StageNextLog();
   unsent_log_store.MarkStagedLogAsSent();
   unsent_log_store.DiscardStagedLog();
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
   unsent_log_store.RecordMetaDataMetrics();
 
   // The |foobar_log| shall be sent.
@@ -549,7 +629,7 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   // Pretend |kFooText| upload failure.
   unsent_log_store.StageNextLog();
   unsent_log_store.DiscardStagedLog();
-  unsent_log_store.TrimAndPersistUnsentLogs();
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
   unsent_log_store.RecordMetaDataMetrics();
 
   // Verify the failed upload wasn't added to the sent samples count.

@@ -106,7 +106,7 @@ class MetricsLogStore : public LogStore {
   void StageNextLog() override;
   void DiscardStagedLog() override;
   void MarkStagedLogAsSent() override;
-  void TrimAndPersistUnsentLogs() override;
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
   // Inspection methods for tests.

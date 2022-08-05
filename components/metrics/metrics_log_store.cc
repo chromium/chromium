@@ -74,7 +74,8 @@ void MetricsLogStore::SetAlternateOngoingLogStore(
 
 void MetricsLogStore::UnsetAlternateOngoingLogStore() {
   DCHECK(has_alternate_ongoing_log_store());
-  alternate_ongoing_log_queue_->TrimAndPersistUnsentLogs();
+  alternate_ongoing_log_queue_->TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/true);
   alternate_ongoing_log_queue_.reset();
 }
 
@@ -164,15 +165,16 @@ void MetricsLogStore::MarkStagedLogAsSent() {
     ongoing_log_queue_.MarkStagedLogAsSent();
 }
 
-void MetricsLogStore::TrimAndPersistUnsentLogs() {
+void MetricsLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   DCHECK(unsent_logs_loaded_);
   if (!unsent_logs_loaded_)
     return;
 
-  initial_log_queue_.TrimAndPersistUnsentLogs();
-  ongoing_log_queue_.TrimAndPersistUnsentLogs();
+  initial_log_queue_.TrimAndPersistUnsentLogs(overwrite_in_memory_store);
+  ongoing_log_queue_.TrimAndPersistUnsentLogs(overwrite_in_memory_store);
   if (has_alternate_ongoing_log_store())
-    alternate_ongoing_log_queue_->TrimAndPersistUnsentLogs();
+    alternate_ongoing_log_queue_->TrimAndPersistUnsentLogs(
+        overwrite_in_memory_store);
 }
 
 }  // namespace metrics
