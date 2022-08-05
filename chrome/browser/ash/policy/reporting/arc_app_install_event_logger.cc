@@ -174,8 +174,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
 std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
     const std::string& pref_name) const {
   std::set<std::string> packages;
-  for (const auto& package :
-       profile_->GetPrefs()->GetList(pref_name)->GetListDeprecated()) {
+  for (const auto& package : profile_->GetPrefs()->GetValueList(pref_name)) {
     if (!package.is_string()) {
       continue;
     }
