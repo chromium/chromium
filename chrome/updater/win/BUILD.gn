@@ -79,7 +79,7 @@ copy("signing") {
   sources = [
     "$root_out_dir/certificate_tag.exe",
     "//chrome/tools/build/win/resedit.py",
-    "//third_party/lzma_sdk/bin/7zr.exe",
+    "//third_party/lzma_sdk/bin/win64/7zr.exe",
     "signing/sign.py",
   ]
 

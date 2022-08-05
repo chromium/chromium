@@ -317,7 +317,7 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
       "--out",
       "$target_name.exe",
       "--path_7za",
-      "../../third_party/lzma_sdk/bin",
+      "../../third_party/lzma_sdk/bin/win64",
     ]
     deps = [
       ":mini_installer",

@@ -23,6 +23,11 @@ of this archive are copied here.  More specifically:
 extract files. 7zr is "lightweight" and only handles 7zip extensions. 7za can
 handle a few more. 7za.exe comes from https://www.7-zip.org/a/7z2107-extra.7z.
 
+The 7zz (arm64/x86-64) command for macOS is extracted from
+https://7-zip.org/a/7z2107-mac.tar.xz. It is necessary to remove
+`com.apple.quarantine` file attribute with command `xattr -c` before adding
+the file.
+
 The patch in chromium.patch was applied to 7zCrc.c, CpuArch.c, LZFind.c and
 Sha256.c to disable some ARM code that was failing to build in Android and
 Fuschia as well as some of the AVX2 and SSE4 code for Windows. In Fuschia,
