@@ -397,7 +397,7 @@ RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   GLenum plane_config = static_cast<GLenum>(c.plane_config);
   GLenum subsampling = static_cast<GLenum>(c.subsampling);
   uint32_t mailboxes_size;
-  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 80>(1, &mailboxes_size)) {
+  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 144>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
   }
   if (mailboxes_size > immediate_data_size) {

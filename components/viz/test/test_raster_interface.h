@@ -89,6 +89,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,
+      const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) override {}

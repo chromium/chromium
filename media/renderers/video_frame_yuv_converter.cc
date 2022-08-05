@@ -146,10 +146,10 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
   holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
                                  mailboxes);
-  ri->ConvertYUVAMailboxesToRGB(dest_mailbox_holder.mailbox,
-                                holder_->yuva_info().yuvColorSpace(),
-                                holder_->yuva_info().planeConfig(),
-                                holder_->yuva_info().subsampling(), mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(
+      dest_mailbox_holder.mailbox, holder_->yuva_info().yuvColorSpace(),
+      SkColorSpace::MakeSRGB().get(), holder_->yuva_info().planeConfig(),
+      holder_->yuva_info().subsampling(), mailboxes);
   return true;
 }
 

@@ -230,7 +230,7 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoConvertYUVAMailboxesToRGBINTERNAL',
     'internal': True,
     'type': 'PUT',
-    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
+    'count': 144, #GL_MAILBOX_SIZE_CHROMIUM x5 + 16 floats
     'unit_test': False,
     'trace_level': 2,
   },

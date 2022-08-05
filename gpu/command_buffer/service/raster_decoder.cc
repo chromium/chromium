@@ -750,6 +750,8 @@ class RasterDecoderImpl final : public RasterDecoder,
                                         GLuint v_stride,
                                         const volatile GLbyte* mailbox);
 
+  sk_sp<SkColorSpace> ReadSkColorSpace(const volatile GLbyte* bytes) const;
+
   // Return true if all of `sk_yuv_color_space`, `sk_plane_config`,
   // `sk_subsampling`, `rgba_image, `num_yuva_images`, and `yuva_images` were
   // successfully populated. Return false on error. If this returns false, some
@@ -2918,6 +2920,19 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   *result = 1;
 }
 
+sk_sp<SkColorSpace> RasterDecoderImpl::ReadSkColorSpace(
+    const volatile GLbyte* bytes) const {
+  size_t offset = 0;
+  const volatile skcms_TransferFunction* transfer =
+      reinterpret_cast<const volatile skcms_TransferFunction*>(bytes + offset);
+  offset += sizeof(skcms_TransferFunction);
+  const volatile skcms_Matrix3x3* primaries =
+      reinterpret_cast<const volatile skcms_Matrix3x3*>(bytes + offset);
+  return SkColorSpace::MakeRGB(
+      const_cast<const skcms_TransferFunction&>(*transfer),
+      const_cast<const skcms_Matrix3x3&>(*primaries));
+}
+
 bool RasterDecoderImpl::ConvertYUVACommon(
     const char* function_name,
     GLenum yuv_color_space_in,
@@ -2997,8 +3012,8 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum planes_yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  SkYUVColorSpace src_color_space;
+    const volatile GLbyte* bytes_in) {
+  SkYUVColorSpace src_yuv_color_space;
   SkYUVAInfo::PlaneConfig src_plane_config;
   SkYUVAInfo::Subsampling src_subsampling;
   std::unique_ptr<SkiaImageRepresentation> rgba_image;
@@ -3006,11 +3021,13 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   if (!ConvertYUVACommon("ConvertYUVAMailboxesToRGB", planes_yuv_color_space,
-                         plane_config, subsampling, mailboxes_in,
-                         src_color_space, src_plane_config, src_subsampling,
+                         plane_config, subsampling, bytes_in,
+                         src_yuv_color_space, src_plane_config, src_subsampling,
                          rgba_image, num_src_planes, yuva_images)) {
     return;
   }
+  sk_sp<SkColorSpace> src_rgb_color_space = ReadSkColorSpace(
+      bytes_in + (SkYUVAInfo::kMaxPlanes + 1) * sizeof(gpu::Mailbox));
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
@@ -3064,11 +3081,11 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     SkISize dest_size =
         SkISize::Make(dest_surface->width(), dest_surface->height());
     SkYUVAInfo yuva_info(dest_size, src_plane_config, src_subsampling,
-                         src_color_space);
+                         src_yuv_color_space);
     GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
                                                 kTopLeft_GrSurfaceOrigin);
-    auto result_image =
-        SkImage::MakeFromYUVATextures(gr_context(), yuva_backend_textures);
+    auto result_image = SkImage::MakeFromYUVATextures(
+        gr_context(), yuva_backend_textures, src_rgb_color_space);
     if (!result_image) {
       LOCAL_SET_GL_ERROR(
           GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",

@@ -68,9 +68,13 @@ class RasterInterface : public InterfaceBase {
                            const SkImageInfo& src_info,
                            const void* src_pixels) = 0;
 
+  // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
+  // source of the copy is split into `planes_yuv_color_space` which converts
+  // into full range RGB, and `planes_rgb_color_space` which an RGB color space.
   virtual void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,
+      const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) = 0;

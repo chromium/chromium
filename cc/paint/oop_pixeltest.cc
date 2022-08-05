@@ -2211,6 +2211,7 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
   gl->OrderingBarrierCHROMIUM();
 
   ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
+                                SkColorSpace::MakeSRGB().get(),
                                 SkYUVAInfo::PlaneConfig::kY_U_V,
                                 SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
   ri->OrderingBarrierCHROMIUM();
@@ -2345,6 +2346,7 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   gl->OrderingBarrierCHROMIUM();
 
   ri->ConvertYUVAMailboxesToRGB(dest_mailbox, kJPEG_SkYUVColorSpace,
+                                SkColorSpace::MakeSRGB().get(),
                                 SkYUVAInfo::PlaneConfig::kY_UV,
                                 SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
   ri->OrderingBarrierCHROMIUM();
