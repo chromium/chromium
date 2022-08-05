@@ -409,7 +409,7 @@ void ProjectorMessageHandler::GetUserPref(const base::Value::List& args) {
     return;
   }
 
-  ResolveJavascriptCallback(args[0], *(pref_service_->Get(user_pref)));
+  ResolveJavascriptCallback(args[0], pref_service_->GetValue(user_pref));
 }
 
 void ProjectorMessageHandler::SetUserPref(const base::Value::List& args) {
