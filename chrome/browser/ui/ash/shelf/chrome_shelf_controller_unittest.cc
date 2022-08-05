@@ -711,12 +711,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
         base::WrapUnique<ShelfControllerHelper>(helper));
   }
 
-  void AppendPrefValue(base::ListValue* pref_value,
+  void AppendPrefValue(base::Value::List& pref_value,
                        const std::string& extension_id) {
-    base::DictionaryValue entry;
-    entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-                 base::Value(extension_id));
-    pref_value->Append(std::move(entry));
+    base::Value::Dict entry;
+    entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, extension_id);
+    pref_value.Append(std::move(entry));
   }
 
   void InsertRemoveAllPinsChange(syncer::SyncChangeList* list) {
@@ -1846,13 +1845,12 @@ TEST_P(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
   SendPinChanges(sync_list, true);
 
-  base::ListValue policy_value;
+  base::Value::List policy_value;
   // extension 2 4 are pinned by policy
-  AppendPrefValue(&policy_value, extension2_->id());
-  AppendPrefValue(&policy_value, web_app::kGoogleDocsAppId);
+  AppendPrefValue(policy_value, extension2_->id());
+  AppendPrefValue(policy_value, web_app::kGoogleDocsAppId);
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
   // 2 is not pinned as it's not installed
@@ -3339,12 +3337,11 @@ TEST_P(ChromeShelfControllerTest, Policy) {
   AddWebApp(web_app::kGmailAppId);
 
   // Pin policy should be initilized before controller start.
-  base::ListValue policy_value;
-  AppendPrefValue(&policy_value, extension1_->id());
-  AppendPrefValue(&policy_value, extension2_->id());
+  base::Value::List policy_value;
+  AppendPrefValue(policy_value, extension1_->id());
+  AppendPrefValue(policy_value, extension2_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   InitShelfController();
 
@@ -3360,10 +3357,9 @@ TEST_P(ChromeShelfControllerTest, Policy) {
 
   // Removing |extension1_| from the policy should not be reflected in the
   // shelf and pin will exist.
-  policy_value.EraseListIter(policy_value.GetListDeprecated().begin());
+  policy_value.erase(policy_value.begin());
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
 }
 
@@ -4361,11 +4357,10 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
   // Set policy, that makes pins ARC app. Unlike native extension, for ARC app
   // package_name (not hash) specified as id. In this test we check that
   // by hash we can determine that appropriate package was set by policy.
-  base::ListValue policy_value;
-  AppendPrefValue(&policy_value, appinfo->package_name);
+  base::Value::List policy_value;
+  AppendPrefValue(policy_value, appinfo->package_name);
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
@@ -4961,12 +4956,12 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
 
   InitShelfControllerWithBrowser();
 
-  base::ListValue policy_value;
+  base::Value::List policy_value;
 
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AppendPrefValue(&policy_value, extension1_->id());
-  AppendPrefValue(&policy_value, extension2_->id());
+  AppendPrefValue(policy_value, extension1_->id());
+  AppendPrefValue(policy_value, extension2_->id());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -4977,12 +4972,12 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   const std::string online_only_app_id =
       AddArcAppAndShortcut(*online_only_appinfo);
 
-  AppendPrefValue(&policy_value, appinfo->package_name);
-  AppendPrefValue(&policy_value, online_only_appinfo->package_name);
+  AppendPrefValue(policy_value, appinfo->package_name);
+  AppendPrefValue(policy_value, online_only_appinfo->package_name);
 
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
   web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
-  AppendPrefValue(&policy_value, kWebAppUrl);
+  AppendPrefValue(policy_value, kWebAppUrl);
 
   // If the device is offline, extension2, onlineonly, and TestPWA should
   // be unpinned. Since the device is online here, these apps should still be
@@ -4991,8 +4986,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
       {extension2_->id(), online_only_appinfo->package_name});
 
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   app_service_test().FlushMojoCalls();
 
@@ -5024,12 +5018,12 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
 
   InitShelfControllerWithBrowser();
 
-  base::ListValue policy_value;
+  base::Value::List policy_value;
 
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AppendPrefValue(&policy_value, extension1_->id());
-  AppendPrefValue(&policy_value, extension2_->id());
+  AppendPrefValue(policy_value, extension1_->id());
+  AppendPrefValue(policy_value, extension2_->id());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -5040,12 +5034,12 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   const std::string online_only_app_id =
       AddArcAppAndShortcut(*online_only_appinfo);
 
-  AppendPrefValue(&policy_value, appinfo->package_name);
-  AppendPrefValue(&policy_value, online_only_appinfo->package_name);
+  AppendPrefValue(policy_value, appinfo->package_name);
+  AppendPrefValue(policy_value, online_only_appinfo->package_name);
 
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
   web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
-  AppendPrefValue(&policy_value, kWebAppUrl);
+  AppendPrefValue(policy_value, kWebAppUrl);
 
   // If the device is offline, extension2 and onlineonly, and TestPWA should be
   // unpinned.
@@ -5053,8 +5047,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
       {extension2_->id(), online_only_appinfo->package_name, kWebAppUrl});
 
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
   app_service_test().FlushMojoCalls();
 
   // Since the device is offline, the policy pinned apps that shouldn't be
@@ -5458,11 +5451,10 @@ TEST_P(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
   AddExtension(extension1_.get());
 
   // Pin a test app by policy.
-  base::ListValue policy_value;
-  AppendPrefValue(&policy_value, extension1_->id());
+  base::Value::List policy_value;
+  AppendPrefValue(policy_value, extension1_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps,
-      base::Value::ToUniquePtrValue(policy_value.Clone()));
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
   InitShelfController();
   EXPECT_EQ(2, model_->item_count());
