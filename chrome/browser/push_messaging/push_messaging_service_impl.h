@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 #include "chrome/browser/push_messaging/push_messaging_refresher.h"
 #include "chrome/common/buildflags.h"
@@ -243,15 +243,14 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                         const std::string& push_message_id,
                         bool did_show_generic_notification);
 
-  void OnCheckedOriginForAbuse(
-      PendingMessage message,
-      AbusiveOriginPermissionRevocationRequest::Outcome outcome);
+  void OnCheckedOrigin(PendingMessage message,
+                       PermissionRevocationRequest::Outcome outcome);
 
   void DeliverNextQueuedMessageForServiceWorkerRegistration(
       const GURL& origin,
       int64_t service_worker_registration_id);
 
-  void CheckOriginForAbuseAndDispatchNextMessage();
+  void CheckOriginAndDispatchNextMessage();
 
 #if BUILDFLAG(IS_ANDROID)
   //  Verifies if Chrome has Android app-level Notifications permission. If
@@ -264,7 +263,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const gcm::IncomingMessage& message,
       const PushMessagingAppIdentifier& app_identifier);
 #endif
-
   // Subscribe methods ---------------------------------------------------------
 
   void DoSubscribe(PushMessagingAppIdentifier app_identifier,
@@ -450,8 +448,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void OnAppTerminating();
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
-      abusive_origin_revocation_request_;
+  std::unique_ptr<PermissionRevocationRequest> origin_revocation_request_;
   std::queue<PendingMessage> messages_pending_permission_check_;
 
   // {Origin, ServiceWokerRegistratonId} key for message delivery queue. This

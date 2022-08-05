@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/abusive_origin_notifications_permission_revocation_config.h"
+#include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -93,52 +93,54 @@ void RevokePermission(const GURL& origin, Profile* profile) {
 }
 }  // namespace
 
-AbusiveOriginPermissionRevocationRequest::
-    AbusiveOriginPermissionRevocationRequest(Profile* profile,
-                                             const GURL& origin,
-                                             OutcomeCallback callback)
+PermissionRevocationRequest::PermissionRevocationRequest(
+    Profile* profile,
+    const GURL& origin,
+    OutcomeCallback callback)
     : profile_(profile), origin_(origin), callback_(std::move(callback)) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&PermissionRevocationRequest::CheckAndRevokeIfBlocklisted,
+                     weak_factory_.GetWeakPtr()));
 }
 
-AbusiveOriginPermissionRevocationRequest::
-    ~AbusiveOriginPermissionRevocationRequest() = default;
+PermissionRevocationRequest::~PermissionRevocationRequest() = default;
 
 // static
-void AbusiveOriginPermissionRevocationRequest::
-    ExemptOriginFromFutureRevocations(Profile* profile, const GURL& origin) {
+void PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
+    Profile* profile,
+    const GURL& origin) {
   OriginStatus status = GetOriginStatus(profile, origin);
   status.is_exempt_from_future_revocations = true;
   SetOriginStatus(profile, origin, status);
 }
 
 // static
-bool AbusiveOriginPermissionRevocationRequest::
-    IsOriginExemptedFromFutureRevocations(Profile* profile,
-                                          const GURL& origin) {
+bool PermissionRevocationRequest::IsOriginExemptedFromFutureRevocations(
+    Profile* profile,
+    const GURL& origin) {
   OriginStatus status = GetOriginStatus(profile, origin);
   return status.is_exempt_from_future_revocations;
 }
 
 // static
-bool AbusiveOriginPermissionRevocationRequest::HasPreviouslyRevokedPermission(
+bool PermissionRevocationRequest::HasPreviouslyRevokedPermission(
     Profile* profile,
     const GURL& origin) {
   OriginStatus status = GetOriginStatus(profile, origin);
   return status.has_been_previously_revoked;
 }
 
-void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
+void PermissionRevocationRequest::CheckAndRevokeIfBlocklisted() {
   DCHECK(profile_);
   DCHECK(callback_);
 
-  if (!AbusiveOriginNotificationsPermissionRevocationConfig::IsEnabled() ||
-      !safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) ||
-      IsOriginExemptedFromFutureRevocations(profile_, origin_)) {
+  if (!safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) ||
+      IsOriginExemptedFromFutureRevocations(profile_, origin_) ||
+      (!NotificationsPermissionRevocationConfig::
+           IsAbusiveOriginPermissionRevocationEnabled() &&
+       !NotificationsPermissionRevocationConfig::
+           IsDisruptiveOriginPermissionRevocationEnabled())) {
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
     return;
   }
@@ -152,12 +154,11 @@ void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
 
   crowd_deny->GetReputationDataForSiteAsync(
       url::Origin::Create(origin_),
-      base::BindOnce(
-          &AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&PermissionRevocationRequest::OnSiteReputationReady,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady(
+void PermissionRevocationRequest::OnSiteReputationReady(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
   if (crowd_deny_request_start_time_.has_value()) {
     crowd_deny_request_duration_ =
@@ -168,23 +169,26 @@ void AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady(
       (site_reputation->notification_ux_quality() ==
            CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
        site_reputation->notification_ux_quality() ==
-           CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT)) {
+           CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT ||
+       site_reputation->notification_ux_quality() ==
+           CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR)) {
     DCHECK(g_browser_process->safe_browsing_service());
 
     if (g_browser_process->safe_browsing_service()) {
       safe_browsing_request_.emplace(
           g_browser_process->safe_browsing_service()->database_manager(),
           base::DefaultClock::GetInstance(), url::Origin::Create(origin_),
-          base::BindOnce(&AbusiveOriginPermissionRevocationRequest::
-                             OnSafeBrowsingVerdictReceived,
-                         weak_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &PermissionRevocationRequest::OnSafeBrowsingVerdictReceived,
+              weak_factory_.GetWeakPtr(), site_reputation));
       return;
     }
   }
   NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
 }
 
-void AbusiveOriginPermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
+void PermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
+    const CrowdDenyPreloadData::SiteReputation* site_reputation,
     CrowdDenySafeBrowsingRequest::Verdict verdict) {
   DCHECK(safe_browsing_request_);
   DCHECK(profile_);
@@ -192,13 +196,21 @@ void AbusiveOriginPermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
 
   if (verdict == CrowdDenySafeBrowsingRequest::Verdict::kUnacceptable) {
     RevokePermission(origin_, profile_);
-    NotifyCallback(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+    if (site_reputation->notification_ux_quality() ==
+            CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
+        site_reputation->notification_ux_quality() ==
+            CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT) {
+      NotifyCallback(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+    } else if (site_reputation->notification_ux_quality() ==
+               CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR) {
+      NotifyCallback(Outcome::PERMISSION_REVOKED_DUE_TO_DISRUPTIVE_BEHAVIOR);
+    }
   } else {
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
   }
 }
 
-void AbusiveOriginPermissionRevocationRequest::NotifyCallback(Outcome outcome) {
+void PermissionRevocationRequest::NotifyCallback(Outcome outcome) {
   if (outcome == Outcome::PERMISSION_NOT_REVOKED &&
       crowd_deny_request_duration_.has_value()) {
     permissions::PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(

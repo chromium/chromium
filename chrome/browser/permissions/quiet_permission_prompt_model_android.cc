@@ -31,6 +31,9 @@ std::u16string GetNotificationBlockedUIDescription(QuietUiReason reason) {
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE);
+    case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
+      return l10n_util::GetStringUTF16(
+          IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_DISRUPTIVE_MESSAGE);
   }
   NOTREACHED();
   return std::u16string();
@@ -67,6 +70,7 @@ QuietPermissionPromptModelAndroid GetQuietNotificationPermissionPromptModel(
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
+    case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
       model.primary_button_label = l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CONTINUE_BLOCKING_BUTTON);
       model.primary_button_behavior = PrimaryButtonBehavior::kContinueBlocking;

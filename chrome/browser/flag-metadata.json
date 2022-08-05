@@ -1401,6 +1401,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "disruptive-notification-permission-revocation",
+    "owners": [ "engedy", "ravjit", "andypaicu", "hkamila", "elklm" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "dm-token-deletion",
     "owners": [ "igorruvinov", "zmin" ],
     "expiry_milestone": 115

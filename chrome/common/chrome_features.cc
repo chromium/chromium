@@ -296,6 +296,12 @@ const base::Feature kKeepForceInstalledPreinstalledApps{
     "KeepForceInstalledPreinstalledApps", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Enables notification permission revocation for origins that may send
+// disruptive notifications.
+const base::Feature kDisruptiveNotificationPermissionRevocation{
+    "DisruptiveNotificationPermissionRevocation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

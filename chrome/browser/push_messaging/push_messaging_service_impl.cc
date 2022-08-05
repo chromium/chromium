@@ -26,7 +26,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -394,10 +394,10 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
 
   if (IsPermissionSet(app_identifier.origin())) {
     messages_pending_permission_check_.emplace(app_id, message);
-    // Start abusive origin verification only if no other verification is in
-    // progress.
-    if (!abusive_origin_revocation_request_)
-      CheckOriginForAbuseAndDispatchNextMessage();
+    // Start abusive and disruptive origin verifications only if no other
+    // respective verification is in progress.
+    if (!origin_revocation_request_)
+      CheckOriginAndDispatchNextMessage();
   } else {
     // Drop message and unregister if origin has lost push permission.
     DeliverMessageCallback(app_id, app_identifier.origin(),
@@ -407,7 +407,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
   }
 }
 
-void PushMessagingServiceImpl::CheckOriginForAbuseAndDispatchNextMessage() {
+void PushMessagingServiceImpl::CheckOriginAndDispatchNextMessage() {
   if (messages_pending_permission_check_.empty())
     return;
 
@@ -419,17 +419,16 @@ void PushMessagingServiceImpl::CheckOriginForAbuseAndDispatchNextMessage() {
       PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
 
   if (app_identifier.is_null()) {
-    CheckOriginForAbuseAndDispatchNextMessage();
+    CheckOriginAndDispatchNextMessage();
     return;
   }
 
-  DCHECK(!abusive_origin_revocation_request_)
-      << "Create one Abusive Origin Revocation instance per request.";
-  abusive_origin_revocation_request_ =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          profile_, app_identifier.origin(),
-          base::BindOnce(&PushMessagingServiceImpl::OnCheckedOriginForAbuse,
-                         weak_factory_.GetWeakPtr(), std::move(message)));
+  DCHECK(!origin_revocation_request_)
+      << "Create one Origin Revocation instance per request.";
+  origin_revocation_request_ = std::make_unique<PermissionRevocationRequest>(
+      profile_, app_identifier.origin(),
+      base::BindOnce(&PushMessagingServiceImpl::OnCheckedOrigin,
+                     weak_factory_.GetWeakPtr(), std::move(message)));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -503,10 +502,10 @@ bool PushMessagingServiceImpl::CheckAndRevokeNotificationPermissionIfNeeded(
 }
 #endif
 
-void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
+void PushMessagingServiceImpl::OnCheckedOrigin(
     PendingMessage message,
-    AbusiveOriginPermissionRevocationRequest::Outcome outcome) {
-  abusive_origin_revocation_request_.reset();
+    PermissionRevocationRequest::Outcome outcome) {
+  origin_revocation_request_.reset();
 
   base::UmaHistogramLongTimes("PushMessaging.CheckOriginForAbuseTime",
                               base::Time::Now() - message.received_time);
@@ -515,7 +514,7 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
       PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
 
   if (app_identifier.is_null()) {
-    CheckOriginForAbuseAndDispatchNextMessage();
+    CheckOriginAndDispatchNextMessage();
     return;
   }
 
@@ -525,8 +524,7 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
 
   // It is possible that Notifications permission has been revoked by a user
   // during abusive origin verification.
-  if (outcome == AbusiveOriginPermissionRevocationRequest::Outcome::
-                     PERMISSION_NOT_REVOKED &&
+  if (outcome == PermissionRevocationRequest::Outcome::PERMISSION_NOT_REVOKED &&
       IsPermissionSet(origin)) {
     std::queue<PendingMessage>& delivery_queue =
         message_delivery_queue_[{origin, service_worker_registration_id}];
@@ -540,18 +538,32 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
           origin, service_worker_registration_id);
     }
   } else {
+    blink::mojom::PushEventStatus status;
+
+    switch (outcome) {
+      case PermissionRevocationRequest::Outcome::PERMISSION_NOT_REVOKED:
+        status = blink::mojom::PushEventStatus::PERMISSION_DENIED;
+        break;
+      case PermissionRevocationRequest::Outcome::
+          PERMISSION_REVOKED_DUE_TO_ABUSE:
+        status = blink::mojom::PushEventStatus::PERMISSION_REVOKED_ABUSIVE;
+        break;
+      case PermissionRevocationRequest::Outcome::
+          PERMISSION_REVOKED_DUE_TO_DISRUPTIVE_BEHAVIOR:
+        status = blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE;
+        break;
+      default:
+        NOTREACHED();
+    }
+
     // Drop message and unregister if origin has lost push permission.
-    DeliverMessageCallback(
-        message.app_id, origin, service_worker_registration_id, message.message,
-        /*did_enqueue_message=*/false,
-        outcome == AbusiveOriginPermissionRevocationRequest::Outcome::
-                       PERMISSION_NOT_REVOKED
-            ? blink::mojom::PushEventStatus::PERMISSION_DENIED
-            : blink::mojom::PushEventStatus::PERMISSION_REVOKED_ABUSIVE);
+    DeliverMessageCallback(message.app_id, origin,
+                           service_worker_registration_id, message.message,
+                           /* did_enqueue_message */ false, status);
   }
 
   // Verify the next message in the queue.
-  CheckOriginForAbuseAndDispatchNextMessage();
+  CheckOriginAndDispatchNextMessage();
 }
 
 void PushMessagingServiceImpl::
@@ -678,6 +690,10 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
     case blink::mojom::PushEventStatus::PERMISSION_REVOKED_ABUSIVE:
       unsubscribe_reason =
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_ABUSIVE;
+      break;
+    case blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_DISRUPTIVE;
       break;
   }
 

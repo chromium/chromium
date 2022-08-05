@@ -98,6 +98,14 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
       return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       Decision::ShowNoWarning());
     }
+    case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
+      DCHECK(!site_reputation->warning_only());
+
+      if (!Config::IsDisruptiveBehaviorRequestBlockingEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+                      Decision::ShowNoWarning());
+    }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
       return absl::nullopt;
     }
@@ -143,9 +151,10 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  // Even if the quiet UI is enabled on all sites, the crowd deny and abuse
-  // trigger conditions must be evaluated first, so that the corresponding,
-  // less prominent UI and the strings are shown on blocklisted origins.
+  // Even if the quiet UI is enabled on all sites, the crowd deny, abuse and
+  // disruption trigger conditions must be evaluated first, so that the
+  // corresponding, less prominent UI and the strings are shown on blocklisted
+  // origins.
   EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
 }
 

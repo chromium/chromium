@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_ABUSIVE_ORIGIN_PERMISSION_REVOCATION_REQUEST_H_
-#define CHROME_BROWSER_PERMISSIONS_ABUSIVE_ORIGIN_PERMISSION_REVOCATION_REQUEST_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_REVOCATION_REQUEST_H_
+#define CHROME_BROWSER_PERMISSIONS_PERMISSION_REVOCATION_REQUEST_H_
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,34 +17,35 @@
 class Profile;
 enum class ContentSettingsType;
 
-// Revokes the notifications permission if an origin marked as abusive.
-// This is the case when:
+// Revokes the notifications permission if an origin marked as abusive or
+// disruptive. This is the case when:
 //  1) The notifications permission revocation experiment is enabled.
-//  2) The origin exists on ABUSIVE_PROMPTS or ABUSIVE_CONTENT blocking lists.
+//  2) The origin exists on ABUSIVE_PROMPTS, ABUSIVE_CONTENT or
+//     DISRUPTIVE_BEHAVIOR blocking lists.
 //  3) The origin exists on SafeBrowsing.
 //  4) If a user granted notification permission via quiet permission prompt UI,
 //  revocation will not applied.
-class AbusiveOriginPermissionRevocationRequest {
+class PermissionRevocationRequest {
  public:
-  // The abusive permission revocation verdict for a given origin.
+  // The permission revocation verdict for a given origin.
   enum class Outcome {
     PERMISSION_NOT_REVOKED,
     PERMISSION_REVOKED_DUE_TO_ABUSE,
+    PERMISSION_REVOKED_DUE_TO_DISRUPTIVE_BEHAVIOR,
   };
 
   using OutcomeCallback = base::OnceCallback<void(Outcome)>;
 
   // Asynchronously starts origin verification and revokes notifications
   // permission.
-  AbusiveOriginPermissionRevocationRequest(Profile* profile,
-                                           const GURL& origin,
-                                           OutcomeCallback callback);
-  ~AbusiveOriginPermissionRevocationRequest();
+  PermissionRevocationRequest(Profile* profile,
+                              const GURL& origin,
+                              OutcomeCallback callback);
+  ~PermissionRevocationRequest();
 
-  AbusiveOriginPermissionRevocationRequest(
-      const AbusiveOriginPermissionRevocationRequest&) = delete;
-  AbusiveOriginPermissionRevocationRequest& operator=(
-      const AbusiveOriginPermissionRevocationRequest&) = delete;
+  PermissionRevocationRequest(const PermissionRevocationRequest&) = delete;
+  PermissionRevocationRequest& operator=(const PermissionRevocationRequest&) =
+      delete;
 
   static void ExemptOriginFromFutureRevocations(Profile* profile,
                                                 const GURL& origin);
@@ -56,13 +57,14 @@ class AbusiveOriginPermissionRevocationRequest {
                                              const GURL& origin);
 
  private:
-  // Verifies if |origin_| is on ABUSIVE_PROMPTS and ABUSIVE_CONTENT lists. If
-  // yes, the notifications permission will be revoked. |callback_| will be
-  // synchronously called with the result.
-  void CheckAndRevokeIfAbusive();
+  // Verifies if |origin_| is on ABUSIVE_PROMPTS, ABUSIVE_CONTENT or
+  // DISRUPTIVE_BEHAVIOR lists. If yes, the notifications permission will be
+  // revoked. |callback_| will be synchronously called with the result.
+  void CheckAndRevokeIfBlocklisted();
   void OnSiteReputationReady(
       const CrowdDenyPreloadData::SiteReputation* reputation);
   void OnSafeBrowsingVerdictReceived(
+      const CrowdDenyPreloadData::SiteReputation* reputation,
       CrowdDenySafeBrowsingRequest::Verdict verdict);
   void NotifyCallback(Outcome outcome);
 
@@ -74,8 +76,7 @@ class AbusiveOriginPermissionRevocationRequest {
   absl::optional<base::TimeTicks> crowd_deny_request_start_time_;
   // The Crowd Deny component load duration.
   absl::optional<base::TimeDelta> crowd_deny_request_duration_;
-  base::WeakPtrFactory<AbusiveOriginPermissionRevocationRequest> weak_factory_{
-      this};
+  base::WeakPtrFactory<PermissionRevocationRequest> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_ABUSIVE_ORIGIN_PERMISSION_REVOCATION_REQUEST_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_REVOCATION_REQUEST_H_

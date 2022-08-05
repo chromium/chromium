@@ -43,6 +43,10 @@ enum PushEventStatus {
   // Notifications permission and FCM were revoked.
   NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE = 10,
 
+  // The event could not be delivered because permission was auto-revoked as the
+  // origin may be disruptive.
+  PERMISSION_REVOKED_DISRUPTIVE = 11,
+
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
   // in tools/metrics/histograms/histograms.xml to keep it in sync.
@@ -209,6 +213,10 @@ enum PushUnregistrationReason {
   // Unregistering because no app-level Notifications permission after the grace
   // period is over.
   NO_APP_LEVEL_PERMISSION = 14,
+
+  // Unregistering because permissions was auto-revoked as the origin may be
+  // disruptive.
+  PERMISSION_REVOKED_DISRUPTIVE = 15,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list

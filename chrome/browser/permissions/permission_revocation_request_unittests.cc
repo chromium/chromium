@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -11,9 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/permissions/abusive_origin_notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
+#include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,19 +22,19 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 
-class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
+class PermissionRevocationRequestTestBase : public testing::Test {
  public:
-  using Outcome = AbusiveOriginPermissionRevocationRequest::Outcome;
+  using Outcome = PermissionRevocationRequest::Outcome;
   using SiteReputation = CrowdDenyPreloadData::SiteReputation;
 
-  AbusiveOriginPermissionRevocationRequestTestBase() = default;
+  PermissionRevocationRequestTestBase() = default;
 
-  AbusiveOriginPermissionRevocationRequestTestBase(
-      const AbusiveOriginPermissionRevocationRequestTestBase&) = delete;
-  AbusiveOriginPermissionRevocationRequestTestBase& operator=(
-      const AbusiveOriginPermissionRevocationRequestTestBase&) = delete;
+  PermissionRevocationRequestTestBase(
+      const PermissionRevocationRequestTestBase&) = delete;
+  PermissionRevocationRequestTestBase& operator=(
+      const PermissionRevocationRequestTestBase&) = delete;
 
-  ~AbusiveOriginPermissionRevocationRequestTestBase() override = default;
+  ~PermissionRevocationRequestTestBase() override = default;
 
  protected:
   void SetUp() override {
@@ -89,9 +89,8 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
                                     Outcome expected_result) {
     base::MockOnceCallback<void(Outcome)> mock_callback_receiver;
     base::RunLoop run_loop;
-    auto permission_revocation =
-        std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-            testing_profile_.get(), origin, mock_callback_receiver.Get());
+    auto permission_revocation = std::make_unique<PermissionRevocationRequest>(
+        testing_profile_.get(), origin, mock_callback_receiver.Get());
     EXPECT_CALL(mock_callback_receiver, Run(expected_result))
         .WillOnce(
             testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
@@ -136,16 +135,15 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
       safe_browsing_factory_;
 };
 
-class AbusiveOriginPermissionRevocationRequestTest
-    : public AbusiveOriginPermissionRevocationRequestTestBase {
+class PermissionRevocationRequestTest
+    : public PermissionRevocationRequestTestBase {
  public:
-  AbusiveOriginPermissionRevocationRequestTest() = default;
+  PermissionRevocationRequestTest() = default;
 
-  ~AbusiveOriginPermissionRevocationRequestTest() override = default;
+  ~PermissionRevocationRequestTest() override = default;
 };
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest,
-       OriginIsNotOnBlockingLists) {
+TEST_F(PermissionRevocationRequestTest, OriginIsNotOnBlockingLists) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
@@ -155,7 +153,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest,
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingTest) {
+TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
@@ -170,21 +168,19 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingTest) {
   QueryAndExpectDecisionForUrl(origin_to_revoke,
                                Outcome::PERMISSION_NOT_REVOKED);
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
-  EXPECT_FALSE(
-      AbusiveOriginPermissionRevocationRequest::HasPreviouslyRevokedPermission(
-          GetTestingProfile(), origin_to_revoke));
+  EXPECT_FALSE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
+      GetTestingProfile(), origin_to_revoke));
 
   AddToPreloadDataBlocklist(origin_to_revoke, SiteReputation::ABUSIVE_CONTENT,
                             /*has_warning=*/false);
   QueryAndExpectDecisionForUrl(origin_to_revoke,
                                Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
-  EXPECT_TRUE(
-      AbusiveOriginPermissionRevocationRequest::HasPreviouslyRevokedPermission(
-          GetTestingProfile(), origin_to_revoke));
+  EXPECT_TRUE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
+      GetTestingProfile(), origin_to_revoke));
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
+TEST_F(PermissionRevocationRequestTest, PreloadDataTest) {
   const GURL abusive_content_origin_to_revoke =
       GURL("https://abusive-content.com/");
   const GURL abusive_prompts_origin_to_revoke =
@@ -237,7 +233,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
   QueryAndExpectDecisionForUrl(unknown_origin, Outcome::PERMISSION_NOT_REVOKED);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataAsyncTest) {
+TEST_F(PermissionRevocationRequestTest, PreloadDataAsyncTest) {
   auto* instance = CrowdDenyPreloadData::GetInstance();
   // From this point on CrowdDenyPreloadData is not usable for origins
   // verification.
@@ -246,18 +242,16 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataAsyncTest) {
   const GURL abusive_content_origin_to_revoke =
       GURL("https://abusive-content.com/");
   base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
-  auto permission_revocation_1 =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          GetTestingProfile(), abusive_content_origin_to_revoke,
-          mock_callback_receiver_1.Get());
+  auto permission_revocation_1 = std::make_unique<PermissionRevocationRequest>(
+      GetTestingProfile(), abusive_content_origin_to_revoke,
+      mock_callback_receiver_1.Get());
 
   const GURL abusive_prompts_origin_to_revoke =
       GURL("https://abusive-prompts.com/");
   base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
-  auto permission_revocation_2 =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          GetTestingProfile(), abusive_prompts_origin_to_revoke,
-          mock_callback_receiver_2.Get());
+  auto permission_revocation_2 = std::make_unique<PermissionRevocationRequest>(
+      GetTestingProfile(), abusive_prompts_origin_to_revoke,
+      mock_callback_receiver_2.Get());
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_callback_receiver_1,
@@ -283,8 +277,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataAsyncTest) {
   run_loop.Run();
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest,
-       PreloadDataAsyncHistogramTest) {
+TEST_F(PermissionRevocationRequestTest, PreloadDataAsyncHistogramTest) {
   base::HistogramTester histograms;
   // The Crowd Deny component is ready to use, there should be no
   // DelayedPushNotification recording.
@@ -295,7 +288,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest,
     AddToPreloadDataBlocklist(origin_1, SiteReputation::ACCEPTABLE,
                               /*has_warning=*/false);
     auto permission_revocation_1 =
-        std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+        std::make_unique<PermissionRevocationRequest>(
             GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
 
     EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
@@ -313,26 +306,23 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest,
   const GURL origin_1 = GURL("https://not-abusive-origin-1.com/");
   SetPermission(origin_1, CONTENT_SETTING_ALLOW);
   base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
-  auto permission_revocation_1 =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
+  auto permission_revocation_1 = std::make_unique<PermissionRevocationRequest>(
+      GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
   EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
 
   const GURL origin_2 = GURL("https://not-abusive-origin-2.com/");
   SetPermission(origin_2, CONTENT_SETTING_ALLOW);
   base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
-  auto permission_revocation_2 =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          GetTestingProfile(), origin_2, mock_callback_receiver_2.Get());
+  auto permission_revocation_2 = std::make_unique<PermissionRevocationRequest>(
+      GetTestingProfile(), origin_2, mock_callback_receiver_2.Get());
   EXPECT_CALL(mock_callback_receiver_2, Run(Outcome::PERMISSION_NOT_REVOKED));
 
   const GURL abusive_origin = GURL("https://abusive-origin.com/");
   SetPermission(abusive_origin, CONTENT_SETTING_ALLOW);
   AddToSafeBrowsingBlocklist(abusive_origin);
   base::MockOnceCallback<void(Outcome)> mock_callback_receiver_3;
-  auto permission_revocation_3 =
-      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
-          GetTestingProfile(), abusive_origin, mock_callback_receiver_3.Get());
+  auto permission_revocation_3 = std::make_unique<PermissionRevocationRequest>(
+      GetTestingProfile(), abusive_origin, mock_callback_receiver_3.Get());
   EXPECT_CALL(mock_callback_receiver_3,
               Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE));
 
@@ -348,8 +338,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest,
       "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", 2);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest,
-       PreloadDataTestWithWarning) {
+TEST_F(PermissionRevocationRequestTest, PreloadDataTestWithWarning) {
   const GURL abusive_content_origin_to_revoke =
       GURL("https://abusive-content.com/");
   const GURL abusive_prompts_origin_to_revoke =
@@ -396,11 +385,11 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest,
     QueryAndExpectDecisionForUrl(origin, Outcome::PERMISSION_NOT_REVOKED);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
+TEST_F(PermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   const GURL origin_to_exempt = GURL("https://origin-allow.com/");
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
-  AbusiveOriginPermissionRevocationRequest::ExemptOriginFromFutureRevocations(
+  PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
       GetTestingProfile(), origin_to_exempt);
 
   SetPermission(origin_to_exempt, CONTENT_SETTING_ALLOW);
@@ -424,7 +413,7 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
 }
 
-TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
+TEST_F(PermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
@@ -453,17 +442,17 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
   VerifyNotificationsPermission(origin_to_not_revoke, CONTENT_SETTING_ALLOW);
 }
 
-class AbusiveOriginPermissionRevocationRequestDisabledTest
-    : public AbusiveOriginPermissionRevocationRequestTestBase {
+class PermissionRevocationRequestDisabledTest
+    : public PermissionRevocationRequestTestBase {
  public:
-  AbusiveOriginPermissionRevocationRequestDisabledTest() {
+  PermissionRevocationRequestDisabledTest() {
     feature_list_.InitAndDisableFeature(
         features::kAbusiveNotificationPermissionRevocation);
   }
-  ~AbusiveOriginPermissionRevocationRequestDisabledTest() override = default;
+  ~PermissionRevocationRequestDisabledTest() override = default;
 };
 
-TEST_F(AbusiveOriginPermissionRevocationRequestDisabledTest,
+TEST_F(PermissionRevocationRequestDisabledTest,
        PermissionRevocationFeatureDisabled) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
