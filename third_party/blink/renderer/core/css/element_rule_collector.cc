@@ -337,9 +337,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     int style_sheet_index,
     const SelectorChecker& checker,
     PartRequest* part_request) {
-  if (!rules || rules->IsEmpty())
-    return;
-
   SelectorChecker::StyleScopeFrame style_scope_frame(context_.GetElement());
 
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
@@ -464,6 +461,13 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     int style_sheet_index,
     const SelectorChecker& checker,
     PartRequest* part_request) {
+  // This is a very common case for many style sheets, and by putting it here
+  // instead of inside CollectMatchingRulesForListInternal(), we're usually
+  // inlined into the caller (which saves on stack setup and call overhead
+  // in that common case).
+  if (!rules || rules->IsEmpty())
+    return;
+
   // To reduce branching overhead for the common case, we use a template
   // parameter to eliminate branching in CollectMatchingRulesForListInternal
   // when tracing is not enabled.
