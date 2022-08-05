@@ -75,7 +75,6 @@ static_library("report_queue_provider") {
     "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage_selector",
-    "//components/reporting/util:shared_queue",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
   ]

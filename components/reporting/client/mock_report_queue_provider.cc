@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/reporting/client/mock_report_queue.h"

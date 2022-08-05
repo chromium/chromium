@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
