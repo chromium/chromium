@@ -7,6 +7,10 @@
 
 #include <stdint.h>
 
+#include <initializer_list>
+
+#include "base/gtest_prod_util.h"
+
 namespace device {
 
 // CPU core utilization statistics.
@@ -20,29 +24,46 @@ namespace device {
 // Mac:
 // Quantities are expressed in "CPU Ticks", which is an arbitrary unit of time
 // recording how many intervals of time elapsed, typically 1/100 of a second.
-struct CoreTimes {
-  // Normal processes executing in user mode.
-  uint64_t user() const { return times[0]; }
-  // Niced processes executing in user mode.
-  uint64_t nice() const { return times[1]; }
-  // Processes executing in kernel mode.
-  uint64_t system() const { return times[2]; }
-  // Twiddling thumbs.
-  uint64_t idle() const { return times[3]; }
-  // Waiting for I/O to complete. Unreliable.
-  uint64_t iowait() const { return times[4]; }
-  // Servicing interrupts.
-  uint64_t irq() const { return times[5]; }
-  // Servicing softirqs.
-  uint64_t softirq() const { return times[6]; }
-  // Involuntary wait.
-  uint64_t steal() const { return times[7]; }
-  // Running a normal guest.
-  uint64_t guest() const { return times[8]; }
-  // Running a niced guest.
-  uint64_t guest_nice() const { return times[9]; }
+class CoreTimes {
+ public:
+  CoreTimes() = default;
+  ~CoreTimes() = default;
 
-  uint64_t times[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  // Normal processes executing in user mode.
+  uint64_t user() const { return times_[0]; }
+  // Niced processes executing in user mode.
+  uint64_t nice() const { return times_[1]; }
+  // Processes executing in kernel mode.
+  uint64_t system() const { return times_[2]; }
+  // Twiddling thumbs.
+  uint64_t idle() const { return times_[3]; }
+  // Waiting for I/O to complete. Unreliable.
+  uint64_t iowait() const { return times_[4]; }
+  // Servicing interrupts.
+  uint64_t irq() const { return times_[5]; }
+  // Servicing softirqs.
+  uint64_t softirq() const { return times_[6]; }
+  // Involuntary wait.
+  uint64_t steal() const { return times_[7]; }
+  // Running a normal guest.
+  uint64_t guest() const { return times_[8]; }
+  // Running a niced guest.
+  uint64_t guest_nice() const { return times_[9]; }
+
+  // Setters.
+  //
+  // Ensure that the reported core usage times are monotonically increasing.
+  // We assume that by any decrease is a temporary blip.
+  void set_user(uint64_t time);
+  void set_nice(uint64_t time);
+  void set_system(uint64_t time);
+  void set_idle(uint64_t time);
+  void set_iowait(uint64_t time);
+  void set_irq(uint64_t time);
+  void set_softirq(uint64_t time);
+  void set_steal(uint64_t time);
+  void set_guest(uint64_t time);
+  void set_guest_nice(uint64_t time);
 
   // Computes a CPU's utilization over the time between two stat snapshots.
   //
@@ -50,6 +71,17 @@ struct CoreTimes {
   // invalid data, such as a `baseline` that does not represent a stat
   // snapshot collected before `this` snapshot.
   double TimeUtilization(const CoreTimes& baseline) const;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_Balanced);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_EmptyRange);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_NegativeRange);
+  FRIEND_TEST_ALL_PREFIXES(CoreTimesTest, TimeUtilization_Computation);
+
+  // Used by CoreTimesTest.
+  CoreTimes(const std::initializer_list<uint64_t>& times);
+
+  uint64_t times_[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 }  // namespace device

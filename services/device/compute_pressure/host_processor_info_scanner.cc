@@ -61,10 +61,10 @@ bool HostProcessorInfoScanner::Update() {
       core_times_[i] = std::move(core_time);
     }
 
-    core_times_[i].times[0] = cpu_infos[i].cpu_ticks[CPU_STATE_USER];
-    core_times_[i].times[1] = cpu_infos[i].cpu_ticks[CPU_STATE_NICE];
-    core_times_[i].times[2] = cpu_infos[i].cpu_ticks[CPU_STATE_SYSTEM];
-    core_times_[i].times[3] = cpu_infos[i].cpu_ticks[CPU_STATE_IDLE];
+    core_times_[i].set_user(cpu_infos[i].cpu_ticks[CPU_STATE_USER]);
+    core_times_[i].set_nice(cpu_infos[i].cpu_ticks[CPU_STATE_NICE]);
+    core_times_[i].set_system(cpu_infos[i].cpu_ticks[CPU_STATE_SYSTEM]);
+    core_times_[i].set_idle(cpu_infos[i].cpu_ticks[CPU_STATE_IDLE]);
   }
 
   return true;

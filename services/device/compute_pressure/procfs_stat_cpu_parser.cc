@@ -117,16 +117,24 @@ void ProcfsStatCpuParser::UpdateCore(base::StringPiece core_line,
   if (tokens.size() < 11)
     return;
 
+  std::vector<uint64_t> parsed_numbers(10, 0);
   for (int i = 0; i < 10; ++i) {
     uint64_t parsed_number;
     if (!base::StringToUint64(tokens[i + 1], &parsed_number))
-      return;
-
-    // Ensure that the reported core usage times are monotonically increasing.
-    // We assume that by any decrease is a temporary blip.
-    if (core_times.times[i] < parsed_number)
-      core_times.times[i] = parsed_number;
+      break;
+    parsed_numbers[i] = parsed_number;
   }
+
+  core_times.set_user(parsed_numbers[0]);
+  core_times.set_nice(parsed_numbers[1]);
+  core_times.set_system(parsed_numbers[2]);
+  core_times.set_idle(parsed_numbers[3]);
+  core_times.set_iowait(parsed_numbers[4]);
+  core_times.set_irq(parsed_numbers[5]);
+  core_times.set_softirq(parsed_numbers[6]);
+  core_times.set_steal(parsed_numbers[7]);
+  core_times.set_guest(parsed_numbers[8]);
+  core_times.set_guest_nice(parsed_numbers[9]);
 }
 
 }  // namespace device

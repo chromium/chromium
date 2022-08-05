@@ -4,7 +4,67 @@
 
 #include "services/device/compute_pressure/core_times.h"
 
+#include "base/check_op.h"
+
 namespace device {
+
+CoreTimes::CoreTimes(const std::initializer_list<uint64_t>& times) {
+  DCHECK_EQ(times.size(), 10u);
+
+  size_t i = 0;
+  for (auto value : times)
+    times_[i++] = value;
+}
+
+void CoreTimes::set_user(uint64_t time) {
+  if (times_[0] < time)
+    times_[0] = time;
+}
+
+void CoreTimes::set_nice(uint64_t time) {
+  if (times_[1] < time)
+    times_[1] = time;
+}
+
+void CoreTimes::set_system(uint64_t time) {
+  if (times_[2] < time)
+    times_[2] = time;
+}
+
+void CoreTimes::set_idle(uint64_t time) {
+  if (times_[3] < time)
+    times_[3] = time;
+}
+
+void CoreTimes::set_iowait(uint64_t time) {
+  if (times_[4] < time)
+    times_[4] = time;
+}
+
+void CoreTimes::set_irq(uint64_t time) {
+  if (times_[5] < time)
+    times_[5] = time;
+}
+
+void CoreTimes::set_softirq(uint64_t time) {
+  if (times_[6] < time)
+    times_[6] = time;
+}
+
+void CoreTimes::set_steal(uint64_t time) {
+  if (times_[7] < time)
+    times_[7] = time;
+}
+
+void CoreTimes::set_guest(uint64_t time) {
+  if (times_[8] < time)
+    times_[8] = time;
+}
+
+void CoreTimes::set_guest_nice(uint64_t time) {
+  if (times_[9] < time)
+    times_[9] = time;
+}
 
 double CoreTimes::TimeUtilization(const CoreTimes& baseline) const {
   // Each of the blocks below consists of a check and a subtraction. The check
