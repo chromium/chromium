@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
+#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -40,8 +41,11 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
 
     // Spawn a cookies dialog.
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
-    cookies_dialog_ = CollectedCookiesViews::GetDialogForTesting(web_contents);
+    PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
+        web_contents);
+    cookies_dialog_ =
+        PageSpecificSiteDataDialogController::GetDialogViewForTesting(
+            web_contents);
   }
 
   // Closing dialog with modified data will shows infobar.
@@ -107,6 +111,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndCloseTab) {
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialogAndReopen) {
   CloseCookiesDialog();
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+  PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
+      web_contents);
   // If the test didn't crash, it has passed.
 }

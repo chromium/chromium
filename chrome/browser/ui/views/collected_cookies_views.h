@@ -48,12 +48,6 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   CollectedCookiesViews& operator=(const CollectedCookiesViews&) = delete;
   ~CollectedCookiesViews() override;
 
-  // Use BrowserWindow::ShowCollectedCookiesDialog to show.
-  static void CreateAndShowForWebContents(content::WebContents* web_contents);
-
-  static CollectedCookiesViews* GetDialogForTesting(
-      content::WebContents* web_contents);
-
   void set_status_changed_for_testing() { status_changed_ = true; }
 
   // views::TabbedPaneListener:
@@ -66,7 +60,7 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   gfx::Size GetMinimumSize() const override;
 
  private:
-  class WebContentsUserData;
+  friend class PageSpecificSiteDataDialogController;
 
   explicit CollectedCookiesViews(content::WebContents* web_contents);
 
