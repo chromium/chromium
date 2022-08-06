@@ -331,7 +331,6 @@
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -1823,11 +1822,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 2021/07.
   profile_prefs->ClearPref(kExtensionCheckupOnStartup);
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 2021/07.
-  guest_os::GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(profile_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 2021/07

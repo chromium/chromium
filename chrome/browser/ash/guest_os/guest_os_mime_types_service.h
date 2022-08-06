@@ -31,10 +31,6 @@ class GuestOsMimeTypesService : public KeyedService {
   GuestOsMimeTypesService& operator=(const GuestOsMimeTypesService&) = delete;
   ~GuestOsMimeTypesService() override;
 
-  // Migrates from <vm_name>/<container_name>/<ext>: { "mime_type": ... } to
-  // <vm_name>: { <container_name>: { <ext>: <mime_type> } }.
-  static void MigrateVerboseMimeTypePrefs(PrefService* pref_service);
-
   // Returns a MIME type that corresponds to the file extension for the passed
   // in |file_path| for the specified |vm_name| and |container_name|. Returns
   // the empty string if there is no mapping.
