@@ -237,13 +237,11 @@ class PortTest(LoggingTestCase):
         port._options.additional_platform_directory = []
         port._options.additional_driver_flag = ['--special-flag']
         self.assertEqual(port.baseline_search_path(), [
-            MOCK_WEB_TESTS + 'flag-specific/special-flag/platform/foo',
             MOCK_WEB_TESTS + 'flag-specific/special-flag',
             MOCK_WEB_TESTS + 'platform/foo'
         ])
-        self.assertEqual(
-            port.baseline_version_dir(),
-            MOCK_WEB_TESTS + 'flag-specific/special-flag/platform/foo')
+        self.assertEqual(port.baseline_version_dir(),
+                         MOCK_WEB_TESTS + 'flag-specific/special-flag')
 
         # Flag-specific baseline
         port.host.filesystem.write_text_file(
@@ -295,20 +293,19 @@ class PortTest(LoggingTestCase):
             MOCK_WEB_TESTS +
             'flag-specific/special-flag/platform/foo/fast/test-expected.txt',
             'foo')
-        self.assertEqual(
-            port.expected_baselines(test_file, '.txt'),
-            [(MOCK_WEB_TESTS + 'flag-specific/special-flag/platform/foo',
-              'fast/test-expected.txt')])
+        self.assertEqual(port.expected_baselines(test_file, '.txt'),
+                         [(MOCK_WEB_TESTS + 'flag-specific/special-flag',
+                           'fast/test-expected.txt')])
         self.assertEqual(
             port.expected_filename(test_file, '.txt'), MOCK_WEB_TESTS +
-            'flag-specific/special-flag/platform/foo/fast/test-expected.txt')
+            'flag-specific/special-flag/fast/test-expected.txt')
         self.assertEqual(
             port.expected_filename(test_file, '.txt',
                                    return_default=False), MOCK_WEB_TESTS +
-            'flag-specific/special-flag/platform/foo/fast/test-expected.txt')
+            'flag-specific/special-flag/fast/test-expected.txt')
         self.assertEqual(
-            port.fallback_expected_filename(test_file, '.txt'), MOCK_WEB_TESTS
-            + 'flag-specific/special-flag/fast/test-expected.txt')
+            port.fallback_expected_filename(test_file, '.txt'),
+            MOCK_WEB_TESTS + 'platform/foo/fast/test-expected.txt')
 
     def test_expected_baselines_virtual(self):
         port = self.make_port(port_name='foo')

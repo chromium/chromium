@@ -494,8 +494,11 @@ class Port(object):
     def baseline_flag_specific_dir(self):
         """If --additional-driver-flag is specified, returns the absolute path to the flag-specific
            platform-independent results. Otherwise returns None."""
-        flag_specific_path = self._flag_specific_baseline_search_path()
-        return flag_specific_path[-1] if flag_specific_path else None
+        config_name = self.flag_specific_config_name()
+        if not config_name:
+            return None
+        return self._filesystem.join(self.web_tests_dir(), 'flag-specific',
+                                     config_name)
 
     def baseline_search_path(self):
         return (self.get_option('additional_platform_directory', []) +
@@ -1814,18 +1817,8 @@ class Port(object):
             return self.path_to_flag_specific_expectations_file(config_name)
 
     def _flag_specific_baseline_search_path(self):
-        config_name = self.flag_specific_config_name()
-        if not config_name:
-            return []
-        flag_dir = self._filesystem.join(self.web_tests_dir(), 'flag-specific',
-                                         config_name)
-        # FIXME: should we delete the line below? We only run flag specific
-        # tests on linux now
-        baseline_dirs = [
-            self._filesystem.join(flag_dir, 'platform', baseline_dir)
-            for baseline_dir in self.FALLBACK_PATHS[self.version()]
-        ]
-        return baseline_dirs + [flag_dir]
+        dir = self.baseline_flag_specific_dir()
+        return [dir] if dir else []
 
     def expectations_dict(self):
         """Returns an OrderedDict of name -> expectations strings.
