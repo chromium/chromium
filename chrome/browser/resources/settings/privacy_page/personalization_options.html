@@ -13,7 +13,7 @@
         padding-inline-start: 0;
       }
     </style>
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not is_chromeos">
     <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"

@@ -754,7 +754,7 @@
 <if expr="not chromeos_ash and not chromeos_lacros and not is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}">
 </if>
-<if expr="chromeos_ash or chromeos_lacros or is_win">
+<if expr="is_chromeos or is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
@@ -788,7 +788,7 @@
               </settings-collapse-radio-button>
             </settings-radio-group>
           </div>
-<if expr="chromeos_ash or chromeos_lacros or is_win">
+<if expr="is_chromeos or is_win">
           <settings-category-default-radio-group
             header="$i18n{siteSettingsProtectedContentIdentifiers}"
             description=
