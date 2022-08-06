@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS addTrack when pc is closed should throw InvalidStateError
+FAIL addTrack with single track argument and no stream should succeed assert_equals: Expect only one transceiver with sender added expected 1 but got 0
+PASS addTrack with single track argument and single stream should succeed
+FAIL addTrack with single track argument and multiple streams should succeed promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'addTrack' on 'RTCPeerConnection': Adding a track to multiple streams is not supported."
+PASS Adding the same track multiple times should throw InvalidAccessError
+FAIL addTrack with existing sender with null track, same kind, and recvonly direction should reuse sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL addTrack with existing sender that has not been used to send should reuse the sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL addTrack with existing sender that has been used to send should create new sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL addTrack with existing sender with null track, different kind, and recvonly direction should create new sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Adding more tracks does not generate more candidates if bundled promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Calling addTrack while sRD(offer) is pending should allow the new remote transceiver to be the same one that addTrack creates assert_equals: Should have 1 transceiver expected 1 but got 0
+FAIL When addTrack is called while sRD is in progress, and both addTrack and sRD add a transceiver of different media types, the addTrack transceiver should come first, and then the sRD transceiver. promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+

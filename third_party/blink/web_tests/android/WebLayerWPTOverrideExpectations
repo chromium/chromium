@@ -1778,7 +1778,6 @@ crbug.com/1050754 external/wpt/webrtc-insertable-streams/RTCPeerConnection-inser
 crbug.com/1050754 external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCIceConnectionState-candidate-pair.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-operations.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-rollback.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/protocol/rtp-clockrate.html [ Failure Pass ]

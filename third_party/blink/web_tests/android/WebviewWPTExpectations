@@ -4986,7 +4986,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-offe
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-parameterless.https.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-rollback.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-tracks.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription.html [ Failure Pass ]
