@@ -82,11 +82,13 @@ target(link_target_type, "renderer_sources") {
     "//content/renderer",
   ]
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_plugins) {
+    sources += [ "plugin_ax_tree_source.h" ]
+  }
+
   if (enable_ppapi) {
     sources += [
       "pepper_plugin_instance.h",
-      "plugin_ax_tree_source.h",
       "ppapi_gfx_conversion.h",
       "renderer_ppapi_host.h",
     ]

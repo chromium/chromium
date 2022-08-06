@@ -288,14 +288,13 @@ static_library("content_shell_lib") {
     ]
   }
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
-  if (enable_ppapi) {
+  if (enable_plugins) {
     sources += [
       "browser/shell_plugin_service_filter.cc",
       "browser/shell_plugin_service_filter.h",
     ]
-    deps += [ "//ppapi/shared_impl" ]
   }
+
   if (enable_cast_renderer) {
     deps += [ "//media/mojo/services" ]
   }

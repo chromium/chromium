@@ -1659,10 +1659,12 @@ test("content_browsertests") {
     "//third_party/mesa_headers",
   ]
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_plugins) {
+    sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
+  }
+
   if (enable_ppapi) {
     sources += [
-      "../browser/plugin_service_impl_browsertest.cc",
       "../renderer/pepper/fake_pepper_plugin_instance.cc",
       "../renderer/pepper/fake_pepper_plugin_instance.h",
       "../renderer/pepper/mock_renderer_ppapi_host.cc",

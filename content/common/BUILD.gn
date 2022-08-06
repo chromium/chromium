@@ -120,12 +120,6 @@ source_set("common") {
     "origin_util.cc",
     "partition_alloc_support.cc",
     "partition_alloc_support.h",
-    "pepper_file_util.cc",
-    "pepper_file_util.h",
-    "pepper_plugin_list.cc",
-    "pepper_plugin_list.h",
-    "pepper_renderer_instance_data.cc",
-    "pepper_renderer_instance_data.h",
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
@@ -357,18 +351,17 @@ source_set("common") {
   }
 
   if (enable_ppapi) {
-    deps += [
-      "//ppapi/proxy:ipc",
-      "//ppapi/shared_impl",
-    ]
-  } else {
-    sources -= [
+    sources += [
       "pepper_file_util.cc",
       "pepper_file_util.h",
       "pepper_plugin_list.cc",
       "pepper_plugin_list.h",
       "pepper_renderer_instance_data.cc",
       "pepper_renderer_instance_data.h",
+    ]
+    deps += [
+      "//ppapi/proxy:ipc",
+      "//ppapi/shared_impl",
     ]
   }
 

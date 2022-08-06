@@ -2712,18 +2712,24 @@ source_set("browser") {
     ]
   }
 
-  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
-  if (enable_ppapi) {
+  if (enable_plugins) {
     sources += [
       "../public/browser/plugin_service.h",
-      "media/session/pepper_playback_observer.cc",
-      "media/session/pepper_playback_observer.h",
-      "media/session/pepper_player_delegate.cc",
-      "media/session/pepper_player_delegate.h",
       "plugin_list.cc",
       "plugin_list.h",
       "plugin_service_impl.cc",
       "plugin_service_impl.h",
+      "renderer_host/plugin_registry_impl.cc",
+      "renderer_host/plugin_registry_impl.h",
+    ]
+  }
+
+  if (enable_ppapi) {
+    sources += [
+      "media/session/pepper_playback_observer.cc",
+      "media/session/pepper_playback_observer.h",
+      "media/session/pepper_player_delegate.cc",
+      "media/session/pepper_player_delegate.h",
       "ppapi_plugin_process_host.cc",
       "ppapi_plugin_process_host.h",
       "ppapi_plugin_process_host_receiver_bindings.cc",
@@ -2773,8 +2779,6 @@ source_set("browser") {
       "renderer_host/pepper/pepper_udp_socket_message_filter.h",
       "renderer_host/pepper/quota_reservation.cc",
       "renderer_host/pepper/quota_reservation.h",
-      "renderer_host/plugin_registry_impl.cc",
-      "renderer_host/plugin_registry_impl.h",
     ]
     deps += [
       "//ppapi/host",
