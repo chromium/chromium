@@ -87,6 +87,7 @@ void HidDetectionManagerImpl::InputDeviceAdded(
                  << ", name: " << info->name;
   const std::string& device_id = info->id;
   device_id_to_device_map_[device_id] = std::move(info);
+  hid_detection::RecordHidConnected(*device_id_to_device_map_[device_id]);
 
   if (AttemptSetDeviceAsConnectedHid(*device_id_to_device_map_[device_id])) {
     NotifyHidDetectionStatusChanged();

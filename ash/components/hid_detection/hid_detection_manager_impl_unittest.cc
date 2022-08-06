@@ -139,7 +139,7 @@ class HidDetectionManagerImplTest : public testing::Test {
     AddDevice(std::vector{hid_type}, device_type, id_out, name);
   }
 
-  void AddDevice(std::vector<TestHidType> hid_types,
+  void AddDevice(const std::vector<TestHidType>& hid_types,
                  InputDeviceType device_type,
                  std::string* id_out = nullptr,
                  const char* name = NULL) {
@@ -241,6 +241,13 @@ class HidDetectionManagerImplTest : public testing::Test {
         "OOBE.HidDetectionScreen.InitialHidsMissing", count);
   }
 
+  void AssertHidConnectedCount(HidType hid_type, int count) {
+    histogram_tester_.ExpectBucketCount("OOBE.HidDetectionScreen.HidConnected",
+                                        hid_type, count);
+    histogram_tester_.ExpectTotalCount("OOBE.HidDetectionScreen.HidConnected",
+                                       count);
+  }
+
   size_t GetNumSetInputDevicesStatusCalls() {
     return fake_bluetooth_hid_detector_->num_set_input_devices_status_calls();
   }
@@ -308,6 +315,7 @@ TEST_F(HidDetectionManagerImplTest,
 TEST_F(HidDetectionManagerImplTest, StartDetection_TouchscreenPreConnected) {
   AddDevice(TestHidType::kTouchscreen, InputDeviceType::TYPE_SERIO);
   EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidConnectedCount(HidType::kTouchscreen, /*count=*/0);
 
   StartHidDetection();
   EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
@@ -368,6 +376,41 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_KeyboardPreConnected) {
   StopHidDetection(/*should_be_using_bluetooth=*/false);
 }
 
+TEST_F(HidDetectionManagerImplTest, StartDetection_NonHidConnected) {
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/{InputState::kSearching,
+                            /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      {InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false,
+      /*pairing_state=*/absl::nullopt);
+  EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
+  AssertInputDevicesStatus(
+      {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kTouchscreen, /*count=*/0);
+
+  // Add a device without a HID type. This should not inform the delegate
+  // and no state changed.
+  std::vector<TestHidType> hid_types{};
+  AddDevice(hid_types, InputDeviceType::TYPE_USB);
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/{InputState::kSearching,
+                            /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      {InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false,
+      /*pairing_state=*/absl::nullopt);
+  EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
+  AssertInputDevicesStatus(
+      {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/0);
+  StopHidDetection(/*should_be_using_bluetooth=*/false);
+}
+
 TEST_F(HidDetectionManagerImplTest,
        StartDetection_TouchscreenConnectedDisconnected) {
   StartHidDetection();
@@ -383,6 +426,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kTouchscreen, /*count=*/0);
 
   std::string touchscreen_id1;
   AddDevice(TestHidType::kTouchscreen, InputDeviceType::TYPE_SERIO,
@@ -398,6 +442,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(1u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kTouchscreen, /*count=*/1);
 
   RemoveDevice(touchscreen_id1);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
@@ -440,6 +485,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(2u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kTouchscreen, /*count=*/1);
 
   // Remove the touchscreen device. This should not inform the delegate.
   RemoveDevice(touchscreen_id2);
@@ -471,6 +517,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/0);
 
   std::string pointer_id1;
   AddDevice(TestHidType::kMouse, InputDeviceType::TYPE_BLUETOOTH, &pointer_id1);
@@ -484,6 +531,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(1u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = false, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/1);
 
   RemoveDevice(pointer_id1);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
@@ -525,6 +573,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(2u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/1);
 
   // Remove the pointer device. This should not inform the delegate.
   RemoveDevice(pointer_id2);
@@ -556,6 +605,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/0);
 
   std::string keyboard_id1;
   AddDevice(TestHidType::kKeyboard, InputDeviceType::TYPE_USB, &keyboard_id1);
@@ -570,6 +620,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(1u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = false});
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/1);
 
   RemoveDevice(keyboard_id1);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
@@ -611,6 +662,7 @@ TEST_F(HidDetectionManagerImplTest,
   EXPECT_EQ(2u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/1);
 
   // Remove the keyboard device. This should not inform the delegate.
   RemoveDevice(keyboard_id2);
@@ -812,6 +864,7 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothPointerSuccess) {
   EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/0);
 
   SimulatePairingStarted(
       BluetoothHidMetadata{kTestHidName, BluetoothHidType::kPointer});
@@ -839,6 +892,7 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothPointerSuccess) {
   EXPECT_EQ(1u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = false, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/1);
 
   SimulatePairingSessionEnded();
   EXPECT_EQ(4u, GetNumHidDetectionStatusChangedCalls());
@@ -914,6 +968,7 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothKeyboardSuccess) {
   EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
   AssertInputDevicesStatus(
       {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothKeyboard, /*count=*/0);
 
   SimulatePairingStarted(
       BluetoothHidMetadata{kTestHidName, BluetoothHidType::kKeyboard});
@@ -942,6 +997,8 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothKeyboardSuccess) {
   // Simulate the pairing succeeding.
   AddDevice(TestHidType::kKeyboard, InputDeviceType::TYPE_BLUETOOTH,
             /*id_out=*/nullptr, kTestHidName);
+  AssertHidConnectedCount(HidType::kBluetoothKeyboard, /*count=*/1);
+
   EXPECT_EQ(4u, GetNumHidDetectionStatusChangedCalls());
   AssertHidDetectionStatus(
       /*pointer_metadata=*/{InputState::kSearching, /*detected_hid_name=*/""},
