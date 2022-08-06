@@ -39,6 +39,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -121,6 +122,7 @@ class ArcApps : public KeyedService,
   void LaunchShortcut(const std::string& app_id,
                       const std::string& shortcut_id,
                       int64_t display_id) override;
+  void SetPermission(const std::string& app_id, PermissionPtr permission);
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,

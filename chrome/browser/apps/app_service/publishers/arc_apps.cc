@@ -161,31 +161,30 @@ apps::PermissionType GetPermissionType(
   }
 }
 
-bool GetArcPermissionType(
-    apps::mojom::PermissionType app_service_permission_type,
-    arc::mojom::AppPermission& arc_permission) {
+bool GetArcPermissionType(apps::PermissionType app_service_permission_type,
+                          arc::mojom::AppPermission& arc_permission) {
   switch (app_service_permission_type) {
-    case apps::mojom::PermissionType::kCamera:
+    case apps::PermissionType::kCamera:
       arc_permission = arc::mojom::AppPermission::CAMERA;
       return true;
-    case apps::mojom::PermissionType::kLocation:
+    case apps::PermissionType::kLocation:
       arc_permission = arc::mojom::AppPermission::LOCATION;
       return true;
-    case apps::mojom::PermissionType::kMicrophone:
+    case apps::PermissionType::kMicrophone:
       arc_permission = arc::mojom::AppPermission::MICROPHONE;
       return true;
-    case apps::mojom::PermissionType::kNotifications:
+    case apps::PermissionType::kNotifications:
       arc_permission = arc::mojom::AppPermission::NOTIFICATIONS;
       return true;
-    case apps::mojom::PermissionType::kContacts:
+    case apps::PermissionType::kContacts:
       arc_permission = arc::mojom::AppPermission::CONTACTS;
       return true;
-    case apps::mojom::PermissionType::kStorage:
+    case apps::PermissionType::kStorage:
       arc_permission = arc::mojom::AppPermission::STORAGE;
       return true;
-    case apps::mojom::PermissionType::kUnknown:
-    case apps::mojom::PermissionType::kPrinting:
-    case apps::mojom::PermissionType::kFileHandling:
+    case apps::PermissionType::kUnknown:
+    case apps::PermissionType::kPrinting:
+    case apps::PermissionType::kFileHandling:
       return false;
   }
 }
@@ -971,6 +970,52 @@ void ArcApps::LaunchShortcut(const std::string& app_id,
   arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
 }
 
+void ArcApps::SetPermission(const std::string& app_id,
+                            PermissionPtr permission) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(app_id);
+  if (!app_info) {
+    LOG(ERROR) << "SetPermission failed, could not find app with id " << app_id;
+    return;
+  }
+
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    LOG(WARNING) << "SetPermission failed, ArcServiceManager not available.";
+    return;
+  }
+
+  // TODO(crbug.com/1198390): Add unknown type for arc permissions enum.
+  arc::mojom::AppPermission permission_type = arc::mojom::AppPermission::CAMERA;
+
+  if (!GetArcPermissionType(permission->permission_type, permission_type)) {
+    LOG(ERROR) << "SetPermission failed, permission type not supported by ARC.";
+    return;
+  }
+
+  if (permission->IsPermissionEnabled()) {
+    auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->app_permissions(),
+        GrantPermission);
+    if (permissions_instance) {
+      permissions_instance->GrantPermission(app_info->package_name,
+                                            permission_type);
+    }
+  } else {
+    auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->app_permissions(),
+        RevokePermission);
+    if (permissions_instance) {
+      permissions_instance->RevokePermission(app_info->package_name,
+                                             permission_type);
+    }
+  }
+}
+
 void ArcApps::OnPreferredAppSet(
     const std::string& app_id,
     IntentFilterPtr intent_filter,
@@ -1213,48 +1258,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
 
 void ArcApps::SetPermission(const std::string& app_id,
                             apps::mojom::PermissionPtr permission) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (!prefs) {
-    return;
-  }
-  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-      prefs->GetApp(app_id);
-  if (!app_info) {
-    LOG(ERROR) << "SetPermission failed, could not find app with id " << app_id;
-    return;
-  }
-
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    LOG(WARNING) << "SetPermission failed, ArcServiceManager not available.";
-    return;
-  }
-
-  // TODO(crbug.com/1198390): Add unknown type for arc permissions enum.
-  arc::mojom::AppPermission permission_type = arc::mojom::AppPermission::CAMERA;
-
-  if (!GetArcPermissionType(permission->permission_type, permission_type)) {
-    LOG(ERROR) << "SetPermission failed, permission type not supported by ARC.";
-    return;
-  }
-
-  if (apps_util::IsPermissionEnabled(permission->value)) {
-    auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->app_permissions(),
-        GrantPermission);
-    if (permissions_instance) {
-      permissions_instance->GrantPermission(app_info->package_name,
-                                            permission_type);
-    }
-  } else {
-    auto* permissions_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->app_permissions(),
-        RevokePermission);
-    if (permissions_instance) {
-      permissions_instance->RevokePermission(app_info->package_name,
-                                             permission_type);
-    }
-  }
+  SetPermission(app_id, ConvertMojomPermissionToPermission(permission));
 }
 
 void ArcApps::SetResizeLocked(const std::string& app_id,
