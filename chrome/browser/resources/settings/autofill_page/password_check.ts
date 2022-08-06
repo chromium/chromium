@@ -17,7 +17,7 @@ import '../prefs/prefs.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';
 import './password_remove_confirmation_dialog.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import '../controls/password_prompt_dialog.js';
 
 // </if>
@@ -27,13 +27,13 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // </if>
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
 // </if>
 
@@ -41,7 +41,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
@@ -175,7 +175,7 @@ export class SettingsPasswordCheckElement extends
         value: new Set(),
       },
 
-      // <if expr="chromeos_ash or chromeos_lacros">
+      // <if expr="is_chromeos">
       showPasswordPromptDialog_: Boolean,
       // </if>
     };
@@ -198,7 +198,7 @@ export class SettingsPasswordCheckElement extends
   private iconHaloClass_: string;
   private clickedChangePasswordIds_: Set<number>;
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private showPasswordPromptDialog_: boolean;
   // </if>
 
@@ -235,7 +235,7 @@ export class SettingsPasswordCheckElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager_| will immediately
@@ -797,7 +797,7 @@ export class SettingsPasswordCheckElement extends
     return this.clickedChangePasswordIds_.has(item.id);
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   /**
    * Copied from passwords_section.js.
    * TODO(crbug.com/1074228): Extract to a separate behavior

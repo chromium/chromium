@@ -17,7 +17,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../controls/settings_toggle_button.js';
@@ -51,7 +51,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
@@ -269,7 +269,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: () => [],
       },
 
-      // <if expr="chromeos_ash or chromeos_lacros">
+      // <if expr="is_chromeos">
       showPasswordPromptDialog_: Boolean,
       // </if>
 
@@ -309,7 +309,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private showPasswordPromptDialog_: boolean;
   // </if>
 
@@ -371,7 +371,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       this.passwordExceptions = exceptionList;
     };
 
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager| will immediately
@@ -523,7 +523,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return this.passwordManager_;
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   /**
    * When this event fired, it means that the password-prompt-dialog succeeded
    * in creating a fresh token in the quickUnlockPrivate API. Because new tokens

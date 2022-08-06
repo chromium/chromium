@@ -4,7 +4,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordManagerImpl} from './password_manager_proxy.js';
@@ -15,7 +15,7 @@ export const PasswordRequestorMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<PasswordRequestorMixinInterface> => {
       class PasswordRequestorMixin extends superClass {
-        // <if expr="chromeos_ash or chromeos_lacros">
+        // <if expr="is_chromeos">
         static get properties() {
           return {tokenRequestManager: Object};
         }
@@ -26,7 +26,7 @@ export const PasswordRequestorMixin = dedupingMixin(
         requestPlaintextPassword(
             id: number,
             reason: chrome.passwordsPrivate.PlaintextReason): Promise<string> {
-          // <if expr="chromeos_ash or chromeos_lacros">
+          // <if expr="is_chromeos">
           // If no password was found, refresh auth token and retry.
           return new Promise(resolve => {
             PasswordManagerImpl.getInstance()
@@ -52,7 +52,7 @@ export interface PasswordRequestorMixinInterface {
   requestPlaintextPassword(
       id: number,
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   tokenRequestManager: BlockingRequestManager;
   // </if>
 }
