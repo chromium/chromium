@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 30
+// Next MinVersion: 31
 
 module arc.mojom;
 
@@ -250,6 +250,12 @@ enum ReauthReason {
     // Main account set in system properties is not found in Android
     // Account Manager.
     [MinVersion=27] MAIN_ACCOUNT_UNKNOWN = 1,
+
+    // Device Policy Controller account info is out of sync.
+    [MinVersion=30] DPC_OUT_OF_SYNC = 2,
+
+    // Used as a baseline to capture when reauth is not needed.
+    [MinVersion=30] NOT_NEEDED = 3,
 };
 
 [Extensible]

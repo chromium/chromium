@@ -3969,6 +3969,8 @@ Unknown properties are collapsed to zero. -->
 <enum name="ArcAuthReauthReason">
   <int value="0" label="AndroidID is missing"/>
   <int value="1" label="Main account is missing"/>
+  <int value="2" label="ARC DPC is out of sync"/>
+  <int value="3" label="Reauth not needed"/>
 </enum>
 
 <enum name="ArcBootContinueCodeInstallationResult">
