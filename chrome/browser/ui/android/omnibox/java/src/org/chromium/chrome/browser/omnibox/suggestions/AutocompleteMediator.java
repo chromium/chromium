@@ -21,10 +21,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
@@ -44,6 +47,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -94,6 +98,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
     private boolean mShouldCacheSuggestions;
+    private boolean mClearFocusAfterNavigation;
+    private boolean mClearFocusAfterNavigationAsynchronously;
 
     @IntDef({SuggestionVisibilityState.DISALLOWED, SuggestionVisibilityState.PENDING_ALLOW,
             SuggestionVisibilityState.ALLOWED})
@@ -280,6 +286,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     void onNativeInitialized() {
         mNativeInitialized = true;
+        mClearFocusAfterNavigation =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION);
+        mClearFocusAfterNavigationAsynchronously =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
+                        "clear_focus_asynchronously", false);
         mDropdownViewInfoListBuilder.onNativeInitialized();
         runPendingAutocompleteRequests();
     }
@@ -782,55 +794,78 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     private void loadUrlForOmniboxMatch(int matchIndex, @NonNull AutocompleteMatch suggestion,
             @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList) {
-        SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
+        try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
+            SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
 
-        // Clear the deferred site load action in case it executes. Reclaims a bit of memory.
-        mDeferredLoadAction = null;
+            // Clear the deferred site load action in case it executes. Reclaims a bit of memory.
+            mDeferredLoadAction = null;
 
-        mOmniboxFocusResultedInNavigation = true;
-        url = updateSuggestionUrlIfNeeded(suggestion, matchIndex, url, !inVisibleSuggestionList);
+            mOmniboxFocusResultedInNavigation = true;
+            url = updateSuggestionUrlIfNeeded(
+                    suggestion, matchIndex, url, !inVisibleSuggestionList);
 
-        // loadUrl modifies AutocompleteController's state clearing the native
-        // AutocompleteResults needed by onSuggestionsSelected. Therefore,
-        // loadUrl should should be invoked last.
-        int transition = suggestion.getTransition();
-        int type = suggestion.getType();
+            // loadUrl modifies AutocompleteController's state clearing the native
+            // AutocompleteResults needed by onSuggestionsSelected. Therefore,
+            // loadUrl should should be invoked last.
+            int transition = suggestion.getTransition();
+            int type = suggestion.getType();
 
-        recordMetrics(matchIndex, WindowOpenDisposition.CURRENT_TAB, suggestion);
-        if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
-                && TextUtils.equals(url.getSpec(), mDataProvider.getCurrentUrl())) {
-            // When the user hit enter on the existing permanent URL, treat it like a
-            // reload for scoring purposes.  We could detect this by just checking
-            // user_input_in_progress_, but it seems better to treat "edits" that end
-            // up leaving the URL unchanged (e.g. deleting the last character and then
-            // retyping it) as reloads too.  We exclude non-TYPED transitions because if
-            // the transition is GENERATED, the user input something that looked
-            // different from the current URL, even if it wound up at the same place
-            // (e.g. manually retyping the same search query), and it seems wrong to
-            // treat this as a reload.
-            transition = PageTransition.RELOAD;
-        } else if (type == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
-                && mUrlBarEditingTextProvider.wasLastEditPaste()) {
-            // It's important to use the page transition from the suggestion or we might end
-            // up saving generated URLs as typed URLs, which would then pollute the subsequent
-            // omnibox results. There is one special case where the suggestion text was pasted,
-            // where we want the transition type to be LINK.
+            recordMetrics(matchIndex, WindowOpenDisposition.CURRENT_TAB, suggestion);
+            if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
+                    && TextUtils.equals(url.getSpec(), mDataProvider.getCurrentUrl())) {
+                // When the user hit enter on the existing permanent URL, treat it like a
+                // reload for scoring purposes.  We could detect this by just checking
+                // user_input_in_progress_, but it seems better to treat "edits" that end
+                // up leaving the URL unchanged (e.g. deleting the last character and then
+                // retyping it) as reloads too.  We exclude non-TYPED transitions because if
+                // the transition is GENERATED, the user input something that looked
+                // different from the current URL, even if it wound up at the same place
+                // (e.g. manually retyping the same search query), and it seems wrong to
+                // treat this as a reload.
+                transition = PageTransition.RELOAD;
+            } else if (type == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
+                    && mUrlBarEditingTextProvider.wasLastEditPaste()) {
+                // It's important to use the page transition from the suggestion or we might end
+                // up saving generated URLs as typed URLs, which would then pollute the subsequent
+                // omnibox results. There is one special case where the suggestion text was pasted,
+                // where we want the transition type to be LINK.
 
-            transition = PageTransition.LINK;
+                transition = PageTransition.LINK;
+            }
+
+            // Kick off an action to clear focus and dismiss the suggestions list.
+            // This normally happens when the target site loads and focus is moved to the
+            // webcontents. On Android T we occasionally observe focus events to be lost, resulting
+            // with Suggestions list obscuring the view.
+            // TODO(crbug.com/1348324): clearing the Omnibox focus is slow, so we want to experiment
+            // with two alternatives:
+            // 1) Clear the Omnibox focus in a follow-up task. From a latency perspective, this is
+            //    the best option: the navigation gets kicked off right away, and important
+            //    navigation tasks can get scheduled between the current task and the task clearing
+            //    the Omnibox focus. The ClearOmniboxFocusAfterNavigation feature with the
+            //    clear_focus_asynchronously = false parameter (default) implements this option.
+            // 2) Clear the Omnibox focus synchronously *after* the navigation has been kicked off.
+            //    This allows some navigation work outside the browser process (e.g. running
+            //    beforeunload handlers) to start ASAP. This is implemented by the setting the
+            //    clear_focus_asynchronously = true parameter.
+            if (!mClearFocusAfterNavigation) {
+                mDelegate.clearOmniboxFocus();
+            }
+
+            if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
+                mDelegate.loadUrlWithPostData(url.getSpec(), transition, inputStart,
+                        suggestion.getPostContentType(), suggestion.getPostData());
+            } else {
+                mDelegate.loadUrl(url.getSpec(), transition, inputStart);
+            }
+
+            if (mClearFocusAfterNavigationAsynchronously) {
+                PostTask.postTask(
+                        UiThreadTaskTraits.USER_VISIBLE, () -> mDelegate.clearOmniboxFocus());
+            } else if (mClearFocusAfterNavigation) {
+                mDelegate.clearOmniboxFocus();
+            }
         }
-
-        // Kick off an action to clear focus and dismiss the suggestions list.
-        // This normally happens when the target site loads and focus is moved to the webcontents.
-        // On Android T we occasionally observe focus events to be lost, resulting with Suggestions
-        // list obscuring the view.
-        mDelegate.clearOmniboxFocus();
-
-        if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
-            mDelegate.loadUrlWithPostData(url.getSpec(), transition, inputStart,
-                    suggestion.getPostContentType(), suggestion.getPostData());
-            return;
-        }
-        mDelegate.loadUrl(url.getSpec(), transition, inputStart);
     }
 
     /**

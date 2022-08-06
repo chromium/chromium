@@ -2083,6 +2083,25 @@
             ]
         }
     ],
+    "BreakupLongOmniboxTasks": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "clear_focus_asynchronously": "true"
+                    },
+                    "enable_features": [
+                        "ClearOmniboxFocusAfterNavigation",
+                        "PostTaskFocusTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
@@ -6419,21 +6438,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OmniboxReportSearchboxStats"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxPostTaskFocusTabAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PostTaskFocusTab"
                     ]
                 }
             ]

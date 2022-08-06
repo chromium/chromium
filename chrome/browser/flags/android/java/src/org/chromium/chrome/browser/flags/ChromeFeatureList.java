@@ -276,6 +276,8 @@ public abstract class ChromeFeatureList {
             "ChromeSharingHubLaunchAdjacent";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String ENABLE_CBD_SIGN_OUT = "EnableCbdSignOut";
+    public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
+            "ClearOmniboxFocusAfterNavigation";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_COUPONS = "CommerceCoupons";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";

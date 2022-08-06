@@ -178,6 +178,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackgroundThreadPool,
     &kBulkTabRestore,
     &kCastDeviceFilter,
+    &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
     &kCriticalPersistedTabData,
     &kCommerceCoupons,
@@ -492,6 +493,9 @@ const base::Feature kConditionalTabStripAndroid{
 // Used in downstream code.
 const base::Feature kCastDeviceFilter{"CastDeviceFilter",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kClearOmniboxFocusAfterNavigation{
+    "ClearOmniboxFocusAfterNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCloseTabSuggestions{"CloseTabSuggestions",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
