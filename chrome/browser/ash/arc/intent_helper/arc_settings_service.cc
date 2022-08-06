@@ -101,8 +101,8 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
   return !host->empty() && *port;
 }
 
-bool IsProxyAutoDetectionConfigured(const base::Value* proxy_config_dict) {
-  ProxyConfigDictionary dict(proxy_config_dict->Clone());
+bool IsProxyAutoDetectionConfigured(const base::Value& proxy_config_dict) {
+  ProxyConfigDictionary dict(proxy_config_dict.Clone());
   ProxyPrefs::ProxyMode mode;
   dict.GetMode(&mode);
   return mode == ProxyPrefs::MODE_AUTO_DETECT;
@@ -357,8 +357,9 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
     //  configured to use the Web Proxy Auto-Discovery (WPAD) Protocol via the
     //  DHCP discovery method, the PAC URL will be propagated to Chrome via the
     //  default network properties.
-    if (dhcp_wpad_url_changed && IsProxyAutoDetectionConfigured(GetPrefs()->Get(
-                                     proxy_config::prefs::kProxy))) {
+    if (dhcp_wpad_url_changed &&
+        IsProxyAutoDetectionConfigured(
+            GetPrefs()->GetValue(proxy_config::prefs::kProxy))) {
       SyncProxySettings();
     }
     return;
@@ -382,7 +383,7 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
   // Check if proxy auto detection is enabled. If yes, and the PAC URL set via
   // DHCP has changed, propagate the change to ARC.
   if (!default_proxy_config_.is_none() && dhcp_wpad_url_changed &&
-      IsProxyAutoDetectionConfigured(&default_proxy_config_)) {
+      IsProxyAutoDetectionConfigured(default_proxy_config_)) {
     sync_proxy = true;
   }
 
