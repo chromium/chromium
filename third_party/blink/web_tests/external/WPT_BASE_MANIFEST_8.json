@@ -109529,7 +109529,7 @@
       ]
      ],
      "flexbox-min-width-auto-005.html": [
-      "018d8e65982a8744600eebc5193c9e678aab4242",
+      "7cf43c4d493d8dcfb4c84efdc5cb6cd6fd8ba957",
       [
        null,
        [
@@ -109542,7 +109542,7 @@
       ]
      ],
      "flexbox-min-width-auto-006.html": [
-      "7ff72d6e3d5015607abb7f58cc025025a0cf8b77",
+      "30e077e438fd3079742be03f17f46e00592f9aaa",
       [
        null,
        [
@@ -153979,6 +153979,19 @@
        [
         [
          "/css/css-ruby/reference/rb-display-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "rbc-rtc-basic-001.html": [
+      "758490a5536793449e072f31ef9d38481355a200",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/reference/rbc-rtc-basic-001-ref.html",
          "=="
         ]
        ],
@@ -270083,11 +270096,11 @@
        []
       ],
       "flexbox-min-width-auto-005-ref.html": [
-       "d1e9d963d74cd507350ff139cfd14776f3f2d713",
+       "6bc8a27f62dec4090b43054caf4eeb2f0542a931",
        []
       ],
       "flexbox-min-width-auto-006-ref.html": [
-       "1d6cb7ae6583cb825005f850538e409d6dbb7066",
+       "1f1b7dfb24b24f871547388e04f6354be7448b09",
        []
       ],
       "flexbox-order-only-flexitems-ref.html": [
@@ -295735,7 +295748,7 @@
        []
       ],
       "text-shadow-orientation-upright-001-ref.html": [
-       "cbd8adbdcbbf104672ce4cf1b39312b8481681a0",
+       "54c1f74259e1fb689d2ffd3dbbd43478c62638c5",
        []
       ],
       "three-levels-of-orthogonal-flows.html": [
@@ -591913,13 +591926,6 @@
      ]
     },
     "css-ruby": {
-     "rbc-rtc-basic-001.html": [
-      "8da4a04571da6bcd4d0690d4828bba4e65bbd44b",
-      [
-       null,
-       {}
-      ]
-     ],
      "ruby-001.xht": [
       "80f49f0dbcf3e3a76ba6f740243e19a5f627bfd2",
       [
