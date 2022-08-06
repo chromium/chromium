@@ -4004,6 +4004,13 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Não definir a política significa que os usuários não poderão jogar no <ph name="PRODUCT_OS_NAME" /> registrado, mas poderão fazer isso em outras circunstâncias.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
+<translation id="529541406739235505">Se a política for definida, o usuário vai poder escolher um dos métodos de entrada para as sessões do <ph name="PRODUCT_OS_NAME" /> que você especificar.
+
+       Se ela for deixada sem definição ou for definida como uma lista vazia, o usuário vai poder selecionar todos os métodos de entrada com suporte.
+
+       Da versão M105 em diante, os métodos de entrada permitidos são ativados automaticamente na sessão de quiosque.
+
+      Observação: se não houver suporte para o método de entrada atual, ele vai ser alternado para o layout de teclado de hardware (se permitido) ou para a primeira entrada válida da lista. Métodos de entrada sem suporte ou inválidos são ignorados.</translation>
 <translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
