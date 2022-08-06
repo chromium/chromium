@@ -290,23 +290,10 @@ bool BaseSearchProvider::CanSendRequestWithURL(
     const GURL& current_page_url,
     const GURL& suggest_url,
     const TemplateURL* template_url,
-    metrics::OmniboxEventProto::PageClassification page_classification,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client,
     bool sending_search_terms) {
   if (!CanSendRequest(suggest_url, template_url, search_terms_data, client)) {
-    return false;
-  }
-
-  // Don't bother sending the URL of an NTP page; it's not useful.  The server
-  // already gets equivalent information in the form of the current page
-  // classification.
-  if (IsNTPPage(page_classification)) {
-    return false;
-  }
-
-  // Only allow valid HTTP or HTTPS URLs.
-  if (!CanSendPageURLInRequest(current_page_url)) {
     return false;
   }
 

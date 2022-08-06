@@ -2055,6 +2055,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.ZeroSuggest.Eligible.OnFocusV2"
     enum="ZeroSuggestEligibleOnFocus" expires_after="2022-12-25">
+  <obsolete>
+    Obsolete as of M106.
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -2083,6 +2086,20 @@ chromium-metrics-reviews@google.com.
     suggest suggestions (including incognito mode), and reports eligibility for
     suggestions even if kOmniboxPopupShortcutIconsInZeroState is enabled
     (meaning: suggestions are not shown, but current URL is eligible).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ZeroSuggestProvider.Eligibility"
+    enum="ZeroSuggestEligibility" expires_after="2022-12-11">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Logs whether ZeroSuggestProvider is eligible to request and display zero-
+    prefix suggestions, and if not, why not. Emitted for both
+    omit_asynchronous_matches_ true (i.e, Autocomplete classifier) and false
+    inputs (i.e, when the user has typed in, focused the omnibox, or cleared it
+    but has not typed in yet) in ZeroSuggestProvider::Start(). Also emitted on
+    applicable page load/switch events in ZeroSuggestProvider::StartPrefetch().
   </summary>
 </histogram>
 

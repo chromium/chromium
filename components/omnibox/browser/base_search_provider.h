@@ -131,8 +131,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   // Returns whether we can send the URL of the current page in any suggest
   // requests.  Doing this requires that all the following hold:
   // * CanSendRequest() returns true.
-  // * IsNTPPage() returns false.
-  // * CanSendPageURLInRequest() returns true.
   // * Either one of:
   //   * The user consented to sending URLs of current page to Google and have
   //     them associated with their Google account.
@@ -142,14 +140,12 @@ class BaseSearchProvider : public AutocompleteProvider {
   //     Chrome still shouldn't leak the association between typed search terms
   //     and which tab the user is looking at. On-focus suggest requests never
   //     send search terms.
-  static bool CanSendRequestWithURL(
-      const GURL& current_page_url,
-      const GURL& suggest_url,
-      const TemplateURL* template_url,
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      const SearchTermsData& search_terms_data,
-      const AutocompleteProviderClient* client,
-      bool sending_search_terms);
+  static bool CanSendRequestWithURL(const GURL& current_page_url,
+                                    const GURL& suggest_url,
+                                    const TemplateURL* template_url,
+                                    const SearchTermsData& search_terms_data,
+                                    const AutocompleteProviderClient* client,
+                                    bool sending_search_terms);
 
   // AutocompleteProvider:
   void DeleteMatch(const AutocompleteMatch& match) override;
