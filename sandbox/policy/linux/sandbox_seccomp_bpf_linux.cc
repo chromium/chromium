@@ -90,7 +90,7 @@ namespace {
 // in its dependencies. Make sure to not link things that are not needed.
 #if !defined(IN_NACL_HELPER)
 inline bool IsChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
