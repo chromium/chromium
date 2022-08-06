@@ -919,6 +919,18 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_FALSE(bridge()->HasValidTargetDevice());
 }
 
+TEST_F(SendTabToSelfBridgeTest, CollapseWhitespacesOfEntryTitle) {
+  InitializeBridge();
+
+  const SendTabToSelfEntry* result =
+      bridge()->AddEntry(GURL("http://a.com"), " a  b ", kLocalDeviceCacheGuid);
+  EXPECT_EQ("a b", result->GetTitle());
+
+  result =
+      bridge()->AddEntry(GURL("http://b.com"), "입", kLocalDeviceCacheGuid);
+  EXPECT_EQ("입", result->GetTitle());
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self

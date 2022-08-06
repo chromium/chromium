@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -303,7 +304,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   std::string trimmed_title = "";
 
   if (base::IsStringUTF8(title)) {
-    trimmed_title = base::CollapseWhitespaceASCII(title, false);
+    trimmed_title = base::UTF16ToUTF8(
+        base::CollapseWhitespace(base::UTF8ToUTF16(title), false));
   }
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
