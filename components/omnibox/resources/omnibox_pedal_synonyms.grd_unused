@@ -41,7 +41,7 @@ data from other batches in messages below to omnibox_pedal_synonyms.grd . -->
       <output filename="omnibox_pedal_synonyms_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="omnibox_pedal_synonyms_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos_ash or chromeos_lacros">
+    <if expr="is_chromeos">
       <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="omnibox_pedal_synonyms_am.pak" type="data_package" lang="am" />
