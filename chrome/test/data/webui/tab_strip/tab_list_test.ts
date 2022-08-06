@@ -696,12 +696,61 @@ suite('TabList', () => {
     const tabToGroup = tabs[1]!;
     callbackRouter.tabGroupStateChanged(
         tabToGroup.id, tabToGroup.index, 'group0');
+    callbackRouter.tabMoved(tabToGroup.id, 0, false);
     callbackRouter.tabGroupMoved('group0', 0);
     await flushTasks();
 
     const tabAtIndex0 = getUnpinnedTabs()[0]!;
     assertEquals(tabAtIndex0.parentElement!.tagName, 'TABSTRIP-TAB-GROUP');
     assertEquals(tabAtIndex0.tab.id, tabToGroup.id);
+  });
+
+  test('MoveTabGroupMultipleTabs', async () => {
+    const tabToGroup1 = tabs[1]!;
+    const tabToGroup2 = tabs[2]!;
+
+    // Group tabs {1, 2} and assert the tab elements are correctly added under
+    // their tab group element.
+    callbackRouter.tabGroupStateChanged(
+        tabToGroup1.id, tabToGroup1.index, 'group0');
+    callbackRouter.tabGroupStateChanged(
+        tabToGroup2.id, tabToGroup2.index, 'group0');
+    await flushTasks();
+    assertEquals(
+        getUnpinnedTabs()[1]!.parentElement!.tagName, 'TABSTRIP-TAB-GROUP');
+    assertEquals(
+        getUnpinnedTabs()[2]!.parentElement!.tagName, 'TABSTRIP-TAB-GROUP');
+
+    // During a drag and drop session that triggers a tab group move within the
+    // WebUI tab strip the following sequence of events occur:
+    //   1. The drag manager places the existing tab group element at the
+    //      proposed drop index.
+    //   2. The drag completes and the tab strip model is updated. This results
+    //      in a series of tabMoved() events followed by a final tabGroupMoved()
+    //      event.
+    // The code below simulates this sequence of events and ensures the tab
+    // strip responds correctly.
+
+    // 1.
+    const tabGroupElement = tabList.shadowRoot!.querySelector(
+        'tabstrip-tab-group[data-group-id="group0"]')!;
+    tabList.placeTabGroupElement(tabGroupElement as TabGroupElement, 0);
+
+    // 2.
+    callbackRouter.tabMoved(tabToGroup2.id, 0, false);
+    callbackRouter.tabMoved(tabToGroup1.id, 0, false);
+    callbackRouter.tabGroupMoved('group0', 0);
+    await flushTasks();
+
+    // Assert the tabs have moved as expected and are still members of their
+    // oroginal tab group colloring the move.
+    const tabAtIndex0 = getUnpinnedTabs()[0]!;
+    assertEquals(tabAtIndex0.parentElement!.tagName, 'TABSTRIP-TAB-GROUP');
+    assertEquals(tabAtIndex0.tab.id, tabToGroup1.id);
+
+    const tabAtIndex1 = getUnpinnedTabs()[1]!;
+    assertEquals(tabAtIndex1.parentElement!.tagName, 'TABSTRIP-TAB-GROUP');
+    assertEquals(tabAtIndex1.tab.id, tabToGroup2.id);
   });
 
   test('tracks and untracks thumbnails based on viewport', async () => {
