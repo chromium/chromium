@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
   ASSERT_FALSE(client()->IsDriveFsMountFailed());
 
   base::FilePath mounted_path;
-  ASSERT_TRUE(client()->GetDriveFsMountPointPath(&mounted_path));
+  ASSERT_TRUE(client()->GetBaseStoragePath(&mounted_path));
   ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
 }
 

@@ -148,7 +148,7 @@ void ProjectorControllerImpl::StartProjectorSession(
 void ProjectorControllerImpl::CreateScreencastContainerFolder(
     CreateScreencastContainerFolderCallback callback) {
   base::FilePath mounted_path;
-  if (!client_->GetDriveFsMountPointPath(&mounted_path)) {
+  if (!client_->GetBaseStoragePath(&mounted_path)) {
     LOG(ERROR) << "Failed to get DriveFs mounted point path.";
     ProjectorUiController::ShowSaveFailureNotification();
     std::move(callback).Run(base::FilePath());

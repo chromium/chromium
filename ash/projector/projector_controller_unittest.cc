@@ -257,8 +257,7 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
   base::FilePath screencast_container_path;
-  ASSERT_TRUE(
-      mock_client_.GetDriveFsMountPointPath(&screencast_container_path));
+  ASSERT_TRUE(mock_client_.GetBaseStoragePath(&screencast_container_path));
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
@@ -325,8 +324,7 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
   bool user_deleted_video_file = std::get<1>(GetParam());
 
   base::FilePath screencast_container_path;
-  ASSERT_TRUE(
-      mock_client_.GetDriveFsMountPointPath(&screencast_container_path));
+  ASSERT_TRUE(mock_client_.GetBaseStoragePath(&screencast_container_path));
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 

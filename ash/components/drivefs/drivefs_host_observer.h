@@ -24,7 +24,7 @@ class DriveFsHostObserver {
   virtual void OnError(const mojom::DriveError& error) {}
 
  protected:
-  ~DriveFsHostObserver() = default;
+  virtual ~DriveFsHostObserver() = default;
 };
 
 }  // namespace drivefs

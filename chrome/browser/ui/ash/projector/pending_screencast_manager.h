@@ -14,12 +14,9 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
-#include "components/user_manager/user_manager.h"
+#include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 
 namespace drivefs {
 namespace mojom {
@@ -39,10 +36,7 @@ using PendingScreencastChangeCallback =
     base::RepeatingCallback<void(const ash::PendingScreencastSet&)>;
 
 // A class that handles pending screencast events.
-class PendingScreencastManager
-    : public drivefs::DriveFsHostObserver,
-      public user_manager::UserManager::UserSessionStateObserver,
-      public session_manager::SessionManagerObserver {
+class PendingScreencastManager : public drivefs::DriveFsHostObserver {
  public:
   explicit PendingScreencastManager(
       PendingScreencastChangeCallback pending_screencast_change_callback);
@@ -58,6 +52,9 @@ class PendingScreencastManager
 
   // Returns a list of pending screencast from `pending_screencast_cache_`.
   const ash::PendingScreencastSet& GetPendingScreencasts() const;
+
+  // Maybe reset `drivefs_observation_` and observe the current active profile.
+  void MaybeSwitchDriveFsObservation();
 
   // Test only:
   base::TimeTicks last_pending_screencast_change_tick() const {
@@ -80,15 +77,6 @@ class PendingScreencastManager
   void OnProcessAndGenerateNewScreencastsFinished(
       const base::TimeTicks task_start_tick,
       const ash::PendingScreencastSet& screencasts);
-
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override;
-
-  // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(user_manager::User* active_user) override;
-
-  // Maybe reset `drivefs_observation_` and observe the current active profile.
-  void MaybeSwitchDriveFsObservation();
 
   // Called when the `event_file` is synced to Drive. Removed completedly synced
   // files from `error_syncing_files_` and `syncing_metadata_files_` cached. If
@@ -126,16 +114,6 @@ class PendingScreencastManager
 
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
       drivefs_observation_{this};
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
-
-  base::ScopedObservation<
-      user_manager::UserManager,
-      user_manager::UserManager::UserSessionStateObserver,
-      &user_manager::UserManager::AddSessionStateObserver,
-      &user_manager::UserManager::RemoveSessionStateObserver>
-      session_state_observation_{this};
 
   // The time tick when last `pending_screencast_change_callback_` was called.
   // Could be null if last `pending_screencast_change_callback_` was called with
@@ -151,6 +129,8 @@ class PendingScreencastManager
   // used in tests to verify the task quit correctly while error happens.
   OnGetRequestBodyCallback on_get_request_body_;
   OnGetFileIdCallback on_get_file_id_callback_;
+
+  ProjectorDriveFsProvider drive_helper_;
 
   base::WeakPtrFactory<PendingScreencastManager> weak_ptr_factory_{this};
 };

@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,9 +55,4 @@ bool IsProjectorAppEnabled(const Profile* profile) {
   return ash::features::IsProjectorEnabled() &&
          (ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
           profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy));
-}
-
-drive::DriveIntegrationService* GetDriveIntegrationServiceForActiveProfile() {
-  return drive::DriveIntegrationServiceFactory::FindForProfile(
-      ProfileManager::GetActiveUserProfile());
 }

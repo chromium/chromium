@@ -51,17 +51,18 @@ void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
   web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorAppUrl));
 }
 
+// Using base::Unretained for callback is safe since the ProjectorClientImpl
+// owns `drive_helper_`.
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
-    : controller_(controller) {
+    : controller_(controller),
+      drive_helper_(base::BindRepeating(
+          &ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation,
+          base::Unretained(this))) {
   controller_->SetClient(this);
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
   if (session_manager)
     session_observation_.Observe(session_manager);
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager)
-    session_state_observation_.Observe(user_manager);
 }
 
 ProjectorClientImpl::ProjectorClientImpl()
@@ -90,8 +91,7 @@ void ProjectorClientImpl::StopSpeechRecognition() {
   speech_recognizer_->Stop();
 }
 
-bool ProjectorClientImpl::GetDriveFsMountPointPath(
-    base::FilePath* result) const {
+bool ProjectorClientImpl::GetBaseStoragePath(base::FilePath* result) const {
   if (!IsDriveFsMounted())
     return false;
 
@@ -105,9 +105,7 @@ bool ProjectorClientImpl::GetDriveFsMountPointPath(
     return true;
   }
 
-  drive::DriveIntegrationService* integration_service =
-      GetDriveIntegrationServiceForActiveProfile();
-  *result = integration_service->GetMountPointPath();
+  *result = ProjectorDriveFsProvider::GetDriveFsMountPointPath();
   return true;
 }
 
@@ -120,16 +118,11 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
     // folder for Projector storage.
     return true;
   }
-
-  drive::DriveIntegrationService* integration_service =
-      GetDriveIntegrationServiceForActiveProfile();
-  return integration_service && integration_service->IsMounted();
+  return ProjectorDriveFsProvider::IsDriveFsMounted();
 }
 
 bool ProjectorClientImpl::IsDriveFsMountFailed() const {
-  drive::DriveIntegrationService* integration_service =
-      GetDriveIntegrationServiceForActiveProfile();
-  return integration_service && integration_service->mount_failed();
+  return ProjectorDriveFsProvider::IsDriveFsMountFailed();
 }
 
 void ProjectorClientImpl::OpenProjectorApp() const {
@@ -220,10 +213,6 @@ void ProjectorClientImpl::OnFileSystemMountFailed() {
       controller_->GetNewScreencastPrecondition());
 }
 
-void ProjectorClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
-  MaybeSwitchDriveIntegrationServiceObservation();
-}
-
 void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
   if (!is_primary_user || !pref_change_registrar_.IsEmpty())
     return;
@@ -241,20 +230,9 @@ void ProjectorClientImpl::OnUserSessionStarted(bool is_primary_user) {
                           base::Unretained(this)));
 }
 
-void ProjectorClientImpl::ActiveUserChanged(user_manager::User* active_user) {
-  // After user login, the first ActiveUserChanged() might be called before
-  // profile is loaded.
-  if (active_user->is_profile_created())
-    MaybeSwitchDriveIntegrationServiceObservation();
-}
-
 void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!IsProjectorAllowedForProfile(profile))
-    return;
-
   drive::DriveIntegrationService* drive_service =
-      GetDriveIntegrationServiceForActiveProfile();
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
   if (!drive_service || drive_observation_.IsObservingSource(drive_service))
     return;
 

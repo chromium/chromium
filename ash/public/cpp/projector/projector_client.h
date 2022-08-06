@@ -28,8 +28,10 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
 
   virtual void StartSpeechRecognition() = 0;
   virtual void StopSpeechRecognition() = 0;
-  // Returns false if Drive is not enabled.
-  virtual bool GetDriveFsMountPointPath(base::FilePath* result) const = 0;
+  // Returns false if base storage path is not available. Normally the base path
+  // is the DriveFS mounted folder. It is download folder when extended feature
+  // command line flag is disabled.
+  virtual bool GetBaseStoragePath(base::FilePath* result) const = 0;
   virtual bool IsDriveFsMounted() const = 0;
   // Return true if Drive mount failed. Drive will not automatically retry to
   // mount.

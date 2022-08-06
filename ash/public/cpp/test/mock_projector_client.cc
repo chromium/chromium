@@ -13,8 +13,7 @@ MockProjectorClient::MockProjectorClient() {
 
 MockProjectorClient::~MockProjectorClient() = default;
 
-bool MockProjectorClient::GetDriveFsMountPointPath(
-    base::FilePath* result) const {
+bool MockProjectorClient::GetBaseStoragePath(base::FilePath* result) const {
   *result = screencast_container_path_.GetPath();
   return true;
 }

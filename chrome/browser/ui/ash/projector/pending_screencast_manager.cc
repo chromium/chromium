@@ -24,10 +24,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -47,11 +43,6 @@ constexpr base::TimeDelta kDriveGetMetadataDelay = base::Seconds(3);
 bool IsWebmOrProjectorFile(const base::FilePath& path) {
   return path.MatchesExtension(ash::kProjectorMediaFileExtension) ||
          path.MatchesExtension(ash::kProjectorMetadataFileExtension);
-}
-
-drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
-  auto* drivefs_integration = GetDriveIntegrationServiceForActiveProfile();
-  return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;
 }
 
 // "Absolute path" is the DriveFS absolute path of `drive_relative_path` on
@@ -115,7 +106,7 @@ void GetDriveFileMetadata(
     PendingScreencastManager::OnGetFileIdCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   auto* drive_integration_service =
-      GetDriveIntegrationServiceForActiveProfile();
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
   if (!drive_integration_service)
     return;
   const base::FilePath local_path = GetLocalAbsolutePath(
@@ -337,20 +328,17 @@ ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
 
 }  // namespace
 
+// Using base::Unretained for callback is safe since the
+// PendingScreencastManager owns the `drive_helper_`.
 PendingScreencastManager::PendingScreencastManager(
     PendingScreencastChangeCallback pending_screencast_change_callback)
     : pending_screencast_change_callback_(pending_screencast_change_callback),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  session_manager::SessionManager* session_manager =
-      session_manager::SessionManager::Get();
-  if (session_manager)
-    session_observation_.Observe(session_manager);
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager)
-    session_state_observation_.Observe(user_manager);
-}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      drive_helper_(base::BindRepeating(
+          &PendingScreencastManager::MaybeSwitchDriveFsObservation,
+          base::Unretained(this))) {}
 
 PendingScreencastManager::~PendingScreencastManager() = default;
 
@@ -375,9 +363,7 @@ void PendingScreencastManager::OnUnmounted() {
 // download event. Find a way to filter out the upload event.
 void PendingScreencastManager::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& status) {
-  drive::DriveIntegrationService* drivefs_integration =
-      GetDriveIntegrationServiceForActiveProfile();
-  if (!drivefs_integration->IsMounted())
+  if (!ProjectorDriveFsProvider::IsDriveFsMounted())
     return;
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
   for (const auto& event : status.item_events) {
@@ -422,7 +408,7 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
       base::BindOnce(ProcessAndGenerateNewScreencasts,
                      std::move(pending_webm_or_projector_events),
                      error_syncing_files_,
-                     drivefs_integration->GetMountPointPath()),
+                     ProjectorDriveFsProvider::GetDriveFsMountPointPath()),
       base::BindOnce(
           &PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished,
           weak_ptr_factory_.GetWeakPtr(),
@@ -471,6 +457,25 @@ void PendingScreencastManager::SetProjectorXhrSenderForTest(
   xhr_sender_ = std::move(xhr_sender);
 }
 
+void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
+  auto* drivefs_integration =
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+  if (!drivefs_integration)
+    return;
+
+  auto* drivefs_host = drivefs_integration->GetDriveFsHost();
+  if (!drivefs_host || drivefs_observation_.IsObservingSource(drivefs_host))
+    return;
+
+  pending_screencast_cache_.clear();
+  error_syncing_files_.clear();
+
+  // Reset if observing DriveFsHost of other profile.
+  if (drivefs_observation_.IsObserving())
+    drivefs_observation_.Reset();
+  drivefs_observation_.Observe(drivefs_host);
+}
+
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
@@ -492,41 +497,6 @@ void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
   // delta between finish uploading and new uploading started.
   last_pending_screencast_change_tick_ =
       pending_screencast_cache_.empty() ? base::TimeTicks() : now;
-}
-
-void PendingScreencastManager::OnUserProfileLoaded(
-    const AccountId& account_id) {
-  MaybeSwitchDriveFsObservation();
-}
-
-void PendingScreencastManager::ActiveUserChanged(
-    user_manager::User* active_user) {
-  // After user login, the first ActiveUserChanged() might be called before
-  // profile is loaded.
-  if (!active_user->is_profile_created())
-    return;
-
-  MaybeSwitchDriveFsObservation();
-}
-
-void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
-  auto* profile = ProfileManager::GetActiveUserProfile();
-
-  if (!IsProjectorAllowedForProfile(profile))
-    return;
-
-  auto* drivefs_host = GetDriveFsHostForActiveProfile();
-  if (!drivefs_host || drivefs_observation_.IsObservingSource(drivefs_host))
-    return;
-
-  pending_screencast_cache_.clear();
-  error_syncing_files_.clear();
-
-  // Reset if observing DriveFsHost of other profile.
-  if (drivefs_observation_.IsObserving())
-    drivefs_observation_.Reset();
-
-  drivefs_observation_.Observe(drivefs_host);
 }
 
 void PendingScreencastManager::OnFileSyncedCompletely(

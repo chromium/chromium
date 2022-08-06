@@ -37,7 +37,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
  public:
   explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
   DriveFsEventRouter(const DriveFsEventRouter&) = delete;
-  virtual ~DriveFsEventRouter();
+  ~DriveFsEventRouter() override;
 
   DriveFsEventRouter& operator=(const DriveFsEventRouter&) = delete;
 
