@@ -163,7 +163,7 @@
       You can open and edit supported files with this app from the File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Windows settings<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing the ChromeOS Files app) and a link to a learn more link for default filetype associations.">
       You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>

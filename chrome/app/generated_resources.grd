@@ -295,7 +295,7 @@ are declared in tools/grit/grit_rule.gni.
       <part file="profiles_strings.grdp" />
 
       <!-- Chrome-OS-specific strings -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <part file="chromeos_shared_strings.grdp" />
       </if>
       <if expr="chromeos_ash">
@@ -379,7 +379,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT" desc="Announcement to screen readers on ChromeOS when permission is requested to inform users of how to focus the permission UI.">
           Permission requested, press Ctrl + Forward to respond
         </message>
@@ -389,7 +389,7 @@ are declared in tools/grit/grit_rule.gni.
           Permission requested, press ⌘ + Option + Down arrow to respond
         </message>
       </if>
-      <if expr="not chromeos_ash and not chromeos_lacros and not is_macosx and toolkit_views">
+      <if expr="not is_chromeos and not is_macosx and toolkit_views">
         <message name="IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT" desc="Announcement to screen readers on Windows, Linux or Fuchsia when permission is requested to inform users of how to focus the permission UI.">
           Permission requested, press F6 to respond
         </message>
@@ -1409,7 +1409,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- App menu -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_TOGGLE_REQUEST_TABLET_SITE" desc="The toggle to request mobile version site on a touch dev.">
           Request mobile site
         </message>
@@ -1800,7 +1800,7 @@ are declared in tools/grit/grit_rule.gni.
                desc="When starting a download, let the user know we're starting the download.">
         Starting...
       </message>
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_TITLE"
                  desc="The title of a download notification: the current download status is in progress.">
                  Downloading <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
@@ -2012,21 +2012,21 @@ are declared in tools/grit/grit_rule.gni.
         This file is encrypted. Ask its owner to decrypt.
       </message>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_MIXED_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
           Insecure download blocked
         </message>
       </if>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_MALICIOUS_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of message shown for blocked download">
           Dangerous download blocked
         </message>
       </if>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_PROMPT_SEND_TO_SAFEBROWSING_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of message shown indicating that the file may be malicious and Safe Browsing recommends sending the file to Google">
           Scan file before opening?
@@ -4897,7 +4897,7 @@ are declared in tools/grit/grit_rule.gni.
         Could not load '<ph name="IMAGE_PATH">$1<ex>/path/to/file</ex></ph>' for theme.
       </message>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_EXTENSION_NOTIFICATION_INSTALLED" desc="Toast message shown when an application is successfully installed.">
           <ph name="APP">$1<ex>Google Keep</ex></ph> installed
         </message>
@@ -5651,7 +5651,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         App Settings
       </message>
 
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <then>
           <message name="IDS_WEB_APP_SETTINGS_LINK" desc="Text of the link pointing to the app settings page. This appears at the bottom of the Permissions pane of the Page Information Window for app windows (in place of 'Site settings').">
             App settings
@@ -7222,7 +7222,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Open in app
         </message>
 
-        <if expr="chromeos_ash or chromeos_lacros">
+        <if expr="is_chromeos">
           <then>
             <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_MESSAGE" desc="The text of an infobar asking if the user wants to open web links supported by a particular app (e.g. https://www.youtube.com) in that app.">
               Always use the <ph name="APP">$1<ex>YouTube</ex></ph> app to open supported web links?
@@ -8328,7 +8328,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
  for unfollowing a site.">
           Unfollow site
         </message>
-        <if expr="chromeos_ash or chromeos_lacros">
+        <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
             <ph name="TAB_TITLE">$1<ex>Google News</ex></ph> belongs to desk <ph name="DESK_TITLE">$2<ex>School</ex></ph>
           </message>
@@ -8723,7 +8723,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Send feedback
       </message>
       <!-- Killed Tab Strings -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_KILLED_TAB_BY_OOM_MESSAGE" desc="The message displayed on the killed tab page when the page was killed by an out of memory error.">
           Either Chrome ran out of memory or the process for the webpage was terminated for some other reason.  To continue, reload or go to another page.
         </message>
@@ -11672,7 +11672,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TAB_AX_LABEL_PINNED_FORMAT" is_accessibility_with_no_ui="true" desc="Accessibility label text, when a tab is pinned. Example: 'Google Search - Pinned'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Pinned
       </message>
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <message name="IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT" desc="Accessibility label text for ChromeOS, when a tab has a pending request. Example: 'Google Search - Permission requested, press F6 to respond'.">
           <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Permission requested, press Ctrl + Forward to respond
         </message>
@@ -11682,7 +11682,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Permission requested, press ⌘ + Option + Up arrow to respond
         </message>
       </if>
-      <if expr="not chromeos_ash and not chromeos_lacros and not is_macosx and toolkit_views">
+      <if expr="not is_chromeos and not is_macosx and toolkit_views">
         <message name="IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT" desc="Accessibility label text for Windows, Linux or Fuchsia, when a tab has a pending request. Example: 'Google Search - Permission requested, press F6 to respond'.">
           <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Permission requested, press F6 to respond
         </message>

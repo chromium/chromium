@@ -124,12 +124,12 @@
   <message name="IDS_SETTINGS_HOME_BUTTON_DISABLED" desc="Sub label for the Show home button setting when disabled.">
     Disabled
   </message>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_THEMES" desc="Name of the control which allows the user to get a theme for the browser.">
       Browser themes
     </message>
   </if>
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_THEMES" desc="Name of the control which allows the user to get a theme for the browser.">
       Theme
     </message>
@@ -148,7 +148,7 @@
       Use Classic
     </message>
   </if>
-  <if expr="not is_linux or chromeos_ash or chromeos_lacros or is_fuchsia">
+  <if expr="not is_linux or is_chromeos or is_fuchsia">
     <message name="IDS_SETTINGS_RESET_TO_DEFAULT_THEME" desc="Name of the control which resets the browser theme back to the default theme.">
       Reset to default
     </message>
@@ -863,7 +863,7 @@
   </message>
 
   <!-- Default Browser Page -->
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER" desc="Name of the Default Browser page, which allows users to set which browser will open .html files within the OS.">
       Default browser
     </message>
@@ -1053,7 +1053,7 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_WRITE_ERROR_FORMAT" desc="The text in the error dialog for PKCS #12 file write errors.">
       There was an error while trying to write the file: <ph name="ERROR_TEXT">$1<ex>Permission denied.</ex></ph>.
     </message>
-    <if expr="chromeos_ash or chromeos_lacros">
+    <if expr="is_chromeos">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER" desc="Header that lists the certificate provisioning processes.">
         Certificates are being provisioned for these certificate profiles
       </message>
@@ -1431,7 +1431,7 @@
   <message name="IDS_SETTINGS_PRIVACY_MORE" desc="Label on the expansion button to show more privacy settings.">
     More
   </message>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <if expr="reven">
       <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in ChromeOS Flex.">
         Manage secure DNS in ChromeOS Flex settings
@@ -3584,7 +3584,7 @@
     Control how your browsing history is used to personalize Search and more
   </message>
 
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <!-- Import Settings Dialog -->
     <message name="IDS_SETTINGS_IMPORT_SETTINGS_TITLE" desc="Dialog title for import dialog.">
       Import bookmarks and settings
@@ -3691,7 +3691,7 @@
       System
     </message>
   </if>
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via hardware acceleration (GPU) when available.">
       Use hardware acceleration when available
     </message>

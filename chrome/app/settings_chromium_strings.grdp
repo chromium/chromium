@@ -101,7 +101,7 @@
     To apply your changes, relaunch Chromium
   </message>
 
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
     Allow Chromium sign-in
     </message>
@@ -114,7 +114,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
     Open PDFs in Chromium
   </message>
-  <if expr="not chromeos_ash and not chromeos_lacros">
+  <if expr="not is_chromeos">
     <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user will be signed out of Chrome each time they close all Chrome windows.">
       When on, you'll also be signed out of Chromium
     </message>
