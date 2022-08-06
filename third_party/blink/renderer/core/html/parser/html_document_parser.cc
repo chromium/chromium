@@ -454,32 +454,6 @@ static HTMLTokenizer::State TokenizerStateForContextElement(
   return HTMLTokenizer::kDataState;
 }
 
-class ScopedYieldTimer {
- public:
-  // This object is created at the start of a block of parsing, and will
-  // report the time since the last block yielded if known.
-  ScopedYieldTimer(std::unique_ptr<base::ElapsedTimer>* timer,
-                   HTMLParserMetrics* metrics_reporter)
-      : timer_(timer), reporting_metrics_(metrics_reporter) {
-    if (!reporting_metrics_ || !(*timer_))
-      return;
-
-    metrics_reporter->AddYieldInterval((*timer_)->Elapsed());
-    timer_->reset();
-  }
-
-  // The destructor creates a new timer, which will keep track of time until
-  // the next block starts.
-  ~ScopedYieldTimer() {
-    if (reporting_metrics_)
-      *timer_ = std::make_unique<base::ElapsedTimer>();
-  }
-
- private:
-  std::unique_ptr<base::ElapsedTimer>* timer_;
-  bool reporting_metrics_;
-};
-
 HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy,
                                        ParserPrefetchPolicy prefetch_policy)
