@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "content/public/browser/browser_context.h"
@@ -533,8 +534,11 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   }
 
   if (!success) {
+    std::string msg = base::StringPrintf(
+        "Service worker registration failed. Status code: %d",
+        static_cast<int>(status_code));
     auto error = std::make_unique<ManifestError>(
-        extension_id, u"Service worker registration failed",
+        extension_id, base::UTF8ToUTF16(msg),
         base::UTF8ToUTF16(manifest_keys::kBackground),
         base::UTF8ToUTF16(
             BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));
