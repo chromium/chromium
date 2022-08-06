@@ -36,7 +36,7 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_PREDICTORS_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\predictors.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\resource_prefetch_predictor.js" use_base_dir="false" type="BINDATA" />
 
-      <if expr="is_android or is_linux or chromeos_ash or chromeos_lacros">
+      <if expr="is_android or is_linux or is_chromeos">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
         <include name="IDR_SANDBOX_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\sandbox_internals\tsc\sandbox_internals.js" use_base_dir="false" type="BINDATA" />
       </if>
