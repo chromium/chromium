@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -179,6 +180,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   // going to show another bubble anyway.
   HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
 
+  DCHECK(IsIconVisible());
+  autofill_metrics::LogPageLoadsWithOfferIconShown(offer->GetOfferType());
+
   if (card)
     card_ = *card;
 
@@ -189,8 +193,6 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     if (!last_display_time.is_null() &&
         (base::Time::Now() - last_display_time) <
             commerce::kCouponDisplayInterval.Get()) {
-      bubble_state_ = BubbleState::kShowingIcon;
-      UpdatePageActionIcon();
       autofill_metrics::LogOfferNotificationBubbleSuppressed(
           AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
       return;

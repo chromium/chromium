@@ -2485,6 +2485,18 @@ chromium-metrics-reviews@google.com.
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
+<histogram name="Autofill.PageLoadsWithOfferIconShowing.{OfferType}"
+    enum="BooleanShown" expires_after="2023-07-01">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Emits true if the offer notification icon is currently being shown in the
+    omnibox after a page navigation for {OfferType}. Doesn't emit any other
+    value.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"
     expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
