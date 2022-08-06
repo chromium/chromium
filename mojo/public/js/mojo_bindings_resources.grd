@@ -26,7 +26,7 @@
           use_base_dir="false"
           resource_path="mojo/mojo/public/js/bindings.js"
           type="BINDATA" />
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <include name="IDR_MOJO_MOJO_BINDINGS_LITE_JS"
             file="${root_gen_dir}/mojo/public/js/mojo_bindings_lite.js"
             use_base_dir="false"
