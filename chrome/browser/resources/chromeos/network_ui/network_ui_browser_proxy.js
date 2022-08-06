@@ -98,6 +98,17 @@ export class NetworkUIBrowserProxy {
    * @return {Promise<string>}
    */
   setTetheringConfig(config) {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  checkTetheringReadiness() {}
+
+  /**
+   * @param {boolean} enabled
+   * @return {Promise<string>}
+   */
+  setTetheringEnabled(enabled) {}
 }
 
 /**
@@ -220,6 +231,21 @@ export class NetworkUIBrowserProxyImpl {
    */
   setTetheringConfig(config) {
     return sendWithPromise('setTetheringConfig', config);
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  checkTetheringReadiness() {
+    return sendWithPromise('checkTetheringReadiness');
+  }
+
+  /**
+   * @param {boolean} enabled
+   * @return {Promise<string>}
+   */
+  setTetheringEnabled(enabled) {
+    return sendWithPromise('setTetheringEnabled', enabled);
   }
 }
 

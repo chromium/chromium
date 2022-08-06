@@ -3333,6 +3333,15 @@
   <message name="IDS_NETWORK_UI_SET_TETHERING_CONFIG_BUTTON_TEXT" desc="Text for button which, when pressed, set the tethering configuration.">
     Set Tethering Configuration
   </message>
+  <message name="IDS_NETWORK_UI_TETHERING_READINESS_LABEL" desc="Title for the section for displaying and checking tethering readiness.">
+    Tethering Readiness:
+  </message>
+  <message name="IDS_NETWORK_UI_CHECK_TETHERING_READINESS_BUTTON_TEXT" desc="Text for button which, when pressed, check the tethering readiness.">
+    Check Tethering Readiness
+  </message>
+  <message name="IDS_NETWORK_UI_SET_TETHERING_ENABLED_LABEL" desc="Title for the section for enabling or disabling tethering.">
+    Enable/Disable Tethering
+  </message>
 
   <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>

@@ -9,6 +9,7 @@ import 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_count
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -86,6 +87,22 @@ Polymer({
         return loadTimeData.valueExists('isGuestModeActive') &&
             loadTimeData.getBoolean('isGuestModeActive');
       },
+    },
+
+    /**@private */
+    isTetheringEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Set to true while an tethering state change is requested and the
+     * callback hasn't been fired yet.
+     * @private
+     */
+    tetheringChangeInProgress_: {
+      type: Boolean,
+      value: false,
     },
 
     /** @private */
@@ -252,6 +269,14 @@ Polymer({
     this.browserProxy_.getTetheringStatus().then(result => {
       this.$$('#tethering-status-div').textContent =
           this.stringifyJSON_(result);
+      const state = result['state'];
+      const startingState = loadTimeData.getString('tetheringStateStarting');
+      const activeState = loadTimeData.getString('tetheringStateActive');
+      if (!!state && (state === startingState || state === activeState)) {
+        this.isTetheringEnabled_ = true;
+        return;
+      }
+      this.isTetheringEnabled_ = false;
     });
   },
 
@@ -277,6 +302,15 @@ Polymer({
         });
   },
 
+  /** @private */
+  checkTetheringReadiness_() {
+    this.browserProxy_.checkTetheringReadiness().then(result => {
+      const resultDiv = this.$$('#check-tethering-readiness-result');
+      resultDiv.innerText = result;
+      resultDiv.classList.toggle('error', result !== 'ready');
+    });
+  },
+
   /**
    * Check if the input tethering config string is a valid JSON object.
    * @private
@@ -298,6 +332,19 @@ Polymer({
     } catch (e) {
       this.invalidJSON_ = true;
     }
+  },
+
+  /** @private */
+  onTetheringToggleChanged_() {
+    this.tetheringChangeInProgress_ = true;
+    this.browserProxy_.setTetheringEnabled(this.isTetheringEnabled_)
+        .then(result => {
+          const resultDiv = this.$$('#set-tethering-enabled-result');
+          resultDiv.innerText = result;
+          resultDiv.classList.toggle('error', result !== 'success');
+          this.getTetheringStatus_();
+          this.tetheringChangeInProgress_ = false;
+        });
   },
 
   /**

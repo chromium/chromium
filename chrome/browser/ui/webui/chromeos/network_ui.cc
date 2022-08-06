@@ -85,6 +85,8 @@ constexpr char kGetTetheringCapabilities[] = "getTetheringCapabilities";
 constexpr char kGetTetheringStatus[] = "getTetheringStatus";
 constexpr char kGetTetheringConfig[] = "getTetheringConfig";
 constexpr char kSetTetheringConfig[] = "setTetheringConfig";
+constexpr char kCheckTetheringReadiness[] = "checkTetheringReadiness";
+constexpr char kSetTetheringEnabled[] = "setTetheringEnabled";
 
 bool GetServicePathFromGuid(const std::string& guid,
                             std::string* service_path) {
@@ -543,6 +545,15 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
         kSetTetheringConfig,
         base::BindRepeating(&HotspotConfigMessageHandler::SetTetheringConfig,
                             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kCheckTetheringReadiness,
+        base::BindRepeating(
+            &HotspotConfigMessageHandler::CheckTetheringReadiness,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kSetTetheringEnabled,
+        base::BindRepeating(&HotspotConfigMessageHandler::SetTetheringEnabled,
+                            base::Unretained(this)));
   }
 
  private:
@@ -581,6 +592,46 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
         shill::kTetheringConfigProperty));
   }
 
+  void CheckTetheringReadiness(const base::Value::List& arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+
+    ShillManagerClient::Get()->CheckTetheringReadiness(
+        base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id),
+        base::BindOnce(&HotspotConfigMessageHandler::RespondError,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id,
+                       kCheckTetheringReadiness));
+  }
+
+  void SetTetheringEnabled(const base::Value::List& arg_list) {
+    CHECK_EQ(2u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+    bool enabled = arg_list[1].GetBool();
+
+    // Enable TetheringAllowed flag in Shill manager before turning on/off
+    // tethering.
+    ShillManagerClient::Get()->SetProperty(
+        shill::kTetheringAllowedProperty, base::Value(true),
+        base::BindOnce(&HotspotConfigMessageHandler::PerformSetTetheringEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id, enabled),
+        base::BindOnce(
+            &HotspotConfigMessageHandler::SetManagerPropertiesErrorCallback,
+            weak_ptr_factory_.GetWeakPtr(), callback_id,
+            shill::kTetheringConfigProperty));
+  }
+
+  void PerformSetTetheringEnabled(const std::string& callback_id,
+                                  bool enabled) {
+    ShillManagerClient::Get()->SetTetheringEnabled(
+        enabled,
+        base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id, "success"),
+        base::BindOnce(&HotspotConfigMessageHandler::RespondError,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id,
+                       kSetTetheringEnabled));
+  }
+
   void SetTetheringConfig(const base::Value::List& arg_list) {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
@@ -597,9 +648,8 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
                   << ": " << *value;
     ShillManagerClient::Get()->SetProperty(
         shill::kTetheringConfigProperty, *value,
-        base::BindOnce(
-            &HotspotConfigMessageHandler::SetManagerPropertiesSuccessCallback,
-            weak_ptr_factory_.GetWeakPtr(), callback_id),
+        base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id, "success"),
         base::BindOnce(
             &HotspotConfigMessageHandler::SetManagerPropertiesErrorCallback,
             weak_ptr_factory_.GetWeakPtr(), callback_id,
@@ -633,8 +683,18 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, base::Value(dbus_error_name));
   }
 
-  void SetManagerPropertiesSuccessCallback(const std::string& callback_id) {
-    Respond(callback_id, base::Value("success"));
+  void RespondError(const std::string& callback_id,
+                    const std::string& operation,
+                    const std::string& error_name,
+                    const std::string& error_message) {
+    NET_LOG(ERROR) << "Error occured when " << operation << ": " << error_name
+                   << ", error message: " << error_message;
+    Respond(callback_id, base::Value(error_name));
+  }
+
+  void RespondStringResult(const std::string& callback_id,
+                           const std::string& result) {
+    Respond(callback_id, base::Value(result));
   }
 
   base::WeakPtrFactory<HotspotConfigMessageHandler> weak_ptr_factory_{this};
@@ -827,6 +887,16 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set("setTetheringConfigButtonText",
                         l10n_util::GetStringUTF16(
                             IDS_NETWORK_UI_SET_TETHERING_CONFIG_BUTTON_TEXT));
+  localized_strings.Set(
+      "tetheringReadinessLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_TETHERING_READINESS_LABEL));
+  localized_strings.Set(
+      "checkTetheringReadinessButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_CHECK_TETHERING_READINESS_BUTTON_TEXT));
+  localized_strings.Set(
+      "setTetheringEnabledLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_SET_TETHERING_ENABLED_LABEL));
   return localized_strings;
 }
 
@@ -854,6 +924,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
   html->AddBoolean("isHotspotEnabled", ash::features::IsHotspotEnabled());
+  html->AddString("tetheringStateStarting", shill::kTetheringStateStarting);
+  html->AddString("tetheringStateActive", shill::kTetheringStateActive);
   network_health::AddResources(html);
   network_diagnostics::AddResources(html);
   cellular_setup::AddLocalizedStrings(html);
