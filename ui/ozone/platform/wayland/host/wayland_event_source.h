@@ -165,7 +165,6 @@ class WaylandEventSource : public PlatformEventSource,
     PointerScrollData& operator=(const PointerScrollData&);
     PointerScrollData& operator=(PointerScrollData&&);
 
-    WaylandWindow* target = nullptr;
     absl::optional<uint32_t> axis_source;
     float dx = 0.0f;
     float dy = 0.0f;

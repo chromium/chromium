@@ -253,7 +253,6 @@ void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
     // Save new pointer location.
     pointer_location_ = location;
     window_manager_->SetPointerFocusedWindow(window);
-    pointer_scroll_data_.target = window;
   }
 
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
@@ -266,7 +265,6 @@ void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
 
   if (!focused) {
     window_manager_->SetPointerFocusedWindow(nullptr);
-    pointer_scroll_data_.target = nullptr;
   }
 }
 
@@ -344,8 +342,8 @@ void WaylandEventSource::OnPointerFrameEvent() {
 #else
       false;
 #endif
-  auto* target = pointer_scroll_data_.target;
-  if (!window_manager_->IsWindowValid(target))
+  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
+  if (!target)
     return;
 
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
