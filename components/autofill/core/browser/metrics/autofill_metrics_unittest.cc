@@ -2528,8 +2528,22 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
   EXPECT_FALSE(
       histogram_tester.GetAllSamples("Autofill.Timing.DetermineHeuristicTypes")
           .empty());
-  EXPECT_FALSE(
-      histogram_tester.GetAllSamples("Autofill.Timing.ParseForm").empty());
+  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
+    EXPECT_FALSE(
+        histogram_tester.GetAllSamples("Autofill.Timing.ParseForm").empty());
+  } else {
+    EXPECT_FALSE(
+        histogram_tester.GetAllSamples("Autofill.Timing.ParseFormsAsync")
+            .empty());
+    EXPECT_FALSE(
+        histogram_tester
+            .GetAllSamples("Autofill.Timing.ParseFormsAsync.RunHeuristics")
+            .empty());
+    EXPECT_FALSE(
+        histogram_tester
+            .GetAllSamples("Autofill.Timing.ParseFormsAsync.UpdateCache")
+            .empty());
+  }
 }
 
 // Test that we log quality metrics appropriately when an upload is triggered
@@ -2590,6 +2604,8 @@ TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
 
   // Simulate text input on one of the fields.
   ChangeTextField(form, form.fields[0]);
+  autofill_manager().SetSeenFormPredictions(form.global_id(), heuristic_types,
+                                            server_types);
 
   // Trigger a form upload and metrics by Resetting the manager.
   base::HistogramTester histogram_tester;
