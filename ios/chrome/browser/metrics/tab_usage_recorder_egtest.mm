@@ -216,6 +216,11 @@ void SwitchToNormalMode() {
 // Verifies the UMA metric for page loads before a tab eviction by loading
 // some tabs, forcing a tab eviction, then checking the histogram.
 - (void)testPageLoadCountBeforeEvictedTab {
+  // TODO(crbug.com/1350733): Re-enable when flake fixed.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
+  }
+
   [ChromeEarlGrey resetTabUsageRecorder];
   const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
   // This test opens three tabs.
@@ -465,6 +470,10 @@ void SwitchToNormalMode() {
     // is displayed at the bottom of the tab grid and not evicted.
     EARL_GREY_TEST_SKIPPED(@"Thumbstrip keeps active tab alive.");
   }
+  // TODO(crbug.com/1350733): Re-enable when flake fixed.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
+  }
 
   std::map<GURL, std::string> responses;
   const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
@@ -522,6 +531,11 @@ void SwitchToNormalMode() {
 // Test that the USER_DID_NOT_WAIT metric is logged when the user opens an NTP
 // while the evicted tab is still reloading.
 - (void)testEvictedTabReloadSwitchToNTP {
+  // TODO(crbug.com/1350733): Re-enable when flake fixed.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
+  }
+
   if ([ChromeEarlGrey isThumbstripEnabledForWindowWithNumber:0]) {
     // Skip this test if thumbstrip is enabled. When enabled, the current tab
     // is displayed at the bottom of the tab grid and not evicted.
