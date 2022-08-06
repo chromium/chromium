@@ -271,7 +271,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497852260688568942">O administrador desactivou a sincronización</translation>
 <translation id="250020030759455918">Poderás ver o teu estado de inicio de sesión de <ph name="SITE_NAME" />, os teus datos de navegación e os datos do sitio en Chrome</translation>
-<translation id="2507178219579379057">Chrome explora formas de limitar o spam, a fraude e o uso compartido entre sitios. Tamén <ph name="BEGIN_LINK" />fai unha estimación dos teus intereses<ph name="END_LINK" /> que os sitios poden usar para mostrarche anuncios. Podes xestionar os teus intereses na configuración.</translation>
 <translation id="2513403576141822879">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización e servizos de Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2523184218357549926">Envía a Google os URL das páxinas que visitas</translation>
@@ -1049,6 +1048,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6674571176963658787">Para comezar a sincronizar datos, escribe a túa frase de acceso</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
+<translation id="6676927815633975364">Inicia sesión neste sitio e en Chrome</translation>
 <translation id="6684809838922667136">Mellora Chrome</translation>
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>

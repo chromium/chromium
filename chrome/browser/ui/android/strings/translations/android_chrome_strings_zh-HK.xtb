@@ -271,7 +271,6 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497852260688568942">您的管理員已停用同步功能</translation>
 <translation id="250020030759455918">您可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料</translation>
-<translation id="2507178219579379057">Chrome 正在研究如何防範垃圾廣告和欺詐行為，以及限制網站之間分享資訊的方法。Chrome 亦會<ph name="BEGIN_LINK" />推斷您的興趣<ph name="END_LINK" />，讓網站能顯示廣告。您可在設定中管理興趣。</translation>
 <translation id="2513403576141822879">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2523184218357549926">將您瀏覽的網頁網址傳送給 Google</translation>
@@ -780,6 +779,7 @@
 <translation id="5308380583665731573">連線</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
+<translation id="5321849971085220133">Chrome 正在尋找新方法，以減少追蹤，並進一步提高瀏覽時的安全性。Chrome 亦會<ph name="BEGIN_LINK" />推斷您的興趣<ph name="END_LINK" />，並讓您管理這些興趣。然後，您瀏覽的網站便可要求 Chrome 提供您的興趣，以向您展示廣告。</translation>
 <translation id="5324858694974489420">家長設定</translation>
 <translation id="5326921373682845375">由於預先載入的網頁已經過加密，且連至這些網頁的網站為 Google 網站，因此以私密方式預先載入這些網頁時，Google 伺服器不會接收新資料。</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>

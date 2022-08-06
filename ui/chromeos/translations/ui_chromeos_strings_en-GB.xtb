@@ -285,10 +285,12 @@
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
+<translation id="3495810061346586977">This file is confidential and subject to restrictions by administrator policy. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">An incorrect PIN was entered too many times.</translation>
 <translation id="3549797760399244642">Go to drive.google.com...</translation>
 <translation id="3553048479571901246">To open files with <ph name="APP_NAME" />, first copy them to the Windows files folder.</translation>
 <translation id="3556731189587832921">English (US) with International PC keyboard</translation>
@@ -615,6 +617,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
+<translation id="6295542640242147836">Lock SIM</translation>
 <translation id="6296410173147755564">Invalid PUK</translation>
 <translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6317608858038767920">Custom nameserver <ph name="INPUT_INDEX" /></translation>
@@ -724,6 +727,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Save file as</translation>
 <translation id="7229570126336867161">Need EVDO</translation>
+<translation id="7230898482850090046">Your administrator has requested you to turn off the 'Lock SIM' setting</translation>
 <translation id="7238097264433196391">Drive name</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
@@ -756,6 +760,7 @@
 <translation id="7505167922889582512">Show hidden files</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="751507702149411736">Belarusian</translation>
+<translation id="7521790570754130607">A PIN is required to use mobile data</translation>
 <translation id="7532029025027028521">Persian transliteration</translation>
 <translation id="7544830582642184299">Give Linux apps permission to access files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="7547009467130558110">Trainer</translation>
@@ -780,6 +785,7 @@
 <translation id="76959938259365003">Failed to empty the bin.</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copied.</translation>
+<translation id="7708271999969613024">To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the operator.</translation>
 <translation id="7711920809702896782">Image info</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7730494089396812859">Show Cloud backup details</translation>
@@ -875,6 +881,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Missing SIM card</translation>
 <translation id="8456681095658380701">Invalid name</translation>
+<translation id="8457767749626250697">Your SIM is locked</translation>
 <translation id="8459404855768962328">Copying this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">Right-click a file, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8461914792118322307">Proxy</translation>

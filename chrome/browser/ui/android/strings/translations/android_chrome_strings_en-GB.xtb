@@ -271,7 +271,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="250020030759455918">You'll see your <ph name="SITE_NAME" /> sign-in status, browsing data and site data in Chrome</translation>
-<translation id="2507178219579379057">Chrome is exploring ways to limit ad spam, fraud and sharing between sites. Chrome also <ph name="BEGIN_LINK" />estimates your interests<ph name="END_LINK" /> that sites can use to show you ads. You can manage your interests in settings.</translation>
 <translation id="2513403576141822879">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google services<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2523184218357549926">Sends URLs of pages that you visit to Google</translation>
@@ -780,6 +779,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
+<translation id="5321849971085220133">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK" />estimates your interests<ph name="END_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="5324858694974489420">Parental Settings</translation>
 <translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>

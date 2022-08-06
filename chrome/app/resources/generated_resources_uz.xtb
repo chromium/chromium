@@ -1871,6 +1871,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2727633948226935816">Boshqa eslatilmasin</translation>
 <translation id="2727712005121231835">Asl hajmi</translation>
 <translation id="2729314457178420145">Shuningdek, brauzer tarixi (<ph name="URL" />) ham tozalansin (Google.com hisobingizdan avtomatik chiqib ketasiz). <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome brauzerdagi harakatlaringiz kuzatuvini kamaytirishning yangi usullarini ishlab chiqadi. Shuningdek, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> va ularni boshqarish imkonini beradi. Keyin siz kiradigan saytlar reklama chiqarish uchun Chromedan qiziqishlaringizni koʻrishga ruxsat soʻrashi mumkin.</translation>
 <translation id="2730029791981212295">Linux ilova va fayllari zaxiralanmoqda</translation>
 <translation id="2730901670247399077">Emoji takliflari</translation>
 <translation id="273093730430620027">Bu sahifa kameradan foydalanmoqda.</translation>
@@ -3793,6 +3794,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> translatsiya qilinmadi.</translation>
 <translation id="4579876313423027742">Brauzer bildirishnomalari <ph name="LINK_BEGIN" />Chrome brauzeri sozlamalari<ph name="LINK_END" /> sahifasida boshqariladi</translation>
 <translation id="4580596421317071374">Bu qurilmadagi parollar <ph name="GOOGLE_PASSWORD_MANAGER" />ga saqlanadi.</translation>
+<translation id="4580626299762849806">Parollar import qilinmadi. <ph name="FILENAME" /> faylini va uning bexato formatda ekanini tekshiring.</translation>
 <translation id="4581774856936278355">Linux tiklanmadi</translation>
 <translation id="4582297591746054421">Saytlar odatda nusxalanayotgan matn formatini saqlab qolish uchun klipbord axborotini oʻqiydi</translation>
 <translation id="4582563038311694664">Barcha sozlamalarni dastlabki holatga qaytarish</translation>
@@ -4558,6 +4560,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5350293332385664455">Google Assistentni faolsizlantirish</translation>
 <translation id="535123479159372765">Matn boshqa qurilmadan nusxalangan</translation>
 <translation id="5352033265844765294">Vaqt shtampi</translation>
+<translation id="5352257124367865087">Sayt ruxsatlarini boshqarish</translation>
 <translation id="5353252989841766347">Parollarni Chrome’dan eksport qilish</translation>
 <translation id="5355099869024327351">Sizga bildirishnomalar chiqishi uchun Assistentni ishga tushiradi.</translation>
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
@@ -5058,6 +5061,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5843706793424741864">Farengeyt</translation>
 <translation id="5844574845205796324">Tanishuv uchun yangi kontent takliflari</translation>
 <translation id="5846200638699387931">Konfiguratsiya bilan bogʻliq imloviy xato: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Sayt ruxsatlarini boshqarish</translation>
 <translation id="5846807460505171493">Yangilanishlar va ilovalarni oʻrnating. Davom etish orqali siz bu qurilma Google, aloqa operatoringiz va qurilma ishlab chiqaruvchisidan dasturiy yangilanish va ilovalarni mobil internet orqali ham avtomatik ravishda yuklab olishi va oʻrnatishiga rozilik bildirgan hisoblanasiz. Ayrim ilovalar ilova ichida xaridlarni taklif etishi mumkin.</translation>
 <translation id="5849212445710944278">Allaqachon qo‘shilgan</translation>
 <translation id="5851868085455377790">Noshir</translation>
@@ -5098,6 +5102,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5877064549588274448">Kanal o‘zgartirildi. O‘zgartirishlar kuchga kirishi uchun qurilmani qayta ishga tushiring.</translation>
 <translation id="5877584842898320529">Bu printer mavjud emas yoki noto‘g‘ri o‘rnatilgan.<ph name="BR" /> Uni tekshirib ko‘ring yoki boshqasini tanlang.</translation>
 <translation id="5878945009165002849">Shaxsni tasdiqlash xizmatlariga kirish oynalarini bloklash</translation>
+<translation id="5882449899683447569">Nimadir xato ketdi va parollaringiz import qilinmadi</translation>
 <translation id="5882919346125742463">Tanish tarmoqlar</translation>
 <translation id="5883356647197510494">Avtomatik bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Bu sahiva USB qurilmaga ulangan.</translation>
@@ -5316,7 +5321,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6086846494333236931">Administratoringiz tomonidan o‘rnatilgan</translation>
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>
-<translation id="6088535503330933227">Chrome spam, firibgarlik va saytlararo fayl almashinuviga qarshi kurash usullarini oʻrganadi. Shuningdek, Chrome sizga reklama chiqaradigan saytlarda <ph name="ESTIMATE_INTERESTS_LINK" />. Qiziqishlarni sozlamalr orqali boshqarish mumkin.</translation>
 <translation id="608912389580139775">Bu sahifani Saqlangan sahifalarga kiritish uchun Bukmark belgisini bosing</translation>
 <translation id="6091761513005122595">Umumiy ruxsat berildi.</translation>
 <translation id="6093888419484831006">Yangilash bekor qilinmoqda...</translation>
@@ -5623,6 +5627,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6398715114293939307">Google Play Market olib tashlansin</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="6399774419735315745">Josus</translation>
+<translation id="6400360390396538896">Har doim yoniq (<ph name="ORIGIN" />)</translation>
 <translation id="6401458660421980302">Bu varaqni boshqa qurilmaga yuborish uchun bu yerdan Chrome hisobiga kiring</translation>
 <translation id="6401597285454423070">Kompyuter ishonch platformasi modulining (TPM) xavfsizlik qurilmasi bilan jihozlangan. Undan ChromeOS platformasida ko‘plab jiddiy xavfsizlik funksiyalarini amalga oshirishda foydalanialdi. Batafsil ma’lumotni Chromebook yordam markazidan olishingiz mumkin: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook Oʻyinlar</translation>

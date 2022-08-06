@@ -4691,6 +4691,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5470735824776589490">En omstart krävs innan enheten kan återställas med Powerwash. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hejsan! Nu används min röst för text till tal.</translation>
 <translation id="5472627187093107397">Spara lösenord för den här webbplatsen</translation>
+<translation id="5473062644742711742">Hitta fler tillgänglighetsverktyg i Chrome Web Store</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Genom att fortsätta godkänner du att enheten kan ladda ned och installera uppdateringar och appar automatiskt från Google, ditt barns operatör och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att några av apparna erbjuder köp i appen.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden måste innehålla minst ett tecken}other{Pinkoden måste innehålla minst # tecken}}</translation>
@@ -5328,7 +5329,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
 <translation id="6087746524533454243">Letar du webbläsarens about-sida? Besök</translation>
 <translation id="6087960857463881712">Entusiastiskt ansikte</translation>
-<translation id="6088535503330933227">Chrome utforskar olika sätt att begränsa skräppost, bedrägerier och delning mellan webbplatser. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> också. Dessa kan användas på webbplatser för att visa annonser. Du kan hantera dina intressen i inställningarna.</translation>
 <translation id="608912389580139775">Om du vill lägga till den här sidan i läslistan klickar du på bokmärkesikonen</translation>
 <translation id="6091761513005122595">Den delade resursen har monterats.</translation>
 <translation id="6093888419484831006">Avbryter uppdatering ...</translation>

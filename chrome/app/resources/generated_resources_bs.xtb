@@ -3805,6 +3805,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4579581181964204535">Nije moguće emitirati host računar <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Obavještenja preglednika potražite u <ph name="LINK_BEGIN" />Postavkama preglednika Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Lozinke se pohranjuju u aplikaciji <ph name="GOOGLE_PASSWORD_MANAGER" /> na ovom uređaju.</translation>
+<translation id="4580626299762849806">Zaporke se ne mogu uvesti. Provjerite je li datoteka <ph name="FILENAME" /> pravilno formatirana.</translation>
 <translation id="4581774856936278355">Greška prilikom vraćanja Linuxa</translation>
 <translation id="4582297591746054421">Web lokacije obično čitaju vašu međumemoriju radi funkcija kao što je održavanje formatiranja teksta koji ste kopirali</translation>
 <translation id="4582563038311694664">Vrati sve postavke na zadano</translation>
@@ -5110,6 +5111,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5877064549588274448">Kanal je promijenjen. Ponovo pokrenite uređaj za primjenu izmjena.</translation>
 <translation id="5877584842898320529">Odabrani štampač nije dostupan ili nije ispravno instaliran. <ph name="BR" /> Provjerite štampač ili odaberite drugi.</translation>
 <translation id="5878945009165002849">Blokiraj upite za prijavu koji potiču od usluga identiteta</translation>
+<translation id="5882449899683447569">Došlo je do pogreške i vaše zaporke nisu uvezene</translation>
 <translation id="5882919346125742463">Poznate mreže</translation>
 <translation id="5883356647197510494">Automatski je blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Ova kartica je povezana na USB uređaj.</translation>
@@ -5328,7 +5330,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6086846494333236931">Instalirao administrator</translation>
 <translation id="6087746524533454243">Tražite stranicu s informacijama o pregledniku? Posjetite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
-<translation id="6088535503330933227">Chrome istražuje načine da ograniči neželjenu poštu oglasa, prevare i dijeljenje između web lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koja web lokacije mogu koristiti da vam prikazuju oglase. Interesovanjima možete upravljati u postavkama.</translation>
 <translation id="608912389580139775">Da dodate ovu stranicu na listu za čitanje, kliknite na ikonu Oznaka</translation>
 <translation id="6091761513005122595">Dijeljenje je uspješno aktivirano.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>

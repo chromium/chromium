@@ -4675,6 +4675,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5470735824776589490">È necessario riavviare prima che il dispositivo possa essere reimpostato con Powerwash. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Ciao! Sono la voce della sintesi locale.</translation>
 <translation id="5472627187093107397">Salva le password per questo sito</translation>
+<translation id="5473062644742711742">Trova altri strumenti di accessibilità nel Chrome Web Store</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Se prosegui, accetti che il dispositivo possa scaricare e installare automaticamente aggiornamenti e app da Google, dall'operatore di tuo figlio e dal produttore del dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
@@ -5309,7 +5310,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087746524533454243">Stai cercando la pagina delle informazioni sul browser? Visita la pagina</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>
-<translation id="6088535503330933227">Chrome esamina dei metodi per limitare spam, attività fraudolente e la condivisione tra siti. Inoltre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, che possono essere usati dai siti per mostrarti annunci. Puoi gestire i tuoi interessi nelle impostazioni.</translation>
 <translation id="608912389580139775">Fai clic sull'icona dei preferiti per aggiungere questa pagina al tuo elenco di lettura</translation>
 <translation id="6091761513005122595">Condivisione montata correttamente.</translation>
 <translation id="6093888419484831006">Annullamento aggiornamento...</translation>

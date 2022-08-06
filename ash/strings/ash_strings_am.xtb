@@ -469,6 +469,7 @@
 <translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
 <translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="3713734891607377840">ሲጠናቀቅ ይክፈቱ</translation>
+<translation id="3724279623330129812">በራስ-አጉላ ካሜራውን መሃል ላይ አድርጎታል</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />፣ <ph name="UNAVAILABLE_APPS_TWO" /> እና <ph name="UNAVAILABLE_APPS_COUNT" /> ሌሎች በዚህ መሳሪያ ላይ የሉም።</translation>
 <translation id="3735740477244556633">ደርድር በ</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገጽ እይታ ተነስቷል</translation>
@@ -758,6 +759,16 @@
 <translation id="5393156353051693207">መተግበሪያዎችዎን እንደገና ለመደርደር የትኛውም ቦታ ላይ ይንኩ እና ይያዙ</translation>
 <translation id="5395308026110844773">በ<ph name="IN_PLACE_APP" /> ላይ <ph name="DRAGGED_APP_NAME" />፣ አቃፊ ለመፍጠር ይልቀቁት።</translation>
 <translation id="5397578532367286026">የዚህ ተጠቃሚ አጠቃቀም እና ታሪክ በchrome.com ላይ በአስተዳዳሪ (<ph name="MANAGER_EMAIL" />) ሊገመገም ይችላል።</translation>
+<translation id="5399673806694250334">የሁኔታ መሣቢያ፣ ሰዓት <ph name="TIME" />፣
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />፣
+        <ph name="NETWORK" />፣
+        <ph name="MIC" />፣
+        <ph name="CAMERA" />፣
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />፣
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">ፈጣን ቅንብሮች፣ የማሳወቂያ ማዕከሉን ለመድረስ ፍለጋ + ግራ ይጫኑ።</translation>
 <translation id="5426063383988017631">የቅንብሮች ምናሌ ተዘግቷል</translation>
 <translation id="5428899915242071344">መምረጥ ይጀምሩ</translation>

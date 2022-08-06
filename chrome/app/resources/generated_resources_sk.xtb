@@ -4677,6 +4677,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5470735824776589490">Pred resetovaním zariadenia pomocou funkcie Powerwash sa vyžaduje jeho reštart. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Dobrý deň, som hlas prevodu textu na reč.</translation>
 <translation id="5472627187093107397">Ukladať heslá pre tento web</translation>
+<translation id="5473062644742711742">Ďalšie nástroje dostupnosti v Internetovom obchode Chrome</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora vášho dieťaťa a výrobcu tohto zariadenia a v prípade potreby pritom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí mať aspoň jeden znak}few{PIN musí mať aspoň # znaky}many{PIN must be at least # characters}other{PIN musí mať aspoň # znakov}}</translation>
@@ -5314,7 +5315,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6086846494333236931">Nainštalované vaším správcom</translation>
 <translation id="6087746524533454243">Hľadáte stránku s informáciami o prehliadači? Prejdite na</translation>
 <translation id="6087960857463881712">Paráda</translation>
-<translation id="6088535503330933227">Chrome hľadá spôsoby, ako obmedziť reklamný spam, podvody a zdieľanie obsahu medzi webmi. Chrome okrem toho <ph name="ESTIMATE_INTERESTS_LINK" />, na základe ktorých vám budú môcť weby zobrazovať reklamy. Záujmy môžete spravovať v nastaveniach.</translation>
 <translation id="608912389580139775">Ak chcete túto stránku pridať do svojho čitateľského zoznamu, kliknite na ikonu uloženia ako záložky</translation>
 <translation id="6091761513005122595">Zdieľané úložisko sa úspešne pripojilo.</translation>
 <translation id="6093888419484831006">Zrušenie aktualizácie...</translation>

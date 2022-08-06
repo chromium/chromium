@@ -3793,6 +3793,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4579581181964204535">Ne može se emitirati <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Za obavijesti preglednika otvorite <ph name="LINK_BEGIN" />postavke preglednika Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Zaporke se spremaju u <ph name="GOOGLE_PASSWORD_MANAGER" /> na ovom uređaju.</translation>
+<translation id="4580626299762849806">Zaporke se ne mogu uvesti. Provjerite je li datoteka <ph name="FILENAME" /> pravilno formatirana.</translation>
 <translation id="4581774856936278355">Došlo je do pogreške prilikom vraćanja Linuxa</translation>
 <translation id="4582297591746054421">Web-lokacije obično čitaju vaš međuspremnik radi značajki poput zadržavanja formatiranja kopiranog teksta</translation>
 <translation id="4582563038311694664">Vraćanje svih postavki na zadano</translation>
@@ -5096,6 +5097,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5877064549588274448">Kanal je promijenjen. Ponovo pokrenite uređaj za primjenu promjena.</translation>
 <translation id="5877584842898320529">Odabrani pisač nije dostupan ili nije ispravno instaliran. <ph name="BR" /> Provjerite pisač ili pokušajte odabrati neki drugi.</translation>
 <translation id="5878945009165002849">Blokiraj upite za prijavu usluga za identitet</translation>
+<translation id="5882449899683447569">Došlo je do pogreške i vaše zaporke nisu uvezene</translation>
 <translation id="5882919346125742463">Poznate mreže</translation>
 <translation id="5883356647197510494">Automatski je blokirano sljedeće: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Kartica je povezana s USB uređajem.</translation>
@@ -5313,7 +5315,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6086846494333236931">Instalirao vaš administrator</translation>
 <translation id="6087746524533454243">Tražite li stranicu s informacijama o pregledniku? Otvorite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
-<translation id="6088535503330933227">Chrome istražuje načine za ograničavanje neželjenih oglasa, prijevara i dijeljenja između web-lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koje web-lokacije mogu upotrebljavati da bi vam prikazivale oglase. Svojim interesima možete upravljati u postavkama.</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na popis za čitanje, kliknite ikonu Oznaka</translation>
 <translation id="6091761513005122595">Dijeljenje je učitano.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>

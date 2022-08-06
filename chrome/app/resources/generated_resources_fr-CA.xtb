@@ -5315,7 +5315,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6086846494333236931">Élément installé par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez la page à propos du navigateur? Consultez</translation>
 <translation id="6087960857463881712">Superbe visage</translation>
-<translation id="6088535503330933227">Chrome explore des moyens de limiter les annonces publicitaires indésirables, la fraude et le partage entre les sites. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> que d'autres sites peuvent utiliser pour vous montrer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône de favori</translation>
 <translation id="6091761513005122595">Partage correctement configuré.</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
@@ -7965,6 +7964,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8666759526542103597">À propos de la personnalisation des annonces en fonction du navigateur</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> est maintenant en mode plein écran et a désactivé le curseur de votre souris.</translation>
 <translation id="8667760277771450375">Nous explorons des moyens de limiter les suivis intersites tout en permettant aux sites d'empêcher les annonces indésirables et la fraude.</translation>
+<translation id="8668378421690365723">Votre appareil pourrait ne plus fonctionner correctement et pourrait rencontrer des problèmes de sécurité et de performance.</translation>
 <translation id="8669284339312441707">Plus chaud</translation>
 <translation id="8670537393737592796">Pour revenir ici rapidement, installez <ph name="APP_NAME" /> en cliquant sur le bouton d'installation</translation>
 <translation id="867085395664725367">Une erreur de serveur temporaire s'est produite.</translation>
@@ -8449,6 +8449,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pour profiter d'une expérience optimale, installez <ph name="DEVICE_OS" /> sur votre disque interne. Vous pouvez également l'installer plus tard à partir de l'écran d'ouverture de session.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si vous n'êtes pas prêt à faire l'installation, vous pouvez l'exécuter à partir d'une clé USB pour l'essayer. Vous conserverez ainsi votre SE et vos données, mais vous remarquerez peut-être des limites de l'espace de stockage et des performances.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
+<translation id="9123287046453017203">Votre appareil n'est pas à jour</translation>
 <translation id="9124003689441359348">Les mots de passe enregistrés s'afficheront ici</translation>
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>

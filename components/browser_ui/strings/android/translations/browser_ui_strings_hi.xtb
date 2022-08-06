@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटों को अपने वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करने से रोकें</translation>
 <translation id="6447842834002726250">कुकी</translation>
+<translation id="6467852467360539617">डेटा मिटाएं और अनुमतियां रीसेट करें</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चुने गए</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="7302486331832100261">आप आम तौर पर, सूचनाओंं पर रोक लगाते हैं. अनुमति देने के लिए, 'जानकारी' पर टैप करें.</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> की सेटिंग</translation>
 <translation id="7423098979219808738">पहले पूछें</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड पढ़ने से ब्लॉक किया गया है</translation>
 <translation id="7425915948813553151">साइटों के लिए गहरे रंग वाली थीम</translation>

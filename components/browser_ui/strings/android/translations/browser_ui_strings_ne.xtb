@@ -243,6 +243,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
+<translation id="6467852467360539617">डेटा मेटाउनुहोस् र अनुमतिहरू रिसेट गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}}</translation>
@@ -282,6 +283,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चयन गरिए</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="7302486331832100261">तपाईं सामान्यतया सूचनाहरूमाथि रोक लगाउनुहुन्छ। अनुमति दिन विवरणहरूमा ट्याप गर्नुहोस्।</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> का सेटिङ</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
 <translation id="7423538860840206698">क्लिपबोर्डका सामग्री पढ्नबाट रोक लगाइयो</translation>
 <translation id="7425915948813553151">साइटहरूमा लागू हुने अँध्यारो थिम</translation>

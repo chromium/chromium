@@ -271,7 +271,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="2497852260688568942">Administratoren din har slått av synkronisering</translation>
 <translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
-<translation id="2507178219579379057">Chrome utforsker måter å begrense søppelannonser, svindel og deling mellom nettsteder på. Chrome <ph name="BEGIN_LINK" />anslår også interessene dine<ph name="END_LINK" /> som nettsteder kan bruke for å vise deg annonser. Du kan administrere interessene dine i innstillingene.</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2523184218357549926">Sender Google nettadressene til sider du besøker</translation>

@@ -327,6 +327,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2894949423239620203">Ikhebuli lingase lithonye ukusebenza</translation>
 <translation id="2903844815300039659">Ixhumeke ku-<ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ukuthatha isikrini</translation>
+<translation id="2925246975070834767">Zama ukusondeza ngokuzenzakalela ukuze ube maphakathi nesikrini. Ivule Kumasethingi Asheshayo.</translation>
 <translation id="2941112035454246133">Phansi</translation>
 <translation id="2942350706960889382">Isikhulisi esidokhiwe</translation>
 <translation id="2942516765047364088">Isimo seshelufu</translation>
@@ -469,6 +470,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="3708186454126126312">Kuxhunywe ngaphambilini</translation>
 <translation id="371370241367527062">Imakrofoni yangaphambili</translation>
 <translation id="3713734891607377840">Vula lapho isiqedile</translation>
+<translation id="3724279623330129812">Sondeza ngokuzenzakalela ikhamera emaphakathi</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, nangu-<ph name="UNAVAILABLE_APPS_COUNT" /> ngaphezulu awekho kule divayisi.</translation>
 <translation id="3735740477244556633">Hlunga nge-</translation>
 <translation id="3742055079367172538">Kuthathwe isithombe-skrini</translation>
@@ -633,6 +635,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="4628757576491864469">Amadivayisi</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Isilinganiso senkanyezi <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nosuku}one{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nezinsuku ezingu-#}other{Shintsha idivayisi ibe wuhlobo lwangaphambilini phakathi nezinsuku ezingu-#}}</translation>
+<translation id="4633636853437260449">Cindezela u-Ctrl+W ukuze usule</translation>
 <translation id="4642092649622328492">Thatha isithombe-skrini esincane</translation>
 <translation id="4644727592819780893">Isifunda sincane kakhulu ukulingana ikhamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Izincomo zohlelo lokusebenza</translation>
@@ -758,6 +761,16 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5393156353051693207">Thinta uphinde ubambe noma yikuphi ukuze uhlele kabusha ama-app akho</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> phezu kwe-<ph name="IN_PLACE_APP" />, khulula ukuze udale ifolda.</translation>
 <translation id="5397578532367286026">Ukusetshenziswa nomlando walo msebenzisi ungabuyekezwa ngumphathi (<ph name="MANAGER_EMAIL" />) ku-chrome.com.</translation>
+<translation id="5399673806694250334">Isimo sethileyi, isikhathi <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Izilungiselelo Ezisheshayo, Cindezela usesho + esobunxele ukuze ufinyelele isikhungo sezaziso.</translation>
 <translation id="5426063383988017631">Imenyu yamasethingi ivaliwe</translation>
 <translation id="5428899915242071344">Qala ukukhetha</translation>

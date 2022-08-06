@@ -271,7 +271,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497852260688568942">La synchronisation est désactivée par votre administrateur</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, vos données de navigation et vos données de site dans Chrome</translation>
-<translation id="2507178219579379057">Chrome explore des moyens de limiter les annonces indésirables, la fraude et le partage entre les sites. En outre, Chrome <ph name="BEGIN_LINK" />devine vos centres d'intérêt<ph name="END_LINK" /> que d'autres sites peuvent utiliser pour vous montrer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="2513403576141822879">Pour plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, voir <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>

@@ -4675,6 +4675,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5470735824776589490">Es necesario reiniciar el dispositivo antes de poder restablecerlo con Powerwash. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">¡Hola! Soy tu voz de la conversión de texto a voz.</translation>
 <translation id="5472627187093107397">Guardar contraseñas de este sitio web</translation>
+<translation id="5473062644742711742">Descubre más herramientas de accesibilidad en Chrome Web Store</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Si continúas, aceptas que este dispositivo pueda descargar e instalar actualizaciones y aplicaciones de Google, del operador de tu hijo/a y del fabricante de este dispositivo de forma automática, y que incluso pueda usar datos móviles para ello. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
@@ -5312,7 +5313,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6086846494333236931">Instalada por tu administrador</translation>
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de emoción</translation>
-<translation id="6088535503330933227">Chrome explora formas de limitar el spam publicitario, el fraude y lo que se comparte entre sitios. Chrome también <ph name="ESTIMATE_INTERESTS_LINK" />, que después usan los sitios para mostrarte anuncios. Puedes gestionar tus intereses en la configuración.</translation>
 <translation id="608912389580139775">Para añadir esta página a tu lista de lectura, haz clic en el icono de marcadores</translation>
 <translation id="6091761513005122595">El recurso compartido se ha activado correctamente.</translation>
 <translation id="6093888419484831006">Cancelando la actualización...</translation>

@@ -1884,6 +1884,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2727633948226935816">Don't remind me again</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Also clear browsing data (<ph name="URL" />) which may sign you out of Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="2730029791981212295">Backing up Linux apps and files</translation>
 <translation id="2730901670247399077">Emoji suggestions</translation>
 <translation id="273093730430620027">This page is accessing your camera.</translation>
@@ -3806,6 +3807,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4579581181964204535">Unable to cast <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">For browser notifications, go to <ph name="LINK_BEGIN" />Chrome browser settings<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> on this device.</translation>
+<translation id="4580626299762849806">Can't import passwords. Check <ph name="FILENAME" /> and make sure that it's formatted correctly.</translation>
 <translation id="4581774856936278355">Error while restoring Linux</translation>
 <translation id="4582297591746054421">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4582563038311694664">Reset all settings</translation>
@@ -4571,6 +4573,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5350293332385664455">Turn off Google Assistant</translation>
 <translation id="535123479159372765">Text copied from other device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
+<translation id="5352257124367865087">Manage site permissions</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
 <translation id="5355099869024327351">Allow the Assistant to show you notifications</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
@@ -5071,6 +5074,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Manage site permissions</translation>
 <translation id="5846807460505171493">Install updates and apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
 <translation id="5849212445710944278">Already added</translation>
 <translation id="5851868085455377790">Issuer</translation>
@@ -5111,6 +5115,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5877064549588274448">Channel changed. Restart your device to apply changes.</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
+<translation id="5882449899683447569">Something went wrong and your passwords weren't imported</translation>
 <translation id="5882919346125742463">Known Networks</translation>
 <translation id="5883356647197510494">Automatically blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">This tab is connected to a USB device.</translation>
@@ -5329,7 +5334,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
-<translation id="6088535503330933227">Chrome is exploring ways to limit ad spam, fraud and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> that sites can use to show you ads. You can manage your interests in settings.</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>
 <translation id="6091761513005122595">Share mounted successfully.</translation>
 <translation id="6093888419484831006">Cancelling update...</translation>
@@ -5636,6 +5640,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6398715114293939307">Remove Google Play Store</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6399774419735315745">Spy</translation>
+<translation id="6400360390396538896">Always on <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">To send this tab to another device, sign in to Chrome there</translation>
 <translation id="6401597285454423070">Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook gaming</translation>

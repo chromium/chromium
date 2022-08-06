@@ -100,6 +100,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="1467432559032391204">Left</translation>
+<translation id="146902737843070955">Your administrator has requested this change</translation>
 <translation id="147310119694673958">Phone battery <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, press Enter key to open Calendar view</translation>
@@ -837,6 +838,7 @@ Connect your device to power.</translation>
 <translation id="5779721926447984944">Pinned files</translation>
 <translation id="5788127256798019331">Play files</translation>
 <translation id="5790085346892983794">Success</translation>
+<translation id="5804651031882187592">Turn off 'Lock SIM' setting</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>

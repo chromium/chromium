@@ -271,7 +271,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2496180316473517155">Kezish tarixi</translation>
 <translation id="2497852260688568942">Sinxronizatsiyani administrator o‘chirib qo‘ygan</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> saytiga kirish holati, brauzer va sayt maʼlumotlari Chromeda chiqadi</translation>
-<translation id="2507178219579379057">Chrome spam, firibgarlik va saytlararo fayl almashinuviga qarshi kurash usullarini oʻrganadi. Chrome, shuningdek, saytlar sizga reklama koʻrsatishda foydalanishi mumkin boʻlgan <ph name="BEGIN_LINK" />qiziqishlaringizni ham hisobga oladi.<ph name="END_LINK" /> Qiziqishlarni sozlamalr orqali boshqarish mumkin.</translation>
 <translation id="2513403576141822879">Maxfiylik, xavfsizlik va ma’lumotlar yig‘ilishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Sinxronizatsiya va shaxsiy sozlamalar<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2523184218357549926">Siz tashrif buyurgan URL manzillarni Google serverlariga yuboradi</translation>
@@ -780,6 +779,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5319359161174645648">Google Chrome brauzerini  tavsiya qiladi</translation>
+<translation id="5321849971085220133">Chrome brauzerdagi harakatlaringiz kuzatuvini kamaytirishning yangi usullarini ishlab chiqadi. Shuningdek, Chrome <ph name="BEGIN_LINK" />qiziqishlaringizni taxmin qiladi<ph name="END_LINK" /> va ularni boshqarish imkonini beradi. Keyin siz kiradigan saytlar reklama chiqarish uchun Chromedan qiziqishlaringizni koʻrishga ruxsat soʻrashi mumkin.</translation>
 <translation id="5324858694974489420">Ota-onalar sozlamalari</translation>
 <translation id="5326921373682845375">Oldindan yuklanadigan sahifalar shifrlangani va sahifalarga ulovchi sayt Google sayti boʻlgani bois, bunday sahifalar maxfiy tarzda oldindan yuklansa, Google serverlari yangi maʼlumotlarni qabul qila olmaydi.</translation>
 <translation id="5329858041417644019">Brauzeringiz mustaqil rejimda</translation>

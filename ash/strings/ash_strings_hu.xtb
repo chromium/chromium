@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">A kábel befolyásolhatja a teljesítményt</translation>
 <translation id="2903844815300039659">Csatlakozva <ph name="NAME" /> hálózathoz, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Képernyőfelvételek</translation>
+<translation id="2925246975070834767">Próbálja ki az automatikus nagyítást, hogy a képernyő közepére kerüljön. Ezt a funkciót a Gyorsbeállításokban kapcsolhatja be.</translation>
 <translation id="2941112035454246133">Alacsony</translation>
 <translation id="2942350706960889382">Dokkolt nagyító</translation>
 <translation id="2942516765047364088">Polc pozíciója</translation>
@@ -469,6 +470,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3708186454126126312">Korábban csatlakoztatva</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
+<translation id="3724279623330129812">Az automatikus nagyítás középre igazította a kamerát</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
@@ -634,6 +636,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4628757576491864469">Eszközök</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> csillagos értékelés</translation>
 <translation id="4633185660152240791">{0,plural, =1{Eszköz módosítása az előző verzióra egy napon belül}other{Eszköz módosítása az előző verzióra # napon belül}}</translation>
+<translation id="4633636853437260449">A törléshez nyomja meg a Ctrl + W billentyűkombinációt.</translation>
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4644727592819780893">A terület túl kicsi, a kamera nem tud előnézetet készíteni róla</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, javasolt alkalmazás</translation>
