@@ -1687,7 +1687,6 @@ crbug.com/1050754 external/wpt/css/mediaqueries/forced-colors.html [ Failure Pas
 crbug.com/1050754 external/wpt/css/mediaqueries/navigation-controls.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/mediaqueries/prefers-contrast.html [ Failure ]
 crbug.com/1050754 external/wpt/css/mediaqueries/prefers-reduced-data.html [ Failure ]
-crbug.com/1050754 external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/1050754 external/wpt/css/motion/animation/offset-anchor-composition.html [ Failure ]
 crbug.com/1050754 external/wpt/css/motion/animation/offset-anchor-interpolation.html [ Failure ]
 crbug.com/1050754 external/wpt/css/motion/animation/offset-distance-composition.html [ Failure Pass ]

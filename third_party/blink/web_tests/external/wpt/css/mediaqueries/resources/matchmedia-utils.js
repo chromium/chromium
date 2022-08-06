@@ -49,11 +49,11 @@ function query_should_not_be_js_parseable(query) {
 }
 
 function query_is_known(query) {
-  return window.matchMedia(`(${query}) or (not (${query}))`).matches;
+  return window.matchMedia(`${query}, not all and ${query}`).matches;
 }
 
 function query_is_unknown(query) {
-  return !window.matchMedia(`(${query}) or (not (${query}))`).matches;
+  return !window.matchMedia(`${query}, not all and ${query}`).matches;
 }
 
 function query_should_be_known(query) {
@@ -68,6 +68,9 @@ function query_should_be_unknown(query) {
   test(() => {
     assert_true(query_is_js_parseable(query), "Can parse with JS");
     assert_true(query_is_css_parseable(query), "Can parse with CSS");
+  }, "Should be parseable: '" + query + "'");
+
+  test(() => {
     assert_true(query_is_unknown(query));
   }, "Should be unknown: '" + query + "'");
 }

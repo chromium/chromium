@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1059 tests; 1028 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1410 tests; 1379 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS query_should_be_parseable: (orientation)
 PASS query_should_be_parseable: not (orientation)
 PASS expression_should_be_known: (orientation)
@@ -20,7 +20,9 @@ PASS query_should_be_parseable: all and (orientation) and (orientation)
 PASS query_should_not_be_parseable: (orientation) and (orientation) or (orientation)
 PASS query_should_not_be_parseable: (orientation) and not (orientation)
 PASS expression_should_be_known: width
+PASS expression_should_be_parseable: min-width
 PASS expression_should_be_unknown: min-width
+PASS expression_should_be_parseable: max-width
 PASS expression_should_be_unknown: max-width
 PASS expression_should_be_known: width : 0
 PASS expression_should_be_known: width : 0px
@@ -32,16 +34,27 @@ PASS expression_should_be_known: width : 0.001mm
 PASS expression_should_be_known: width : 100000px
 PASS expression_should_be_known: min-width : -0
 PASS expression_should_be_known: max-width : -0
+PASS expression_should_be_parseable: width : -1px
 PASS expression_should_be_unknown: width : -1px
+PASS expression_should_be_parseable: min-width : -1px
 PASS expression_should_be_unknown: min-width : -1px
+PASS expression_should_be_parseable: max-width : -1px
 PASS expression_should_be_unknown: max-width : -1px
+PASS expression_should_be_parseable: width : -0.00001mm
 PASS expression_should_be_unknown: width : -0.00001mm
+PASS expression_should_be_parseable: width : -100000em
 PASS expression_should_be_unknown: width : -100000em
+PASS expression_should_be_parseable: 0px : width : 0px
 PASS expression_should_be_unknown: 0px : width : 0px
+PASS expression_should_be_parseable: 0px : width > 0px
 PASS expression_should_be_unknown: 0px : width > 0px
+PASS expression_should_be_parseable: 0px : width >= 0px
 PASS expression_should_be_unknown: 0px : width >= 0px
+PASS expression_should_be_parseable: 0px : width = 0px
 PASS expression_should_be_unknown: 0px : width = 0px
+PASS expression_should_be_parseable: 0px : width <= 0px
 PASS expression_should_be_unknown: 0px : width <= 0px
+PASS expression_should_be_parseable: 0px : width < 0px
 PASS expression_should_be_unknown: 0px : width < 0px
 PASS expression_should_be_known: width > 0
 PASS expression_should_be_known: width > 0px
@@ -51,19 +64,30 @@ PASS expression_should_be_known: width > -0cm
 PASS expression_should_be_known: width > 1px
 PASS expression_should_be_known: width > 0.001mm
 PASS expression_should_be_known: width > 100000px
+PASS expression_should_be_parseable: min-width > -0
 PASS expression_should_be_unknown: min-width > -0
+PASS expression_should_be_parseable: max-width > -0
 PASS expression_should_be_unknown: max-width > -0
 PASS expression_should_be_known: 0px > width > 100000px
+PASS expression_should_be_parseable: width > -1px
 PASS expression_should_be_unknown: width > -1px
+PASS expression_should_be_parseable: min-width > -1px
 PASS expression_should_be_unknown: min-width > -1px
+PASS expression_should_be_parseable: max-width > -1px
 PASS expression_should_be_unknown: max-width > -1px
+PASS expression_should_be_parseable: width > -0.00001mm
 PASS expression_should_be_unknown: width > -0.00001mm
+PASS expression_should_be_parseable: width > -100000em
 PASS expression_should_be_unknown: width > -100000em
+PASS expression_should_be_parseable: 0px > width : 0px
 PASS expression_should_be_unknown: 0px > width : 0px
 PASS expression_should_be_known: 0px > width > 0px
 PASS expression_should_be_known: 0px > width >= 0px
+PASS expression_should_be_parseable: 0px > width = 0px
 PASS expression_should_be_unknown: 0px > width = 0px
+PASS expression_should_be_parseable: 0px > width <= 0px
 PASS expression_should_be_unknown: 0px > width <= 0px
+PASS expression_should_be_parseable: 0px > width < 0px
 PASS expression_should_be_unknown: 0px > width < 0px
 PASS expression_should_be_known: width >= 0
 PASS expression_should_be_known: width >= 0px
@@ -73,20 +97,32 @@ PASS expression_should_be_known: width >= -0cm
 PASS expression_should_be_known: width >= 1px
 PASS expression_should_be_known: width >= 0.001mm
 PASS expression_should_be_known: width >= 100000px
+PASS expression_should_be_parseable: min-width >= -0
 PASS expression_should_be_unknown: min-width >= -0
+PASS expression_should_be_parseable: max-width >= -0
 PASS expression_should_be_unknown: max-width >= -0
 PASS expression_should_be_known: 0px >= width >= 100000px
+PASS expression_should_be_parseable: width > = 0px
 PASS expression_should_be_unknown: width > = 0px
+PASS expression_should_be_parseable: width >= -1px
 PASS expression_should_be_unknown: width >= -1px
+PASS expression_should_be_parseable: min-width >= -1px
 PASS expression_should_be_unknown: min-width >= -1px
+PASS expression_should_be_parseable: max-width >= -1px
 PASS expression_should_be_unknown: max-width >= -1px
+PASS expression_should_be_parseable: width >= -0.00001mm
 PASS expression_should_be_unknown: width >= -0.00001mm
+PASS expression_should_be_parseable: width >= -100000em
 PASS expression_should_be_unknown: width >= -100000em
+PASS expression_should_be_parseable: 0px >= width : 0px
 PASS expression_should_be_unknown: 0px >= width : 0px
 PASS expression_should_be_known: 0px >= width > 0px
 PASS expression_should_be_known: 0px >= width >= 0px
+PASS expression_should_be_parseable: 0px >= width = 0px
 PASS expression_should_be_unknown: 0px >= width = 0px
+PASS expression_should_be_parseable: 0px >= width <= 0px
 PASS expression_should_be_unknown: 0px >= width <= 0px
+PASS expression_should_be_parseable: 0px >= width < 0px
 PASS expression_should_be_unknown: 0px >= width < 0px
 PASS expression_should_be_known: width = 0
 PASS expression_should_be_known: width = 0px
@@ -96,19 +132,33 @@ PASS expression_should_be_known: width = -0cm
 PASS expression_should_be_known: width = 1px
 PASS expression_should_be_known: width = 0.001mm
 PASS expression_should_be_known: width = 100000px
+PASS expression_should_be_parseable: min-width = -0
 PASS expression_should_be_unknown: min-width = -0
+PASS expression_should_be_parseable: max-width = -0
 PASS expression_should_be_unknown: max-width = -0
+PASS expression_should_be_parseable: 0px = width = 100000px
 PASS expression_should_be_unknown: 0px = width = 100000px
+PASS expression_should_be_parseable: width = -1px
 PASS expression_should_be_unknown: width = -1px
+PASS expression_should_be_parseable: min-width = -1px
 PASS expression_should_be_unknown: min-width = -1px
+PASS expression_should_be_parseable: max-width = -1px
 PASS expression_should_be_unknown: max-width = -1px
+PASS expression_should_be_parseable: width = -0.00001mm
 PASS expression_should_be_unknown: width = -0.00001mm
+PASS expression_should_be_parseable: width = -100000em
 PASS expression_should_be_unknown: width = -100000em
+PASS expression_should_be_parseable: 0px = width : 0px
 PASS expression_should_be_unknown: 0px = width : 0px
+PASS expression_should_be_parseable: 0px = width > 0px
 PASS expression_should_be_unknown: 0px = width > 0px
+PASS expression_should_be_parseable: 0px = width >= 0px
 PASS expression_should_be_unknown: 0px = width >= 0px
+PASS expression_should_be_parseable: 0px = width = 0px
 PASS expression_should_be_unknown: 0px = width = 0px
+PASS expression_should_be_parseable: 0px = width <= 0px
 PASS expression_should_be_unknown: 0px = width <= 0px
+PASS expression_should_be_parseable: 0px = width < 0px
 PASS expression_should_be_unknown: 0px = width < 0px
 PASS expression_should_be_known: width <= 0
 PASS expression_should_be_known: width <= 0px
@@ -118,18 +168,30 @@ PASS expression_should_be_known: width <= -0cm
 PASS expression_should_be_known: width <= 1px
 PASS expression_should_be_known: width <= 0.001mm
 PASS expression_should_be_known: width <= 100000px
+PASS expression_should_be_parseable: min-width <= -0
 PASS expression_should_be_unknown: min-width <= -0
+PASS expression_should_be_parseable: max-width <= -0
 PASS expression_should_be_unknown: max-width <= -0
 PASS expression_should_be_known: 0px <= width <= 100000px
+PASS expression_should_be_parseable: width < = 0px
 PASS expression_should_be_unknown: width < = 0px
+PASS expression_should_be_parseable: width <= -1px
 PASS expression_should_be_unknown: width <= -1px
+PASS expression_should_be_parseable: min-width <= -1px
 PASS expression_should_be_unknown: min-width <= -1px
+PASS expression_should_be_parseable: max-width <= -1px
 PASS expression_should_be_unknown: max-width <= -1px
+PASS expression_should_be_parseable: width <= -0.00001mm
 PASS expression_should_be_unknown: width <= -0.00001mm
+PASS expression_should_be_parseable: width <= -100000em
 PASS expression_should_be_unknown: width <= -100000em
+PASS expression_should_be_parseable: 0px <= width : 0px
 PASS expression_should_be_unknown: 0px <= width : 0px
+PASS expression_should_be_parseable: 0px <= width > 0px
 PASS expression_should_be_unknown: 0px <= width > 0px
+PASS expression_should_be_parseable: 0px <= width >= 0px
 PASS expression_should_be_unknown: 0px <= width >= 0px
+PASS expression_should_be_parseable: 0px <= width = 0px
 PASS expression_should_be_unknown: 0px <= width = 0px
 PASS expression_should_be_known: 0px <= width <= 0px
 PASS expression_should_be_known: 0px <= width < 0px
@@ -141,22 +203,35 @@ PASS expression_should_be_known: width < -0cm
 PASS expression_should_be_known: width < 1px
 PASS expression_should_be_known: width < 0.001mm
 PASS expression_should_be_known: width < 100000px
+PASS expression_should_be_parseable: min-width < -0
 PASS expression_should_be_unknown: min-width < -0
+PASS expression_should_be_parseable: max-width < -0
 PASS expression_should_be_unknown: max-width < -0
 PASS expression_should_be_known: 0px < width < 100000px
+PASS expression_should_be_parseable: width < -1px
 PASS expression_should_be_unknown: width < -1px
+PASS expression_should_be_parseable: min-width < -1px
 PASS expression_should_be_unknown: min-width < -1px
+PASS expression_should_be_parseable: max-width < -1px
 PASS expression_should_be_unknown: max-width < -1px
+PASS expression_should_be_parseable: width < -0.00001mm
 PASS expression_should_be_unknown: width < -0.00001mm
+PASS expression_should_be_parseable: width < -100000em
 PASS expression_should_be_unknown: width < -100000em
+PASS expression_should_be_parseable: 0px < width : 0px
 PASS expression_should_be_unknown: 0px < width : 0px
+PASS expression_should_be_parseable: 0px < width > 0px
 PASS expression_should_be_unknown: 0px < width > 0px
+PASS expression_should_be_parseable: 0px < width >= 0px
 PASS expression_should_be_unknown: 0px < width >= 0px
+PASS expression_should_be_parseable: 0px < width = 0px
 PASS expression_should_be_unknown: 0px < width = 0px
 PASS expression_should_be_known: 0px < width <= 0px
 PASS expression_should_be_known: 0px < width < 0px
 PASS expression_should_be_known: height
+PASS expression_should_be_parseable: min-height
 PASS expression_should_be_unknown: min-height
+PASS expression_should_be_parseable: max-height
 PASS expression_should_be_unknown: max-height
 PASS expression_should_be_known: height : 0
 PASS expression_should_be_known: height : 0px
@@ -168,16 +243,27 @@ PASS expression_should_be_known: height : 0.001mm
 PASS expression_should_be_known: height : 100000px
 PASS expression_should_be_known: min-height : -0
 PASS expression_should_be_known: max-height : -0
+PASS expression_should_be_parseable: height : -1px
 PASS expression_should_be_unknown: height : -1px
+PASS expression_should_be_parseable: min-height : -1px
 PASS expression_should_be_unknown: min-height : -1px
+PASS expression_should_be_parseable: max-height : -1px
 PASS expression_should_be_unknown: max-height : -1px
+PASS expression_should_be_parseable: height : -0.00001mm
 PASS expression_should_be_unknown: height : -0.00001mm
+PASS expression_should_be_parseable: height : -100000em
 PASS expression_should_be_unknown: height : -100000em
+PASS expression_should_be_parseable: 0px : height : 0px
 PASS expression_should_be_unknown: 0px : height : 0px
+PASS expression_should_be_parseable: 0px : height > 0px
 PASS expression_should_be_unknown: 0px : height > 0px
+PASS expression_should_be_parseable: 0px : height >= 0px
 PASS expression_should_be_unknown: 0px : height >= 0px
+PASS expression_should_be_parseable: 0px : height = 0px
 PASS expression_should_be_unknown: 0px : height = 0px
+PASS expression_should_be_parseable: 0px : height <= 0px
 PASS expression_should_be_unknown: 0px : height <= 0px
+PASS expression_should_be_parseable: 0px : height < 0px
 PASS expression_should_be_unknown: 0px : height < 0px
 PASS expression_should_be_known: height > 0
 PASS expression_should_be_known: height > 0px
@@ -187,19 +273,30 @@ PASS expression_should_be_known: height > -0cm
 PASS expression_should_be_known: height > 1px
 PASS expression_should_be_known: height > 0.001mm
 PASS expression_should_be_known: height > 100000px
+PASS expression_should_be_parseable: min-height > -0
 PASS expression_should_be_unknown: min-height > -0
+PASS expression_should_be_parseable: max-height > -0
 PASS expression_should_be_unknown: max-height > -0
 PASS expression_should_be_known: 0px > height > 100000px
+PASS expression_should_be_parseable: height > -1px
 PASS expression_should_be_unknown: height > -1px
+PASS expression_should_be_parseable: min-height > -1px
 PASS expression_should_be_unknown: min-height > -1px
+PASS expression_should_be_parseable: max-height > -1px
 PASS expression_should_be_unknown: max-height > -1px
+PASS expression_should_be_parseable: height > -0.00001mm
 PASS expression_should_be_unknown: height > -0.00001mm
+PASS expression_should_be_parseable: height > -100000em
 PASS expression_should_be_unknown: height > -100000em
+PASS expression_should_be_parseable: 0px > height : 0px
 PASS expression_should_be_unknown: 0px > height : 0px
 PASS expression_should_be_known: 0px > height > 0px
 PASS expression_should_be_known: 0px > height >= 0px
+PASS expression_should_be_parseable: 0px > height = 0px
 PASS expression_should_be_unknown: 0px > height = 0px
+PASS expression_should_be_parseable: 0px > height <= 0px
 PASS expression_should_be_unknown: 0px > height <= 0px
+PASS expression_should_be_parseable: 0px > height < 0px
 PASS expression_should_be_unknown: 0px > height < 0px
 PASS expression_should_be_known: height >= 0
 PASS expression_should_be_known: height >= 0px
@@ -209,20 +306,32 @@ PASS expression_should_be_known: height >= -0cm
 PASS expression_should_be_known: height >= 1px
 PASS expression_should_be_known: height >= 0.001mm
 PASS expression_should_be_known: height >= 100000px
+PASS expression_should_be_parseable: min-height >= -0
 PASS expression_should_be_unknown: min-height >= -0
+PASS expression_should_be_parseable: max-height >= -0
 PASS expression_should_be_unknown: max-height >= -0
 PASS expression_should_be_known: 0px >= height >= 100000px
+PASS expression_should_be_parseable: height > = 0px
 PASS expression_should_be_unknown: height > = 0px
+PASS expression_should_be_parseable: height >= -1px
 PASS expression_should_be_unknown: height >= -1px
+PASS expression_should_be_parseable: min-height >= -1px
 PASS expression_should_be_unknown: min-height >= -1px
+PASS expression_should_be_parseable: max-height >= -1px
 PASS expression_should_be_unknown: max-height >= -1px
+PASS expression_should_be_parseable: height >= -0.00001mm
 PASS expression_should_be_unknown: height >= -0.00001mm
+PASS expression_should_be_parseable: height >= -100000em
 PASS expression_should_be_unknown: height >= -100000em
+PASS expression_should_be_parseable: 0px >= height : 0px
 PASS expression_should_be_unknown: 0px >= height : 0px
 PASS expression_should_be_known: 0px >= height > 0px
 PASS expression_should_be_known: 0px >= height >= 0px
+PASS expression_should_be_parseable: 0px >= height = 0px
 PASS expression_should_be_unknown: 0px >= height = 0px
+PASS expression_should_be_parseable: 0px >= height <= 0px
 PASS expression_should_be_unknown: 0px >= height <= 0px
+PASS expression_should_be_parseable: 0px >= height < 0px
 PASS expression_should_be_unknown: 0px >= height < 0px
 PASS expression_should_be_known: height = 0
 PASS expression_should_be_known: height = 0px
@@ -232,19 +341,33 @@ PASS expression_should_be_known: height = -0cm
 PASS expression_should_be_known: height = 1px
 PASS expression_should_be_known: height = 0.001mm
 PASS expression_should_be_known: height = 100000px
+PASS expression_should_be_parseable: min-height = -0
 PASS expression_should_be_unknown: min-height = -0
+PASS expression_should_be_parseable: max-height = -0
 PASS expression_should_be_unknown: max-height = -0
+PASS expression_should_be_parseable: 0px = height = 100000px
 PASS expression_should_be_unknown: 0px = height = 100000px
+PASS expression_should_be_parseable: height = -1px
 PASS expression_should_be_unknown: height = -1px
+PASS expression_should_be_parseable: min-height = -1px
 PASS expression_should_be_unknown: min-height = -1px
+PASS expression_should_be_parseable: max-height = -1px
 PASS expression_should_be_unknown: max-height = -1px
+PASS expression_should_be_parseable: height = -0.00001mm
 PASS expression_should_be_unknown: height = -0.00001mm
+PASS expression_should_be_parseable: height = -100000em
 PASS expression_should_be_unknown: height = -100000em
+PASS expression_should_be_parseable: 0px = height : 0px
 PASS expression_should_be_unknown: 0px = height : 0px
+PASS expression_should_be_parseable: 0px = height > 0px
 PASS expression_should_be_unknown: 0px = height > 0px
+PASS expression_should_be_parseable: 0px = height >= 0px
 PASS expression_should_be_unknown: 0px = height >= 0px
+PASS expression_should_be_parseable: 0px = height = 0px
 PASS expression_should_be_unknown: 0px = height = 0px
+PASS expression_should_be_parseable: 0px = height <= 0px
 PASS expression_should_be_unknown: 0px = height <= 0px
+PASS expression_should_be_parseable: 0px = height < 0px
 PASS expression_should_be_unknown: 0px = height < 0px
 PASS expression_should_be_known: height <= 0
 PASS expression_should_be_known: height <= 0px
@@ -254,18 +377,30 @@ PASS expression_should_be_known: height <= -0cm
 PASS expression_should_be_known: height <= 1px
 PASS expression_should_be_known: height <= 0.001mm
 PASS expression_should_be_known: height <= 100000px
+PASS expression_should_be_parseable: min-height <= -0
 PASS expression_should_be_unknown: min-height <= -0
+PASS expression_should_be_parseable: max-height <= -0
 PASS expression_should_be_unknown: max-height <= -0
 PASS expression_should_be_known: 0px <= height <= 100000px
+PASS expression_should_be_parseable: height < = 0px
 PASS expression_should_be_unknown: height < = 0px
+PASS expression_should_be_parseable: height <= -1px
 PASS expression_should_be_unknown: height <= -1px
+PASS expression_should_be_parseable: min-height <= -1px
 PASS expression_should_be_unknown: min-height <= -1px
+PASS expression_should_be_parseable: max-height <= -1px
 PASS expression_should_be_unknown: max-height <= -1px
+PASS expression_should_be_parseable: height <= -0.00001mm
 PASS expression_should_be_unknown: height <= -0.00001mm
+PASS expression_should_be_parseable: height <= -100000em
 PASS expression_should_be_unknown: height <= -100000em
+PASS expression_should_be_parseable: 0px <= height : 0px
 PASS expression_should_be_unknown: 0px <= height : 0px
+PASS expression_should_be_parseable: 0px <= height > 0px
 PASS expression_should_be_unknown: 0px <= height > 0px
+PASS expression_should_be_parseable: 0px <= height >= 0px
 PASS expression_should_be_unknown: 0px <= height >= 0px
+PASS expression_should_be_parseable: 0px <= height = 0px
 PASS expression_should_be_unknown: 0px <= height = 0px
 PASS expression_should_be_known: 0px <= height <= 0px
 PASS expression_should_be_known: 0px <= height < 0px
@@ -277,22 +412,35 @@ PASS expression_should_be_known: height < -0cm
 PASS expression_should_be_known: height < 1px
 PASS expression_should_be_known: height < 0.001mm
 PASS expression_should_be_known: height < 100000px
+PASS expression_should_be_parseable: min-height < -0
 PASS expression_should_be_unknown: min-height < -0
+PASS expression_should_be_parseable: max-height < -0
 PASS expression_should_be_unknown: max-height < -0
 PASS expression_should_be_known: 0px < height < 100000px
+PASS expression_should_be_parseable: height < -1px
 PASS expression_should_be_unknown: height < -1px
+PASS expression_should_be_parseable: min-height < -1px
 PASS expression_should_be_unknown: min-height < -1px
+PASS expression_should_be_parseable: max-height < -1px
 PASS expression_should_be_unknown: max-height < -1px
+PASS expression_should_be_parseable: height < -0.00001mm
 PASS expression_should_be_unknown: height < -0.00001mm
+PASS expression_should_be_parseable: height < -100000em
 PASS expression_should_be_unknown: height < -100000em
+PASS expression_should_be_parseable: 0px < height : 0px
 PASS expression_should_be_unknown: 0px < height : 0px
+PASS expression_should_be_parseable: 0px < height > 0px
 PASS expression_should_be_unknown: 0px < height > 0px
+PASS expression_should_be_parseable: 0px < height >= 0px
 PASS expression_should_be_unknown: 0px < height >= 0px
+PASS expression_should_be_parseable: 0px < height = 0px
 PASS expression_should_be_unknown: 0px < height = 0px
 PASS expression_should_be_known: 0px < height <= 0px
 PASS expression_should_be_known: 0px < height < 0px
 PASS expression_should_be_known: device-width
+PASS expression_should_be_parseable: min-device-width
 PASS expression_should_be_unknown: min-device-width
+PASS expression_should_be_parseable: max-device-width
 PASS expression_should_be_unknown: max-device-width
 PASS expression_should_be_known: device-width : 0
 PASS expression_should_be_known: device-width : 0px
@@ -304,16 +452,27 @@ PASS expression_should_be_known: device-width : 0.001mm
 PASS expression_should_be_known: device-width : 100000px
 PASS expression_should_be_known: min-device-width : -0
 PASS expression_should_be_known: max-device-width : -0
+PASS expression_should_be_parseable: device-width : -1px
 PASS expression_should_be_unknown: device-width : -1px
+PASS expression_should_be_parseable: min-device-width : -1px
 PASS expression_should_be_unknown: min-device-width : -1px
+PASS expression_should_be_parseable: max-device-width : -1px
 PASS expression_should_be_unknown: max-device-width : -1px
+PASS expression_should_be_parseable: device-width : -0.00001mm
 PASS expression_should_be_unknown: device-width : -0.00001mm
+PASS expression_should_be_parseable: device-width : -100000em
 PASS expression_should_be_unknown: device-width : -100000em
+PASS expression_should_be_parseable: 0px : device-width : 0px
 PASS expression_should_be_unknown: 0px : device-width : 0px
+PASS expression_should_be_parseable: 0px : device-width > 0px
 PASS expression_should_be_unknown: 0px : device-width > 0px
+PASS expression_should_be_parseable: 0px : device-width >= 0px
 PASS expression_should_be_unknown: 0px : device-width >= 0px
+PASS expression_should_be_parseable: 0px : device-width = 0px
 PASS expression_should_be_unknown: 0px : device-width = 0px
+PASS expression_should_be_parseable: 0px : device-width <= 0px
 PASS expression_should_be_unknown: 0px : device-width <= 0px
+PASS expression_should_be_parseable: 0px : device-width < 0px
 PASS expression_should_be_unknown: 0px : device-width < 0px
 PASS expression_should_be_known: device-width > 0
 PASS expression_should_be_known: device-width > 0px
@@ -323,19 +482,30 @@ PASS expression_should_be_known: device-width > -0cm
 PASS expression_should_be_known: device-width > 1px
 PASS expression_should_be_known: device-width > 0.001mm
 PASS expression_should_be_known: device-width > 100000px
+PASS expression_should_be_parseable: min-device-width > -0
 PASS expression_should_be_unknown: min-device-width > -0
+PASS expression_should_be_parseable: max-device-width > -0
 PASS expression_should_be_unknown: max-device-width > -0
 PASS expression_should_be_known: 0px > device-width > 100000px
+PASS expression_should_be_parseable: device-width > -1px
 PASS expression_should_be_unknown: device-width > -1px
+PASS expression_should_be_parseable: min-device-width > -1px
 PASS expression_should_be_unknown: min-device-width > -1px
+PASS expression_should_be_parseable: max-device-width > -1px
 PASS expression_should_be_unknown: max-device-width > -1px
+PASS expression_should_be_parseable: device-width > -0.00001mm
 PASS expression_should_be_unknown: device-width > -0.00001mm
+PASS expression_should_be_parseable: device-width > -100000em
 PASS expression_should_be_unknown: device-width > -100000em
+PASS expression_should_be_parseable: 0px > device-width : 0px
 PASS expression_should_be_unknown: 0px > device-width : 0px
 PASS expression_should_be_known: 0px > device-width > 0px
 PASS expression_should_be_known: 0px > device-width >= 0px
+PASS expression_should_be_parseable: 0px > device-width = 0px
 PASS expression_should_be_unknown: 0px > device-width = 0px
+PASS expression_should_be_parseable: 0px > device-width <= 0px
 PASS expression_should_be_unknown: 0px > device-width <= 0px
+PASS expression_should_be_parseable: 0px > device-width < 0px
 PASS expression_should_be_unknown: 0px > device-width < 0px
 PASS expression_should_be_known: device-width >= 0
 PASS expression_should_be_known: device-width >= 0px
@@ -345,20 +515,32 @@ PASS expression_should_be_known: device-width >= -0cm
 PASS expression_should_be_known: device-width >= 1px
 PASS expression_should_be_known: device-width >= 0.001mm
 PASS expression_should_be_known: device-width >= 100000px
+PASS expression_should_be_parseable: min-device-width >= -0
 PASS expression_should_be_unknown: min-device-width >= -0
+PASS expression_should_be_parseable: max-device-width >= -0
 PASS expression_should_be_unknown: max-device-width >= -0
 PASS expression_should_be_known: 0px >= device-width >= 100000px
+PASS expression_should_be_parseable: device-width > = 0px
 PASS expression_should_be_unknown: device-width > = 0px
+PASS expression_should_be_parseable: device-width >= -1px
 PASS expression_should_be_unknown: device-width >= -1px
+PASS expression_should_be_parseable: min-device-width >= -1px
 PASS expression_should_be_unknown: min-device-width >= -1px
+PASS expression_should_be_parseable: max-device-width >= -1px
 PASS expression_should_be_unknown: max-device-width >= -1px
+PASS expression_should_be_parseable: device-width >= -0.00001mm
 PASS expression_should_be_unknown: device-width >= -0.00001mm
+PASS expression_should_be_parseable: device-width >= -100000em
 PASS expression_should_be_unknown: device-width >= -100000em
+PASS expression_should_be_parseable: 0px >= device-width : 0px
 PASS expression_should_be_unknown: 0px >= device-width : 0px
 PASS expression_should_be_known: 0px >= device-width > 0px
 PASS expression_should_be_known: 0px >= device-width >= 0px
+PASS expression_should_be_parseable: 0px >= device-width = 0px
 PASS expression_should_be_unknown: 0px >= device-width = 0px
+PASS expression_should_be_parseable: 0px >= device-width <= 0px
 PASS expression_should_be_unknown: 0px >= device-width <= 0px
+PASS expression_should_be_parseable: 0px >= device-width < 0px
 PASS expression_should_be_unknown: 0px >= device-width < 0px
 PASS expression_should_be_known: device-width = 0
 PASS expression_should_be_known: device-width = 0px
@@ -368,19 +550,33 @@ PASS expression_should_be_known: device-width = -0cm
 PASS expression_should_be_known: device-width = 1px
 PASS expression_should_be_known: device-width = 0.001mm
 PASS expression_should_be_known: device-width = 100000px
+PASS expression_should_be_parseable: min-device-width = -0
 PASS expression_should_be_unknown: min-device-width = -0
+PASS expression_should_be_parseable: max-device-width = -0
 PASS expression_should_be_unknown: max-device-width = -0
+PASS expression_should_be_parseable: 0px = device-width = 100000px
 PASS expression_should_be_unknown: 0px = device-width = 100000px
+PASS expression_should_be_parseable: device-width = -1px
 PASS expression_should_be_unknown: device-width = -1px
+PASS expression_should_be_parseable: min-device-width = -1px
 PASS expression_should_be_unknown: min-device-width = -1px
+PASS expression_should_be_parseable: max-device-width = -1px
 PASS expression_should_be_unknown: max-device-width = -1px
+PASS expression_should_be_parseable: device-width = -0.00001mm
 PASS expression_should_be_unknown: device-width = -0.00001mm
+PASS expression_should_be_parseable: device-width = -100000em
 PASS expression_should_be_unknown: device-width = -100000em
+PASS expression_should_be_parseable: 0px = device-width : 0px
 PASS expression_should_be_unknown: 0px = device-width : 0px
+PASS expression_should_be_parseable: 0px = device-width > 0px
 PASS expression_should_be_unknown: 0px = device-width > 0px
+PASS expression_should_be_parseable: 0px = device-width >= 0px
 PASS expression_should_be_unknown: 0px = device-width >= 0px
+PASS expression_should_be_parseable: 0px = device-width = 0px
 PASS expression_should_be_unknown: 0px = device-width = 0px
+PASS expression_should_be_parseable: 0px = device-width <= 0px
 PASS expression_should_be_unknown: 0px = device-width <= 0px
+PASS expression_should_be_parseable: 0px = device-width < 0px
 PASS expression_should_be_unknown: 0px = device-width < 0px
 PASS expression_should_be_known: device-width <= 0
 PASS expression_should_be_known: device-width <= 0px
@@ -390,18 +586,30 @@ PASS expression_should_be_known: device-width <= -0cm
 PASS expression_should_be_known: device-width <= 1px
 PASS expression_should_be_known: device-width <= 0.001mm
 PASS expression_should_be_known: device-width <= 100000px
+PASS expression_should_be_parseable: min-device-width <= -0
 PASS expression_should_be_unknown: min-device-width <= -0
+PASS expression_should_be_parseable: max-device-width <= -0
 PASS expression_should_be_unknown: max-device-width <= -0
 PASS expression_should_be_known: 0px <= device-width <= 100000px
+PASS expression_should_be_parseable: device-width < = 0px
 PASS expression_should_be_unknown: device-width < = 0px
+PASS expression_should_be_parseable: device-width <= -1px
 PASS expression_should_be_unknown: device-width <= -1px
+PASS expression_should_be_parseable: min-device-width <= -1px
 PASS expression_should_be_unknown: min-device-width <= -1px
+PASS expression_should_be_parseable: max-device-width <= -1px
 PASS expression_should_be_unknown: max-device-width <= -1px
+PASS expression_should_be_parseable: device-width <= -0.00001mm
 PASS expression_should_be_unknown: device-width <= -0.00001mm
+PASS expression_should_be_parseable: device-width <= -100000em
 PASS expression_should_be_unknown: device-width <= -100000em
+PASS expression_should_be_parseable: 0px <= device-width : 0px
 PASS expression_should_be_unknown: 0px <= device-width : 0px
+PASS expression_should_be_parseable: 0px <= device-width > 0px
 PASS expression_should_be_unknown: 0px <= device-width > 0px
+PASS expression_should_be_parseable: 0px <= device-width >= 0px
 PASS expression_should_be_unknown: 0px <= device-width >= 0px
+PASS expression_should_be_parseable: 0px <= device-width = 0px
 PASS expression_should_be_unknown: 0px <= device-width = 0px
 PASS expression_should_be_known: 0px <= device-width <= 0px
 PASS expression_should_be_known: 0px <= device-width < 0px
@@ -413,22 +621,35 @@ PASS expression_should_be_known: device-width < -0cm
 PASS expression_should_be_known: device-width < 1px
 PASS expression_should_be_known: device-width < 0.001mm
 PASS expression_should_be_known: device-width < 100000px
+PASS expression_should_be_parseable: min-device-width < -0
 PASS expression_should_be_unknown: min-device-width < -0
+PASS expression_should_be_parseable: max-device-width < -0
 PASS expression_should_be_unknown: max-device-width < -0
 PASS expression_should_be_known: 0px < device-width < 100000px
+PASS expression_should_be_parseable: device-width < -1px
 PASS expression_should_be_unknown: device-width < -1px
+PASS expression_should_be_parseable: min-device-width < -1px
 PASS expression_should_be_unknown: min-device-width < -1px
+PASS expression_should_be_parseable: max-device-width < -1px
 PASS expression_should_be_unknown: max-device-width < -1px
+PASS expression_should_be_parseable: device-width < -0.00001mm
 PASS expression_should_be_unknown: device-width < -0.00001mm
+PASS expression_should_be_parseable: device-width < -100000em
 PASS expression_should_be_unknown: device-width < -100000em
+PASS expression_should_be_parseable: 0px < device-width : 0px
 PASS expression_should_be_unknown: 0px < device-width : 0px
+PASS expression_should_be_parseable: 0px < device-width > 0px
 PASS expression_should_be_unknown: 0px < device-width > 0px
+PASS expression_should_be_parseable: 0px < device-width >= 0px
 PASS expression_should_be_unknown: 0px < device-width >= 0px
+PASS expression_should_be_parseable: 0px < device-width = 0px
 PASS expression_should_be_unknown: 0px < device-width = 0px
 PASS expression_should_be_known: 0px < device-width <= 0px
 PASS expression_should_be_known: 0px < device-width < 0px
 PASS expression_should_be_known: device-height
+PASS expression_should_be_parseable: min-device-height
 PASS expression_should_be_unknown: min-device-height
+PASS expression_should_be_parseable: max-device-height
 PASS expression_should_be_unknown: max-device-height
 PASS expression_should_be_known: device-height : 0
 PASS expression_should_be_known: device-height : 0px
@@ -440,16 +661,27 @@ PASS expression_should_be_known: device-height : 0.001mm
 PASS expression_should_be_known: device-height : 100000px
 PASS expression_should_be_known: min-device-height : -0
 PASS expression_should_be_known: max-device-height : -0
+PASS expression_should_be_parseable: device-height : -1px
 PASS expression_should_be_unknown: device-height : -1px
+PASS expression_should_be_parseable: min-device-height : -1px
 PASS expression_should_be_unknown: min-device-height : -1px
+PASS expression_should_be_parseable: max-device-height : -1px
 PASS expression_should_be_unknown: max-device-height : -1px
+PASS expression_should_be_parseable: device-height : -0.00001mm
 PASS expression_should_be_unknown: device-height : -0.00001mm
+PASS expression_should_be_parseable: device-height : -100000em
 PASS expression_should_be_unknown: device-height : -100000em
+PASS expression_should_be_parseable: 0px : device-height : 0px
 PASS expression_should_be_unknown: 0px : device-height : 0px
+PASS expression_should_be_parseable: 0px : device-height > 0px
 PASS expression_should_be_unknown: 0px : device-height > 0px
+PASS expression_should_be_parseable: 0px : device-height >= 0px
 PASS expression_should_be_unknown: 0px : device-height >= 0px
+PASS expression_should_be_parseable: 0px : device-height = 0px
 PASS expression_should_be_unknown: 0px : device-height = 0px
+PASS expression_should_be_parseable: 0px : device-height <= 0px
 PASS expression_should_be_unknown: 0px : device-height <= 0px
+PASS expression_should_be_parseable: 0px : device-height < 0px
 PASS expression_should_be_unknown: 0px : device-height < 0px
 PASS expression_should_be_known: device-height > 0
 PASS expression_should_be_known: device-height > 0px
@@ -459,19 +691,30 @@ PASS expression_should_be_known: device-height > -0cm
 PASS expression_should_be_known: device-height > 1px
 PASS expression_should_be_known: device-height > 0.001mm
 PASS expression_should_be_known: device-height > 100000px
+PASS expression_should_be_parseable: min-device-height > -0
 PASS expression_should_be_unknown: min-device-height > -0
+PASS expression_should_be_parseable: max-device-height > -0
 PASS expression_should_be_unknown: max-device-height > -0
 PASS expression_should_be_known: 0px > device-height > 100000px
+PASS expression_should_be_parseable: device-height > -1px
 PASS expression_should_be_unknown: device-height > -1px
+PASS expression_should_be_parseable: min-device-height > -1px
 PASS expression_should_be_unknown: min-device-height > -1px
+PASS expression_should_be_parseable: max-device-height > -1px
 PASS expression_should_be_unknown: max-device-height > -1px
+PASS expression_should_be_parseable: device-height > -0.00001mm
 PASS expression_should_be_unknown: device-height > -0.00001mm
+PASS expression_should_be_parseable: device-height > -100000em
 PASS expression_should_be_unknown: device-height > -100000em
+PASS expression_should_be_parseable: 0px > device-height : 0px
 PASS expression_should_be_unknown: 0px > device-height : 0px
 PASS expression_should_be_known: 0px > device-height > 0px
 PASS expression_should_be_known: 0px > device-height >= 0px
+PASS expression_should_be_parseable: 0px > device-height = 0px
 PASS expression_should_be_unknown: 0px > device-height = 0px
+PASS expression_should_be_parseable: 0px > device-height <= 0px
 PASS expression_should_be_unknown: 0px > device-height <= 0px
+PASS expression_should_be_parseable: 0px > device-height < 0px
 PASS expression_should_be_unknown: 0px > device-height < 0px
 PASS expression_should_be_known: device-height >= 0
 PASS expression_should_be_known: device-height >= 0px
@@ -481,20 +724,32 @@ PASS expression_should_be_known: device-height >= -0cm
 PASS expression_should_be_known: device-height >= 1px
 PASS expression_should_be_known: device-height >= 0.001mm
 PASS expression_should_be_known: device-height >= 100000px
+PASS expression_should_be_parseable: min-device-height >= -0
 PASS expression_should_be_unknown: min-device-height >= -0
+PASS expression_should_be_parseable: max-device-height >= -0
 PASS expression_should_be_unknown: max-device-height >= -0
 PASS expression_should_be_known: 0px >= device-height >= 100000px
+PASS expression_should_be_parseable: device-height > = 0px
 PASS expression_should_be_unknown: device-height > = 0px
+PASS expression_should_be_parseable: device-height >= -1px
 PASS expression_should_be_unknown: device-height >= -1px
+PASS expression_should_be_parseable: min-device-height >= -1px
 PASS expression_should_be_unknown: min-device-height >= -1px
+PASS expression_should_be_parseable: max-device-height >= -1px
 PASS expression_should_be_unknown: max-device-height >= -1px
+PASS expression_should_be_parseable: device-height >= -0.00001mm
 PASS expression_should_be_unknown: device-height >= -0.00001mm
+PASS expression_should_be_parseable: device-height >= -100000em
 PASS expression_should_be_unknown: device-height >= -100000em
+PASS expression_should_be_parseable: 0px >= device-height : 0px
 PASS expression_should_be_unknown: 0px >= device-height : 0px
 PASS expression_should_be_known: 0px >= device-height > 0px
 PASS expression_should_be_known: 0px >= device-height >= 0px
+PASS expression_should_be_parseable: 0px >= device-height = 0px
 PASS expression_should_be_unknown: 0px >= device-height = 0px
+PASS expression_should_be_parseable: 0px >= device-height <= 0px
 PASS expression_should_be_unknown: 0px >= device-height <= 0px
+PASS expression_should_be_parseable: 0px >= device-height < 0px
 PASS expression_should_be_unknown: 0px >= device-height < 0px
 PASS expression_should_be_known: device-height = 0
 PASS expression_should_be_known: device-height = 0px
@@ -504,19 +759,33 @@ PASS expression_should_be_known: device-height = -0cm
 PASS expression_should_be_known: device-height = 1px
 PASS expression_should_be_known: device-height = 0.001mm
 PASS expression_should_be_known: device-height = 100000px
+PASS expression_should_be_parseable: min-device-height = -0
 PASS expression_should_be_unknown: min-device-height = -0
+PASS expression_should_be_parseable: max-device-height = -0
 PASS expression_should_be_unknown: max-device-height = -0
+PASS expression_should_be_parseable: 0px = device-height = 100000px
 PASS expression_should_be_unknown: 0px = device-height = 100000px
+PASS expression_should_be_parseable: device-height = -1px
 PASS expression_should_be_unknown: device-height = -1px
+PASS expression_should_be_parseable: min-device-height = -1px
 PASS expression_should_be_unknown: min-device-height = -1px
+PASS expression_should_be_parseable: max-device-height = -1px
 PASS expression_should_be_unknown: max-device-height = -1px
+PASS expression_should_be_parseable: device-height = -0.00001mm
 PASS expression_should_be_unknown: device-height = -0.00001mm
+PASS expression_should_be_parseable: device-height = -100000em
 PASS expression_should_be_unknown: device-height = -100000em
+PASS expression_should_be_parseable: 0px = device-height : 0px
 PASS expression_should_be_unknown: 0px = device-height : 0px
+PASS expression_should_be_parseable: 0px = device-height > 0px
 PASS expression_should_be_unknown: 0px = device-height > 0px
+PASS expression_should_be_parseable: 0px = device-height >= 0px
 PASS expression_should_be_unknown: 0px = device-height >= 0px
+PASS expression_should_be_parseable: 0px = device-height = 0px
 PASS expression_should_be_unknown: 0px = device-height = 0px
+PASS expression_should_be_parseable: 0px = device-height <= 0px
 PASS expression_should_be_unknown: 0px = device-height <= 0px
+PASS expression_should_be_parseable: 0px = device-height < 0px
 PASS expression_should_be_unknown: 0px = device-height < 0px
 PASS expression_should_be_known: device-height <= 0
 PASS expression_should_be_known: device-height <= 0px
@@ -526,18 +795,30 @@ PASS expression_should_be_known: device-height <= -0cm
 PASS expression_should_be_known: device-height <= 1px
 PASS expression_should_be_known: device-height <= 0.001mm
 PASS expression_should_be_known: device-height <= 100000px
+PASS expression_should_be_parseable: min-device-height <= -0
 PASS expression_should_be_unknown: min-device-height <= -0
+PASS expression_should_be_parseable: max-device-height <= -0
 PASS expression_should_be_unknown: max-device-height <= -0
 PASS expression_should_be_known: 0px <= device-height <= 100000px
+PASS expression_should_be_parseable: device-height < = 0px
 PASS expression_should_be_unknown: device-height < = 0px
+PASS expression_should_be_parseable: device-height <= -1px
 PASS expression_should_be_unknown: device-height <= -1px
+PASS expression_should_be_parseable: min-device-height <= -1px
 PASS expression_should_be_unknown: min-device-height <= -1px
+PASS expression_should_be_parseable: max-device-height <= -1px
 PASS expression_should_be_unknown: max-device-height <= -1px
+PASS expression_should_be_parseable: device-height <= -0.00001mm
 PASS expression_should_be_unknown: device-height <= -0.00001mm
+PASS expression_should_be_parseable: device-height <= -100000em
 PASS expression_should_be_unknown: device-height <= -100000em
+PASS expression_should_be_parseable: 0px <= device-height : 0px
 PASS expression_should_be_unknown: 0px <= device-height : 0px
+PASS expression_should_be_parseable: 0px <= device-height > 0px
 PASS expression_should_be_unknown: 0px <= device-height > 0px
+PASS expression_should_be_parseable: 0px <= device-height >= 0px
 PASS expression_should_be_unknown: 0px <= device-height >= 0px
+PASS expression_should_be_parseable: 0px <= device-height = 0px
 PASS expression_should_be_unknown: 0px <= device-height = 0px
 PASS expression_should_be_known: 0px <= device-height <= 0px
 PASS expression_should_be_known: 0px <= device-height < 0px
@@ -549,17 +830,28 @@ PASS expression_should_be_known: device-height < -0cm
 PASS expression_should_be_known: device-height < 1px
 PASS expression_should_be_known: device-height < 0.001mm
 PASS expression_should_be_known: device-height < 100000px
+PASS expression_should_be_parseable: min-device-height < -0
 PASS expression_should_be_unknown: min-device-height < -0
+PASS expression_should_be_parseable: max-device-height < -0
 PASS expression_should_be_unknown: max-device-height < -0
 PASS expression_should_be_known: 0px < device-height < 100000px
+PASS expression_should_be_parseable: device-height < -1px
 PASS expression_should_be_unknown: device-height < -1px
+PASS expression_should_be_parseable: min-device-height < -1px
 PASS expression_should_be_unknown: min-device-height < -1px
+PASS expression_should_be_parseable: max-device-height < -1px
 PASS expression_should_be_unknown: max-device-height < -1px
+PASS expression_should_be_parseable: device-height < -0.00001mm
 PASS expression_should_be_unknown: device-height < -0.00001mm
+PASS expression_should_be_parseable: device-height < -100000em
 PASS expression_should_be_unknown: device-height < -100000em
+PASS expression_should_be_parseable: 0px < device-height : 0px
 PASS expression_should_be_unknown: 0px < device-height : 0px
+PASS expression_should_be_parseable: 0px < device-height > 0px
 PASS expression_should_be_unknown: 0px < device-height > 0px
+PASS expression_should_be_parseable: 0px < device-height >= 0px
 PASS expression_should_be_unknown: 0px < device-height >= 0px
+PASS expression_should_be_parseable: 0px < device-height = 0px
 PASS expression_should_be_unknown: 0px < device-height = 0px
 PASS expression_should_be_known: 0px < device-height <= 0px
 PASS expression_should_be_known: 0px < device-height < 0px
@@ -752,11 +1044,17 @@ PASS width != 0, height != 0: should_apply: all and (width)
 PASS ratio that reduces to 59/40: expression_should_be_known: orientation
 PASS ratio that reduces to 59/40: expression_should_be_known: orientation: portrait
 PASS ratio that reduces to 59/40: expression_should_be_known: orientation: landscape
+PASS ratio that reduces to 59/40: expression_should_be_parseable: min-orientation
 PASS ratio that reduces to 59/40: expression_should_be_unknown: min-orientation
+PASS ratio that reduces to 59/40: expression_should_be_parseable: min-orientation: portrait
 PASS ratio that reduces to 59/40: expression_should_be_unknown: min-orientation: portrait
+PASS ratio that reduces to 59/40: expression_should_be_parseable: min-orientation: landscape
 PASS ratio that reduces to 59/40: expression_should_be_unknown: min-orientation: landscape
+PASS ratio that reduces to 59/40: expression_should_be_parseable: max-orientation
 PASS ratio that reduces to 59/40: expression_should_be_unknown: max-orientation
+PASS ratio that reduces to 59/40: expression_should_be_parseable: max-orientation: portrait
 PASS ratio that reduces to 59/40: expression_should_be_unknown: max-orientation: portrait
+PASS ratio that reduces to 59/40: expression_should_be_parseable: max-orientation: landscape
 PASS ratio that reduces to 59/40: expression_should_be_unknown: max-orientation: landscape
 PASS ratio that reduces to 59/40: should_apply: (orientation)
 PASS ratio that reduces to 59/40: should_apply: (orientation: landscape)
@@ -784,12 +1082,14 @@ PASS should_apply: (min-aspect-ratio: 58/80)
 PASS should_apply: (min-aspect-ratio: 59/81)
 PASS should_not_apply: (min-aspect-ratio: 60/80)
 PASS should_not_apply: (min-aspect-ratio: 59/79)
+PASS expression_should_be_parseable: min-aspect-ratio
 PASS expression_should_be_unknown: min-aspect-ratio
 PASS should_apply: (max-aspect-ratio: 59/80)
 PASS should_not_apply: (max-aspect-ratio: 58/80)
 PASS should_not_apply: (max-aspect-ratio: 59/81)
 PASS should_apply: (max-aspect-ratio: 60/80)
 PASS should_apply: (max-aspect-ratio: 59/79)
+PASS expression_should_be_parseable: max-aspect-ratio
 PASS expression_should_be_unknown: max-aspect-ratio
 PASS should_apply: (device-aspect-ratio: ${real_dar})
 PASS should_apply: not all and (device-aspect-ratio: ${high_dar_1})
@@ -802,12 +1102,14 @@ PASS should_not_apply: all and (min-device-aspect-ratio: ${high_dar_1})
 PASS should_apply: not all and (min-device-aspect-ratio: ${high_dar_2})
 PASS should_not_apply: not all and (min-device-aspect-ratio: ${low_dar_1})
 PASS should_apply: all and (min-device-aspect-ratio: ${low_dar_2})
+PASS expression_should_be_parseable: min-device-aspect-ratio
 PASS expression_should_be_unknown: min-device-aspect-ratio
 PASS should_apply: all and (max-device-aspect-ratio: ${real_dar})
 PASS should_apply: (max-device-aspect-ratio: ${high_dar_1})
 PASS should_apply: (max-device-aspect-ratio: ${high_dar_2})
 PASS should_not_apply: all and (max-device-aspect-ratio: ${low_dar_1})
 PASS should_apply: not all and (max-device-aspect-ratio: ${low_dar_2})
+PASS expression_should_be_parseable: max-device-aspect-ratio
 PASS expression_should_be_unknown: max-device-aspect-ratio
 PASS expression_should_be_known: max-aspect-ratio: 1/1
 PASS expression_should_be_known: max-aspect-ratio: 1  /1
@@ -822,11 +1124,17 @@ FAIL expression_should_be_known: max-aspect-ratio: 1.0/1.0 assert_true: expected
 FAIL expression_should_be_known: max-aspect-ratio: 0/1 assert_true: expected true got false
 FAIL expression_should_be_known: max-aspect-ratio: 1/0 assert_true: expected true got false
 FAIL expression_should_be_known: max-aspect-ratio: 0/0 assert_true: expected true got false
+PASS expression_should_be_parseable: max-aspect-ratio: -1/1
 PASS expression_should_be_unknown: max-aspect-ratio: -1/1
+PASS expression_should_be_parseable: max-aspect-ratio: 1/-1
 PASS expression_should_be_unknown: max-aspect-ratio: 1/-1
+PASS expression_should_be_parseable: max-aspect-ratio: -1/-1
 PASS expression_should_be_unknown: max-aspect-ratio: -1/-1
+PASS expression_should_be_parseable: max-aspect-ratio: invalid
 PASS expression_should_be_unknown: max-aspect-ratio: invalid
+PASS expression_should_be_parseable: max-aspect-ratio: 1 / invalid
 PASS expression_should_be_unknown: max-aspect-ratio: 1 / invalid
+PASS expression_should_be_parseable: max-aspect-ratio: 1 invalid
 PASS expression_should_be_unknown: max-aspect-ratio: 1 invalid
 PASS expression_should_be_known: device-aspect-ratio: 1/1
 PASS expression_should_be_known: device-aspect-ratio: 1  /1
@@ -841,11 +1149,17 @@ FAIL expression_should_be_known: device-aspect-ratio: 1.0/1.0 assert_true: expec
 FAIL expression_should_be_known: device-aspect-ratio: 0/1 assert_true: expected true got false
 FAIL expression_should_be_known: device-aspect-ratio: 1/0 assert_true: expected true got false
 FAIL expression_should_be_known: device-aspect-ratio: 0/0 assert_true: expected true got false
+PASS expression_should_be_parseable: device-aspect-ratio: -1/1
 PASS expression_should_be_unknown: device-aspect-ratio: -1/1
+PASS expression_should_be_parseable: device-aspect-ratio: 1/-1
 PASS expression_should_be_unknown: device-aspect-ratio: 1/-1
+PASS expression_should_be_parseable: device-aspect-ratio: -1/-1
 PASS expression_should_be_unknown: device-aspect-ratio: -1/-1
+PASS expression_should_be_parseable: device-aspect-ratio: invalid
 PASS expression_should_be_unknown: device-aspect-ratio: invalid
+PASS expression_should_be_parseable: device-aspect-ratio: 1 / invalid
 PASS expression_should_be_unknown: device-aspect-ratio: 1 / invalid
+PASS expression_should_be_parseable: device-aspect-ratio: 1 invalid
 PASS expression_should_be_unknown: device-aspect-ratio: 1 invalid
 PASS monochrome_and_color
 PASS find_depth
@@ -856,10 +1170,14 @@ PASS should_apply: all and (max-color:8)
 PASS should_not_apply: all and (max-color:7)
 PASS should_apply: all and (max-color:9)
 PASS should_apply: all and (color)
+PASS expression_should_be_parseable: max-color
 PASS expression_should_be_unknown: max-color
+PASS expression_should_be_parseable: min-color
 PASS expression_should_be_unknown: min-color
 PASS should_not_apply: all and (monochrome)
+PASS expression_should_be_parseable: max-monochrome
 PASS expression_should_be_unknown: max-monochrome
+PASS expression_should_be_parseable: min-monochrome
 PASS expression_should_be_unknown: min-monochrome
 PASS should_apply: not all and (monochrome)
 PASS should_not_apply: not all and (color)
@@ -868,20 +1186,29 @@ PASS should_not_apply: only all and (monochrome)
 PASS expression_should_be_known: color: 1
 PASS expression_should_be_known: color: 327
 PASS expression_should_be_known: color: 0
+PASS expression_should_be_parseable: color: 1.0
 PASS expression_should_be_unknown: color: 1.0
+PASS expression_should_be_parseable: color: -1
 PASS expression_should_be_unknown: color: -1
+PASS expression_should_be_parseable: color: 1/1
 PASS expression_should_be_unknown: color: 1/1
 PASS expression_should_be_known: min-monochrome: 1
 PASS expression_should_be_known: min-monochrome: 327
 PASS expression_should_be_known: min-monochrome: 0
+PASS expression_should_be_parseable: min-monochrome: 1.0
 PASS expression_should_be_unknown: min-monochrome: 1.0
+PASS expression_should_be_parseable: min-monochrome: -1
 PASS expression_should_be_unknown: min-monochrome: -1
+PASS expression_should_be_parseable: min-monochrome: 1/1
 PASS expression_should_be_unknown: min-monochrome: 1/1
 PASS expression_should_be_known: max-color-index: 1
 PASS expression_should_be_known: max-color-index: 327
 PASS expression_should_be_known: max-color-index: 0
+PASS expression_should_be_parseable: max-color-index: 1.0
 PASS expression_should_be_unknown: max-color-index: 1.0
+PASS expression_should_be_parseable: max-color-index: -1
 PASS expression_should_be_unknown: max-color-index: -1
+PASS expression_should_be_parseable: max-color-index: 1/1
 PASS expression_should_be_unknown: max-color-index: 1/1
 PASS should_apply: (color-index: 0)
 PASS should_not_apply: (color-index: 1)
@@ -900,9 +1227,13 @@ PASS expression_should_be_known: resolution: 1x
 PASS expression_should_be_known: resolution: 1.5dppx
 PASS expression_should_be_known: resolution: 1.5x
 PASS expression_should_be_known: resolution: 2.0dppx
+PASS expression_should_be_parseable: resolution: 0dpi
 PASS expression_should_be_unknown: resolution: 0dpi
+PASS expression_should_be_parseable: resolution: -3dpi
 PASS expression_should_be_unknown: resolution: -3dpi
+PASS expression_should_be_parseable: resolution: 0dppx
 PASS expression_should_be_unknown: resolution: 0dppx
+PASS expression_should_be_parseable: resolution: 0x
 PASS expression_should_be_unknown: resolution: 0x
 PASS expression_should_be_known: min-resolution: 3dpi
 PASS expression_should_be_known: min-resolution:3dpi
@@ -914,9 +1245,13 @@ PASS expression_should_be_known: min-resolution: 1x
 PASS expression_should_be_known: min-resolution: 1.5dppx
 PASS expression_should_be_known: min-resolution: 1.5x
 PASS expression_should_be_known: min-resolution: 2.0dppx
+PASS expression_should_be_parseable: min-resolution: 0dpi
 PASS expression_should_be_unknown: min-resolution: 0dpi
+PASS expression_should_be_parseable: min-resolution: -3dpi
 PASS expression_should_be_unknown: min-resolution: -3dpi
+PASS expression_should_be_parseable: min-resolution: 0dppx
 PASS expression_should_be_unknown: min-resolution: 0dppx
+PASS expression_should_be_parseable: min-resolution: 0x
 PASS expression_should_be_unknown: min-resolution: 0x
 PASS expression_should_be_known: max-resolution: 3dpi
 PASS expression_should_be_known: max-resolution:3dpi
@@ -928,9 +1263,13 @@ PASS expression_should_be_known: max-resolution: 1x
 PASS expression_should_be_known: max-resolution: 1.5dppx
 PASS expression_should_be_known: max-resolution: 1.5x
 PASS expression_should_be_known: max-resolution: 2.0dppx
+PASS expression_should_be_parseable: max-resolution: 0dpi
 PASS expression_should_be_unknown: max-resolution: 0dpi
+PASS expression_should_be_parseable: max-resolution: -3dpi
 PASS expression_should_be_unknown: max-resolution: -3dpi
+PASS expression_should_be_parseable: max-resolution: 0dppx
 PASS expression_should_be_unknown: max-resolution: 0dppx
+PASS expression_should_be_parseable: max-resolution: 0x
 PASS expression_should_be_unknown: max-resolution: 0x
 PASS find_resolution
 PASS resolution is exact: should_apply: (resolution: ${resolution}dpi)
@@ -949,9 +1288,13 @@ PASS should_apply: not all and (min-resolution: ${dpcm_high}dpcm)
 PASS expression_should_be_known: scan
 PASS expression_should_be_known: scan: progressive
 PASS expression_should_be_known: scan:interlace
+PASS expression_should_be_parseable: min-scan:interlace
 PASS expression_should_be_unknown: min-scan:interlace
+PASS expression_should_be_parseable: scan: 1
 PASS expression_should_be_unknown: scan: 1
+PASS expression_should_be_parseable: max-scan
 PASS expression_should_be_unknown: max-scan
+PASS expression_should_be_parseable: max-scan: progressive
 PASS expression_should_be_unknown: max-scan: progressive
 PASS should_not_apply: (scan)
 PASS should_not_apply: (scan: progressive)
@@ -962,10 +1305,15 @@ PASS should_apply: not all and (scan: interlace)
 PASS expression_should_be_known: grid
 PASS expression_should_be_known: grid: 0
 PASS expression_should_be_known: grid: 1
+PASS expression_should_be_parseable: min-grid
 PASS expression_should_be_unknown: min-grid
+PASS expression_should_be_parseable: min-grid:0
 PASS expression_should_be_unknown: min-grid:0
+PASS expression_should_be_parseable: max-grid: 1
 PASS expression_should_be_unknown: max-grid: 1
+PASS expression_should_be_parseable: grid: 2
 PASS expression_should_be_unknown: grid: 2
+PASS expression_should_be_parseable: grid: -1
 PASS expression_should_be_unknown: grid: -1
 PASS should_not_apply: (grid)
 PASS should_apply: (grid: 0)
@@ -1009,17 +1357,20 @@ FAIL expression_should_be_known: overflow-block: none assert_true: expected true
 FAIL expression_should_be_known: overflow-block: paged assert_true: expected true got false
 FAIL expression_should_be_known: overflow-block: scroll assert_true: expected true got false
 FAIL expression_should_be_known: overflow-block: optional-paged assert_true: expected true got false
+PASS expression_should_be_parseable: overflow-block: some-random-invalid-thing
 PASS expression_should_be_unknown: overflow-block: some-random-invalid-thing
 FAIL Sanity check for overflow-block assert_not_equals: overflow-block should be equivalent to not (overflow-block: none) got disallowed value false
 FAIL expression_should_be_known: overflow-inline assert_true: expected true got false
 FAIL expression_should_be_known: overflow-inline: none assert_true: expected true got false
 FAIL expression_should_be_known: overflow-inline: scroll assert_true: expected true got false
+PASS expression_should_be_parseable: overflow-inline: some-random-invalid-thing
 PASS expression_should_be_unknown: overflow-inline: some-random-invalid-thing
 FAIL Sanity check for overflow-inline assert_not_equals: overflow-inline should be equivalent to not (overflow-inline: none) got disallowed value false
 FAIL expression_should_be_known: update assert_true: expected true got false
 FAIL expression_should_be_known: update: none assert_true: expected true got false
 FAIL expression_should_be_known: update: slow assert_true: expected true got false
 FAIL expression_should_be_known: update: fast assert_true: expected true got false
+PASS expression_should_be_parseable: update: some-random-invalid-thing
 PASS expression_should_be_unknown: update: some-random-invalid-thing
 FAIL Sanity check for update assert_not_equals: update should be equivalent to not (update: none) got disallowed value false
 PASS expression_should_be_known: hover

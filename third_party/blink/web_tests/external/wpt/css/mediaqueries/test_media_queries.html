@@ -90,20 +90,22 @@ setup({ "explicit_done": true });
      * https://drafts.csswg.org/mediaqueries-4/#evaluating
      */
 
-    function expression_is_known(e) {
-      return query_is_parseable(`(${e})`) && query_applies(`(${e}) or (not (${e}))`);
+    function expression_is_parseable(e) {
+      return query_is_parseable(`(${e})`);
     }
 
-    function expression_is_unknown(e) {
-      return query_is_parseable(`(${e})`) && !query_applies(`(${e}) or (not (${e}))`);
+    function expression_is_known(e) {
+      return query_applies(`(${e}), not all and (${e})`);
     }
 
     function expression_should_be_known(e) {
+      // We don't bother with expression_is_parseable here, because it must be parseable to be known
       test_predicate(e, expression_is_known, "expression_should_be_known");
     }
 
     function expression_should_be_unknown(e) {
-      test_predicate(e, expression_is_unknown, "expression_should_be_unknown");
+      test_predicate(e, expression_is_parseable, "expression_should_be_parseable");
+      test_predicate(e, not(expression_is_known), "expression_should_be_unknown");
     }
 
     // The no-type syntax doesn't mix with the not and only keywords.
