@@ -271,7 +271,7 @@
             </section>
           </template>
 
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
           <div hidden="[[!localTrustRoots_]]">
             <section>
               <h2 class="cr-title-text">$i18n{localTrustRoots}</h2>
@@ -306,7 +306,7 @@
             </section>
           </template>
 </if>
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not is_chromeos">
           <template is="dom-if"
               if="[[showBrowserReportingInfo_(browserReportingInfo_)]]">
             <section>
