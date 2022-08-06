@@ -80,7 +80,6 @@ class FirmwareUpdateManager;
 class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class IdleActionWarningObserver;
-class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class NetworkPrefStateObserver;
@@ -264,8 +263,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
   std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
-  std::unique_ptr<LoginScreenExtensionsLifetimeManager>
-      login_screen_extensions_lifetime_manager_;
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
 

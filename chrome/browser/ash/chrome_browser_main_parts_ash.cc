@@ -112,7 +112,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/login_screen_extensions_lifetime_manager.h"
 #include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
@@ -1236,8 +1235,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     demo_mode_resources_remover_ = DemoModeResourcesRemover::CreateIfNeeded(
         g_browser_process->local_state());
 
-    login_screen_extensions_lifetime_manager_ =
-        std::make_unique<LoginScreenExtensionsLifetimeManager>();
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
   }
@@ -1478,7 +1475,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   lock_to_single_user_manager_.reset();
   wilco_dtc_supportd_manager_.reset();
   gnubby_notification_.reset();
-  login_screen_extensions_lifetime_manager_.reset();
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
