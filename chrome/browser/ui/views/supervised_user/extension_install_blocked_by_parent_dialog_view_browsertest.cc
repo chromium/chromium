@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/browser/web_contents.h"
@@ -32,8 +32,8 @@ class ExtensionInstallBlockedByParentDialogViewTest : public DialogBrowserTest {
     }
     extension_ = extensions::ExtensionBuilder("test extension", type).Build();
 
-    chrome::ShowExtensionInstallBlockedByParentDialog(
-        chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd,
+    extensions::ShowExtensionInstallBlockedByParentDialog(
+        extensions::ExtensionInstalledBlockedByParentDialogAction::kAdd,
         extension_.get(), browser()->tab_strip_model()->GetWebContentsAt(0),
         base::DoNothing());
   }

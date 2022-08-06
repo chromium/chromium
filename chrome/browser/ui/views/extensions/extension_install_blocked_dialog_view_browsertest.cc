@@ -7,7 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/browser/web_contents.h"
@@ -19,7 +19,7 @@ class ExtensionInstallBlockedDialogViewTest : public DialogBrowserTest {
   ~ExtensionInstallBlockedDialogViewTest() override = default;
 
   void ShowUi(const std::string& name) override {
-    chrome::ShowExtensionInstallBlockedDialog(
+    extensions::ShowExtensionInstallBlockedDialog(
         "extension_id", "extension_name", message_, CreateExtensionIcon(),
         browser()->tab_strip_model()->GetWebContentsAt(0), base::DoNothing());
   }

@@ -16,11 +16,9 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/common/buildflags.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -291,37 +289,6 @@ void ShowChromeCleanerRebootPrompt(
     safe_browsing::ChromeCleanerRebootDialogController* dialog_controller);
 
 #endif  // BUILDFLAG(IS_WIN)
-
-// TODO(crbug.com/1324288): Move extensions dialogs to
-// c/b/ui/extensions/extensions_dialogs.h
-
-// Displays a dialog to notify the user that the extension installation is
-// blocked due to policy. It also show additional information from administrator
-// if it exists.
-void ShowExtensionInstallBlockedDialog(
-    const extensions::ExtensionId& extension_id,
-    const std::string& extension_name,
-    const std::u16string& custom_error_message,
-    const gfx::ImageSkia& icon,
-    content::WebContents* web_contents,
-    base::OnceClosure done_callback);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-// The type of action that the ExtensionInstalledBlockedByParentDialog
-// is being shown in reaction to.
-enum class ExtensionInstalledBlockedByParentDialogAction {
-  kAdd,     // The user attempted to add the extension.
-  kEnable,  // The user attempted to enable the extension.
-};
-
-// Displays a dialog to notify the user that the extension installation is
-// blocked by a parent
-void ShowExtensionInstallBlockedByParentDialog(
-    ExtensionInstalledBlockedByParentDialogAction action,
-    const extensions::Extension* extension,
-    content::WebContents* web_contents,
-    base::OnceClosure done_callback);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Returns a OnceClosure that client code can call to close the device chooser.
 // This OnceClosure references the actual dialog as a WeakPtr, so it's safe to

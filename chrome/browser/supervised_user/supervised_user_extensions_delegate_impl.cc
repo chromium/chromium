@@ -12,7 +12,7 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -128,9 +128,9 @@ void SupervisedUserExtensionsDelegateImpl::
                                                   std::move(done_callback));
     return;
   }
-  chrome::ShowExtensionInstallBlockedByParentDialog(
-      chrome::ExtensionInstalledBlockedByParentDialogAction::kEnable,
-      &extension, contents, std::move(done_callback));
+  ShowExtensionInstallBlockedByParentDialog(
+      ExtensionInstalledBlockedByParentDialogAction::kEnable, &extension,
+      contents, std::move(done_callback));
 }
 
 }  // namespace extensions

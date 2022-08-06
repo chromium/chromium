@@ -40,7 +40,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -244,9 +243,9 @@ void ShowBlockedByParentDialog(const Extension* extension,
     return;
   }
 
-  chrome::ShowExtensionInstallBlockedByParentDialog(
-      chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd, extension,
-      contents, std::move(done_callback));
+  extensions::ShowExtensionInstallBlockedByParentDialog(
+      extensions::ExtensionInstalledBlockedByParentDialogAction::kAdd,
+      extension, contents, std::move(done_callback));
 }
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -934,9 +933,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::
     return;
   }
 
-  chrome::ShowExtensionInstallBlockedDialog(
-      extension->id(), extension->name(), blocked_by_policy_error_message_,
-      image, contents, std::move(done_callback));
+  ShowExtensionInstallBlockedDialog(extension->id(), extension->name(),
+                                    blocked_by_policy_error_message_, image,
+                                    contents, std::move(done_callback));
 }
 
 WebstorePrivateCompleteInstallFunction::

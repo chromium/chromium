@@ -31,7 +31,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace chrome {
+namespace extensions {
 
 void ShowExtensionInstallBlockedByParentDialog(
     ExtensionInstalledBlockedByParentDialogAction action,
@@ -51,11 +51,11 @@ void ShowExtensionInstallBlockedByParentDialog(
   widget->Show();
 }
 
-}  // namespace chrome
+}  // namespace extensions
 
 ExtensionInstallBlockedByParentDialogView::
     ExtensionInstallBlockedByParentDialogView(
-        chrome::ExtensionInstalledBlockedByParentDialogAction action,
+        extensions::ExtensionInstalledBlockedByParentDialogAction action,
         const extensions::Extension* extension,
         base::OnceClosure done_callback)
     : extension_(extension),
@@ -90,13 +90,13 @@ void ExtensionInstallBlockedByParentDialogView::OnThemeChanged() {
 void ExtensionInstallBlockedByParentDialogView::ConfigureTitle() {
   std::u16string title_string;
   switch (action_) {
-    case chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd:
+    case extensions::ExtensionInstalledBlockedByParentDialogAction::kAdd:
       // The user is trying to add/install the extension/app
       title_string = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_INSTALL_BLOCKED_BY_PARENT_PROMPT_TITLE,
           GetExtensionTypeString());
       break;
-    case chrome::ExtensionInstalledBlockedByParentDialogAction::kEnable:
+    case extensions::ExtensionInstalledBlockedByParentDialogAction::kEnable:
       // The user is trying to enable the extension/app
       title_string = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_TITLE,
@@ -111,13 +111,13 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
 
   std::u16string body_string;
   switch (action_) {
-    case chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd:
+    case extensions::ExtensionInstalledBlockedByParentDialogAction::kAdd:
       // The user is trying to add/install the extension/app
       body_string = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_INSTALL_BLOCKED_BY_PARENT_PROMPT_MESSAGE,
           GetExtensionTypeString());
       break;
-    case chrome::ExtensionInstalledBlockedByParentDialogAction::kEnable:
+    case extensions::ExtensionInstalledBlockedByParentDialogAction::kEnable:
       // The user is trying to enable the extension/app
       body_string = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_MESSAGE,

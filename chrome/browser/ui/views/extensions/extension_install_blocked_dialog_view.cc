@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -34,7 +33,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-namespace chrome {
+namespace extensions {
 
 void ShowExtensionInstallBlockedDialog(
     const std::string& extension_id,
@@ -51,7 +50,7 @@ void ShowExtensionInstallBlockedDialog(
       ->Show();
 }
 
-}  // namespace chrome
+}  // namespace extensions
 
 ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
     const std::string& extension_id,

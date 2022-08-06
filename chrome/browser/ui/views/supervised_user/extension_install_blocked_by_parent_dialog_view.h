@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -35,7 +35,7 @@ class ExtensionInstallBlockedByParentDialogView
   // |window| is the window the dialog will modally attach to.
   // |done_callback| will be called when the dialog is dismissed by the user.
   ExtensionInstallBlockedByParentDialogView(
-      chrome::ExtensionInstalledBlockedByParentDialogAction action,
+      extensions::ExtensionInstalledBlockedByParentDialogAction action,
       const extensions::Extension* extension,
       base::OnceClosure done_callback);
   ExtensionInstallBlockedByParentDialogView(
@@ -52,7 +52,7 @@ class ExtensionInstallBlockedByParentDialogView
   std::u16string GetExtensionTypeString() const;
 
   raw_ptr<const extensions::Extension> extension_ = nullptr;
-  chrome::ExtensionInstalledBlockedByParentDialogAction action_;
+  extensions::ExtensionInstalledBlockedByParentDialogAction action_;
   base::OnceClosure done_callback_;
 };
 
