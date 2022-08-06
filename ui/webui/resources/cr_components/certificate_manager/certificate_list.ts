@@ -24,7 +24,7 @@ import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError
 export interface CertificateListElement {
   $: {
     import: HTMLElement,
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     importAndBind: HTMLElement,
     // </if>
   };
@@ -53,7 +53,7 @@ export class CertificateListElement extends CertificateListElementBase {
       certificateType: String,
       importAllowed: Boolean,
 
-      // <if expr="chromeos_ash or chromeos_lacros">
+      // <if expr="is_chromeos">
       isGuest_: {
         type: Boolean,
         value() {
@@ -76,7 +76,7 @@ export class CertificateListElement extends CertificateListElementBase {
   certificates: CertificatesOrgGroup[];
   certificateType: CertificateType;
   importAllowed: boolean;
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private isGuest_: boolean;
   // </if>
   private isKiosk_: boolean;
@@ -105,7 +105,7 @@ export class CertificateListElement extends CertificateListElementBase {
         this.importAllowed;
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private canImportAndBind_(): boolean {
     return !this.isGuest_ &&
         this.certificateType === CertificateType.PERSONAL && this.importAllowed;
@@ -152,7 +152,7 @@ export class CertificateListElement extends CertificateListElementBase {
     this.handleImport_(false, e.target as HTMLElement);
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private onImportAndBindTap_(e: Event) {
     this.handleImport_(true, e.target as HTMLElement);
   }

@@ -18,7 +18,7 @@
       <cr-button id="import" on-click="onImportTap_"
           hidden="[[!canImport_(certificateType, importAllowed, isKiosk_)]]">
         [[i18n('certificateManagerImport')]]</cr-button>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
       <cr-button id="importAndBind" on-click="onImportAndBindTap_"
           hidden="[[!canImportAndBind_(certificateType, importAllowed,
                  isGuest_)]]">

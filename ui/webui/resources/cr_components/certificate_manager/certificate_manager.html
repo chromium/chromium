@@ -37,7 +37,7 @@
             certificate-type="[[certificateTypeEnum_.PERSONAL]]"
             import-allowed="[[clientImportAllowed]]">
         </certificate-list>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
         <certificate-provisioning-list></certificate-provisioning-list>
 </if>
       </div>
