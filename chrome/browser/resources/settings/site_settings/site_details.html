@@ -171,7 +171,7 @@
       <site-details-permission category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
           icon="settings:hid-device" label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>
-<if expr="chromeos_ash or chromeos_lacros or is_win">
+<if expr="is_chromeos or is_win">
       <site-details-permission
           category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
           icon="settings:protected-content"
