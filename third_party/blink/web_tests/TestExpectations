@@ -318,6 +318,8 @@ crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-t
 crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
 crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
 
+crbug.com/1350640 [ Mac11 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
+
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
 
