@@ -175,6 +175,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   }
   const GURL& initiator_url() const { return attributes_.initiator_url; }
 
+  const GURL& prerendering_url() const { return attributes_.prerendering_url; }
+
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }

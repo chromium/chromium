@@ -8460,12 +8460,15 @@ domain Page
       FailToGetMemoryUsage
 
   # Fired when a prerender attempt is completed.
-  event prerenderAttemptCompleted
+  experimental event prerenderAttemptCompleted
     parameters
       # The frame id of the frame initiating prerendering.
       FrameId initiatingFrameId
       string prerenderingUrl
       PrerenderFinalStatus finalStatus
+      # This is used to give users more information about the cancellation details,
+      # and this will be formatted for display.
+      optional string reasonDetails
 
   event loadEventFired
     parameters

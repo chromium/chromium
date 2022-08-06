@@ -197,6 +197,38 @@ class SyntheticKeyEventTest : public DevToolsProtocolTest {
   }
 };
 
+class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
+ public:
+  PrerenderDevToolsProtocolTest() {
+    prerender_helper_ = std::make_unique<test::PrerenderTestHelper>(
+        base::BindRepeating(&PrerenderDevToolsProtocolTest::web_contents,
+                            base::Unretained(this)));
+  }
+
+  GURL GetUrl(const std::string& path) {
+    return embedded_test_server()->GetURL("a.test", path);
+  }
+
+  bool HasHostForUrl(const GURL& url) {
+    int host_id = prerender_helper_->GetHostForUrl(url);
+    return host_id != RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
+  int AddPrerender(const GURL& prerendering_url) {
+    return prerender_helper_->AddPrerender(prerendering_url);
+  }
+
+  RenderFrameHostImpl* GetPrerenderedMainFrameHost(int host_id) {
+    return static_cast<RenderFrameHostImpl*>(
+        prerender_helper_->GetPrerenderedMainFrameHost(host_id));
+  }
+
+ private:
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
+};
+
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
  public:
   SyntheticMouseEventTest() {
@@ -3315,6 +3347,42 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolECHTest, SecurityDetailsECH) {
   absl::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
   EXPECT_EQ(true, ech);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       ReportPrerenderDisallowedAPICancellationDetails) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
+  Attach();
+  SendCommand("Page.enable", nullptr, true);
+  SendCommand("Runtime.enable", nullptr, true);
+
+  // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
+  // interface, and this is expected to cause prerender cancellation because
+  // the API is disallowed.
+  ExecuteScriptAsyncWithoutUserGesture(prerender_render_frame_host,
+                                       "navigator.getGamepads()");
+
+  base::Value::Dict result =
+      WaitForNotification("Page.prerenderAttemptCompleted", true);
+
+  // Verify Mojo capability control cancels prerendering.
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_THAT(*result.FindString("reasonDetails"),
+              Eq("device.mojom.GamepadMonitor"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
 }
 
 }  // namespace content

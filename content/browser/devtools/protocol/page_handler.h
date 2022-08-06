@@ -111,7 +111,8 @@ class PageHandler : public DevToolsDomainHandler,
   void DidActivatePrerender(const NavigationRequest& nav_request);
   void DidCancelPrerender(const GURL& prerendering_url,
                           const std::string& initiating_frame_id,
-                          PrerenderHost::FinalStatus status);
+                          PrerenderHost::FinalStatus status,
+                          const std::string& reason_details);
 
   Response Enable() override;
   Response Disable() override;

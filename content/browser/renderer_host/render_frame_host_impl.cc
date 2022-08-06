@@ -10504,6 +10504,19 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   // prerendering, as it could mean an interface request is never resolved for
   // an active page.
   DCHECK(canceled);
+
+  FrameTreeNode* prerender_initiator_frame = FrameTreeNode::GloballyFindByID(
+      prerender_host->initiator_frame_tree_node_id());
+  // The prerender initiator frame is used to report the cancellation to
+  // DevTools. When a prerender is canceled, we use the prerender initiator
+  // frame's DevTools agent instead of the cancelled prerendered frame's. This
+  // is because DevTools agent gets attached to a frame when it becomes active,
+  // so a canceled prerendered frame won't have a Devtools agent attached.
+  if (prerender_initiator_frame) {
+    devtools_instrumentation::DidCancelPrerender(
+        prerender_host->prerendering_url(), prerender_initiator_frame,
+        PrerenderHost::FinalStatus::kMojoBinderPolicy, interface_name);
+  }
 }
 
 void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
