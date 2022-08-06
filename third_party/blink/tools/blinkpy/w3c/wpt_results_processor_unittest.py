@@ -619,6 +619,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(
             [self.fs.join(path_from_out_dir_base, 'reftest-diff.png')],
             test_node['artifacts']['image_diff'])
+        self.assertEqual({
+            'maxDifference': 100,
+            'maxPixels': 3
+        }, test_node['image_diff_stats'])
 
     def test_copy_expected_output(self):
         # Check that an -expected.txt file is created from a checked-in metadata

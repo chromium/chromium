@@ -253,7 +253,9 @@ class WPTResultsProcessor(object):
             test_passed = current_node['actual'] == 'PASS'
             self._maybe_write_text_results(artifacts, current_path,
                                            test_passed)
-            self._maybe_write_screenshots(artifacts, current_path)
+            diff_stats = self._maybe_write_screenshots(artifacts, current_path)
+            if diff_stats:
+                current_node["image_diff_stats"] = diff_stats
             self._maybe_write_logs(artifacts, current_path)
             # Required by blinkpy/web_tests/results.html to show stderr.
             if 'stderr' in artifacts:
@@ -372,6 +374,7 @@ class WPTResultsProcessor(object):
 
     def _maybe_write_screenshots(self, artifacts, test_name):
         """Write actual, expected, and diff screenshots to disk, if possible.
+        Returns the diff stats if the screenshots are different.
 
         The raw "screenshots" artifact is a list of strings, each of which has
         the format "<url>:<base64-encoded PNG>". Each URL-PNG pair is a
@@ -415,8 +418,8 @@ class WPTResultsProcessor(object):
             )
             artifacts[screenshot_key] = [screenshot_subpath]
 
-        diff_bytes, _, error = self.port.diff_image(expected_image_bytes,
-                                                    actual_image_bytes)
+        diff_bytes, stats, error = self.port.diff_image(
+            expected_image_bytes, actual_image_bytes)
         if error:
             _log.error(
                 'Error creating diff image for %s '
@@ -429,6 +432,8 @@ class WPTResultsProcessor(object):
                 test_failures.FILENAME_SUFFIX_DIFF,
             )
             artifacts['image_diff'] = [diff_subpath]
+
+        return stats
 
     def _maybe_write_logs(self, artifacts, test_name):
         """Write WPT logs to disk, if possible."""
