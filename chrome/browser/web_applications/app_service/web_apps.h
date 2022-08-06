@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -111,6 +112,7 @@ class WebApps : public apps::PublisherBase,
   void LaunchShortcut(const std::string& app_id,
                       const std::string& shortcut_id,
                       int64_t display_id) override;
+  void SetPermission(const std::string& app_id, apps::PermissionPtr permission);
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

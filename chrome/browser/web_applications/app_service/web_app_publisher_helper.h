@@ -224,8 +224,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   content::WebContents* LaunchAppWithParams(apps::AppLaunchParams params);
 
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission);
+  void SetPermission(const std::string& app_id, apps::PermissionPtr permission);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void StopApp(const std::string& app_id);

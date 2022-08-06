@@ -83,6 +83,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -138,26 +139,26 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::NOTIFICATIONS,
 };
 
-bool GetContentSettingsType(apps::mojom::PermissionType permission_type,
+bool GetContentSettingsType(apps::PermissionType permission_type,
                             ContentSettingsType& content_setting_type) {
   switch (permission_type) {
-    case apps::mojom::PermissionType::kCamera:
+    case apps::PermissionType::kCamera:
       content_setting_type = ContentSettingsType::MEDIASTREAM_CAMERA;
       return true;
-    case apps::mojom::PermissionType::kLocation:
+    case apps::PermissionType::kLocation:
       content_setting_type = ContentSettingsType::GEOLOCATION;
       return true;
-    case apps::mojom::PermissionType::kMicrophone:
+    case apps::PermissionType::kMicrophone:
       content_setting_type = ContentSettingsType::MEDIASTREAM_MIC;
       return true;
-    case apps::mojom::PermissionType::kNotifications:
+    case apps::PermissionType::kNotifications:
       content_setting_type = ContentSettingsType::NOTIFICATIONS;
       return true;
-    case apps::mojom::PermissionType::kUnknown:
-    case apps::mojom::PermissionType::kContacts:
-    case apps::mojom::PermissionType::kStorage:
-    case apps::mojom::PermissionType::kPrinting:
-    case apps::mojom::PermissionType::kFileHandling:
+    case apps::PermissionType::kUnknown:
+    case apps::PermissionType::kContacts:
+    case apps::PermissionType::kStorage:
+    case apps::PermissionType::kPrinting:
+    case apps::PermissionType::kFileHandling:
       return false;
   }
 }
@@ -964,9 +965,8 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
   return web_contents;
 }
 
-void WebAppPublisherHelper::SetPermission(
-    const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
+void WebAppPublisherHelper::SetPermission(const std::string& app_id,
+                                          apps::PermissionPtr permission) {
   if (IsShuttingDown()) {
     return;
   }
@@ -976,11 +976,13 @@ void WebAppPublisherHelper::SetPermission(
     return;
   }
 
-  if (permission->permission_type ==
-      apps::mojom::PermissionType::kFileHandling) {
-    PersistFileHandlersUserChoice(profile_, app_id,
-                                  permission->value->get_bool_value(),
-                                  base::DoNothing());
+  if (permission->permission_type == apps::PermissionType::kFileHandling) {
+    if (permission->value &&
+        absl::holds_alternative<bool>(permission->value->value)) {
+      PersistFileHandlersUserChoice(profile_, app_id,
+                                    absl::get<bool>(permission->value->value),
+                                    base::DoNothing());
+    }
     return;
   }
 
@@ -996,16 +998,17 @@ void WebAppPublisherHelper::SetPermission(
     return;
   }
 
-  DCHECK(permission->value->is_tristate_value());
+  DCHECK(permission->value);
+  DCHECK(absl::holds_alternative<apps::TriState>(permission->value->value));
   ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
-  switch (permission->value->get_tristate_value()) {
-    case apps::mojom::TriState::kAllow:
+  switch (absl::get<apps::TriState>(permission->value->value)) {
+    case apps::TriState::kAllow:
       permission_value = CONTENT_SETTING_ALLOW;
       break;
-    case apps::mojom::TriState::kAsk:
+    case apps::TriState::kAsk:
       permission_value = CONTENT_SETTING_ASK;
       break;
-    case apps::mojom::TriState::kBlock:
+    case apps::TriState::kBlock:
       permission_value = CONTENT_SETTING_BLOCK;
       break;
     default:  // Return if value is invalid.

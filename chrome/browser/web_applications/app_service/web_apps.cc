@@ -176,6 +176,11 @@ void WebApps::LaunchShortcut(const std::string& app_id,
   publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
 }
 
+void WebApps::SetPermission(const std::string& app_id,
+                            apps::PermissionPtr permission) {
+  publisher_helper().SetPermission(app_id, std::move(permission));
+}
+
 void WebApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -221,7 +226,8 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
 
 void WebApps::SetPermission(const std::string& app_id,
                             apps::mojom::PermissionPtr permission) {
-  publisher_helper().SetPermission(app_id, std::move(permission));
+  publisher_helper().SetPermission(
+      app_id, apps::ConvertMojomPermissionToPermission(permission));
 }
 
 void WebApps::OpenNativeSettings(const std::string& app_id) {

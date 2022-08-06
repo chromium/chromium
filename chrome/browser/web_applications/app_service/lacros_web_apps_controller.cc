@@ -251,8 +251,7 @@ void LacrosWebAppsController::StopApp(const std::string& app_id) {
 
 void LacrosWebAppsController::SetPermission(const std::string& app_id,
                                             apps::PermissionPtr permission) {
-  publisher_helper().SetPermission(
-      app_id, apps::ConvertPermissionToMojomPermission(permission));
+  publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
 // TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
