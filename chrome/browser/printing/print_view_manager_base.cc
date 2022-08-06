@@ -37,7 +37,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -79,8 +78,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/printing/print_job_utils_lacros.h"
 #endif
-
-using print_to_pdf::PdfPrintResult;
 
 namespace printing {
 
@@ -288,44 +285,10 @@ void PrintViewManagerBase::PrintToPdf(
     content::RenderFrameHost* rfh,
     const std::string& page_ranges,
     mojom::PrintPagesParamsPtr print_pages_params,
-    PrintToPdfCallback callback) {
-  DCHECK(callback);
-
-  if (print_to_pdf_callback_) {
-    std::move(callback).Run(PdfPrintResult::kSimultaneousPrintActive,
-                            base::MakeRefCounted<base::RefCountedString>());
-    return;
-  }
-
-  if (!rfh->IsRenderFrameLive()) {
-    std::move(callback).Run(PdfPrintResult::kPrintFailure,
-                            base::MakeRefCounted<base::RefCountedString>());
-    return;
-  }
-
-  absl::variant<printing::PageRanges, PdfPrintResult> parsed_ranges =
-      print_to_pdf::TextPageRangesToPageRanges(page_ranges);
-  if (absl::holds_alternative<PdfPrintResult>(parsed_ranges)) {
-    DCHECK_NE(absl::get<PdfPrintResult>(parsed_ranges),
-              PdfPrintResult::kPrintSuccess);
-    std::move(callback).Run(absl::get<PdfPrintResult>(parsed_ranges),
-                            base::MakeRefCounted<base::RefCountedString>());
-    return;
-  }
-
-  // TODO(crbug.com/1348323): OOPIF printing is not yet supported by
-  // PrintToPdf(), so very limited state is set up here, just enough to handle
-  // RenderFrameDeleted() and printed document type is forced to be PDF instead
-  // of Skia MultiPictureDocument.
-  SetPrintingRFH(rfh);
-  print_pages_params->pages = absl::get<printing::PageRanges>(parsed_ranges);
-  print_pages_params->params->printed_doc_type = mojom::SkiaDocumentType::kPDF;
-  print_to_pdf_callback_ = std::move(callback);
-
-  GetPrintRenderFrame(rfh)->PrintWithParams(
-      std::move(print_pages_params),
-      base::BindOnce(&PrintViewManagerBase::OnDidPrintWithParams,
-                     weak_ptr_factory_.GetWeakPtr()));
+    print_to_pdf::PdfPrintJob::PrintToPdfCallback callback) {
+  print_to_pdf::PdfPrintJob::StartJob(
+      web_contents(), rfh, GetPrintRenderFrame(rfh), page_ranges,
+      std::move(print_pages_params), std::move(callback));
 }
 
 void PrintViewManagerBase::PrintDocument(
@@ -774,11 +737,6 @@ void PrintViewManagerBase::RenderFrameDeleted(
   // Terminates or cancels the print job if one was pending.
   if (render_frame_host != printing_rfh_)
     return;
-
-  if (print_to_pdf_callback_) {
-    FailPrintToPdfJob(PdfPrintResult::kPrintFailure);
-    return;
-  }
 
   printing_rfh_ = nullptr;
 
@@ -1234,59 +1192,5 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
-void PrintViewManagerBase::OnDidPrintWithParams(
-    printing::mojom::PrintWithParamsResultPtr result) {
-  DCHECK(print_to_pdf_callback_);
-
-  if (result->is_failure_reason()) {
-    switch (result->get_failure_reason()) {
-      case mojom::PrintFailureReason::kGeneralFailure:
-        FailPrintToPdfJob(PdfPrintResult::kPrintFailure);
-        return;
-      case mojom::PrintFailureReason::kInvalidPageRange:
-        FailPrintToPdfJob(PdfPrintResult::kPageCountExceeded);
-        return;
-    }
-  }
-
-  auto& content = *result->get_params()->content;
-  if (!content.metafile_data_region.IsValid()) {
-    FailPrintToPdfJob(PdfPrintResult::kInvalidMemoryHandle);
-    return;
-  }
-
-  base::ReadOnlySharedMemoryMapping map = content.metafile_data_region.Map();
-  if (!map.IsValid()) {
-    FailPrintToPdfJob(PdfPrintResult::kMetafileMapError);
-    return;
-  }
-
-  std::string data =
-      std::string(static_cast<const char*>(map.memory()), map.size());
-  std::move(print_to_pdf_callback_)
-      .Run(PdfPrintResult::kPrintSuccess,
-           base::RefCountedString::TakeString(&data));
-
-  ResetPrintToPdfJob();
-}
-
-void PrintViewManagerBase::FailPrintToPdfJob(PdfPrintResult result) {
-  DCHECK_NE(result, PdfPrintResult::kPrintSuccess);
-  DCHECK(print_to_pdf_callback_);
-
-  std::move(print_to_pdf_callback_)
-      .Run(result, base::MakeRefCounted<base::RefCountedString>());
-
-  ResetPrintToPdfJob();
-}
-
-void PrintViewManagerBase::ResetPrintToPdfJob() {
-  printing_rfh_ = nullptr;
-
-  // The callback is supposed to be consumed at this point meaning we
-  // reported results to the PrintToPdf() caller.
-  DCHECK(!print_to_pdf_callback_);
-}
 
 }  // namespace printing

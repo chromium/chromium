@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,7 +20,7 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "components/prefs/pref_member.h"
 #include "components/printing/browser/print_manager.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_job.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "printing/buildflags/buildflags.h"
@@ -58,10 +57,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
   };
 
-  using PrintToPdfCallback =
-      base::OnceCallback<void(print_to_pdf::PdfPrintResult result,
-                              scoped_refptr<base::RefCountedMemory>)>;
-
   PrintViewManagerBase(const PrintViewManagerBase&) = delete;
   PrintViewManagerBase& operator=(const PrintViewManagerBase&) = delete;
 
@@ -90,7 +85,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void PrintToPdf(content::RenderFrameHost* rfh,
                   const std::string& page_ranges,
                   mojom::PrintPagesParamsPtr print_pages_params,
-                  PrintToPdfCallback callback);
+                  print_to_pdf::PdfPrintJob::PrintToPdfCallback callback);
 
   // Whether printing is enabled or not.
   void UpdatePrintingEnabled();
@@ -326,13 +321,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
       bool allowed);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-  // This is called to report PrintToPdf() call results.
-  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
-
-  // Helpers to report PrintToPdf() failure and cleanup related state.
-  void FailPrintToPdfJob(print_to_pdf::PdfPrintResult result);
-  void ResetPrintToPdfJob();
-
   // The current RFH that is printing with a system printing dialog.
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
 
@@ -351,8 +339,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Client ID with the print backend service manager for this print job.
   absl::optional<uint32_t> service_manager_client_id_;
 #endif
-
-  PrintToPdfCallback print_to_pdf_callback_;
 
   const scoped_refptr<PrintQueriesQueue> queue_;
 

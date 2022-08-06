@@ -14,12 +14,10 @@ std::string PdfPrintResultToString(PdfPrintResult result) {
       return "Printing failed";
     case PdfPrintResult::kInvalidPrinterSettings:
       return "Show invalid printer settings error";
-    case PdfPrintResult::kInvalidMemoryHandle:
-      return "Invalid memory handle";
-    case PdfPrintResult::kMetafileMapError:
-      return "Map to shared memory error";
-    case PdfPrintResult::kSimultaneousPrintActive:
-      return "The previous printing job hasn't finished";
+    case PdfPrintResult::kInvalidSharedMemoryRegion:
+      return "Invalid shared memory region";
+    case PdfPrintResult::kInvalidSharedMemoryMapping:
+      return "Invalid shared memory mapping";
     case PdfPrintResult::kPageRangeSyntaxError:
       return "Page range syntax error";
     case PdfPrintResult::kPageRangeInvalidRange:

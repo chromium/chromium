@@ -7,13 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "components/printing/browser/print_manager.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_job.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,10 +26,6 @@ class HeadlessPrintManager
     : public printing::PrintManager,
       public content::WebContentsUserData<HeadlessPrintManager> {
  public:
-  using PrintToPdfCallback =
-      base::OnceCallback<void(print_to_pdf::PdfPrintResult,
-                              scoped_refptr<base::RefCountedMemory>)>;
-
   ~HeadlessPrintManager() override;
 
   HeadlessPrintManager(const HeadlessPrintManager&) = delete;
@@ -46,22 +39,18 @@ class HeadlessPrintManager
   void PrintToPdf(content::RenderFrameHost* rfh,
                   const std::string& page_ranges,
                   printing::mojom::PrintPagesParamsPtr print_page_params,
-                  PrintToPdfCallback callback);
+                  print_to_pdf::PdfPrintJob::PrintToPdfCallback callback);
 
  private:
   friend class content::WebContentsUserData<HeadlessPrintManager>;
 
   explicit HeadlessPrintManager(content::WebContents* web_contents);
 
-  // WebContentsObserver overrides (via PrintManager):
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-
   // printing::mojom::PrintManagerHost:
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
   void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
-  void ShowInvalidPrinterSettingsError() override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
                            base::Value::Dict job_settings,
@@ -83,14 +72,6 @@ class HeadlessPrintManager
 #if BUILDFLAG(IS_ANDROID)
   void PdfWritingDone(int page_count) override;
 #endif
-
-  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
-
-  void FailJob(print_to_pdf::PdfPrintResult result);
-  void Reset();
-
-  raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
-  PrintToPdfCallback print_to_pdf_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

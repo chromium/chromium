@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 
@@ -119,6 +120,16 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   }
 
   void RendePdfPage(int page_index) {
+    absl::optional<gfx::SizeF> page_size_in_points =
+        chrome_pdf::GetPDFPageSizeByIndex(pdf_span_, page_index);
+    ASSERT_TRUE(page_size_in_points.has_value());
+
+    gfx::SizeF page_size_in_pixels =
+        gfx::ScaleSize(page_size_in_points.value(),
+                       static_cast<float>(kDpi) / printing::kPointsPerInch);
+
+    gfx::Rect page_rect(gfx::ToCeiledSize(page_size_in_pixels));
+
     constexpr chrome_pdf::RenderOptions options = {
         .stretch_to_bounds = false,
         .keep_aspect_ratio = true,
@@ -127,26 +138,16 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
         .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
     };
 
-    absl::optional<gfx::SizeF> page_size =
-        chrome_pdf::GetPDFPageSizeByIndex(pdf_span_, page_index);
-    ASSERT_TRUE(page_size.has_value());
+    bitmap_size_ = page_rect.size();
+    bitmap_data_.resize(kColorChannels * bitmap_size_.GetArea());
 
-    gfx::Rect rect(kPaperWidth * kDpi, kPaperHeight * kDpi);
-    printing::PdfRenderSettings settings(
-        rect, gfx::Point(), gfx::Size(kDpi, kDpi), options.autorotate,
-        options.use_color, printing::PdfRenderSettings::Mode::NORMAL);
-    std::vector<uint8_t> bitmap_data(kColorChannels *
-                                     settings.area.size().GetArea());
     ASSERT_TRUE(chrome_pdf::RenderPDFPageToBitmap(
-        pdf_span_, page_index, bitmap_data.data(), settings.area.size(),
-        settings.dpi, options));
-
-    bitmap_data_.swap(bitmap_data);
-    bitmap_size_ = settings.area.size();
+        pdf_span_, page_index, bitmap_data_.data(), bitmap_size_,
+        gfx::Size(kDpi, kDpi), options));
   }
 
   uint32_t GetPixelRGB(int x, int y) {
-    int pixel_index =
+    size_t pixel_index =
         bitmap_size_.width() * y * kColorChannels + x * kColorChannels;
     return bitmap_data_[pixel_index + 0]           // B
            | bitmap_data_[pixel_index + 1] << 8    // G
@@ -464,6 +465,27 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 
   // Expect midpoint pixel of red color
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
+}
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfOOPIF) {
+  NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/oopif.html");
+
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  PrintToPdfAndRenderPage(base::Value(std::move(params)), 0);
+
+  ASSERT_TRUE(printing::IsOopifEnabled());
+
+  // Expect red iframe pixel at 1 inch into the page.
+  EXPECT_EQ(GetPixelRGB(1 * kDpi, 1 * kDpi), 0xff0000u);
 }
 
 }  // namespace

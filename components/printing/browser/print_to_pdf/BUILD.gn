@@ -9,6 +9,8 @@ assert(enable_basic_printing)
 
 static_library("print_to_pdf") {
   sources = [
+    "pdf_print_job.cc",
+    "pdf_print_job.h",
     "pdf_print_result.cc",
     "pdf_print_result.h",
     "pdf_print_utils.cc",
@@ -18,6 +20,8 @@ static_library("print_to_pdf") {
   deps = [
     "//base",
     "//components/printing/browser",
+    "//components/services/print_compositor",
+    "//components/services/print_compositor/public/mojom",
     "//printing",
     "//printing/buildflags",
     "//printing/mojom",
