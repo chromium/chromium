@@ -31,6 +31,21 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     return SendSessionCommand(method, std::move(params), std::string(), wait);
   }
 
+  const base::Value::Dict* SendCommandSync(std::string method) {
+    return SendCommand(std::move(method), base::Value::Dict(), true);
+  }
+  const base::Value::Dict* SendCommandSync(std::string method,
+                                           base::Value::Dict params) {
+    return SendCommand(std::move(method), std::move(params), true);
+  }
+  const base::Value::Dict* SendCommandAsync(std::string method) {
+    return SendCommand(std::move(method), base::Value::Dict(), false);
+  }
+  const base::Value::Dict* SendCommandAsync(std::string method,
+                                            base::Value::Dict params) {
+    return SendCommand(std::move(method), std::move(params), false);
+  }
+
   // DEPRECATED! Use the overload above.
   const base::Value::Dict* SendCommand(
       std::string method,
