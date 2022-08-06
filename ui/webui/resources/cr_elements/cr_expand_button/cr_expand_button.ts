@@ -12,18 +12,26 @@ import '../cr_icon_button/cr_icon_button.m.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
+import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.m.js';
 
-/** @polymer */
+import {getTemplate} from './cr_expand_button.html.js';
+
+export interface CrExpandButtonElement {
+  $: {
+    icon: CrIconButtonElement,
+  };
+}
+
 export class CrExpandButtonElement extends PolymerElement {
   static get is() {
     return 'cr-expand-button';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -83,45 +91,36 @@ export class CrExpandButtonElement extends PolymerElement {
     };
   }
 
+  expanded: boolean;
+  disabled: boolean;
+  expandIcon: string;
+  collapseIcon: string;
+  expandTitle: string;
+  collapseTitle: string;
+  private tooltipText_: string;
+
   static get observers() {
     return ['updateAriaExpanded_(disabled, expanded)'];
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.toggleExpand_);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeTooltipText_() {
+  private computeTooltipText_(): string {
     return this.expanded ? this.collapseTitle : this.expandTitle;
   }
 
-  /** @private */
-  onTooltipTextChange_() {
+  private onTooltipTextChange_() {
     this.title = this.tooltipText_;
   }
 
-  /** @type {boolean} */
-  get noink() {
-    return this.$.icon.noink;
-  }
-
-  /** @type {boolean} */
-  set noink(value) {
-    this.$.icon.noink = value;
-  }
-
-  focus() {
+  override focus() {
     this.$.icon.focus();
   }
 
-  /** @private */
-  onAriaLabelChange_() {
+  private onAriaLabelChange_() {
     if (this.ariaLabel) {
       this.$.icon.removeAttribute('aria-labelledby');
       this.$.icon.setAttribute('aria-label', this.ariaLabel);
@@ -131,26 +130,19 @@ export class CrExpandButtonElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onExpandedChange_() {
+  private onExpandedChange_() {
     this.updateIcon_();
   }
 
-  /** @private */
-  onIconChange_() {
+  private onIconChange_() {
     this.updateIcon_();
   }
 
-  /** @private */
-  updateIcon_() {
+  private updateIcon_() {
     this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  toggleExpand_(event) {
+  private toggleExpand_(event: Event) {
     // Prevent |click| event from bubbling. It can cause parents of this
     // elements to erroneously re-toggle this control.
     event.stopPropagation();
@@ -161,13 +153,19 @@ export class CrExpandButtonElement extends PolymerElement {
     focusWithoutInk(this.$.icon);
   }
 
-  /** @private */
-  updateAriaExpanded_() {
+  private updateAriaExpanded_() {
     if (this.disabled) {
       this.$.icon.removeAttribute('aria-expanded');
     } else {
-      this.$.icon.setAttribute('aria-expanded', this.expanded);
+      this.$.icon.setAttribute(
+          'aria-expanded', this.expanded ? 'true' : 'false');
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-expand-button': CrExpandButtonElement;
   }
 }
 

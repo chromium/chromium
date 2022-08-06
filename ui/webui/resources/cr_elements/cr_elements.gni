@@ -31,6 +31,7 @@ if (include_polymer) {
     "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_action_menu/cr_action_menu.ts",
     "cr_drawer/cr_drawer.ts",
+    "cr_expand_button/cr_expand_button.ts",
     "cr_fingerprint/cr_fingerprint_progress_arc.ts",
     "cr_grid/cr_grid.ts",
     "cr_link_row/cr_link_row.ts",
