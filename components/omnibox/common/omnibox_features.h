@@ -42,6 +42,7 @@ extern const base::Feature kClobberTriggersSRPZeroSuggest;
 extern const base::Feature kFocusTriggersContextualWebZeroSuggest;
 extern const base::Feature kFocusTriggersSRPZeroSuggest;
 extern const base::Feature kLocalHistorySuggestRevamp;
+extern const base::Feature kLocalHistoryZeroSuggestBeyondNTP;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kZeroSuggestOnNTPForSignedOutUsers;
 extern const base::Feature kZeroSuggestPrefetching;

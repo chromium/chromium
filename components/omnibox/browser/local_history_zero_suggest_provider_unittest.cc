@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
+using metrics::OmniboxEventProto;
 using OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold;
 using OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore;
 
@@ -136,7 +137,8 @@ class LocalHistoryZeroSuggestProviderTest
   // Creates an input using the provided information and queries the provider.
   void StartProviderAndWaitUntilDone(const std::string& text,
                                      OmniboxFocusType focus_type,
-                                     PageClassification page_classification);
+                                     PageClassification page_classification,
+                                     const std::string& current_url);
 
   // Verifies that provider matches are as expected.
   void ExpectMatches(const std::vector<TestMatchData>& match_data_list);
@@ -198,11 +200,12 @@ void LocalHistoryZeroSuggestProviderTest::WaitForHistoryService() {
 void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
     const std::string& text = "",
     OmniboxFocusType focus_type = OmniboxFocusType::ON_FOCUS,
-    PageClassification page_classification =
-        metrics::OmniboxEventProto::NTP_REALBOX) {
+    PageClassification page_classification = OmniboxEventProto::NTP_REALBOX,
+    const std::string& current_url = "") {
   AutocompleteInput input(base::ASCIIToUTF16(text), page_classification,
                           TestSchemeClassifier());
   input.set_focus_type(focus_type);
+  input.set_current_url(GURL(current_url));
   provider_->Start(input, false);
   if (!provider_->done()) {
     provider_run_loop_ = std::make_unique<base::RunLoop>();
@@ -310,19 +313,72 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, Incognito) {
       {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 }
 
-// Tests that suggestions are returned only if FeatureFlags is configured
-// to return local history suggestions in the NTP.
-TEST_P(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
+// Tests that suggestions are allowed in the eligibile entry points.
+TEST_P(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
 
-  // Verify that local history zero-prefix suggestions are enabled by default
-  // on Desktop and Android NTP.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  StartProviderAndWaitUntilDone();
-  ExpectMatches(
-      {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  {
+    // Disable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(omnibox::kLocalHistoryZeroSuggestBeyondNTP);
+    StartProviderAndWaitUntilDone();
+
+    // Local history zero-prefix suggestions are enabled by default.
+    ExpectMatches(
+        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  }
+  {
+    // Enable on-focus for SRP.
+    // Disable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest},
+        /*disabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are disabled for on-focus SRP.
+    ExpectMatches({});
+  }
+  {
+    // Enable on-focus for SRP.
+    // Enable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            omnibox::kFocusTriggersSRPZeroSuggest,
+            omnibox::kLocalHistoryZeroSuggestBeyondNTP,
+        },
+        /*disabled_features=*/{});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are enabled for on-focus SRP.
+    ExpectMatches(
+        {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
+  }
+  {
+    // Disable on-focus for SRP.
+    // Enable local history zero-prefix suggestions beyond NTP.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
+        /*disabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest});
+    StartProviderAndWaitUntilDone(
+        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        /*current_url=*/"https://example.com/");
+
+    // Local history zero-prefix suggestions are disabled for on-focus SRP.
+    ExpectMatches({});
+  }
 }
 
 // Tests that search terms are extracted from the default search provider's

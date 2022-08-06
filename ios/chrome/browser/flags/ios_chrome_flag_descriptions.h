@@ -501,6 +501,10 @@ extern const char kOmniboxNewImplementationDescription[];
 extern const char kOmniboxPasteButtonName[];
 extern const char kOmniboxPasteButtonDescription[];
 
+// Title and description for local history zero-prefix suggestions beyond NTP.
+extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPName[];
+extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
+
 // Title and description for the zero-suggest prefetching on the New Tab Page.
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];

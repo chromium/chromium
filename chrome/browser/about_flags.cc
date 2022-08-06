@@ -5173,6 +5173,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesTitleWrapAround)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"omnibox-local-history-zero-suggest-beyond-ntp",
+     flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPName,
+     flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription,
+     kOsAll, FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggestBeyondNTP)},
+
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxFocusTriggersContextualWebZeroSuggestName,
      flag_descriptions::

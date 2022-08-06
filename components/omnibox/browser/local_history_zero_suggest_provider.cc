@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -58,21 +59,13 @@ std::u16string GetSearchTermsFromURL(const GURL& url,
 // Invoked early, confirms all the conditions for zero suggestions are met.
 bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
                                              const AutocompleteInput& input) {
-  // Allow local history query suggestions only when the user is not in an
-  // off-the-record context.
+  // Allow local history zero-suggest only when the user is not in incognito
+  // mode.
   if (client->IsOffTheRecord())
     return false;
 
-  // Allow local history query suggestions only when the omnibox is empty and is
-  // focused from the NTP.
-  if (input.focus_type() == OmniboxFocusType::DEFAULT ||
-      input.type() != OmniboxInputType::EMPTY ||
-      !BaseSearchProvider::IsNTPPage(input.current_page_classification())) {
-    return false;
-  }
-
-  // Allow local history query suggestions only when the user has set up Google
-  // as their default search engine.
+  // Allow local history zero-suggest only when the user has set up Google as
+  // their default search engine.
   TemplateURLService* template_url_service = client->GetTemplateURLService();
   if (!template_url_service ||
       !template_url_service->GetDefaultSearchProvider() ||
@@ -81,7 +74,18 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
     return false;
   }
 
-  return true;
+  if (base::FeatureList::IsEnabled(
+          omnibox::kLocalHistoryZeroSuggestBeyondNTP)) {
+    // Allow local history zero-suggest where remote zero-suggest is eligible.
+    return ZeroSuggestProvider::ResultTypeToRun(client, input) !=
+           ZeroSuggestProvider::ResultType::kNone;
+  }
+
+  // Allow local history query suggestions only when the omnibox is empty and is
+  // focused from the NTP.
+  return input.focus_type() == OmniboxFocusType::ON_FOCUS &&
+         input.type() == OmniboxInputType::EMPTY &&
+         BaseSearchProvider::IsNTPPage(input.current_page_classification());
 }
 
 void RecordDBMetrics(const base::TimeTicks db_query_time,
