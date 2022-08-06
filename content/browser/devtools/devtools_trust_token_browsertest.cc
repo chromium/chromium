@@ -33,7 +33,7 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
 
   // The returned view is only valid until the next |SendCommand| call.
   base::Value::ConstListView GetTrustTokensViaProtocol() {
-    SendCommand("Storage.getTrustTokens", nullptr);
+    SendCommandSync("Storage.getTrustTokens");
     const base::Value* tokens = result()->Find("tokens");
     CHECK(tokens);
     return tokens->GetListDeprecated();
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   // 2) Open DevTools and enable Network domain.
   Attach();
-  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Network.enable");
 
   // Make sure there are no existing DevTools events in the queue.
   EXPECT_FALSE(HasExistingNotification());
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open DevTools and enable Network domain.
   Attach();
-  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Network.enable");
 
   // Make sure there are no existing DevTools events in the queue.
   EXPECT_FALSE(HasExistingNotification());
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, FetchEndToEnd) {
 
   // 2) Open DevTools and enable Network domain.
   Attach();
-  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Network.enable");
 
   // 3) Request and redeem a token, then use the redeemed token in a Signing
   // request.
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
 
   // 2) Open DevTools and enable Network domain.
   Attach();
-  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Network.enable");
 
   // 3) Request and redeem a token, then use the redeemed token in a Signing
   // request.
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   // 2) Open DevTools and enable Network domain.
   Attach();
-  SendCommand("Network.enable", std::make_unique<base::DictionaryValue>());
+  SendCommandSync("Network.enable");
 
   // 3) Request some Trust Tokens.
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
@@ -354,9 +354,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
   AssertTrustTokensViaProtocol(IssuanceOriginFromHost("a.test"), 10);
 
   // 5) Call Storage.clearTrustTokens
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetStringPath("issuerOrigin", IssuanceOriginFromHost("a.test"));
-  auto* result = SendCommand("Storage.clearTrustTokens", std::move(params));
+  base::Value::Dict params;
+  params.Set("issuerOrigin", IssuanceOriginFromHost("a.test"));
+  auto* result = SendCommandSync("Storage.clearTrustTokens", std::move(params));
 
   EXPECT_THAT(result->FindBool("didDeleteTokens"), ::testing::Optional(true));
 
