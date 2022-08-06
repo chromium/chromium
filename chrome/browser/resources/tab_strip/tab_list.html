@@ -8,10 +8,10 @@
         0 2px 3px 0 rgba(var(--google-grey-800-rgb), .3),
         0 6px 10px 4px rgba(var(--google-grey-800-rgb), .15);
 
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not is_chromeos">
     --tabstrip-tab-drag-image-scale: 1.1;
 </if>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
     /* ChromeOS scales drag images by 1.2, so this variable multiplied by
      * 1.2 should be around 1.1. */
     --tabstrip-tab-drag-image-scale: calc(1.1 / 1.2);
