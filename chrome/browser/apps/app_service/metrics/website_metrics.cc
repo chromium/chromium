@@ -101,10 +101,37 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::
   owner_->OnInstallableWebAppStatusUpdated(web_contents());
 }
 
+WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
+  const base::Value::Dict* data_dict = value.GetIfDict();
+  if (!data_dict) {
+    return;
+  }
+
+  absl::optional<base::TimeDelta> running_time_value =
+      base::ValueToTimeDelta(data_dict->Find(kRunningTimeKey));
+  if (!running_time_value.has_value()) {
+    return;
+  }
+
+  auto url_content_value = data_dict->FindInt(kUrlContentKey);
+  if (!url_content_value.has_value()) {
+    return;
+  }
+
+  auto promotable_value = data_dict->FindBool(kPromotableKey);
+  if (!promotable_value.has_value()) {
+    return;
+  }
+
+  running_time_in_two_hours = running_time_value.value();
+  url_content = static_cast<UrlContent>(url_content_value.value());
+  promotable = promotable_value.value();
+}
+
 base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
   base::Value usage_time_dict(base::Value::Type::DICTIONARY);
   usage_time_dict.SetPath(kRunningTimeKey,
-                          base::TimeDeltaToValue(running_time));
+                          base::TimeDeltaToValue(running_time_in_two_hours));
   usage_time_dict.SetIntKey(kUrlContentKey, static_cast<int>(url_content));
   usage_time_dict.SetBoolKey(kPromotableKey, promotable);
   return usage_time_dict;
@@ -196,12 +223,20 @@ void WebsiteMetrics::HistoryServiceBeingDeleted(
 }
 
 void WebsiteMetrics::OnFiveMinutes() {
+  // When the user logs in, there might be usage time for some websites saved in
+  // the user pref for the last login, and they haven't been recorded yet. So
+  // for the first five minutes, read the usage time saved in the user pref, and
+  // record the UKM, then save the new usage time to the user pref.
+  if (should_record_ukm_from_pref_) {
+    RecordUsageTimeFromPref();
+    should_record_ukm_from_pref_ = false;
+  }
+
   SaveUsageTime();
 }
 
 void WebsiteMetrics::OnTwoHours() {
-  // TODO(crbug.com/1334173): Records the usage time UKM, and reset the local
-  // variables after recording the UKM.
+  RecordUsageTime();
 
   std::map<GURL, UrlInfo> url_infos;
   for (const auto& it : webcontents_to_ukm_key_) {
@@ -425,8 +460,10 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
     return;
   }
 
-  DCHECK_GE(base::TimeTicks::Now(), it->second.start_time);
-  it->second.running_time += base::TimeTicks::Now() - it->second.start_time;
+  auto current_time = base::TimeTicks::Now();
+  DCHECK_GE(current_time, it->second.start_time);
+  it->second.running_time_in_five_minutes +=
+      current_time - it->second.start_time;
   it->second.is_activated = false;
 }
 
@@ -435,13 +472,48 @@ void WebsiteMetrics::SaveUsageTime() {
                                          kWebsiteUsageTime);
   auto& dict = usage_time_update->GetDict();
   dict.clear();
-  for (auto it : url_infos_) {
+  for (auto& it : url_infos_) {
     if (it.second.is_activated) {
-      it.second.running_time += base::TimeTicks::Now() - it.second.start_time;
-      it.second.start_time = base::TimeTicks::Now();
+      auto current_time = base::TimeTicks::Now();
+      it.second.running_time_in_five_minutes +=
+          current_time - it.second.start_time;
+      it.second.start_time = current_time;
     }
-    if (!it.second.running_time.is_zero()) {
+    if (!it.second.running_time_in_five_minutes.is_zero()) {
+      it.second.running_time_in_two_hours +=
+          it.second.running_time_in_five_minutes;
       dict.Set(it.first.spec(), it.second.ConvertToValue());
+      it.second.running_time_in_five_minutes = base::TimeDelta();
+    }
+  }
+}
+
+void WebsiteMetrics::RecordUsageTime() {
+  for (auto& it : url_infos_) {
+    if (!it.second.running_time_in_two_hours.is_zero()) {
+      // TODO(crbug.com/1334173): Records the usage time UKM.
+      it.second.running_time_in_two_hours = base::TimeDelta();
+    }
+  }
+
+  // The app usage time AppKMs have been recorded, so clear the saved usage time
+  // in the user pref.
+  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
+                                         kWebsiteUsageTime);
+  usage_time_update->GetDict().clear();
+}
+
+void WebsiteMetrics::RecordUsageTimeFromPref() {
+  DictionaryPrefUpdate usage_time_update(profile_->GetPrefs(),
+                                         kWebsiteUsageTime);
+  if (!usage_time_update->is_dict()) {
+    return;
+  }
+
+  for (const auto [url, url_info_value] : usage_time_update->GetDict()) {
+    auto url_info = std::make_unique<UrlInfo>(url_info_value);
+    if (!url_info->running_time_in_two_hours.is_zero()) {
+      // TODO(crbug.com/1334173): Records the usage time UKM.
     }
   }
 }

@@ -124,8 +124,15 @@ class WebsiteMetrics : public BrowserListObserver,
   };
 
   struct UrlInfo {
+    UrlInfo() = default;
+    explicit UrlInfo(const base::Value& value);
     base::TimeTicks start_time;
-    base::TimeDelta running_time;
+    // Running time in the past 5 minutes without noise.
+    base::TimeDelta running_time_in_five_minutes;
+    // Sum `running_time_in_five_minutes` with noise in the past 2 hours:
+    // time1 * noise1 + time2 * noise2 + time3 * noise3....
+    base::TimeDelta running_time_in_two_hours;
+
     UrlContent url_content = UrlContent::kUnknown;
     bool is_activated = false;
     bool promotable = false;
@@ -185,6 +192,13 @@ class WebsiteMetrics : public BrowserListObserver,
   // minutes.
   void SaveUsageTime();
 
+  // Records the website usage time metrics each 2 hours.
+  void RecordUsageTime();
+
+  // Records the usage time UKM saved in the user pref at the first 5 minutes
+  // after the user logs in.
+  void RecordUsageTimeFromPref();
+
   const raw_ptr<Profile> profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
@@ -209,6 +223,8 @@ class WebsiteMetrics : public BrowserListObserver,
   // Saves the usage info for the activated urls in activated windows for the
   // UKM records. `url_infos_` is cleared after recording the UKM each 2 hours.
   std::map<GURL, UrlInfo> url_infos_;
+
+  bool should_record_ukm_from_pref_ = true;
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,
