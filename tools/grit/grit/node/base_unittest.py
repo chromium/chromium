@@ -215,16 +215,13 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "is_linux", {}, 'linux2', {})  # Python 2 used 'linux2'.
     AssertExpr(False, "is_linux", {}, 'linux-foo', {})  # Must match exactly.
     AssertExpr(False, "is_linux", {}, 'foollinux', {})
-    AssertExpr(True, "is_linux", {'chromeos_ash': False}, 'linux', {})
-    AssertExpr(False, "is_linux", {'chromeos_ash': True}, 'linux', {})
-    AssertExpr(True, "is_linux", {'chromeos_lacros': False}, 'linux', {})
-    AssertExpr(False, "is_linux", {'chromeos_lacros': True}, 'linux', {})
+    AssertExpr(False, "is_linux", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(False, "is_linux", {'chromeos_lacros': True}, 'chromeos', {})
     # `is_chromeos` is not used with GRIT and is thus ignored.
     AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux', {})
-    # `is_chromeos` is not currently supported.
-    # TODO(crbug.com/1316150): Uncomment and update these tests when fixed.
-    # AssertExpr(False, "is_chromeos", {}, 'linux', {})
-    # AssertExpr(True, "is_chromeos", {<some condition>}, 'linux', {})
+    AssertExpr(True, "is_chromeos", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(True, "is_chromeos", {'chromeos_lacros': True}, 'chromeos', {})
+    AssertExpr(False, "is_chromeos", {}, 'linux', {})
     AssertExpr(False, "is_fuchsia", {}, 'linux', {})
     AssertExpr(False, "is_linux", {}, 'win32', {})
     AssertExpr(True, "is_macosx", {}, 'darwin', {})
@@ -236,8 +233,8 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(True, "is_ios", {}, 'ios', {})
     AssertExpr(False, "is_ios", {}, 'darwin', {})
     AssertExpr(True, "is_posix", {}, 'linux', {})
-    AssertExpr(True, "is_posix", {'chromeos_ash': True}, 'linux', {})
-    AssertExpr(True, "is_posix", {'chromeos_lacros': True}, 'linux', {})
+    AssertExpr(True, "is_posix", {'chromeos_ash': True}, 'chromeos', {})
+    AssertExpr(True, "is_posix", {'chromeos_lacros': True}, 'chromeos', {})
     AssertExpr(True, "is_posix", {}, 'darwin', {})
     AssertExpr(True, "is_posix", {}, 'android', {})
     AssertExpr(True, "is_posix", {}, 'ios', {})
@@ -286,17 +283,35 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "foo == 'bar' or not baz",
                {'foo': 'ruz', 'baz': True}, 'ios', {'lang': 'en'})
 
-  def testEvaluateExpressionWithUndefinedVariables(self):
-    def AssertThrows(expr, defs):
+  def testEvaluateExpressionThrows(self):
+    def AssertThrows(expr, defs, target_platform, message):
       with self.assertRaises(AssertionError) as cm:
-        base.Node.EvaluateExpression(expr, defs, 'linux', {})
-      self.assertTrue(
-          str(cm.exception).startswith('undefined Grit variable found:'))
+        base.Node.EvaluateExpression(expr, defs, target_platform, {})
+      self.assertTrue(str(cm.exception) == message)
 
-    AssertThrows("is_chromeos", {})
-    AssertThrows("foo == 'baz'", {})
-    AssertThrows("is_chromeos", {'is_macosx': True})
-    AssertThrows("foo == 'bar' or not baz", {'foo': 'bar', 'fun': True})
+    # Test undefined variables.
+    AssertThrows("foo == 'baz'", {}, 'linux',
+                 'undefined Grit variable found: foo')
+    AssertThrows("foo == 'bar' or not baz", {
+        'foo': 'bar',
+        'fun': True
+    }, 'linux', 'undefined Grit variable found: baz')
+
+    # Test invalid chromeos configurations.
+    AssertThrows("is_chromeos", {}, 'chromeos',
+                 'The chromeos target must be either ash or lacros')
+    AssertThrows("is_chromeos", {
+        'chromeos_ash': True,
+        'chromeos_lacros': True
+    }, 'chromeos', 'The chromeos target must be either ash or lacros')
+    AssertThrows("is_linux", {'chromeos_ash': True}, 'linux',
+                 'Non-chromeos targets cannot be ash or lacros')
+    AssertThrows("is_linux", {'chromeos_lacros': True}, 'linux',
+                 'Non-chromeos targets cannot be ash or lacros')
+    AssertThrows("is_linux", {
+        'chromeos_ash': True,
+        'chromeos_lacros': True
+    }, 'linux', 'Non-chromeos targets cannot be ash or lacros')
 
 
 if __name__ == '__main__':

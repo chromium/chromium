@@ -480,15 +480,14 @@ class Node(object):
   def EvaluateExpression(cls, expr, defs, target_platform, extra_variables={}):
     '''Worker for EvaluateCondition (below) and conditions in XTB files.'''
 
-    def IsChromeOS(defs):
-      '''Returns whether the target is Chrome OS based on specified definitions.
-
-      Unlike other platforms, the target platform for Chrome OS is Linux and not
-      the target OS, which is instead specified by one of two defines.
-
-      TODO(crbug.com/1316150): Remove once GRIT natively supports `is_chromeos`.
-      '''
-      return defs.get('chromeos_ash') or defs.get('chromeos_lacros')
+    if target_platform == 'chromeos':
+      assert defs.get('chromeos_ash', False) != defs.get(
+          'chromeos_lacros',
+          False), 'The chromeos target must be either ash or lacros'
+    else:
+      assert not defs.get('chromeos_ash', False) and not defs.get(
+          'chromeos_lacros',
+          False), 'Non-chromeos targets cannot be ash or lacros'
 
     if expr in cls.eval_expr_cache:
       code, variables_in_expr = cls.eval_expr_cache[expr]
@@ -509,9 +508,9 @@ class Node(object):
         value = defs
 
       elif name == 'is_linux':
-        # Although the `target_platform` for Chrome OS is 'linux', do not
-        # consider `is_linux` to be true, consistent with the GN arg.
-        value = target_platform == 'linux' and not IsChromeOS(defs)
+        value = target_platform == 'linux'
+      elif name == 'is_chromeos':
+        value = target_platform == 'chromeos'
       elif name == 'is_macosx':
         value = target_platform == 'darwin'
       elif name == 'is_win':
@@ -526,7 +525,8 @@ class Node(object):
         value = 'bsd' in target_platform
       elif name == 'is_posix':
         value = (target_platform in ('linux', 'darwin', 'sunos5', 'android',
-                                     'ios') or 'bsd' in target_platform)
+                                     'ios', 'chromeos')
+                 or 'bsd' in target_platform)
 
       elif name == 'pp_ifdef':
         def pp_ifdef(symbol):
@@ -667,7 +667,7 @@ class Node(object):
                                self._COMPRESS_BY_DEFAULT_EXTENSIONS))
 
     if compress == 'gzip' or compress_by_default:
-      # We only use rsyncable compression on Linux.
+      # We only use rsyncable compression for platforms built on Linux.
       if sys.platform == 'linux':
         return grit.format.gzip_string.GzipStringRsyncable(data)
       return grit.format.gzip_string.GzipString(data)

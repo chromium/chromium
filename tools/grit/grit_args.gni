@@ -14,8 +14,8 @@ devtools_grd_path_no_ext = get_path_info(devtools_grd_path, "dir") + "/" +
 
 # Prefer using this (and excluding specific platforms) when a resource applies
 # to (most) desktop platforms.
-assert(toolkit_views == (is_chromeos_ash || is_chromeos_lacros || is_fuchsia ||
-                         is_linux || is_mac || is_win))
+assert(toolkit_views ==
+       (is_chromeos || is_fuchsia || is_linux || is_mac || is_win))
 
 # Variables that are passed to grit with the -D flag.
 
@@ -75,7 +75,9 @@ foreach(i, _grit_environment_vars) {
 }
 
 # When cross-compiling, explicitly pass the target system to grit.
-if (current_toolchain != host_toolchain) {
+# There's an exception for Chrome OS, as the toolchain can be the same
+# as linux, but the target platform still must be set.
+if (current_toolchain != host_toolchain || is_chromeos) {
   _target_platform = ""
 
   if (is_android) {
@@ -87,8 +89,11 @@ if (current_toolchain != host_toolchain) {
   if (is_ios) {
     _target_platform = "ios"
   }
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     _target_platform = "linux"
+  }
+  if (is_chromeos) {
+    _target_platform = "chromeos"
   }
   if (is_mac) {
     _target_platform = "darwin"
