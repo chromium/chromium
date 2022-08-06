@@ -1506,10 +1506,6 @@ crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-
 crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-007.xhtml [ Failure ]
 crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
 
-# Bad test expectations, but we aren't sure if web compatible yet.
-crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-005.html [ Failure ]
-crbug.com/1114280 external/wpt/css/css-flexbox/flexbox-min-width-auto-006.html [ Failure ]
-
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
