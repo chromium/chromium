@@ -45,7 +45,7 @@ export enum DuplexModeRestriction {
   DUPLEX = 0x6,
 }
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 /**
  * Enumeration of PIN printing mode restrictions used by Chromium.
  * This has to coincide with |printing::PinModeRestriction| as defined in
@@ -77,7 +77,7 @@ export interface Policies {
     allowedMode?: DuplexModeRestriction,
     defaultMode?: DuplexModeRestriction,
   };
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction};
   // </if>
   printPdfAsImage?: {defaultMode?: boolean};
@@ -173,7 +173,7 @@ export interface NativeLayer {
    */
   saveAppState(appStateStr: string): void;
 
-  // <if expr="not chromeos_ash and not chromeos_lacros and not is_win">
+  // <if expr="not is_chromeos and not is_win">
   /** Shows the system's native printing dialog. */
   showSystemDialog(): void;
   // </if>

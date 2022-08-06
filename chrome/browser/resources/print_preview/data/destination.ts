@@ -6,13 +6,13 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 // </if>
 
 import {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
@@ -25,7 +25,7 @@ export enum DestinationOrigin {
   // legacy entries in the recent destinations, since we can't guarantee all
   // such recent printers have been overridden.
   COOKIES = 'cookies',
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   DEVICE = 'device',
   // </if>
   PRIVET = 'privet',
@@ -45,7 +45,7 @@ export enum PrinterType {
   CLOUD_PRINTER_DEPRECATED = 4
 }
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 /**
  * Enumeration specifying whether a destination is provisional and the reason
  * the destination is provisional.
@@ -78,7 +78,7 @@ export interface RecentDestination {
 }
 
 export function isPdfPrinter(id: string): boolean {
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   if (id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
     return true;
   }
@@ -123,7 +123,7 @@ export function createRecentDestinationKey(
 
 export interface DestinationOptionalParams {
   isEnterprisePrinter?: boolean;
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   provisionalType?: DestinationProvisionalType;
   // </if>
   extensionId?: string;
@@ -192,7 +192,7 @@ export class Destination {
    */
   private extensionName_: string;
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   /**
    * Different from  DestinationProvisionalType.NONE if
    * the destination is provisional. Provisional destinations cannot be
@@ -244,7 +244,7 @@ export class Destination {
     this.extensionName_ = (params && params.extensionName) || '';
     this.location_ = (params && params.location) || '';
     this.type_ = this.computeType_(id, origin);
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     this.provisionalType_ =
         (params && params.provisionalType) || DestinationProvisionalType.NONE;
 
@@ -324,7 +324,7 @@ export class Destination {
     }
   }
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   get eulaUrl(): string {
     return this.eulaUrl_;
   }
@@ -436,7 +436,7 @@ export class Destination {
 
   /** @return Path to the SVG for the destination's icon. */
   get icon(): string {
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     if (this.id_ === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return 'print-preview:save-to-drive';
     }
@@ -582,7 +582,7 @@ export class Destination {
  */
 export enum GooglePromotedDestinationId {
   SAVE_AS_PDF = 'Save as PDF',
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   SAVE_TO_DRIVE_CROS = 'Save to Drive CrOS',
   // </if>
 }
@@ -591,7 +591,7 @@ export enum GooglePromotedDestinationId {
 export const PDF_DESTINATION_KEY: string =
     `${GooglePromotedDestinationId.SAVE_AS_PDF}/${DestinationOrigin.LOCAL}/`;
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 /* Unique identifier for the Save to Drive CrOS destination */
 export const SAVE_TO_DRIVE_CROS_DESTINATION_KEY: string =
     `${GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS}/${

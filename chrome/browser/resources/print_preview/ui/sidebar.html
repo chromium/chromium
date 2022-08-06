@@ -48,7 +48,7 @@
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
   <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pin.available]]" class="settings-section">
@@ -121,7 +121,7 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not is_chromeos">
     <print-preview-link-container destination="[[destination]]"
         app-kiosk-mode="[[isInAppKioskMode_]]"
         disabled="[[controlsDisabled_]]">

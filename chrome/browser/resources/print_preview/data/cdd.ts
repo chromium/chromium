@@ -134,7 +134,7 @@ export interface CddCapabilities {
   page_orientation?: PageOrientationCapability;
   media_size?: MediaSizeCapability;
   dpi?: DpiCapability;
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   pin?: PinCapability;
   // </if>
 }

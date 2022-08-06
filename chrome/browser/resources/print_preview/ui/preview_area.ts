@@ -745,7 +745,7 @@ export class PrintPreviewPreviewAreaElement extends
           substitutions: [],
           tags: ['BR'],
         });
-      // <if expr="chromeos_ash or chromeos_lacros">
+      // <if expr="is_chromeos">
       case Error.NO_DESTINATIONS:
         return this.i18n('noDestinationsMessage');
       // </if>

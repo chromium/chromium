@@ -20,13 +20,13 @@ import './more_settings.js';
 import './other_options_settings.js';
 import './pages_per_sheet_settings.js';
 import './pages_settings.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import './pin_settings.js';
 // </if>
 import './print_preview_vars.css.js';
 import './scaling_settings.js';
 import '../strings.m.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import './link_container.js';
 
 // </if>
@@ -246,7 +246,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     }
   }
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   /** @return Whether the system dialog link is available. */
   systemDialogLinkAvailable(): boolean {
     const linkContainer =
