@@ -504,9 +504,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     VLOG(1) << "Use BalanceAvailableBalloonPolicy";
   }
 
-  if (base::FeatureList::IsEnabled(kGuestZram)) {
+  if (base::FeatureList::IsEnabled(kGuestZram))
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
-  }
 
   request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed));
