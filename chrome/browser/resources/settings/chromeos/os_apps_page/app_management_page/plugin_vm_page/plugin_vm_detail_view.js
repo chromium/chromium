@@ -6,7 +6,7 @@ import '../pin_to_shelf_item.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 import '../shared_style.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';

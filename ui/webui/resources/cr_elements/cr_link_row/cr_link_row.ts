@@ -10,7 +10,7 @@
  * page (somewhat like an HTML link).
  */
 import '../cr_actionable_row_style.m.js';
-import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icon_button/cr_icon_button.js';
 import '../hidden_style_css.m.js';
 import '../icons.m.js';
 import '../shared_style_css.m.js';
@@ -19,7 +19,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.m.js';
+import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getTemplate} from './cr_link_row.html.js';
 

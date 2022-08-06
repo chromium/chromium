@@ -288,6 +288,7 @@ polymer_modulizer("gaia_dialog") {
   html_file = "gaia_dialog.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -373,6 +374,7 @@ polymer_modulizer("oobe_carousel") {
   html_file = "oobe_carousel.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -381,6 +383,7 @@ polymer_modulizer("oobe_cr_lottie") {
   html_file = "oobe_cr_lottie.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

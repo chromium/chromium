@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './viewer-zoom-button.html.js';
 
 export class ViewerZoomButtonElement extends PolymerElement {

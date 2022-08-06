@@ -8,7 +8,7 @@
  * uses CrSearchFieldMixin.
  */
 
-import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icon_button/cr_icon_button.js';
 import '../cr_input/cr_input.m.js';
 import '../cr_input/cr_input_style_css.m.js';
 import '../icons.m.js';

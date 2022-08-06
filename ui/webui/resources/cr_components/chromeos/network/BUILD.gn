@@ -527,7 +527,7 @@ js_library("network_password_input.m") {
     ":network_config_element_behavior.m",
     ":network_shared_css.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -573,7 +573,7 @@ js_library("network_proxy_exclusions.m") {
     ":network_shared_css.m",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_proxy_exclusions_module" ]
@@ -789,6 +789,7 @@ polymer_modulizer("network_list_item") {
   html_file = "network_list_item.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
@@ -804,6 +805,7 @@ polymer_modulizer("network_password_input") {
   html_file = "network_password_input.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_property_list_mojo") {
@@ -818,6 +820,7 @@ polymer_modulizer("network_proxy_exclusions") {
   html_file = "network_proxy_exclusions.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 

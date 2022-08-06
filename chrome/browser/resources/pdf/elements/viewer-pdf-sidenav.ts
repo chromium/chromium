@@ -7,7 +7,7 @@ import '../pdf_viewer_shared_style.css.js';
 import './icons.html.js';
 import './viewer-document-outline.js';
 import './viewer-thumbnail-bar.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 

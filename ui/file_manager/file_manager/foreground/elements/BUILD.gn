@@ -215,10 +215,7 @@ js_unittest("files_xf_elements_unittest") {
 }
 
 js_library("xf_button") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
+  deps = [ "//ui/webui/resources/cr_elements/cr_button:cr_button.m" ]
 }
 
 js_library("xf_circular_progress") {

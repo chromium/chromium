@@ -9,7 +9,7 @@
  */
 
 import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './cr_camera.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

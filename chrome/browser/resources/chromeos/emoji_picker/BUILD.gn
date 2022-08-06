@@ -191,7 +191,7 @@ action("symbol_data") {
 
 copy("symbol_test_data") {
   sources = [ "./symbol_test_ordering.json" ]
-  outputs =  [ "$target_gen_dir/symbol_test_ordering.json" ]
+  outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
 }
 
 js_library("emoji_picker") {
@@ -224,7 +224,7 @@ js_library("emoji_category_button") {
   deps = [
     ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
   ]
 }
 
@@ -233,7 +233,7 @@ js_library("emoji_group_button") {
     ":events",
     ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
   ]
 }
 

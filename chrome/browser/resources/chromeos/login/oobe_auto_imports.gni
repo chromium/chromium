@@ -96,4 +96,5 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_expand_button/cr_expand_button.html",
   "ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html",
   "ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_icon.html",
+  "ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.html",
 ]

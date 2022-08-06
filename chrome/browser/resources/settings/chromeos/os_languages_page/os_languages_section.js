@@ -8,7 +8,7 @@
  * languages.
  */
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './input_page.js';
 import './os_languages_page_v2.js';

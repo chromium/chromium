@@ -9,7 +9,7 @@
  */
 
 import '../../settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import './os_bluetooth_change_device_name_dialog.js';
 import './os_bluetooth_true_wireless_images.js';

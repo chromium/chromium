@@ -14,7 +14,7 @@
  */
 
 import '../cr_button/cr_button.m.js';
-import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icon_button/cr_icon_button.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 

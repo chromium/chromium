@@ -40,8 +40,15 @@
  * When using iron-icon's, more than one icon can be specified by setting
  * the |ironIcon| property to a comma-delimited list of keys.
  */
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+
 Polymer({
   is: 'cr-icon-button',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     disabled: {
@@ -196,4 +203,3 @@ Polymer({
     }
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

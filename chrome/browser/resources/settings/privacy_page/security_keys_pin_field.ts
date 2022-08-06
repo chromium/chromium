@@ -8,7 +8,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 

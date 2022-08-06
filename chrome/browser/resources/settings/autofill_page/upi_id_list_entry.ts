@@ -7,7 +7,7 @@
  * the settings page. https://en.wikipedia.org/wiki/Unified_Payments_Interface
  */
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';
