@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BitmapDrawableProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.R;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,6 +88,7 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testShowCastOnDocumentElement() throws Exception {
         SelectorProto element = toCssSelector("#touch_area_one");
 
