@@ -10,7 +10,9 @@ namespace display {
 namespace test {
 
 ScopedScreenOverride::ScopedScreenOverride(Screen* screen)
-    : original_screen_(display::Screen::GetScreen()) {
+    : original_screen_(display::Screen::HasScreen()
+                           ? display::Screen::GetScreen()
+                           : nullptr) {
   display::Screen::SetScreenInstance(screen);
 }
 

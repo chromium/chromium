@@ -134,9 +134,7 @@ struct ShellPlatformDelegate::PlatformData {};
 ShellPlatformDelegate::ShellPlatformDelegate() = default;
 ShellPlatformDelegate::~ShellPlatformDelegate() = default;
 
-void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
-  screen_ = std::make_unique<display::ScopedNativeScreen>();
-}
+void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {}
 
 void ShellPlatformDelegate::CreatePlatformWindow(
     Shell* shell,

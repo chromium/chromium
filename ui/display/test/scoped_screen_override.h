@@ -14,6 +14,7 @@ class Screen;
 namespace test {
 
 // [Deprecated] Do not use this in new code.
+// TODO(crbug.com/1350722): Remove this class.
 //
 // This class represents a RAII wrapper for global screen overriding. An object
 // of this class restores original display::Screen instance when it goes out of

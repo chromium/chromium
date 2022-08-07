@@ -65,7 +65,6 @@ const NSActivityOptions kActivityOptions =
 }  // namespace
 
 void HeadlessBrowserImpl::PlatformInitialize() {
-  screen_ = std::make_unique<display::ScopedNativeScreen>();
   HeadlessPopUpMethods::Init();
 }
 
