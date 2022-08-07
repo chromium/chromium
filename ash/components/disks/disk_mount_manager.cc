@@ -16,7 +16,6 @@
 
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/suspend_unmount_manager.h"
-#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -68,12 +67,7 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
 class DiskMountManagerImpl : public DiskMountManager,
                              public CrosDisksClient::Observer {
  public:
-  DiskMountManagerImpl() {
-    cros_disks_client_ = chromeos::CrosDisksClient::Get();
-    suspend_unmount_manager_ = std::make_unique<SuspendUnmountManager>(this);
-
-    cros_disks_client_->AddObserver(this);
-  }
+  DiskMountManagerImpl() { cros_disks_client_->AddObserver(this); }
 
   DiskMountManagerImpl(const DiskMountManagerImpl&) = delete;
   DiskMountManagerImpl& operator=(const DiskMountManagerImpl&) = delete;
@@ -1032,7 +1026,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Mount event change observers.
   base::ObserverList<DiskMountManager::Observer> observers_;
 
-  CrosDisksClient* cros_disks_client_;
+  CrosDisksClient* const cros_disks_client_ = chromeos::CrosDisksClient::Get();
 
   // The list of disks found.
   DiskMountManager::DiskMap disks_;
@@ -1049,7 +1043,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   bool already_refreshed_ = false;
   std::vector<EnsureMountInfoRefreshedCallback> refresh_callbacks_;
 
-  std::unique_ptr<SuspendUnmountManager> suspend_unmount_manager_;
+  SuspendUnmountManager suspend_unmount_manager_{this};
 
   // Whether the instance attempted to mount a device in read-only mode for
   // each source path.
