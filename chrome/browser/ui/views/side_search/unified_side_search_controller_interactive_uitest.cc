@@ -281,21 +281,13 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SidePanelCrashesCloseSidePanel) {
   EXPECT_TRUE(rph_second_tab->Shutdown(content::RESULT_CODE_KILLED));
   crash_observer_second_tab.Wait();
 
-  // Side panel should be closed and the WebContents cleared.
+  // Side panel should be closed and the crashed WebContents cleared.
   EXPECT_FALSE(side_panel->GetVisible());
   EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
-  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
 
   // Reopen side panel.
   coordinator->Show();
-
-  // Since the side panel contents of the first tab is already cleared,
-  // switch back to the first tab to reload side panel contents.
-  ActivateTabAt(browser(), 0);
-  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
-  ActivateTabAt(browser(), 1);
-
-  // Side panel is still open.
   EXPECT_TRUE(side_panel->GetVisible());
 
   // Simulate a crash in the side panel contents of the first tab which is not
@@ -495,4 +487,43 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_CloseSidePanelShouldClearCache) {
 
   // When side panel is closed, side panel web contents is destroyed.
   EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+}
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_NewForegroundTabShouldNotDestroySidePanelContents \
+  DISABLED_NewForegroundTabShouldNotDestroySidePanelContents
+#else
+#define MAYBE_NewForegroundTabShouldNotDestroySidePanelContents \
+  NewForegroundTabShouldNotDestroySidePanelContents
+#endif
+// Test added for crbug.com/1349687 .
+IN_PROC_BROWSER_TEST_F(
+    SideSearchV2Test,
+    MAYBE_NewForegroundTabShouldNotDestroySidePanelContents) {
+  auto* browser_view = BrowserViewFor(browser());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
+            browser_view->side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->id());
+
+  // When side panel is open,  side panel web contents is present.
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+
+  // Open URL with a new foreground tab.
+  tab_contents_helper->side_panel_contents_for_testing()->OpenURL(
+      content::OpenURLParams(embedded_test_server()->GetURL("/foo"),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false));
+
+  // When swtiched to the new tab, side panel web contents should not be
+  // destroyed. Otherwise a UAF will occur.
+  EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
 }
