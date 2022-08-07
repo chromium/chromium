@@ -77,6 +77,7 @@ BOOL WaitForHistoryToDisappear() {
 
 - (void)tearDown {
   [self releaseHistogramTester];
+  policy_test_utils::ClearPolicies();
   [super tearDown];
 }
 

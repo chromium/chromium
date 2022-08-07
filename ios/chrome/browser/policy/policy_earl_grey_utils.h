@@ -39,6 +39,9 @@ void SetPolicy(const std::string& json_value, const std::string& policy_key);
 // if possible.
 void SetPolicy(base::Value value, const std::string& policy_key);
 
+// Clears all policy values.
+void ClearPolicies();
+
 }  // namespace policy_test_utils
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_EARL_GREY_UTILS_H_

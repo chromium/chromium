@@ -48,4 +48,8 @@ void SetPolicy(base::Value value, const std::string& policy_key) {
   SetPolicy(SerializeValue(std::move(value)), policy_key);
 }
 
+void ClearPolicies() {
+  [PolicyAppInterface clearPolicies];
+}
+
 }  // namespace policy_test_utils
