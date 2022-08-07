@@ -296,7 +296,8 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireTextAttributesChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
-      DCHECK(node->IsTextField());
+      if (!node->IsTextField())
+        return;  // Node no longer editable since event originally fired.
       FireEvent(node, ax::mojom::Event::kValueChanged);
       break;
 

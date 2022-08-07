@@ -1168,7 +1168,10 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   // content-visibility:auto may be removed from the AX tree depending on
   // whether it was recently rendered.
   //
-  // TODO(accessibility): There should be a better way to accomplish this.
+  // TODO(accessibility) This fails for the web test
+  // detach-locked-slot-children-crash.html with --force-renderer-accessibility.
+  // See web_tests/FlagExpectations/force-renderer-accessibility.
+  // There should be a better way to accomplish this.
   // Could a new function be added to the slot element?
   const Node* parent = LayoutTreeBuilderTraversal::Parent(slot);
   if (const HTMLSlotElement* parent_slot =

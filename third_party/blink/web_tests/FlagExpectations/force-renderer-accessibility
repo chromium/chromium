@@ -1,120 +1,81 @@
-# results: [ Timeout Crash Pass Failure Slow Skip ]
+# results: [ Skip Crash Pass Failure Slow ]
 
 # Expectations for --force-renderer-accessibility
+#
+# Used for the linux-blink-web-tests-force-accessibility-rel builder.
+# To change the builder configuration, edit:
+# infra/config/subprojects/chromium/try/tryserver.chromium.accessibility.star
+#
 # crbug.com/1138028 tracks the removal of these failure expectations
-
+# For failures, prefer [Pass Failure] over [ Skip ] to detect crashes.
+#
 # To save time in linux-blink-web-tests-force-accessibility-rel builder, do not
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# Unintentional failure
-external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Skip ]
-external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Skip ]
-external/wpt/css/css-display/display-contents-shadow-dom-1.html [ Skip ]
-external/wpt/css/css-grid/subgrid/parent-repeat-auto-fit-001.html [ Skip ]
-external/wpt/css/css-grid/subgrid/subgrid-item-block-size-001.html [ Skip ]
-external/wpt/css/css-highlight-api/painting/custom-highlight-painting-invalidation-002.html [ Skip ]
-external/wpt/css/css-multicol/multicol-list-item-002.html [ Skip ]
-external/wpt/css/css-transitions/transition-base-response-002.html [ Skip ]
-external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Failure Pass ]
-external/wpt/editing/other/exec-command-without-editable-element.tentative.html [ Skip ]
-external/wpt/editing/other/insert-paragraph-in-void-element.tentative.html [ Skip ]
-external/wpt/fetch/metadata/generated/element-img-environment-change.https.sub.html [ Skip ]
-external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-11.html [ Skip ]
-external/wpt/forced-colors-mode/forced-colors-mode-36.html [ Skip ]
-external/wpt/forced-colors-mode/forced-colors-mode-48.html [ Skip ]
-external/wpt/fullscreen/crashtests/chrome-1312699.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/dedicated-worker.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-2.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-cors.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/focus.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/pushstate.https.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-clients-matchall.https.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-unregister.https.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/storage-events.html [ Skip ]
-external/wpt/html/browsers/browsing-the-web/back-forward-cache/timers.html [ Skip ]
-external/wpt/inert/inert-iframe-hittest.html [ Skip ]
-external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Skip ]
-external/wpt/mimesniff/media/media-sniff.window.html [ Skip ]
-external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache-in-iframe.html [ Skip ]
-external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache.html [ Skip ]
-external/wpt/navigation-api/per-entry-events/dispose-after-bfcache.html [ Skip ]
-external/wpt/performance-timeline/navigation-id.tentative.html [ Skip ]
-external/wpt/pointerevents/pointerevent_setpointercapture_relatedtarget.html [ Skip ]
-external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Skip ]
-external/wpt/url/a-element.html [ Skip ]
-external/wpt/webrtc/simulcast/h264.https.html [ Skip ]
-external/wpt/websockets/Create-valid-url-protocol-string.any.worker.html?wpt_flags=h2 [ Skip ]
-external/wpt/websockets/Send-0byte-data.any.worker.html?wpt_flags=h2 [ Skip ]
-external/wpt/websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-unicode.html?wpt_flags=h2 [ Skip ]
-fast/filesystem/workers/file-writer-events-shared-worker.html [ Skip ]
-fast/forms/calendar-picker/date-picker-ax.html [ Skip ]
-fast/forms/month/month-picker-ax.html [ Skip ]
-fast/forms/select-popup/popup-menu-appearance-texttransform.html [ Skip ]
-fast/forms/suggested-value.html [ Skip ]
-fast/loader/iframe-navigation-stealing-focus.html [ Pass Timeout ]
-fast/spatial-navigation/snav-div-in-anchor.html [ Skip ]
-http/tests/devtools/console/console-format.js [ Skip ]
-http/tests/inspector-protocol/accessibility/accessibility-ignoredNodesModal.js [ Skip ]
-http/tests/inspector-protocol/bfcache/bfcache-auto-attach.js [ Skip ]
-http/tests/inspector-protocol/bfcache/bfcache-request-basic.js [ Skip ]
-http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features-same-site.js [ Skip ]
-http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features.js [ Skip ]
-http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-disabled-for-render-frame-host.js [ Skip ]
-http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Skip ]
-media/autoplay-muted.html [ Skip ]
-media/video-controls-attribute-fullscreen.html [ Skip ]
-media/video-prefixed-fullscreen.html [ Skip ]
-transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
-virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Skip ]
-virtual/css-highlight-inheritance/external/wpt/css/css-highlight-api/painting/custom-highlight-painting-inheritance-001.html [ Skip ]
-virtual/css-highlight-overlay-painting/external/wpt/css/css-pseudo/highlight-painting-currentcolor-005.html [ Skip ]
-virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-descendant-selector.html [ Skip ]
-virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-in-flow.html [ Skip ]
-virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/dont-share-style-to-top-layer.html [ Skip ]
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Skip ]
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Skip ]
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Skip ]
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/maxframes.https.html [ Skip ]
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/sandbox-mandatory-flags.https.html [ Skip ]
-virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/maxframes.https.html [ Skip ]
-virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/sandbox-mandatory-flags.https.html [ Skip ]
-virtual/first-party-sets/http/tests/inspector-protocol/network/raw-headers-after-navigation.js [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Skip ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Skip ]
-virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Skip ]
-virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Skip ]
-virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/pixel-manipulation/2d.imageData.put.nonfinite.worker.html [ Skip ]
-virtual/plz-dedicated-worker/http/tests/devtools/console/console-format.js [ Skip ]
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/bfcache/bfcache-auto-attach.js [ Skip ]
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/bfcache/bfcache-request-basic.js [ Skip ]
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features-same-site.js [ Skip ]
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features.js [ Skip ]
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-disabled-for-render-frame-host.js [ Skip ]
-virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Skip ]
-virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
-virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/restriction-prompt-by-before-unload.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/sandbox-iframe.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
-virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
-virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-noscroll-body-xhidden.html [ Skip ]
-virtual/scroll-unification/fast/forms/select-popup/popup-menu-appearance-texttransform.html [ Skip ]
-virtual/text-antialias/sub-pixel/text-scaling-pixel.html [ Skip ]
-virtual/threaded/external/wpt/css/css-backgrounds/background-repeat-space-3.html [ Skip ]
-virtual/threaded/external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Skip ]
-virtual/webrtc-wpt-plan-b/external/wpt/webrtc/simulcast/h264.https.html [ Skip ]
-wpt_internal/css/css-contain/crashtests/contain-nested-crash-002.html [ Skip ]
+# Crashes
+# ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
+external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
+virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
+# ax_object.cc#2792 -- IsInert():
+crbug.com/1350162 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
+crbug.com/1350162 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
+# Should not receive unincluded child:
+external/wpt/inert/dynamic-inert-on-focused-element.html [ Crash ]
+# Unknown cause:
+crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
+
+# Failures
+# Too few events and dirty objects marked:
+fast/forms/calendar-picker/date-picker-ax.html [ Pass Failure ]
+fast/forms/month/month-picker-ax.html [ Pass Failure ]
+# isUseCounted() difference:
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Pass Failure ]
+# ax_position.h#467 -- IsIgnored():
+external/wpt/fullscreen/crashtests/chrome-1312699.html [ Crash ]
+http/tests/devtools/console/console-format.js [ Crash ]
+virtual/plz-dedicated-worker/http/tests/devtools/console/console-format.js [ Crash ]
+media/video-prefixed-fullscreen.html [ Crash ]
+media/video-controls-attribute-fullscreen.html [ Crash ]
+media/autoplay-muted.html [ Crash ]
+# Unknown cause:
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Pass Failure ]
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Pass Failure ]
+external/wpt/css/css-transitions/transition-base-response-002.html [ Pass Failure ]
+
+# Timeouts
+fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
+
+# Slow prerender tests, needs investigation
+# Using [ Skip ] instead of [ Timeout ] to save time on test run
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/activation-start.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/cross-origin-isolated.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-iframe.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-prompt-by-before-unload.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/sandbox-iframe.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ Skip ]
+crbug.com/1350124 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ Skip ]
+
+# Intentional failures for focusless spatial navigation.
+# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
+# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
+#   and run without any accessibility, in which case the tests pass.
+#   See https://crrev.com/c/1620345.
+# * On bots with --force-renderer-accessibiity, the tests will fail because of the check in
+#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
+#   As this is intentional it is good to test as well via --force-renderer-accessibility.
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ Failure ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ Failure ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Failure ]
+crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Failure ]
+virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Failure ]
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
@@ -145,7 +106,3 @@ wpt_internal/webcodecs/annexb_decoding.https.any.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
-
-#Sheriff 2022-7-04 crbug.com/1341679
-virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/reinsert.https.html [ Failure Pass ]
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/reinsert.https.html [ Failure Pass ]
