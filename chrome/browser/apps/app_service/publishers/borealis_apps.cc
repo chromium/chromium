@@ -25,7 +25,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,16 +32,15 @@
 namespace {
 
 struct PermissionInfo {
-  apps::mojom::PermissionType permission;
+  apps::PermissionType permission;
   const char* pref_name;
 };
 
 constexpr PermissionInfo permission_infos[] = {
-    {apps::mojom::PermissionType::kMicrophone,
-     borealis::prefs::kBorealisMicAllowed},
+    {apps::PermissionType::kMicrophone, borealis::prefs::kBorealisMicAllowed},
 };
 
-const char* PermissionToPrefName(apps::mojom::PermissionType permission) {
+const char* PermissionToPrefName(apps::PermissionType permission) {
   for (const PermissionInfo& info : permission_infos) {
     if (info.permission == permission) {
       return info.pref_name;
@@ -135,7 +133,8 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
 void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
-    permission->permission_type = info.permission;
+    permission->permission_type =
+        apps::ConvertPermissionTypeToMojomPermissionType(info.permission);
     permission->value = apps::mojom::PermissionValue::NewBoolValue(
         profile->GetPrefs()->GetBoolean(info.pref_name));
     permission->is_managed = false;
@@ -147,7 +146,7 @@ apps::Permissions CreatePermissions(Profile* profile) {
   apps::Permissions permissions;
   for (const PermissionInfo& info : permission_infos) {
     permissions.push_back(std::make_unique<apps::Permission>(
-        apps::ConvertMojomPermissionTypeToPermissionType(info.permission),
+        info.permission,
         std::make_unique<apps::PermissionValue>(
             profile->GetPrefs()->GetBoolean(info.pref_name)),
         /*is_managed=*/false));
@@ -333,6 +332,17 @@ void BorealisApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void BorealisApps::SetPermission(const std::string& app_id,
+                                 PermissionPtr permission_ptr) {
+  auto permission = permission_ptr->permission_type;
+  const char* pref_name = PermissionToPrefName(permission);
+  if (!pref_name) {
+    return;
+  }
+  profile_->GetPrefs()->SetBoolean(pref_name,
+                                   permission_ptr->IsPermissionEnabled());
+}
+
 void BorealisApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -364,13 +374,7 @@ void BorealisApps::Launch(const std::string& app_id,
 
 void BorealisApps::SetPermission(const std::string& app_id,
                                  apps::mojom::PermissionPtr permission_ptr) {
-  auto permission = permission_ptr->permission_type;
-  const char* pref_name = PermissionToPrefName(permission);
-  if (!pref_name) {
-    return;
-  }
-  profile_->GetPrefs()->SetBoolean(
-      pref_name, apps_util::IsPermissionEnabled(permission_ptr->value));
+  SetPermission(app_id, ConvertMojomPermissionToPermission(permission_ptr));
 }
 
 void BorealisApps::Uninstall(const std::string& app_id,

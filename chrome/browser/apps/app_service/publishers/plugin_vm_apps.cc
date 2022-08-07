@@ -26,7 +26,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,21 +33,19 @@
 namespace {
 
 struct PermissionInfo {
-  apps::mojom::PermissionType permission;
+  apps::PermissionType permission;
   const char* pref_name;
 };
 
 // TODO(crbug.com/1198390): Update to use a switch to map between two enum.
 constexpr PermissionInfo permission_infos[] = {
-    {apps::mojom::PermissionType::kPrinting,
+    {apps::PermissionType::kPrinting,
      plugin_vm::prefs::kPluginVmPrintersAllowed},
-    {apps::mojom::PermissionType::kCamera,
-     plugin_vm::prefs::kPluginVmCameraAllowed},
-    {apps::mojom::PermissionType::kMicrophone,
-     plugin_vm::prefs::kPluginVmMicAllowed},
+    {apps::PermissionType::kCamera, plugin_vm::prefs::kPluginVmCameraAllowed},
+    {apps::PermissionType::kMicrophone, plugin_vm::prefs::kPluginVmMicAllowed},
 };
 
-const char* PermissionToPrefName(apps::mojom::PermissionType permission) {
+const char* PermissionToPrefName(apps::PermissionType permission) {
   for (const PermissionInfo& info : permission_infos) {
     if (info.permission == permission) {
       return info.pref_name;
@@ -95,7 +92,8 @@ void SetShowInAppManagement(apps::mojom::App* app, bool installed) {
 void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   for (const PermissionInfo& info : permission_infos) {
     auto permission = apps::mojom::Permission::New();
-    permission->permission_type = info.permission;
+    permission->permission_type =
+        apps::ConvertPermissionTypeToMojomPermissionType(info.permission);
     permission->value = apps::mojom::PermissionValue::NewBoolValue(
         profile->GetPrefs()->GetBoolean(info.pref_name));
     permission->is_managed = false;
@@ -107,7 +105,7 @@ apps::Permissions CreatePermissions(Profile* profile) {
   apps::Permissions permissions;
   for (const PermissionInfo& info : permission_infos) {
     permissions.push_back(std::make_unique<apps::Permission>(
-        apps::ConvertMojomPermissionTypeToPermissionType(info.permission),
+        info.permission,
         std::make_unique<apps::PermissionValue>(
             profile->GetPrefs()->GetBoolean(info.pref_name)),
         /*is_managed=*/false));
@@ -280,6 +278,18 @@ void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void PluginVmApps::SetPermission(const std::string& app_id,
+                                 PermissionPtr permission_ptr) {
+  auto permission = permission_ptr->permission_type;
+  const char* pref_name = PermissionToPrefName(permission);
+  if (!pref_name) {
+    return;
+  }
+
+  profile_->GetPrefs()->SetBoolean(pref_name,
+                                   permission_ptr->IsPermissionEnabled());
+}
+
 void PluginVmApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
@@ -295,14 +305,7 @@ void PluginVmApps::Launch(const std::string& app_id,
 
 void PluginVmApps::SetPermission(const std::string& app_id,
                                  apps::mojom::PermissionPtr permission_ptr) {
-  auto permission = permission_ptr->permission_type;
-  const char* pref_name = PermissionToPrefName(permission);
-  if (!pref_name) {
-    return;
-  }
-
-  profile_->GetPrefs()->SetBoolean(
-      pref_name, apps_util::IsPermissionEnabled(permission_ptr->value));
+  SetPermission(app_id, ConvertMojomPermissionToPermission(permission_ptr));
 }
 
 void PluginVmApps::Uninstall(const std::string& app_id,

@@ -122,7 +122,8 @@ class ArcApps : public KeyedService,
   void LaunchShortcut(const std::string& app_id,
                       const std::string& shortcut_id,
                       int64_t display_id) override;
-  void SetPermission(const std::string& app_id, PermissionPtr permission);
+  void SetPermission(const std::string& app_id,
+                     PermissionPtr permission) override;
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,

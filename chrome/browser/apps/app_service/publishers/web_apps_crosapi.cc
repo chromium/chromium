@@ -166,6 +166,15 @@ void WebAppsCrosapi::LaunchShortcut(const std::string& app_id,
                                          base::DoNothing());
 }
 
+void WebAppsCrosapi::SetPermission(const std::string& app_id,
+                                   PermissionPtr permission) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->SetPermission(app_id, std::move(permission));
+}
+
 void WebAppsCrosapi::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -386,12 +395,7 @@ void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
 
 void WebAppsCrosapi::SetPermission(const std::string& app_id,
                                    apps::mojom::PermissionPtr permission) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    return;
-  }
-
-  controller_->SetPermission(app_id,
-                             ConvertMojomPermissionToPermission(permission));
+  SetPermission(app_id, ConvertMojomPermissionToPermission(permission));
 }
 
 void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {

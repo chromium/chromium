@@ -62,6 +62,11 @@ void AppPublisher::LaunchAppWithIntent(
   std::move(callback).Run(/*success=*/false);
 }
 
+void AppPublisher::SetPermission(const std::string& app_id,
+                                 PermissionPtr permission) {
+  NOTIMPLEMENTED();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {
