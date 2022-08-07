@@ -539,6 +539,19 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
 }
 
 void AppServiceProxyBase::SetPermission(const std::string& app_id,
+                                        PermissionPtr permission) {
+  app_registry_cache_.ForOneApp(
+      app_id, [this, &permission](const apps::AppUpdate& update) {
+        auto* publisher = GetPublisher(update.AppType());
+        if (!publisher) {
+          return;
+        }
+
+        publisher->SetPermission(update.AppId(), std::move(permission));
+      });
+}
+
+void AppServiceProxyBase::SetPermission(const std::string& app_id,
                                         apps::mojom::PermissionPtr permission) {
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(

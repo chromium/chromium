@@ -29,6 +29,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -270,8 +271,13 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 
 void AppManagementPageHandler::SetPermission(const std::string& app_id,
                                              apps::PermissionPtr permission) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
-      app_id, apps::ConvertPermissionToMojomPermission(permission));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
+        app_id, std::move(permission));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
+        app_id, apps::ConvertPermissionToMojomPermission(permission));
+  }
 }
 
 void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
@@ -356,13 +362,17 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
 
 void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
                                                       bool enabled) {
-  auto mojom_permission = apps::mojom::Permission::New();
-  mojom_permission->permission_type =
-      apps::mojom::PermissionType::kFileHandling;
-  mojom_permission->value = apps::mojom::PermissionValue::NewBoolValue(enabled);
-  mojom_permission->is_managed = false;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
-      app_id, std::move(mojom_permission));
+  auto permission = std::make_unique<apps::Permission>(
+      apps::PermissionType::kFileHandling,
+      std::make_unique<apps::PermissionValue>(enabled),
+      /*is_managed=*/false);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
+        app_id, std::move(permission));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
+        app_id, apps::ConvertPermissionToMojomPermission(permission));
+  }
 }
 
 void AppManagementPageHandler::ShowDefaultAppAssociationsUi() {

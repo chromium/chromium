@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -92,14 +93,20 @@ void PwaNotifierController::SetNotifierEnabled(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   // We should not set permissions for a profile we are not currently observing.
   DCHECK(observed_profile_->IsSameOrParent(profile));
-  auto permission = apps::mojom::Permission::New();
-  permission->permission_type = apps::mojom::PermissionType::kNotifications;
-  permission->value = apps::mojom::PermissionValue::NewTristateValue(
-      enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);
-  permission->is_managed = false;
+
+  auto permission = std::make_unique<apps::Permission>(
+      apps::PermissionType::kNotifications,
+      enabled ? std::make_unique<apps::PermissionValue>(apps::TriState::kAllow)
+              : std::make_unique<apps::PermissionValue>(apps::TriState::kBlock),
+      /*is_managed=*/false);
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  service->SetPermission(notifier_id.id, std::move(permission));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    service->SetPermission(notifier_id.id, std::move(permission));
+  } else {
+    service->SetPermission(
+        notifier_id.id, apps::ConvertPermissionToMojomPermission(permission));
+  }
 }
 
 void PwaNotifierController::CallLoadIcons() {

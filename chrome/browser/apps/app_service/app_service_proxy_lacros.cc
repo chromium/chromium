@@ -282,6 +282,11 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
   std::move(callback).Run(LaunchResult());
 }
 
+void AppServiceProxyLacros::SetPermission(const std::string& app_id,
+                                          PermissionPtr permission) {
+  NOTIMPLEMENTED();
+}
+
 void AppServiceProxyLacros::SetPermission(
     const std::string& app_id,
     apps::mojom::PermissionPtr permission) {

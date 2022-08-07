@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
@@ -211,6 +212,9 @@ class AppServiceProxyBase : public KeyedService,
                            LaunchCallback callback = base::DoNothing());
 
   // Sets |permission| for the app identified by |app_id|.
+  void SetPermission(const std::string& app_id, PermissionPtr permission);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
 
