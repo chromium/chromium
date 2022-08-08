@@ -15,4 +15,7 @@ const base::Feature kAppServiceLaunchWithoutMojom{
 const base::Feature kAppServiceSetPermissionWithoutMojom{
     "AppServiceSetPermissionWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kAppServiceUninstallWithoutMojom{
+    "AppServiceUninstallWithoutMojom", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace apps
