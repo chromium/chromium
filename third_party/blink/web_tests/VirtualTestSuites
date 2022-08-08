@@ -1305,6 +1305,12 @@
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"]
   },
   {
+    "prefix": "isolate-sandboxed-iframes",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "external/wpt/html/infrastructure/urls/terminology-0/" ],
+    "args": [ "--enable-features=IsolateSandboxedIframes" ]
+  },
+  {
     "prefix": "coop-restrict-properties",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],

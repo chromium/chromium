@@ -3,6 +3,9 @@
 # No need to run Virtual test suite plz-dedicated-worker here
 virtual/plz-dedicated-worker/* [ Skip ]
 
+# Isolated-sandboxed-iframe require site isolation to be effective.
+virtual/isolate-sandboxed-iframes/* [ Skip ]
+
 # The following tests fail with UserActivationSameOriginVisibility plus UAv2.
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Failure ]
