@@ -64,7 +64,7 @@ class ScopedCommitCompletionEvent {
         proxy_main_weak_ptr_(proxy_main_weak_ptr) {}
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
-    event_->Signal();
+    event_.ExtractAsDangling()->Signal();
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
                                   proxy_main_weak_ptr_, commit_timestamps_));
@@ -77,7 +77,7 @@ class ScopedCommitCompletionEvent {
   }
 
  private:
-  const raw_ptr<CompletionEvent, DanglingUntriaged> event_;
+  raw_ptr<CompletionEvent> event_;
   CommitTimestamps commit_timestamps_;
   raw_ptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;
