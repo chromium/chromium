@@ -330,6 +330,11 @@ extern const char kEnableUnicornAccountSupportDescription[];
 extern const char kFullscreenPromosManagerName[];
 extern const char kFullscreenPromosManagerDescription[];
 
+// Title and description for the flag to enable web page detected intents
+// annotations.
+extern const char kEnableWebPageAnnotationsName[];
+extern const char kEnableWebPageAnnotationsDescription[];
+
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
 extern const char kFullscreenSmoothScrollingName[];

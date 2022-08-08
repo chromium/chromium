@@ -3975,6 +3975,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ios-webpage-intent-annotations",
+    "owners": [ "djean", "bling-flags@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "isolate-origins",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
     // This is useful for isolating additional origins beyond the normal site

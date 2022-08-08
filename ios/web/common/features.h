@@ -66,6 +66,9 @@ extern const base::Feature kEnableFullscreenAPI;
 // should be used instead of directly checking this feature.
 extern const base::Feature kUseLoadSimulatedRequestForOfflinePage;
 
+// Feature flag that enable web page detected intents annotations.
+extern const base::Feature kEnableWebPageAnnotations;
+
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();
 

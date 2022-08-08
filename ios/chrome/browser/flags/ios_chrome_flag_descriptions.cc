@@ -315,6 +315,11 @@ const char kEnableUnicornAccountSupportName[] =
 const char kEnableUnicornAccountSupportDescription[] =
     "Allows users to sign-in with their Unicorn account.";
 
+const char kEnableWebPageAnnotationsName[] = "Enable Web Page Intent Detection";
+const char kEnableWebPageAnnotationsDescription[] =
+    "Prototype to detect and highlight data with possible intent in a web "
+    "page.";
+
 const char kEnableShortenedPasswordAutoFillInstructionName[] =
     "Enable shortened instructions to turn on Password AutoFill for Chrome";
 const char kEnableShortenedPasswordAutoFillInstructionDescription[] =

@@ -49,12 +49,15 @@ const base::Feature kIOSSharedHighlightingColorChange{
 const base::Feature kSynthesizedRestoreSession{
     "SynthesizedRestoreSession", base::FEATURE_ENABLED_BY_DEFAULT};
 
-extern const base::Feature kEnableFullscreenAPI{
-    "EnableFullscreenAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableFullscreenAPI{"EnableFullscreenAPI",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kUseLoadSimulatedRequestForOfflinePage{
+const base::Feature kUseLoadSimulatedRequestForOfflinePage{
     "UseLoadSimulatedRequestForErrorPageNavigation",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableWebPageAnnotations{
+    "EnableWebPageAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
