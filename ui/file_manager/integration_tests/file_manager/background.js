@@ -27,6 +27,7 @@ import './keyboard_operations.js';
 import './metadata.js';
 import './metrics.js';
 import './my_files.js';
+import './navigation.js';
 import './office.js';
 import './open_audio_media_app.js';
 import './open_image_media_app.js';

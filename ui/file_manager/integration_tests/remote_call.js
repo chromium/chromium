@@ -939,4 +939,39 @@ export class RemoteCallFilesApp extends RemoteCall {
     chrome.test.assertTrue(
         await this.callRemoteTestUtil('disableBannersForTesting', appId, []));
   }
+
+  /**
+   * Sends text to the search box in the Files app.
+   * @param {string} appId App window Id
+   * @param {string} text The text to type in the search box.
+   */
+  async typeSearchText(appId, text) {
+    const searchBoxInput = ['#search-box cr-input'];
+
+    // Focus the search box.
+    await this.waitAndClickElement(appId, '#search-button');
+
+    // Input the text.
+    await this.inputText(appId, searchBoxInput, text);
+
+    // Notify the element of the input.
+    chrome.test.assertTrue(await this.callRemoteTestUtil(
+        'fakeEvent', appId, ['#search-box cr-input', 'input']));
+  }
+
+  /**
+   * Waits for the search box auto complete list to appear.
+   * @param {string} appId
+   * @return {!Promise<!Array<string>>} Array of the names in the auto complete
+   *     list.
+   */
+  async waitForSearchAutoComplete(appId) {
+    // Wait for the list to appear.
+    await this.waitForElement(appId, '#autocomplete-list li');
+
+    // Return the result.
+    const elements = await this.callRemoteTestUtil(
+        'deepQueryAllElements', appId, ['#autocomplete-list li']);
+    return elements.map((element) => element.text);
+  }
 }
