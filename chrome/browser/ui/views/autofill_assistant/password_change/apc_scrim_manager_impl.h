@@ -17,6 +17,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class Browser;
+
 // Implementation of `ApcScrimManager` interface.
 class ApcScrimManagerImpl : public ApcScrimManager,
                             public content::WebContentsObserver,
@@ -46,7 +48,7 @@ class ApcScrimManagerImpl : public ApcScrimManager,
 
   base::ScopedObservation<views::View, ViewObserver> observation_{this};
   raw_ptr<views::View> overlay_view_ref_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_SCRIM_MANAGER_IMPL_H_

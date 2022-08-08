@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill_assistant/password_change/apc_scrim_manager_impl.h"
 
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "content/public/browser/web_contents.h"
@@ -25,14 +26,29 @@ std::unique_ptr<ApcScrimManager> ApcScrimManager::Create(
 
 ApcScrimManagerImpl::ApcScrimManagerImpl(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
-  web_contents_ = web_contents;
+  browser_ = chrome::FindBrowserWithWebContents(web_contents);
   GetContentsWebView()->AddChildView(CreateOverlayView());
   observation_.Observe(GetContentsWebView());
 }
 
 ApcScrimManagerImpl::~ApcScrimManagerImpl() {
-  std::unique_ptr<views::View> overlay_view =
-      GetContentsWebView()->RemoveChildViewT(overlay_view_ref_);
+  // Makes sure the browser is still in the browser list.
+  // If yes, we can safely access it. The browser might not be in the list
+  // in the case where a tab is dragged to a browser B causing
+  // browser A (containing this view) to be deleted.
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser_ == browser) {
+      BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser);
+      // If the browser view no longer exists, neither its children do.
+      if (!browser_view)
+        return;
+      if (browser_view->contents_web_view()->Contains(overlay_view_ref_)) {
+        browser_view->contents_web_view()->RemoveChildViewT(overlay_view_ref_);
+      }
+      return;
+    }
+  }
 }
 
 void ApcScrimManagerImpl::Show() {
@@ -48,9 +64,9 @@ bool ApcScrimManagerImpl::GetVisible() {
 }
 
 raw_ptr<views::View> ApcScrimManagerImpl::GetContentsWebView() {
-  return BrowserView::GetBrowserViewForBrowser(
-             chrome::FindBrowserWithWebContents(web_contents_))
-      ->contents_web_view();
+  DCHECK(browser_);
+  DCHECK(BrowserView::GetBrowserViewForBrowser(browser_));
+  return BrowserView::GetBrowserViewForBrowser(browser_)->contents_web_view();
 }
 
 std::unique_ptr<views::View> ApcScrimManagerImpl::CreateOverlayView() {
