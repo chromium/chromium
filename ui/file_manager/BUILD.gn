@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -138,7 +139,10 @@ ts_library("build_ts") {
   composite = true
 
   extra_deps = [
+    ":copy_definition",
+    ":copy_fmp",
     ":copy_ts",
+    ":generate_definitions",
     ":preprocess_generated",
     ":preprocess_generated_image_loader",
     ":preprocess_static",
@@ -152,10 +156,75 @@ ts_library("build_ts") {
       image_loader_static_js_files + image_loader_generated_js_files
 
   definitions = [
-    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
-    "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
-    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
+    "$preprocess_folder/file_manager/externs/file_manager_private.js",
+    "$target_gen_dir/file_manager/definitions/file_manager.d.ts",
+    "$target_gen_dir/file_manager/externs/volume_manager.d.ts",
   ]
+}
+
+ts_library("test_build_ts") {
+  testonly = true
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+
+  in_files = ts_test_files
+
+  path_mappings = [
+    # for chai_assert.js.
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+
+  definitions = [
+    "$preprocess_folder/file_manager/externs/file_manager_private.js",
+    "$target_gen_dir/file_manager/definitions/file_error.d.ts",
+    "$target_gen_dir/file_manager/definitions/file_manager.d.ts",
+    "$target_gen_dir/file_manager/externs/volume_manager.d.ts",
+  ]
+
+  deps = [ ":build_ts" ]
+  extra_deps = [
+    ":copy_definition",
+    ":copy_fmp",
+    ":copy_ts",
+    ":generate_definitions",
+  ]
+}
+
+ts_definitions("generate_definitions") {
+  root_dir = "."
+  out_dir = target_gen_dir
+
+  js_files = [
+    "file_manager/common/js/volume_manager_types.js",
+    "file_manager/externs/entry_location.js",
+    "file_manager/externs/files_app_entry_interfaces.js",
+    "file_manager/externs/volume_info.js",
+    "file_manager/externs/volume_info_list.js",
+    "file_manager/externs/volume_manager.js",
+  ]
+}
+
+# Copy definition files to GEN folder, so they can import relatively the
+# generated definitions.
+copy("copy_definition") {
+  sources = [
+    "file_manager/definitions/file_error.d.ts",
+    "file_manager/definitions/file_manager.d.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_ts") {
+  sources = ts_files + ts_test_files
+  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+}
+
+copy("copy_fmp") {
+  sources = [ "//third_party/closure_compiler/externs/file_manager_private.js" ]
+  outputs = [ "$preprocess_folder/file_manager/externs/{{source_file_part}}" ]
 }
 
 js_library("js_from_ts") {
@@ -251,44 +320,8 @@ grit("file_manager_gen_resources") {
   output_dir = target_gen_dir
 }
 
-copy("copy_ts") {
-  sources = ts_files
-  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
-}
-
-copy("copy_ts_test") {
-  sources = ts_test_files
-  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
-}
-
 html_to_wrapper("html_wrapper_files") {
   in_files = ts_templates
-}
-
-ts_library("test_build_ts") {
-  testonly = true
-  root_dir = preprocess_folder
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-
-  in_files = ts_test_files
-
-  path_mappings = [
-    # for chai_assert.js.
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-
-  definitions = [
-    "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
-    "//ui/file_manager/file_manager/definitions/file_error.d.ts",
-    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
-    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
-  ]
-
-  deps = [ ":build_ts" ]
-  extra_deps = [ ":copy_ts_test" ]
 }
 
 # GRD for test files.

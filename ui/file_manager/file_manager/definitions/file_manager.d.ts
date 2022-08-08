@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/// <reference types="./volume_manager" />
+import {VolumeManager} from '../externs/volume_manager.js';
 
 /**
  * Type definition for foreground/js/file_manager.js:FileManager.
