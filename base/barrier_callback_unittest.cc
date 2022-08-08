@@ -15,7 +15,7 @@
 namespace {
 
 TEST(BarrierCallbackTest, RunsImmediatelyForZeroCallbacks) {
-  bool done = true;
+  bool done = false;
   auto barrier_callback = base::BarrierCallback<int>(
       0, base::BindLambdaForTesting([&done](std::vector<int> results) {
         EXPECT_THAT(results, testing::IsEmpty());
