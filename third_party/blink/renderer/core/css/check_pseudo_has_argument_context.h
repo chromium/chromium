@@ -94,9 +94,17 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
 
   const CSSSelector* HasArgument() const { return has_argument_; }
 
+  const Vector<unsigned>& GetPseudoHasArgumentHashes() const {
+    return pseudo_has_argument_hashes_;
+  }
+
  private:
   const static int kInfiniteDepth = std::numeric_limits<int>::max();
   const static int kInfiniteAdjacentDistance = std::numeric_limits<int>::max();
+
+  inline const CSSSelector* GetCurrentRelationAndNextCompound(
+      const CSSSelector* compound_selector,
+      CSSSelector::RelationType& relation);
 
   // Indicate the :has argument relative type and subtree traversal scope.
   // If 'adjacent_distance_limit' is integer max, it means that all the
@@ -226,6 +234,8 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   CheckPseudoHasArgumentTraversalScope traversal_scope_;
   SiblingsAffectedByHasFlags siblings_affected_by_has_flags_;
   const CSSSelector* has_argument_;
+
+  Vector<unsigned> pseudo_has_argument_hashes_;
 };
 
 // Subtree traversal iterator class for :has() argument checking. To solve the

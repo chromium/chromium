@@ -4,26 +4,27 @@
 
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 
+#include "third_party/blink/renderer/core/css/check_pseudo_has_fast_reject_filter.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 
 namespace blink {
 
-namespace {
-
-inline const CSSSelector* GetCurrentRelationAndNextCompound(
+const CSSSelector*
+CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
     const CSSSelector* compound_selector,
     CSSSelector::RelationType& relation) {
   DCHECK(compound_selector);
-  for (; compound_selector;
-       compound_selector = compound_selector->TagHistory()) {
-    relation = compound_selector->Relation();
+  for (const CSSSelector* simple_selector = compound_selector; simple_selector;
+       simple_selector = simple_selector->TagHistory()) {
+    CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
+        pseudo_has_argument_hashes_, simple_selector);
+
+    relation = simple_selector->Relation();
     if (relation != CSSSelector::kSubSelector)
-      return compound_selector->TagHistory();
+      return simple_selector->TagHistory();
   }
   return nullptr;
 }
-
-}  // namespace
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
     const CSSSelector* selector)
