@@ -5804,7 +5804,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
        <message name="IDS_PASSWORD_GENERATION_EDITING_SUGGESTION" desc="Notification text next to the generated password assuring the user that the password has been saved.">
         Saved password
       </message>
-      <message name="IDS_SAVE_PASSWORD" desc="The title of the save password bubble when a password can be saved.">
+      <message name="IDS_SAVE_PASSWORD" desc="The title of the save password bubble when a password can be saved." formatter_data="android_java">
         Save password?
       </message>
       <message name="IDS_SAVE_ACCOUNT" desc="The title of the save password bubble when a federated credential can be saved.">
@@ -7775,7 +7775,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </if>
       </if>
       <if expr="is_android">
-        <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option">
+        <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option"  formatter_data="android_java">
           Save
         </message>
         <message name="IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Never remember for this site' option">

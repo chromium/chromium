@@ -105,18 +105,44 @@ class PasswordEditDialogCoordinator {
     }
 
     /**
-     * Shows the password edit dialog.
+     * Shows the dialog asking if user wants to save the password and providing
+     * username & password editing capabilities.
+     * Possible user choices: Save, Never for this site, Cancel
+     *
+     * @param username Initially typed username that user will be able to edit
+     * @param password Initially typed password that user will be able to edit
+     * @param account The account name where the password will be saved. When the user is not signed
+     *         in the account is null.
+     */
+    void showSavePasswordDialog(
+            @NonNull String username, @NonNull String password, @Nullable String account) {
+        mDialogModel = createModalDialogModel(
+                R.string.save_password, R.string.password_manager_save_button);
+        mDialogViewModel = createDialogViewModel(new String[] {username}, 0, password, account);
+
+        mMediator.initialize(mDialogViewModel, mDialogModel);
+        // The mediator needs to be initialized before the model change processor,
+        // so that the callbacks handling changes from the view are not null
+        // when the view is populated.
+        PropertyModelChangeProcessor.create(
+                mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
+
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+    }
+
+    /**
+     * Shows the dialog asking if user wants to update the password and providing
+     * username & password editing capabilities
      *
      * @param usernames The list of usernames that will be presented in the Spinner.
      * @param selectedUsernameIndex The index in the usernames list of the user that should be
      *         selected initially.
-     * @param password The password.
-     * @param origin The origin with which these credentials are associated.
+     * @param password The password that the user entered in the form.
      * @param account The account name where the password will be saved. When the user is not signed
      *         in the account is null.
      */
-    void show(@NonNull String[] usernames, int selectedUsernameIndex, @NonNull String password,
-            @NonNull String origin, @Nullable String account) {
+    void showUpdatePasswordDialog(@NonNull String[] usernames, int selectedUsernameIndex,
+            @NonNull String password, @Nullable String account) {
         mDialogModel = createModalDialogModel(mIsDialogWithDetailsFeatureEnabled
                         ? R.string.password_update_dialog_title
                         : R.string.confirm_username_dialog_title,

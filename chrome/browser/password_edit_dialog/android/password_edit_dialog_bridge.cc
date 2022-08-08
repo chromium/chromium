@@ -43,11 +43,27 @@ PasswordEditDialogBridge::~PasswordEditDialogBridge() {
   DCHECK(java_password_dialog_.is_null());
 }
 
-void PasswordEditDialogBridge::Show(
+void PasswordEditDialogBridge::ShowSavePasswordDialog(
+    const std::u16string& username,
+    const std::u16string& password,
+    const std::string& account_email) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  base::android::ScopedJavaLocalRef<jstring> j_username =
+      base::android::ConvertUTF16ToJavaString(env, username);
+  base::android::ScopedJavaLocalRef<jstring> j_password =
+      base::android::ConvertUTF16ToJavaString(env, password);
+  base::android::ScopedJavaLocalRef<jstring> j_account_email =
+      base::android::ConvertUTF8ToJavaString(env, account_email);
+
+  Java_PasswordEditDialogBridge_showSavePasswordDialog(
+      env, java_password_dialog_, j_username, j_password, j_account_email);
+}
+
+void PasswordEditDialogBridge::ShowUpdatePasswordDialog(
     const std::vector<std::u16string>& usernames,
     int selected_username_index,
     const std::u16string& password,
-    const std::u16string& origin,
     const std::string& account_email) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -56,14 +72,12 @@ void PasswordEditDialogBridge::Show(
 
   base::android::ScopedJavaLocalRef<jstring> j_password =
       base::android::ConvertUTF16ToJavaString(env, password);
-  base::android::ScopedJavaLocalRef<jstring> j_origin =
-      base::android::ConvertUTF16ToJavaString(env, origin);
   base::android::ScopedJavaLocalRef<jstring> j_account_email =
       base::android::ConvertUTF8ToJavaString(env, account_email);
 
-  Java_PasswordEditDialogBridge_show(env, java_password_dialog_, j_usernames,
-                                     selected_username_index, j_password,
-                                     j_origin, j_account_email);
+  Java_PasswordEditDialogBridge_showUpdatePasswordDialog(
+      env, java_password_dialog_, j_usernames, selected_username_index,
+      j_password, j_account_email);
 }
 
 void PasswordEditDialogBridge::Dismiss() {

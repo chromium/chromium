@@ -26,6 +26,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
+using password_manager::features::kPasswordEditDialogWithDetails;
+
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
     : SaveUpdatePasswordMessageDelegate(
           base::BindRepeating(PasswordEditDialogBridge::Create)) {}
@@ -164,17 +166,28 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
   }
 
-  if (!update_password) {
-    message_->SetSecondaryIconResourceId(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-    message_->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
-        password_manager::features::UsesUnifiedPasswordManagerUi()
-            ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
-            : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
-    message_->SetSecondaryActionCallback(base::BindRepeating(
-        &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
+  if (!update_password)
+    SetupCogMenu(message_);
+}
+
+void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
+    std::unique_ptr<messages::MessageWrapper>& message) {
+  message->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+    message->SetSecondaryActionCallback(base::BindRepeating(
+        &SaveUpdatePasswordMessageDelegate::DisplayEditDialog,
         base::Unretained(this)));
+    return;
   }
+
+  message->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
+      password_manager::features::UsesUnifiedPasswordManagerUi()
+          ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
+          : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
+  message->SetSecondaryActionCallback(base::BindRepeating(
+      &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
+      base::Unretained(this)));
 }
 
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
@@ -247,6 +260,30 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
   passwords_state_.form_manager()->Save();
 }
 
+void SaveUpdatePasswordMessageDelegate::DisplayEditDialog() {
+  const std::u16string& current_username =
+      passwords_state_.form_manager()->GetPendingCredentials().username_value;
+  const std::u16string& current_password =
+      passwords_state_.form_manager()->GetPendingCredentials().password_value;
+  DisplaySavePasswordDialog(std::move(current_username),
+                            std::move(current_password));
+  DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
+}
+
+void SaveUpdatePasswordMessageDelegate::DisplaySavePasswordDialog(
+    std::u16string current_username,
+    std::u16string current_password) {
+  CreatePasswordEditDialog();
+
+  // Password edit dialog factory method can return nullptr when web_contents
+  // is not attached to a window. See crbug.com/1049090 for details.
+  if (!password_edit_dialog_)
+    return;
+
+  password_edit_dialog_->ShowSavePasswordDialog(
+      current_username, current_password, account_email_);
+}
+
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
   passwords_state_.form_manager()->Blocklist();
   DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
@@ -256,39 +293,26 @@ void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
   std::vector<std::u16string> usernames;
   int selected_username_index = GetDisplayUsernames(&usernames);
   if (usernames.size() > 1) {
-    DisplayUsernameConfirmDialog(std::move(usernames), selected_username_index);
+    DisplayUpdatePasswordDialog(std::move(usernames), selected_username_index);
   } else {
     passwords_state_.form_manager()->Save();
   }
 }
 
-void SaveUpdatePasswordMessageDelegate::DisplayUsernameConfirmDialog(
+void SaveUpdatePasswordMessageDelegate::DisplayUpdatePasswordDialog(
     std::vector<std::u16string> usernames,
     int selected_username_index) {
-  // Binding with base::Unretained(this) is safe here because
-  // SaveUpdatePasswordMessageDelegate owns password_edit_dialog_. Callbacks
-  // won't be called after the SaveUpdatePasswordMessageDelegate object is
-  // destroyed.
-  password_edit_dialog_ = password_edit_dialog_factory_.Run(
-      web_contents_.get(),
-      base::BindOnce(
-          &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
-          base::Unretained(this)),
-      base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
-                     base::Unretained(this)));
+  CreatePasswordEditDialog();
 
   // Password edit dialog factory method can return nullptr when web_contents
   // is not attached to a window. See crbug.com/1049090 for details.
   if (!password_edit_dialog_)
     return;
 
-  std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
-      url::Origin::Create(passwords_state_.form_manager()->GetURL()),
-      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  password_edit_dialog_->Show(
+  password_edit_dialog_->ShowUpdatePasswordDialog(
       usernames, selected_username_index,
       passwords_state_.form_manager()->GetPendingCredentials().password_value,
-      origin, account_email_);
+      account_email_);
 }
 
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
@@ -317,6 +341,20 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
   return selected_username_index;
 }
 
+void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
+  // Binding with base::Unretained(this) is safe here because
+  // SaveUpdatePasswordMessageDelegate owns password_edit_dialog_. Callbacks
+  // won't be called after the SaveUpdatePasswordMessageDelegate object is
+  // destroyed.
+  password_edit_dialog_ = password_edit_dialog_factory_.Run(
+      web_contents_.get(),
+      base::BindOnce(
+          &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
+          base::Unretained(this)),
+      base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
+                     base::Unretained(this)));
+}
+
 void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
     bool dialogAccepted) {
   password_edit_dialog_.reset();
@@ -329,7 +367,6 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
 void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
     const std::u16string& username,
     const std::u16string& password) {
-  DCHECK(passwords_state_.GetCurrentForms().size() > 1);
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
   passwords_state_.form_manager()->Save();

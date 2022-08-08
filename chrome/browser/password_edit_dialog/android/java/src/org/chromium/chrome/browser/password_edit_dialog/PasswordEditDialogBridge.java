@@ -31,9 +31,16 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     }
 
     @CalledByNative
-    void show(@NonNull String[] usernames, int selectedUsernameIndex, @NonNull String password,
-            @NonNull String origin, @Nullable String account) {
-        mDialogCoordinator.show(usernames, selectedUsernameIndex, password, origin, account);
+    void showUpdatePasswordDialog(@NonNull String[] usernames, int selectedUsernameIndex,
+            @NonNull String password, @Nullable String account) {
+        mDialogCoordinator.showUpdatePasswordDialog(
+                usernames, selectedUsernameIndex, password, account);
+    }
+
+    @CalledByNative
+    void showSavePasswordDialog(
+            @NonNull String username, @NonNull String password, @Nullable String account) {
+        mDialogCoordinator.showSavePasswordDialog(username, password, account);
     }
 
     @CalledByNative

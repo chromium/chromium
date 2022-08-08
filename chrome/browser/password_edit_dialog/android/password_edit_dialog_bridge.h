@@ -36,7 +36,7 @@ class WebContents;
 // Here is how typically dialog bridge is created:
 //   m_dialog_bridge = PasswordEditDialogBridge::Create(web_contents,
 //       base::BindOnce(&OnDialogAccepted),base::BindOnce(&OnDialogDismissed));
-//   if (m_dialog_bridge) m_dialog_bridge->Show(...);
+//   if (m_dialog_bridge) m_dialog_bridge->ShowUpdatePasswordDialog(...);
 //
 // The owning class should dismiss displayed dialog during its own destruction:
 //   if (m_dialog_bridge) m_dialog_bridge->Dismiss();
@@ -56,12 +56,17 @@ class PasswordEditDialog {
 
   virtual ~PasswordEditDialog();
 
-  // Calls Java side of the bridge to display password edit modal dialog.
-  virtual void Show(const std::vector<std::u16string>& usernames,
-                    int selected_username_index,
-                    const std::u16string& password,
-                    const std::u16string& origin,
-                    const std::string& account_email) = 0;
+  // Calls Java side of the bridge to display password save modal dialog.
+  virtual void ShowSavePasswordDialog(const std::u16string& username,
+                                      const std::u16string& password,
+                                      const std::string& account_email) = 0;
+
+  // Calls Java side of the bridge to display password update modal dialog.
+  virtual void ShowUpdatePasswordDialog(
+      const std::vector<std::u16string>& usernames,
+      int selected_username_index,
+      const std::u16string& password,
+      const std::string& account_email) = 0;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object
@@ -85,12 +90,16 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   PasswordEditDialogBridge(const PasswordEditDialogBridge&) = delete;
   PasswordEditDialogBridge& operator=(const PasswordEditDialogBridge&) = delete;
 
-  // Calls Java side of the bridge to display password edit modal dialog.
-  void Show(const std::vector<std::u16string>& usernames,
-            int selected_username_index,
-            const std::u16string& password,
-            const std::u16string& origin,
-            const std::string& account_email) override;
+  // Calls Java side of the bridge to display password save modal dialog.
+  void ShowSavePasswordDialog(const std::u16string& username,
+                              const std::u16string& password,
+                              const std::string& account_email) override;
+
+  // Calls Java side of the bridge to display password update modal dialog.
+  void ShowUpdatePasswordDialog(const std::vector<std::u16string>& usernames,
+                                int selected_username_index,
+                                const std::u16string& password,
+                                const std::string& account_email) override;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object

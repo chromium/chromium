@@ -69,7 +69,7 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogControllerTest.java" ]
 
   deps = [
     ":java",
@@ -81,6 +81,7 @@ robolectric_library("junit") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -64,6 +64,7 @@ class SaveUpdatePasswordMessageDelegate {
       absl::optional<AccountInfo> account_info,
       bool update_password);
   void CreateMessage(bool update_password);
+  void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message);
 
   // Returns the message description depending on whether the password is being
   // saved or updated and if unified password manager is enabled.
@@ -87,11 +88,15 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleSaveButtonClicked();
   void HandleNeverSaveClicked();
   void HandleUpdateButtonClicked();
-  void DisplayUsernameConfirmDialog(std::vector<std::u16string> usernames,
-                                    int selected_username_index);
+  void DisplayEditDialog();
+  void DisplaySavePasswordDialog(std::u16string current_username,
+                                 std::u16string current_password);
+  void DisplayUpdatePasswordDialog(std::vector<std::u16string> usernames,
+                                   int selected_username_index);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   void HandleSavePasswordFromDialog(const std::u16string& username,
                                     const std::u16string& password);
+  void CreatePasswordEditDialog();
   void HandleDialogDismissed(bool dialogAccepted);
 
   void ClearState();
