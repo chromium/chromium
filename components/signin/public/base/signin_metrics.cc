@@ -185,12 +185,6 @@ void LogAccountReconcilorStateOnGaiaResponse(AccountReconcilorState state) {
                             state);
 }
 
-void LogAccountEquality(AccountEquality equality) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.AccountEquality",
-                            static_cast<int>(equality),
-                            static_cast<int>(AccountEquality::HISTOGRAM_COUNT));
-}
-
 void LogCookieJarStableAge(const base::TimeDelta stable_age,
                            const ReportingType type) {
   INVESTIGATOR_HISTOGRAM_CUSTOM_COUNTS(

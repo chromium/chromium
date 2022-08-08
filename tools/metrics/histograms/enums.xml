@@ -88523,14 +88523,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="38" label="Sync off settings row"/>
 </enum>
 
-<enum name="SigninAccountEquality">
-  <int value="0" label="Both Equal"/>
-  <int value="1" label="Both Different"/>
-  <int value="2" label="Only Same Email"/>
-  <int value="3" label="Only Same Id"/>
-  <int value="4" label="Email Fallback"/>
-</enum>
-
 <enum name="SigninAccountReconcilorState">
   <int value="0" label="OK">
     The account reconcilor has finished running and is up-to-date.
@@ -88713,13 +88705,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Credentials rejected by server"/>
   <int value="2" label="Credentials rejected by client"/>
   <int value="3" label="Credentials missing"/>
-</enum>
-
-<enum name="SigninInvestigatedScenario">
-  <int value="0" label="First-time sign in"/>
-  <int value="1" label="Upgrade high risk (deprecated 07-2019)"/>
-  <int value="2" label="Same account"/>
-  <int value="3" label="Different account"/>
 </enum>
 
 <enum name="SigninIOSDeviceRestoreSentinelError">

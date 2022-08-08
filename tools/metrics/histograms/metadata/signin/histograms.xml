@@ -104,18 +104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Signin.AccountEquality" enum="SigninAccountEquality"
-    expires_after="2022-09-06">
-  <owner>droger@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <summary>
-    There are two separate ways to test for account equality, using the account
-    id or the email. Historically the email was always used, but going forward
-    email will be modifiable. Now when we check account equality we use both
-    approaches and emit this metric to capture if they agreed or not.
-  </summary>
-</histogram>
-
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
     expires_after="2022-12-25">
   <owner>triploblastic@chromium.org</owner>
@@ -522,17 +510,6 @@ prefs when the profile is loaded.  -->
   <summary>
     Reason for invalid Gaia credentials. Recorded when Signin.AuthError records
     invalid credentials.
-  </summary>
-</histogram>
-
-<histogram name="Signin.InvestigatedScenario" enum="SigninInvestigatedScenario"
-    expires_after="2022-12-12">
-  <owner>treib@chromium.org</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Recorded when Sync is turned on in a profile. Records whether this is the
-    first time Sync is turned on in this profile or, if not, whether Sync was
-    previously turned on for the same or for a different account.
   </summary>
 </histogram>
 

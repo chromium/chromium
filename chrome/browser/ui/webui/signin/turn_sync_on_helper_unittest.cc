@@ -77,6 +77,7 @@ namespace {
 
 const char kEmail[] = "foo@gmail.com";
 const char kPreviousEmail[] = "notme@bar.com";
+const char kPreviousAccountId[] = "gaia_id_for_not_me_at_bar_com";
 const char kEnterpriseEmail[] = "enterprise@managed.com";
 const char kEnterpriseHostedDomain[] = "managed.com";
 
@@ -837,6 +838,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbort) {
   // Configure the test.
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
+                                   kPreviousAccountId);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
@@ -854,6 +857,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   // Configure the test.
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
+                                   kPreviousAccountId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -877,6 +882,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
+                                   kPreviousAccountId);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
@@ -895,6 +902,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   merge_data_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
+                                   kPreviousAccountId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -921,6 +930,8 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   merge_data_choice_ = signin::SIGNIN_CHOICE_NEW_PROFILE;
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                    kPreviousEmail);
+  profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
+                                   kPreviousAccountId);
   // Signin flow.
   ProfileWaiter profile_waiter;
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);

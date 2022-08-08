@@ -40,8 +40,6 @@ static_library("browser") {
     "signin_header_helper.h",
     "signin_internals_util.cc",
     "signin_internals_util.h",
-    "signin_investigator.cc",
-    "signin_investigator.h",
     "signin_status_metrics_provider_helpers.cc",
     "signin_status_metrics_provider_helpers.h",
   ]
@@ -116,7 +114,6 @@ source_set("unit_tests") {
     "account_reconcilor_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
-    "signin_investigator_unittest.cc",
     "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 
@@ -173,10 +170,7 @@ if (is_android) {
   }
 
   java_cpp_enum("signin_enums_javagen") {
-    sources = [
-      "signin_header_helper.h",
-      "signin_investigator.h",
-    ]
+    sources = [ "signin_header_helper.h" ]
     visibility = [ ":*" ]  # Depend on through :signin_enums_java
   }
 }

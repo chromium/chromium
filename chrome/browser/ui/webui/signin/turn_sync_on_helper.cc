@@ -214,7 +214,7 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     return;
   }
 
-  if (!IsCrossAccountError(profile_, account_info_.email, account_info_.gaia)) {
+  if (!IsCrossAccountError(profile_, account_info_.gaia)) {
     TurnSyncOnWithProfileMode(ProfileMode::CURRENT_PROFILE);
     return;
   }
