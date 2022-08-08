@@ -17,6 +17,8 @@ import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js'
 
 // The size of each tile in pixels.
 const QR_CODE_TILE_SIZE = 5;
+// Amount of padding around the QR code in pixels.
+const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
 
@@ -165,7 +167,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     if (!response || !response.qrCode) {
       return;
     }
-    this.canvasSize_ = response.qrCode.size * QR_CODE_TILE_SIZE;
+    this.canvasSize_ =
+        response.qrCode.size * QR_CODE_TILE_SIZE + 2 * QR_CODE_PADDING;
     const context = this.getCanvasContext_();
     context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
     context.fillStyle = QR_CODE_FILL_STYLE;
@@ -174,7 +177,8 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       for (let y = 0; y < response.qrCode.size; y++) {
         if (response.qrCode.data[index]) {
           context.fillRect(
-              x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
+              x * QR_CODE_TILE_SIZE + QR_CODE_PADDING,
+              y * QR_CODE_TILE_SIZE + QR_CODE_PADDING, QR_CODE_TILE_SIZE,
               QR_CODE_TILE_SIZE);
         }
         index++;
