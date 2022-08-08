@@ -200,7 +200,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   // RevertBackgroundChanges is called.
   if (previous_background_info_ == absl::nullopt) {
     previous_background_info_ = absl::make_optional(
-        pref_service_->Get(prefs::kNtpCustomBackgroundDict)->Clone());
+        pref_service_->GetValue(prefs::kNtpCustomBackgroundDict).Clone());
     previous_local_background_ = false;
   }
 
@@ -362,8 +362,8 @@ bool NtpCustomBackgroundService::IsCustomBackgroundDisabledByPolicy() {
   bool managed =
       pref_service_->IsManagedPreference(prefs::kNtpCustomBackgroundDict);
   if (managed) {
-    DCHECK(pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict)
-               ->DictEmpty());
+    DCHECK(
+        pref_service_->GetValueDict(prefs::kNtpCustomBackgroundDict).empty());
   }
   return managed;
 }
