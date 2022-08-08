@@ -2287,7 +2287,7 @@
     // https://crbug.com/1314739
     {
       name: "TouchActionEffectiveAtPointerDown",
-      status: "experimental",
+      status: "stable",
     },
     // This feature allows touch dragging and a context menu to occur
     // simultaneously, with the assumption that the menu is non-modal.  Without
