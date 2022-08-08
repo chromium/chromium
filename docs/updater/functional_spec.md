@@ -29,7 +29,15 @@ On Windows, the tag is embedded in one of the certificates in the metainstaller
 PE. The tag is supported for both EXE and MSI formats.
 
 #### Tag Format
-TODO(crbug.com/1328903) - document the rest of the tag format.
+Tags have a format of a UTF-8 string `Gact2.0Omaha{length}{tag}`, where
+`{length}` is a big-endian uint16, and `{tag}` is `{length}` bytes long.
+
+The format of the `{tag}` piece is further documented in
+[tag.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/tag.h#159).
+
+The project also contains code used by non-Google embedders to support UTF-16
+tags of the format `Gact2.0Omaha{tag}ahamO0.2tcaG`, but Chromium-branded and
+Google-branded builds assume the first case.
 
 ##### Brand code
 The brand code is a string of up to 4 characters long. The brand code is
@@ -45,12 +53,14 @@ preferred language on the current system. Every string shown in the UI is
 translated.
 
 ### Bundle Installer
+TODO(crbug.com/1035895): Implement bundle installers.
+
 The bundle installer allows installation of more than one application. The
 bundle installer is typically used in software distribution scenarios.
 
-TODO(crbug.com/1035895): Document bundled installers.
-
 ### Standalone Installer
+TODO(crbug.com/1281688): Implement standalone installers.
+
 TODO(crbug.com/1035895): Document the standalone installer, including building
 a standalone installer for a given application.
 
@@ -65,15 +75,13 @@ deployments in an enterprise.
 2. when downloading the application payload is not desirable for any reason.
 3. during OEM installation.
 
-TODO(crbug.com/1139014): Document OEM.
-
 Applications on macOS frequently install via "drag-install", and then install
 the updater using a standalone installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
 
 ### MSI Wrapper
-TODO(crbug.com/1327497) - document.
+TODO(crbug.com/1327497) - Implement and document.
 
 ### Scope
 The updater is installed in one of the following modes (or scopes):
@@ -262,35 +270,20 @@ keeps the Omaha registry entry
 with its own.
 
 ### Installer User Interface
-TODO(crbug.com/1035895): Document UI/UX.
+During installation, the user is presented with a UI that displays the progress
+of the download and installation. The user may close the dialog, which cancels
+the installation. A cancelled installation still results in an event ping to
+the server indicating an installation failure.
 
-The user interface is localized in the following languages: TBD.
+The user interface is localized in the same languages as the Chromium project.
 
-TODO(crbug.com/1014591): Implement install cancellation, including cancellation
-ping.
-
-The install flow can be stopped before the payload finishes downloading. In this
-case, the event ping associated with the install attempt will be sent with an
-`eventresult` of 4 (cancelled).
-
-TODO(crbug.com/1286580): Implement silent mode.
-
-Has a silent mode where the UI is not displayed at all.
+TODO(crbug.com/1286580): Implement and document silent mode.
 
 #### Help Button
 If the installation fails, the updater shows an error message with a "Help"
 button. Clicking the help button opens a web page in the user's default browser.
 The page is opened with a query string:
 `?product={AppId}&errorcode={ErrorCode}`.
-
-### Install Source
-
-TODO(crbug.com/1327491) - Implement the following algorithm.
-
-The `installsource` identifies the originator of an install. It is provided on
-the command line of the metainstaller.
-
-TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
 
 ## Updates
 There is no limit for the number of retries to update an application if the
@@ -337,7 +330,9 @@ hours).
   update).
 
 #### Usage Counts
-TODO(crbug.com/1329328) - document the client responsibilities.
+The updater implements [date-last counting](protocol_3_1.md#User-Counting),
+allowing servers to anonymously count the number of active updaters and
+applications.
 
 #### Cohort Tracking
 The client records the `cohort`, `cohortname`, and `cohorthint` values from the
@@ -353,15 +348,27 @@ Application installers are run with a 15-minute timeout. If the installer runs
 for longer than this, the updater assumes failure and continues operation.
 However, the updater does not kill the installer process.
 
-The macOS API is [defined here](installer_api_mac.md).
+The application installer API varies by platform. [macOS](installer_api_mac.md), [Windows](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/win/installer_api.h).
 
-TODO(crbug.com/1035895): Document Windows installer APIs
-
-TODO(crbug.com/1339454): Run installers at BELOW_NORMAL_PRIORITY_CLASS if the
-update flow is a background flow.
+TODO(crbug.com/1339454): Implement running installers at
+BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
 
 ### Enterprise Enrollment
-TODO(crbug.com/1339451): Document enterprise enrollment and the token.
+The updater may be enrolled with a particular enterprise. Enrollment is
+coordinated with a device management server by means of an enrollment token and
+a device management token. The enrollment token is placed on the device by other
+programs or the enterprise administrator and serves as an indicator of which
+enterprise the device should attempt to enroll with. The updater sends the
+enrollment token, along with the device's machine name, os information, and
+(on Windows) BIOS serial number. If the server accepts the enrollment, it
+responds with a device-specific device management token, which is used in
+future requests to fetch device-specific policies from the device management
+server.
+
+TODO(crbug.com/1339451): Document location of enrollment token.
+
+TODO(crbug.com/1339451): Document timing of enterprise enrollment and policy
+fetches.
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
@@ -371,6 +378,20 @@ Enterprise policies can prevent the installation of applications:
 *   If the default install policy is unset, the application may be installed.
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
+
+Policies may be set by platform-specific means (group policy on Windows, managed
+preferences on macOS), or by communication with the device management server.
+
+TODO(crbug.com/1339451): Document how conflicts between multiple policy sources
+are resolved.
+
+#### Deploying enterprise applications via updater policy
+For each application that needs to be deployed via the updater, the policy for
+that application can be set to either `Force installs (system wide)` or `Force
+installs (per user)`.
+
+The updater then downloads and installs the application on all machines where
+the policy is deployed, and where the application is not already installed.
 
 ### Dynamic Install Parameters
 
@@ -550,9 +571,7 @@ The updater accepts updates packaged as CRX₃ files. All files are signed with 
 publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Differential Updates
-TODO(crbug.com/1035895): Document differential updates.
-
-TODO(crbug.com/1331030): Implement differential update support.
+TODO(crbug.com/1331030): Implement and document differential update support.
 
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting
@@ -584,12 +603,10 @@ Background updates can be disabled entirely through policy.
 The update tasks are scheduled using the OS task scheduler.
 
 The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
-they've been created.
+they've been created. If a task execution is missed, it will run as soon as the
+system is able to.
 
-TODO(crbug.com/1328935): implement built in task scheduler as a failover
-mechanism
-
-TODO(crbug.com/1035895): Does the updater run at user login on Windows?
+The updater also runs at user login.
 
 ### On-Demand Updates
 The updater exposes an RPC interface for any user to trigger an update check.
@@ -654,14 +671,6 @@ any piece of software it manages is permitted to send usage stats.
 *   The updater searches the file system for Crashpad directories belonging
     to {Company}.
 
-### Enterprise Policies
-TODO(crbug.com/1035895): Document relevant enterprise policies.
-
-#### Windows
-TODO(crbug.com/1035895): Implement this section. (ADMX file export.)
-
-ADMX templates are provided.
-
 ### Telemetry
 When the updater installs an application (an installer is run) it sends an
 event with `"eventtype": 2` indicating the outcome of installation. The updater
@@ -707,9 +716,13 @@ On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 ## Services
 
 ### Crash Reporting
-TODO(crbug.com/1035895): Document updater crash reporting.
+The updater uses Crashpad for crash reporting. Each updater process spawns a
+crash handler child process. Each crash handler process is capable of uploading
+crashes.
 
-### Process Launcher (Deprecated, please use the Application Commands feature)
+### Process Launcher
+(This feature is deprecated, please use the Application Commands feature.)
+
 The feature allows installed products to pre-register and later run elevated
 command lines in the format `c:\program files\foo\exe.exe params`. Multiple
 command lines can be registered per `app_id`.
@@ -889,18 +902,8 @@ Overrides are specified in an overrides.json file placed in the updater data
 directory.
 
 ### Tagging Tools
-TODO(crbug.com/1035895): Document tagging tools.
-
-## Updater for the enterprise
-
-TODO(crbug.com/1347910): Document updater for the enterprise.
-
-### Deploying enterprise applications via updater policy
-
-For each application that needs to be deployed via the updater, the policy for
-that application can be set to either `Force installs (system wide)` or `Force
-installs (per user)`.
-
-The updater then downloads and installs the application on all machines where
-the policy is deployed, and where the application is not already installed.
-
+The project contains a helper tool for tagging called `certificate_tag.exe`.
+This tool can be
+[used](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/tools/main.cc#59)
+to inject a superfluous certificate into a signed binary to support the
+creation of tagged binaries.
