@@ -34,8 +34,8 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
     group_views_ = std::make_unique<TabGroupViews>(
-        tab_container_.get(), drag_context_.get(), tab_slot_controller_.get(),
-        id_);
+        tab_container_.get(), drag_context_.get(),
+        *(tab_slot_controller_.get()), id_);
   }
 
   void TearDown() override {

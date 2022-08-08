@@ -26,11 +26,11 @@
 
 TabGroupViews::TabGroupViews(views::View* container_view,
                              views::View* drag_container_view,
-                             TabSlotController* tab_slot_controller,
+                             TabSlotController& tab_slot_controller,
                              const tab_groups::TabGroupId& group)
     : tab_slot_controller_(tab_slot_controller), group_(group) {
   header_ = container_view->AddChildView(
-      std::make_unique<TabGroupHeader>(tab_slot_controller_, group_));
+      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_));
   underline_ = container_view->AddChildView(
       std::make_unique<TabGroupUnderline>(this, group_));
   drag_underline_ = drag_container_view->AddChildView(

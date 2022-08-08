@@ -166,10 +166,10 @@ void TabContainerImpl::RemoveTabDelegate::AnimationCanceled(
 }
 
 TabContainerImpl::TabContainerImpl(
-    TabContainerController* controller,
+    TabContainerController& controller,
     TabHoverCardController* hover_card_controller,
     TabDragContextBase* drag_context,
-    TabSlotController* tab_slot_controller,
+    TabSlotController& tab_slot_controller,
     views::View* scroll_contents_view)
     : controller_(controller),
       hover_card_controller_(hover_card_controller),
@@ -373,7 +373,7 @@ absl::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
 
 void TabContainerImpl::OnGroupCreated(const tab_groups::TabGroupId& group) {
   auto group_view = std::make_unique<TabGroupViews>(
-      this, drag_context_, tab_slot_controller_, group);
+      this, drag_context_, *tab_slot_controller_, group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
 }

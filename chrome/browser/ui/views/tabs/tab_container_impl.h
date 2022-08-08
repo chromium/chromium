@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -39,10 +40,10 @@ class TabContainerImpl : public TabContainer,
  public:
   METADATA_HEADER(TabContainerImpl);
 
-  TabContainerImpl(TabContainerController* controller,
+  TabContainerImpl(TabContainerController& controller,
                    TabHoverCardController* hover_card_controller,
                    TabDragContextBase* drag_context,
-                   TabSlotController* tab_slot_controller,
+                   TabSlotController& tab_slot_controller,
                    views::View* scroll_contents_view);
   ~TabContainerImpl() override;
 
@@ -305,17 +306,18 @@ class TabContainerImpl : public TabContainer,
   // the remove animation completes.
   views::ViewModelT<Tab> tabs_view_model_;
 
-  raw_ptr<TabContainerController> controller_;
+  const raw_ref<TabContainerController> controller_;
 
-  raw_ptr<TabHoverCardController> hover_card_controller_;
+  const raw_ptr<TabHoverCardController> hover_card_controller_;
 
   // May be nullptr in tests.
-  raw_ptr<TabDragContextBase> drag_context_;
+  const raw_ptr<TabDragContextBase> drag_context_;
 
-  raw_ptr<TabSlotController> tab_slot_controller_;
+  const raw_ref<TabSlotController> tab_slot_controller_;
 
-  // The View that is to be scrolled by |tab_scrolling_animation_|.
-  raw_ptr<views::View> scroll_contents_view_;
+  // The View that is to be scrolled by |tab_scrolling_animation_|. May be
+  // nullptr in tests.
+  const raw_ptr<views::View> scroll_contents_view_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;
@@ -323,7 +325,7 @@ class TabContainerImpl : public TabContainer,
   // Responsible for animating the scroll of the tab container.
   std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
-  std::unique_ptr<TabStripLayoutHelper> layout_helper_;
+  const std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 
   // MouseWatcher is used when a tab is closed to reset the layout.
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;

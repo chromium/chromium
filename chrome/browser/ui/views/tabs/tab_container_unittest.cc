@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 
 #include <memory>
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
@@ -48,7 +49,7 @@ class FakeTabDragContext : public TabDragContextBase {
 
 class FakeTabContainerController final : public TabContainerController {
  public:
-  explicit FakeTabContainerController(TabStripController* tab_strip_controller)
+  explicit FakeTabContainerController(TabStripController& tab_strip_controller)
       : tab_strip_controller_(tab_strip_controller) {}
   ~FakeTabContainerController() override = default;
 
@@ -84,7 +85,7 @@ class FakeTabContainerController final : public TabContainerController {
   }
 
  private:
-  raw_ptr<TabStripController> tab_strip_controller_;
+  const raw_ref<TabStripController> tab_strip_controller_;
 };
 }  // namespace
 
@@ -100,7 +101,7 @@ class TabContainerTest : public ChromeViewsTestBase {
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_container_controller_ = std::make_unique<FakeTabContainerController>(
-        tab_strip_controller_.get());
+        *(tab_strip_controller_.get()));
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
@@ -108,9 +109,9 @@ class TabContainerTest : public ChromeViewsTestBase {
         std::make_unique<FakeTabDragContext>();
     std::unique_ptr<TabContainer> tab_container =
         std::make_unique<TabContainerImpl>(
-            tab_container_controller_.get(), nullptr /*hover_card_controller*/,
-            drag_context.get(), tab_slot_controller_.get(),
-            nullptr /*scroll_contents_view*/);
+            *(tab_container_controller_.get()),
+            nullptr /*hover_card_controller*/, drag_context.get(),
+            *(tab_slot_controller_.get()), nullptr /*scroll_contents_view*/);
     tab_container->SetAvailableWidthCallback(base::BindRepeating(
         [](TabContainerTest* test) { return test->tab_container_width_; },
         this));

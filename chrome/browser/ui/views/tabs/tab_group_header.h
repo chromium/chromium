@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -32,7 +33,7 @@ class TabGroupHeader : public TabSlotView,
  public:
   METADATA_HEADER(TabGroupHeader);
 
-  TabGroupHeader(TabSlotController* tab_slot_controller,
+  TabGroupHeader(TabSlotController& tab_slot_controller,
                  const tab_groups::TabGroupId& group);
   TabGroupHeader(const TabGroupHeader&) = delete;
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
@@ -81,7 +82,7 @@ class TabGroupHeader : public TabSlotView,
   // collapsed.
   void LogCollapseTime();
 
-  const raw_ptr<TabSlotController> tab_slot_controller_;
+  const raw_ref<TabSlotController> tab_slot_controller_;
 
   raw_ptr<views::View> title_chip_;
   raw_ptr<views::Label> title_;
@@ -96,7 +97,7 @@ class TabGroupHeader : public TabSlotView,
   // at once.
   class EditorBubbleTracker : public views::WidgetObserver {
    public:
-    explicit EditorBubbleTracker(TabSlotController* tab_slot_controller);
+    explicit EditorBubbleTracker(TabSlotController& tab_slot_controller);
     ~EditorBubbleTracker() override;
 
     void Opened(views::Widget* bubble_widget);
@@ -111,7 +112,7 @@ class TabGroupHeader : public TabSlotView,
     raw_ptr<views::Widget> widget_;
     // Outlives this because it's a dependency inversion interface for the
     // header's parent View.
-    raw_ptr<TabSlotController> tab_slot_controller_;
+    raw_ref<TabSlotController> tab_slot_controller_;
   };
 
   EditorBubbleTracker editor_bubble_tracker_;

@@ -85,12 +85,10 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 
 }  // namespace
 
-TabGroupHeader::TabGroupHeader(TabSlotController* tab_slot_controller,
+TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
                                const tab_groups::TabGroupId& group)
     : tab_slot_controller_(tab_slot_controller),
       editor_bubble_tracker_(tab_slot_controller) {
-  DCHECK(tab_slot_controller);
-
   set_group(group);
   set_context_menu_controller(this);
 
@@ -515,7 +513,7 @@ ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
 END_METADATA
 
 TabGroupHeader::EditorBubbleTracker::EditorBubbleTracker(
-    TabSlotController* tab_slot_controller)
+    TabSlotController& tab_slot_controller)
     : tab_slot_controller_(tab_slot_controller) {}
 
 TabGroupHeader::EditorBubbleTracker::~EditorBubbleTracker() {

@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -450,10 +451,10 @@ class TabStrip : public views::View,
 
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
 
-  raw_ptr<TabDragContextImpl> drag_context_;
+  raw_ref<TabDragContextImpl> drag_context_;
 
   // The View parent for the tabs and the various group views.
-  raw_ptr<TabContainer> tab_container_;
+  raw_ref<TabContainer> tab_container_;
 
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;

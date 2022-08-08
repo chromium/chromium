@@ -571,7 +571,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       bounds_animator_.AnimateViewTo(
           view, ideal_bounds,
           std::make_unique<ResetDraggingStateDelegate>(
-              tab_strip_->tab_container_, view));
+              *tab_strip_->tab_container_, *view));
     }
   }
 
@@ -653,8 +653,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   // |tab_container_|.
   class ResetDraggingStateDelegate : public gfx::AnimationDelegate {
    public:
-    ResetDraggingStateDelegate(TabContainer* tab_container,
-                               TabSlotView* slot_view)
+    ResetDraggingStateDelegate(TabContainer& tab_container,
+                               TabSlotView& slot_view)
         : tab_container_(tab_container), slot_view_(slot_view) {
       slot_view_->set_animating(true);
     }
@@ -664,14 +664,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     ~ResetDraggingStateDelegate() override = default;
 
     void AnimationProgressed(const gfx::Animation* animation) override {
-      tab_container_->OnTabSlotAnimationProgressed(slot_view_);
+      tab_container_->OnTabSlotAnimationProgressed(&*slot_view_);
     }
 
     void AnimationEnded(const gfx::Animation* animation) override {
       AnimationProgressed(animation);
       slot_view_->set_animating(false);
       slot_view_->set_dragging(false);
-      tab_container_->StoppedDraggingView(slot_view_);
+      tab_container_->StoppedDraggingView(&*slot_view_);
     }
 
     void AnimationCanceled(const gfx::Animation* animation) override {
@@ -679,8 +679,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
 
    private:
-    const raw_ptr<TabContainer> tab_container_;
-    const raw_ptr<TabSlotView> slot_view_;
+    const raw_ref<TabContainer> tab_container_;
+    const raw_ref<TabSlotView> slot_view_;
   };
 
   gfx::Rect ideal_bounds(int i) const { return tab_strip_->ideal_bounds(i); }
@@ -887,12 +887,12 @@ END_METADATA
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
-      drag_context_(AddChildView(std::make_unique<TabDragContextImpl>(this))),
-      tab_container_(AddChildViewAt(
-          std::make_unique<TabContainerImpl>(this,
+      drag_context_(*AddChildView(std::make_unique<TabDragContextImpl>(this))),
+      tab_container_(*AddChildViewAt(
+          std::make_unique<TabContainerImpl>(*this,
                                              hover_card_controller_.get(),
-                                             drag_context_.get(),
-                                             this,
+                                             &*drag_context_,
+                                             *this,
                                              this),
           0)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
@@ -917,8 +917,8 @@ TabStrip::~TabStrip() {
   // |tab_container_|'s tabs may call back to us or to |drag_context_| from
   // their destructors. Delete them first so that if they call back we aren't in
   // a weird state.
-  RemoveChildViewT(tab_container_);
-  RemoveChildViewT(drag_context_);
+  RemoveChildViewT(&*tab_container_);
+  RemoveChildViewT(&*drag_context_);
 
   CHECK(!IsInObserverList());
 }
@@ -1319,7 +1319,7 @@ int TabStrip::GetModelCount() const {
 }
 
 TabDragContext* TabStrip::GetDragContext() {
-  return drag_context_.get();
+  return &*drag_context_;
 }
 
 int TabStrip::GetPinnedTabCount() const {
@@ -1809,7 +1809,7 @@ const Browser* TabStrip::GetBrowser() const {
 views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
   // We can only reach here if SetAvailableWidthCallback() was never called,
   // e.g. if tab scrolling is disabled. Defer to our parent.
-  DCHECK(child == tab_container_);
+  DCHECK(child == &*tab_container_);
   return parent()->GetAvailableSize(this);
 }
 
@@ -1901,7 +1901,7 @@ void TabStrip::Init() {
     // With tab scrolling enabled, we instead ignore the size of our container
     // and simply match TabContainer's size unconditionally.
     SetLayoutManager(std::make_unique<views::FillLayout>())
-        ->SetChildViewIgnoredByLayout(drag_context_, true);
+        ->SetChildViewIgnoredByLayout(&*drag_context_, true);
   }
 }
 

@@ -66,7 +66,7 @@ struct TabStripLayoutHelper::TabSlot {
 };
 
 TabStripLayoutHelper::TabStripLayoutHelper(
-    const TabContainerController* controller,
+    const TabContainerController& controller,
     GetTabsCallback get_tabs_callback)
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),

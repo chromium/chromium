@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -26,7 +27,7 @@ class TabGroupViews {
   // views are not destroyed before |this|.
   TabGroupViews(views::View* container_view,
                 views::View* drag_container_view,
-                TabSlotController* tab_slot_controller,
+                TabSlotController& tab_slot_controller,
                 const tab_groups::TabGroupId& group);
 
   // Destroys the views added during the constructor.
@@ -61,7 +62,7 @@ class TabGroupViews {
   SkColor GetGroupBackgroundColor() const;
 
  private:
-  const raw_ptr<TabSlotController> tab_slot_controller_;
+  const raw_ref<TabSlotController> tab_slot_controller_;
   const tab_groups::TabGroupId group_;
   raw_ptr<TabGroupHeader> header_;
   raw_ptr<TabGroupHighlight> highlight_;
