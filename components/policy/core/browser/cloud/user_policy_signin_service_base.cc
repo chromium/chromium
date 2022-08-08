@@ -76,15 +76,17 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     DCHECK(client->is_registered());
     DCHECK(!manager->core()->client());
     InitializeUserCloudPolicyManager(account_id, std::move(client));
+    // `UserCloudPolicyManager` will initiate a policy fetch right after
+    // initialization. Invoke `callback` after the policy is fetched.
+    policy_fetch_callbacks().AddUnsafe(std::move(callback));
+    return;
   }
-
-  DCHECK(manager->core()->client());
 
   if (!manager->IsClientRegistered()) {
     // The manager already has a client but it's still registering.
     // `UserCloudPolicyManager` will initiate a policy fetch when the client
     // registration completes. Invoke `callback` after the policy is fetched.
-    policy_fetch_callbacks_.AddUnsafe(std::move(callback));
+    policy_fetch_callbacks().AddUnsafe(std::move(callback));
     return;
   }
 
@@ -127,12 +129,23 @@ void UserPolicySigninServiceBase::Shutdown() {
 void UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown() {
   registration_helper_.reset();
   registration_helper_for_temporary_client_.reset();
-  policy_fetch_callbacks_.Notify(/*success=*/false);
+  // Don't run the callbacks to be consistent with
+  // `CloudPolicyService::RefreshPolicy()` behavior during shutdown.
+  policy_fetch_callbacks_.reset();
   UserCloudPolicyManager* manager = policy_manager();
   if (manager && manager->core()->client())
     manager->core()->client()->RemoveObserver(this);
   if (manager && manager->core()->service())
     manager->core()->service()->RemoveObserver(this);
+}
+
+base::OnceCallbackList<void(bool)>&
+UserPolicySigninServiceBase::policy_fetch_callbacks() {
+  if (!policy_fetch_callbacks_) {
+    policy_fetch_callbacks_ =
+        std::make_unique<base::OnceCallbackList<void(bool)>>();
+  }
+  return *policy_fetch_callbacks_;
 }
 
 std::unique_ptr<CloudPolicyClient>
@@ -349,7 +362,7 @@ void UserPolicySigninServiceBase::
 }
 
 void UserPolicySigninServiceBase::OnPolicyRefreshed(bool success) {
-  policy_fetch_callbacks_.Notify(success);
+  policy_fetch_callbacks().Notify(success);
 }
 
 void UserPolicySigninServiceBase::ProhibitSignoutIfNeeded() {}

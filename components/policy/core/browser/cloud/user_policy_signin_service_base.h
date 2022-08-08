@@ -172,6 +172,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   }
 
  private:
+  // A getter for `policy_fetch_callbacks_` that constructs a new instance if
+  // it's null.
+  base::OnceCallbackList<void(bool)>& policy_fetch_callbacks();
+
   // Returns a CloudPolicyClient to perform a registration with the DM server,
   // or NULL if |username| shouldn't register for policy management.
   std::unique_ptr<CloudPolicyClient> CreateClientForRegistrationOnly(
@@ -209,7 +213,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
 
   // Callbacks to invoke upon policy fetch.
-  base::OnceCallbackList<void(bool)> policy_fetch_callbacks_;
+  std::unique_ptr<base::OnceCallbackList<void(bool)>> policy_fetch_callbacks_;
 
   // Helper for registering the client to DMServer to get a DM token using a
   // cloud policy client. When there is an instance of |registration_helper_|,
