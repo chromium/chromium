@@ -724,6 +724,10 @@ source_set("app_service_browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:lacros" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

@@ -203,6 +203,12 @@ void SubscriberCrosapi::SetSupportedLinksPreference(const std::string& app_id) {
   proxy_->SetSupportedLinksPreference(app_id);
 }
 
+void SubscriberCrosapi::UninstallSilently(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source) {
+  proxy_->UninstallSilently(app_id, uninstall_source);
+}
+
 void SubscriberCrosapi::OnSubscriberDisconnected() {
   subscriber_.reset();
 }

@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -50,6 +51,11 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -240,6 +246,18 @@ class PreinstalledWebAppMigrationBrowserTest
         ->FlushMojoCallsForTesting();
   }
 
+  bool IsUninstallSilentlySupported() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    DCHECK(IsWebAppsCrosapiEnabled());
+    return chromeos::LacrosService::Get()->GetInterfaceVersion(
+               crosapi::mojom::AppServiceProxy::Uuid_) >=
+           int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                   kUninstallSilentlyMinVersion};
+#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
+    return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
  protected:
   const char* uninstall_and_replace_ = kExtensionId;
   base::test::ScopedFeatureList features_;
@@ -248,9 +266,11 @@ class PreinstalledWebAppMigrationBrowserTest
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigrateRevertMigrate) {
+  if (!IsUninstallSilentlySupported())
+    GTEST_SKIP() << "Unsupported Ash version.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Grab handles to the app list to update shelf/list state for apps later on.
   app_list::AppListSyncableService* app_list_syncable_service =
@@ -385,6 +405,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigratePreferences) {
+  if (!IsUninstallSilentlySupported())
+    GTEST_SKIP() << "Unsupported Ash version.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableService* app_list_syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile());
@@ -501,6 +524,9 @@ class PreinstalledWebAppMigratePlatformAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
                        MigratePlatformAppPreferences) {
+  if (!IsUninstallSilentlySupported())
+    GTEST_SKIP() << "Unsupported Ash version.";
+
   // Install platform app to migrate.
   {
     AppRegistrationWaiter extension_app_registration_waiter(profile(),
@@ -531,7 +557,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
           GetWebAppId()),
       UserDisplayMode::kStandalone);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        UserUninstalledExtensionApp) {
@@ -643,11 +668,15 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests the migration from an extension-app to a preinstalled web app provided
 // by the preinstalled apps (rather than an external config).
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
+  if (!IsUninstallSilentlySupported())
+    GTEST_SKIP() << "Unsupported Ash version.";
+
   ScopedTestingPreinstalledAppData preinstalled_apps;
   ExternalInstallOptions options(GetWebAppUrl(), UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
@@ -725,6 +754,5 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     }
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

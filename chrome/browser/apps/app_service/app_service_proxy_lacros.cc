@@ -310,7 +310,21 @@ void AppServiceProxyLacros::Uninstall(
 void AppServiceProxyLacros::UninstallSilently(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
-  NOTIMPLEMENTED();
+  if (!remote_crosapi_app_service_proxy_) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kUninstallSilentlyMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support UninstallSilently().";
+    return;
+  }
+
+  remote_crosapi_app_service_proxy_->UninstallSilently(app_id,
+                                                       uninstall_source);
 }
 
 void AppServiceProxyLacros::StopApp(const std::string& app_id) {
