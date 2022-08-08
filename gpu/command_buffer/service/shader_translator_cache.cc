@@ -32,7 +32,7 @@ scoped_refptr<ShaderTranslator> ShaderTranslatorCache::GetTranslator(
     ShShaderSpec shader_spec,
     const ShBuiltInResources* resources,
     ShShaderOutput shader_output_language,
-    ShCompileOptions driver_bug_workarounds) {
+    const ShCompileOptions& driver_bug_workarounds) {
   ShaderTranslatorInitParams params(shader_type, shader_spec, *resources,
                                     shader_output_language,
                                     driver_bug_workarounds);

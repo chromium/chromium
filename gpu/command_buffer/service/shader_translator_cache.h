@@ -44,7 +44,7 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
       ShShaderSpec shader_spec,
       const ShBuiltInResources* resources,
       ShShaderOutput shader_output_language,
-      ShCompileOptions driver_bug_workarounds);
+      const ShCompileOptions& driver_bug_workarounds);
 
  private:
   friend class ShaderTranslatorCacheTest_InitParamComparable_Test;
@@ -61,7 +61,7 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
                                ShShaderSpec shader_spec,
                                const ShBuiltInResources& resources,
                                ShShaderOutput shader_output_language,
-                               ShCompileOptions driver_bug_workarounds) {
+                               const ShCompileOptions& driver_bug_workarounds) {
       memset(this, 0, sizeof(*this));
       this->shader_type = shader_type;
       this->shader_spec = shader_spec;

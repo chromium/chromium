@@ -23,7 +23,7 @@ TEST(ShaderTranslatorCacheTest, InitParamComparable) {
 
   EXPECT_TRUE(memcmp(&a_resources, &b_resources, sizeof(a_resources)) == 0);
 
-  ShCompileOptions driver_bug_workarounds = 0;
+  ShCompileOptions driver_bug_workarounds{};
 
   char a_storage[sizeof(ShaderTranslatorCache::ShaderTranslatorInitParams)];
   memset(a_storage, 55, sizeof(a_storage));

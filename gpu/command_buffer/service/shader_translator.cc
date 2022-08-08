@@ -141,14 +141,13 @@ ShaderTranslator::DestructionObserver::DestructionObserver() = default;
 
 ShaderTranslator::DestructionObserver::~DestructionObserver() = default;
 
-ShaderTranslator::ShaderTranslator()
-    : compiler_(nullptr), compile_options_(0) {}
+ShaderTranslator::ShaderTranslator() : compiler_(nullptr), compile_options_{} {}
 
 bool ShaderTranslator::Init(GLenum shader_type,
                             ShShaderSpec shader_spec,
                             const ShBuiltInResources* resources,
                             ShShaderOutput shader_output_language,
-                            ShCompileOptions driver_bug_workarounds,
+                            const ShCompileOptions& driver_bug_workarounds,
                             bool gl_shader_interm_output) {
   // Make sure Init is called only once.
   DCHECK(compiler_ == nullptr);
@@ -166,14 +165,15 @@ bool ShaderTranslator::Init(GLenum shader_type,
                                       shader_output_language, resources);
   }
 
-  compile_options_ =
+  compile_options_ = driver_bug_workarounds;
+#if ANGLE_SH_VERSION < 300
+  compile_options_ |=
       SH_OBJECT_CODE | SH_VARIABLES | SH_ENFORCE_PACKING_RESTRICTIONS |
       SH_LIMIT_EXPRESSION_COMPLEXITY | SH_LIMIT_CALL_STACK_DEPTH |
       SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_EMULATE_GL_DRAW_ID |
       SH_EMULATE_GL_BASE_VERTEX_BASE_INSTANCE;
   if (gl_shader_interm_output)
     compile_options_ |= SH_INTERMEDIATE_TREE;
-  compile_options_ |= driver_bug_workarounds;
   switch (shader_spec) {
     case SH_WEBGL_SPEC:
     case SH_WEBGL2_SPEC:
@@ -182,19 +182,50 @@ bool ShaderTranslator::Init(GLenum shader_type,
     default:
       break;
   }
+  std::string compile_options_string =
+      base::NumberToString(GetCompileOptions());
+#else
+  compile_options_.objectCode = true;
+  compile_options_.variables = true;
+  compile_options_.enforcePackingRestrictions = true;
+  compile_options_.limitExpressionComplexity = true;
+  compile_options_.limitCallStackDepth = true;
+  compile_options_.clampIndirectArrayBounds = true;
+  compile_options_.emulateGLDrawID = true;
+  compile_options_.emulateGLBaseVertexBaseInstance = true;
+
+  std::string compile_options_string =
+      "objectCode:variables:enforcePackingRestrictions:"
+      "limitExpressionComplexity:limitCallStackDepth:clampIndirectArrayBounds:"
+      "emulateGLDrawID:emulateGLBaseVertexBaseInstance";
+
+  if (gl_shader_interm_output) {
+    compile_options_.intermediateTree = true;
+    compile_options_string += ":intermediateTree";
+  }
+
+  switch (shader_spec) {
+    case SH_WEBGL_SPEC:
+    case SH_WEBGL2_SPEC:
+      compile_options_.initOutputVariables = true;
+      compile_options_string += ":initOutputVariables";
+      break;
+    default:
+      break;
+  }
+#endif
 
   if (compiler_) {
     options_affecting_compilation_ =
         base::MakeRefCounted<OptionsAffectingCompilationString>(
-            std::string(":CompileOptions:" +
-                        base::NumberToString(GetCompileOptions())) +
+            ":CompileOptions:" + compile_options_string +
             sh::GetBuiltInResourcesString(compiler_));
   }
 
   return compiler_ != nullptr;
 }
 
-ShCompileOptions ShaderTranslator::GetCompileOptions() const {
+const ShCompileOptions& ShaderTranslator::GetCompileOptions() const {
   return compile_options_;
 }
 

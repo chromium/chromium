@@ -32,12 +32,10 @@ class ShaderTranslatorTest : public testing::Test {
 
     ASSERT_TRUE(vertex_translator_->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
                                          &resources, shader_output_language_,
-                                         static_cast<ShCompileOptions>(0),
-                                         false));
+                                         {}, false));
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC,
                                            &resources, shader_output_language_,
-                                           static_cast<ShCompileOptions>(0),
-                                           false));
+                                           {}, false));
   }
   void TearDown() override {
     vertex_translator_ = nullptr;
@@ -71,12 +69,10 @@ class ES3ShaderTranslatorTest : public testing::Test {
 
     ASSERT_TRUE(vertex_translator_->Init(GL_VERTEX_SHADER, SH_GLES3_SPEC,
                                          &resources, shader_output_language_,
-                                         static_cast<ShCompileOptions>(0),
-                                         false));
+                                         {}, false));
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES3_SPEC,
                                            &resources, shader_output_language_,
-                                           static_cast<ShCompileOptions>(0),
-                                           false));
+                                           {}, false));
   }
   void TearDown() override {
     vertex_translator_ = nullptr;
@@ -405,18 +401,14 @@ TEST_F(ShaderTranslatorTest, OptionsString) {
   sh::InitBuiltInResources(&resources);
 
   ASSERT_TRUE(translator_1->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
-                                 SH_GLSL_150_CORE_OUTPUT,
-                                 static_cast<ShCompileOptions>(0),
-                                 false));
+                                 SH_GLSL_150_CORE_OUTPUT, {}, false));
   ASSERT_TRUE(translator_2->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT,
                                  SH_INIT_OUTPUT_VARIABLES,
                                  false));
   resources.EXT_draw_buffers = 1;
   ASSERT_TRUE(translator_3->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
-                                 SH_GLSL_150_CORE_OUTPUT,
-                                 static_cast<ShCompileOptions>(0),
-                                 false));
+                                 SH_GLSL_150_CORE_OUTPUT, {}, false));
 
   std::string options_1(
       translator_1->GetStringForOptionsThatWouldAffectCompilation()->data);
@@ -443,7 +435,12 @@ class ShaderTranslatorOutputVersionTest
 TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
+#if ANGLE_SH_VERSION < 300
   ShCompileOptions compile_options = SH_OBJECT_CODE;
+#else
+  ShCompileOptions compile_options{};
+  compile_options.objectCode = true;
+#endif
   ShShaderOutput shader_output_language = SH_GLSL_COMPATIBILITY_OUTPUT;
   scoped_refptr<ShaderTranslator> vertex_translator = new ShaderTranslator();
   ASSERT_TRUE(vertex_translator->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
@@ -512,7 +509,12 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
   scoped_refptr<ShaderTranslator> translator = new ShaderTranslator();
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
+#if ANGLE_SH_VERSION < 300
   ShCompileOptions compile_options = SH_OBJECT_CODE;
+#else
+  ShCompileOptions compile_options{};
+  compile_options.objectCode = true;
+#endif
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(
           output_context_version);
