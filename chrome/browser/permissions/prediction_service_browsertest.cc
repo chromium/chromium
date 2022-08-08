@@ -42,10 +42,17 @@ namespace permissions {
 class PredictionServiceBrowserTest : public InProcessBrowserTest {
  public:
   PredictionServiceBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPermissionOnDeviceNotificationPredictions,
-         optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kRemoteOptimizationGuideFetching},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kPermissionOnDeviceNotificationPredictions,
+             {{feature_params::
+                   kPermissionOnDeviceNotificationPredictionsHoldbackChance
+                       .name,
+               "0"}}},
+            {optimization_guide::features::kOptimizationHints, {}},
+            {optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {}},
+        },
         {});
   }
 
