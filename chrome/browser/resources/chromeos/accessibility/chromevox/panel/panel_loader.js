@@ -9,7 +9,6 @@
 goog.require('AncestryRecoveryStrategy');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
-goog.require('AutomationUtil');
 goog.require('EarconDescription');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');

@@ -6,6 +6,7 @@
  * @fileoverview Calculates the menu items for the node menus in the ChromeVox
  * panel.
  */
+import {AutomationUtil} from '../../../common/automation_util.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';

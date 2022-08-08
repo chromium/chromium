@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles page loading sounds based on automation events.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';

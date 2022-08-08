@@ -40,6 +40,8 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         ['Cursor', 'CursorMovement', 'CursorUnit', 'WrappingCursor'],
         '/common/cursors/cursor.js');
+
+    await importModule('AutomationUtil', '/common/automation_util.js');
     // Various aliases
     window.CHARACTER = CursorUnit.CHARACTER;
     window.WORD = CursorUnit.WORD;

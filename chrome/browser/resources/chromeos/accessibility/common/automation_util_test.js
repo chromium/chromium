@@ -18,6 +18,7 @@ AccessibilityExtensionAutomationUtilE2ETest =
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('RectUtil', '/common/rect_util.js');
+    await importModule('AutomationUtil', '/common/automation_util.js');
 
     window.Dir = constants.Dir;
     window.RoleType = chrome.automation.RoleType;

@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {Cursor, CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {EventGenerator} from '../../common/event_generator.js';

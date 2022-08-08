@@ -6,18 +6,10 @@
  * @fileoverview ChromeVox utilities for the automation extension API.
  */
 
-goog.provide('AutomationUtil');
-
-goog.require('AutomationPredicate');
-goog.require('AutomationTreeWalker');
-goog.require('constants');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 
-AutomationUtil = class {
+export class AutomationUtil {
   constructor() {}
 
   /**
@@ -25,7 +17,7 @@ AutomationUtil = class {
    * traversal.
    * @param {AutomationNode} cur Node to begin the search
    *     from.
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {AutomationPredicate.Unary} pred A predicate to apply
    *     to a candidate node.
    * @return {AutomationNode}
@@ -39,13 +31,14 @@ AutomationUtil = class {
       return cur;
     }
 
-    let child = dir === Dir.BACKWARD ? cur.lastChild : cur.firstChild;
+    let child = dir === constants.Dir.BACKWARD ? cur.lastChild : cur.firstChild;
     while (child) {
       const ret = AutomationUtil.findNodePre(child, dir, pred);
       if (ret) {
         return ret;
       }
-      child = dir === Dir.BACKWARD ? child.previousSibling : child.nextSibling;
+      child = dir === constants.Dir.BACKWARD ? child.previousSibling :
+                                               child.nextSibling;
     }
     return null;
   }
@@ -55,7 +48,7 @@ AutomationUtil = class {
    * traversal.
    * @param {AutomationNode} cur Node to begin the search
    *     from.
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {AutomationPredicate.Unary} pred A predicate to apply
    *     to a candidate node.
    * @return {AutomationNode}
@@ -65,13 +58,14 @@ AutomationUtil = class {
       return null;
     }
 
-    let child = dir === Dir.BACKWARD ? cur.lastChild : cur.firstChild;
+    let child = dir === constants.Dir.BACKWARD ? cur.lastChild : cur.firstChild;
     while (child) {
       const ret = AutomationUtil.findNodePost(child, dir, pred);
       if (ret) {
         return ret;
       }
-      child = dir === Dir.BACKWARD ? child.previousSibling : child.nextSibling;
+      child = dir === constants.Dir.BACKWARD ? child.previousSibling :
+                                               child.nextSibling;
     }
 
     if (pred(cur) && !AutomationPredicate.shouldIgnoreNode(cur)) {
@@ -92,7 +86,7 @@ AutomationUtil = class {
    * from F.
    * @param {!AutomationNode} cur Node to begin the search
    *     from.
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {AutomationPredicate.Unary} pred A predicate to apply
    *     to a candidate node.
    * @param {AutomationTreeWalkerRestriction=} opt_restrictions |leaf|, |root|,
@@ -122,7 +116,7 @@ AutomationUtil = class {
    * from F.
    * @param {!AutomationNode} cur Node to begin the search
    *     from.
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {AutomationPredicate.Unary} pred A predicate to apply
    *     to a candidate node.
    * @param {AutomationTreeWalkerRestriction=} opt_restrictions |leaf|, |root|,
@@ -152,7 +146,7 @@ AutomationUtil = class {
    * |pred| to a_i and a_(i - 1) until |pred| is satisfied.  Returns a_(i - 1)
    * or a_i (depending on opt_before) or null if no match was found.
    * @param {!AutomationNode} cur
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {AutomationPredicate.Binary} pred
    * @param {boolean=} opt_before True to return a_(i - 1); a_i otherwise.
    *                              Defaults to false.
@@ -238,16 +232,16 @@ AutomationUtil = class {
    * document.
    * @param {!AutomationNode} nodeA
    * @param {!AutomationNode} nodeB
-   * @return {Dir}
+   * @return {constants.Dir}
    */
   static getDirection(nodeA, nodeB) {
     const ancestorsA = AutomationUtil.getAncestors(nodeA);
     const ancestorsB = AutomationUtil.getAncestors(nodeB);
     const divergence = AutomationUtil.getDivergence(ancestorsA, ancestorsB);
 
-    // Default to Dir.FORWARD.
+    // Default to constants.Dir.FORWARD.
     if (divergence === -1) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     const divA = ancestorsA[divergence];
@@ -258,20 +252,20 @@ AutomationUtil = class {
     // nodeB. nodeA > nodeB if nodeB is a descendant of nodeA.
 
     if (!divA) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
     if (!divB) {
-      return Dir.BACKWARD;
+      return constants.Dir.BACKWARD;
     }
     if (divA.parent === nodeB) {
-      return Dir.BACKWARD;
+      return constants.Dir.BACKWARD;
     }
     if (divB.parent === nodeA) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
-    return divA.indexInParent <= divB.indexInParent ? Dir.FORWARD :
-                                                      Dir.BACKWARD;
+    return divA.indexInParent <= divB.indexInParent ? constants.Dir.FORWARD :
+                                                      constants.Dir.BACKWARD;
   }
 
   /**
@@ -453,16 +447,17 @@ AutomationUtil = class {
       if (shallowest) {
         return shallowest;
       }
-    } while (node = AutomationUtil.findNextNode(node, Dir.BACKWARD, pred));
+    } while (
+        node = AutomationUtil.findNextNode(node, constants.Dir.BACKWARD, pred));
 
     return null;
   }
-};
+}
 
 /**
  * @param {!AutomationNode} cur Node to begin the search
  *     from.
- * @param {Dir} dir
+ * @param {constants.Dir} dir
  * @param {AutomationPredicate.Unary} pred A predicate to apply
  *     to a candidate node.
  * @param {AutomationTreeWalkerRestriction=} opt_restrictions |leaf|, |root|,
@@ -495,5 +490,3 @@ function createWalker(cur, dir, pred, opt_restrictions) {
 
   return new AutomationTreeWalker(cur, dir, restrictions);
 }
-
-});  // goog.scope

@@ -109,6 +109,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
         ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
         '/chromevox/background/output/output_types.js');
     await importModule('Msgs', '/chromevox/common/msgs.js');
+    await importModule('AutomationUtil', '/common/automation_util.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();

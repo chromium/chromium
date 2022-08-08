@@ -15,6 +15,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
+    await importModule('AutomationUtil', '/common/automation_util.js');
     await importModule(
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
+import {AutomationUtil} from '../../../common/automation_util.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';

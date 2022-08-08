@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from ChromeVox's current range.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {Msgs} from '../common/msgs.js';

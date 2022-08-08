@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {WrappingCursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';

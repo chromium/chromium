@@ -10,7 +10,6 @@ goog.require('AbstractEarcons');
 goog.require('AncestryRecoveryStrategy');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
-goog.require('AutomationUtil');
 goog.require('JaPhoneticData');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');

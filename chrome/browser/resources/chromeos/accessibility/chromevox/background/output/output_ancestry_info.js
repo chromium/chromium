@@ -6,6 +6,8 @@
  * @fileoverview Provides a class which computes various types of ancestor
  * chains given the current node.
  */
+import {AutomationUtil} from '../../../common/automation_util.js';
+
 import {OutputRoleInfo} from './output_role_info.js';
 import {OutputContextOrder} from './output_types.js';
 

@@ -8,6 +8,7 @@
  * (e.g. start/end offsets) get saved. Line: nodes/offsets at the beginning/end
  * of a line get saved.
  */
+import {AutomationUtil} from '../../../common/automation_util.js';
 import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {Spannable} from '../../common/spannable.js';

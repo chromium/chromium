@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutomationUtil} from '../common/automation_util.js';
+
 import {InputHandler} from './input_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {NodeNavigationUtils} from './node_navigation_utils.js';

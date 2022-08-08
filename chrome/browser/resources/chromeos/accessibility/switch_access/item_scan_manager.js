@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AutomationUtil} from '../common/automation_util.js';
 import {EventGenerator} from '../common/event_generator.js';
 import {RectUtil} from '../common/rect_util.js';
 

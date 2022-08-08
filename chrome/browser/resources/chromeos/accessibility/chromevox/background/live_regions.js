@@ -5,6 +5,7 @@
 /**
  * @fileoverview Implements support for live regions in ChromeVox Next.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 
 import {ChromeVoxState} from './chromevox_state.js';

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles auto scrolling on navigation.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 

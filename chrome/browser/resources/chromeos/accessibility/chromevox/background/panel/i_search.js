@@ -5,6 +5,7 @@
 /**
  * @fileoverview The logic behind incremental search.
  */
+import {AutomationUtil} from '../../../common/automation_util.js';
 import {Cursor} from '../../../common/cursors/cursor.js';
 
 import {ISearchHandler} from './i_search_handler.js';
