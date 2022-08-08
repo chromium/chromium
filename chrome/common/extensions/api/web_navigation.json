@@ -75,12 +75,12 @@
                   "nodoc": true
                 },
                 "documentLifecycle": {
-                  "type": "string",
+                  "$ref": "extensionTypes.DocumentLifecycle",
                   "description": "The lifecycle the document is in.",
                   "nodoc": true
                 },
                 "frameType": {
-                  "type": "string",
+                  "$ref": "extensionTypes.FrameType",
                   "description": "The type of frame the navigation occurred in.",
                   "nodoc": true
                 }
@@ -146,12 +146,12 @@
                     "nodoc": true
                   },
                   "documentLifecycle": {
-                    "type": "string",
+                    "$ref": "extensionTypes.DocumentLifecycle",
                     "description": "The lifecycle the document is in.",
                     "nodoc": true
                   },
                   "frameType": {
-                    "type": "string",
+                    "$ref": "extensionTypes.FrameType",
                     "description": "The type of frame the navigation occurred in.",
                     "nodoc": true
                   }
@@ -191,8 +191,8 @@
               "parentFrameId": {"type": "integer", "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."},
               "timeStamp": {"type": "number", "description": "The time when the browser was about to start the navigation, in milliseconds since the epoch."},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -224,8 +224,8 @@
               "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -255,8 +255,8 @@
               "timeStamp": {"type": "number", "description": "The time when the page's DOM was fully constructed, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -286,8 +286,8 @@
               "timeStamp": {"type": "number", "description": "The time when the document finished loading, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -322,8 +322,8 @@
               "timeStamp": {"type": "number", "description": "The time when the error occurred, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -382,8 +382,8 @@
               "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]
@@ -431,8 +431,8 @@
               "timeStamp": {"type": "number", "description": "The time when the navigation was committed, in milliseconds since the epoch."},
               "documentId": {"type": "string", "description": "A UUID of the document loaded.", "nodoc": true},
               "parentDocumentId": {"type": "string", "optional": true, "description": "A UUID of the parent document owning this frame. This is not set if there is no parent.", "nodoc": true},
-              "documentLifecycle": {"type": "string", "description": "The lifecycle the document is in.","nodoc": true},
-              "frameType": {"type": "string", "description": "The type of frame the navigation occurred in.","nodoc": true}
+              "documentLifecycle": {"$ref": "extensionTypes.DocumentLifecycle","description": "The lifecycle the document is in.","nodoc": true},
+              "frameType": {"$ref": "extensionTypes.FrameType","description": "The type of frame the navigation occurred in.","nodoc": true}
             }
           }
         ]

@@ -542,9 +542,9 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
         ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
   }
   frame_details.frame_type =
-      ToString(ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+      ExtensionApiFrameIdMap::GetFrameType(render_frame_host);
   frame_details.document_lifecycle =
-      ToString(ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host));
+      ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host);
 
   return RespondNow(ArgumentList(GetFrame::Results::Create(frame_details)));
 }
@@ -611,11 +611,10 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
                   ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host)
                       .ToString());
             }
-            frame.frame_type = ToString(
-                ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+            frame.frame_type =
+                ExtensionApiFrameIdMap::GetFrameType(render_frame_host);
             frame.document_lifecycle =
-                ToString(ExtensionApiFrameIdMap::GetDocumentLifecycle(
-                    render_frame_host));
+                ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host);
             frame.process_id = render_frame_host->GetProcess()->GetID();
             frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
             result_list.push_back(std::move(frame));

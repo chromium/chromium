@@ -960,6 +960,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   extensions::api::web_navigation::OnCommitted::Details details;
   details.transition_type =
       extensions::api::web_navigation::TRANSITION_TYPE_TYPED;
+  details.frame_type = api::extension_types::FRAME_TYPE_OUTERMOST_FRAME;
+  details.document_lifecycle = api::extension_types::DOCUMENT_LIFECYCLE_ACTIVE;
 
   // Build a dummy onCommited event to dispatch.
   auto on_committed_event = std::make_unique<Event>(
