@@ -251,6 +251,7 @@ class AccountSelectionMediator {
                         ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
                         : null);
 
+        mBottomSheetContent.computeAndUpdateAccountListHeight();
         showContent();
         mBottomSheetContent.focusForAccessibility(focusItem);
     }

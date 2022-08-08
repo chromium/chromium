@@ -14,13 +14,18 @@
 
     <include layout="@layout/account_selection_header_item"
         android:id="@+id/header_view_item" />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/sheet_item_list"
+    <FrameLayout
+        android:id="@+id/sheet_item_list_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:divider="@null"
-        tools:listitem="@layout/account_selection_account_item"/>
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sheet_item_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:divider="@null"
+            tools:listitem="@layout/account_selection_account_item"/>
+      </FrameLayout>
 
     <include layout="@layout/account_selection_continue_button"
         android:id="@+id/account_selection_continue_btn"
