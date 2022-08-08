@@ -462,13 +462,13 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// TODO(crbug.com/1263420): Flaky on Linux Tests(dbg).
+// TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
 GEN('#if BUILDFLAG(IS_LINUX)');
 GEN('#define MAYBE_PrivacyPageTests DISABLED_PrivacyPageTests');
 GEN('#else');
 GEN('#define MAYBE_PrivacyPageTests PrivacyPageTests');
 GEN('#endif');
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacyPageTests', function() {
+TEST_F('CrSettingsPrivacyPageTest', 'MAYBE_PrivacyPageTests', function() {
   runMochaSuite('PrivacyPage');
 });
 
