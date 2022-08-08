@@ -813,41 +813,26 @@ void ParseUsingBaseHeuristics(
   return;
 }
 
-// Helper to get the platform specific identifier by which autofill and password
-// manager refer to a field. The fuzzing infrastructure doed not run on iOS, so
-// the iOS specific parts of PasswordForm are also built on fuzzer enabled
-// platforms. See http://crbug.com/896594
-std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
-#if BUILDFLAG(IS_IOS)
-  return field.unique_id;
-#else
-  return field.name;
-#endif
-}
-
 // Set username and password fields in |password_form| based on
 // |significant_fields| .
 void SetFields(const SignificantFields& significant_fields,
                PasswordForm* password_form) {
   if (significant_fields.username) {
-    password_form->username_element =
-        GetPlatformSpecificIdentifier(*significant_fields.username);
+    password_form->username_element = significant_fields.username->name;
     password_form->username_value = GetFieldValue(*significant_fields.username);
     password_form->username_element_renderer_id =
         significant_fields.username->unique_renderer_id;
   }
 
   if (significant_fields.password) {
-    password_form->password_element =
-        GetPlatformSpecificIdentifier(*significant_fields.password);
+    password_form->password_element = significant_fields.password->name;
     password_form->password_value = GetFieldValue(*significant_fields.password);
     password_form->password_element_renderer_id =
         significant_fields.password->unique_renderer_id;
   }
 
   if (significant_fields.new_password) {
-    password_form->new_password_element =
-        GetPlatformSpecificIdentifier(*significant_fields.new_password);
+    password_form->new_password_element = significant_fields.new_password->name;
     password_form->new_password_value =
         GetFieldValue(*significant_fields.new_password);
     password_form->new_password_element_renderer_id =
@@ -856,8 +841,7 @@ void SetFields(const SignificantFields& significant_fields,
 
   if (significant_fields.confirmation_password) {
     password_form->confirmation_password_element =
-        GetPlatformSpecificIdentifier(
-            *significant_fields.confirmation_password);
+        significant_fields.confirmation_password->name;
     password_form->confirmation_password_element_renderer_id =
         significant_fields.confirmation_password->unique_renderer_id;
   }

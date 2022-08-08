@@ -129,9 +129,6 @@ FormPredictions ConvertToFormPredictions(int driver_id,
     field_predictions.back().type = server_type;
     field_predictions.back().may_use_prefilled_placeholder =
         field->may_use_prefilled_placeholder();
-#if BUILDFLAG(IS_IOS)
-    field_predictions.back().unique_id = field->unique_id;
-#endif
   }
 
   FormPredictions predictions;

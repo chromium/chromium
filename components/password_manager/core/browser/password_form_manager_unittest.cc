@@ -385,21 +385,6 @@ class PasswordFormManagerTest : public testing::Test,
     field.unique_renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
 
-// On iOS the unique_id member uniquely addresses this field in the DOM.
-// This is an ephemeral value which is not guaranteed to be stable across
-// page loads. It serves to allow a given field to be found during the
-// current navigation.
-// TODO(crbug.com/896689): Expand the logic/application of this to other
-// platforms and/or merge this concept with |unique_renderer_id|.
-#if BUILDFLAG(IS_IOS)
-    for (auto& f : observed_form_.fields) {
-      f.unique_id = f.id_attribute;
-    }
-    for (auto& f : observed_form_only_password_fields_.fields) {
-      f.unique_id = f.id_attribute;
-    }
-#endif
-
     submitted_form_ = observed_form_;
     submitted_form_.fields[kUsernameFieldIndex].value = u"user1";
     submitted_form_.fields[kPasswordFieldIndex].value = u"secret1";
@@ -1765,9 +1750,6 @@ TEST_P(PasswordFormManagerTest, FillForm) {
       form.fields[kUsernameFieldIndex].unique_renderer_id.value() += 1000;
       form.fields[kUsernameFieldIndex].name += u"1";
       form.fields[kUsernameFieldIndex].id_attribute += u"1";
-#if BUILDFLAG(IS_IOS)
-      form.fields[kUsernameFieldIndex].unique_id += u"1";
-#endif
       form.fields[kPasswordFieldIndex].unique_renderer_id.value() += 1000;
     }
 
@@ -2126,8 +2108,6 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   // Use |generated_password| different from value in field to test that the
   // generated password is saved.
   const std::u16string generated_password = u"gen_pw";
-  // Use different |unique_id| and |name| to test that |unique_id| is taken.
-  password_field.unique_id = password_field.name + u"1";
   FieldRendererId generation_element = password_field.unique_renderer_id;
 
   PasswordForm saved_form;

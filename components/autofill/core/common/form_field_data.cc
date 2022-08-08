@@ -234,14 +234,9 @@ auto IdentityTuple(const FormFieldData& f) {
   // uniquely identify the field as well.
   return std::tuple_cat(
       SimilarityTuple(f),
-      std::tie(
-// TODO(crbug.com/896689): On iOS the unique_id member uniquely addresses
-// this field in the DOM.
-#if BUILDFLAG(IS_IOS)
-          f.unique_id,
-#endif
-          f.autocomplete_attribute, f.placeholder, f.max_length, f.css_classes,
-          f.is_focusable, f.should_autocomplete, f.role, f.text_direction));
+      std::tie(f.autocomplete_attribute, f.placeholder, f.max_length,
+               f.css_classes, f.is_focusable, f.should_autocomplete, f.role,
+               f.text_direction));
 }
 
 }  // namespace

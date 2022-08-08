@@ -193,15 +193,14 @@ bool ExtractFormData(const base::Value& form_value,
 
 bool ExtractFormFieldData(const base::Value::Dict& field,
                           autofill::FormFieldData* field_data) {
-  const std::string *name, *identifier, *form_control_type;
+  const std::string* name;
+  const std::string* form_control_type;
   if (!(name = field.FindString("name")) ||
-      !(identifier = field.FindString("identifier")) ||
       !(form_control_type = field.FindString("form_control_type"))) {
     return false;
   }
 
   field_data->name = base::UTF8ToUTF16(*name);
-  field_data->unique_id = base::UTF8ToUTF16(*identifier);
   field_data->form_control_type = *form_control_type;
 
   const std::string* unique_renderer_id =

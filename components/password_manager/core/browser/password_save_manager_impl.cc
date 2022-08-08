@@ -63,16 +63,6 @@ PasswordForm PendingCredentialsForNewCredentials(
   return pending_credentials;
 }
 
-// Helper to get the platform specific identifier by which autofill and password
-// manager refer to a field. See http://crbug.com/896594
-std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
-#if BUILDFLAG(IS_IOS)
-  return field.unique_id;
-#else
-  return field.name;
-#endif
-}
-
 // Copies field properties masks from the form |from| to the form |to|.
 void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
   // Skip copying if the number of fields is different.
@@ -81,8 +71,7 @@ void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
 
   for (size_t i = 0; i < from.fields.size(); ++i) {
     to->fields[i].properties_mask =
-        GetPlatformSpecificIdentifier(to->fields[i]) ==
-                GetPlatformSpecificIdentifier(from.fields[i])
+        to->fields[i].name == from.fields[i].name
             ? from.fields[i].properties_mask
             : autofill::FieldPropertiesFlags::kErrorOccurred;
   }

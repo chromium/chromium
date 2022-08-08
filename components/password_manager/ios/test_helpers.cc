@@ -38,13 +38,11 @@ void SetPasswordFormFillData(const std::string& url,
   autofill::FormFieldData username;
   username.name = base::UTF8ToUTF16(username_field);
   username.unique_renderer_id = FieldRendererId(username_unique_id);
-  username.unique_id = base::UTF8ToUTF16(username_field);
   username.value = base::UTF8ToUTF16(username_value);
   form_data->username_field = username;
   autofill::FormFieldData password;
   password.name = base::UTF8ToUTF16(password_field);
   password.unique_renderer_id = FieldRendererId(password_unique_id);
-  password.unique_id = base::UTF8ToUTF16(password_field);
   password.value = base::UTF8ToUTF16(password_value);
   form_data->password_field = password;
   if (additional_username) {
@@ -108,7 +106,6 @@ autofill::FormData MakeSimpleFormData() {
   field.name_attribute = field.name;
   field.value = u"googleuser";
   field.form_control_type = "text";
-  field.unique_id = field.id_attribute;
   form_data.fields.push_back(field);
 
   field.name = u"Passwd";
@@ -116,7 +113,6 @@ autofill::FormData MakeSimpleFormData() {
   field.name_attribute = field.name;
   field.value = u"p4ssword";
   field.form_control_type = "password";
-  field.unique_id = field.id_attribute;
   form_data.fields.push_back(field);
 
   return form_data;

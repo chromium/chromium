@@ -147,10 +147,6 @@ autofill::FormData GenerateWithDataAccessor(
       }
     }
 
-#if BUILDFLAG(IS_IOS)
-    result.fields[i].unique_id =
-        result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
-#endif
     if (field_params[i].same_value_field &&
         first_field_with_same_value != static_cast<int>(i)) {
       result.fields[i].value = result.fields[first_field_with_same_value].value;

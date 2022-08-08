@@ -183,9 +183,6 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
       field.name = std::u16string(field_description.name);
     }
     field.name_attribute = field.name;
-#if BUILDFLAG(IS_IOS)
-    field.unique_id = StampUniqueSuffix(u"unique_id");
-#endif
     field.form_control_type = field_description.form_control_type;
     field.is_focusable = field_description.is_focusable;
     field.is_enabled = field_description.is_enabled;
@@ -215,9 +212,6 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     if (field_description.prediction.type != autofill::MAX_VALID_FIELD_TYPE) {
       predictions->fields.push_back(field_description.prediction);
       predictions->fields.back().renderer_id = renderer_id;
-#if BUILDFLAG(IS_IOS)
-      predictions->fields.back().unique_id = field.unique_id;
-#endif
     }
     if (field_description.predicted_username >= 0) {
       size_t index = static_cast<size_t>(field_description.predicted_username);
@@ -265,13 +259,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 
-// On iOS |unique_id| is used for identifying DOM elements, so the parser should
-// return it. See crbug.com/896594
-#if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(element_name, field_it->unique_id);
-#else
   EXPECT_EQ(element_name, field_it->name);
-#endif
 
   std::u16string expected_value =
       field_it->user_input.empty() ? field_it->value : field_it->user_input;

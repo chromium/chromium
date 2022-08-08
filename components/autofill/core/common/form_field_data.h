@@ -193,20 +193,6 @@ struct FormFieldData {
   bool HadFocus() const;
   bool WasAutofilled() const;
 
-#if BUILDFLAG(IS_IOS)
-  // The identifier which uniquely addresses this field in the DOM. This is an
-  // ephemeral value which is not guaranteed to be stable across page loads. It
-  // serves to allow a given field to be found during the current navigation.
-  //
-  // TODO(crbug.com/896689): Expand the logic/application of this to other
-  // platforms and/or merge this concept with |unique_renderer_id|.
-  std::u16string unique_id;
-#define EXPECT_EQ_UNIQUE_ID(expected, actual) \
-  EXPECT_EQ((expected).unique_id, (actual).unique_id)
-#else
-#define EXPECT_EQ_UNIQUE_ID(expected, actual)
-#endif
-
   // NOTE: update SameFieldAs()            if needed when adding new a member.
   // NOTE: update SimilarFieldAs()         if needed when adding new a member.
   // NOTE: update DynamicallySameFieldAs() if needed when adding new a member.
@@ -326,7 +312,6 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
 // TODO(crbug.com/1208354): Replace this with FormData::DeepEqual().
 #define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                        \
   do {                                                                         \
-    EXPECT_EQ_UNIQUE_ID(expected, actual);                                     \
     EXPECT_EQ(expected.label, actual.label);                                   \
     EXPECT_EQ(expected.name, actual.name);                                     \
     EXPECT_EQ(expected.value, actual.value);                                   \

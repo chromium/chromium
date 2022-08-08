@@ -296,12 +296,6 @@ PasswordFormFillData CreatePasswordFormFillData(
     result.password_field.unique_renderer_id =
         form_on_page.password_element_renderer_id;
     result.password_field.form_control_type = "password";
-
-    // On iOS, use the unique_id field to refer to elements.
-#if BUILDFLAG(IS_IOS)
-    result.username_field.unique_id = form_on_page.username_element;
-    result.password_field.unique_id = form_on_page.password_element;
-#endif
   }
 
   if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {

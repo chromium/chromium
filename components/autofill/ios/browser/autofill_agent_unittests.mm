@@ -143,7 +143,6 @@ TEST_F(AutofillAgentTests,
   field.name = u"number";
   field.name_attribute = field.name;
   field.id_attribute = u"number";
-  field.unique_id = field.id_attribute;
   field.value = u"number_value";
   field.is_autofilled = true;
   field.unique_renderer_id = FieldRendererId(2);
@@ -152,7 +151,6 @@ TEST_F(AutofillAgentTests,
   field.name = u"name";
   field.name_attribute = field.name;
   field.id_attribute = u"name";
-  field.unique_id = field.id_attribute;
   field.value = u"name_value";
   field.is_autofilled = true;
   field.unique_renderer_id = FieldRendererId(3);
@@ -161,7 +159,6 @@ TEST_F(AutofillAgentTests,
   field.name = u"expiry_month";
   field.name_attribute = field.name;
   field.id_attribute = u"expiry_month";
-  field.unique_id = field.id_attribute;
   field.value = u"01";
   field.is_autofilled = false;
   field.unique_renderer_id = FieldRendererId(4);
@@ -170,7 +167,6 @@ TEST_F(AutofillAgentTests,
   field.name = u"unknown";
   field.name_attribute = field.name;
   field.id_attribute = u"unknown";
-  field.unique_id = field.id_attribute;
   field.value = u"";
   field.is_autofilled = true;
   field.unique_renderer_id = FieldRendererId(5);

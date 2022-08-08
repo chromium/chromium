@@ -321,14 +321,6 @@ void SanitizeFormData(FormData* form) {
   }
 }
 
-void SetFieldName(const std::u16string& name, FormFieldData* field) {
-#if BUILDFLAG(IS_IOS)
-  field->unique_id = name;
-#else
-  field->name = name;
-#endif
-}
-
 // Verifies that |test_ukm_recorder| recorder has a single entry called |entry|
 // and returns it.
 const ukm::mojom::UkmEntry* GetMetricEntry(
@@ -351,20 +343,6 @@ void CheckMetricHasValue(const ukm::TestUkmRecorder& test_ukm_recorder,
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(test_ukm_recorder, entry), metric,
       static_cast<int64_t>(value));
-}
-
-// Sets |unique_id| in fields on iOS.
-void SetUniqueIdIfNeeded(FormData* form) {
-  // On iOS the unique_id member uniquely addresses this field in the DOM.
-  // This is an ephemeral value which is not guaranteed to be stable across
-  // page loads. It serves to allow a given field to be found during the
-  // current navigation.
-  // TODO(crbug.com/896689): Expand the logic/application of this to other
-  // platforms and/or merge this concept with |unique_renderer_id|.
-#if BUILDFLAG(IS_IOS)
-  for (auto& f : form->fields)
-    f.unique_id = f.id_attribute;
-#endif
 }
 
 class MockFieldInfoManager : public FieldInfoManager {
@@ -524,7 +502,6 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
     field.unique_renderer_id = FieldRendererId(3);
     form_data.fields.push_back(field);
 
-    SetUniqueIdIfNeeded(&form_data);
     return form_data;
   }
 
@@ -641,8 +618,6 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
     field.unique_renderer_id = FieldRendererId(3);
     field.autocomplete_attribute = "cc-number";
     form.form_data.fields.push_back(field);
-
-    SetUniqueIdIfNeeded(&form.form_data);
 
     return form;
   }
@@ -1499,8 +1474,7 @@ TEST_P(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
   // Different values of |username_element| needed to ensure that it is the
   // |observed_form| and not the |stored_form| what is passed to ShouldSave.
   observed_form.username_element += u"1";
-  SetFieldName(observed_form.username_element,
-               &observed_form.form_data.fields[0]);
+  observed_form.form_data.fields[0].name = observed_form.username_element;
   observed.push_back(observed_form.form_data);
   // Simulate that |form| is already in the store, making this an update.
   EXPECT_CALL(*store_, GetLogins(_, _))
