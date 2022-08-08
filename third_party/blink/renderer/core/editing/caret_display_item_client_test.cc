@@ -420,6 +420,37 @@ TEST_P(CaretDisplayItemClientTest, CompositingChange) {
   EXPECT_EQ(PhysicalRect(50, 50, 1, 1), CaretLocalRect());
 }
 
+TEST_P(CaretDisplayItemClientTest, PlainTextRTLCaretPosition) {
+  // LayoutNG-only test
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  LoadNoto();
+  SetBodyInnerHTML(
+      "<style>"
+      "  div { width: 100px; padding: 5px; font: 20px NotoArabic }"
+      "  #plaintext { unicode-bidi: plaintext }"
+      "</style>"
+      "<div id='regular' dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>"
+      "<div id='plaintext'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
+
+  auto* regular = GetDocument().getElementById("regular");
+  auto* regular_text_node = regular->firstChild();
+  const Position& regular_position =
+      Position::FirstPositionInNode(*regular_text_node);
+  const PhysicalRect regular_caret_rect =
+      ComputeCaretRect(PositionWithAffinity(regular_position));
+
+  auto* plaintext = GetDocument().getElementById("plaintext");
+  auto* plaintext_text_node = plaintext->firstChild();
+  const Position& plaintext_position =
+      Position::FirstPositionInNode(*plaintext_text_node);
+  const PhysicalRect plaintext_caret_rect =
+      ComputeCaretRect(PositionWithAffinity(plaintext_position));
+
+  EXPECT_EQ(regular_caret_rect, plaintext_caret_rect);
+}
+
 // http://crbug.com/1278559
 TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrapRTL) {
   LoadNoto();
