@@ -7,15 +7,22 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
+#include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::testing::ContainerEq;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAreArray;
 
@@ -53,6 +60,24 @@ class SupportToolUiUtilsTest : public ::testing::Test {
 
   SupportToolUiUtilsTest(const SupportToolUiUtilsTest&) = delete;
   SupportToolUiUtilsTest& operator=(const SupportToolUiUtilsTest&) = delete;
+
+  // Change included field of `included_data_collectors` in `data_collectors` as
+  // true for testing.
+  void MarkDataCollectorsAsIncluded(
+      base::Value::List& data_collectors,
+      const std::set<support_tool::DataCollectorType>&
+          included_data_collectors) {
+    for (auto& data_collector : data_collectors) {
+      base::Value::Dict& data_collector_item = data_collector.GetDict();
+      absl::optional<int> data_collector_enum =
+          data_collector_item.FindInt(support_tool_ui::kDataCollectorProtoEnum);
+      ASSERT_TRUE(data_collector_enum);
+      if (base::Contains(included_data_collectors,
+                         static_cast<support_tool::DataCollectorType>(
+                             data_collector_enum.value())))
+        data_collector_item.Set(support_tool_ui::kDataCollectorIncluded, true);
+    }
+  }
 };
 
 TEST_F(SupportToolUiUtilsTest, PiiItems) {
@@ -90,4 +115,64 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
       GetPIITypesToKeep(&detected_pii_items);
   // Check if the returned PII type set is as expected.
   EXPECT_THAT(pii_to_keep_result, UnorderedElementsAreArray(kPIITypes));
+}
+
+TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
+  const std::string test_case_id = "test_case_id_0";
+  // Get list of all data collectors.
+  base::Value::List expected_data_collectors = GetAllDataCollectorsForDevice();
+  std::set<support_tool::DataCollectorType> included_data_collectors = {
+      support_tool::DataCollectorType::CHROME_INTERNAL,
+      support_tool::DataCollectorType::CRASH_IDS};
+  MarkDataCollectorsAsIncluded(expected_data_collectors,
+                               included_data_collectors);
+  base::Value::Dict url_generation_result =
+      GenerateCustomizedURL(test_case_id, &expected_data_collectors);
+  // The result must be successful.
+  EXPECT_TRUE(url_generation_result
+                  .FindBool(support_tool_ui::kUrlGenerationResultSuccess)
+                  .value());
+  // Error string must be empty.
+  EXPECT_EQ(*url_generation_result.FindString(
+                support_tool_ui::kUrlGenerationResultErrorMessage),
+            std::string());
+  const std::string* url_output = url_generation_result.FindString(
+      support_tool_ui::kUrlGenerationResultUrl);
+  ASSERT_TRUE(url_output);
+  // URL output shouldn't be empty.
+  EXPECT_THAT(*url_output, Not(IsEmpty()));
+  // Check that case ID in the URL is as expected.
+  EXPECT_EQ(GetSupportCaseIDFromURL(GURL(*url_output)), test_case_id);
+  // Get the data collector module from URL.
+  std::string data_collector_module;
+  net::GetValueForKeyInQuery(GURL(*url_output), support_tool_ui::kModuleQuery,
+                             &data_collector_module);
+  EXPECT_THAT(data_collector_module, Not(IsEmpty()));
+  base::Value::List data_collector_items_result =
+      GetDataCollectorItemsInQuery(data_collector_module);
+  // Check that the output data collector list is equal to expected.
+  EXPECT_EQ(data_collector_items_result.size(),
+            expected_data_collectors.size());
+  for (size_t i = 0; i < data_collector_items_result.size(); i++) {
+    const base::Value::Dict& actual_data_collector_item =
+        data_collector_items_result[i].GetDict();
+    const base::Value::Dict& extected_data_collector_item =
+        expected_data_collectors[i].GetDict();
+    EXPECT_EQ(actual_data_collector_item
+                  .FindInt(support_tool_ui::kDataCollectorProtoEnum)
+                  .value(),
+              extected_data_collector_item
+                  .FindInt(support_tool_ui::kDataCollectorProtoEnum)
+                  .value());
+    EXPECT_EQ(actual_data_collector_item
+                  .FindBool(support_tool_ui::kDataCollectorIncluded)
+                  .value(),
+              extected_data_collector_item
+                  .FindBool(support_tool_ui::kDataCollectorIncluded)
+                  .value());
+  }
+  // Check if the output of GetIncludedDataCollectorTypes is equal to expected
+  // set of included data collectors.
+  EXPECT_THAT(GetIncludedDataCollectorTypes(&data_collector_items_result),
+              ContainerEq(included_data_collectors));
 }

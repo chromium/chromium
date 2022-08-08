@@ -8,14 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -46,23 +42,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
-const char kSupportCaseIDQuery[] = "case_id";
-const char kModuleQuery[] = "module";
-
-// TODO(b/226318326): Move the utility functions to support_tool_ui_utils.h and
-// add unit tests for them.
 namespace {
-
-// Returns the support case ID that's extracted from `url` with query
-// `kSupportCaseIDQuery`. Returns empty string if `url` doesn't contain support
-// case ID.
-std::string GetSupportCaseIDFromURL(const GURL& url) {
-  std::string support_case_id;
-  if (url.has_query()) {
-    net::GetValueForKeyInQuery(url, kSupportCaseIDQuery, &support_case_id);
-  }
-  return support_case_id;
-}
 
 content::WebUIDataSource* CreateSupportToolHTMLSource(const GURL& url) {
   content::WebUIDataSource* source =
@@ -78,243 +58,6 @@ content::WebUIDataSource* CreateSupportToolHTMLSource(const GURL& url) {
                           IDR_SUPPORT_TOOL_URL_GENERATOR_CONTAINER_HTML);
 
   return source;
-}
-
-// Returns the human readable name corresponding to `data_collector_type`.
-std::string GetDataCollectorName(
-    support_tool::DataCollectorType data_collector_type) {
-  // This function will return translatable strings in future. For now, return
-  // string constants until we have the translatable strings ready.
-  switch (data_collector_type) {
-    case support_tool::CHROME_INTERNAL:
-      return "Chrome System Information";
-    case support_tool::CRASH_IDS:
-      return "Crash IDs";
-    case support_tool::MEMORY_DETAILS:
-      return "Memory Details";
-    case support_tool::CHROMEOS_UI_HIERARCHY:
-      return "UI Hierarchy";
-    case support_tool::CHROMEOS_COMMAND_LINE:
-      return "Additional Chrome OS Platform Logs";
-    case support_tool::CHROMEOS_DEVICE_EVENT:
-      return "Device Event";
-    case support_tool::CHROMEOS_IWL_WIFI_DUMP:
-      return "Intel WiFi NICs Debug Dump";
-    case support_tool::CHROMEOS_TOUCH_EVENTS:
-      return "Touch Events";
-    case support_tool::CHROMEOS_CROS_API:
-      return "LaCrOS System Information";
-    case support_tool::CHROMEOS_LACROS:
-      return "LaCrOS";
-    case support_tool::CHROMEOS_REVEN:
-      return "Chrome OS Flex Logs";
-    case support_tool::CHROMEOS_DBUS:
-      return "DBus Details";
-    case support_tool::CHROMEOS_NETWORK_ROUTES:
-      return "Chrome OS Network Routes";
-    case support_tool::CHROMEOS_SHILL:
-      return "Chrome OS Shill";
-    default:
-      return "Error: Undefined";
-  }
-}
-
-// Decodes `module_query` string and initializes contents of `module`.
-void InitDataCollectionModuleFromURLQuery(
-    support_tool::DataCollectionModule* module,
-    const std::string& module_query) {
-  std::string query_decoded;
-  if (!module_query.empty() &&
-      base::Base64UrlDecode(module_query,
-                            base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                            &query_decoded)) {
-    module->ParseFromString(query_decoded);
-  }
-}
-
-// Returns data collector item for `type`. Sets isIncluded field true if
-// `module` contains `type`.
-base::Value::Dict GetDataCollectorItemForType(
-    const support_tool::DataCollectionModule& module,
-    const support_tool::DataCollectorType& type) {
-  base::Value::Dict dict;
-  dict.Set("name", GetDataCollectorName(type));
-  dict.Set("protoEnum", type);
-  dict.Set("isIncluded",
-           base::Contains(module.included_data_collectors(), type));
-  return dict;
-}
-
-// Returns data collector item for `type`. Sets isIncluded to false for all data
-// collector items.
-base::Value::Dict GetDataCollectorItemForType(
-    const support_tool::DataCollectorType& type) {
-  base::Value::Dict dict;
-  dict.Set("name", GetDataCollectorName(type));
-  dict.Set("protoEnum", type);
-  dict.Set("isIncluded", false);
-  return dict;
-}
-
-// Creates base::Value::List according to the format Support Tool UI
-// accepts and fills the contents with by decoding `module_query` to its
-// support_tool.pb components. Support Tool UI requests data collector items in
-// format:
-// type DataCollectorItem = {
-//  name: string,
-//  isIncluded: boolean,
-//  protoEnum: number,
-// }
-// Returns only the data collectors that are available for user's device.
-base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
-  base::Value::List data_collector_list;
-  support_tool::DataCollectionModule module;
-  InitDataCollectionModuleFromURLQuery(&module, module_query);
-  for (const auto& type : kDataCollectors) {
-    data_collector_list.Append(GetDataCollectorItemForType(module, type));
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (const auto& type : kDataCollectorsChromeosAsh) {
-    data_collector_list.Append(GetDataCollectorItemForType(module, type));
-  }
-#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-  for (const auto& type : kDataCollectorsChromeosHwDetails) {
-    data_collector_list.Append(GetDataCollectorItemForType(module, type));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return data_collector_list;
-}
-
-// Creates base::Value::List according to the format Support Tool UI
-// accepts and fills the contents with all data collectors with isIncluded:
-// false as a default choice. Support Tool UI requests data collector items in
-// format:
-// type DataCollectorItem = {
-//  name: string,
-//  isIncluded: boolean,
-//  protoEnum: number,
-// }
-base::Value::List GetAllDataCollectors() {
-  base::Value::List data_collector_list;
-  for (const auto& type : kDataCollectors) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-  for (const auto& type : kDataCollectorsChromeosAsh) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-  for (const auto& type : kDataCollectorsChromeosHwDetails) {
-    data_collector_list.Append(GetDataCollectorItemForType(type));
-  }
-  return data_collector_list;
-}
-
-std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
-    const base::Value::List* data_collector_items) {
-  std::set<support_tool::DataCollectorType> included_data_collectors;
-  for (const auto& item : *data_collector_items) {
-    const base::Value::Dict* item_as_dict = item.GetIfDict();
-    DCHECK(item_as_dict);
-    absl::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
-    if (isIncluded && isIncluded.value()) {
-      included_data_collectors.insert(
-          static_cast<support_tool::DataCollectorType>(
-              item_as_dict->FindInt("protoEnum").value()));
-    }
-  }
-  return included_data_collectors;
-}
-
-// Returns start data collection result in a structure that Support Tool UI
-// accepts. The returned type is as follow: type StartDataCollectionResult = {
-//   success: boolean,
-//   errorMessage: string,
-// }
-base::Value GetStartDataCollectionResult(bool success,
-                                         std::string error_message) {
-  base::Value::Dict result;
-  result.Set("success", success);
-  result.Set("errorMessage", error_message);
-  return base::Value(std::move(result));
-}
-
-// Returns the current time in YYYY_MM_DD_HH_mm format.
-std::string GetTimestampString(base::Time timestamp) {
-  base::Time::Exploded tex;
-  timestamp.LocalExplode(&tex);
-  return base::StringPrintf("%04d_%02d_%02d_%02d_%02d", tex.year, tex.month,
-                            tex.day_of_month, tex.hour, tex.minute);
-}
-
-base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
-                                      const std::string& case_id,
-                                      base::Time timestamp) {
-  std::string timestamp_string = GetTimestampString(timestamp);
-  std::string filename =
-      case_id.empty()
-          ? base::StringPrintf("support_packet_%s", timestamp_string.c_str())
-          : base::StringPrintf("support_packet_%s_%s", case_id.c_str(),
-                               timestamp_string.c_str());
-  return suggested_path.AppendASCII(filename);
-}
-
-std::string GetDataCollectionModuleQuery(
-    std::set<support_tool::DataCollectorType> included_data_collectors) {
-  support_tool::DataCollectionModule module;
-  for (const auto& data_collector : included_data_collectors) {
-    module.add_included_data_collectors(data_collector);
-  }
-  std::string module_serialized;
-  module.SerializeToString(&module_serialized);
-  std::string data_collection_url_query;
-  base::Base64UrlEncode(module_serialized,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &data_collection_url_query);
-  return data_collection_url_query;
-}
-
-// Returns a URL generation result in the type Support Tool UI expects.
-// type UrlGenerationResult = {
-//   success: boolean,
-//   url: string,
-//   errorMessage: string,
-// }
-base::Value::Dict GetURLGenerationResult(bool success,
-                                         std::string url,
-                                         std::string error_message) {
-  base::Value::Dict url_generation_response;
-  url_generation_response.Set("success", success);
-  url_generation_response.Set("url", url);
-  url_generation_response.Set("errorMessage", error_message);
-  return url_generation_response;
-}
-
-// Generates a customized chrome://support-tool URL from given `case_id` and
-// `data_collector_items` and returns the result in a format Support Tool UI
-// expects. Returns a result with error when there's no data collector selected
-// in `data_collector_items`.
-base::Value::Dict GenerateCustomizedURL(
-    std::string case_id,
-    const base::Value::List* data_collector_items) {
-  base::Value::Dict url_generation_response;
-  std::set<support_tool::DataCollectorType> included_data_collectors =
-      GetIncludedDataCollectorTypes(data_collector_items);
-  if (included_data_collectors.empty()) {
-    // If there's no selected data collector to add, consider this as an error.
-    return GetURLGenerationResult(
-        /*success=*/false, /*url=*/std::string(), /*error_message=*/
-        "No data collectors included. Please select a data collector.");
-  }
-  GURL customized_url("chrome://support-tool");
-  if (!case_id.empty()) {
-    customized_url =
-        net::AppendQueryParameter(customized_url, kSupportCaseIDQuery, case_id);
-  }
-  customized_url = net::AppendQueryParameter(
-      customized_url, kModuleQuery,
-      GetDataCollectionModuleQuery(included_data_collectors));
-  return GetURLGenerationResult(/*success=*/true, /*url=*/customized_url.spec(),
-                                /*error_message=*/std::string());
 }
 
 }  // namespace
@@ -455,8 +198,8 @@ void SupportToolMessageHandler::HandleGetDataCollectors(
   const base::Value& callback_id = args[0];
 
   std::string module_query;
-  net::GetValueForKeyInQuery(web_ui()->GetWebContents()->GetURL(), kModuleQuery,
-                             &module_query);
+  net::GetValueForKeyInQuery(web_ui()->GetWebContents()->GetURL(),
+                             support_tool_ui::kModuleQuery, &module_query);
 
   ResolveJavascriptCallback(
       callback_id, base::Value(GetDataCollectorItemsInQuery(module_query)));

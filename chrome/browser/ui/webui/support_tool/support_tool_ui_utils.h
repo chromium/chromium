@@ -7,9 +7,12 @@
 
 #include <set>
 
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
+#include "url/gurl.h"
 
 namespace support_tool_ui {
 
@@ -38,6 +41,19 @@ extern const char kPiiItemDetectedDataKey[];
 extern const char kPiiItemCountKey[];
 extern const char kPiiItemKeepKey[];
 
+// Support Tool URL query fields.
+extern const char kModuleQuery[];
+
+// String keys that Support Tool UI uses to store data collector items in
+// dictionary.
+extern const char kDataCollectorIncluded[];
+extern const char kDataCollectorProtoEnum[];
+
+// String keys of URL generation result that Support Tool UI accepts.
+extern const char kUrlGenerationResultSuccess[];
+extern const char kUrlGenerationResultUrl[];
+extern const char kUrlGenerationResultErrorMessage[];
+
 }  // namespace support_tool_ui
 
 // Returns PIIDataItems in `detected_pii` where PIIDataItem is
@@ -53,5 +69,62 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii);
 // Returns the set of PIITypes that has their `keep` field true in `pii_items`.
 std::set<feedback::PIIType> GetPIITypesToKeep(
     const base::Value::List* pii_items);
+
+// Returns the support case ID that's extracted from `url` with query
+// `kSupportCaseIDQuery`. Returns empty string if `url` doesn't contain support
+// case ID.
+std::string GetSupportCaseIDFromURL(const GURL& url);
+
+// Creates base::Value::List according to the format Support Tool UI
+// accepts and fills the contents with by decoding `module_query` to its
+// support_tool.pb components. Support Tool UI requests data collector items in
+// format:
+// type DataCollectorItem = {
+//  name: string,
+//  isIncluded: boolean,
+//  protoEnum: number,
+// }
+// Returns only the data collectors that are available for user's device.
+base::Value::List GetDataCollectorItemsInQuery(std::string module_query);
+
+// Creates base::Value::List according to the format Support Tool UI
+// accepts and fills the contents with all data collectors with isIncluded:
+// false as a default choice. Support Tool UI requests data collector items in
+// format:
+// type DataCollectorItem = {
+//  name: string,
+//  isIncluded: boolean,
+//  protoEnum: number,
+// }
+base::Value::List GetAllDataCollectors();
+
+// Creates base::Value::List according to the format Support Tool UI
+// accepts and fills the contents with all data collectors with isIncluded:
+// false as a default choice. Only return data collectors available for caller's
+// platform.
+base::Value::List GetAllDataCollectorsForDevice();
+
+std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
+    const base::Value::List* data_collector_items);
+
+// Returns start data collection result in a structure that Support Tool UI
+// accepts. The returned type is as follow: type StartDataCollectionResult = {
+//   success: boolean,
+//   errorMessage: string,
+// }
+base::Value GetStartDataCollectionResult(bool success,
+                                         std::string error_message);
+
+base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
+                                      const std::string& case_id,
+                                      base::Time timestamp);
+
+// Generates a customized chrome://support-tool URL from given `case_id` and
+// `data_collector_items` and returns the result in a format Support Tool UI
+// expects. Returns a result with error when there's no data collector selected
+// in `data_collector_items`.
+base::Value::Dict GenerateCustomizedURL(
+    std::string case_id,
+    const base::Value::List* data_collector_items);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SUPPORT_TOOL_SUPPORT_TOOL_UI_UTILS_H_
