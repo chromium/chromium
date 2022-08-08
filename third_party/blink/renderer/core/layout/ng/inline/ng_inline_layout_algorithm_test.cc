@@ -7,6 +7,7 @@
 #include <sstream>
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -727,6 +728,86 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
 )DUMP",
             AsFragmentItemsString(
                 *To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"))));
+}
+
+TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLRightAligned) {
+  LoadAhem();
+  InsertStyleElement(
+      "textarea {"
+      "  width: 100px;"
+      "  text-align: right;"
+      "  font: 10px/10px Ahem;"
+      "}");
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <textarea dir="rtl" id="hangingDoesntOverflow">abc  </textarea>
+    <textarea dir="rtl" id="hangingOverflows">abc        </textarea>
+  )HTML");
+
+  HTMLTextAreaElement* hanging_doesnt_overflow =
+      To<HTMLTextAreaElement>(GetElementById("hangingDoesntOverflow"));
+  NGInlineCursor hanging_doesnt_overflow_cursor(*To<LayoutBlockFlow>(
+      hanging_doesnt_overflow->InnerEditorElement()->GetLayoutObject()));
+  hanging_doesnt_overflow_cursor.MoveToFirstLine();
+  EXPECT_TRUE(hanging_doesnt_overflow_cursor.IsNotNull());
+  PhysicalRect hanging_doesnt_overflow_rect(
+      hanging_doesnt_overflow_cursor.Current().OffsetInContainerFragment(),
+      hanging_doesnt_overflow_cursor.Current().Size());
+  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), hanging_doesnt_overflow_rect);
+
+  HTMLTextAreaElement* hanging_overflows =
+      To<HTMLTextAreaElement>(GetElementById("hangingOverflows"));
+  NGInlineCursor hanging_overflows_cursor(*To<LayoutBlockFlow>(
+      hanging_overflows->InnerEditorElement()->GetLayoutObject()));
+  hanging_overflows_cursor.MoveToFirstLine();
+  EXPECT_TRUE(hanging_overflows_cursor.IsNotNull());
+  PhysicalRect hanging_overflows_rect(
+      hanging_overflows_cursor.Current().OffsetInContainerFragment(),
+      hanging_overflows_cursor.Current().Size());
+  EXPECT_EQ(PhysicalRect(70, 0, 30, 10), hanging_overflows_rect);
+}
+
+TEST_F(NGInlineLayoutAlgorithmTest, LineBoxWithHangingWidthRTLCenterAligned) {
+  LoadAhem();
+  InsertStyleElement(
+      "textarea {"
+      "  width: 100px;"
+      "  text-align: center;"
+      "  font: 10px/10px Ahem;"
+      "}");
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <textarea dir="rtl" id="a">abc  </textarea>
+    <textarea dir="rtl" id="b">abc      </textarea>
+  )HTML");
+
+  HTMLTextAreaElement* a_textarea =
+      To<HTMLTextAreaElement>(GetElementById("a"));
+  NGInlineCursor a_cursor(*To<LayoutBlockFlow>(
+      a_textarea->InnerEditorElement()->GetLayoutObject()));
+  a_cursor.MoveToFirstLine();
+  EXPECT_TRUE(a_cursor.IsNotNull());
+  PhysicalRect a_rect(a_cursor.Current().OffsetInContainerFragment(),
+                      a_cursor.Current().Size());
+  // The line size is 30px and the hanging width is 20px. The rectangle
+  // containing the line and the hanging width is centered, so its right edge
+  // is at (100 + 30 + 20)/2 = 75px. Since the line's base direction is RTL, the
+  // text is at the right and its left edge is at 75px - 30 = 45px.
+  EXPECT_EQ(PhysicalRect(45, 0, 30, 10), a_rect);
+
+  HTMLTextAreaElement* b_textarea =
+      To<HTMLTextAreaElement>(GetElementById("b"));
+  NGInlineCursor b_cursor(*To<LayoutBlockFlow>(
+      b_textarea->InnerEditorElement()->GetLayoutObject()));
+  b_cursor.MoveToFirstLine();
+  EXPECT_TRUE(b_cursor.IsNotNull());
+  PhysicalRect b_rect(b_cursor.Current().OffsetInContainerFragment(),
+                      b_cursor.Current().Size());
+  // The line size is 30px and the hanging width is 60px. The rectangle
+  // containing the line and the hanging width is centered, so its right edge
+  // is at (100 + 30 + 60)/2 = 95px. Since the line's base direction is RTL, the
+  // text is at the right and its left edge is at 95px - 30 = 65px.
+  EXPECT_EQ(PhysicalRect(65, 0, 30, 10), b_rect);
 }
 
 #undef MAYBE_VerticalAlignBottomReplaced
