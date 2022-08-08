@@ -17,6 +17,7 @@ import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
+import {DragSelector} from './drag_selector.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
 import {FileTapHandler} from './file_tap_handler.js';
 import {TableList} from './table/table_list.js';
@@ -26,7 +27,7 @@ import {TableList} from './table/table_list.js';
  */
 const filelist = {};
 
-// Group Heading height, align with CSS #list-container li[group-heading].
+// Group Heading height, align with CSS #list-container .group-heading.
 const GROUP_HEADING_HEIGHT = 57;
 
 /**
@@ -86,9 +87,12 @@ export class FileTableList extends TableList {
       }
       // Check if index i is the start of a new group.
       if (startIndexToGroupLabel.has(i)) {
-        item.setAttribute('group-heading', startIndexToGroupLabel.get(i).label);
-      } else {
-        item.removeAttribute('group-heading');
+        // For first item in each group, we add a title div before the element.
+        const title = document.createElement('div');
+        title.innerText = startIndexToGroupLabel.get(i).label;
+        title.classList.add(
+            'group-heading', `group-by-${fileListModel.groupByField}`);
+        this.insertBefore(title, item);
       }
     }
 
@@ -198,6 +202,12 @@ export class FileTableList extends TableList {
    * Override here because previously we just need to use the index to multiply
    * the item height, now we also need to add up the potential group heading
    * heights included in these items.
+   *
+   * Note: for group start item, technically its height should be "all heights
+   * above it + current group heading height", but here we don't add the
+   * current group heading height (logic in getGroupHeadingCountBeforeIndex_),
+   * that's because it will break the "beforeFillerHeight" logic in the redraw
+   * of list.js.
    * @override
    */
   getItemTop(index) {
@@ -224,6 +234,53 @@ export class FileTableList extends TableList {
         this.getGroupHeadingCountAfterIndex_(lastIndex);
     return (this.dataModel.length - lastIndex) * itemHeight +
         countOfGroupHeadings * this.getGroupHeadingHeight_();
+  }
+
+  /**
+   * Returns whether the drag event is inside a file entry in the list (and not
+   * the background padding area).
+   * @param {MouseEvent} event Drag start event.
+   * @return {boolean} True if the mouse is over an element in the list, False
+   *     if it is in the background.
+   */
+  hasDragHitElement(event) {
+    const pos = DragSelector.getScrolledPosition(this, event);
+    return this.getHitElements(pos.x, pos.y).length !== 0;
+  }
+
+  /**
+   * Obtains the index list of elements that are hit by the point or the
+   * rectangle.
+   *
+   * @param {number} x X coordinate value.
+   * @param {number} y Y coordinate value.
+   * @param {number=} opt_width Width of the coordinate.
+   * @param {number=} opt_height Height of the coordinate.
+   * @return {Array<number>} Index list of hit elements.
+   */
+  getHitElements(x, y, opt_width, opt_height) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot =
+        fileListModel ? fileListModel.getGroupBySnapshot() : [];
+    const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
+      return [group.startIndex, group];
+    }));
+
+    const currentSelection = [];
+    const startHeight = y;
+    const endHeight = y + (opt_height || 0);
+    for (let i = 0; i < this.selectionModel.length; i++) {
+      const itemMetrics = this.getHeightsForIndex(i);
+      // For group start item, we need to explicitly add group height because
+      // its top doesn't take that into consideration. (check notes in
+      // getItemTop())
+      const itemTop = itemMetrics.top +
+          (startIndexToGroupLabel.has(i) ? this.getGroupHeadingHeight_() : 0);
+      if (itemTop < endHeight && itemTop + itemMetrics.height >= startHeight) {
+        currentSelection.push(i);
+      }
+    }
+    return currentSelection;
   }
 }
 

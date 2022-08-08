@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
@@ -534,4 +534,57 @@ export function testGetIndexForListOffset() {
   assertEquals(tableList.getIndexForListOffset_(300), 5);
   assertEquals(tableList.getIndexForListOffset_(400), 7);
   assertEquals(tableList.getIndexForListOffset_(500), 9);
+}
+
+export function testGetHitElements() {
+  const tableList = setupFileTableList();
+
+  // No group heading.
+  // index      height      total height
+  // -----------------------------------
+  // Item 0       40            40
+  // Item 1       40            80
+  // Item 2       40            120
+  // Item 3       40            160
+  // Item 4       40            200
+  // Item 5       40            240
+  // Item 6       40            280
+  // Item 7       40            320
+  // Item 8       40            360
+  // Item 9       40            400
+
+  // Passing -1 for 1st/3rd parameter because we don't care the x coordinates
+  // and the width of the drag selection.
+  assertArrayEquals(tableList.getHitElements(-1, 10), [0]);
+  assertArrayEquals(
+      tableList.getHitElements(-1, 50, -1, 200), [1, 2, 3, 4, 5, 6]);
+  assertArrayEquals(tableList.getHitElements(-1, 240, -1, 100), [5, 6, 7, 8]);
+
+  // Enable group by.
+  enableGroupByForDataModel(tableList.dataModel);
+  // index      height      total height
+  // -----------------------------------
+  // Heading 1    20            20
+  // Item 0       40            60
+  // Item 1       40            100
+  // Heading 2    20            120
+  // Item 2       40            160
+  // Heading 3    20            180
+  // Item 3       40            220
+  // Item 4       40            260
+  // Heading 4    20            280
+  // Item 5       40            320
+  // Item 6       40            360
+  // Heading 5    20            380
+  // Item 7       40            420
+  // Item 8       40            460
+  // Heading 6    20            480
+  // Item 9       40            520
+
+  // Passing -1 for 1st/3rd parameter because we don't care the x coordinates
+  // and the width of the drag selection.
+  assertArrayEquals(tableList.getHitElements(-1, 10), []);
+  assertArrayEquals(tableList.getHitElements(-1, 40), [0]);
+  assertArrayEquals(tableList.getHitElements(-1, 50, -1, 200), [0, 1, 2, 3, 4]);
+  assertArrayEquals(tableList.getHitElements(-1, 220, -1, 100), [3, 4, 5]);
 }

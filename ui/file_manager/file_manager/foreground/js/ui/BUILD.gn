@@ -399,18 +399,15 @@ js_library("file_table") {
   deps = [
     ":a11y_announce",
     ":drag_selector",
-    ":file_list_selection_model",
     ":file_metadata_formatter",
     ":file_table_list",
     "table:table",
     "table:table_column",
     "table:table_column_model",
-    "table:table_list",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:importer_common",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:import_history",
@@ -420,9 +417,6 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:list_item.m",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
   ]
 }
 
@@ -437,6 +431,7 @@ js_unittest("file_table_unittest") {
 js_library("file_table_list") {
   deps = [
     ":a11y_announce",
+    ":drag_selector",
     ":file_list_selection_model",
     ":file_tap_handler",
     "table:table",

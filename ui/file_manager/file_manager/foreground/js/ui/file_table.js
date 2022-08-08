@@ -4,16 +4,12 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 
 import {AsyncUtil} from '../../../common/js/async_util.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {importer} from '../../../common/js/importer_common.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
-import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -23,13 +19,11 @@ import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
-import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
 import {FileMetadataFormatter} from './file_metadata_formatter.js';
 import {filelist, FileTableList} from './file_table_list.js';
 import {Table} from './table/table.js';
 import {TableColumn} from './table/table_column.js';
 import {TableColumnModel} from './table/table_column_model.js';
-import {TableList} from './table/table_list.js';
 
 /**
  * Custom column model for advanced auto-resizing.
@@ -538,31 +532,6 @@ export class FileTable extends Table {
     }.bind(self), true);
     self.list.shouldStartDragSelection =
         self.shouldStartDragSelection_.bind(self);
-    self.list.hasDragHitElement = self.hasDragHitElement_.bind(self);
-
-    /**
-     * Obtains the index list of elements that are hit by the point or the
-     * rectangle.
-     *
-     * @param {number} x X coordinate value.
-     * @param {number} y Y coordinate value.
-     * @param {number=} opt_width Width of the coordinate.
-     * @param {number=} opt_height Height of the coordinate.
-     * @return {Array<number>} Index list of hit elements.
-     * @this {List}
-     */
-    self.list.getHitElements = function(x, y, opt_width, opt_height) {
-      const currentSelection = [];
-      const bottom = y + (opt_height || 0);
-      for (let i = 0; i < this.selectionModel_.length; i++) {
-        const itemMetrics = this.getHeightsForIndex(i);
-        if (itemMetrics.top < bottom &&
-            itemMetrics.top + itemMetrics.height >= y) {
-          currentSelection.push(i);
-        }
-      }
-      return currentSelection;
-    };
   }
 
   /**
@@ -756,19 +725,6 @@ export class FileTable extends Table {
    */
   setUseModificationByMeTime(useModificationByMeTime) {
     this.useModificationByMeTime_ = useModificationByMeTime;
-  }
-
-  /**
-   * Returns whether the drag event is inside a file entry in the list (and not
-   * the background padding area).
-   * @param {MouseEvent} event Drag start event.
-   * @return {boolean} True if the mouse is over an element in the list, False
-   *     if
-   *                   it is in the background.
-   */
-  hasDragHitElement_(event) {
-    const pos = DragSelector.getScrolledPosition(this.list, event);
-    return this.list.getHitElements(pos.x, pos.y).length !== 0;
   }
 
   /**

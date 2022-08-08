@@ -1010,19 +1010,24 @@ testcase.recentsTimePeriodHeadings = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([todayFile, yesterdayFile]), {
         // Ignore last modified time because it will show Today/Yesterday
-        // instead
-        // of the actual date.
+        // instead of the actual date.
         ignoreLastModifiedTime: true,
       });
   // Check headings in list view mode.
-  const todayListItem =
-      await remoteCall.waitForElement(appId, 'li[group-heading="Today"]');
+  await remoteCall.waitForElementsCount(appId, ['.group-heading'], 2);
+  const groupHeadings = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, ['.group-heading']);
+  chrome.test.assertEq(2, groupHeadings.length);
+  const fileItems = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, ['.group-heading + .table-row']);
+  chrome.test.assertEq(2, fileItems.length);
+
+  chrome.test.assertEq('Today', groupHeadings[0].text);
   chrome.test.assertEq(
-      todayFile.nameText, todayListItem.attributes['file-name']);
-  const yesterdayListItem =
-      await remoteCall.waitForElement(appId, 'li[group-heading="Yesterday"]');
+      todayFile.nameText, fileItems[0].attributes['file-name']);
+  chrome.test.assertEq('Yesterday', groupHeadings[1].text);
   chrome.test.assertEq(
-      yesterdayFile.nameText, yesterdayListItem.attributes['file-name']);
+      yesterdayFile.nameText, fileItems[1].attributes['file-name']);
 
   // Switch to grid view.
   await remoteCall.waitAndClickElement(appId, '#view-button');

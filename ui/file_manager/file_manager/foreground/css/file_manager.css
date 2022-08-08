@@ -1459,6 +1459,8 @@ body.files-ng grid .grid-title {
   font-family: 'Roboto Medium';
   padding-inline-start: 16px;
   padding-top: 20px;
+  /* Make sure clicking this area can unselect file grids. */
+  pointer-events: none;
   width: 100%;
 }
 
@@ -1798,26 +1800,17 @@ body.files-ng #list-container li {
 }
 
 /* Modify GROUP_HEADING_HEIGHT in file_table_list.js if this height changes. */
-#list-container li[group-heading] {
-  /* The desired height plus the border width. */
-  margin-top: calc(56px + 1px);
-}
-
-#list-container li[group-heading]::before {
+#list-container .group-heading {
   border-bottom: 1px solid var(--cros-separator-color);
+  box-sizing: border-box;
   color: var(--cros-text-color-secondary);
-  content: attr(group-heading);
-  display: block;
   font-family: 'Roboto Medium';
-  left: 0;
-  padding-bottom: 16px;
-  padding-inline-end: 20px;
+  /* The desired height plus the border width. */
+  height: calc(56px + 1px);
   padding-inline-start: 16px;
   padding-top: 20px;
+  /* Make sure clicking this area can unselect file items. */
   pointer-events: none;
-  position: absolute;
-  /* Align with li[group-heading]'s margin-top. */
-  top: -57px;
   width: 100%;
 }
 
