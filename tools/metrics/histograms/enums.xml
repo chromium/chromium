@@ -54939,6 +54939,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Bubble expanded"/>
 </enum>
 
+<enum name="LiveCaptionPinBubbleEvent">
+  <int value="0" label="Bubble unpinned"/>
+  <int value="1" label="Bubble pinned"/>
+</enum>
+
 <enum name="LiveCaptionSessionEvent">
   <int value="0" label="Stream started"/>
   <int value="1" label="Stream finished"/>

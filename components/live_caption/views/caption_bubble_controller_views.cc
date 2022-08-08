@@ -23,8 +23,7 @@ std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create() {
 CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
   caption_bubble_ = new CaptionBubble(
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
-                     base::Unretained(this)),
-      /* hide_on_inactivity= */ true);
+                     base::Unretained(this)));
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
   caption_bubble_->SetCaptionBubbleStyle();

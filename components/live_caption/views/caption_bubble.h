@@ -67,7 +67,7 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 class CaptionBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(CaptionBubble);
-  CaptionBubble(base::OnceClosure destroyed_callback, bool hide_on_inactivity);
+  explicit CaptionBubble(base::OnceClosure destroyed_callback);
   CaptionBubble(const CaptionBubble&) = delete;
   CaptionBubble& operator=(const CaptionBubble&) = delete;
   ~CaptionBubble() override;
@@ -124,6 +124,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void BackToTabButtonPressed();
   void CloseButtonPressed();
   void ExpandOrCollapseButtonPressed();
+  void PinOrUnpinButtonPressed();
+  void SwapButtons(views::Button* first_button,
+                   views::Button* second_button,
+                   bool show_first_button);
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -140,10 +144,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnErrorChanged(CaptionBubbleErrorType error_type,
                       OnErrorClickedCallback callback,
                       OnDoNotShowAgainClickedCallback error_silenced_callback);
-
-  // Called when the caption bubble expanded state has changed. Changes the
-  // number of lines displayed.
-  void OnIsExpandedChanged();
 
   // The caption bubble manages its own visibility based on whether there's
   // space for it to be shown, and if it has an error or text to display.
@@ -195,6 +195,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<views::ImageButton> close_button_;
   raw_ptr<views::ImageButton> expand_button_;
   raw_ptr<views::ImageButton> collapse_button_;
+  raw_ptr<views::ImageButton> pin_button_;
+  raw_ptr<views::ImageButton> unpin_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
 
 #if BUILDFLAG(IS_WIN)
@@ -217,10 +219,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // Whether the caption bubble is expanded to show more lines of text.
   bool is_expanded_ = false;
 
-  bool has_been_shown_ = false;
+  // Whether the caption bubble is pinned or if it should hide on inactivity.
+  bool is_pinned_ = false;
 
-  // Whether we should hide the caption bubble on inactivity.
-  bool const hide_on_inactivity_;
+  bool has_been_shown_ = false;
 
   // Used to determine whether to propagate theme changes to the widget.
   SkColor text_color_ = gfx::kPlaceholderColor;

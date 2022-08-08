@@ -53,6 +53,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -401,10 +402,8 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 };
 #endif
 
-CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
-                             bool hide_on_inactivity)
+CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback)
     : destroyed_callback_(std::move(destroyed_callback)),
-      hide_on_inactivity_(hide_on_inactivity),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
@@ -415,10 +414,6 @@ CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
   SetShowTitle(false);
   SetTitle(IDS_LIVE_CAPTION_BUBBLE_TITLE);
   set_has_parent(false);
-
-  // No need to set up timer if the bubble is not hidden on inactivity.
-  if (!hide_on_inactivity_)
-    return;
 
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, base::Seconds(kNoActivityIntervalSeconds),
@@ -568,6 +563,18 @@ void CaptionBubble::Init() {
                                            base::Unretained(this)),
                        IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
+  views::Button::PressedCallback pin_or_unpin_callback = base::BindRepeating(
+      &CaptionBubble::PinOrUnpinButtonPressed, base::Unretained(this));
+  auto pin_button = BuildImageButton(pin_or_unpin_callback,
+                                     IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB);
+  pin_button->SetVisible(!is_pinned_);
+  pin_button_ = header_container->AddChildView(std::move(pin_button));
+
+  auto unpin_button = BuildImageButton(std::move(pin_or_unpin_callback),
+                                       IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB);
+  unpin_button->SetVisible(is_pinned_);
+  unpin_button_ = header_container->AddChildView(std::move(unpin_button));
+
   back_to_tab_button_ =
       header_container->AddChildView(std::move(back_to_tab_button));
   close_button_ = header_container->AddChildView(std::move(close_button));
@@ -629,7 +636,8 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 std::unique_ptr<views::NonClientFrameView>
 CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
   std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
-                                       expand_button_, collapse_button_};
+                                       expand_button_,      collapse_button_,
+                                       pin_button_,         unpin_button_};
   auto frame = std::make_unique<CaptionBubbleFrameView>(
       buttons, base::BindRepeating(&CaptionBubble::ResetInactivityTimer,
                                    base::Unretained(this)));
@@ -640,8 +648,6 @@ CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
 void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
                                           const gfx::Rect& new_bounds) {
   DCHECK_EQ(widget, GetWidget());
-  if (!hide_on_inactivity_)
-    return;
 
   // If the widget is visible and unfocused, probably due to a mouse drag, reset
   // the inactivity timer.
@@ -652,8 +658,6 @@ void CaptionBubble::OnWidgetBoundsChanged(views::Widget* widget,
 void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
                                               bool active) {
   DCHECK_EQ(widget, GetWidget());
-  if (!hide_on_inactivity_)
-    return;
 
   ResetInactivityTimer();
 }
@@ -694,17 +698,33 @@ void CaptionBubble::ExpandOrCollapseButtonPressed() {
   is_expanded_ = !is_expanded_;
   base::UmaHistogramBoolean("Accessibility.LiveCaption.ExpandBubble",
                             is_expanded_);
-  views::Button *old_button = collapse_button_, *new_button = expand_button_;
-  if (is_expanded_)
-    std::swap(old_button, new_button);
-  bool button_had_focus = old_button->HasFocus();
-  OnIsExpandedChanged();
-  // TODO(crbug.com/1055150): Ensure that the button keeps focus on mac.
-  if (button_had_focus)
-    new_button->RequestFocus();
 
-  if (hide_on_inactivity_)
-    ResetInactivityTimer();
+  SwapButtons(collapse_button_, expand_button_, is_expanded_);
+
+  // The change of expanded state may cause the title to change visibility, and
+  // it surely causes the content height to change, so redraw the bubble.
+  Redraw();
+}
+
+void CaptionBubble::PinOrUnpinButtonPressed() {
+  is_pinned_ = !is_pinned_;
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.PinBubble", is_pinned_);
+
+  SwapButtons(unpin_button_, pin_button_, is_pinned_);
+}
+
+void CaptionBubble::SwapButtons(views::Button* first_button,
+                                views::Button* second_button,
+                                bool show_first_button) {
+  if (!show_first_button)
+    std::swap(first_button, second_button);
+
+  second_button->SetVisible(false);
+  first_button->SetVisible(true);
+  ResetInactivityTimer();
+
+  if (!first_button->HasFocus())
+    first_button->RequestFocus();
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
@@ -725,7 +745,7 @@ void CaptionBubble::OnTextChanged() {
   label_->SetText(base::UTF8ToUTF16(text));
   UpdateBubbleAndTitleVisibility();
 
-  if (hide_on_inactivity_ && GetWidget()->IsVisible())
+  if (GetWidget()->IsVisible())
     ResetInactivityTimer();
 }
 
@@ -795,15 +815,6 @@ void CaptionBubble::OnContentSettingsLinkClicked() {
   }
 }
 #endif
-
-void CaptionBubble::OnIsExpandedChanged() {
-  expand_button_->SetVisible(!is_expanded_);
-  collapse_button_->SetVisible(is_expanded_);
-
-  // The change of expanded state may cause the title to change visibility, and
-  // it surely causes the content height to change, so redraw the bubble.
-  Redraw();
-}
 
 void CaptionBubble::UpdateBubbleAndTitleVisibility() {
   // Show the title if there is room for it and no error.
@@ -978,6 +989,12 @@ void CaptionBubble::SetTextColor() {
   views::SetImageFromVectorIconWithColor(collapse_button_,
                                          vector_icons::kCaretUpIcon, kButtonDip,
                                          icon_color, icon_disabled_color);
+  views::SetImageFromVectorIconWithColor(pin_button_, views::kPinIcon,
+                                         kButtonDip, icon_color,
+                                         icon_disabled_color);
+  views::SetImageFromVectorIconWithColor(unpin_button_, views::kUnpinIcon,
+                                         kButtonDip, icon_color,
+                                         icon_disabled_color);
 }
 
 void CaptionBubble::SetBackgroundColor() {
@@ -1082,7 +1099,8 @@ void CaptionBubble::Hide() {
 }
 
 void CaptionBubble::OnInactivityTimeout() {
-  if (HasMediaFoundationError() || IsMouseHovered() || GetWidget()->IsActive())
+  if (HasMediaFoundationError() || IsMouseHovered() || is_pinned_ ||
+      GetWidget()->IsActive())
     return;
 
   // Clear the partial and final text in the caption bubble model and the label.
@@ -1125,7 +1143,7 @@ void CaptionBubble::LogSessionEvent(SessionEvent event) {
 bool CaptionBubble::HasActivity() {
   return model_ &&
          ((inactivity_timer_ && inactivity_timer_->IsRunning()) || HasFocus() ||
-          !model_->GetFullText().empty() || model_->HasError());
+          !model_->GetFullText().empty() || model_->HasError() || is_pinned_);
 }
 
 views::Label* CaptionBubble::GetLabelForTesting() {
