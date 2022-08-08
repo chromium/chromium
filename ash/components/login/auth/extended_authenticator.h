@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 
 namespace ash {
 

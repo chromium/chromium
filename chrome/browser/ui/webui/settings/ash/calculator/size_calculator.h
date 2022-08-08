@@ -18,8 +18,8 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "components/user_manager/user.h"
 
 class Profile;

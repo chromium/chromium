@@ -10,8 +10,8 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 

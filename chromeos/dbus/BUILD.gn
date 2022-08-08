@@ -47,8 +47,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:attestation_proto",
     "//chromeos/dbus/dlcservice:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",

@@ -9,9 +9,9 @@
 
 #include "ash/components/attestation/attestation_flow_utils.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -41,7 +41,7 @@ void TpmEnrollmentKeySigningService::OnDataSigned(
     SigningCallback callback,
     const ::attestation::SignSimpleChallengeReply& reply) {
   enterprise_management::SignedData em_signed_data;
-  chromeos::attestation::SignedData att_signed_data;
+  ash::attestation::SignedData att_signed_data;
   const bool success =
       reply.status() == ::attestation::STATUS_SUCCESS &&
       att_signed_data.ParseFromString(reply.challenge_response());

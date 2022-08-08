@@ -15,9 +15,9 @@ component("userdataauth") {
   deps = [
     ":userdataauth_proto",
     "//base",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/common",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//components/policy/proto",
     "//dbus",
   ]
@@ -64,7 +64,7 @@ static_library("test_support") {
 }
 
 proto_library("userdataauth_proto") {
-  deps = [ "//chromeos/dbus/cryptohome:cryptohome_proto" ]
+  deps = [ "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto" ]
 
   sources = [
     "//third_party/cros_system_api/dbus/cryptohome/UserDataAuth.proto",
@@ -72,5 +72,5 @@ proto_library("userdataauth_proto") {
     "//third_party/cros_system_api/dbus/cryptohome/fido.proto",
   ]
 
-  proto_out_dir = "chromeos/dbus/cryptohome"
+  proto_out_dir = "chromeos/ash/components/dbus/cryptohome"
 }

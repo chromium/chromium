@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_CERT_DATABASE_ASH_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

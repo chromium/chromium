@@ -14,7 +14,7 @@
 #include "ash/components/cryptohome/common_types.h"
 #include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 
 class AccountId;
 

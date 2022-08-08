@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

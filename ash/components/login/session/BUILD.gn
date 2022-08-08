@@ -11,11 +11,11 @@ component("session") {
   defines = [ "IS_ASH_LOGIN_SESSION_IMPL" ]
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-    "//chromeos/dbus/cryptohome:cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/power:power",
     "//third_party/protobuf:protobuf_lite",
   ]
@@ -30,9 +30,9 @@ source_set("unit_tests") {
   deps = [
     "//ash/components/login/session:session",
     "//base",
+    "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
-    "//chromeos/dbus/cryptohome:cryptohome",
     "//chromeos/dbus/power:power",
     "//testing/gtest",
   ]

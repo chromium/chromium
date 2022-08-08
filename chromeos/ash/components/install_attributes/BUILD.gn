@@ -16,9 +16,9 @@ component("install_attributes") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/constants",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/tpm_manager",
     "//components/policy/proto:proto",
     "//google_apis:google_apis",
@@ -48,9 +48,9 @@ source_set("unit_tests") {
     ":install_attributes",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/constants",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/tpm_manager",
     "//components/policy/proto:proto",
     "//google_apis:google_apis",

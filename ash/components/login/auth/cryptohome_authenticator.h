@@ -19,7 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

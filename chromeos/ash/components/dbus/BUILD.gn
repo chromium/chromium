@@ -20,6 +20,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/biod:test_support",
     "//chromeos/ash/components/dbus/cec_service:unit_tests",
     "//chromeos/ash/components/dbus/cros_disks:unit_tests",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/dbus/easy_unlock:unit_tests",
     "//chromeos/ash/components/dbus/fwupd:test_support",
     "//chromeos/ash/components/dbus/gnubby:unit_tests",

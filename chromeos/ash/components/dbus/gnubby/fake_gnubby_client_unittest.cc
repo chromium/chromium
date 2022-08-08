@@ -6,8 +6,8 @@
 
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
-#include "chromeos/dbus/attestation/attestation.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

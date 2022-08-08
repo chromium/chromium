@@ -12,8 +12,8 @@
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/policy/proto/install_attributes.pb.h"
 
 namespace ash {

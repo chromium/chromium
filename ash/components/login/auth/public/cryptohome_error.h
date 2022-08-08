@@ -7,7 +7,7 @@
 
 #include "ash/components/login/auth/public/auth_failure.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 
 namespace ash {
 

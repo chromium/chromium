@@ -11,9 +11,9 @@ component("debug_daemon") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/common",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//dbus",
   ]
 

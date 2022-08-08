@@ -12,7 +12,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

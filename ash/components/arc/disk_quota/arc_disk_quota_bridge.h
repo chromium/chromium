@@ -7,7 +7,7 @@
 
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

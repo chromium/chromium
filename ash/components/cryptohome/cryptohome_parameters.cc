@@ -12,7 +12,7 @@
 #include "ash/components/cryptohome/common_types.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
-#include "chromeos/dbus/cryptohome/key.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 

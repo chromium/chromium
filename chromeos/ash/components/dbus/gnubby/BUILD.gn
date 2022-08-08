@@ -28,7 +28,7 @@ source_set("unit_tests") {
     ":gnubby",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//dbus",
     "//testing/gtest",
   ]
