@@ -623,6 +623,8 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
       // An engaged site with length less than threshold (4) for
       // consideration.
       GetDomainInfo(GURL("https://len.com")),
+      // An engaged site with a registry other than com.
+      GetDomainInfo(GURL("https://testcombo.org")),
   };
   const struct TestCase {
     const char* domain;
@@ -720,6 +722,18 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
       // Not CSQ, skeleton of brand name (lén) is from engaged sites list but it
       // is short.
       {"lén-online.com", "", ComboSquattingType::kNone},
+
+      // CSQ when domain and registry are in top domains.
+      {"google-login.co.kr", "google.co.kr", ComboSquattingType::kHardCoded},
+
+      // CSQ when brand name is in hard coded brand names, but domain and
+      // registry are not in top domains.
+      {"google-login.co.ir", "google.com", ComboSquattingType::kHardCoded},
+
+      // CSQ when domain and registry are in engaged sites, with registry other
+      // than com.
+      {"testcomboonline.org", "testcombo.org",
+       ComboSquattingType::kSiteEngagement},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =
