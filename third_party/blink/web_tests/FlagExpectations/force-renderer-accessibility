@@ -27,10 +27,10 @@ crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/s
 
 # Failures
 # Too few events and dirty objects marked:
-fast/forms/calendar-picker/date-picker-ax.html [ Pass Failure ]
-fast/forms/month/month-picker-ax.html [ Pass Failure ]
+fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
+fast/forms/month/month-picker-ax.html [ Failure Pass ]
 # isUseCounted() difference:
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Pass Failure ]
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
 # ax_position.h#467 -- IsIgnored():
 external/wpt/fullscreen/crashtests/chrome-1312699.html [ Crash ]
 http/tests/devtools/console/console-format.js [ Crash ]
@@ -39,9 +39,9 @@ media/video-prefixed-fullscreen.html [ Crash ]
 media/video-controls-attribute-fullscreen.html [ Crash ]
 media/autoplay-muted.html [ Crash ]
 # Unknown cause:
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Pass Failure ]
-virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Pass Failure ]
-external/wpt/css/css-transitions/transition-base-response-002.html [ Pass Failure ]
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Failure Pass ]
+virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
+external/wpt/css/css-transitions/transition-base-response-002.html [ Failure Pass ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]

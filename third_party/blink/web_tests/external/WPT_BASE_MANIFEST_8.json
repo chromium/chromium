@@ -97555,7 +97555,7 @@
       ]
      ],
      "contain-size-select-001.html": [
-      "071db67831fd7951b8568ca1b7e4dcc5dbc119a1",
+      "479eb810aafa161ea49630d699c05f959bd2641e",
       [
        null,
        [
@@ -97568,7 +97568,7 @@
       ]
      ],
      "contain-size-select-002.html": [
-      "1aa2d9f31d0cf4fe2b92f6d150e6c76596737115",
+      "3fdea550470adb6b061c59447a3c3fb6145b08ce",
       [
        null,
        [
@@ -266796,7 +266796,7 @@
        []
       ],
       "contain-size-select-001-ref.html": [
-       "960abc1e158756fca26ed3e42afcc9d97a0d07b1",
+       "1944e4937554f8c46a8a88e8593d6e128ef92cab",
        []
       ],
       "contain-strict-011-ref.html": [
@@ -332455,6 +332455,10 @@
       ],
       "storage-foundation-access.https.html": [
        "db965fa928f2ad01285e362d9c8fb7d374acd29c",
+       []
+      ],
+      "storage-persist.https.html": [
+       "ab5fabd9e3099fbf1fd47f2d01461ec64b4352fa",
        []
       ],
       "utils.js": [
@@ -470474,6 +470478,20 @@
        }
       },
       "terminology-0": {
+       "document-base-url-about-srcdoc.https.window.js": [
+        "b8fad36ccf8b493d18ece3d47cb230b90fac6975",
+        [
+         "html/infrastructure/urls/terminology-0/document-base-url-about-srcdoc.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "document-base-url-initiated-grand-parent.https.window.js": [
         "1983f02c267837a9152f94d91bdbde4b1c3add6d",
         [
@@ -531600,6 +531618,15 @@
      ],
      "restriction-service-worker-update.https.html": [
       "92c16e5433d5411c0222c3ca7d2a85513f86cd12",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-storage-persist.https.html": [
+      "7d2f04f6d05ae5295b0bc018a31b1a5fe60af07c",
       [
        null,
        {
