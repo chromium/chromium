@@ -397,7 +397,8 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
   // The block layout algorithm skips spanners for min/max calculation (since
   // they shouldn't be part of the column-count multiplication above). Calculate
   // min/max inline-size for spanners now.
-  result.sizes.Encompass(ComputeSpannersMinMaxSizes(Node()).sizes);
+  if (!Node().ShouldApplyInlineSizeContainment())
+    result.sizes.Encompass(ComputeSpannersMinMaxSizes(Node()).sizes);
 
   result.sizes += BorderScrollbarPadding().InlineSum();
   return result;
