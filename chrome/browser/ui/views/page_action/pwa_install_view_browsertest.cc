@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -50,6 +51,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -298,6 +300,26 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
               expected_buckets);
   }
 
+  void WaitPwaConfirmationBubbleViewShown() {
+    views::NamedWidgetShownWaiter pwa_confirmation_bubble_id_waiter(
+                                          views::test::AnyWidgetTestPasskey(),
+                                          "PWAConfirmationBubbleView");
+
+    pwa_install_view_->ExecuteForTesting();
+    pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
+  }
+
+  void WaitPwaConfirmationBubbleClosed() {
+    if (PWAConfirmationBubbleView::IsShowing()) {
+      base::RunLoop run_loop;
+      PWAConfirmationBubbleView::GetBubble()->RegisterDeleteDelegateCallback(
+                                                      run_loop.QuitClosure());
+      PWAConfirmationBubbleView::GetBubble()->GetWidget()->CloseWithReason(
+                                  views::Widget::ClosedReason::kEscKeyPressed);
+      run_loop.Run();
+    }
+  }
+
  protected:
   net::EmbeddedTestServer https_server_;
   std::string intercept_request_path_;
@@ -413,6 +435,35 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   chrome::SelectNextTab(browser());
   ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
+  EXPECT_FALSE(pwa_install_view_->GetVisible());
+}
+
+// Tests that the plus icon updates its visibility when PWAConfirmationBubbleView is showing in
+// installable tab and switching to non-installable tab.
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+                       IconVisibilityAfterTabSwitchingWhenPWAConfirmationBubbleViewShowing) {
+  content::WebContents* installable_web_contents;
+  {
+    OpenTabResult result = OpenTab(GetInstallableAppURL());
+    installable_web_contents = result.web_contents;
+    ASSERT_TRUE(result.installable);
+  }
+  content::WebContents* non_installable_web_contents;
+  {
+    OpenTabResult result = OpenTab(GetNonInstallableAppURL());
+    non_installable_web_contents = result.web_contents;
+    ASSERT_FALSE(result.installable);
+  }
+  chrome::SelectPreviousTab(browser());
+  ASSERT_EQ(installable_web_contents, GetCurrentTab());
+  EXPECT_TRUE(pwa_install_view_->GetVisible());
+
+  WaitPwaConfirmationBubbleViewShown();
+
+  chrome::SelectNextTab(browser());
+  WaitPwaConfirmationBubbleClosed();
+  ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
+  EXPECT_FALSE(PWAConfirmationBubbleView::IsShowing());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
