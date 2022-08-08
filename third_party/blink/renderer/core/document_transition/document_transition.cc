@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -57,21 +59,37 @@ uint32_t NextDocumentTag() {
 
 DocumentTransition::PostCaptureResolved::PostCaptureResolved(
     DocumentTransition* transition,
-    bool success)
-    : transition_(transition), success_(success) {}
+    bool success,
+    Document* document)
+    : transition_(transition), success_(success), document_(document) {}
 
 DocumentTransition::PostCaptureResolved::~PostCaptureResolved() = default;
 
-ScriptValue DocumentTransition::PostCaptureResolved::Call(ScriptState*,
-                                                          ScriptValue) {
+ScriptValue DocumentTransition::PostCaptureResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
   if (transition_)
     transition_->NotifyPostCaptureCallbackResolved(success_);
+
+  if (!success_) {
+    auto* isolate = document_->GetExecutionContext()->GetIsolate();
+    v8::Local<v8::Message> message =
+        v8::Exception::CreateMessage(isolate, value.V8Value());
+    std::unique_ptr<SourceLocation> location = SourceLocation::FromMessage(
+        isolate, message, document_->GetExecutionContext());
+    ErrorEvent* error = ErrorEvent::Create(
+        ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
+        &DOMWrapperWorld::MainWorld());
+    document_->domWindow()->DispatchErrorEvent(error,
+                                               SanitizeScriptErrors::kSanitize);
+  }
   return ScriptValue();
 }
 
 void DocumentTransition::PostCaptureResolved::Trace(Visitor* visitor) const {
   ScriptFunction::Callable::Trace(visitor);
   visitor->Trace(transition_);
+  visitor->Trace(document_);
 }
 
 void DocumentTransition::PostCaptureResolved::Cancel() {
@@ -273,9 +291,9 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
   }
 
   post_capture_success_callable_ =
-      MakeGarbageCollected<PostCaptureResolved>(this, true);
+      MakeGarbageCollected<PostCaptureResolved>(this, true, document_);
   post_capture_reject_callable_ =
-      MakeGarbageCollected<PostCaptureResolved>(this, false);
+      MakeGarbageCollected<PostCaptureResolved>(this, false, document_);
 
   ScriptState::Scope scope(start_script_state_);
   result.ToChecked().Then(

@@ -1,0 +1,2 @@
+CONSOLE ERROR: Uncaught ReferenceError: foo is not defined
+
