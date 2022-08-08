@@ -221,13 +221,6 @@ void PaymentRequest::Init(
                             url != google_play_billing_url;
                    });
   std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
-  // Note that only a test can add autofill payment apps when basic-card
-  // feature is disabled.
-  if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard) &&
-      !spec_->supported_card_networks().empty()) {
-    method_categories.push_back(
-        JourneyLogger::PaymentMethodCategory::kBasicCard);
-  }
   if (base::Contains(spec_->url_payment_method_identifiers(), google_pay_url) ||
       base::Contains(spec_->url_payment_method_identifiers(),
                      android_pay_url)) {

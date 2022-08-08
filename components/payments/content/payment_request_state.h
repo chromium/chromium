@@ -137,7 +137,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   GetPaymentManifestWebDataService() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
-  bool MayCrawlForInstallablePaymentApps() override;
   bool IsOffTheRecord() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(

@@ -48,7 +48,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       base::WeakPtr<PaymentRequestSpec> spec,
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
-      bool may_crawl_for_installable_payment_apps,
       bool is_off_the_record,
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
@@ -78,7 +77,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
-  bool MayCrawlForInstallablePaymentApps() override;
   bool IsOffTheRecord() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
@@ -105,7 +103,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       base::WeakPtr<PaymentRequestSpec> spec,
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
-      bool may_crawl_for_installable_payment_apps,
       bool is_off_the_record,
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
@@ -122,7 +119,6 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   const std::string twa_package_name_;
   scoped_refptr<PaymentManifestWebDataService>
       payment_manifest_web_data_service_;
-  bool may_crawl_for_installable_payment_apps_;
   bool is_off_the_record_;
   std::vector<autofill::AutofillProfile*> dummy_profiles_;
 

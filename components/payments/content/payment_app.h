@@ -110,14 +110,8 @@ class PaymentApp {
       const;
 
   // Returns true if this payment app can be used to fulfill a request
-  // specifying |method| as supported method of payment. The parsed basic-card
-  // specific data (supported_networks) is relevant only for the
-  // AutofillPaymentApp, which runs inside of the browser process and thus
-  // should not be parsing untrusted JSON strings from the renderer.
-  virtual bool IsValidForModifier(
-      const std::string& method,
-      bool supported_networks_specified,
-      const std::set<std::string>& supported_networks) const = 0;
+  // specifying |method| as supported method of payment.
+  virtual bool IsValidForModifier(const std::string& method) const = 0;
 
   // Sets |is_valid| to true if this payment app can handle payments for the
   // given |payment_method_identifier|. The |is_valid| is an out-param instead

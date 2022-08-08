@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/core/currency_formatter.h"
@@ -131,14 +130,6 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
     return query_for_quota_;
   }
 
-  bool supports_basic_card() const { return !supported_card_networks_.empty(); }
-
-  const std::vector<std::string>& supported_card_networks() const {
-    return supported_card_networks_;
-  }
-  const std::set<std::string>& supported_card_networks_set() const {
-    return supported_card_networks_set_;
-  }
   const std::map<std::string, std::set<std::string>>& stringified_method_data()
       const {
     return stringified_method_data_;
@@ -149,10 +140,6 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   const std::set<std::string>& payment_method_identifiers_set() const {
     return payment_method_identifiers_set_;
   }
-  // Returns whether the |method_name| was specified as supported through the
-  // "basic-card" payment method. If false, it means either the |method_name| is
-  // not supported at all, or specified directly in supportedMethods.
-  bool IsMethodSupportedThroughBasicCard(const std::string& method_name);
 
   // Uses CurrencyFormatter to format the value of |currency_amount| with the
   // currency symbol for its currency.
@@ -246,20 +233,8 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // One currency formatter is instantiated and cached per currency code.
   std::map<std::string, CurrencyFormatter> currency_formatters_;
 
-  // A list/set of supported basic card networks. The list is used to keep the
-  // order in which they were specified by the merchant. The set is used for
-  // fast lookup of supported methods.
-  std::vector<std::string> supported_card_networks_;
-  std::set<std::string> supported_card_networks_set_;
-
-  // Only the set of basic-card specified networks. NOTE: callers should use
-  // |supported_card_networks_set_| to check merchant support.
-  std::set<std::string> basic_card_specified_networks_;
-
   // A list of supported url-based payment method identifiers specified by the
-  // merchant. This encompasses one of the two types of payment method
-  // identifiers, the other being standardized payment method identifiers i.e.,
-  // basic-card.
+  // merchant.
   std::vector<GURL> url_payment_method_identifiers_;
 
   // The set of all payment method identifiers.

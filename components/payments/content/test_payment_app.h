@@ -30,10 +30,7 @@ class TestPaymentApp : public PaymentApp {
   std::string GetId() const override;
   std::u16string GetLabel() const override;
   std::u16string GetSublabel() const override;
-  bool IsValidForModifier(
-      const std::string& method,
-      bool supported_networks_specified,
-      const std::set<std::string>& supported_networks) const override;
+  bool IsValidForModifier(const std::string& method) const override;
   base::WeakPtr<PaymentApp> AsWeakPtr() override;
   bool HandlesShippingAddress() const override;
   bool HandlesPayerName() const override;

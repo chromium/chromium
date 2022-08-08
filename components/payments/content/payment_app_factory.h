@@ -78,7 +78,6 @@ class PaymentAppFactory {
     CreateInternalAuthenticator() const = 0;
     virtual scoped_refptr<PaymentManifestWebDataService>
     GetPaymentManifestWebDataService() const = 0;
-    virtual bool MayCrawlForInstallablePaymentApps() = 0;
     virtual bool IsOffTheRecord() const = 0;
 
     // Returns the merchant provided information, or null if the payment is

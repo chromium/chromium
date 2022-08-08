@@ -52,10 +52,7 @@ class MockApp : public PaymentApp {
   MOCK_CONST_METHOD0(GetId, std::string());
   MOCK_CONST_METHOD0(GetLabel, std::u16string());
   MOCK_CONST_METHOD0(GetSublabel, std::u16string());
-  MOCK_CONST_METHOD3(IsValidForModifier,
-                     bool(const std::string& method,
-                          bool supported_networks_specified,
-                          const std::set<std::string>& supported_networks));
+  MOCK_CONST_METHOD1(IsValidForModifier, bool(const std::string& method));
   MOCK_METHOD0(AsWeakPtr, base::WeakPtr<PaymentApp>());
   MOCK_CONST_METHOD0(HandlesShippingAddress, bool());
   MOCK_CONST_METHOD0(HandlesPayerName, bool());
@@ -106,7 +103,6 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
           /*number_of_factories=*/3, web_contents_->GetPrimaryMainFrame(),
           top_origin_, spec.AsWeakPtr(), /*twa_package_name=*/GetParam(),
           web_data_service_,
-          /*may_crawl_for_installable_payment_apps=*/true,
           /*is_off_the_record=*/false,
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
@@ -131,7 +127,6 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
   EXPECT_EQ(2U, bridge->GetMethodData().size());
   EXPECT_EQ("basic-card", bridge->GetMethodData()[0]->supported_method);
   EXPECT_EQ("https://ph.example", bridge->GetMethodData()[1]->supported_method);
-  EXPECT_TRUE(bridge->MayCrawlForInstallablePaymentApps());
 
   auto app = std::make_unique<MockApp>();
   EXPECT_CALL(mock_callback, NotifyPaymentAppCreated(::testing::_));

@@ -66,6 +66,8 @@ ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
                                     payment_app_->GetAppMethodNames().end()));
 }
 
+// TODO(crbug.com/1209835): Remove jdata_byte_buffer here, as it is no longer
+// used.
 bool JniPaymentApp::IsValidForPaymentMethodData(
     JNIEnv* env,
     const JavaParamRef<jstring>& jmethod,
@@ -84,9 +86,7 @@ bool JniPaymentApp::IsValidForPaymentMethodData(
 
   PaymentMethodData data = ConvertPaymentMethodData(mojo_data);
   return payment_app_->IsValidForModifier(
-      ConvertJavaStringToUTF8(env, jmethod), !data.supported_networks.empty(),
-      std::set<std::string>(data.supported_networks.begin(),
-                            data.supported_networks.end()));
+      ConvertJavaStringToUTF8(env, jmethod));
 }
 
 bool JniPaymentApp::HandlesShippingAddress(JNIEnv* env) {

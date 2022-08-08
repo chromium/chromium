@@ -133,7 +133,6 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       std::unique_ptr<PaymentManifestDownloader> downloader,
       scoped_refptr<PaymentManifestWebDataService> cache,
       const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
-      bool may_crawl_for_installable_payment_apps,
       ServiceWorkerPaymentAppFinder::GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_using_resources_callback) {
     DCHECK(!verifier_);
@@ -150,8 +149,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     verifier_ = std::make_unique<ManifestVerifier>(
         merchant_origin, web_contents, downloader_.get(), parser_.get(),
         cache_.get());
-    if (may_crawl_for_installable_payment_apps &&
-        base::FeatureList::IsEnabled(
+    if (base::FeatureList::IsEnabled(
             features::kWebPaymentsJustInTimePaymentApp)) {
       crawler_ = std::make_unique<InstallablePaymentAppCrawler>(
           merchant_origin, initiator_render_frame_host, downloader_.get(),
@@ -408,7 +406,6 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     const url::Origin& merchant_origin,
     scoped_refptr<PaymentManifestWebDataService> cache,
     std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
-    bool may_crawl_for_installable_payment_apps,
     GetAllPaymentAppsCallback callback,
     base::OnceClosure finished_writing_cache_callback_for_testing) {
   DCHECK(!requested_method_data.empty());
@@ -451,8 +448,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
 
   self_delete_factory->GetAllPaymentApps(
       merchant_origin, &render_frame_host(), std::move(downloader), cache,
-      requested_method_data, may_crawl_for_installable_payment_apps,
-      std::move(callback),
+      requested_method_data, std::move(callback),
       std::move(finished_writing_cache_callback_for_testing));
 }
 

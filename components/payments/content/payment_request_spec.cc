@@ -30,31 +30,7 @@ namespace {
 
 // Validates the |method_data| and fills the output parameters.
 void PopulateValidatedMethodData(
-    const std::vector<PaymentMethodData>& method_data_vector,
-    std::vector<std::string>* supported_card_networks,
-    std::set<std::string>* basic_card_specified_networks,
-    std::set<std::string>* supported_card_networks_set,
-    std::vector<GURL>* url_payment_method_identifiers,
-    std::set<std::string>* payment_method_identifiers_set,
-    std::map<std::string, std::set<std::string>>* stringified_method_data) {
-  data_util::ParseSupportedMethods(method_data_vector, supported_card_networks,
-                                   basic_card_specified_networks,
-                                   url_payment_method_identifiers,
-                                   payment_method_identifiers_set);
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
-    // Clears the basic-card related items that ParseSupportedMethods() added.
-    supported_card_networks->clear();
-    basic_card_specified_networks->clear();
-  }
-  supported_card_networks_set->insert(supported_card_networks->begin(),
-                                      supported_card_networks->end());
-}
-
-void PopulateValidatedMethodData(
     const std::vector<mojom::PaymentMethodDataPtr>& method_data_mojom,
-    std::vector<std::string>* supported_card_networks,
-    std::set<std::string>* basic_card_specified_networks,
-    std::set<std::string>* supported_card_networks_set,
     std::vector<GURL>* url_payment_method_identifiers,
     std::set<std::string>* payment_method_identifiers_set,
     std::map<std::string, std::set<std::string>>* stringified_method_data) {
@@ -68,11 +44,9 @@ void PopulateValidatedMethodData(
     method_data_vector.push_back(ConvertPaymentMethodData(method_data_entry));
   }
 
-  PopulateValidatedMethodData(
-      method_data_vector, supported_card_networks,
-      basic_card_specified_networks, supported_card_networks_set,
-      url_payment_method_identifiers, payment_method_identifiers_set,
-      stringified_method_data);
+  data_util::ParseSupportedMethods(method_data_vector,
+                                   url_payment_method_identifiers,
+                                   payment_method_identifiers_set);
 }
 
 }  // namespace
@@ -98,10 +72,9 @@ PaymentRequestSpec::PaymentRequestSpec(
   if (!details_->modifiers)
     details_->modifiers = std::vector<mojom::PaymentDetailsModifierPtr>();
   UpdateSelectedShippingOption(/*after_update=*/false);
-  PopulateValidatedMethodData(
-      method_data_, &supported_card_networks_, &basic_card_specified_networks_,
-      &supported_card_networks_set_, &url_payment_method_identifiers_,
-      &payment_method_identifiers_set_, &stringified_method_data_);
+  PopulateValidatedMethodData(method_data_, &url_payment_method_identifiers_,
+                              &payment_method_identifiers_set_,
+                              &stringified_method_data_);
 
   query_for_quota_ = stringified_method_data_;
 
@@ -284,11 +257,6 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
   return PaymentShippingType::SHIPPING;
 }
 
-bool PaymentRequestSpec::IsMethodSupportedThroughBasicCard(
-    const std::string& method_name) {
-  return basic_card_specified_networks_.count(method_name) > 0;
-}
-
 std::u16string PaymentRequestSpec::GetFormattedCurrencyAmount(
     const mojom::PaymentCurrencyAmountPtr& currency_amount) {
   CurrencyFormatter* formatter =
@@ -379,23 +347,8 @@ PaymentRequestSpec::GetApplicableModifier(PaymentApp* selected_app) const {
 
   DCHECK(details_->modifiers);
   for (const auto& modifier : *details_->modifiers) {
-    std::set<std::string> supported_card_networks_set;
-    // The following 4 are unused but required by PopulateValidatedMethodData.
-    std::set<std::string> basic_card_specified_networks;
-    std::vector<std::string> supported_networks;
-    std::vector<GURL> url_payment_method_identifiers;
-    std::set<std::string> payment_method_identifiers_set;
-    std::map<std::string, std::set<std::string>> stringified_method_data;
-    PopulateValidatedMethodData(
-        {ConvertPaymentMethodData(modifier->method_data)}, &supported_networks,
-        &basic_card_specified_networks, &supported_card_networks_set,
-        &url_payment_method_identifiers, &payment_method_identifiers_set,
-        &stringified_method_data);
-
     if (selected_app->IsValidForModifier(
-            modifier->method_data->supported_method,
-            !modifier->method_data->supported_networks.empty(),
-            supported_card_networks_set)) {
+            modifier->method_data->supported_method)) {
       return &modifier;
     }
   }

@@ -430,9 +430,7 @@ std::u16string ServiceWorkerPaymentApp::GetSublabel() const {
 }
 
 bool ServiceWorkerPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+    const std::string& method) const {
   // Payment app that needs installation only supports url based payment
   // methods.
   if (needs_installation_)
@@ -440,49 +438,7 @@ bool ServiceWorkerPaymentApp::IsValidForModifier(
 
   bool is_valid = false;
   IsValidForPaymentMethodIdentifier(method, &is_valid);
-  if (!is_valid)
-    return false;
-
-  // Return true if 'basic-card' is not the only matched payment method. This
-  // assumes that there is no duplicated payment methods.
-  if (method != methods::kBasicCard)
-    return true;
-
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-    return false;
-
-  // Checking the capabilities of this app against the modifier.
-  // Return true if card networks are not specified in the  modifier.
-  if (!supported_networks_specified)
-    return true;
-
-  // Return false if no capabilities for this app.
-  if (stored_payment_app_info_->capabilities.empty())
-    return false;
-
-  uint32_t i = 0;
-  for (; i < stored_payment_app_info_->capabilities.size(); i++) {
-    if (supported_networks_specified) {
-      std::set<std::string> app_supported_networks;
-      for (const auto& network :
-           stored_payment_app_info_->capabilities[i].supported_card_networks) {
-        app_supported_networks.insert(GetBasicCardNetworkName(
-            static_cast<mojom::BasicCardNetwork>(network)));
-      }
-
-      if (base::STLSetIntersection<std::set<std::string>>(
-              app_supported_networks, supported_networks)
-              .empty()) {
-        continue;
-      }
-    }
-
-    break;
-  }
-
-  // i >= stored_payment_app_info_->capabilities.size() indicates no matched
-  // capabilities.
-  return i < stored_payment_app_info_->capabilities.size();
+  return is_valid;
 }
 
 base::WeakPtr<PaymentApp> ServiceWorkerPaymentApp::AsWeakPtr() {

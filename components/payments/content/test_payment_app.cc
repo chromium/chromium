@@ -43,10 +43,7 @@ std::u16string TestPaymentApp::GetLabel() const {
 std::u16string TestPaymentApp::GetSublabel() const {
   return std::u16string();
 }
-bool TestPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+bool TestPaymentApp::IsValidForModifier(const std::string& method) const {
   return false;
 }
 base::WeakPtr<PaymentApp> TestPaymentApp::AsWeakPtr() {

@@ -74,7 +74,6 @@ class ServiceWorkerPaymentAppFinder
       const url::Origin& merchant_origin,
       scoped_refptr<PaymentManifestWebDataService> cache,
       std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
-      bool may_crawl_for_installable_payment_apps,
       GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_writing_cache_callback_for_testing);
 

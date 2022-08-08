@@ -88,18 +88,10 @@ std::unique_ptr<BasicCardResponse> GetBasicCardResponseFromAutofillCreditCard(
 
 void ParseSupportedMethods(
     const std::vector<PaymentMethodData>& method_data,
-    std::vector<std::string>* out_supported_networks,
-    std::set<std::string>* out_basic_card_specified_networks,
     std::vector<GURL>* out_url_payment_method_identifiers,
     std::set<std::string>* out_payment_method_identifiers) {
-  DCHECK(out_supported_networks->empty());
-  DCHECK(out_basic_card_specified_networks->empty());
   DCHECK(out_url_payment_method_identifiers->empty());
   DCHECK(out_payment_method_identifiers->empty());
-
-  const std::set<std::string> kBasicCardNetworks{
-      "amex",       "diners", "discover", "jcb",
-      "mastercard", "mir",    "unionpay", "visa"};
 
   std::set<GURL> url_payment_method_identifiers;
 
@@ -109,39 +101,15 @@ void ParseSupportedMethods(
 
     out_payment_method_identifiers->insert(method_data_entry.supported_method);
 
-    if (method_data_entry.supported_method == methods::kBasicCard) {
-      if (method_data_entry.supported_networks.empty()) {
-        // Empty |supported_networks| means all networks are supported.
-        out_supported_networks->insert(out_supported_networks->end(),
-                                       kBasicCardNetworks.begin(),
-                                       kBasicCardNetworks.end());
-        out_basic_card_specified_networks->insert(kBasicCardNetworks.begin(),
-                                                  kBasicCardNetworks.end());
-      } else {
-        // The merchant has specified a few basic card supported networks. Use
-        // the mapping to transform to known basic-card types.
-        for (const std::string& supported_network :
-             method_data_entry.supported_networks) {
-          if (kBasicCardNetworks.find(supported_network) !=
-                  kBasicCardNetworks.end() &&
-              out_basic_card_specified_networks->find(supported_network) ==
-                  out_basic_card_specified_networks->end()) {
-            out_supported_networks->push_back(supported_network);
-            out_basic_card_specified_networks->insert(supported_network);
-          }
-        }
-      }
-    } else {
-      // Here |method_data_entry.supported_method| could be a deprecated
-      // supported network (e.g., "visa"), some invalid string or a URL-based
-      // payment method identifier. Capture this last category if it is valid.
-      // Avoid duplicates.
-      GURL url(method_data_entry.supported_method);
-      if (UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(url)) {
-        const auto result = url_payment_method_identifiers.insert(url);
-        if (result.second)
-          out_url_payment_method_identifiers->push_back(url);
-      }
+    // |method_data_entry.supported_method| could be a deprecated supported
+    // method (e.g., "basic-card" or "visa"), some invalid string or a URL-based
+    // payment method identifier. Capture this last category if it is valid.
+    // Avoid duplicates.
+    GURL url(method_data_entry.supported_method);
+    if (UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(url)) {
+      const auto result = url_payment_method_identifiers.insert(url);
+      if (result.second)
+        out_url_payment_method_identifiers->push_back(url);
     }
   }
 }

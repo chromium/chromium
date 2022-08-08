@@ -117,10 +117,7 @@ const SkBitmap* AndroidPaymentApp::icon_bitmap() const {
   return nullptr;
 }
 
-bool AndroidPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+bool AndroidPaymentApp::IsValidForModifier(const std::string& method) const {
   bool is_valid = false;
   IsValidForPaymentMethodIdentifier(method, &is_valid);
   return is_valid;
