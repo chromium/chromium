@@ -270,6 +270,12 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
         ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
   }
 
+  void LogInAsManuallyLaunchedKioskAppUser() {
+    LogInAsKioskAppUser();
+    ash::KioskAppManager::Get()
+        ->set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
+  }
+
   void SetDeviceIdleTime(int idle_time_in_sec) {
     user_activity_detector_->set_last_activity_time_for_test(
         base::TimeTicks::Now() - base::Seconds(idle_time_in_sec));
@@ -439,18 +445,17 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailForRegularUser) {
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailForKioskUserWithoutAutoLaunch) {
+       ShouldSucceedForManuallyLaunchedKioskUser) {
   LogInAsKioskAppUser();
 
   ash::KioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
 
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSucceedForKioskUserWithZeroDelayAutoLaunch) {
+       ShouldSucceedForAutoLaunchedKioskUser) {
   LogInAsKioskAppUser();
   ash::KioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
@@ -459,19 +464,18 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailForArcKioskUserWithoutAutoLaunch) {
+       ShouldSucceedForManuallyLaunchedArcKioskUser) {
   SetOAuthToken(kTestOAuthToken);
 
   LogInAsArcKioskAppUser();
   ash::ArcKioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
 
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSucceedForArcKioskUserWithZeroDelayAutoLaunch) {
+       ShouldSucceedForAutoLaunchedArcKioskUser) {
   LogInAsArcKioskAppUser();
   ash::ArcKioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
@@ -480,17 +484,16 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailForWebKioskUserWithoutAutoLaunch) {
+       ShouldSucceedForManuallyLaunchedWebKioskUser) {
   LogInAsWebKioskAppUser();
   ash::WebKioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
 
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSucceedForWebKioskUserWithZeroDelayAutoLaunch) {
+       ShouldSucceedForAutoLaunchedWebKioskUser) {
   LogInAsWebKioskAppUser();
   ash::WebKioskAppManager::Get()
       ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
@@ -585,7 +588,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
-    ShouldPassTerminateUponInputTrueToDelegateForKioskUserIfAckedUserPresenceSetFalse) {
+    ShouldPassTerminateUponInputTrueToDelegateForAutolaunchedKioskIfAckedUserPresenceSetFalse) {
   LogInAsAutoLaunchedKioskAppUser();
 
   EXPECT_SUCCESS(
@@ -597,8 +600,32 @@ TEST_F(
 
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
-    ShouldPassTerminateUponInputFalseToDelegateForKioskUserIfAckedUserPresenceSetTrue) {
+    ShouldPassTerminateUponInputFalseToDelegateForAutolaunchedKioskIfAckedUserPresenceSetTrue) {
   LogInAsAutoLaunchedKioskAppUser();
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true)));
+
+  EXPECT_EQ(false,
+            crd_host_delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(
+    DeviceCommandStartCrdSessionJobTest,
+    ShouldPassTerminateUponInputTrueToDelegateForManuallylaunchedKioskIfAckedUserPresenceSetFalse) {
+  LogInAsManuallyLaunchedKioskAppUser();
+
+  EXPECT_SUCCESS(
+      RunJobAndWaitForResult(Payload().Set("acked_user_presence", false)));
+
+  EXPECT_EQ(true,
+            crd_host_delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(
+    DeviceCommandStartCrdSessionJobTest,
+    ShouldPassTerminateUponInputFalseToDelegateForManuallyLaunchedKioskIfAckedUserPresenceSetTrue) {
+  LogInAsManuallyLaunchedKioskAppUser();
 
   EXPECT_SUCCESS(
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true)));
@@ -673,7 +700,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSendSuccessUmaLogWhenAutoLaunchKioskConnects) {
+       ShouldSendSuccessUmaLogWhenAutoLaunchedKioskConnects) {
   base::HistogramTester histogram_tester;
 
   LogInAsAutoLaunchedKioskAppUser();
@@ -685,6 +712,21 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType",
       UmaSessionType::kAutoLaunchedKiosk, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendSuccessUmaLogWhenManuallyLaunchedKioskConnects) {
+  base::HistogramTester histogram_tester;
+
+  LogInAsManuallyLaunchedKioskAppUser();
+  crd_host_delegate().SetHasActiveSession(true);
+  RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.SessionType",
+      UmaSessionType::kManuallyLaunchedKiosk, 1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

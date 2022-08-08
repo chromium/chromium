@@ -30726,6 +30726,7 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="kAutoLaunchedKiosk"/>
   <int value="1" label="kAffiliatedUser"/>
   <int value="2" label="kManagedGuestSession"/>
+  <int value="3" label="kManuallyLaunchedKiosk"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">

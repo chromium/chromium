@@ -421,9 +421,9 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
     case UserType::kAffiliatedUser:
     case UserType::kAutoLaunchedKiosk:
     case UserType::kManagedGuestSession:
+    case UserType::kManuallyLaunchedKiosk:
       return true;
     case UserType::kNoUser:
-    case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
       return false;
   }
@@ -442,7 +442,7 @@ DeviceCommandStartCrdSessionJob::GetUserType() const {
     if (IsRunningAutoLaunchedKiosk())
       return UserType::kAutoLaunchedKiosk;
     else
-      return UserType::kNonAutoLaunchedKiosk;
+      return UserType::kManuallyLaunchedKiosk;
   }
 
   if (user_manager->IsLoggedInAsPublicAccount())
@@ -463,10 +463,11 @@ DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
       return UmaSessionType::kAffiliatedUser;
     case UserType::kManagedGuestSession:
       return UmaSessionType::kManagedGuestSession;
+    case UserType::kManuallyLaunchedKiosk:
+      return UmaSessionType::kManuallyLaunchedKiosk;
     case UserType::kNoUser:
       // TODO(b/236689277): Introduce UmaSessionType::kNoLocalUser.
       return UmaSessionType::kMaxValue;
-    case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
       NOTREACHED();
       return UmaSessionType::kMaxValue;
@@ -507,8 +508,8 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
     case UserType::kManagedGuestSession:
       return true;
     case UserType::kAutoLaunchedKiosk:
+    case UserType::kManuallyLaunchedKiosk:
     case UserType::kNoUser:
-    case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
       return false;
   }
@@ -532,9 +533,9 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       //      user input.
       return false;
     case UserType::kAutoLaunchedKiosk:
+    case UserType::kManuallyLaunchedKiosk:
       return !acked_user_presence_;
     case UserType::kNoUser:
-    case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
       // This method will only be called for user types for which we support
       // CRD sessions.
@@ -562,8 +563,8 @@ const char* DeviceCommandStartCrdSessionJob::UserTypeToString(
   switch (value) {
     case UserType::kAutoLaunchedKiosk:
       return "kAutoLaunchedKiosk";
-    case UserType::kNonAutoLaunchedKiosk:
-      return "kNonAutoLaunchedKiosk";
+    case UserType::kManuallyLaunchedKiosk:
+      return "kManuallyLaunchedKiosk";
     case UserType::kNoUser:
       return "kNoUser";
     case UserType::kAffiliatedUser:

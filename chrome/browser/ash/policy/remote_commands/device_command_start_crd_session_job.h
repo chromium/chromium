@@ -95,12 +95,13 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // fetch an oauth token.
   void SetOAuthTokenForTest(const std::string& token);
 
-  // This enum can't be renumbered because its logged to UMA.
+  // This enum can't be renumbered because it is logged to UMA.
   enum class UmaSessionType {
     kAutoLaunchedKiosk = 0,
     kAffiliatedUser = 1,
     kManagedGuestSession = 2,
-    kMaxValue = kManagedGuestSession
+    kManuallyLaunchedKiosk = 3,
+    kMaxValue = kManuallyLaunchedKiosk
   };
 
  protected:
@@ -116,7 +117,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   enum class UserType {
     kAutoLaunchedKiosk,
-    kNonAutoLaunchedKiosk,
+    kManuallyLaunchedKiosk,
     kNoUser,
     kAffiliatedUser,
     kManagedGuestSession,
