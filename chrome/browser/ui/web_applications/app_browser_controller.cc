@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -578,10 +579,14 @@ void AppBrowserController::UpdateThemePack() {
     return;
   }
 
-  if (!theme_color)
+  if (!theme_color) {
     theme_color = GetAltColor(*background_color);
-  else if (!background_color)
-    background_color = GetAltColor(*theme_color);
+  } else if (!background_color) {
+    background_color =
+        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+            ? gfx::kGoogleGrey900
+            : SK_ColorWHITE;
+  }
 
   // For regular web apps, frame gets theme color and active tab gets
   // background color.
