@@ -2064,13 +2064,6 @@
       origin_trial_feature_name: "SecurePaymentConfirmationOptOut",
       origin_trial_allows_third_party: true
     },
-    // Relaxes the resident key requirement for SPC. This is necessary to ship
-    // SPC on Android, and will be enabled on all platforms for simplicity,
-    // with the assumption that desktop platforms will always create a
-    // resident key/discoverable credential.
-    {
-      name: "SecurePaymentConfirmationRelaxResidentKey",
-    },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       status: "stable",

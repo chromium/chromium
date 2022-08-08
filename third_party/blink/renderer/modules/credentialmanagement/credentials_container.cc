@@ -914,20 +914,18 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
     return false;
   }
 
-  if (!RuntimeEnabledFeatures::
-          SecurePaymentConfirmationRelaxResidentKeyEnabled()) {
-    if ((!authenticator->hasResidentKey() &&
-         !authenticator->hasRequireResidentKey()) ||
-        (authenticator->hasResidentKey() &&
-         authenticator->residentKey() != "required") ||
-        (!authenticator->hasResidentKey() &&
-         authenticator->hasRequireResidentKey() &&
-         !authenticator->requireResidentKey())) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "A resident key is required for 'payment' extension."));
-      return false;
-    }
+  if ((!authenticator->hasResidentKey() &&
+       !authenticator->hasRequireResidentKey()) ||
+      (authenticator->hasResidentKey() &&
+       authenticator->residentKey() == "discouraged") ||
+      (!authenticator->hasResidentKey() &&
+       authenticator->hasRequireResidentKey() &&
+       !authenticator->requireResidentKey())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "A resident key must be 'preferred' or 'required' for 'payment' "
+        "extension."));
+    return false;
   }
 
   if (!authenticator->hasAuthenticatorAttachment() ||
