@@ -97,7 +97,7 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
 
 // static
 uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
-  // TODO(https://crbug.com/986608): Implement this.
+  // TODO(crbug.com/986608): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
   return 0;
 }
@@ -109,6 +109,8 @@ int SysInfo::NumberOfProcessors() {
 
 // static
 uint64_t SysInfo::AmountOfVirtualMemory() {
+  // Fuchsia does not provide this type of information.
+  // Return zero to indicate that there is unlimited available virtual memory.
   return 0;
 }
 
@@ -171,15 +173,16 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
 
 // static
 std::string SysInfo::OperatingSystemVersion() {
-  return GetCachedBuildInfo().has_version() ? GetCachedBuildInfo().version()
-                                            : "";
+  const auto& build_info = GetCachedBuildInfo();
+  return build_info.has_version() ? build_info.version() : "";
 }
 
 // static
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  // Fuchsia doesn't have OS version numbers.
+  // TODO(crbug.com/1348711): Implement this when Fuchsia supports it.
+  NOTIMPLEMENTED_LOG_ONCE();
   *major_version = 0;
   *minor_version = 0;
   *bugfix_version = 0;
@@ -198,6 +201,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 std::string SysInfo::CPUModelName() {
+  // TODO(crbug.com/1233859): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
   return std::string();
 }
