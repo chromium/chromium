@@ -532,8 +532,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/1164575): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_WithRetainedFiles) {
+                       DISABLED_InvokeUi_WithRetainedFiles) {
   AddRetainedFile(base::FilePath(FILE_PATH_LITERAL("/dev/null")));
   AddRetainedFile(base::FilePath(FILE_PATH_LITERAL("/dev/zero")));
   AddRetainedFile(base::FilePath(FILE_PATH_LITERAL("/dev/random")));
