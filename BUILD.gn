@@ -1598,7 +1598,6 @@ if (!is_ios) {
       "//third_party/catapult/devil/",
       "//third_party/catapult/dependency_manager/",
       "//third_party/catapult/third_party/typ/",
-      "//third_party/depot_tools/pylint",
       "//third_party/depot_tools/pylint-1.5",
       "//third_party/depot_tools/pylint_main.py",
       "//third_party/depot_tools/pylintrc",

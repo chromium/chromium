@@ -64,7 +64,7 @@ class PythonChecker(object):
         ])
         return executive.run_command([
             sys.executable,
-            finder.path_from_depot_tools_base('pylint'),
+            finder.path_from_depot_tools_base('pylint-1.5'),
             '--output-format=parseable',
             '--rcfile=' + finder.path_from_blink_tools('blinkpy', 'pylintrc'),
             path,
