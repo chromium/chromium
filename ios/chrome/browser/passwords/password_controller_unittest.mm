@@ -1339,28 +1339,6 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
   EXPECT_FALSE(form_manager->IsPasswordUpdate());
 }
 
-// Check that if the PasswordController is told (by the PasswordManagerClient)
-// that this is Incognito, it won't enable password generation.
-TEST_F(PasswordControllerTestSimple, IncognitoPasswordGenerationDisabled) {
-  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
-
-  auto client =
-      std::make_unique<NiceMock<MockPasswordManagerClient>>(store_.get());
-  weak_client_ = client.get();
-
-  EXPECT_CALL(*weak_client_->GetPasswordFeatureManager(), IsGenerationEnabled)
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*weak_client_, IsIncognito).WillRepeatedly(Return(true));
-
-  UniqueIDDataTabHelper::CreateForWebState(&web_state_);
-  passwordController_ =
-      [[PasswordController alloc] initWithWebState:&web_state_
-                                            client:std::move(client)];
-
-  EXPECT_FALSE(
-      passwordController_.passwordManagerDriver->GetPasswordGenerationHelper());
-}
-
 // Checks that when the user set a focus on a field of a password form which was
 // not sent to the store then the request the the store is sent.
 TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {

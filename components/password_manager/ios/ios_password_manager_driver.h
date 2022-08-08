@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/ios/password_manager_driver_bridge.h"
 
@@ -59,6 +60,8 @@ class IOSPasswordManagerDriver
  private:
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
   password_manager::PasswordManager* password_manager_;
+  std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
+      password_generation_helper_;
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_

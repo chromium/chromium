@@ -13,6 +13,7 @@
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -112,14 +113,28 @@ class MockPasswordManager : public PasswordManagerInterface {
               (override));
 };
 
+class TestPasswordManagerDriver : public StubPasswordManagerDriver {
+ public:
+  explicit TestPasswordManagerDriver(PasswordManagerClient* client)
+      : password_generation_helper_(client, this) {}
+
+  PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override {
+    return &password_generation_helper_;
+  }
+
+ private:
+  PasswordGenerationFrameHelper password_generation_helper_;
+};
+
 class SharedPasswordControllerTest : public PlatformTest {
  public:
   SharedPasswordControllerTest() : PlatformTest() {
     delegate_ = OCMProtocolMock(@protocol(SharedPasswordControllerDelegate));
     password_manager::PasswordManagerClient* client_ptr =
         &password_manager_client_;
-    password_manager::PasswordManagerDriver* driver_ptr =
-        &password_manager_driver_;
+    password_manager_driver_ =
+        std::make_unique<TestPasswordManagerDriver>(client_ptr);
+    TestPasswordManagerDriver* driver_ptr = password_manager_driver_.get();
     [[[delegate_ stub] andReturnValue:OCMOCK_VALUE(client_ptr)]
         passwordManagerClient];
     [[[delegate_ stub] andReturnValue:OCMOCK_VALUE(driver_ptr)]
@@ -150,7 +165,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   id form_helper_;
   id suggestion_helper_;
   password_manager::StubPasswordManagerClient password_manager_client_;
-  password_manager::StubPasswordManagerDriver password_manager_driver_;
+  std::unique_ptr<TestPasswordManagerDriver> password_manager_driver_;
   id delegate_;
   SharedPasswordController* controller_;
 };

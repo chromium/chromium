@@ -20,7 +20,11 @@ using password_manager::PasswordManager;
 IOSPasswordManagerDriver::IOSPasswordManagerDriver(
     id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManager* password_manager)
-    : bridge_(bridge), password_manager_(password_manager) {}
+    : bridge_(bridge), password_manager_(password_manager) {
+  password_generation_helper_ =
+      std::make_unique<password_manager::PasswordGenerationFrameHelper>(
+          password_manager_->client(), this);
+}
 
 IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;
 
@@ -70,7 +74,7 @@ void IOSPasswordManagerDriver::ClearPreviewedForm() {
 
 password_manager::PasswordGenerationFrameHelper*
 IOSPasswordManagerDriver::GetPasswordGenerationHelper() {
-  return [bridge_ passwordGenerationHelper];
+  return password_generation_helper_.get();
 }
 
 PasswordManager* IOSPasswordManagerDriver::GetPasswordManager() {

@@ -107,7 +107,6 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
 @implementation SharedPasswordController {
   PasswordManagerInterface* _passwordManager;
-  std::unique_ptr<PasswordGenerationFrameHelper> _passwordGenerationHelper;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
@@ -513,11 +512,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 }
 
 - (PasswordGenerationFrameHelper*)passwordGenerationHelper {
-  if (![self isIncognito]) {
-    _passwordGenerationHelper.reset(new PasswordGenerationFrameHelper(
-        _delegate.passwordManagerClient, _delegate.passwordManagerDriver));
-  }
-  return _passwordGenerationHelper.get();
+  return _delegate.passwordManagerDriver->GetPasswordGenerationHelper();
 }
 
 - (void)formEligibleForGenerationFound:(const PasswordFormGenerationData&)form {
@@ -602,8 +597,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 - (BOOL)canGeneratePasswordForForm:(FormRendererId)formIdentifier
                    fieldIdentifier:(FieldRendererId)fieldIdentifier
                          fieldType:(NSString*)fieldType {
-  if ([self isIncognito] || !self.passwordGenerationHelper->IsGenerationEnabled(
-                                /*log_debug_data*/ true)) {
+  if (!self.passwordGenerationHelper->IsGenerationEnabled(
+          /*log_debug_data*/ true)) {
     return NO;
   }
   if (![fieldType isEqual:kPasswordFieldType]) {
