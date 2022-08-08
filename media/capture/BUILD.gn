@@ -479,7 +479,7 @@ test("capture_unittests") {
     ]
     use_cfv1 = false
     additional_manifest_fragments =
-        [ "//media/fuchsia/camera/test_support.shard.test-cml" ]
+        [ "//media/fuchsia/test_support.shard.test-cml" ]
   }
 
   if (is_mac) {

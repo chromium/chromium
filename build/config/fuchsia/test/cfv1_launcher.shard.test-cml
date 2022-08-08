@@ -4,7 +4,7 @@
 {
   use: [
     {
-      protocol: "fuchsia.sysmem.Allocator",
+      protocol: "fuchsia.sys.Launcher",
     },
   ],
 }
