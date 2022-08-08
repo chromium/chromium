@@ -408,6 +408,39 @@ TEST_F(AppsAccessManagerImplTest, SimulateUserRejectedError) {
       OnboardingUserActionMetric::kUserActionPermissionRejected, 1);
 }
 
+TEST_F(AppsAccessManagerImplTest, SimulateReceivesAppsSetupAck) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ACK_BY_EXO,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  EXPECT_TRUE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kAckByExo, 1);
+}
+
 TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCanceled) {
   base::HistogramTester histograms;
 

@@ -52,6 +52,7 @@ enum Result {
   RESULT_ERROR_ACTION_TIMEOUT = 3;
   RESULT_ERROR_ACTION_CANCELED = 4;
   RESULT_ERROR_SYSTEM = 5;
+  RESULT_ACK_BY_EXO = 6;
 }
 
 message SendAppsSetupRequest {}

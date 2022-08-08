@@ -72375,6 +72375,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="System exceptions thrown out"/>
   <int value="7" label="Users cancel from the onboarding UI"/>
   <int value="8" label="Users cancel when the device disconnects"/>
+  <int value="9"
+      label="The permission request is delivered to phone's Exo package"/>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">

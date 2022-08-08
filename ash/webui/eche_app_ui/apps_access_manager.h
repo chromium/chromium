@@ -58,7 +58,10 @@ class AppsAccessManager {
     // The permission request is canceled when the device is disconnected.
     kFailedConnection = 8,
 
-    kMaxValue = kFailedConnection
+    // The permission request is delivered to phone's Exo package.
+    kAckByExo = 9,
+
+    kMaxValue = kAckByExo
   };
 
   class Observer : public base::CheckedObserver {

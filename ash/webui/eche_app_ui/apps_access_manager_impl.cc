@@ -132,11 +132,13 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
     // Log the error response before we change the setup operation to not in
     // progress.
     LogAppsSetupResponse(apps_setup_response.result());
-    SetAppsSetupOperationStatus(
-        (apps_setup_response.result() ==
-         proto::Result::RESULT_ERROR_USER_REJECTED)
-            ? AppsAccessSetupOperation::Status::kCompletedUserRejected
-            : AppsAccessSetupOperation::Status::kOperationFailedOrCancelled);
+    if (apps_setup_response.result() != proto::Result::RESULT_ACK_BY_EXO) {
+      SetAppsSetupOperationStatus(
+          (apps_setup_response.result() ==
+           proto::Result::RESULT_ERROR_USER_REJECTED)
+              ? AppsAccessSetupOperation::Status::kCompletedUserRejected
+              : AppsAccessSetupOperation::Status::kOperationFailedOrCancelled);
+    }
   }
 }
 
@@ -392,6 +394,10 @@ void AppsAccessManagerImpl::LogAppsSetupResponse(
     case proto::Result::RESULT_ERROR_SYSTEM:
       base::UmaHistogramEnumeration(kEcheOnboardingHistogramName,
                                     OnboardingUserActionMetric::kSystemError);
+      break;
+    case proto::Result::RESULT_ACK_BY_EXO:
+      base::UmaHistogramEnumeration(kEcheOnboardingHistogramName,
+                                    OnboardingUserActionMetric::kAckByExo);
       break;
     default:
       base::UmaHistogramEnumeration(
