@@ -37,9 +37,8 @@ export class FileSystemMetadataProvider extends MetadataProvider {
                 // console.error causes them to fail because of JSErrorCount.
                 // This error is an acceptable condition.
                 console.warn(
-                    'getMetadata error for: %s; error: (%d, %s, %s)',
-                    request.entry.toURL(), error.code, error.name,
-                    error.message);
+                    `getMetadata error for '${request.entry.toURL()}':`,
+                    error.toString());
                 return new MetadataItem();
               });
     }));
