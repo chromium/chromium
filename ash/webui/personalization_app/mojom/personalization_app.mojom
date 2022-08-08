@@ -341,7 +341,7 @@ interface ThemeProvider {
 
 // Contains information about the current user.
 struct UserInfo {
-  // The display email of the user.
+  // The display email of the user. It can be empty for guest users.
   string email;
 
   // The display name of the user.

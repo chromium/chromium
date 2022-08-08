@@ -168,11 +168,13 @@
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">
       <h2 id="name">[[info_.name]]</h2>
-      <a id="emailContainer" href="chrome://os-settings/accountManager" target="_blank"
-          aria-description="$i18n{ariaLabelGoToAccountSettings}">
-        <span id="email">[[info_.email]]</span>
-        <iron-icon icon="cr:open-in-new"></iron-icon>
-      </a>
+      <template is="dom-if" if="[[info_.email]]">
+        <a id="emailContainer" href="chrome://os-settings/accountManager" target="_blank"
+            aria-description="$i18n{ariaLabelGoToAccountSettings}">
+          <span id="email">[[info_.email]]</span>
+          <iron-icon icon="cr:open-in-new"></iron-icon>
+        </a>
+      </template>
     </template>
   </div>
 </div>
