@@ -336,6 +336,7 @@ content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return embedder_support::AllowServiceWorker(
       scope, site_for_cookies, top_frame_origin,
       CookieSettingsFactory::GetForBrowserContext(context).get(),

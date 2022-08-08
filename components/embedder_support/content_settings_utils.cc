@@ -8,6 +8,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,6 +44,10 @@ content::AllowServiceWorkerResult AllowServiceWorker(
     const absl::optional<url::Origin>& top_frame_origin,
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/1336617): Remove this check once we figure out what is
+  // wrong.
+  DCHECK(settings_map);
   GURL first_party_url = top_frame_origin ? top_frame_origin->GetURL() : GURL();
   // Check if JavaScript is allowed.
   content_settings::SettingInfo info;

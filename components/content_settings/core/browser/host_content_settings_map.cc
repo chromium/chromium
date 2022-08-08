@@ -954,6 +954,10 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     ContentSettingsPattern* primary_pattern,
     ContentSettingsPattern* secondary_pattern,
     content_settings::SessionModel* session_model) {
+  // TODO(crbug.com/1336617): Remove this check once we figure out what is
+  // wrong.
+  CHECK(provider);
+
   if (include_incognito) {
     // Check incognito-only specific settings. It's essential that the
     // |RuleIterator| gets out of scope before we get a rule iterator for the
