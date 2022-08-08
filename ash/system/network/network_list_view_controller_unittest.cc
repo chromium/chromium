@@ -1112,44 +1112,49 @@ TEST_F(NetworkListViewControllerTest, NetworkScanning) {
   network_state_helper()->manager_test()->SetInteractiveDelay(
       kInteractiveDelay);
 
+  // ClearDevices() calls RunUntilIdle which performs some initial scans.
+  size_t initial_wifi_count = 1u;
+  size_t initial_tether_count = 1u;
+  size_t initial_scan_count = 2u;
+
   // Scanning bar is not visible if WiFi is not enabled.
   EXPECT_FALSE(HasScanTimerStarted());
   EXPECT_FALSE(getScanningBarVisibility());
-  EXPECT_EQ(0u, GetScanCount());
-  EXPECT_EQ(0u, GetWifiScanCount());
-  EXPECT_EQ(0u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 0u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 0u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 0u, GetTetherScanCount());
 
   // Add an enabled WiFi device.
   AddWifiDevice();
   EXPECT_TRUE(HasScanTimerStarted());
   EXPECT_TRUE(getScanningBarVisibility());
-  EXPECT_EQ(2u, GetScanCount());
-  EXPECT_EQ(1u, GetWifiScanCount());
-  EXPECT_EQ(1u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
 
   // Simulate scanning finishing.
   task_environment()->FastForwardBy(kInteractiveDelay);
 
   EXPECT_FALSE(getScanningBarVisibility());
   EXPECT_TRUE(HasScanTimerStarted());
-  EXPECT_EQ(2u, GetScanCount());
-  EXPECT_EQ(1u, GetWifiScanCount());
-  EXPECT_EQ(1u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
 
   // Make sure scan timer is still running.
   task_environment()->FastForwardBy(kInteractiveDelay);
   EXPECT_TRUE(HasScanTimerStarted());
   EXPECT_FALSE(getScanningBarVisibility());
-  EXPECT_EQ(2u, GetScanCount());
-  EXPECT_EQ(1u, GetWifiScanCount());
-  EXPECT_EQ(1u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
 
   task_environment()->FastForwardBy(kInteractiveDelay);
   EXPECT_TRUE(HasScanTimerStarted());
   EXPECT_FALSE(getScanningBarVisibility());
-  EXPECT_EQ(2u, GetScanCount());
-  EXPECT_EQ(1u, GetWifiScanCount());
-  EXPECT_EQ(1u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
 
   // Disabling WiFi device ends scan timer.
   network_state_handler()->SetTechnologyEnabled(
@@ -1158,9 +1163,9 @@ TEST_F(NetworkListViewControllerTest, NetworkScanning) {
 
   EXPECT_FALSE(getScanningBarVisibility());
   EXPECT_FALSE(HasScanTimerStarted());
-  EXPECT_EQ(2u, GetScanCount());
-  EXPECT_EQ(1u, GetWifiScanCount());
-  EXPECT_EQ(1u, GetTetherScanCount());
+  EXPECT_EQ(initial_scan_count + 2u, GetScanCount());
+  EXPECT_EQ(initial_wifi_count + 1u, GetWifiScanCount());
+  EXPECT_EQ(initial_tether_count + 1u, GetTetherScanCount());
 }
 
 }  // namespace ash

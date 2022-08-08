@@ -192,17 +192,15 @@ class NetworkMetricsHelperTest : public testing::Test {
 
   void SetUp() override {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-
-    shill_service_client_ = ShillServiceClient::Get()->GetTestInterface();
-    shill_service_client_->ClearServices();
-    base::RunLoop().RunUntilIdle();
-
+    network_handler_test_helper_->ClearServices();
     network_handler_test_helper_->RegisterPrefs(profile_prefs_.registry(),
                                                 local_state_.registry());
-
     network_handler_test_helper_->InitializePrefs(&profile_prefs_,
                                                   &local_state_);
+
+    shill_service_client_ = network_handler_test_helper_->service_test();
+
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -259,6 +257,8 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
                                     /*visible=*/true);
   shill_service_client_->SetServiceProperty(
       kTestServicePath, shill::kEidProperty, base::Value("eid"));
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kIccidProperty, base::Value("iccid"));
   base::RunLoop().RunUntilIdle();
 
   NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
@@ -291,6 +291,8 @@ TEST_F(NetworkMetricsHelperTest, CellularESimPolicy) {
                                     /*visible=*/true);
   shill_service_client_->SetServiceProperty(
       kTestServicePath, shill::kEidProperty, base::Value("eid"));
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kIccidProperty, base::Value("iccid"));
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
   shill_service_client_->SetServiceProperty(kTestServicePath,
@@ -332,6 +334,8 @@ TEST_F(NetworkMetricsHelperTest, CellularPSim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeCellular, shill::kStateIdle,
                                     /*visible=*/true);
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kIccidProperty, base::Value("iccid"));
   base::RunLoop().RunUntilIdle();
 
   NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,

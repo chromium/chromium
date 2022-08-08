@@ -59,7 +59,6 @@ NetworkTestHelperBase::~NetworkTestHelperBase() {
 }
 
 void NetworkTestHelperBase::ResetDevicesAndServices() {
-  base::RunLoop().RunUntilIdle();  // Process any pending updates
   ClearDevices();
   ClearServices();
 
@@ -80,11 +79,13 @@ void NetworkTestHelperBase::ResetDevicesAndServices() {
 }
 
 void NetworkTestHelperBase::ClearDevices() {
+  base::RunLoop().RunUntilIdle();  // Process any pending updates
   device_test_->ClearDevices();
   base::RunLoop().RunUntilIdle();
 }
 
 void NetworkTestHelperBase::ClearServices() {
+  base::RunLoop().RunUntilIdle();  // Process any pending updates
   service_test_->ClearServices();
   base::RunLoop().RunUntilIdle();
 }
