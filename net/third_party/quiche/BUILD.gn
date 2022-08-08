@@ -94,6 +94,8 @@ component("quiche") {
     "src/quiche/common/platform/api/quiche_thread_local.h",
     "src/quiche/common/platform/api/quiche_time_utils.h",
     "src/quiche/common/platform/api/quiche_url_utils.h",
+    "src/quiche/common/platform/default/quiche_platform_impl/quic_flags_impl.cc",
+    "src/quiche/common/platform/default/quiche_platform_impl/quic_flags_impl.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
@@ -822,12 +824,8 @@ if (build_epoll_based_tools) {
       "src/quiche/quic/platform/api/quic_udp_socket_platform_api.h",
       "src/quiche/quic/tools/quic_client.cc",
       "src/quiche/quic/tools/quic_client.h",
-      "src/quiche/quic/tools/quic_client_default_network_helper.cc",
-      "src/quiche/quic/tools/quic_client_default_network_helper.h",
       "src/quiche/quic/tools/quic_client_epoll_network_helper.cc",
       "src/quiche/quic/tools/quic_client_epoll_network_helper.h",
-      "src/quiche/quic/tools/quic_default_client.cc",
-      "src/quiche/quic/tools/quic_default_client.h",
       "src/quiche/quic/tools/quic_server.cc",
       "src/quiche/quic/tools/quic_server.h",
     ]
@@ -867,9 +865,9 @@ if (build_epoll_based_tools) {
   executable("epoll_quic_server") {
     testonly = true
     sources = [
+      "src/quiche/quic/tools/quic_epoll_server_factory.cc",
+      "src/quiche/quic/tools/quic_epoll_server_factory.h",
       "src/quiche/quic/tools/quic_server_bin.cc",
-      "src/quiche/quic/tools/quic_server_factory.cc",
-      "src/quiche/quic/tools/quic_server_factory.h",
     ]
 
     configs += [ ":quiche_internal_config" ]
@@ -1074,6 +1072,8 @@ static_library("quiche_test_support") {
     "src/quiche/quic/test_tools/qpack/qpack_decoder_test_utils.h",
     "src/quiche/quic/test_tools/qpack/qpack_encoder_peer.cc",
     "src/quiche/quic/test_tools/qpack/qpack_encoder_peer.h",
+    "src/quiche/quic/test_tools/qpack/qpack_encoder_test_utils.cc",
+    "src/quiche/quic/test_tools/qpack/qpack_encoder_test_utils.h",
     "src/quiche/quic/test_tools/qpack/qpack_offline_decoder.cc",
     "src/quiche/quic/test_tools/qpack/qpack_offline_decoder.h",
     "src/quiche/quic/test_tools/qpack/qpack_test_utils.cc",
@@ -1657,7 +1657,6 @@ source_set("quiche_tests") {
       "src/quiche/quic/core/quic_epoll_clock_test.cc",
       "src/quiche/quic/core/quic_epoll_connection_helper_test.cc",
       "src/quiche/quic/tools/quic_client_test.cc",
-      "src/quiche/quic/tools/quic_default_client_test.cc",
       "src/quiche/quic/tools/quic_server_test.cc",
       "src/quiche/quic/tools/quic_simple_server_session_test.cc",
       "src/quiche/quic/tools/quic_simple_server_stream_test.cc",

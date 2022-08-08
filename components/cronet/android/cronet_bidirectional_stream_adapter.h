@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
 
 namespace net {
 struct BidirectionalStreamRequestInfo;
