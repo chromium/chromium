@@ -124,6 +124,14 @@ CompositorGpuThread::GetSharedContextState() {
   attribs.angle_context_virtualization_group_number =
       gl::AngleContextVirtualizationGroup::kDrDc;
 
+  bool enable_angle_validation = features::IsANGLEValidationEnabled();
+#if DCHECK_IS_ON()
+  // Force validation on for all debug builds and testing
+  enable_angle_validation = true;
+#endif
+
+  attribs.can_skip_validation = !enable_angle_validation;
+
   // Compositor thread context doesn't need access textures and semaphores
   // created with other contexts.
   attribs.global_texture_share_group = false;
