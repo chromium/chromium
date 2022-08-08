@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/browser_process.h"
 
 namespace {
 
