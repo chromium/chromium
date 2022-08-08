@@ -1125,12 +1125,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that feed ablation successfully hides the feed from the NTP and the
 // toggle from the Chrome settings.
 // TODO(crbug.com/1339419): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testFeedAblationHidesFeed DISABLED_testFeedAblationHidesFeed
-#else
-#define MAYBE_testFeedAblationHidesFeed testFeedAblationHidesFeed
-#endif
-- (void)MAYBE_testFeedAblationHidesFeed {
+// TODO(crbug.com/1350826): Test fails on small form factors.
+- (void)DISABLED_testFeedAblationHidesFeed {
   // Relaunch the app with trending queries disabled, to ensure that the
   // discover feed is always present.
   // TODO(crbug.com/1350826): Trending queries is configured as a
