@@ -45,6 +45,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -62,6 +63,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -81,6 +84,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
+@DoNotBatch(reason = "Test start up behaviors.")
 public class LocationBarTest {
     private static final String TEST_QUERY = "testing query";
     private static final List<String> TEST_PARAMS = Arrays.asList("foo=bar");
@@ -615,6 +619,41 @@ public class LocationBarTest {
         mOmnibox.requestFocus();
         mOmnibox.checkFocus(true);
         mOmnibox.clearFocus();
+        mOmnibox.checkFocus(false);
+    }
+
+    /**
+     * Test that back press should make the omnibox unfocused.
+     */
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_backPress() {
+        startActivityNormally();
+
+        mOmnibox.requestFocus();
+        mOmnibox.checkFocus(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.backKeyPressed());
+        mOmnibox.checkFocus(false);
+    }
+
+    /**
+     * Same with {@link #testFocusLogic_backPress()}, but with predictive back gesture enabled.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testFocusLogic_backPress_Refactored() {
+        startActivityNormally();
+
+        mOmnibox.requestFocus();
+        mOmnibox.checkFocus(true);
+        Assert.assertTrue(mLocationBarMediator.getHandleBackPressChangedSupplier().get());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getOnBackPressedDispatcher().onBackPressed());
+        Assert.assertFalse(mLocationBarMediator.getHandleBackPressChangedSupplier().get());
         mOmnibox.checkFocus(false);
     }
 
