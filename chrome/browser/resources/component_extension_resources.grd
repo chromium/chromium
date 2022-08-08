@@ -26,7 +26,7 @@
       </if>
 
       <!-- Contact Center Insights extension, enabled on managed ChromeOS devices -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_JS" file="chromeos/contact_center_insights/background.js" type="BINDATA" />
         <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_WRAPPER_JS" file="chromeos/contact_center_insights/background_wrapper.js" type="BINDATA" />
         <!-- Generated dependency bundle used by the extension for reporting purposes -->
