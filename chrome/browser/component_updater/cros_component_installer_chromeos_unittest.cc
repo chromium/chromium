@@ -27,7 +27,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -211,7 +210,6 @@ class CrOSComponentInstallerTest : public testing::Test {
 
     tmp_unpack_dir_ = base_component_paths_.GetPath().AppendASCII("tmp_unpack");
 
-    chromeos::DBusThreadManager::Initialize();
     ash::ImageLoaderClient::InitializeFake();
     image_loader_client_ =
         static_cast<ash::FakeImageLoaderClient*>(ash::ImageLoaderClient::Get());
@@ -220,7 +218,6 @@ class CrOSComponentInstallerTest : public testing::Test {
   void TearDown() override {
     image_loader_client_ = nullptr;
     ash::ImageLoaderClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     preinstalled_components_path_override_.reset();
     user_components_path_override_.reset();
   }

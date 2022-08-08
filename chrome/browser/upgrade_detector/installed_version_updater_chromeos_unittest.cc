@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +25,6 @@ using ::testing::Property;
 class InstalledVersionUpdaterTest : public ::testing::Test {
  protected:
   InstalledVersionUpdaterTest() {
-    chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
         ash::UpdateEngineClient::InitializeFakeForTest();
 
@@ -38,7 +36,6 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
 
     // Be kind; rewind.
     ash::UpdateEngineClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void NotifyStatusChanged(update_engine::StatusResult status) {

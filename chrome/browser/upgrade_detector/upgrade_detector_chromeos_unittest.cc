@@ -21,7 +21,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,7 +94,6 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     scoped_local_state_.Get()->SetUserPref(prefs::kAttemptedToEnableAutoupdate,
                                            std::make_unique<base::Value>(true));
 
-    chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
         ash::UpdateEngineClient::InitializeFakeForTest();
 
@@ -120,7 +118,6 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     tzset();
 
     ash::UpdateEngineClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   const base::Clock* GetMockClock() { return task_environment_.GetMockClock(); }

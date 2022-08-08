@@ -20,7 +20,6 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -171,7 +170,6 @@ class NetworkRoutesDataCollectorTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    chromeos::DBusThreadManager::Initialize();
     ash::DebugDaemonClient::InitializeFake();
     static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get())
         ->SetRoutesForTesting(fake_routes);
@@ -183,7 +181,6 @@ class NetworkRoutesDataCollectorTest : public ::testing::Test {
     EXPECT_TRUE(temp_dir_.Delete());
 
     ash::DebugDaemonClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
