@@ -61,6 +61,7 @@
 #include "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -398,6 +399,10 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Set monitoring for some experimental flags.
   MonitorExperimentalSettingsChanges();
+
+  // Ensure the Fullscren Promos Manager is initialized.
+  PromosManager* promos_manager = application_context_->GetPromosManager();
+  promos_manager->Init();
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {

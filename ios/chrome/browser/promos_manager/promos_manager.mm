@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/promos_manager/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +29,9 @@ PromosManager::~PromosManager() = default;
 #pragma mark - Public methods
 
 void PromosManager::Init() {
+  if (!IsFullscreenPromosManagerEnabled())
+    return;
+
   DCHECK(local_state_);
 
   const base::Value::List& stored_active_promos =
