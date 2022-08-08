@@ -30,6 +30,11 @@
 
 // https://w3c.github.io/resource-timing/#performanceresourcetiming
 
+enum RenderBlockingStatusType {
+    "blocking",
+    "non-blocking"
+};
+
 [Exposed=(Window,Worker)]
 interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingInitiatorType] readonly attribute DOMString initiatorType;
@@ -53,6 +58,6 @@ interface PerformanceResourceTiming : PerformanceEntry {
     // PerformanceResourceTiming#renderBlockingStatus
     // See: https://github.com/abinpaul1/resource-timing/blob/render-blocking-status-explainer/Explainer/Render_Blocking_Status.md
     [RuntimeEnabled=RenderBlockingStatus]
-        readonly attribute DOMString renderBlockingStatus;
+        readonly attribute RenderBlockingStatusType renderBlockingStatus;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

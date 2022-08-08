@@ -74,8 +74,9 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       alpn_negotiated_protocol_(
           static_cast<String>(info.alpn_negotiated_protocol)),
       connection_info_(static_cast<String>(info.connection_info)),
-      render_blocking_status_(info.render_blocking_status ? "blocking"
-                                                          : "non-blocking"),
+      render_blocking_status_(info.render_blocking_status
+                                  ? RenderBlockingStatusType::kBlocking
+                                  : RenderBlockingStatusType::kNonBlocking),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       timing_(ResourceLoadTiming::FromMojo(info.timing.get())),
@@ -169,7 +170,14 @@ AtomicString PerformanceResourceTiming::initiatorType() const {
 }
 
 AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
-  return render_blocking_status_;
+  switch (render_blocking_status_) {
+    case RenderBlockingStatusType::kBlocking:
+      return "blocking";
+    case RenderBlockingStatusType::kNonBlocking:
+      return "non-blocking";
+  }
+  NOTREACHED();
+  return "non-blocking";
 }
 
 AtomicString PerformanceResourceTiming::AlpnNegotiatedProtocol() const {
