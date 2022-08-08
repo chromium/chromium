@@ -28,6 +28,7 @@ namespace content {
 
 class FrameTree;
 class PrerenderHostRegistry;
+class PrerenderPageHolder;
 class RenderFrameHostImpl;
 class WebContentsImpl;
 
@@ -197,8 +198,6 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   }
 
  private:
-  class PageHolder;
-
   // Records the status to UMA and UKM. `initiator_ukm_id` represents the page
   // that starts prerendering and `prerendered_ukm_id` represents the
   // prerendered page. `prerendered_ukm_id` is valid after the page is
@@ -236,7 +235,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   absl::optional<FinalStatus> final_status_;
 
-  std::unique_ptr<PageHolder> page_holder_;
+  std::unique_ptr<PrerenderPageHolder> page_holder_;
 
   base::ObserverList<Observer> observers_;
 
