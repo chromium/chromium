@@ -86,13 +86,13 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
   available_len = max(available_len, 0);
 
   DCHECK_EQ(axis.sizes_.size(), deltas.size());
-  int* grid_layout = axis.sizes_.data();
 
   if (grid.IsEmpty()) {
-    grid_layout[0] = available_len;
+    axis.sizes_[0] = LayoutUnit(available_len);
     return;
   }
 
+  Vector<int> grid_layout(axis.sizes_.size());
   int grid_len = axis.sizes_.size();
   DCHECK(grid_len);
 
@@ -283,6 +283,9 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     for (int i = 0; i < grid_len; ++i)
       grid_layout[i] -= deltas[i];
   }
+
+  for (int i = 0; i < grid_len; ++i)
+    axis.sizes_[i] = LayoutUnit(grid_layout[i]);
 }
 
 void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {

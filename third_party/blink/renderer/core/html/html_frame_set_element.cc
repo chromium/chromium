@@ -437,9 +437,9 @@ void HTMLFrameSetElement::ContinueResizing(const LayoutFrameSet::GridAxis& axis,
       (position - current_split_position) - resize_axis.split_resize_offset_;
   if (!delta)
     return;
-  const int original_size_prev =
+  const LayoutUnit original_size_prev =
       axis.sizes_[split_index - 1] - resize_axis.deltas_[split_index - 1];
-  const int original_size_next =
+  const LayoutUnit original_size_next =
       axis.sizes_[split_index] - resize_axis.deltas_[split_index];
   if ((original_size_prev != 0 && axis.sizes_[split_index - 1] + delta <= 0) ||
       (original_size_next != 0 && axis.sizes_[split_index] - delta <= 0)) {
@@ -465,7 +465,7 @@ int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
 
   int position = 0;
   for (int i = 0; i < split && i < size; ++i)
-    position += axis.sizes_[i] + border_thickness;
+    position += axis.sizes_[i].ToInt() + border_thickness;
   return position - border_thickness;
 }
 
@@ -492,12 +492,12 @@ int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
   if (!size)
     return ResizeAxis::kNoSplit;
 
-  int split_position = axis.sizes_[0];
+  int split_position = axis.sizes_[0].ToInt();
   for (wtf_size_t i = 1; i < size; ++i) {
     if (position >= split_position &&
         position < split_position + border_thickness)
       return static_cast<int>(i);
-    split_position += border_thickness + axis.sizes_[i];
+    split_position += border_thickness + axis.sizes_[i].ToInt();
   }
   return ResizeAxis::kNoSplit;
 }

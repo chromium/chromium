@@ -74,7 +74,7 @@ class LayoutFrameSet final : public LayoutBox {
 
     void Resize(int);
 
-    Vector<int> sizes_;
+    Vector<LayoutUnit> sizes_;
     // A copy of HTMLFrameSetElement::allow_border_*.  It's helpful
     // because this information is used at the paint stage.
     Vector<bool> allow_border_;
