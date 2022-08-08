@@ -3195,6 +3195,13 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_HARDWARE_SHUTDOWN_BUTTON" desc="Label for the shut down button on the hardware error page.">
         Shut down
       </message>
+      <!-- Reboot page -->
+      <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_TITLE" desc="The title for the reboot page. The reboot page is shown when the device is preparing to reboot.">
+        Preparing to restart...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_MESSAGE" desc="The message for the reboot page explaining how soon the device will reboot.">
+        System will restart in 5 seconds.
+      </message>
       <!-- Wipe device page -->
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">
         Device is going to the same user. Erase user data?

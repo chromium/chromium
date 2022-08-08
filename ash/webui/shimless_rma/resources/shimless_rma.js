@@ -14,6 +14,7 @@ import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_wp_disable_complete_page.js';
+import './reboot_page.js';
 import './reimaging_calibration_failed_page.js';
 import './reimaging_calibration_run_page.js';
 import './reimaging_calibration_setup_page.js';
@@ -221,6 +222,13 @@ export const StateComponentMapping = {
   },
   [State.kHardwareError]: {
     componentIs: 'hardware-error-page',
+    requiresReloadWhenShown: false,
+    buttonNext: ButtonState.HIDDEN,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
+  },
+  [State.kReboot]: {
+    componentIs: 'reboot-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,

@@ -140,6 +140,12 @@ export const fakeStates = [
     canGoBack: false,
     error: RmadErrorCode.kOk,
   },
+  {
+    state: State.kReboot,
+    canExit: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk,
+  },
 ];
 
 /** @type {!Array<string>} */
