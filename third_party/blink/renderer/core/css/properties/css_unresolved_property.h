@@ -14,6 +14,7 @@
 namespace blink {
 
 class ExecutionContext;
+const CSSUnresolvedProperty& GetCSSPropertyVariableInternal();
 
 // TODO(crbug.com/793288): audit and consider redesigning how aliases are
 // handled once more of project Ribbon is done and all use of aliases can be
@@ -57,12 +58,14 @@ class CORE_EXPORT CSSUnresolvedProperty {
   }
 
  protected:
-  static const CSSUnresolvedProperty& GetNonAliasProperty(CSSPropertyID);
+  static const CSSUnresolvedProperty& GetNonAliasProperty(CSSPropertyID id) {
+    if (id == CSSPropertyID::kVariable)
+      return GetCSSPropertyVariableInternal();
+    return *kPropertyClasses[static_cast<int>(id)];
+  }
 
-  constexpr CSSUnresolvedProperty() {}
+  constexpr CSSUnresolvedProperty() = default;
 };
-
-const CSSUnresolvedProperty& GetCSSPropertyVariableInternal();
 
 }  // namespace blink
 
