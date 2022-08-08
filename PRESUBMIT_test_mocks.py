@@ -142,7 +142,7 @@ class MockInputApi(object):
 class MockOutputApi(object):
   """Mock class for the OutputApi class.
 
-  An instance of this class can be passed to presubmit unittests for outputing
+  An instance of this class can be passed to presubmit unittests for outputting
   various types of results.
   """
 

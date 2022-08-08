@@ -3771,7 +3771,7 @@ class PydepsChecker:
         return self._file_cache[path]
 
     def _ComputeNormalizedPydepsEntries(self, pydeps_path):
-        """Returns an interable of paths within the .pydep, relativized to //."""
+        """Returns an iterable of paths within the .pydep, relativized to //."""
         pydeps_data = self._LoadFile(pydeps_path)
         uses_gn_paths = '--gn-paths' in pydeps_data
         entries = (l for l in pydeps_data.splitlines()
@@ -3898,7 +3898,7 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
         results.append(
             output_api.PresubmitPromptOrNotify(
                 'You have changed python files that may affect pydeps for android\n'
-                'specific scripts. However, the relevant presumbit check cannot be\n'
+                'specific scripts. However, the relevant presubmit check cannot be\n'
                 'run because you are not using an Android checkout. To validate that\n'
                 'the .pydeps are correct, re-run presubmit in an Android checkout, or\n'
                 'use the android-internal-presubmit optional trybot.\n'
@@ -4245,7 +4245,7 @@ def CheckGnGlobForward(input_api, output_api):
                 'forward_variables_from("*") without exclusions',
                 items=sorted(problems),
                 long_text=(
-                    'The variables "visibilty" and "test_only" should be '
+                    'The variables "visibility" and "test_only" should be '
                     'explicitly listed in forward_variables_from(). For more '
                     'details, see:\n'
                     'https://chromium.googlesource.com/chromium/src/+/HEAD/'
@@ -5217,7 +5217,7 @@ def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
         detection_list=['config=nacl', 'enable-nacl', 'cpu=pnacl', 'nacl_io'],
         files_to_skip=files_to_skip + [r"^native_client_sdk[\\/]"])
 
-    # PPAPI: any C/C++ file that in its diff includes a ppappi library
+    # PPAPI: any C/C++ file that in its diff includes a ppapi library
     problems += _CheckForDeprecatedTech(
         input_api,
         output_api,
@@ -5675,7 +5675,7 @@ def CheckTranslationExpectations(input_api, output_api,
         grd_files = git_helper.list_grds_in_repository(repo_root)
 
     # Ignore bogus grd files used only for testing
-    # ui/webui/resoucres/tools/generate_grd.py.
+    # ui/webui/resources/tools/generate_grd.py.
     ignore_path = input_api.os_path.join('ui', 'webui', 'resources', 'tools',
                                          'tests')
     grd_files = [p for p in grd_files if ignore_path not in p]
