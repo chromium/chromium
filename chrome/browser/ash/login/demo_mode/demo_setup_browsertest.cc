@@ -1029,16 +1029,9 @@ class DemoSetupRegionCodeNotExistTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// TODO(crbug.com/1320444): Re-enable the test in debug.
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
-  DISABLED_RegionCodeNotExistPlaceholderIsSet
-#else
-#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
-  RegionCodeNotExistPlaceholderIsSet
-#endif
+// TODO(crbug.com/1320444): Flaky test.
 IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
-                       MAYBE_RegionCodeNotExistPlaceholderIsSet) {
+                       DISABLED_RegionCodeNotExistPlaceholderIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
