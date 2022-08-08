@@ -353,9 +353,12 @@ bool ArgumentParser::ResolveArguments(
   }
 
   // A required argument was not matched. There is only one case in which this
-  // is allowed: a required callback when Promises are supported instead; if
-  // this is the case, |allow_omitted_final_argument| is true.
-  if (allow_omitted_final_argument && expected.size() == 1) {
+  // is allowed: a required callback has been left off of the provided arguments
+  // when Promises are supported; if this is the case,
+  // |allow_omitted_final_argument| is true and there should be no provided
+  // arguments left.
+  if (allow_omitted_final_argument && provided.size() == 0 &&
+      expected.size() == 1) {
     (*result)[index] = v8::Local<v8::Value>();
     return true;
   }

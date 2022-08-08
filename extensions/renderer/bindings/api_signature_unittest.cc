@@ -826,7 +826,15 @@ TEST_F(APISignatureTest, PromisesSupport) {
         &access_checker);
     ExpectPass(*required_callback_signature, "[]", "[]",
                binding::AsyncResponseType::kPromise);
-    // If the context doesn't support promises, parsing should fail.
+
+    // Ensure that the promise support allowing the final argument to be
+    // optional doesn't mean we can ignore it entirely if it doesn't match the
+    // signature. See: http://crbug.com/1350315
+    ExpectFailure(*required_callback_signature, "['foo']",
+                  NoMatchingSignature());
+
+    // If the context doesn't support promises, parsing should fail if the
+    // required callback is left off.
     context_allows_promises = false;
     ExpectFailure(*required_callback_signature, "[]", NoMatchingSignature());
   }

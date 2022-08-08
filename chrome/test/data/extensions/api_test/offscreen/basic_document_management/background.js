@@ -99,7 +99,7 @@ chrome.test.runTests([
   async function callingCloseDocumentWhenNoneOpenRejects() {
     chrome.test.assertFalse(await chrome.offscreen.hasDocument());
     await chrome.test.assertPromiseRejects(
-        chrome.offscreen.closeDocument(VALID_PARAMS),
+        chrome.offscreen.closeDocument(),
         'Error: No current offscreen document.');
     chrome.test.succeed();
   },
