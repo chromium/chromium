@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
@@ -18,11 +19,6 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 #endif
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}  // namespace base
 
 // This class is responsible for gathering the list of modules for the
 // chrome://conflicts page and the state of the third-party features on the
@@ -33,7 +29,7 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
   using UniquePtr =
       std::unique_ptr<ConflictsDataFetcher, base::OnTaskRunnerDeleter>;
   using OnConflictsDataFetchedCallback =
-      base::OnceCallback<void(base::DictionaryValue results)>;
+      base::OnceCallback<void(base::Value::Dict results)>;
 
   ConflictsDataFetcher(const ConflictsDataFetcher&) = delete;
   ConflictsDataFetcher& operator=(const ConflictsDataFetcher&) = delete;
@@ -71,7 +67,7 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
 
   // Temporarily holds the module list while the modules are being
   // enumerated.
-  std::unique_ptr<base::ListValue> module_list_;
+  absl::optional<base::Value::List> module_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

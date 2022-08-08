@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -329,14 +328,13 @@ std::string GetThirdPartyFeaturesStatusString(ThirdPartyFeaturesStatus status) {
 void OnConflictsDataFetched(
     ConflictsDataFetcher::OnConflictsDataFetchedCallback
         on_conflicts_data_fetched_callback,
-    base::DictionaryValue results,
+    base::Value::Dict results,
     ThirdPartyFeaturesStatus third_party_features_status) {
   // Third-party conflicts status.
-  results.SetBoolKey("thirdPartyFeatureEnabled",
-                     IsThirdPartyFeatureEnabled(third_party_features_status));
-  results.SetStringKey(
-      "thirdPartyFeatureStatus",
-      GetThirdPartyFeaturesStatusString(third_party_features_status));
+  results.Set("thirdPartyFeatureEnabled",
+              IsThirdPartyFeatureEnabled(third_party_features_status));
+  results.Set("thirdPartyFeatureStatus",
+              GetThirdPartyFeaturesStatusString(third_party_features_status));
 
   std::move(on_conflicts_data_fetched_callback).Run(std::move(results));
 }
@@ -344,7 +342,7 @@ void OnConflictsDataFetched(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void OnModuleDataFetched(ConflictsDataFetcher::OnConflictsDataFetchedCallback
                              on_conflicts_data_fetched_callback,
-                         base::DictionaryValue results,
+                         base::Value::Dict results,
                          absl::optional<ThirdPartyConflictsManager::State>
                              third_party_conflicts_manager_state) {
   OnConflictsDataFetched(
@@ -358,7 +356,7 @@ void OnModuleDataFetched(ConflictsDataFetcher::OnConflictsDataFetchedCallback
 ConflictsDataFetcher::~ConflictsDataFetcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (module_list_)
+  if (module_list_.has_value())
     ModuleDatabase::GetInstance()->RemoveObserver(this);
 }
 
@@ -421,7 +419,7 @@ void ConflictsDataFetcher::GetListOfModules() {
 
   // The request is handled asynchronously, filling up the |module_list_|,
   // and will callback via OnModuleDatabaseIdle() on completion.
-  module_list_ = std::make_unique<base::ListValue>();
+  module_list_ = base::Value::List();
 
   auto* module_database = ModuleDatabase::GetInstance();
   module_database->ForceStartInspection();
@@ -469,7 +467,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
   data.Set("code_id", GenerateCodeId(module_key));
   data.Set("process_types", GetProcessTypesString(module_data));
 
-  module_list_->GetList().Append(std::move(data));
+  module_list_->Append(std::move(data));
 }
 
 void ConflictsDataFetcher::OnModuleDatabaseIdle() {
@@ -478,9 +476,10 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
 
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 
-  base::DictionaryValue results;
-  results.GetDict().Set("moduleCount", int(module_list_->GetList().size()));
-  results.Set("moduleList", std::move(module_list_));
+  base::Value::Dict results;
+  results.Set("moduleCount", int(module_list_->size()));
+  results.Set("moduleList", std::move(*module_list_));
+  module_list_ = absl::nullopt;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The state of third-party features must be determined on the UI thread.

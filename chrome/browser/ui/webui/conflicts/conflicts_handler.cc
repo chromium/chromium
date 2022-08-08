@@ -41,7 +41,7 @@ void ConflictsHandler::HandleRequestModuleList(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ConflictsHandler::OnConflictsDataFetched(base::DictionaryValue results) {
+void ConflictsHandler::OnConflictsDataFetched(base::Value::Dict results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!module_list_callback_id_.empty());
 
