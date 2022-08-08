@@ -84,8 +84,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   void ExportPasswordsToPath(const base::FilePath& path);
 
-  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
-
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   std::unique_ptr<password_manager::PasswordImporter> importer_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

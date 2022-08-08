@@ -9,10 +9,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/sync/base/bind_to_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,7 +48,8 @@ base::expected<std::string, PasswordImporter::Status> ReadFileToString(
 
 }  // namespace
 
-PasswordImporter::PasswordImporter() = default;
+PasswordImporter::PasswordImporter(SavedPasswordsPresenter* presenter)
+    : presenter_(presenter) {}
 
 PasswordImporter::~PasswordImporter() = default;
 
@@ -75,15 +78,30 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
   }
 }
 
-void PasswordImporter::Import(const base::FilePath& path,
-                              CompletionCallback completion) {
+void PasswordImporter::Import(const base::FilePath& path) {
   // Posting with USER_VISIBLE priority, because the result of the import is
   // visible to the user in the password settings page.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&ReadFileToString, path),
       base::BindOnce(&PasswordImporter::ParseCSVPasswordsInSandbox,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&PasswordImporter::ConsumePasswords,
+                                    weak_ptr_factory_.GetWeakPtr())));
+}
+
+void PasswordImporter::ConsumePasswords(
+    password_manager::mojom::CSVPasswordSequencePtr seq) {
+  if (!seq)
+    return;
+
+  for (const auto& pwd : seq->csv_passwords) {
+    presenter_->AddCredential(password_manager::CredentialUIEntry(pwd),
+                              password_manager::PasswordForm::Type::kImported);
+  }
+
+  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
+                          seq->csv_passwords.size());
 }
 
 void PasswordImporter::SetServiceForTesting(

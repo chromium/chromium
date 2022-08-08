@@ -15,6 +15,8 @@
 
 namespace password_manager {
 
+class SavedPasswordsPresenter;
+
 // Exposes an API for importing passwords from a file. Parsing of CSV will be
 // performed using a utility SandBox process.
 class PasswordImporter {
@@ -34,15 +36,14 @@ class PasswordImporter {
   using CompletionCallback =
       password_manager::mojom::CSVPasswordParser::ParseCSVCallback;
 
-  PasswordImporter();
+  explicit PasswordImporter(SavedPasswordsPresenter* presenter);
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
   ~PasswordImporter();
 
-  // Imports passwords from the file at |path|, and fires |completion| callback
-  // on the calling thread with the passwords when ready. The only supported
-  // file format is CSV.
-  void Import(const base::FilePath& path, CompletionCallback completion);
+  // Imports passwords from the file at |path|.
+  // The only supported file format is CSV.
+  void Import(const base::FilePath& path);
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>
@@ -69,6 +70,8 @@ class PasswordImporter {
   mojo::Remote<mojom::CSVPasswordParser> parser_;
 
   Status status_{Status::NONE};
+
+  const raw_ptr<SavedPasswordsPresenter> presenter_;
 
   base::WeakPtrFactory<PasswordImporter> weak_ptr_factory_{this};
 };

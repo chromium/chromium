@@ -111,7 +111,8 @@ void PasswordManagerPorter::Import(content::WebContents* web_contents) {
   DCHECK(web_contents);
 
   if (!importer_)
-    importer_ = std::make_unique<password_manager::PasswordImporter>();
+    importer_ =
+        std::make_unique<password_manager::PasswordImporter>(presenter_);
 
   PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
@@ -199,21 +200,5 @@ void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {
 
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
-  importer_->Import(path,
-                    base::BindOnce(&PasswordManagerPorter::ConsumePasswords,
-                                   weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PasswordManagerPorter::ConsumePasswords(
-    password_manager::mojom::CSVPasswordSequencePtr seq) {
-  if (!seq)
-    return;
-
-  for (const auto& pwd : seq->csv_passwords) {
-    presenter_->AddCredential(password_manager::CredentialUIEntry(pwd),
-                              password_manager::PasswordForm::Type::kImported);
-  }
-
-  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
-                          seq->csv_passwords.size());
+  importer_->Import(path);
 }

@@ -328,7 +328,7 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
                                PasswordManagerPorter::ProgressCallback());
 
   std::unique_ptr<password_manager::PasswordImporter> importer =
-      std::make_unique<password_manager::PasswordImporter>();
+      std::make_unique<password_manager::PasswordImporter>(&presenter);
 
   FakePasswordParserService service;
   mojo::Receiver<password_manager::mojom::CSVPasswordParser> receiver{&service};

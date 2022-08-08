@@ -12,6 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,8 +28,9 @@ namespace password_manager {
 
 namespace {
 const char kTestOriginURL[] = "http://accounts.google.com/a/LoginAuth";
-const char kTestUsername[] = "test@gmail.com";
-const char kTestPassword[] = "test1";
+const char kTestSignonRealm[] = "http://accounts.google.com/";
+const char16_t kTestUsername[] = u"test@gmail.com";
+const char16_t kTestPassword[] = u"test1";
 const char kTestFileName[] = "test_only.csv";
 }  // namespace
 
@@ -49,39 +53,30 @@ class FakePasswordParserService : public mojom::CSVPasswordParser {
 
 class PasswordImporterTest : public testing::Test {
  public:
-  PasswordImporterTest() : receiver_{&service_} {
+  PasswordImporterTest() : receiver_{&service_}, importer_(&presenter_) {
     CHECK(temp_directory_.CreateUniqueTempDir());
     mojo::PendingRemote<mojom::CSVPasswordParser> pending_remote{
         receiver_.BindNewPipeAndPassRemote()};
     importer_.SetServiceForTesting(std::move(pending_remote));
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   }
 
   PasswordImporterTest(const PasswordImporterTest&) = delete;
   PasswordImporterTest& operator=(const PasswordImporterTest&) = delete;
 
+  ~PasswordImporterTest() override {
+    store_->ShutdownOnUIThread();
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
   void StartImportAndWaitForCompletion(const base::FilePath& input_file) {
-    importer_.Import(input_file,
-                     base::BindOnce(&PasswordImporterTest::OnImportFinished,
-                                    base::Unretained(this)));
-
+    importer_.Import(input_file);
     task_environment_.RunUntilIdle();
-
-    ASSERT_TRUE(callback_called_);
   }
 
-  void OnImportFinished(mojom::CSVPasswordSequencePtr seq) {
-    callback_called_ = true;
-    imported_passwords_.clear();
-    if (!seq)
-      return;
-    for (const auto& pwd : seq->csv_passwords) {
-      imported_passwords_.push_back(pwd);
-    }
-  }
-
-  const std::vector<CSVPassword>& imported_passwords() {
-    return imported_passwords_;
+  std::vector<CredentialUIEntry> imported_passwords() {
+    return presenter_.GetSavedCredentials();
   }
 
   PasswordImporter::Status GetImportStatus() const {
@@ -93,10 +88,12 @@ class PasswordImporterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  bool callback_called_ = false;
-  std::vector<CSVPassword> imported_passwords_;
+  std::vector<CredentialUIEntry> imported_passwords_;
   FakePasswordParserService service_;
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
+  scoped_refptr<TestPasswordStore> store_ =
+      base::MakeRefCounted<TestPasswordStore>();
+  password_manager::SavedPasswordsPresenter presenter_{store_};
   password_manager::PasswordImporter importer_;
 };
 
@@ -112,9 +109,10 @@ TEST_F(PasswordImporterTest, CSVImport) {
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   ASSERT_EQ(1u, imported_passwords().size());
-  EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].GetURL());
-  EXPECT_EQ(kTestUsername, imported_passwords()[0].GetUsername());
-  EXPECT_EQ(kTestPassword, imported_passwords()[0].GetPassword());
+  EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
+  EXPECT_EQ(kTestSignonRealm, imported_passwords()[0].signon_realm);
+  EXPECT_EQ(kTestUsername, imported_passwords()[0].username);
+  EXPECT_EQ(kTestPassword, imported_passwords()[0].password);
 }
 
 TEST_F(PasswordImporterTest, CSVImportLargeFile) {
