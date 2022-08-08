@@ -116,7 +116,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
 
   // PrefDelegate implementation.
   const base::Value* GetServerProperties() const override {
-    return pref_service_->Get(path_);
+    return &pref_service_->GetValue(path_);
   }
 
   void SetServerProperties(const base::Value& value,
@@ -183,9 +183,7 @@ class NetworkQualitiesPrefDelegateImpl
   base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return pref_service_->GetDictionary(kNetworkQualitiesPref)
-        ->GetDict()
-        .Clone();
+    return pref_service_->GetValueDict(kNetworkQualitiesPref).Clone();
   }
 
  private:
