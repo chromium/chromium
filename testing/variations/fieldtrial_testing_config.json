@@ -2172,29 +2172,6 @@
             ]
         }
     ],
-    "CPSS-OnDeviceNotificationPredictions": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220221",
-                    "params": {
-                        "holdback_chance": "0.3"
-                    },
-                    "enable_features": [
-                        "PermissionOnDeviceNotificationPredictions"
-                    ]
-                }
-            ]
-        }
-    ],
     "CWPCollectsETM": [
         {
             "platforms": [

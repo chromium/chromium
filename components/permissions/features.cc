@@ -65,7 +65,7 @@ const base::Feature kPermissionPredictionServiceUseUrlOverride{
 
 const base::Feature kPermissionOnDeviceNotificationPredictions{
     "PermissionOnDeviceNotificationPredictions",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -111,7 +111,7 @@ const base::FeatureParam<double>
     kPermissionOnDeviceNotificationPredictionsHoldbackChance(
         &features::kPermissionOnDeviceNotificationPredictions,
         "holdback_chance",
-        0.0);
+        0.3);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Specifies the `trigger_id` of the HaTS survey to trigger immediately after
