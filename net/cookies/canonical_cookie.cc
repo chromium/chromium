@@ -1500,6 +1500,43 @@ std::string CanonicalCookie::BuildCookieLine(
 }
 
 // static
+std::string CanonicalCookie::BuildCookieAttributesLine(
+    const CanonicalCookie& cookie) {
+  std::string cookie_line;
+  // In Mozilla, if you set a cookie like "AAA", it will have an empty token
+  // and a value of "AAA". When it sends the cookie back, it will send "AAA",
+  // so we need to avoid sending "=AAA" for a blank token value.
+  if (!cookie.Name().empty())
+    cookie_line += cookie.Name() + "=";
+  cookie_line += cookie.Value();
+  if (!cookie.Domain().empty())
+    cookie_line += "; domain=" + cookie.Domain();
+  if (!cookie.Path().empty())
+    cookie_line += "; path=" + cookie.Path();
+  if (cookie.ExpiryDate() != base::Time())
+    cookie_line += "; expires=" + TimeFormatHTTP(cookie.ExpiryDate());
+  if (cookie.IsSecure())
+    cookie_line += "; secure";
+  if (cookie.IsHttpOnly())
+    cookie_line += "; httponly";
+  switch (cookie.SameSite()) {
+    case CookieSameSite::NO_RESTRICTION:
+      cookie_line += "; samesite=none";
+      break;
+    case CookieSameSite::LAX_MODE:
+      cookie_line += "; samesite=lax";
+      break;
+    case CookieSameSite::STRICT_MODE:
+      cookie_line += "; samesite=strict";
+      break;
+    case CookieSameSite::UNSPECIFIED:
+      // Don't append any text if the samesite attribute wasn't explicitly set.
+      break;
+  }
+  return cookie_line;
+}
+
+// static
 CanonicalCookie::CookiePrefix CanonicalCookie::GetCookiePrefix(
     const std::string& name) {
   const char kSecurePrefix[] = "__Secure-";

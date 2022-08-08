@@ -15,6 +15,9 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * AwCookieManager manages cookies according to RFC2109 spec.
  *
@@ -105,6 +108,17 @@ public final class AwCookieManager {
                 AwCookieManagerJni.get().getCookie(mNativeCookieManager, AwCookieManager.this, url);
         // Return null if the string is empty to match legacy behavior
         return cookie == null || cookie.trim().isEmpty() ? null : cookie;
+    }
+
+    /**
+     * Get the attributes of any cookie(s) for a given url.
+     * @param url The url for which the cookies are set.
+     * @return The cookies as a list of Strings formatted like http set cookie headers.
+     */
+    public List<String> getCookieInfo(final String url) {
+        String[] cookies = AwCookieManagerJni.get().getCookieInfo(
+                mNativeCookieManager, AwCookieManager.this, url);
+        return Arrays.asList(cookies);
     }
 
     /**
@@ -268,6 +282,7 @@ public final class AwCookieManager {
         void setCookieSync(
                 long nativeCookieManager, AwCookieManager caller, String url, String value);
         String getCookie(long nativeCookieManager, AwCookieManager caller, String url);
+        String[] getCookieInfo(long nativeCookieManager, AwCookieManager caller, String url);
         void removeSessionCookies(
                 long nativeCookieManager, AwCookieManager caller, CookieCallback callback);
         void removeSessionCookiesSync(long nativeCookieManager, AwCookieManager caller);

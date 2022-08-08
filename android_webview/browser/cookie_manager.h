@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
@@ -122,6 +123,11 @@ class CookieManager {
                      const base::android::JavaParamRef<jstring>& value);
 
   base::android::ScopedJavaLocalRef<jstring> GetCookie(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jstring>& url);
+
+  base::android::ScopedJavaLocalRef<jobjectArray> GetCookieInfo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url);

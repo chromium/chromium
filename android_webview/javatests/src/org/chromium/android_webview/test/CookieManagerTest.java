@@ -39,11 +39,15 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Tests for the CookieManager.
@@ -303,6 +307,69 @@ public class CookieManagerTest {
         String allCookies = mCookieManager.getCookie(url);
         Assert.assertFalse(allCookies.contains(sessionCookie));
         Assert.assertTrue(allCookies.contains(normalCookie));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testGetCookieInfo_singleCookie() {
+        final String url = "http://www.example.com";
+        final String formattedDate = getHttpCookieExpiryDate();
+
+        final String cookieString =
+                "cookie=test; Domain=.example.com; Path=/; Expires=" + formattedDate;
+        final String expected =
+                "cookie=test; domain=.example.com; path=/; expires=" + formattedDate;
+
+        allowThirdPartyCookies(mAwContents);
+        mCookieManager.setCookie(url, cookieString);
+        List<String> cookieInfo = mCookieManager.getCookieInfo(url);
+
+        Assert.assertNotNull(cookieInfo);
+        Assert.assertEquals(expected, cookieInfo.get(0));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testGetCookieInfo_twoCookies() {
+        final String url = "http://www.example.com";
+        final String formattedDate = getHttpCookieExpiryDate();
+
+        final String cookie1String =
+                "cookie1=test1; Domain=example.com; Path=/; Expires=" + formattedDate;
+        final String cookie2String =
+                "cookie2=test2; SameSite=Lax; HttpOnly; Expires=" + formattedDate;
+        final String expected1 =
+                "cookie1=test1; domain=.example.com; path=/; expires=" + formattedDate;
+        final String expected2 = "cookie2=test2; domain=www.example.com; path=/; expires="
+                + formattedDate + "; httponly; samesite=lax";
+
+        allowThirdPartyCookies(mAwContents);
+        mCookieManager.setCookie(url, cookie1String);
+        mCookieManager.setCookie(url, cookie2String);
+        List<String> cookieInfo = mCookieManager.getCookieInfo(url);
+
+        Assert.assertNotNull(cookieInfo);
+        Assert.assertEquals(expected1, cookieInfo.get(0));
+        Assert.assertEquals(expected2, cookieInfo.get(1));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testGetCookieInfo_emptyCookie() {
+        final String url = "http://www.example.com";
+
+        final String cookieString = "cookie1=test1";
+        final String expected = "cookie1=test1; domain=www.example.com; path=/";
+
+        allowThirdPartyCookies(mAwContents);
+        mCookieManager.setCookie(url, cookieString);
+        List<String> cookieInfo = mCookieManager.getCookieInfo(url);
+
+        Assert.assertNotNull(cookieInfo);
+        Assert.assertEquals(expected, cookieInfo.get(0));
     }
 
     @Test
@@ -1518,6 +1585,24 @@ public class CookieManagerTest {
         // Use "Max-Age" instead of "Expires", since "Max-Age" is relative to the time the cookie is
         // set, rather than a call to the Date constructor when building this cookie string.
         return cookie + "; Max-Age=" + secondsTillExpiry;
+    }
+
+    /**
+     * @return an expiry date in the standard IMF-fixdate format defined by RFC 7231. The expiry
+     * date will outlive the test so that it can be read during the test.
+     */
+    private String getHttpCookieExpiryDate() {
+        final DateFormat format = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date expiry = new Date();
+        expiry.setTime(expiry.getTime() + CookieLifetime.OUTLIVE_THE_TEST_SEC * 1000);
+        String formattedDate = format.format(expiry);
+        // On some platforms, getting the date string includes '+00:00' at the end but the cookie
+        // API does not return this so we want to remove it if it is present.
+        if (formattedDate.endsWith("+00:00")) {
+            formattedDate = formattedDate.substring(0, formattedDate.length() - 6);
+        }
+        return formattedDate;
     }
 
     /**

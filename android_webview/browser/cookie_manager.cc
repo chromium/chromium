@@ -508,6 +508,25 @@ ScopedJavaLocalRef<jstring> CookieManager::GetCookie(
       env, net::CanonicalCookie::BuildCookieLine(cookie_list));
 }
 
+ScopedJavaLocalRef<jobjectArray> CookieManager::GetCookieInfo(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& url) {
+  GURL host(ConvertJavaStringToUTF16(env, url));
+
+  net::CookieList cookie_list;
+  ExecCookieTaskSync(base::BindOnce(&CookieManager::GetCookieListAsyncHelper,
+                                    base::Unretained(this), host,
+                                    &cookie_list));
+  std::vector<std::string> cookie_attributes;
+  for (net::CanonicalCookie cookie : cookie_list) {
+    cookie_attributes.push_back(
+        net::CanonicalCookie::BuildCookieAttributesLine(cookie));
+  }
+  return base::android::ToJavaArrayOfStrings(
+      env, base::span<const std::string>(cookie_attributes));
+}
+
 void CookieManager::GetCookieListAsyncHelper(const GURL& host,
                                              net::CookieList* result,
                                              base::OnceClosure complete) {

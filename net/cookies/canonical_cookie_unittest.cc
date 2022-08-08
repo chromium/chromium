@@ -3135,6 +3135,36 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
   MatchCookieLineToVector("A=B; C; D=E; F=G; D=E; H=I", cookies);
 }
 
+TEST(CanonicalCookieTest, BuildCookieAttributesLine) {
+  std::unique_ptr<CanonicalCookie> cookie;
+  GURL url("https://example.com/");
+  base::Time now = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+
+  cookie = CanonicalCookie::Create(url, "A=B", now, server_time,
+                                   absl::nullopt /* cookie_partition_key */);
+  EXPECT_EQ("A=B; domain=example.com; path=/",
+            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  // Nameless cookies are sent back without a prefixed '='.
+  cookie = CanonicalCookie::Create(url, "C", now, server_time,
+                                   absl::nullopt /* cookie_partition_key */);
+  EXPECT_EQ("C; domain=example.com; path=/",
+            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  // BuildCookieAttributesLine should match the spec in the case of an empty
+  // name with a value containing an equal sign (even if it currently produces
+  // "invalid" cookie lines).
+  cookie = CanonicalCookie::Create(url, "=H=I", now, server_time,
+                                   absl::nullopt /* cookie_partition_key */);
+  EXPECT_EQ("H=I; domain=example.com; path=/",
+            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  // BuildCookieAttributesLine should include all attributes.
+  cookie = CanonicalCookie::Create(
+      url, "A=B; domain=.example.com; path=/; secure; httponly; samesite=lax",
+      now, server_time, absl::nullopt /* cookie_partition_key */);
+  EXPECT_EQ("A=B; domain=.example.com; path=/; secure; httponly; samesite=lax",
+            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+}
+
 // Confirm that input arguments are reflected in the output cookie.
 TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
