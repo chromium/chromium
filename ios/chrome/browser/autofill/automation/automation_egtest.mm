@@ -25,7 +25,6 @@
 namespace {
 
 static const char kAutofillAutomationSwitch[] = "autofillautomation";
-static const int kRecipeRetryLimit = 5;
 
 // Private helper method for accessing app interface method.
 NSError* SetAutofillAutomationProfile(const std::string& profile_json_string) {
@@ -136,58 +135,13 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   }
 }
 
-// Override the XCTestCase method that records a failure due to an exception.
-// This way it can be chosen whether to report failures during multiple runs of
-// a recipe, and only fail the test if all the runs of the recipe fail.
-// Will still print the failure even when it is not reported.
-- (void)recordFailureWithDescription:(NSString*)description
-                              inFile:(NSString*)filePath
-                              atLine:(NSUInteger)lineNumber
-                            expected:(BOOL)expected {
-  if (self->_shouldRecordException) {
-    [super recordFailureWithDescription:description
-                                 inFile:filePath
-                                 atLine:lineNumber
-                               expected:expected];
-  } else {
-    NSLog(@"%@", description);
-  }
-}
-
-// Runs the recipe provided multiple times.
-// If any of the runs succeed, the test will be reported as a success.
+// Runs the recipe provided.
 - (void)testActions {
-  for (int i = 0; i < kRecipeRetryLimit; i++) {
-    // Only actually report the exception on the last run.
-    // This is because any exception reporting will fail the test.
-    NSLog(@"================================================================");
-    NSLog(@"RECIPE ATTEMPT %d of %d for %@", (i + 1), kRecipeRetryLimit,
-          base::SysUTF8ToNSString(_startURL.GetContent()));
+  [ChromeEarlGrey loadURL:_startURL];
 
-    self->_shouldRecordException = (i == (kRecipeRetryLimit - 1));
-
-    if ([self runActionsOnce]) {
-      return;
-    }
+  for (AutomationAction* action in _actions) {
+    [action execute];
   }
-}
-
-// Tries running the recipe against the target website once.
-// Returns true if the entire recipe succeeds.
-// Returns false if an assertion is raised due to a failure.
-- (bool)runActionsOnce {
-  @try {
-    // Load the initial page of the recipe.
-    [ChromeEarlGrey loadURL:_startURL];
-
-    for (AutomationAction* action in _actions) {
-      [action execute];
-    }
-  } @catch (NSException* e) {
-    return false;
-  }
-
-  return true;
 }
 
 @end
