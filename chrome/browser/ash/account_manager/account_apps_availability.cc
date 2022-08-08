@@ -60,9 +60,9 @@ bool IsActiveDirectoryUser() {
 }
 
 bool IsPrefInitialized(PrefService* prefs) {
-  const base::Value* accounts =
-      prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
-  return accounts && (accounts->DictSize() > 0 || IsActiveDirectoryUser());
+  const base::Value::Dict& accounts =
+      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+  return accounts.size() > 0 || IsActiveDirectoryUser();
 }
 
 void CompleteFindAccountByGaiaId(
@@ -106,16 +106,11 @@ void CompleteGetAccountsAvailableInArc(
 
 base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
   base::flat_set<std::string> result;
-  const base::Value* accounts =
-      prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
-  if (!accounts) {
-    LOG(ERROR) << "Couldn't find "
-               << account_manager::prefs::kAccountAppsAvailability
-               << " dict in prefs";
-    return result;
-  }
+  const base::Value::Dict& accounts =
+      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+
   // See structure of `accounts` at the top of the file.
-  for (const auto dict : accounts->DictItems()) {
+  for (const auto dict : accounts) {
     absl::optional<bool> is_available =
         dict.second.FindBoolKey(account_manager::prefs::kIsAvailableInArcKey);
     if (!is_available.has_value() || !is_available.value())
@@ -133,22 +128,16 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 // `SetIsAccountAvailableInArc` wasn't called for this account yet).
 absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
                                              const std::string& gaia_id) {
-  const base::Value* accounts =
-      prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
-  if (!accounts) {
-    LOG(ERROR) << "Couldn't find "
-               << account_manager::prefs::kAccountAppsAvailability
-               << " dict in prefs";
-    return absl::nullopt;
-  }
+  const base::Value::Dict& accounts =
+      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+
   // See structure of `accounts` at the top of the file.
-  const base::Value* account_entry = accounts->FindDictKey(gaia_id);
+  const base::Value::Dict* account_entry = accounts.FindDict(gaia_id);
   if (!account_entry)
     return absl::nullopt;
 
-  DCHECK(account_entry->is_dict());
   absl::optional<bool> is_available_in_arc =
-      account_entry->FindBoolKey(account_manager::prefs::kIsAvailableInArcKey);
+      account_entry->FindBool(account_manager::prefs::kIsAvailableInArcKey);
   DCHECK(is_available_in_arc);
   // If there is no `is_available_in_arc` key, assume that account is available
   // in ARC.
