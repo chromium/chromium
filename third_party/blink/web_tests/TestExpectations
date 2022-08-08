@@ -153,6 +153,7 @@ crbug.com/1339293 [ Linux ] fast/frames/frame-scrolling-attribute.html [ Failure
 crbug.com/1339293 [ Linux ] media/controls/rotated-video-has-right-panel-width.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] media/media-controls-overflow-hidden.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029.html [ Failure Pass ]
+crbug.com/1351106 [ Linux ] fast/frames/invalid-cols-rows-value.html [ Failure Pass ]
 
 # ====== Timed HTML parser budget tests to here ========================
 
