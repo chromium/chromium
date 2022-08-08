@@ -70,6 +70,25 @@ source_set("tab_helper") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("service") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "follow_configuration.h",
+    "follow_configuration.mm",
+    "follow_service.h",
+    "follow_service_observer.h",
+    "follow_service_observer.mm",
+    "followed_web_site.h",
+    "followed_web_site.mm",
+    "web_page_urls.h",
+    "web_page_urls.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
