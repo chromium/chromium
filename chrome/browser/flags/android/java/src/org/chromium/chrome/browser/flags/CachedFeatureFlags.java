@@ -81,6 +81,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false)
                     .put(ChromeFeatureList.NEW_WINDOW_APP_MENU, true)
                     .put(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH, false)
+                    .put(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, false)
                     .put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, false)

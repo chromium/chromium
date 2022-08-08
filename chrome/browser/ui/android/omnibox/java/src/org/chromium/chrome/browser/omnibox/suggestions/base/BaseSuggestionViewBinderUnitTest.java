@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -32,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -277,5 +280,22 @@ public class BaseSuggestionViewBinderUnitTest {
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_height);
         verify(mContentView).setPaddingRelative(0, expectedPadding, 0, expectedPadding);
         verify(mContentView).setMinimumHeight(expectedHeight);
+    }
+
+    @Test
+    public void suggestionBackgroundAndMargin() {
+        mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
+        mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
+
+        verify(mBaseView).setBackground(any());
+        Assert.assertNotNull(mBaseView.getBackground());
+
+        verify(mBaseView).setLayoutParams(any());
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
+        Assert.assertNotNull(layoutParams);
+        Assert.assertEquals(0, layoutParams.leftMargin);
+        Assert.assertNotEquals(0, layoutParams.topMargin);
+        Assert.assertEquals(0, layoutParams.rightMargin);
+        Assert.assertEquals(0, layoutParams.bottomMargin);
     }
 }

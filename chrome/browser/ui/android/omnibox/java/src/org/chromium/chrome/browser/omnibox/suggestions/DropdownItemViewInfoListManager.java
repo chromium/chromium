@@ -11,6 +11,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -127,6 +129,9 @@ class DropdownItemViewInfoListManager {
         int deviceType = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 ? SuggestionCommonProperties.FormFactor.TABLET
                 : SuggestionCommonProperties.FormFactor.PHONE;
+        DropdownItemViewInfo prevSuggestionWithBackground = null;
+        // Note: we consider the Omnibox as part of the background rounding group.
+        boolean inDropdownItemBackgroundRoundingGroup = true;
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
             final PropertyModel model = item.model;
@@ -134,13 +139,54 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
+            // Add the background to suggestions.
+            if (item.processor.allowBackgroundRounding()) {
+                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED,
+                        !inDropdownItemBackgroundRoundingGroup);
+                // The default value is false, so we do not need to assign false to
+                // BG_BOTTOM_CORNER_ROUNDED here.
+
+                prevSuggestionWithBackground = item;
+                inDropdownItemBackgroundRoundingGroup = true;
+            } else {
+                // If the current suggestion does not support background, we should round corner the
+                // bottom of the previous suggestion's background.
+                if (prevSuggestionWithBackground != null) {
+                    prevSuggestionWithBackground.model.set(
+                            DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
+                }
+                inDropdownItemBackgroundRoundingGroup = false;
+            }
+
             final boolean groupIsDefaultCollapsed = getGroupCollapsedState(item.groupId);
             if (!groupIsDefaultCollapsed || isGroupHeaderWithId(item, item.groupId)) {
                 suggestionsList.add(item);
             }
         }
 
+        // round the bottom corners of the last suggestion.
+        if (prevSuggestionWithBackground != null) {
+            prevSuggestionWithBackground.model.set(
+                    DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
+        }
+
         mManagedModel.set(suggestionsList);
+    }
+
+    /**
+     * Return if the suggestion type should have background.
+     *
+     * @param type The type of the suggestion.
+     */
+    private boolean suggestionShouldHaveBackground(@OmniboxSuggestionUiType int type) {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+                && (type == OmniboxSuggestionUiType.DEFAULT
+                        || type == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION
+                        || type == OmniboxSuggestionUiType.ANSWER_SUGGESTION
+                        || type == OmniboxSuggestionUiType.ENTITY_SUGGESTION
+                        || type == OmniboxSuggestionUiType.TAIL_SUGGESTION
+                        || type == OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION
+                        || type == OmniboxSuggestionUiType.PEDAL_SUGGESTION);
     }
 
     /**

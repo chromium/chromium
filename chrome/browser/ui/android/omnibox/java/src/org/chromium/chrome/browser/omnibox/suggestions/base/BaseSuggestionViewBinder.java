@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
@@ -21,6 +25,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -62,6 +67,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
+        } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
+            updateBackgroundAndMargin(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
@@ -264,5 +271,61 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         view.setImageDrawable(sds.drawable);
         ApiCompatibilityUtils.setImageTintList(view, tint);
+    }
+
+    /**
+     * Update the background for the view, also add the margin for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that need to be updated.
+     */
+    public static void updateBackgroundAndMargin(PropertyModel model, View view) {
+        view.setBackground(getBackgroundDrawable(model, view));
+
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams == null) {
+            layoutParams =
+                    new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        }
+
+        if (layoutParams instanceof MarginLayoutParams) {
+            int verticalSpacing = view.getContext().getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_suggestion_vertical_spacing);
+            ((MarginLayoutParams) layoutParams).setMargins(0, verticalSpacing, 0, 0);
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Retrieves background drawable for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that provides context.
+     * @return The suggestion background drawable.
+     */
+    private static Drawable getBackgroundDrawable(PropertyModel model, View view) {
+        final Resources resources = view.getContext().getResources();
+        int roundedRadius =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius);
+        int rectangleRadius = resources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_bg_rectangle_corner_radius);
+
+        int topRadii = model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED) ? roundedRadius
+                                                                                 : rectangleRadius;
+        int bottomRadii = model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED)
+                ? roundedRadius
+                : rectangleRadius;
+
+        GradientDrawable backgroundGradient = new GradientDrawable();
+        backgroundGradient.setShape(GradientDrawable.RECTANGLE);
+
+        backgroundGradient.setCornerRadii(new float[] {topRadii, topRadii, topRadii, topRadii,
+                bottomRadii, bottomRadii, bottomRadii, bottomRadii});
+        backgroundGradient.setColor(view.getContext().getColor(R.color.default_bg_color_baseline));
+        final int tint = ChromeColors.getSurfaceColor(
+                view.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
+        backgroundGradient.setTint(tint);
+
+        return backgroundGradient;
     }
 }

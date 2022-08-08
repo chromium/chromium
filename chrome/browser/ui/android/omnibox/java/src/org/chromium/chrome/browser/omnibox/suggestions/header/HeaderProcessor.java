@@ -104,4 +104,9 @@ public class HeaderProcessor implements DropdownItemProcessor {
         mShouldRemoveSuggestionHeaderCapitalization = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION);
     }
+
+    @Override
+    public boolean allowBackgroundRounding() {
+        return false;
+    }
 }

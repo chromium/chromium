@@ -39,4 +39,9 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
 
     @Override
     public void onNativeInitialized() {}
+
+    @Override
+    public boolean allowBackgroundRounding() {
+        return false;
+    }
 }
