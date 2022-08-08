@@ -257,6 +257,11 @@ const base::Feature kSuggestionAnswersColorReverse = {
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
                                              enabled_by_default_android_only};
 
+// If enabled, computes spacing between MV tiles so that about 4.5 tiles are
+// shown on screen on narrow devices.
+extern const base::Feature kMostVisitedTilesDynamicSpacing{
+    "OmniboxMostVisitedTilesDynamicSpacing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, permits the title on the MostVisitedTiles to wrap around to
 // second line.
 extern const base::Feature kMostVisitedTilesTitleWrapAround{

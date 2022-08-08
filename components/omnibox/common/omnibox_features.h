@@ -74,6 +74,7 @@ extern const base::Feature kClipboardSuggestionContentHidden;
 extern const base::Feature kDocumentProviderDedupingOptimization;
 extern const base::Feature kSuggestionAnswersColorReverse;
 extern const base::Feature kMostVisitedTiles;
+extern const base::Feature kMostVisitedTilesDynamicSpacing;
 extern const base::Feature kMostVisitedTilesTitleWrapAround;
 extern const base::Feature kRichAutocompletion;
 extern const base::Feature kNtpRealboxPedals;
