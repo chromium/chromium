@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 #include "components/autofill_assistant/browser/mock_execution_delegate.h"
+#include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +57,10 @@ class BasicInteractionsTest : public testing::Test {
   BasicInteractions basic_interactions_{&ui_delegate_, &execution_delegate_};
 };
 
+TEST_F(BasicInteractionsTest, GetWeakPtr) {
+  EXPECT_EQ(basic_interactions_.GetWeakPtr().get(), &basic_interactions_);
+}
+
 TEST_F(BasicInteractionsTest, SetValue) {
   SetModelValueProto proto;
   *proto.mutable_value()->mutable_value() = SimpleValue(std::string("success"));
@@ -66,6 +71,109 @@ TEST_F(BasicInteractionsTest, SetValue) {
   proto.set_model_identifier("output");
   EXPECT_TRUE(basic_interactions_.SetValue(proto));
   EXPECT_EQ(user_model_.GetValue("output"), proto.value().value());
+}
+
+TEST_F(BasicInteractionsTest, SetUserActions) {
+  SetUserActionsProto proto;
+  // UserActions not set
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // UserActions value not set
+  proto.mutable_user_actions();
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // UserActions value doesn't have any actions
+  ValueProto done_user_actions_value;
+  *proto.mutable_user_actions()->mutable_value() = done_user_actions_value;
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // Successfully set user action
+  UserActionProto done_user_action;
+  done_user_action.set_identifier("done_identifier");
+  done_user_action.mutable_chip()->set_type(ChipType::HIGHLIGHTED_ACTION);
+  done_user_action.mutable_chip()->set_text("Done");
+  done_user_action.set_enabled(true);
+  *done_user_actions_value.mutable_user_actions()->add_values() =
+      done_user_action;
+  *proto.mutable_user_actions()->mutable_value() = done_user_actions_value;
+  EXPECT_TRUE(basic_interactions_.SetUserActions(proto));
+
+  EXPECT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(AllOf(
+                  Property(&UserAction::identifier, StrEq("done_identifier")),
+                  Property(&UserAction::has_chip, Eq(true)),
+                  Property(&UserAction::enabled, Eq(true)))));
+
+  // Successfully replace user actions
+  ValueProto cancel_user_actions_value;
+  UserActionProto cancel_user_action;
+  cancel_user_action.set_identifier("cancel_identifier");
+  cancel_user_action.mutable_chip()->set_type(ChipType::CANCEL_ACTION);
+  cancel_user_action.mutable_chip()->set_text("Cancel");
+  cancel_user_action.set_enabled(false);
+  *cancel_user_actions_value.mutable_user_actions()->add_values() =
+      cancel_user_action;
+  *proto.mutable_user_actions()->mutable_value() = cancel_user_actions_value;
+  EXPECT_TRUE(basic_interactions_.SetUserActions(proto));
+
+  EXPECT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(AllOf(
+                  Property(&UserAction::identifier, StrEq("cancel_identifier")),
+                  Property(&UserAction::has_chip, Eq(true)),
+                  Property(&UserAction::enabled, Eq(false)))));
+}
+
+TEST_F(BasicInteractionsTest, ComputeValueNoKindOrValue) {
+  // Kind not set
+  ComputeValueProto proto_no_kind_or_value;
+  proto_no_kind_or_value.set_result_model_identifier("output");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_no_kind_or_value));
+
+  // Kind set but no value was added
+  ComputeValueProto proto_boolean_and;
+  proto_boolean_and.set_result_model_identifier("output");
+  proto_boolean_and.mutable_boolean_and();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_and));
+
+  ComputeValueProto proto_boolean_or;
+  proto_boolean_or.set_result_model_identifier("output");
+  proto_boolean_or.mutable_boolean_or();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_or));
+
+  ComputeValueProto proto_boolean_not;
+  proto_boolean_not.set_result_model_identifier("output");
+  proto_boolean_not.mutable_boolean_not();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_not));
+
+  ComputeValueProto proto_to_string;
+  proto_to_string.set_result_model_identifier("output");
+  proto_to_string.mutable_to_string();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_to_string));
+
+  ComputeValueProto proto_comparison;
+  proto_comparison.set_result_model_identifier("output");
+  proto_comparison.mutable_comparison();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_comparison));
+
+  ComputeValueProto proto_integer_sum;
+  proto_integer_sum.set_result_model_identifier("output");
+  proto_integer_sum.mutable_integer_sum();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_integer_sum));
+
+  ComputeValueProto proto_credit_card_response;
+  proto_credit_card_response.set_result_model_identifier("output");
+  proto_credit_card_response.mutable_create_credit_card_response();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_credit_card_response));
+
+  ComputeValueProto proto_login_options_response;
+  proto_login_options_response.set_result_model_identifier("output");
+  proto_login_options_response.mutable_create_login_option_response();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_login_options_response));
+
+  ComputeValueProto proto_string_empty;
+  proto_string_empty.set_result_model_identifier("output");
+  proto_string_empty.mutable_string_empty();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_string_empty));
 }
 
 TEST_F(BasicInteractionsTest, ComputeValueBooleanAnd) {
@@ -437,7 +545,31 @@ TEST_F(BasicInteractionsTest, NotifyViewInflationFinishedRunsCallback) {
 
   EXPECT_CALL(callback,
               Run(Property(&ClientStatus::proto_status, ACTION_APPLIED)));
-  basic_interactions_.NotifyViewInflationFinished(ClientStatus(ACTION_APPLIED));
+  EXPECT_TRUE(basic_interactions_.NotifyViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+}
+
+TEST_F(BasicInteractionsTest, NotifyPersistentViewInflationFinishedCallback) {
+  base::MockCallback<base::OnceCallback<void(const ClientStatus&)>> callback;
+
+  // |persistent_view_inflation_finished_callback_| not set
+  EXPECT_FALSE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+
+  basic_interactions_.SetPersistentViewInflationFinishedCallback(
+      callback.Get());
+  EXPECT_CALL(callback,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED)));
+
+  EXPECT_TRUE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+
+  // |persistent_view_inflation_finished_callback_| cleared
+  basic_interactions_.SetPersistentViewInflationFinishedCallback(
+      callback.Get());
+  basic_interactions_.ClearPersistentUiCallbacks();
+  EXPECT_FALSE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
 }
 
 TEST_F(BasicInteractionsTest, EndActionResetsViewInflationCallback) {
