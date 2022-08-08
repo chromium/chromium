@@ -313,6 +313,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Inline Text Boxes"/>
   <int value="3" label="Screen Reader"/>
   <int value="4" label="HTML"/>
+  <int value="5" label="HTML Metadata"/>
+  <int value="6" label="Label images"/>
+  <int value="7" label="PDF"/>
 </enum>
 
 <enum name="AccessibilityTreeUnserializeError">

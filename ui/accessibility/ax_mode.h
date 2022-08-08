@@ -71,7 +71,8 @@ class AX_BASE_EXPORT AXMode {
 
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
-  // logging and debugging.
+  // logging and debugging, as well as AccessibilityModeFlagEnum (and
+  // related metrics callsites, see: |ModeFlagHistogramValue|).
   static constexpr uint32_t kLastModeFlag = 1 << 7;
 
   constexpr AXMode() : flags_(0) {}
@@ -107,6 +108,9 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_INLINE_TEXT_BOXES = 2,
     UMA_AX_MODE_SCREEN_READER = 3,
     UMA_AX_MODE_HTML = 4,
+    UMA_AX_MODE_HTML_METADATA = 5,
+    UMA_AX_MODE_LABEL_IMAGES = 6,
+    UMA_AX_MODE_PDF = 7,
 
     // This must always be the last enum. It's okay for its value to
     // increase, but none of the other enum values may change.

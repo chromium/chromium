@@ -358,6 +358,15 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   if (new_mode_flags & ui::AXMode::kHTML)
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML);
+  if (new_mode_flags & ui::AXMode::kHTMLMetadata)
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA);
+  if (new_mode_flags & ui::AXMode::kLabelImages)
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES);
+  if (new_mode_flags & ui::AXMode::kPDF)
+    RecordNewAccessibilityModeFlags(
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF);
 
   std::vector<WebContentsImpl*> web_contents_vector =
       WebContentsImpl::GetAllWebContents();

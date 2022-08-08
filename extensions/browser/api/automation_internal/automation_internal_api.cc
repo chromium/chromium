@@ -270,6 +270,18 @@ class AutomationWebContentsObserver
           "Accessibility.ModeFlag",
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML,
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Accessibility.ModeFlag",
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA,
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Accessibility.ModeFlag",
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES,
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Accessibility.ModeFlag",
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF,
+          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
