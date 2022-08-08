@@ -19,15 +19,17 @@ class GeometryMapperTransformCacheTest : public testing::Test {
   }
 
   static void UpdateScreenTransform(const TransformPaintPropertyNode& node) {
+    node.GetTransformCache();  // Ensure the transform cache.
     node.UpdateScreenTransform();
   }
 
-  static bool HasPlaneRootTransform(const TransformPaintPropertyNode& node) {
-    return !!node.GetTransformCache().plane_root_transform_;
+  static bool ScreenTransformUpdated(const TransformPaintPropertyNode& node) {
+    return node.GetTransformCache().screen_transform_updated_;
   }
 
-  static bool HasScreenTransform(const TransformPaintPropertyNode& node) {
-    return node.GetTransformCache().ScreenTransformIsValid();
+  static GeometryMapperTransformCache::ScreenTransform* GetScreenTransform(
+      const TransformPaintPropertyNode& node) {
+    return GetTransformCache(node).screen_transform_.get();
   }
 
   static void Check2dTranslationToRoot(const TransformPaintPropertyNode& node,
@@ -37,11 +39,8 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(&t0(), cache.root_of_2d_translation());
     EXPECT_EQ(gfx::Vector2dF(x, y), cache.to_2d_translation_root());
 
-    EXPECT_FALSE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
-    UpdateScreenTransform(node);
-    EXPECT_FALSE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
+    EXPECT_TRUE(ScreenTransformUpdated(node));
+    EXPECT_FALSE(GetScreenTransform(node));
 
     EXPECT_EQ(&t0(), cache.plane_root());
     TransformationMatrix actual_to_plane_root;
@@ -63,11 +62,8 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(gfx::Vector2dF(translate_x, translate_y),
               cache.to_2d_translation_root());
 
-    EXPECT_TRUE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
-    UpdateScreenTransform(node);
-    EXPECT_TRUE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
+    EXPECT_TRUE(ScreenTransformUpdated(node));
+    EXPECT_FALSE(GetScreenTransform(node));
 
     EXPECT_EQ(&t0(), cache.plane_root());
     EXPECT_EQ(to_plane_root, cache.to_plane_root());
@@ -92,11 +88,10 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(gfx::Vector2dF(translate_x, translate_y),
               cache.to_2d_translation_root());
 
-    EXPECT_FALSE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
+    EXPECT_FALSE(ScreenTransformUpdated(node));
     UpdateScreenTransform(node);
-    EXPECT_FALSE(HasPlaneRootTransform(node));
-    EXPECT_TRUE(HasScreenTransform(node));
+    EXPECT_TRUE(ScreenTransformUpdated(node));
+    EXPECT_TRUE(GetScreenTransform(node));
 
     EXPECT_EQ(&plane_root, cache.plane_root());
     EXPECT_EQ(to_screen, cache.to_screen());
@@ -119,11 +114,10 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(gfx::Vector2dF(translate_x, translate_y),
               cache.to_2d_translation_root());
 
-    EXPECT_TRUE(HasPlaneRootTransform(node));
-    EXPECT_FALSE(HasScreenTransform(node));
+    EXPECT_FALSE(ScreenTransformUpdated(node));
     UpdateScreenTransform(node);
-    EXPECT_TRUE(HasPlaneRootTransform(node));
-    EXPECT_TRUE(HasScreenTransform(node));
+    EXPECT_TRUE(ScreenTransformUpdated(node));
+    EXPECT_TRUE(GetScreenTransform(node));
 
     EXPECT_EQ(&plane_root, cache.plane_root());
     EXPECT_EQ(to_plane_root, cache.to_plane_root());
@@ -133,6 +127,14 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     projection_from_screen.FlattenTo2d();
     projection_from_screen = projection_from_screen.Inverse();
     EXPECT_EQ(projection_from_screen, cache.projection_from_screen());
+  }
+
+  static bool HasAnimationToPlaneRoot(const TransformPaintPropertyNode& node) {
+    return node.GetTransformCache().has_animation_to_plane_root();
+  }
+
+  static bool HasAnimationToScreen(const TransformPaintPropertyNode& node) {
+    return node.GetTransformCache().has_animation_to_screen();
   }
 };
 
@@ -225,18 +227,51 @@ TEST_F(GeometryMapperTransformCacheTest, TransformUpdate) {
                       TransformationMatrix().Rotate3d(0, 45, 0)});
   Check2dTranslationToRoot(t0(), 0, 0);
   Check2dTranslationToRoot(*t1, 1, 2);
-  auto to_screen = TransformationMatrix().Translate(1, 2).Rotate3d(0, 45, 0);
-  CheckPlaneRootSameAs2dTranslationRoot(*t2, to_screen, *t2, 0, 0);
-  to_screen = to_screen.Translate(7, 8);
-  CheckPlaneRootSameAs2dTranslationRoot(*t3, to_screen, *t2, 7, 8);
+
+  auto t2_to_screen = TransformationMatrix().Translate(1, 2).Rotate3d(0, 45, 0);
+  CheckPlaneRootSameAs2dTranslationRoot(*t2, t2_to_screen, *t2, 0, 0);
+  auto t3_to_screen = t2_to_screen;
+  t3_to_screen.Translate(7, 8);
+  CheckPlaneRootSameAs2dTranslationRoot(*t3, t3_to_screen, *t2, 7, 8);
+
+  auto* t2_screen_transform = GetScreenTransform(*t2);
+  ASSERT_TRUE(t2_screen_transform);
+  auto* t3_screen_transform = GetScreenTransform(*t3);
+  ASSERT_TRUE(t3_screen_transform);
+
+  // UpdateScreenTransform should not reallocate screen_transform_.
+  UpdateScreenTransform(*t2);
+  EXPECT_TRUE(ScreenTransformUpdated(*t2));
+  UpdateScreenTransform(*t3);
+  EXPECT_TRUE(ScreenTransformUpdated(*t3));
+  EXPECT_EQ(t2_screen_transform, GetScreenTransform(*t2));
+  EXPECT_EQ(t3_screen_transform, GetScreenTransform(*t3));
+
+  // Invalidating cache should invalidate screen_transform_ but not free it.
+  GeometryMapperTransformCache::ClearCache();
+  t3->Update(*t2, TransformPaintPropertyNode::State{gfx::Vector2dF(28, 27)});
+  EXPECT_FALSE(ScreenTransformUpdated(*t2));
+  EXPECT_FALSE(ScreenTransformUpdated(*t3));
+  EXPECT_EQ(t2_screen_transform, GetScreenTransform(*t2));
+  EXPECT_EQ(t3_screen_transform, GetScreenTransform(*t3));
+
+  // Update screen transforms (by CheckPlaneRootSameAs2dTranslationRoot()).
+  // Screen transforms should be valid and have expected values.
+  CheckPlaneRootSameAs2dTranslationRoot(*t2, t2_to_screen, *t2, 0, 0);
+  t3_to_screen = t2_to_screen;
+  t3_to_screen.Translate(28, 27);
+  CheckPlaneRootSameAs2dTranslationRoot(*t3, t3_to_screen, *t2, 28, 27);
+  // The pointers should be also the same as before.
+  EXPECT_EQ(t2_screen_transform, GetScreenTransform(*t2));
+  EXPECT_EQ(t3_screen_transform, GetScreenTransform(*t3));
 
   // Change t2 back to a 2d translation.
   GeometryMapperTransformCache::ClearCache();
   t2->Update(*t1, TransformPaintPropertyNode::State{gfx::Vector2dF(11, 12)});
   Check2dTranslationToRoot(t0(), 0, 0);
   Check2dTranslationToRoot(*t1, 1, 2);
-  Check2dTranslationToRoot(*t2, 12, 14);
-  Check2dTranslationToRoot(*t3, 19, 22);
+  Check2dTranslationToRoot(*t2, 1 + 11, 2 + 12);
+  Check2dTranslationToRoot(*t3, 1 + 11 + 28, 2 + 12 + 27);
 }
 
 }  // namespace blink
