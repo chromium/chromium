@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -86,6 +87,9 @@ constexpr int kManagedStatusIndicatorSize = 20;
 // There is a gap between the background of the name view and the name view's
 // actual text.
 constexpr auto kTemplateNameInsets = gfx::Insets::VH(0, 2);
+
+// The time duration for the hover and icon containers to fade in and out.
+constexpr int kFadeDurationMs = 100;
 
 std::u16string GetTimeStr(base::Time timestamp) {
   std::u16string date, time, time_str;
@@ -258,6 +262,12 @@ SavedDeskItemView::SavedDeskItemView(
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  hover_container_->SetPaintToLayer();
+  icon_container_view_->SetPaintToLayer();
+
+  hover_container_->layer()->SetFillsBoundsOpaquely(false);
+  icon_container_view_->layer()->SetFillsBoundsOpaquely(false);
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -272,13 +282,25 @@ void SavedDeskItemView::UpdateHoverButtonsVisibility(
 
   // For switch access, setting the hover buttons to visible allows users to
   // navigate to it.
-  const bool visible =
+  bool previous_hover_container_visibility = hover_container_should_be_visible_;
+  hover_container_should_be_visible_ =
       !is_template_name_being_modified_ &&
       ((is_touch && HitTestPoint(location_in_view)) ||
        (!is_touch && IsMouseHovered()) ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
-  hover_container_->SetVisible(visible);
-  icon_container_view_->SetVisible(!visible);
+
+  if (previous_hover_container_visibility ==
+      hover_container_should_be_visible_) {
+    return;
+  }
+
+  if (hover_container_should_be_visible_) {
+    hover_container_->SetVisible(true);
+    AnimateHover(hover_container_->layer(), icon_container_view_->layer());
+  } else {
+    icon_container_view_->SetVisible(true);
+    AnimateHover(icon_container_view_->layer(), hover_container_->layer());
+  }
 }
 
 bool SavedDeskItemView::IsNameBeingModified() const {
@@ -425,6 +447,8 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   // Hide the hover container when we are modifying the template name.
   hover_container_->SetVisible(false);
   icon_container_view_->SetVisible(true);
+  hover_container_->layer()->SetOpacity(0.0f);
+  icon_container_view_->layer()->SetOpacity(1.0f);
 
   // Set the Overview highlight to move focus with the `name_view_`.
   auto* highlight_controller = Shell::Get()
@@ -550,6 +574,30 @@ void SavedDeskItemView::UpdateTemplateName() {
   saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
       /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
       desk_template_->Clone());
+}
+
+void SavedDeskItemView::OnHoverAnimationEnded() {
+  hover_container_->SetVisible(hover_container_should_be_visible_);
+  icon_container_view_->SetVisible(!hover_container_should_be_visible_);
+}
+
+void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,
+                                     ui::Layer* layer_to_hide) {
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<SavedDeskItemView> view) {
+            if (view)
+              view->OnHoverAnimationEnded();
+          },
+          weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetOpacity(std::move(layer_to_show), 0.0f)
+      .SetOpacity(std::move(layer_to_hide), 1.0f)
+      .Then()
+      .SetDuration(base::Milliseconds(kFadeDurationMs))
+      .SetOpacity(std::move(layer_to_show), 1.0f)
+      .SetOpacity(std::move(layer_to_hide), 0.0f);
 }
 
 void SavedDeskItemView::ContentsChanged(views::Textfield* sender,

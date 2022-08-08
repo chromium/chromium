@@ -132,6 +132,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
  private:
   friend class SavedDeskItemViewTestApi;
 
+  void OnHoverAnimationEnded();
+  void AnimateHover(ui::Layer* layer_to_show, ui::Layer* layer_to_hide);
+
   void OnDeleteTemplate();
   void OnDeleteButtonPressed();
 
@@ -187,6 +190,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // `HandleKeyEvent` function detects that the escape key was pressed so that
   // `OnViewBlurred` does not update the template name.
   bool should_commit_name_changes_ = true;
+
+  bool hover_container_should_be_visible_ = false;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       name_view_observation_{this};
