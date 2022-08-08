@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/web_package/web_bundle_memory_quota_consumer.h"
+#include "components/web_package/web_bundle_url_loader_factory.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
-#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
-#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 namespace network {
 
@@ -48,7 +48,7 @@ struct WebBundlePendingSubresourceRequest {
 };
 
 class WebBundleManager::MemoryQuotaConsumer
-    : public WebBundleMemoryQuotaConsumer {
+    : public web_package::WebBundleMemoryQuotaConsumer {
  public:
   MemoryQuotaConsumer(base::WeakPtr<WebBundleManager> manager,
                       int32_t process_id)
@@ -82,7 +82,7 @@ WebBundleManager::WebBundleManager()
 
 WebBundleManager::~WebBundleManager() = default;
 
-base::WeakPtr<WebBundleURLLoaderFactory>
+base::WeakPtr<web_package::WebBundleURLLoaderFactory>
 WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
@@ -107,7 +107,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
                      // |this| outlives |remote|.
                      base::Unretained(this), key));
 
-  auto factory = std::make_unique<WebBundleURLLoaderFactory>(
+  auto factory = std::make_unique<web_package::WebBundleURLLoaderFactory>(
       bundle_url, web_bundle_token_params, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
@@ -146,7 +146,7 @@ WebBundleManager::Key WebBundleManager::GetKey(
   return {process_id, token_params.token};
 }
 
-base::WeakPtr<WebBundleURLLoaderFactory>
+base::WeakPtr<web_package::WebBundleURLLoaderFactory>
 WebBundleManager::GetWebBundleURLLoaderFactory(const Key& key) {
   auto it = factories_.find(key);
   if (it == factories_.end()) {
@@ -165,8 +165,8 @@ void WebBundleManager::StartSubresourceRequest(
   DCHECK(!url_request.web_bundle_token_params->handle.is_valid());
 
   Key key = GetKey(*url_request.web_bundle_token_params, process_id);
-  base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-      GetWebBundleURLLoaderFactory(key);
+  base::WeakPtr<web_package::WebBundleURLLoaderFactory>
+      web_bundle_url_loader_factory = GetWebBundleURLLoaderFactory(key);
   base::Time request_start_time = base::Time::Now();
   base::TimeTicks request_start_time_ticks = base::TimeTicks::Now();
   if (web_bundle_url_loader_factory) {

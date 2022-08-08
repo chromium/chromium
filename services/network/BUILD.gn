@@ -172,13 +172,8 @@ component("network_service") {
     "url_request_context_builder_mojo.h",
     "url_request_context_owner.cc",
     "url_request_context_owner.h",
-    "web_bundle/web_bundle_chunked_buffer.cc",
-    "web_bundle/web_bundle_chunked_buffer.h",
     "web_bundle/web_bundle_manager.cc",
     "web_bundle/web_bundle_manager.h",
-    "web_bundle/web_bundle_memory_quota_consumer.h",
-    "web_bundle/web_bundle_url_loader_factory.cc",
-    "web_bundle/web_bundle_url_loader_factory.h",
     "web_transport.cc",
     "web_transport.h",
   ]
@@ -391,9 +386,7 @@ source_set("tests") {
     "udp_socket_unittest.cc",
     "upload_progress_tracker_unittest.cc",
     "url_loader_unittest.cc",
-    "web_bundle/web_bundle_chunked_buffer_unittest.cc",
     "web_bundle/web_bundle_manager_unittest.cc",
-    "web_bundle/web_bundle_url_loader_factory_unittest.cc",
     "web_transport_unittest.cc",
   ]
 

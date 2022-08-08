@@ -30,7 +30,6 @@
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
-#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"

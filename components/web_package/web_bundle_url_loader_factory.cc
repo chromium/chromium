@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
+#include "components/web_package/web_bundle_url_loader_factory.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/web_package/web_bundle_chunked_buffer.h"
+#include "components/web_package/web_bundle_memory_quota_consumer.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -24,11 +26,9 @@
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/web_bundle/web_bundle_chunked_buffer.h"
-#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
+namespace web_package {
 
 namespace {
 
@@ -47,7 +47,7 @@ bool CheckWebBundleServingConstraints(
     const network::mojom::URLResponseHead& response_head,
     std::string& out_error_message) {
   if (!response_head.headers ||
-      !cors::IsOkStatus(response_head.headers->response_code())) {
+      !network::cors::IsOkStatus(response_head.headers->response_code())) {
     out_error_message = "Failed to fetch Web Bundle.";
     return false;
   }
@@ -90,7 +90,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     if (result != MOJO_RESULT_OK) {
       wrapped_->OnComplete(
-          URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
       completed_ = true;
       return mojo::ScopedDataPipeConsumerHandle();
     }
@@ -111,7 +111,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
         factory_->ReportErrorAndCancelPendingLoaders(
             WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
                 kServingConstraintsNotMet,
-            mojom::WebBundleErrorType::kServingConstraintsNotMet,
+            network::mojom::WebBundleErrorType::kServingConstraintsNotMet,
             error_message);
       }
     }
@@ -134,12 +134,12 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
       factory_->ReportErrorAndCancelPendingLoaders(
           WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
               kWebBundleRedirected,
-          mojom::WebBundleErrorType::kWebBundleRedirected,
+          network::mojom::WebBundleErrorType::kWebBundleRedirected,
           "URL redirection of Subresource Web Bundles is currently not "
           "supported.");
     }
     wrapped_->OnComplete(
-        URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+        network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
     completed_ = true;
   }
 
@@ -177,14 +177,15 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
 
 }  // namespace
 
-class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
+class WebBundleURLLoaderFactory::URLLoader : public network::mojom::URLLoader {
  public:
-  URLLoader(mojo::PendingReceiver<mojom::URLLoader> loader,
-            const ResourceRequest& request,
-            mojo::PendingRemote<mojom::URLLoaderClient> client,
-            mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
-            base::Time request_start_time,
-            base::TimeTicks request_start_time_ticks)
+  URLLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      mojo::Remote<network::mojom::TrustedHeaderClient> trusted_header_client,
+      base::Time request_start_time,
+      base::TimeTicks request_start_time_ticks)
       : url_(request.url),
         request_mode_(request.mode),
         request_initiator_(request.request_initiator),
@@ -209,7 +210,9 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   URLLoader& operator=(const URLLoader&) = delete;
 
   const GURL& url() const { return url_; }
-  const mojom::RequestMode& request_mode() const { return request_mode_; }
+  const network::mojom::RequestMode& request_mode() const {
+    return request_mode_;
+  }
   const absl::optional<std::string>& devtools_request_id() const {
     return devtools_request_id_;
   }
@@ -218,7 +221,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     return request_initiator_;
   }
 
-  mojom::RequestDestination request_destination() const {
+  network::mojom::RequestDestination request_destination() const {
     return request_destination_;
   }
 
@@ -226,18 +229,18 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void OnResponse(mojom::URLResponseHeadPtr response,
+  void OnResponse(network::mojom::URLResponseHeadPtr response,
                   mojo::ScopedDataPipeConsumerHandle consumer) {
     client_->OnReceiveResponse(std::move(response), std::move(consumer));
   }
 
   void OnFail(net::Error error) {
-    client_->OnComplete(URLLoaderCompletionStatus(error));
+    client_->OnComplete(network::URLLoaderCompletionStatus(error));
     delete this;
   }
 
   void OnWriteCompleted(MojoResult result) {
-    URLLoaderCompletionStatus status(
+    network::URLLoaderCompletionStatus status(
         result == MOJO_RESULT_OK ? net::OK : net::ERR_INVALID_WEB_BUNDLE);
     status.encoded_data_length = body_length_ + headers_bytes_;
     // For these values we use the same `body_length_` as we don't currently
@@ -248,14 +251,14 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     delete this;
   }
 
-  void BlockResponseForCorb(mojom::URLResponseHeadPtr response_head) {
+  void BlockResponseForCorb(network::mojom::URLResponseHeadPtr response_head) {
     // A minimum implementation to block CORB-protected resources.
     //
     // TODO(crbug.com/1082020): Re-use
     // network::URLLoader::BlockResponseForCorb(), instead of copying
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
-    corb::SanitizeBlockedResponseHeaders(*response_head);
+    network::corb::SanitizeBlockedResponseHeaders(*response_head);
 
     // Send empty body to the URLLoaderClient.
     mojo::ScopedDataPipeProducerHandle producer;
@@ -275,8 +278,8 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
 
   void CompleteBlockedResponse(
       int error_code,
-      absl::optional<mojom::BlockedByResponseReason> reason) {
-    URLLoaderCompletionStatus status;
+      absl::optional<network::mojom::BlockedByResponseReason> reason) {
+    network::URLLoaderCompletionStatus status;
     status.error_code = error_code;
     status.completion_time = base::TimeTicks::Now();
     status.encoded_data_length = 0;
@@ -291,7 +294,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     delete this;
   }
 
-  mojo::Remote<mojom::TrustedHeaderClient>& trusted_header_client() {
+  mojo::Remote<network::mojom::TrustedHeaderClient>& trusted_header_client() {
     return trusted_header_client_;
   }
 
@@ -304,7 +307,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   }
 
  private:
-  // mojom::URLLoader
+  //  network::mojom::URLLoader
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
@@ -324,14 +327,14 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void OnMojoDisconnect() { delete this; }
 
   const GURL url_;
-  mojom::RequestMode request_mode_;
+  network::mojom::RequestMode request_mode_;
   absl::optional<url::Origin> request_initiator_;
-  mojom::RequestDestination request_destination_;
+  network::mojom::RequestDestination request_destination_;
   absl::optional<std::string> devtools_request_id_;
   const bool is_trusted_;
-  mojo::Receiver<mojom::URLLoader> receiver_;
-  mojo::Remote<mojom::URLLoaderClient> client_;
-  mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client_;
+  mojo::Receiver<network::mojom::URLLoader> receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+  mojo::Remote<network::mojom::TrustedHeaderClient> trusted_header_client_;
   uint64_t body_length_;
   size_t headers_bytes_;
   net::LoadTimingInfo load_timing_;
@@ -514,14 +517,15 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
-    const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
-    mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
+    const network::ResourceRequest::WebBundleTokenParams&
+        web_bundle_token_params,
+    mojo::Remote<network::mojom::WebBundleHandle> web_bundle_handle,
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     absl::optional<std::string> devtools_request_id,
-    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    mojom::CrossOriginEmbedderPolicyReporter* coep_reporter)
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    network::mojom::CrossOriginEmbedderPolicyReporter* coep_reporter)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
       web_bundle_memory_quota_consumer_(
@@ -536,7 +540,7 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     // TODO(crbug.com/1242281): Support redirection for WebBundle requests.
     ReportErrorAndCancelPendingLoaders(
         SubresourceWebBundleLoadResult::kWebBundleRedirected,
-        mojom::WebBundleErrorType::kWebBundleRedirected,
+        network::mojom::WebBundleErrorType::kWebBundleRedirected,
         "URL redirection of Subresource Web Bundles is currently not "
         "supported.");
   }
@@ -581,15 +585,16 @@ void WebBundleURLLoaderFactory::SetBundleStream(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-mojo::PendingRemote<mojom::URLLoaderClient>
+mojo::PendingRemote<network::mojom::URLLoaderClient>
 WebBundleURLLoaderFactory::MaybeWrapURLLoaderClient(
-    mojo::PendingRemote<mojom::URLLoaderClient> wrapped) {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> wrapped) {
   if (HasError()) {
-    mojo::Remote<mojom::URLLoaderClient>(std::move(wrapped))
-        ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(wrapped))
+        ->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
     return {};
   }
-  mojo::PendingRemote<mojom::URLLoaderClient> client;
+  mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   auto client_impl = std::make_unique<WebBundleURLLoaderClient>(
       weak_ptr_factory_.GetWeakPtr(), std::move(wrapped));
   mojo::MakeSelfOwnedReceiver(std::move(client_impl),
@@ -598,10 +603,10 @@ WebBundleURLLoaderFactory::MaybeWrapURLLoaderClient(
 }
 
 void WebBundleURLLoaderFactory::StartSubresourceRequest(
-    mojo::PendingReceiver<mojom::URLLoader> receiver,
-    const ResourceRequest& url_request,
-    mojo::PendingRemote<mojom::URLLoaderClient> client,
-    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    const network::ResourceRequest& url_request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    mojo::Remote<network::mojom::TrustedHeaderClient> trusted_header_client,
     base::Time request_start_time,
     base::TimeTicks request_start_time_ticks) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::StartSubresourceRequest");
@@ -665,7 +670,7 @@ void WebBundleURLLoaderFactory::StartLoad(base::WeakPtr<URLLoader> loader) {
   auto it = metadata_->requests.find(loader->url());
   if (it == metadata_->requests.end()) {
     web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kResourceNotFound,
+        network::mojom::WebBundleErrorType::kResourceNotFound,
         loader->url().possibly_invalid_spec() +
             " is not found in the WebBundle.");
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
@@ -680,7 +685,7 @@ void WebBundleURLLoaderFactory::StartLoad(base::WeakPtr<URLLoader> loader) {
 
 void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
     SubresourceWebBundleLoadResult result,
-    mojom::WebBundleErrorType error,
+    network::mojom::WebBundleErrorType error,
     const std::string& message) {
   DCHECK_NE(SubresourceWebBundleLoadResult::kSuccess, result);
   web_bundle_handle_->OnWebBundleError(error, message);
@@ -702,7 +707,8 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
   if (error) {
     ReportErrorAndCancelPendingLoaders(
         SubresourceWebBundleLoadResult::kMetadataParseError,
-        mojom::WebBundleErrorType::kMetadataParseError, error->message);
+        network::mojom::WebBundleErrorType::kMetadataParseError,
+        error->message);
     if (devtools_request_id_) {
       devtools_observer_->OnSubresourceWebBundleMetadataError(
           *devtools_request_id_, error->message);
@@ -716,7 +722,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     std::string error_message = "Exchange URL is not valid.";
     ReportErrorAndCancelPendingLoaders(
         SubresourceWebBundleLoadResult::kMetadataParseError,
-        mojom::WebBundleErrorType::kMetadataParseError, error_message);
+        network::mojom::WebBundleErrorType::kMetadataParseError, error_message);
     if (devtools_request_id_) {
       devtools_observer_->OnSubresourceWebBundleMetadataError(
           *devtools_request_id_, error_message);
@@ -737,7 +743,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
 
   if (metadata_->version == web_package::mojom::BundleFormatVersion::kB1) {
     web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kDeprecationWarning,
+        network::mojom::WebBundleErrorType::kDeprecationWarning,
         "WebBundle format \"b1\" is deprecated. See migration guide at "
         "https://bit.ly/3rpDuEX.");
   }
@@ -768,7 +774,8 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
           devtools_request_id_);
     }
     web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kResponseParseError, error->message);
+        network::mojom::WebBundleErrorType::kResponseParseError,
+        error->message);
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
@@ -826,14 +833,14 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     uint64_t payload_length) {
   if (!loader)
     return;
-  mojom::URLResponseHeadPtr response_head =
+  network::mojom::URLResponseHeadPtr response_head =
       web_package::CreateResourceResponseFromHeaderString(headers);
   // Currently we allow only net::HTTP_OK responses in bundles.
   // TODO(crbug.com/990733): Revisit this once
   // https://github.com/WICG/webpackage/issues/478 is resolved.
   if (response_head->headers->response_code() != net::HTTP_OK) {
     web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kResponseParseError,
+        network::mojom::WebBundleErrorType::kResponseParseError,
         "Invalid response code " +
             base::NumberToString(response_head->headers->response_code()));
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
@@ -846,8 +853,8 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   loader->SetBodyLength(payload_length);
 
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
-  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
-          CrossOriginResourcePolicy::IsBlocked(
+  if (absl::optional<network::mojom::BlockedByResponseReason> blocked_reason =
+          network::CrossOriginResourcePolicy::IsBlocked(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
               loader->request_destination(), cross_origin_embedder_policy_,
@@ -871,7 +878,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     return;
   }
 
-  auto corb_analyzer = corb::ResponseAnalyzer::Create(corb_state_);
+  auto corb_analyzer = network::corb::ResponseAnalyzer::Create(corb_state_);
   auto decision =
       corb_analyzer->Init(loader->url(), loader->request_initiator(),
                           loader->request_mode(), *response_head);
@@ -900,7 +907,7 @@ void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMemoryQuotaExceeded");
   ReportErrorAndCancelPendingLoaders(
       SubresourceWebBundleLoadResult::kMemoryQuotaExceeded,
-      mojom::WebBundleErrorType::kMemoryQuotaExceeded,
+      network::mojom::WebBundleErrorType::kMemoryQuotaExceeded,
       "Memory quota exceeded. Currently, there is an upper limit on the total "
       "size of subresource web bundles in a process. See "
       "https://crbug.com/1154140 for more details.");
@@ -926,8 +933,8 @@ void WebBundleURLLoaderFactory::MaybeReportLoadResult(
 void WebBundleURLLoaderFactory::OnWebBundleFetchFailed() {
   ReportErrorAndCancelPendingLoaders(
       SubresourceWebBundleLoadResult::kWebBundleFetchFailed,
-      mojom::WebBundleErrorType::kWebBundleFetchFailed,
+      network::mojom::WebBundleErrorType::kWebBundleFetchFailed,
       "Failed to fetch the Web Bundle.");
 }
 
-}  // namespace network
+}  // namespace web_package

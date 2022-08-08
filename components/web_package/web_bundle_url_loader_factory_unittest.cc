@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
+#include "components/web_package/web_bundle_url_loader_factory.h"
 
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/web_package/web_bundle_memory_quota_consumer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -16,11 +17,10 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
-#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
+namespace web_package {
 
 namespace {
 
@@ -79,13 +79,14 @@ std::vector<uint8_t> CreateCrossOriginBundle() {
   return builder.CreateBundle();
 }
 
-class TestWebBundleHandle : public mojom::WebBundleHandle {
+class TestWebBundleHandle : public network::mojom::WebBundleHandle {
  public:
   explicit TestWebBundleHandle(
-      mojo::PendingReceiver<mojom::WebBundleHandle> receiver)
+      mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const absl::optional<
+      std::pair<network::mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return last_bundle_error_;
   }
@@ -98,12 +99,13 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
     run_loop.Run();
   }
 
-  // mojom::WebBundleHandle
-  void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
+  //  network::mojom::WebBundleHandle
+  void Clone(mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)
+      override {
     NOTREACHED();
   }
 
-  void OnWebBundleError(mojom::WebBundleErrorType type,
+  void OnWebBundleError(network::mojom::WebBundleErrorType type,
                         const std::string& message) override {
     last_bundle_error_ = std::make_pair(type, message);
     if (quit_closure_for_bundle_error_)
@@ -113,8 +115,8 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
   void OnWebBundleLoadFinished(bool success) override {}
 
  private:
-  mojo::Receiver<mojom::WebBundleHandle> receiver_;
-  absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>
+  mojo::Receiver<network::mojom::WebBundleHandle> receiver_;
+  absl::optional<std::pair<network::mojom::WebBundleErrorType, std::string>>
       last_bundle_error_;
   base::OnceClosure quit_closure_for_bundle_error_;
 };
@@ -164,16 +166,16 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     mojo::ScopedDataPipeConsumerHandle consumer;
     ASSERT_EQ(CreateDataPipe(nullptr, bundle_data_destination_, consumer),
               MOJO_RESULT_OK);
-    mojo::Remote<mojom::WebBundleHandle> handle;
+    mojo::Remote<network::mojom::WebBundleHandle> handle;
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
-    devtools_observer_ = std::make_unique<MockDevToolsObserver>();
-    const ResourceRequest::WebBundleTokenParams create_params(
+    devtools_observer_ = std::make_unique<network::MockDevToolsObserver>();
+    const network::ResourceRequest::WebBundleTokenParams create_params(
         GURL(kBundleUrl), {} /* token */, {} /* handle */);
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), create_params, std::move(handle),
         std::make_unique<MockMemoryQuotaConsumer>(), devtools_observer_->Bind(),
-        kBundleRequestId, CrossOriginEmbedderPolicy(),
+        kBundleRequestId, network::CrossOriginEmbedderPolicy(),
         nullptr /* coep_reporter */);
     factory_->SetBundleStream(std::move(consumer));
   }
@@ -198,19 +200,20 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
-    request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams();
+    request.web_bundle_token_params =
+        network::ResourceRequest::WebBundleTokenParams();
     request.web_bundle_token_params->bundle_url = GURL(kBundleUrl);
     request.devtools_request_id = devtools_request_id;
     return request;
   }
 
-  StartRequestResult StartRequest(const ResourceRequest& request) {
+  StartRequestResult StartRequest(const network::ResourceRequest& request) {
     StartRequestResult result;
     result.client = std::make_unique<network::TestURLLoaderClient>();
     factory_->StartSubresourceRequest(
         result.loader.BindNewPipeAndPassReceiver(), request,
         result.client->CreateRemote(),
-        mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
+        mojo::Remote<network::mojom::TrustedHeaderClient>(), base::Time::Now(),
         base::TimeTicks::Now());
     return result;
   }
@@ -222,13 +225,14 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
   void RunUntilBundleError() { handle_->RunUntilBundleError(); }
 
-  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const absl::optional<
+      std::pair<network::mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return handle_->last_bundle_error();
   }
 
  protected:
-  std::unique_ptr<MockDevToolsObserver> devtools_observer_;
+  std::unique_ptr<network::MockDevToolsObserver> devtools_observer_;
   std::unique_ptr<WebBundleURLLoaderFactory> factory_;
 
  private:
@@ -285,7 +289,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kMetadataParseError);
+            network::mojom::WebBundleErrorType::kMetadataParseError);
   EXPECT_EQ(last_bundle_error()->second, "Wrong magic bytes.");
 
   // Requests made after metadata parse error should also fail.
@@ -323,7 +327,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataWithInvalidExchangeUrl) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kMetadataParseError);
+            network::mojom::WebBundleErrorType::kMetadataParseError);
   EXPECT_EQ(last_bundle_error()->second, "Exchange URL is not valid.");
 
   // Requests made after metadata parse error should also fail.
@@ -362,7 +366,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kResponseParseError);
+            network::mojom::WebBundleErrorType::kResponseParseError);
   EXPECT_EQ(last_bundle_error()->second,
             ":status must be 3 ASCII decimal digits.");
 }
@@ -385,7 +389,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResourceNotFoundInBundle) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kResourceNotFound);
+            network::mojom::WebBundleErrorType::kResourceNotFound);
   EXPECT_EQ(
       last_bundle_error()->second,
       "https://example.com/no-such-resource is not found in the WebBundle.");
@@ -417,7 +421,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, RedirectResponseIsNotAllowed) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kResponseParseError);
+            network::mojom::WebBundleErrorType::kResponseParseError);
   EXPECT_EQ(last_bundle_error()->second, "Invalid response code 301");
 }
 
@@ -518,7 +522,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, TruncatedBundle) {
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request.client->completion_status().error_code);
   EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kResponseParseError);
+            network::mojom::WebBundleErrorType::kResponseParseError);
   EXPECT_EQ(last_bundle_error()->second, "Error reading response header.");
 }
 
@@ -574,4 +578,4 @@ TEST_F(WebBundleURLLoaderFactoryTest, WrongBundleURL) {
                   "WebBundleURLLoaderFactory: Bundle URL does not match"));
 }
 
-}  // namespace network
+}  // namespace web_package

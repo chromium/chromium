@@ -20,10 +20,15 @@ static_library("web_package") {
     "signed_web_bundles/signed_web_bundle_utils.h",
     "web_bundle_builder.cc",
     "web_bundle_builder.h",
+    "web_bundle_chunked_buffer.cc",
+    "web_bundle_chunked_buffer.h",
+    "web_bundle_memory_quota_consumer.h",
     "web_bundle_parser.cc",
     "web_bundle_parser.h",
     "web_bundle_parser_factory.cc",
     "web_bundle_parser_factory.h",
+    "web_bundle_url_loader_factory.cc",
+    "web_bundle_url_loader_factory.h",
     "web_bundle_utils.cc",
     "web_bundle_utils.h",
   ]
@@ -34,6 +39,7 @@ static_library("web_package") {
     "//components/cbor",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 
@@ -47,8 +53,10 @@ source_set("unit_tests") {
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",
     "signed_web_bundles/signed_web_bundle_utils_unittest.cc",
     "web_bundle_builder_unittest.cc",
+    "web_bundle_chunked_buffer_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
+    "web_bundle_url_loader_factory_unittest.cc",
     "web_bundle_utils_unittest.cc",
   ]
   deps = [
@@ -56,6 +64,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/cbor",
     "//components/web_package/test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

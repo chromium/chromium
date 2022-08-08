@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_CHUNKED_BUFFER_H_
-#define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_CHUNKED_BUFFER_H_
+#ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_CHUNKED_BUFFER_H_
+#define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_CHUNKED_BUFFER_H_
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 
-namespace network {
+namespace web_package {
 
 // WebBundleChunkedBuffer keeps the appended bytes as a RefCountedBytes, so we
 // don't need to copy the bytes while creating a DataSource to read the data
 // using a DataPipeProducer.
-class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
+class WebBundleChunkedBuffer {
  public:
   WebBundleChunkedBuffer();
   ~WebBundleChunkedBuffer();
@@ -56,7 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
   FRIEND_TEST_ALL_PREFIXES(WebBundleChunkedBufferTest, PartialBuffer);
   FRIEND_TEST_ALL_PREFIXES(WebBundleChunkedBufferTest, FindChunk);
 
-  class COMPONENT_EXPORT(NETWORK_SERVICE) Chunk {
+  class Chunk {
    public:
     Chunk(uint64_t start_pos, scoped_refptr<const base::RefCountedBytes> bytes);
     ~Chunk();
@@ -98,6 +97,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
   ChunkVector chunks_;
 };
 
-}  // namespace network
+}  // namespace web_package
 
-#endif  // SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_CHUNKED_BUFFER_H_
+#endif  // COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_CHUNKED_BUFFER_H_
