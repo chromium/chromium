@@ -178,12 +178,10 @@ constexpr net::NetworkTrafficAnnotationTag
 std::string MaybeConvertToTestUrl(std::string url) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kTestWallpaperServer)) {
-    base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3",
-                                           "chromecast-dev.sandbox");
+    base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3", "clients1");
   } else if (base::FeatureList::IsEnabled(
                  chromeos::features::kUseWallpaperStagingUrl)) {
-    base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3",
-                                           "chromecast-staging.sandbox");
+    base::ReplaceFirstSubstringAfterOffset(&url, 0, "clients3", "clients2");
   }
   return url;
 }
