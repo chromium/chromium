@@ -94,14 +94,14 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
 
   void Show() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const policy::DlpRulesManager* GetDlpRulesManager() const override;
 
   void set_dlp_rules_manager(policy::DlpRulesManager* dlp_rules_manager);
 #endif
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
 #endif
 };

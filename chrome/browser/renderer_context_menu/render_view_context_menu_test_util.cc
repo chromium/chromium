@@ -99,7 +99,7 @@ int TestRenderViewContextMenu::GetCommandIDByProfilePath(
 void TestRenderViewContextMenu::Show() {
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const policy::DlpRulesManager* TestRenderViewContextMenu::GetDlpRulesManager()
     const {
   return dlp_rules_manager_;

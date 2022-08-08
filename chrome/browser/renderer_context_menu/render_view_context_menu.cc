@@ -248,6 +248,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 #endif
 
@@ -258,8 +260,6 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
@@ -2314,7 +2314,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
-      return params_.link_url.is_valid();
+      return params_.link_url.is_valid() &&
+             IsOpenLinkAllowedByDlp(params_.link_url);
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       return params_.unfiltered_link_url.is_valid();
@@ -2424,9 +2425,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return IsPrintPreviewEnabled();
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
-      return IsSearchWebForEnabled();
-
     case IDC_CONTENT_CONTEXT_GOTOURL:
+      return IsOpenLinkAllowedByDlp(selection_navigation_url_);
+
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
     case IDC_SEND_TAB_TO_SELF:
@@ -3004,7 +3005,7 @@ void RenderViewContextMenu::EscapeAmpersands(std::u16string* text) {
   base::ReplaceChars(*text, u"&", u"&&", text);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
     const {
   return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -3168,15 +3169,15 @@ bool RenderViewContextMenu::IsPasteEnabled() const {
   return !types.empty();
 }
 
-bool RenderViewContextMenu::IsSearchWebForEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool RenderViewContextMenu::IsOpenLinkAllowedByDlp(const GURL& link_url) const {
+#if BUILDFLAG(IS_CHROMEOS)
   const policy::DlpRulesManager* dlp_rules_manager = GetDlpRulesManager();
   if (!dlp_rules_manager) {
     return true;
   }
   policy::DlpRulesManager::Level level =
       dlp_rules_manager->IsRestrictedDestination(
-          params_.page_url, selection_navigation_url_,
+          params_.page_url, link_url,
           policy::DlpRulesManager::Restriction::kClipboard,
           /*out_source_pattern=*/nullptr, /*out_destination_pattern=*/nullptr);
   // TODO(crbug.com/1222057): show a warning if the level is kWarn
