@@ -709,6 +709,8 @@ experimental domain Audits
       InvalidEligibleHeader
       TooManyConcurrentRequests
       SourceAndTriggerHeaders
+      SourceIgnored
+      TriggerIgnored
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api

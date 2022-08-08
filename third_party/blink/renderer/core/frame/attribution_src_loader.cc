@@ -78,6 +78,30 @@ void LogAuditIssue(ExecutionContext* execution_context,
                                       id_string, invalid_parameter);
 }
 
+void MaybeLogSourceIgnored(ExecutionContext* execution_context,
+                           uint64_t request_id,
+                           const String& json) {
+  if (json.IsNull())
+    return;
+
+  LogAuditIssue(execution_context,
+                AttributionReportingIssueType::kSourceIgnored,
+                /*element=*/nullptr, request_id,
+                /*invalid_parameter=*/json);
+}
+
+void MaybeLogTriggerIgnored(ExecutionContext* execution_context,
+                            uint64_t request_id,
+                            const String& json) {
+  if (json.IsNull())
+    return;
+
+  LogAuditIssue(execution_context,
+                AttributionReportingIssueType::kTriggerIgnored,
+                /*element=*/nullptr, request_id,
+                /*invalid_parameter=*/json);
+}
+
 }  // namespace
 
 bool CanRegisterAttributionInContext(LocalFrame* frame,
@@ -379,13 +403,15 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
+  const auto& response_headers = response.HttpHeaderFields();
+  const AtomicString& source_json =
+      response_headers.Get(http_names::kAttributionReportingRegisterSource);
+  const AtomicString& trigger_json =
+      response_headers.Get(http_names::kAttributionReportingRegisterTrigger);
+
   // Only handle requests which are attempting to invoke the API.
-  if (!response.HttpHeaderFields().Contains(
-          http_names::kAttributionReportingRegisterSource) &&
-      !response.HttpHeaderFields().Contains(
-          http_names::kAttributionReportingRegisterTrigger)) {
+  if (source_json.IsNull() && trigger_json.IsNull())
     return false;
-  }
 
   const uint64_t request_id = request.InspectorId();
 
@@ -400,23 +426,23 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   // for a resource (even if `response` is for a redirect). This indicates
   // whether the redirect chain was configured for eligibility.
   // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registering-attribution-sources
-  const AtomicString& header_value =
+  const AtomicString& eligible_header =
       resource->GetResourceRequest().HttpHeaderField(
           http_names::kAttributionReportingEligible);
 
-  if (header_value.IsNull()) {
+  if (eligible_header.IsNull()) {
     // All subresources are eligible to register triggers if they do *not*
     // specify the header.
     src_type = SrcType::kTrigger;
   } else {
     absl::optional<net::structured_headers::Dictionary> dict =
         net::structured_headers::ParseDictionary(
-            StringUTF8Adaptor(header_value).AsStringPiece());
+            StringUTF8Adaptor(eligible_header).AsStringPiece());
     if (!dict || dict->contains(kAttributionEligibleNavigationSource)) {
       LogAuditIssue(local_frame_->DomWindow(),
                     AttributionReportingIssueType::kInvalidEligibleHeader,
                     /*element=*/nullptr, request_id,
-                    /*invalid_parameter=*/header_value);
+                    /*invalid_parameter=*/eligible_header);
       return false;
     }
 
@@ -424,7 +450,6 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
         dict->contains(kAttributionEligibleEventSource);
     const bool allows_trigger = dict->contains(kAttributionEligibleTrigger);
 
-    // TODO(johnidel): Consider logging a devtools issue here for early exits.
     if (allows_event_source && allows_trigger) {
       // We use an undetermined SrcType which indicates either a source or
       // trigger may be registered.
@@ -434,6 +459,9 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     } else if (allows_trigger) {
       src_type = SrcType::kTrigger;
     } else {
+      MaybeLogSourceIgnored(local_frame_->DomWindow(), request_id, source_json);
+      MaybeLogTriggerIgnored(local_frame_->DomWindow(), request_id,
+                             trigger_json);
       return false;
     }
   }
@@ -504,23 +532,28 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(response.CurrentRequestUrl());
 
+  // TODO(apaseltiner): Avoid redundantly retrieving these headers when this
+  // method is invoked from `MaybeRegisterAttributionHeaders()`.
   const auto& headers = response.HttpHeaderFields();
   const AtomicString& source_json =
       headers.Get(http_names::kAttributionReportingRegisterSource);
   const AtomicString& trigger_json =
       headers.Get(http_names::kAttributionReportingRegisterTrigger);
 
-  // TODO(apaseltiner): Report a DevTools issue when `type_` and `headers` do
-  // not correspond correctly.
-
   switch (type_) {
     case SrcType::kSource:
+      MaybeLogTriggerIgnored(loader_->local_frame_->DomWindow(), request_id,
+                             trigger_json);
+
       if (!source_json.IsNull()) {
         HandleSourceRegistration(source_json, std::move(reporting_origin),
                                  request_id);
       }
       break;
     case SrcType::kTrigger:
+      MaybeLogSourceIgnored(loader_->local_frame_->DomWindow(), request_id,
+                            source_json);
+
       if (!trigger_json.IsNull()) {
         HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
                                   request_id);

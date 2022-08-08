@@ -1,0 +1,22 @@
+Test that an attributionsrc request that is not eligible for sources or triggers triggers issues when it tries to register them.
+Issue 1 reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : {"source_event_id":"0","destination":"https://a.example"}
+            request : <object>
+            violationType : SourceIgnored
+        }
+    }
+}
+Issue 2 reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : {}
+            request : <object>
+            violationType : TriggerIgnored
+        }
+    }
+}
+
