@@ -62,6 +62,7 @@ class AssistantTextSearchResult : public ChromeSearchResult {
                               gfx::kPlaceholderColor),
         kSystemIconDimension));
 
+    SetSkipUpdateAnimation(true);
     set_dismiss_view_on_open(false);
   }
 

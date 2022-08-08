@@ -69,6 +69,7 @@ class AssistantTextSearchProviderTest
     EXPECT_EQ(result->result_type(),
               ash::AppListSearchResultType::kAssistantText);
     EXPECT_EQ(result->display_type(), ash::SearchResultDisplayType::kList);
+    EXPECT_EQ(result->skip_update_animation(), true);
   }
 
  private:
