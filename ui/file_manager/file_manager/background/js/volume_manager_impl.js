@@ -248,15 +248,25 @@ export class VolumeManagerImpl extends EventTarget {
           case 'success':
           case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
           case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
+            console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
             if (volumeMetadata.hidden) {
               console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
               this.finishRequest_(requestKey, status);
               return;
             }
 
-            console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
-            const volumeInfo =
-                await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+            let volumeInfo;
+            try {
+              volumeInfo =
+                  await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+            } catch (error) {
+              console.warn(
+                  'Unable to create volumeInfo for ' +
+                  `${volumeId} mounted on ${sourcePath}.` +
+                  `Mount status: ${status}. Error: ${error.stack || error}.`);
+              this.finishRequest_(requestKey, status);
+              throw (error);
+            }
             await this.addVolumeInfo_(volumeInfo);
             this.finishRequest_(requestKey, status, volumeInfo);
             return;

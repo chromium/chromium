@@ -58,7 +58,8 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   DCHECK(backend);
   file_manager::util::FileDefinition fd;
   if (!backend->GetVirtualPath(volume->mount_path(), &fd.virtual_path)) {
-    return RespondNow(Error("Volume with ID '*' not found", volume_id));
+    return RespondNow(
+        Error("Cannot get virtual path for volume with ID '*'", volume_id));
   }
 
   // Grant the caller right rights to crack URLs based on the virtual path.
