@@ -161,13 +161,22 @@ TEST(RectFTest, UnionEvenIfEmpty) {
 
 TEST(RectFTest, UnionEnsuresContainWithFloatingError) {
   for (float f = 0.1f; f < 5; f += 0.1f) {
-    gfx::RectF r1(1, 2, 3, 4);
+    RectF r1(1, 2, 3, 4);
     r1.Scale(f, f + 0.05f);
-    gfx::RectF r2 = r1 + gfx::Vector2dF(10.f + f, f - 10.f);
-    gfx::RectF r3 = gfx::UnionRects(r1, r2);
+    RectF r2 = r1 + Vector2dF(10.f + f, f - 10.f);
+    RectF r3 = UnionRects(r1, r2);
     EXPECT_TRUE(r3.Contains(r1));
     EXPECT_TRUE(r3.Contains(r2));
   }
+}
+
+TEST(RectFTest, UnionIfEmptyResultTinySize) {
+  RectF r1(1e-15f, 0, 0, 0);
+  RectF r2(0, 1e-15f, 0, 0);
+  RectF r3 = UnionRectsEvenIfEmpty(r1, r2);
+  EXPECT_FALSE(r3.IsEmpty());
+  EXPECT_TRUE(r3.Contains(r1));
+  EXPECT_TRUE(r3.Contains(r2));
 }
 
 TEST(RectFTest, UnionMaxRects) {

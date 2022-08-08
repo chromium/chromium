@@ -66,6 +66,10 @@ class GEOMETRY_EXPORT SizeF {
   void SetToMin(const SizeF& other);
   void SetToMax(const SizeF& other);
 
+  // Expands width/height to the next representable value.
+  void SetToNextWidth() { width_ = next(width_); }
+  void SetToNextHeight() { height_ = next(height_); }
+
   constexpr bool IsEmpty() const { return !width() || !height(); }
   constexpr bool IsZero() const { return !width() && !height(); }
 
@@ -92,6 +96,11 @@ class GEOMETRY_EXPORT SizeF {
   static constexpr float kTrivial = 8.f * std::numeric_limits<float>::epsilon();
 
   static constexpr float clamp(float f) { return f > kTrivial ? f : 0.f; }
+
+  static float next(float f) {
+    return std::nextafter(std::max(kTrivial, f),
+                          std::numeric_limits<float>::max());
+  }
 
   float width_;
   float height_;

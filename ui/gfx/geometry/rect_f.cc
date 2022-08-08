@@ -150,15 +150,16 @@ void RectF::UnionEvenIfEmpty(const RectF& rect) {
 
   SetRect(rx, ry, rr - rx, rb - ry);
 
-  // Due to floating errors, the new rect may not fully contain the original
-  // rects at the right/bottom side. Expand the rect in the case.
+  // Due to floating errors and SizeF::clamp(), the new rect may not fully
+  // contain the original rects at the right/bottom side. Expand the rect in
+  // the case.
   constexpr auto kFloatMax = std::numeric_limits<float>::max();
   if (UNLIKELY(right() < rr && width() < kFloatMax)) {
-    set_width(std::nextafter(width(), kFloatMax));
+    size_.SetToNextWidth();
     DCHECK_GE(right(), rr);
   }
   if (UNLIKELY(bottom() < rb && height() < kFloatMax)) {
-    set_height(std::nextafter(height(), kFloatMax));
+    size_.SetToNextHeight();
     DCHECK_GE(bottom(), rb);
   }
 }
