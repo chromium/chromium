@@ -2173,6 +2173,71 @@ GrBackendTexture MakeBackendTexture(gpu::gles2::GLES2Interface* gl,
 }
 }  // namespace
 
+TEST_F(OopPixelTest, CopySubTexture) {
+  const gfx::Size size(16, 16);
+  auto* ri = raster_context_provider_->RasterInterface();
+  auto* sii = raster_context_provider_->SharedImageInterface();
+  const gfx::ColorSpace source_color_space = gfx::ColorSpace::CreateSRGB();
+  const gfx::ColorSpace dest_color_space =
+      gfx::ColorSpace::CreateDisplayP3D65();
+
+  // Create data to upload in sRGB (solid green).
+  SkBitmap upload_bitmap;
+  {
+    upload_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
+        size.width(), size.height(), source_color_space.ToSkColorSpace()));
+    SkCanvas canvas(upload_bitmap, SkSurfaceProps{});
+    SkPaint paint;
+    paint.setColor(SkColors::kGreen);
+    canvas.drawRect(SkRect::MakeWH(size.width(), size.height()), paint);
+  }
+
+  // Create an sRGB SharedImage and upload to it.
+  gpu::Mailbox source_mailbox;
+  {
+    RasterOptions options(size);
+    options.target_color_params.color_space = source_color_space;
+    source_mailbox = CreateMailboxSharedImage(ri, sii, options,
+                                              viz::ResourceFormat::RGBA_8888);
+    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+    ri->WritePixels(source_mailbox, 0, 0, GL_TEXTURE_2D,
+                    upload_bitmap.rowBytes(), upload_bitmap.info(),
+                    upload_bitmap.getPixels());
+  }
+
+  // Create a DisplayP3 SharedImage and copy to it.
+  gpu::Mailbox dest_mailbox;
+  {
+    RasterOptions options(size);
+    options.target_color_params.color_space = dest_color_space;
+    dest_mailbox = CreateMailboxSharedImage(ri, sii, options,
+                                            viz::ResourceFormat::RGBA_8888);
+    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+    ri->CopySubTexture(source_mailbox, dest_mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
+                       size.width(), size.height(),
+                       /*unpack_flip_y=*/GL_FALSE,
+                       /*unpack_premultiply_alpha=*/GL_FALSE);
+  }
+
+  // Read the data back as DisplayP3, from the Display P3 SharedImage.
+  SkBitmap readback_bitmap;
+  {
+    readback_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
+        size.width(), size.height(), dest_color_space.ToSkColorSpace()));
+
+    ri->ReadbackImagePixels(dest_mailbox, readback_bitmap.info(),
+                            readback_bitmap.rowBytes(), 0, 0,
+                            readback_bitmap.getPixels());
+  }
+
+  // The pixel value should be unchanged, even though the source and dest are
+  // in different color spaces. No color conversion (which would change the
+  // pixel value) should have happened.
+  EXPECT_EQ(*upload_bitmap.getAddr32(0, 0), *readback_bitmap.getAddr32(0, 0));
+}
+
 TEST_F(OopPixelTest, ConvertYUVToRGB) {
   RasterOptions options(gfx::Size(16, 16));
   RasterOptions uv_options(gfx::Size(options.resource_size.width() / 2,

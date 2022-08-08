@@ -2273,7 +2273,17 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
                                  dest_shared_image->surface_origin());
     paint.setBlendMode(SkBlendMode::kSrc);
-    canvas->drawImageRect(source_image, gfx::RectToSkRect(source_rect),
+
+    // Reinterpret the source image as being in the destination color space, to
+    // disable color conversion.
+    auto source_image_reinterpreted = source_image;
+    if (canvas->imageInfo().colorSpace()) {
+      source_image_reinterpreted = source_image->reinterpretColorSpace(
+          canvas->imageInfo().refColorSpace());
+    }
+
+    canvas->drawImageRect(source_image_reinterpreted,
+                          gfx::RectToSkRect(source_rect),
                           gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                           &paint, SkCanvas::kStrict_SrcRectConstraint);
 

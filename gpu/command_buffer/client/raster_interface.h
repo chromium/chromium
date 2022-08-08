@@ -48,6 +48,7 @@ class RasterInterface : public InterfaceBase {
   RasterInterface() {}
   virtual ~RasterInterface() {}
 
+  // This function will not perform any color conversion during the copy.
   virtual void CopySubTexture(const gpu::Mailbox& source_mailbox,
                               const gpu::Mailbox& dest_mailbox,
                               GLenum dest_target,
