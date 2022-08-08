@@ -232,6 +232,7 @@ public class PageInfoAboutThisSiteTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
     public void testAboutThisSiteSubPageRendering() {
         mockResponse(createDescription());
         openPageInfo();
@@ -242,6 +243,7 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
     public void testAboutThisSiteSubPageSourceClicked()
             throws ExecutionException, TimeoutException {
         assertEquals(0, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
@@ -272,6 +274,7 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
     public void testAboutThisSiteSubPageSourceClickedWithoutEphemeralTabCreator()
             throws ExecutionException, TimeoutException {
         // Test the path without ephemeralTabCreator.

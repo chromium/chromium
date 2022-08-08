@@ -6651,6 +6651,21 @@
             ]
         }
     ],
+    "PageInfoAboutThisSiteMoreInfo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoAboutThisSiteMoreInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoDiscoverabilityTimeout": [
         {
             "platforms": [
