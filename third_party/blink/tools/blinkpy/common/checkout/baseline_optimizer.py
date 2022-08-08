@@ -658,7 +658,7 @@ class ResultDigest(object):
             self.is_extra_result = True
             return
 
-        assert fs.exists(path), path + "does not exist"
+        assert fs.exists(path), path + " does not exist"
         if path.endswith('.txt'):
             try:
                 content = fs.read_text_file(path)

@@ -602,16 +602,16 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def _run_in_parallel(self, commands):
         if not commands:
-            return {}
+            return []
 
         command_results = self._tool.executive.run_in_parallel(commands)
         for _, _, stderr in command_results:
             if stderr:
-                _log.error(stderr)
+                lines = stderr.decode("utf-8", "ignore").splitlines()
+                for line in lines:
+                    print(line)
 
-        change_set = self._extract_expectation_line_changes(command_results)
-
-        return change_set.lines_to_remove
+        return command_results
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -637,7 +637,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             test_baseline_set, options)
         lines_to_remove = {}
         self._run_in_parallel(copy_baseline_commands)
-        lines_to_remove = self._run_in_parallel(rebaseline_commands)
+
+        command_results = self._run_in_parallel(rebaseline_commands)
+        change_set = self._extract_expectation_line_changes(command_results)
+        lines_to_remove = change_set.lines_to_remove
         for test in extra_lines_to_remove:
             if test in lines_to_remove:
                 lines_to_remove[test] = (

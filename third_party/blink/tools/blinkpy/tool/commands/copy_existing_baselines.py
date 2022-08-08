@@ -121,17 +121,17 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             "immediate predecessors" of the given baseline path.
         """
         port_names = self._tool.port_factory.all_port_names()
-        immediate_predecessors = []
+        immediate_predecessors = set()
         for port_name in port_names:
             port = self._tool.port_factory.get(port_name)
             baseline_search_path = port.baseline_search_path()
             try:
                 index = baseline_search_path.index(path_to_rebaseline)
                 if index:
-                    immediate_predecessors.append(
+                    immediate_predecessors.add(
                         self._tool.filesystem.basename(
                             baseline_search_path[index - 1]))
             except ValueError:
                 # baseline_search_path.index() throws a ValueError if the item isn't in the list.
                 pass
-        return immediate_predecessors
+        return list(immediate_predecessors)

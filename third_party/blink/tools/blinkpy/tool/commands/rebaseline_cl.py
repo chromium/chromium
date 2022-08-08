@@ -184,11 +184,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 _log.info('Aborting.')
                 return 1
             options.fill_missing = self._tool.user.confirm(
-                'Would you like to try to fill in missing results with\n'
-                'available results?\n'
-                'Note: This will generally yield correct results\n'
-                'as long as the results are not platform-specific.',
+                'Would you like to try to fill in missing results with'
+                ' available results?\n'
+                'Note: This is generally not suggested unless the results'
+                ' are platform agnostic.',
                 default=self._tool.user.DEFAULT_NO)
+            if not options.fill_missing:
+                _log.info(
+                    'Please rebaseline again for builders with no results later.'
+                )
 
         if options.test_name_file:
             test_baseline_set = self._make_test_baseline_set_from_file(
