@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 
+#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -174,6 +175,24 @@ bool PollingWaitUntil(const std::string& javascript,
       << "Timed out while waiting for " << javascript
       << " to evaluate to " << evaluates_to << "; last result was '" << result
       << "'";
+  return false;
+}
+
+bool PollingWaitUntilClosureEvaluatesTrue(
+    base::RepeatingCallback<bool()> closure,
+    content::WebContents* tab_contents,
+    base::TimeDelta poll_interval) {
+  base::Time start_time = base::Time::Now();
+  base::TimeDelta timeout = TestTimeouts::action_max_timeout();
+  while (base::Time::Now() - start_time < timeout) {
+    if (closure.Run())
+      return true;
+    // Sleep a bit here to keep this loop from spinlocking too badly.
+    if (!SleepInJavascript(tab_contents, poll_interval.InMilliseconds())) {
+      LOG(ERROR) << "Failed to sleep.";
+    }
+  }
+  LOG(ERROR) << "Timed out while waiting for closure to evaluate true";
   return false;
 }
 

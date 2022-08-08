@@ -8,6 +8,9 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
@@ -231,8 +234,10 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  void InitializeTabSharingForFirstTab(MediaIDCallback media_id_callback,
-                                       InfobarUIChangeObserver* observer) {
+  void InitializeTabSharingForFirstTab(
+      MediaIDCallback media_id_callback,
+      InfobarUIChangeObserver* observer,
+      absl::optional<std::string> extra_video_constraints = absl::nullopt) {
     ASSERT_TRUE(embedded_test_server()->Start());
     LoadDesktopCaptureExtension();
     auto* first_tab = OpenTestPageInNewTab(kMainWebrtcTestHtmlPage);
@@ -251,10 +256,11 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 
     LOG(INFO) << "Opened desktop media stream, got id " << stream_id;
 
-    const std::string constraints =
-        "{audio: false, video: {mandatory: {chromeMediaSource: 'desktop',"
-        "chromeMediaSourceId: '" +
-        stream_id + "'}}}";
+    std::string constraints = base::StrCat(
+        {"{audio: false, video: { mandatory: {chromeMediaSource: 'desktop', "
+         "chromeMediaSourceId: '",
+         stream_id, "'", (extra_video_constraints.has_value() ? ", " : ""),
+         extra_video_constraints.value_or(""), "}}}"});
 
     // Should create 3 infobars if a tab (webcontents) is shared!
     if (observer)
@@ -295,6 +301,50 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 
   FakeDesktopMediaPickerFactory picker_factory_;
 };
+
+IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
+                       TabCaptureProvidesMinFps) {
+  constexpr int kFps = 25;
+  constexpr const char* const kFpsString = "25";
+  constexpr int kTestTimeSeconds = 2;
+  // We wait with measuring frame rate until a few frames has passed. This is
+  // because the frame rate frame dropper in VideoTrackAdapter is pretty
+  // aggressive dropping frames when the stream starts.
+  constexpr int kNumFramesBeforeStabilization = 10;
+
+  InitializeTabSharingForFirstTab(
+      base::BindOnce(GetDesktopMediaIDForTab, base::Unretained(browser()), 1),
+      nullptr, base::StrCat({"minFrameRate: ", kFpsString}));
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EnableVideoFrameCallbacks(first_tab, "local-view");
+
+  // First wait for a frame to appear, then wait until we get the number of
+  // frames expected during the test time.
+  int initial_frame_counter = 0;
+  base::TimeTicks initial_timestamp;
+  ASSERT_TRUE(test::PollingWaitUntilClosureEvaluatesTrue(
+      base::BindLambdaForTesting([&]() -> bool {
+        initial_timestamp = base::TimeTicks::Now();
+        initial_frame_counter = GetNumVideoFrameCallbacks(first_tab);
+        return initial_frame_counter > kNumFramesBeforeStabilization;
+      }),
+      first_tab, base::Milliseconds(50)));
+  int final_frame_counter = 0;
+  base::TimeTicks final_timestamp;
+  ASSERT_TRUE(test::PollingWaitUntilClosureEvaluatesTrue(
+      base::BindLambdaForTesting([&]() -> bool {
+        final_timestamp = base::TimeTicks::Now();
+        final_frame_counter = GetNumVideoFrameCallbacks(first_tab);
+        return final_frame_counter >=
+               kTestTimeSeconds * kFps + initial_frame_counter;
+      }),
+      first_tab, base::Milliseconds(50)));
+  int average_fps = (final_frame_counter - initial_frame_counter) * 1000 /
+                    (final_timestamp - initial_timestamp).InMilliseconds();
+  // Expect at least 50% of the expected frames to aggressively combat flakes.
+  ASSERT_GE(average_fps, kFps / 2);
+}
 
 // TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.

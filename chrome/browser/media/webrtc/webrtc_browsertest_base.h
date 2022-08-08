@@ -193,6 +193,18 @@ class WebRtcTestBase : public InProcessBrowserTest {
   bool WaitForVideoToPlay(content::WebContents* tab_contents) const;
   bool WaitForVideoToStop(content::WebContents* tab_contents) const;
 
+  // Methods for detecting video frames supplied to a video element. Relies on
+  // chrome/test/data/webrtc/video_frame_detector.js and dependencies loaded.
+  void EnableVideoFrameCallbacks(content::WebContents* tab_contents,
+                                 const std::string& video_element) const;
+  // Returns the current number of frame callback invocations which is expected
+  // to increase provided StartDetectingVideoFrames was called for a video
+  // element, and video frames are being supplied.
+  // If StartDetectingVideoFrames hasn't been called, the method returns 0.
+  // If the string retrieved from Javascript isn't convertible to int, -1 is
+  // returned.
+  int GetNumVideoFrameCallbacks(content::WebContents* tab_contents) const;
+
   // Returns the stream size as a string on the format <width>x<height>.
   std::string GetStreamSize(content::WebContents* tab_contents,
                             const std::string& video_element) const;

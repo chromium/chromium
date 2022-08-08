@@ -498,6 +498,24 @@ bool WebRtcTestBase::WaitForVideoToStop(
   return is_video_stopped;
 }
 
+void WebRtcTestBase::EnableVideoFrameCallbacks(
+    content::WebContents* tab_contents,
+    const std::string& video_element) const {
+  std::string javascript = base::StringPrintf("enableVideoFrameCallbacks('%s')",
+                                              video_element.c_str());
+  EXPECT_EQ("ok-started", ExecuteJavascript(javascript, tab_contents));
+}
+
+int WebRtcTestBase::GetNumVideoFrameCallbacks(
+    content::WebContents* tab_contents) const {
+  int counter = 0;
+  auto result = ExecuteJavascript("getNumVideoFrameCallbacks()", tab_contents);
+  if (base::StringToInt(result, &counter)) {
+    return counter;
+  }
+  return -1;
+}
+
 std::string WebRtcTestBase::GetStreamSize(
     content::WebContents* tab_contents,
     const std::string& video_element) const {
