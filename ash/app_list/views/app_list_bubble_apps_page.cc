@@ -107,6 +107,37 @@ constexpr base::TimeDelta kShowPageAnimationTransformDuration =
 constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
     base::Milliseconds(100);
 
+// A view that runs a click callback when clicked or tapped.
+class ClickableView : public views::View {
+ public:
+  explicit ClickableView(base::RepeatingClosure click_callback)
+      : click_callback_(click_callback) {}
+  ~ClickableView() override = default;
+
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    views::View::OnMousePressed(event);
+    // Return true so this object will receive a mouse released event.
+    return true;
+  }
+
+  void OnMouseReleased(const ui::MouseEvent& event) override {
+    views::View::OnMouseReleased(event);
+    click_callback_.Run();
+  }
+
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    views::View::OnGestureEvent(event);
+    if (event->type() == ui::ET_GESTURE_TAP) {
+      event->SetHandled();
+      click_callback_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure click_callback_;
+};
+
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -617,8 +648,13 @@ ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {
 
 void AppListBubbleAppsPage::InitContinueLabelContainer(
     views::View* scroll_contents) {
+  // The entire container view is clickable/tappable. The view is not focusable,
+  // but the toggle button is focusable, and that satisfies the user's need for
+  // an element with keyboard or accessibility focus.
   continue_label_container_ =
-      scroll_contents->AddChildView(std::make_unique<views::View>());
+      scroll_contents->AddChildView(std::make_unique<ClickableView>(
+          base::BindRepeating(&AppListBubbleAppsPage::OnToggleContinueSection,
+                              base::Unretained(this))));
   continue_label_container_->SetBorder(
       views::CreateEmptyBorder(kContinueLabelContainerPadding));
 
@@ -636,6 +672,8 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
   // Button should be right aligned, so flex label to fill empty space.
   layout->SetFlexForView(continue_label_, 1);
 
+  // The toggle button is clickable/tappable in addition to the container view.
+  // This ensures ink drop ripple effects play when the button is clicked.
   toggle_continue_section_button_ =
       continue_label_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&AppListBubbleAppsPage::OnToggleContinueSection,

@@ -276,7 +276,7 @@ TEST_F(AppListBubbleAppsPageTest, ContinueLabelHiddenWhenNoTasksAndNoRecents) {
   EXPECT_FALSE(apps_page->continue_label_container_for_test()->GetVisible());
 }
 
-TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
+TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingButton) {
   base::test::ScopedFeatureList feature_list(
       features::kLauncherHideContinueSection);
 
@@ -306,6 +306,39 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
   // Label container and separator stay visible.
   EXPECT_TRUE(apps_page->continue_label_container_for_test()->GetVisible());
   EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
+}
+
+TEST_F(AppListBubbleAppsPageTest, CanHideContinueSectionByClickingHeader) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
+  // Show the app list with enough items to make the continue section and
+  // recent apps visible.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // The toggle continue section button has the "hide" tooltip.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  views::View* continue_label_container =
+      apps_page->continue_label_container_for_test();
+  ASSERT_TRUE(continue_label_container);
+
+  // Click on the container to hide the continue section.
+  LeftClickOn(continue_label_container);
+
+  // Continue section and recent apps are hidden.
+  EXPECT_FALSE(helper->GetBubbleContinueSectionView()->GetVisible());
+  EXPECT_FALSE(helper->GetBubbleRecentAppsView()->GetVisible());
+
+  // Tap on the container to show the continue section.
+  GestureTapOn(continue_label_container);
+
+  // Continue section and recent apps are shown.
+  EXPECT_TRUE(helper->GetBubbleContinueSectionView()->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleRecentAppsView()->GetVisible());
 }
 
 TEST_F(AppListBubbleAppsPageTest, HideContinueSectionPlaysAnimation) {
