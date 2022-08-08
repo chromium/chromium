@@ -80,8 +80,8 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -167,7 +167,7 @@ public class MainSettingsFragmentTest {
             TemplateUrlServiceFactory.setInstanceForTesting(mActualTemplateUrlService);
         }
         SharedPreferencesManager.getInstance().removeKey(
-                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+                SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
     }
@@ -543,7 +543,7 @@ public class MainSettingsFragmentTest {
         HistogramDelta showCountHistogram =
                 new HistogramDelta("Signin.SyncPromo.Shown.Count.Settings", 1);
         int promoShowCount = SharedPreferencesManager.getInstance().readInt(
-                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+                SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         Assert.assertEquals(0, promoShowCount);
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
@@ -552,7 +552,7 @@ public class MainSettingsFragmentTest {
         onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
 
         promoShowCount = SharedPreferencesManager.getInstance().readInt(
-                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+                SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         Assert.assertEquals(1, promoShowCount);
         Assert.assertEquals(1,
                 SharedPreferencesManager.getInstance().readInt(

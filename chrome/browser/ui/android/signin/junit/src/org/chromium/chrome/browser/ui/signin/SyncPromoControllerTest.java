@@ -35,11 +35,11 @@ import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
- * Tests for {@link SigninPromoController}.
+ * Tests for {@link SyncPromoController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
-public class SigninPromoControllerTest {
+public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS = 100;
     private static final long TIME_SINCE_FIRST_SHOWN_LIMIT_MS =
             TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;
@@ -74,7 +74,7 @@ public class SigninPromoControllerTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
                 .thenReturn(mIdentityManagerMock);
-        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+        mSharedPreferencesManager.writeInt(SyncPromoController.getPromoShowCountPreferenceName(
                                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 0);
         mSharedPreferencesManager.writeLong(
@@ -86,7 +86,7 @@ public class SigninPromoControllerTest {
     @Test
     public void shouldShowSyncPromoForNTPWhenNoAccountOnDevice() {
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class SigninPromoControllerTest {
                 mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(true).build());
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SigninPromoControllerTest {
         mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -117,31 +117,31 @@ public class SigninPromoControllerTest {
                 mAccountCapabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
     public void shouldShowNTPSyncPromoWhenCountLimitIsNotExceeded() {
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.setForTesting(
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
-        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+        mSharedPreferencesManager.writeInt(SyncPromoController.getPromoShowCountPreferenceName(
                                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS - 1);
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
     public void shouldHideNTPSyncPromoWhenCountLimitIsExceeded() {
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.setForTesting(
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
-        mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
+        mSharedPreferencesManager.writeInt(SyncPromoController.getPromoShowCountPreferenceName(
                                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class SigninPromoControllerTest {
                 -1);
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SigninPromoControllerTest {
                 TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS);
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class SigninPromoControllerTest {
                 TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS);
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -190,12 +190,12 @@ public class SigninPromoControllerTest {
         disableNTPSyncPromoBySettingLimits(
                 firstShownTime, lastShownTime, /*signinPromoResetAfterHours=*/-1);
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
 
-        SigninPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(firstShownTime,
                 SharedPreferencesManager.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
@@ -204,7 +204,7 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
@@ -215,12 +215,12 @@ public class SigninPromoControllerTest {
         final long lastShownTime = System.currentTimeMillis();
         disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
 
-        SigninPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(firstShownTime,
                 SharedPreferencesManager.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
@@ -229,7 +229,7 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(MAX_SIGN_IN_PROMO_IMPRESSIONS,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
@@ -240,12 +240,12 @@ public class SigninPromoControllerTest {
         final long lastShownTime = System.currentTimeMillis() - RESET_AFTER_MS - 1;
         disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
 
-        SigninPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
+        SyncPromoController.resetNTPSyncPromoLimitsIfHiddenForTooLong();
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
         Assert.assertEquals(0L,
                 SharedPreferencesManager.getInstance().readLong(
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
@@ -254,7 +254,7 @@ public class SigninPromoControllerTest {
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)));
     }
 
@@ -264,7 +264,7 @@ public class SigninPromoControllerTest {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
 
         Assert.assertTrue(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
@@ -273,7 +273,7 @@ public class SigninPromoControllerTest {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
 
         Assert.assertFalse(
-                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                SyncPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     private void disableNTPSyncPromoBySettingLimits(
@@ -284,7 +284,7 @@ public class SigninPromoControllerTest {
                 signinPromoResetAfterHours);
 
         SharedPreferencesManager.getInstance().writeInt(
-                SigninPromoController.getPromoShowCountPreferenceName(
+                SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
         SharedPreferencesManager.getInstance().writeLong(

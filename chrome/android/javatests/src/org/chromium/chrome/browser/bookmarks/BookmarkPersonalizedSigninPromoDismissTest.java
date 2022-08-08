@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -71,7 +71,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Before
     public void setUp() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(null);
-        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BookmarkModel bookmarkModel = new BookmarkModel(Profile.fromWebContents(
@@ -84,11 +84,11 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @After
     public void tearDown() {
         SharedPreferencesManager.getInstance().removeKey(
-                SigninPromoController.getPromoShowCountPreferenceName(
+                SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.BOOKMARK_MANAGER));
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        SigninPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
     }
 
     @Test
@@ -129,9 +129,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @MediumTest
     public void testPromoNotExistWhenImpressionLimitReached() {
         SharedPreferencesManager.getInstance().writeInt(
-                SigninPromoController.getPromoShowCountPreferenceName(
+                SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.BOOKMARK_MANAGER),
-                SigninPromoController.getMaxImpressionsBookmarksForTests());
+                SyncPromoController.getMaxImpressionsBookmarksForTests());
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
@@ -148,7 +148,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.BOOKMARK_MANAGER)));
         HistogramDelta showCountHistogram =
                 new HistogramDelta("Signin.SyncPromo.Shown.Count.Bookmarks", 1);
@@ -158,7 +158,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
         assertEquals(1,
                 SharedPreferencesManager.getInstance().readInt(
-                        SigninPromoController.getPromoShowCountPreferenceName(
+                        SyncPromoController.getPromoShowCountPreferenceName(
                                 SigninAccessPoint.BOOKMARK_MANAGER)));
         Assert.assertEquals(1,
                 SharedPreferencesManager.getInstance().readInt(

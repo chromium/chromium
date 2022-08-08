@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -48,7 +48,7 @@ public class SyncPromoPreference extends Preference
     private final AccountManagerFacade mAccountManagerFacade;
     private @State int mState;
     private Runnable mStateChangedCallback;
-    private @Nullable SigninPromoController mSigninPromoController;
+    private @Nullable SyncPromoController mSyncPromoController;
 
     /**
      * Constructor for inflating from XML.
@@ -74,7 +74,7 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.addObserver(this);
         signinManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        mSigninPromoController = new SigninPromoController(
+        mSyncPromoController = new SyncPromoController(
                 SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
         update();
@@ -89,7 +89,7 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.removeObserver(this);
         signinManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
-        mSigninPromoController = null;
+        mSyncPromoController = null;
     }
 
     /** Returns the state of the preference. Not valid until registerForUpdates is called. */
@@ -110,7 +110,7 @@ public class SyncPromoPreference extends Preference
                 && (state == State.PERSONALIZED_SIGNIN_PROMO
                         || state == State.PERSONALIZED_SYNC_PROMO);
         if (hasStateChangedFromHiddenToShown) {
-            mSigninPromoController.increasePromoShowCount();
+            mSyncPromoController.increasePromoShowCount();
         }
 
         mState = state;
@@ -127,7 +127,7 @@ public class SyncPromoPreference extends Preference
             return;
         }
 
-        if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
+        if (SyncPromoController.canShowSyncPromo(SigninAccessPoint.SETTINGS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
@@ -164,7 +164,7 @@ public class SyncPromoPreference extends Preference
 
         PersonalizedSigninPromoView syncPromoView =
                 (PersonalizedSigninPromoView) holder.findViewById(R.id.signin_promo_view_container);
-        mSigninPromoController.setUpSyncPromoView(
+        mSyncPromoController.setUpSyncPromoView(
                 mProfileDataCache, syncPromoView, this::onPromoDismissClicked);
     }
 

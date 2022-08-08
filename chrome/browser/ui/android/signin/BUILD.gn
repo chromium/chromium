@@ -51,13 +51,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/GoogleActivityController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/PersonalizedSigninPromoView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/SigninPromoController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninScrollView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentActivityLauncher.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentFragmentBase.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SyncConsentView.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/TangibleSyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetMediator.java",
@@ -139,7 +139,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/signin/SigninPromoControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegateTest.java",
   ]
@@ -175,7 +175,7 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/signin/SigninPromoControllerRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
   ]

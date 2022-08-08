@@ -49,7 +49,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
 
-/** Render tests of SigninPromoController. */
+/** Render tests of SyncPromoController. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -59,7 +59,7 @@ import java.util.List;
         ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
         ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
 })
-public class SigninPromoControllerRenderTest {
+public class SyncPromoControllerRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -94,7 +94,7 @@ public class SigninPromoControllerRenderTest {
     public void setUp() {
         // TODO(crbug.com/1297981): Remove dependency on ChromeTabbedActivityTestRule.
         // Starting ChromeTabbedActivityTestRule to initialize the browser, which is needed when
-        // SigninPromoController.setUpSyncPromoView() is called.
+        // SyncPromoController.setUpSyncPromoView() is called.
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
@@ -103,7 +103,7 @@ public class SigninPromoControllerRenderTest {
     /**
      * @param nightModeEnabled A nitght mode flag injected by @ParameterAnnotations.ClassParameter.
      */
-    public SigninPromoControllerRenderTest(boolean nightModeEnabled) {
+    public SyncPromoControllerRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -1026,7 +1026,7 @@ public class SigninPromoControllerRenderTest {
     }
 
     // TODO(crbug.com/1314490): In production we observe the onProfileDataUpdated() event and then
-    // update the view, but that's done outside of SigninPromoController, the logic is duplicated
+    // update the view, but that's done outside of SyncPromoController, the logic is duplicated
     // for each entry point. In the long term, we should have a single observer internal to the UI
     // component. Then these tests can just wait for the right data to appear with espresso.
     private ProfileDataCache createProfileDataCacheAndWaitForAccountData() throws Throwable {
@@ -1055,9 +1055,9 @@ public class SigninPromoControllerRenderTest {
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
             activity.setContentView(content);
-            SigninPromoController signinPromoController =
-                    new SigninPromoController(accessPoint, mSyncConsentActivityLauncher);
-            signinPromoController.setUpSyncPromoView(profileDataCache,
+            SyncPromoController syncPromoController =
+                    new SyncPromoController(accessPoint, mSyncConsentActivityLauncher);
+            syncPromoController.setUpSyncPromoView(profileDataCache,
                     promoView.findViewById(R.id.signin_promo_view_container),
                     accessPoint == SigninAccessPoint.RECENT_TABS ? null : () -> {});
             return promoView;

@@ -248,7 +248,7 @@ public class RecentTabsPageTest {
     }
 
     // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
-    // SigninPromoControllerRenderTest.
+    // SyncPromoControllerRenderTest.
     @Test
     @LargeTest
     @Feature("RenderTest")
@@ -272,7 +272,7 @@ public class RecentTabsPageTest {
     }
 
     // TODO(crbug.com/1334912): This test should be removed, since we have a similar test in
-    // SigninPromoControllerRenderTest.
+    // SyncPromoControllerRenderTest.
     @Test
     @LargeTest
     @Feature("RenderTest")

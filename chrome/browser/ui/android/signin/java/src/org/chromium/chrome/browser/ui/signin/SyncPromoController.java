@@ -47,12 +47,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A controller for configuring the sign in promo. It sets up the sign in promo depending on the
+ * A controller for configuring the sync promo. It sets up the sync promo depending on the
  * context: whether there are any Google accounts on the device which have been previously signed in
  * or not. The controller also takes care of counting impressions, recording signin related user
  * actions and histograms.
  */
-public class SigninPromoController {
+public class SyncPromoController {
     /** Specifies the various states of sync promo. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -259,11 +259,11 @@ public class SigninPromoController {
     }
 
     /**
-     * Creates a new SigninPromoController.
+     * Creates a new SyncPromoController.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
      */
-    public SigninPromoController(
+    public SyncPromoController(
             @AccessPoint int accessPoint, SyncConsentActivityLauncher syncConsentActivityLauncher) {
         mAccessPoint = accessPoint;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
@@ -352,10 +352,10 @@ public class SigninPromoController {
      * Sets up the sync promo view.
      * @param profileDataCache The {@link ProfileDataCache} that stores profile data.
      * @param view The {@link PersonalizedSigninPromoView} that should be set up.
-     * @param listener The {@link SigninPromoController.OnDismissListener} to be set to the view.
+     * @param listener The {@link SyncPromoController.OnDismissListener} to be set to the view.
      */
     public void setUpSyncPromoView(ProfileDataCache profileDataCache,
-            PersonalizedSigninPromoView view, SigninPromoController.OnDismissListener listener) {
+            PersonalizedSigninPromoView view, SyncPromoController.OnDismissListener listener) {
         final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         assert !identityManager.hasPrimaryAccount(ConsentLevel.SYNC) : "Sync is already enabled!";

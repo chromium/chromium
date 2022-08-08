@@ -27,8 +27,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController;
-import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -76,7 +76,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private boolean mIsDestroyed;
 
     private final ProfileDataCache mProfileDataCache;
-    private final SigninPromoController mSigninPromoController;
+    private final SyncPromoController mSyncPromoController;
     private final SyncService mSyncService;
 
     /**
@@ -112,7 +112,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSigninPromoController = new SigninPromoController(
+        mSyncPromoController = new SyncPromoController(
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
 
@@ -451,7 +451,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
                 && (newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
                         || newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         if (hasSyncPromoStateChangedtoShown) {
-            mSigninPromoController.increasePromoShowCount();
+            mSyncPromoController.increasePromoShowCount();
         }
         mPromoState = newState;
     }
@@ -460,7 +460,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * Sets up the sync promo view.
      */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSigninPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
+        mSyncPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
     }
 
     // SignInStateObserver implementation.
