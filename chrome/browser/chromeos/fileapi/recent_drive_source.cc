@@ -143,7 +143,10 @@ void RecentDriveSource::GotSearchResults(
         params_.value().file_system_context()->CreateCrackedFileSystemURL(
             blink::StorageKey(url::Origin::Create(params_->origin())),
             storage::kFileSystemTypeExternal, path),
-        result->metadata->modification_time);
+        // Do not use "modification_time" field here because that will cause
+        // files modified by others recently (e.g. Shared with me) being
+        // treated as recent files.
+        result->metadata->last_viewed_by_me_time);
   }
   OnComplete();
 }
