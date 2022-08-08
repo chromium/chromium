@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
+#include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -610,6 +611,16 @@ TEST_P(LongpressDiacriticsSuggesterTest, NoDismissSuggestionOnRepeatKeyPress) {
   EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
   EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
   EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, ReturnsDiacriticsProposeActionType) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  EXPECT_EQ(suggester.GetProposeActionType(),
+            AssistiveType::kLongpressDiacritics);
 }
 
 INSTANTIATE_TEST_SUITE_P(

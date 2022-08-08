@@ -472,6 +472,25 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"à;á;â;ã;ã;ä;å;ā");
 }
 
+TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionOnKeyDownRecordsSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::DIGIT1)));
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Success", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Success",
+                                       AssistiveType::kLongpressDiacritics, 1);
+}
+
 TEST_F(AssistiveSuggesterTest,
        NoDiacriticsSuggestionOnKeyDownLongpressForUSEnglishOnPrefDisabled) {
   base::test::ScopedFeatureList feature_list;

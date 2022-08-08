@@ -25,7 +25,8 @@ enum class AssistiveType {
   kAutocorrectReverted = 12,
   kMultiWordPrediction = 13,
   kMultiWordCompletion = 14,
-  kMaxValue = kMultiWordCompletion,
+  kLongpressDiacritics = 15,
+  kMaxValue = kLongpressDiacritics,
 };
 
 enum class SuggestionStatus {

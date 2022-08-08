@@ -230,8 +230,7 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
 }
 
 AssistiveType LongpressDiacriticsSuggester::GetProposeActionType() {
-  // TODO(b/217560706): Should handle action.
-  return AssistiveType::kGenericAction;
+  return AssistiveType::kLongpressDiacritics;
 }
 
 bool LongpressDiacriticsSuggester::HasSuggestions() {

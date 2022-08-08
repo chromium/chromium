@@ -49782,6 +49782,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="12" label="AUTOCORRECT_REVERTED"/>
   <int value="13" label="MULTIWORD_PREDICTION"/>
   <int value="14" label="MULTIWORD_COMPLETION"/>
+  <int value="15" label="LONGPRESS_DIACRITICS"/>
 </enum>
 
 <enum name="IMEAssistiveDisabledReason">
