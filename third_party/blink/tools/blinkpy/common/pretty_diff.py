@@ -21,8 +21,6 @@ if six.PY2:
 else:
     import html as cgi
 
-from blinkpy.common.base85 import decode_base85
-
 # The style below is meant to be similar to PolyGerrit.
 _LEADING_HTML = """<!DOCTYPE html>
 <meta charset="UTF-8">
@@ -540,8 +538,5 @@ class BinaryHunk(object):
                                  'letter:{}, actual:{}, line:"{}"'.format(
                                      line_length * 5, (len(line) - 1) * 4,
                                      line))
-            if six.PY2:
-                bin_data += decode_base85(line[1:])[0:line_length]
-            else:
-                bin_data += base64.b85decode(line[1:].encode('utf8'))
+            bin_data += base64.b85decode(line[1:].encode('utf8'))
         raise ValueError('No blank line terminating a binary hunk.')
