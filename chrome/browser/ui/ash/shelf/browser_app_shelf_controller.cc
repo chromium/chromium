@@ -32,15 +32,10 @@ void MaybeUpdateStringProperty(aura::Window* window,
   }
 }
 
-// TODO(crbug.com/1267769): sometimes browser window instance lookup fails when
-// it should be present. Remove when we know the root cause.
-void BrowserWindowMustBeValid(
-    const apps::BrowserWindowInstance* browser_window) {
-  if (!browser_window) {
-    base::debug::DumpWithoutCrashing();
-  } else if (!browser_window->window) {
-    base::debug::DumpWithoutCrashing();
-  }
+std::string BrowserAppIdForWindow(aura::Window* window) {
+  return crosapi::browser_util::IsLacrosWindow(window)
+             ? app_constants::kLacrosAppId
+             : app_constants::kChromeAppId;
 }
 
 }  // namespace
@@ -178,46 +173,38 @@ void BrowserAppShelfController::SetShelfItemClosed(const ash::ShelfID& id) {
 
 void BrowserAppShelfController::MaybeUpdateWindowProperties(
     aura::Window* window) {
+  // App ID of a window is set to the ID of the app active in this window:
+  // 1) for app windows, it's the ID of the app running in this window,
+  // 2) for regular tabbed browser windows, it's the ID of the app running in
+  //    the active tab of this window. If there is no app in the active tab of a
+  //    browser window, the window's app ID is set to the ID of the browser
+  //    itself (Ash or Lacros).
+  //
+  // Shelf ID of a window is set to the ID of the shelf item the app instance
+  // running in this window maps to. This is usually the same as window's app
+  // ID, except for the cases where the active instance has no shelf item (apps
+  // configured to open in a tab that don't have a pinned shelf item): in this
+  // case, the window's shelf ID is set to the ID of the browser itself (Ash or
+  // Lacros).
+
+  std::string app_id;
+  ash::ShelfID shelf_id;
+
   const apps::BrowserAppInstance* active_instance =
       browser_app_instance_registry_.FindAppInstanceIf(
           [window](const apps::BrowserAppInstance& instance) {
             return instance.window == window && instance.is_web_contents_active;
           });
-  const apps::BrowserWindowInstance* browser_window =
-      browser_app_instance_registry_.FindWindowInstanceIf(
-          [window](const apps::BrowserWindowInstance& instance) {
-            return instance.window == window;
-          });
-  const char* browser_app_id = crosapi::browser_util::IsLacrosWindow(window)
-                                   ? app_constants::kLacrosAppId
-                                   : app_constants::kChromeAppId;
-  // App ID of the window is set to the app ID of the active tab. If the active
-  // tab has no app, app ID of the window is set to the browser's ID.
-  // Shelf ID of the window is set to the app's item on the shelf, if the item
-  // exists, otherwise it's set to the browser's ID (this happens for apps in
-  // tabs that aren't pinned).
-  std::string app_id;
-  ash::ShelfID shelf_id;
   if (active_instance) {
     app_id = active_instance->app_id;
-    const ash::ShelfItem* item = model_.ItemByID(ash::ShelfID(app_id));
-    if (item) {
+    if (const ash::ShelfItem* item = model_.ItemByID(ash::ShelfID(app_id))) {
       shelf_id = item->id;
-    } else {
-      // There is no shelf item for unpinned apps running in a browser tab, so
-      // they get mapped to the browser's shelf item (app ID and shelf ID are
-      // different at this point).
-      shelf_id = ash::ShelfID(browser_app_id);
-      DCHECK(model_.ItemByID(shelf_id));
-      BrowserWindowMustBeValid(browser_window);
     }
   } else {
-    // No active app for that window: it's mapped to the browser's shelf item,
-    // which must be present.
-    app_id = browser_app_id;
-    shelf_id = ash::ShelfID(browser_app_id);
-    DCHECK(model_.ItemByID(shelf_id));
-    BrowserWindowMustBeValid(browser_window);
+    app_id = BrowserAppIdForWindow(window);
+  }
+  if (shelf_id.IsNull()) {
+    shelf_id = ash::ShelfID(BrowserAppIdForWindow(window));
   }
   MaybeUpdateStringProperty(window, ash::kAppIDKey, app_id);
   MaybeUpdateStringProperty(window, ash::kShelfIDKey, shelf_id.Serialize());
