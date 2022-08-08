@@ -64,6 +64,7 @@ AttestationCertificatesSyncerImpl::Factory::~Factory() = default;
 // static
 void AttestationCertificatesSyncerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
+  PA_LOG(INFO) << __func__;
   registry->RegisterTimePref(
       prefs::kCryptAuthAttestationCertificatesLastGeneratedTimestamp,
       base::Time() - kValidTime);
@@ -89,6 +90,8 @@ void AttestationCertificatesSyncerImpl::UpdateCerts(
     const std::string& user_key) {
   DCHECK(features::IsEcheSWAEnabled());
 
+  PA_LOG(INFO) << __func__;
+
   // Cache the cert generation time, to be committed to prefs once the upload is
   // complete and SetLastSyncTimestamp is called.
   last_update_time_ = base::Time::Now();
@@ -104,6 +107,7 @@ bool AttestationCertificatesSyncerImpl::IsUpdateRequired() {
 }
 
 void AttestationCertificatesSyncerImpl::SetLastSyncTimestamp() {
+  PA_LOG(INFO) << __func__;
   pref_service_->SetTime(
       prefs::kCryptAuthAttestationCertificatesLastGeneratedTimestamp,
       last_update_time_);
@@ -128,14 +132,14 @@ void AttestationCertificatesSyncerImpl::ScheduleSync() {
   base::TimeDelta time_to_regeneration_threshold =
       CalculateTimeToRegeneration();
   if (time_to_regeneration_threshold < base::Seconds(0)) {
-    PA_LOG(INFO) << "Requesting new attestation certificates DeviceSync";
+    PA_LOG(INFO) << "Requesting new attestation certificates sync";
     StartTimer(kMaxTimeout);
     cryptauth_scheduler_->RequestDeviceSync(
         cryptauthv2::ClientMetadata::InvocationReason::
             ClientMetadata_InvocationReason_FAST_PERIODIC,
         /*session_id=*/absl::nullopt);
   } else {
-    PA_LOG(INFO) << "Delaying new attestation certificate generation";
+    PA_LOG(INFO) << "Delaying new attestation certificate sync request";
     StartTimer(time_to_regeneration_threshold);
   }
 }

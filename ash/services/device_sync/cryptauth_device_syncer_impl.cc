@@ -235,10 +235,8 @@ void CryptAuthDeviceSyncerImpl::AttemptNextStep() {
       return;
     case State::kWaitingForBluetoothAddress:
       if (features::IsEcheSWAEnabled()) {
-        if (IsAttestationCertificatesUpdateRequired()) {
-          GetAttestationCertificates();
-          return;
-        }
+        GetAttestationCertificates();
+        return;
       }
       [[fallthrough]];
     case State::kWaitingForAttestationCertificates:
@@ -289,10 +287,6 @@ void CryptAuthDeviceSyncerImpl::OnBluetoothAddress(
   }
 
   AttemptNextStep();
-}
-
-bool CryptAuthDeviceSyncerImpl::IsAttestationCertificatesUpdateRequired() {
-  return attestation_certificates_syncer_->IsUpdateRequired();
 }
 
 void CryptAuthDeviceSyncerImpl::GetAttestationCertificates() {

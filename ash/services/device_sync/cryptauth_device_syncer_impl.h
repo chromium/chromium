@@ -144,7 +144,6 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   void GetBluetoothAddress();
   void OnBluetoothAddress(const std::string& bluetooth_address);
 
-  bool IsAttestationCertificatesUpdateRequired();
   void GetAttestationCertificates();
   void OnAttestationCertificates(const std::vector<std::string>& cert_chain,
                                  bool valid);
