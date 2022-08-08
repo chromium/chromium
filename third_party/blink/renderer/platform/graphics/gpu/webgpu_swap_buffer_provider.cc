@@ -39,7 +39,9 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     WGPUTextureFormat format)
     : dawn_control_client_(dawn_control_client),
       client_(client),
-      device_(device) {
+      device_(device),
+      format_(WGPUFormatToViz(format)),
+      usage_(usage) {
   // Create a layer that will be used by the canvas and will ask for a
   // SharedImage each frame.
   layer_ = cc::TextureLayer::CreateForMailbox(this);
@@ -55,14 +57,6 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   layer_->SetPremultipliedAlpha(true);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
-
-  // Initialize the texture descriptor. Only the size will change after this.
-  texture_desc_ = {};
-  texture_desc_.dimension = WGPUTextureDimension_2D;
-  texture_desc_.mipLevelCount = 1;
-  texture_desc_.sampleCount = 1;
-  texture_desc_.usage = usage;
-  texture_desc_.format = format;
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
@@ -72,7 +66,7 @@ WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
 }
 
 viz::ResourceFormat WebGPUSwapBufferProvider::Format() const {
-  return WGPUFormatToViz(texture_desc_.format);
+  return format_;
 }
 
 const gfx::Size& WebGPUSwapBufferProvider::Size() const {
@@ -221,14 +215,25 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
   unused_swap_buffers_.push_back(std::move(swap_buffer));
 }
 
-WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size,
-                                                    SkAlphaType alpha_mode) {
+WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(
+    const WGPUTextureDescriptor& desc,
+    SkAlphaType alpha_mode) {
+  DCHECK_EQ(desc.nextInChain, nullptr);
+  DCHECK_EQ(desc.usage, usage_);
+  DCHECK_EQ(WGPUFormatToViz(desc.format), format_);
+  DCHECK_EQ(desc.dimension, WGPUTextureDimension_2D);
+  DCHECK_EQ(desc.size.depthOrArrayLayers, 1u);
+  DCHECK_EQ(desc.mipLevelCount, 1u);
+  DCHECK_EQ(desc.sampleCount, 1u);
+  DCHECK_EQ(desc.viewFormatCount, 0u);
+
   DCHECK(!wire_texture_id_);
   auto context_provider = GetContextProviderWeakPtr();
   if (!context_provider) {
     return nullptr;
   }
 
+  gfx::Size size(desc.size.width, desc.size.height);
   if (size.IsEmpty()) {
     return nullptr;
   }
@@ -249,11 +254,8 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size,
   // Associate the mailbox to a dawn_wire client DawnTexture object. Pass in a
   // complete descriptor of the texture so that reflection on GPUTexture from
   // canvases gives the correct result.
-  texture_desc_.size = {static_cast<uint32_t>(size.width()),
-                        static_cast<uint32_t>(size.height()), 1};
-
   gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(device_, &texture_desc_);
+      webgpu->ReserveTexture(device_, &desc);
   DCHECK(reservation.texture);
   wire_device_id_ = reservation.deviceId;
   wire_device_generation_ = reservation.deviceGeneration;
@@ -262,8 +264,7 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size,
 
   webgpu->AssociateMailbox(
       wire_device_id_, wire_device_generation_, wire_texture_id_,
-      wire_texture_generation_, texture_desc_.usage,
-      gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
+      wire_texture_generation_, usage_, gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
       reinterpret_cast<GLbyte*>(&current_swap_buffer_->mailbox));
 
   // When the page request a texture it means we'll need to present it on the
@@ -281,9 +282,8 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
 
   return WebGPUMailboxTextureAndSize(
       WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_,
-          static_cast<WGPUTextureUsage>(texture_desc_.usage),
-          last_swap_buffer_->mailbox, last_swap_buffer_->access_finished_token,
+          dawn_control_client_, device_, usage_, last_swap_buffer_->mailbox,
+          last_swap_buffer_->access_finished_token,
           gpu::webgpu::WEBGPU_MAILBOX_NONE),
       last_swap_buffer_->size);
 }

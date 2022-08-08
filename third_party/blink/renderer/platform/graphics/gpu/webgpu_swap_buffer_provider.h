@@ -49,7 +49,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
-  WGPUTexture GetNewTexture(const gfx::Size& size, SkAlphaType alpha_type);
+  WGPUTexture GetNewTexture(const WGPUTextureDescriptor& desc,
+                            SkAlphaType alpha_type);
 
   // Copy swapchain's texture to a video frame.
   // This happens at the end of an animation frame. Dawn's access to the
@@ -149,7 +150,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   Client* client_;
   WGPUDevice device_;
-  WGPUTextureDescriptor texture_desc_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;
 
@@ -159,6 +159,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
   std::unique_ptr<SwapBuffer> last_swap_buffer_;
+  viz::ResourceFormat format_;
+  WGPUTextureUsage usage_;
 
   uint32_t wire_device_id_ = 0;
   uint32_t wire_device_generation_ = 0;

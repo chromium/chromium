@@ -25,7 +25,8 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   static GPUTexture* Create(GPUDevice* device,
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
-  static GPUTexture* CreateError(GPUDevice* device);
+  static GPUTexture* CreateError(GPUDevice* device,
+                                 const WGPUTextureDescriptor* desc);
   static GPUTexture* FromCanvas(GPUDevice* device,
                                 HTMLCanvasElement* canvas,
                                 WGPUTextureUsage usage,

@@ -89,10 +89,6 @@ WGPUTextureViewDescriptor AsDawnType(
   return dawn_desc;
 }
 
-void popErrorDiscardCallback(WGPUErrorType, const char*, void*) {
-  // This callback is used to silently consume expected error messages
-}
-
 }  // anonymous namespace
 
 // static
@@ -127,22 +123,13 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
 }
 
 // static
-GPUTexture* GPUTexture::CreateError(GPUDevice* device) {
+GPUTexture* GPUTexture::CreateError(GPUDevice* device,
+                                    const WGPUTextureDescriptor* desc) {
   DCHECK(device);
-
-  // Force the creation of an invalid texture and consume the errors that it
-  // causes. It would be nice if Dawn provided a more direct way of creating
-  // an error texture to simplify this.
-  WGPUTextureDescriptor dawn_desc = {};
-  device->GetProcs().devicePushErrorScope(device->GetHandle(),
-                                          WGPUErrorFilter_Validation);
-  GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
+  DCHECK(desc);
+  return MakeGarbageCollected<GPUTexture>(
       device,
-      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc));
-  device->GetProcs().devicePopErrorScope(device->GetHandle(),
-                                         &popErrorDiscardCallback, nullptr);
-
-  return texture;
+      device->GetProcs().deviceCreateErrorTexture(device->GetHandle(), desc));
 }
 
 // static
