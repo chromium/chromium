@@ -22,6 +22,12 @@ component("cryptohome") {
     "//components/user_manager",
   ]
   sources = [
+    "auth_factor.cc",
+    "auth_factor.h",
+    "auth_factor_conversions.cc",
+    "auth_factor_conversions.h",
+    "auth_factor_input.cc",
+    "auth_factor_input.h",
     "common_types.h",
     "cryptohome_parameters.cc",
     "cryptohome_parameters.h",
