@@ -852,6 +852,11 @@ class SitePerProcessHighDPIHitTestBrowserTest
 
   SitePerProcessHighDPIHitTestBrowserTest() {}
 
+// TODO(crbug.com/1350913): Re-enable when fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetUp() override { GTEST_SKIP(); }
+#endif
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SitePerProcessHitTestBrowserTest::SetUpCommandLine(command_line);
