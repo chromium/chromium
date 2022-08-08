@@ -106,11 +106,10 @@ class FailedCameraHalServerCallbacks final
 class CAPTURE_EXPORT CameraPrivacySwitchObserver
     : public base::CheckedObserver {
  public:
+  ~CameraPrivacySwitchObserver() override = default;
+
   virtual void OnCameraPrivacySwitchStatusChanged(
       cros::mojom::CameraPrivacySwitchState state) = 0;
-
- protected:
-  ~CameraPrivacySwitchObserver() override = default;
 };
 
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
