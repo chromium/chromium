@@ -379,6 +379,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_select_file_dialog_factory.cc",
     "lib/browser/headless_select_file_dialog_factory.h",
+    "lib/browser/headless_web_contents_impl.cc",
+    "lib/browser/headless_web_contents_impl.h",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -462,6 +464,7 @@ component("headless_non_renderer") {
     "//components/cookie_config",
     "//components/embedder_support",
     "//components/keyed_service/content",
+    "//components/os_crypt:os_crypt",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
@@ -491,6 +494,7 @@ component("headless_non_renderer") {
     deps += [
       "//components/printing/browser",
       "//components/printing/browser/headless",
+      "//components/printing/browser/print_to_pdf:print_to_pdf",
       "//components/printing/common:mojo_interfaces",
       "//printing",
       "//printing/mojom",
@@ -501,8 +505,6 @@ component("headless_non_renderer") {
     sources += [
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
-      "lib/browser/headless_web_contents_impl.cc",
-      "lib/browser/headless_web_contents_impl.h",
       "lib/headless_content_main_delegate.cc",
       "lib/headless_content_main_delegate.h",
       "lib/renderer/headless_content_renderer_client.cc",
@@ -667,6 +669,7 @@ if (!is_component_build) {
     }
     if (enable_basic_printing) {
       deps += [
+        "//components/printing/browser/headless:headless",
         "//components/printing/renderer",
         "//components/services/print_compositor",
         "//components/services/print_compositor/public/mojom",
@@ -901,6 +904,7 @@ if (is_win) {
     deps = [
       ":headless_non_renderer",
       "//build:branding_buildflags",
+      "//components/crash/core/app:app",
       "//components/crash/core/app:run_as_crashpad_handler",
       "//components/embedder_support",
       "//content:sandbox_helper_win",
@@ -913,6 +917,9 @@ if (is_win) {
     ]
     if (headless_use_policy) {
       deps += [ "//components/policy/content" ]
+    }
+    if (enable_basic_printing) {
+      deps += [ "//components/printing/browser/headless:headless" ]
     }
     configs += [ ":headless_defines_config" ]
   }
@@ -968,6 +975,7 @@ static_library("headless_shell_lib") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser",
+      "//components/printing/browser/headless:headless",
       "//components/printing/renderer",
       "//components/services/print_compositor",
       "//components/services/print_compositor/public/mojom",

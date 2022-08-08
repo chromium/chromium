@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/browser_context.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
