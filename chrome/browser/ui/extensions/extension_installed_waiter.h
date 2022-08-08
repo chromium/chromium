@@ -58,7 +58,7 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
 
-  void OnExtensionRemoved();
+  void OnExtensionRemovedOrBrowserClosed();
 
   const scoped_refptr<const extensions::Extension> extension_;
   const raw_ptr<const Browser> browser_;

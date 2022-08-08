@@ -43,8 +43,9 @@ ExtensionInstalledWaiter::ExtensionInstalledWaiter(
       extensions::ExtensionRegistry::Get(browser->profile()));
   removal_watcher_ = std::make_unique<ExtensionRemovalWatcher>(
       browser, extension,
-      base::BindOnce(&ExtensionInstalledWaiter::OnExtensionRemoved,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &ExtensionInstalledWaiter::OnExtensionRemovedOrBrowserClosed,
+          weak_factory_.GetWeakPtr()));
 }
 
 ExtensionInstalledWaiter::~ExtensionInstalledWaiter() {
@@ -80,6 +81,6 @@ void ExtensionInstalledWaiter::OnExtensionLoaded(
                      weak_factory_.GetWeakPtr()));
 }
 
-void ExtensionInstalledWaiter::OnExtensionRemoved() {
+void ExtensionInstalledWaiter::OnExtensionRemovedOrBrowserClosed() {
   delete this;
 }
