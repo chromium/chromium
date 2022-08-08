@@ -18,6 +18,18 @@ class LoginShelfViewPixelTest : public LoginTestBase {
   LoginShelfViewPixelTest& operator=(const LoginShelfViewPixelTest&) = delete;
   ~LoginShelfViewPixelTest() override = default;
 
+  // Focuses on the login shelf's shutdown button.
+  void FocusOnShutdownButton() {
+    views::View* shutdown_button =
+        GetPrimaryShelf()->shelf_widget()->GetLoginShelfView()->GetViewByID(
+            LoginShelfView::kShutdown);
+    views::Widget* shutdown_button_widget = shutdown_button->GetWidget();
+
+    Shell::Get()->focus_cycler()->FocusWidget(shutdown_button_widget);
+    shutdown_button_widget->Activate();
+    shutdown_button_widget->GetFocusManager()->SetFocusedView(shutdown_button);
+  }
+
   // Returns the screenshot name prefix.
   virtual const char* GetScreenshotPrefix() const {
     return "login_shelf_view_pixel";
@@ -62,6 +74,31 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
 }
 
 // Used to verify the login shelf features with a policy wallpaper.
+TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
+  // Focus on the calendar view.
+  FocusOnShutdownButton();
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+      "focus_on_calendar_view",
+      AshPixelDiffTestHelper::UiComponent::kShelfWidget));
+
+  // Focus on the time view.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+      "focus_on_time_view", AshPixelDiffTestHelper::UiComponent::kShelfWidget));
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+
+  // Move the focus back to the add person button.
+  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+      "refocus_on_login_shelf",
+      AshPixelDiffTestHelper::UiComponent::kShelfWidget));
+}
+
 class LoginShelfWithPolicyWallpaperPixelTest : public LoginShelfViewPixelTest {
  public:
   LoginShelfWithPolicyWallpaperPixelTest() {
@@ -84,16 +121,7 @@ class LoginShelfWithPolicyWallpaperPixelTest : public LoginShelfViewPixelTest {
 // Verifies that focusing on the login shelf widget with a policy wallpaper
 // works as expected (see https://crbug.com/1197052).
 TEST_F(LoginShelfWithPolicyWallpaperPixelTest, FocusOnShutdownButton) {
-  views::View* shutdown_button =
-      GetPrimaryShelf()->shelf_widget()->GetLoginShelfView()->GetViewByID(
-          LoginShelfView::kShutdown);
-  views::Widget* shutdown_button_widget = shutdown_button->GetWidget();
-
-  // Focus on the shutdown button.
-  Shell::Get()->focus_cycler()->FocusWidget(shutdown_button_widget);
-  shutdown_button_widget->Activate();
-  shutdown_button_widget->GetFocusManager()->SetFocusedView(shutdown_button);
-
+  FocusOnShutdownButton();
   EXPECT_TRUE(
       pixel_test_helper_.ComparePrimaryFullScreen("focus_on_shutdown_button"));
 }
