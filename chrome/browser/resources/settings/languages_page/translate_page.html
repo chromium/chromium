@@ -1,6 +1,8 @@
 <style include="cr-shared-style settings-shared iron-flex"></style>
 <settings-toggle-button id="offerTranslateOtherLanguages"
-    pref="{{prefs.translate.enabled}}" label="$i18n{offerToEnableTranslate}"
+    pref="{{prefs.translate.enabled}}"
+    label="$i18n{offerToEnableTranslate}"
+    sub-label="$i18n{offerToEnableTranslateSublabel}"
     on-settings-boolean-control-change="onTranslateToggleChange_">
 </settings-toggle-button>
 <iron-collapse id="spellCheckCollapse"
