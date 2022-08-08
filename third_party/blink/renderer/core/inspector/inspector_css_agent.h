@@ -89,8 +89,10 @@ class CORE_EXPORT InspectorCSSAgent final
     STACK_ALLOCATED();
 
    public:
-    explicit InlineStyleOverrideScope(ExecutionContext* context)
-        : content_security_policy_(context->GetContentSecurityPolicy()) {
+    explicit InlineStyleOverrideScope(ExecutionContext* context) {
+      DCHECK(context);
+      content_security_policy_ = context->GetContentSecurityPolicy();
+      DCHECK(content_security_policy_);
       content_security_policy_->SetOverrideAllowInlineStyle(true);
     }
 
