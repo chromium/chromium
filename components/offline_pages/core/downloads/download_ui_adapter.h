@@ -27,7 +27,6 @@ using OfflineContentProvider = offline_items_collection::OfflineContentProvider;
 using OfflineContentAggregator =
     offline_items_collection::OfflineContentAggregator;
 using OfflineItem = offline_items_collection::OfflineItem;
-using OfflineItemSchedule = offline_items_collection::OfflineItemSchedule;
 using OfflineItemShareInfo = offline_items_collection::OfflineItemShareInfo;
 using UpdateDelta = offline_items_collection::UpdateDelta;
 
