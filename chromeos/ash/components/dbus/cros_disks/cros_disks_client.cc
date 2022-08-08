@@ -524,7 +524,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
     base::UmaHistogramEnumeration("CrosDisksClient.FormatCompletedError",
                                   static_cast<FormatError>(error_code),
-                                  FORMAT_ERROR_COUNT);
+                                  FormatError::kCount);
 
     for (auto& observer : observer_list_) {
       observer.OnFormatCompleted(static_cast<FormatError>(error_code),
@@ -535,15 +535,15 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnPartitionCompleted(PartitionCallback callback,
                             dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(PARTITION_ERROR_UNKNOWN);
+      std::move(callback).Run(PartitionError::kUnknown);
       return;
     }
-    uint32_t status = PARTITION_ERROR_UNKNOWN;
+    uint32_t status = static_cast<uint32_t>(PartitionError::kUnknown);
     dbus::MessageReader reader(response);
     if (!reader.PopUint32(&status)) {
       LOG(ERROR) << "Error reading SinglePartitionFormat response: "
                  << response->ToString();
-      std::move(callback).Run(PARTITION_ERROR_UNKNOWN);
+      std::move(callback).Run(PartitionError::kUnknown);
       return;
     }
     std::move(callback).Run(static_cast<PartitionError>(status));

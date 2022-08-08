@@ -82,60 +82,63 @@ enum class MountError {
 COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
 std::ostream& operator<<(std::ostream& out, MountError error);
 
+// Rename error reported by cros-disks.
+enum class RenameError {
+  kNone,
+  kUnknown,
+  kInternal,
+  kInvalidDevicePath,
+  kDeviceBeingRenamed,
+  kUnsupportedFilesystem,
+  kRenameProgramNotFound,
+  kRenameProgramFailed,
+  kDeviceNotAllowed,
+  kLongName,
+  kInvalidCharacter,
+};
+
+// Format error reported by cros-disks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FormatError {
+  kNone,
+  kUnknown,
+  kInternal,
+  kInvalidDevicePath,
+  kDeviceBeingFormatted,
+  kUnsupportedFilesystem,
+  kFormatProgramNotFound,
+  kFormatProgramFailed,
+  kDeviceNotAllowed,
+  kInvalidOptions,
+  kLongName,
+  kInvalidCharacter,
+  kCount,
+};
+
+// Partition error reported by cros-disks.
+enum class PartitionError {
+  kNone = 0,
+  kUnknown = 1,
+  kInternal = 2,
+  kInvalidDevicePath = 3,
+  kDeviceBeingPartitioned = 4,
+  kProgramNotFound = 5,
+  kProgramFailed = 6,
+  kDeviceNotAllowed = 7,
+};
+
 }  // namespace ash
 
 namespace chromeos {
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 using ::ash::DeviceType;
+using ::ash::FormatError;
 using ::ash::MountError;
 using ::ash::MountType;
-
-// Rename error reported by cros-disks.
-enum RenameError {
-  RENAME_ERROR_NONE,
-  RENAME_ERROR_UNKNOWN,
-  RENAME_ERROR_INTERNAL,
-  RENAME_ERROR_INVALID_DEVICE_PATH,
-  RENAME_ERROR_DEVICE_BEING_RENAMED,
-  RENAME_ERROR_UNSUPPORTED_FILESYSTEM,
-  RENAME_ERROR_RENAME_PROGRAM_NOT_FOUND,
-  RENAME_ERROR_RENAME_PROGRAM_FAILED,
-  RENAME_ERROR_DEVICE_NOT_ALLOWED,
-  RENAME_ERROR_LONG_NAME,
-  RENAME_ERROR_INVALID_CHARACTER,
-};
-
-// Format error reported by cros-disks.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum FormatError {
-  FORMAT_ERROR_NONE,
-  FORMAT_ERROR_UNKNOWN,
-  FORMAT_ERROR_INTERNAL,
-  FORMAT_ERROR_INVALID_DEVICE_PATH,
-  FORMAT_ERROR_DEVICE_BEING_FORMATTED,
-  FORMAT_ERROR_UNSUPPORTED_FILESYSTEM,
-  FORMAT_ERROR_FORMAT_PROGRAM_NOT_FOUND,
-  FORMAT_ERROR_FORMAT_PROGRAM_FAILED,
-  FORMAT_ERROR_DEVICE_NOT_ALLOWED,
-  FORMAT_ERROR_INVALID_OPTIONS,
-  FORMAT_ERROR_LONG_NAME,
-  FORMAT_ERROR_INVALID_CHARACTER,
-  FORMAT_ERROR_COUNT,
-};
-
-// Partition error reported by cros-disks.
-enum PartitionError {
-  PARTITION_ERROR_NONE = 0,
-  PARTITION_ERROR_UNKNOWN = 1,
-  PARTITION_ERROR_INTERNAL = 2,
-  PARTITION_ERROR_INVALID_DEVICE_PATH = 3,
-  PARTITION_ERROR_DEVICE_BEING_PARTITIONED = 4,
-  PARTITION_ERROR_PROGRAM_NOT_FOUND = 5,
-  PARTITION_ERROR_PROGRAM_FAILED = 6,
-  PARTITION_ERROR_DEVICE_NOT_ALLOWED = 7,
-};
+using ::ash::PartitionError;
+using ::ash::RenameError;
 
 // Event type each corresponding to a signal sent from cros-disks.
 enum MountEventType {
@@ -438,26 +441,13 @@ using ::chromeos::CROS_DISKS_DISK_ADDED;
 using ::chromeos::CROS_DISKS_DISK_REMOVED;
 using ::chromeos::CrosDisksClient;
 using ::chromeos::DiskInfo;
-using ::chromeos::FORMAT_ERROR_DEVICE_NOT_ALLOWED;
-using ::chromeos::FORMAT_ERROR_NONE;
-using ::chromeos::FORMAT_ERROR_UNKNOWN;
-using ::chromeos::FORMAT_ERROR_UNSUPPORTED_FILESYSTEM;
-using ::chromeos::FormatError;
 using ::chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
 using ::chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
 using ::chromeos::MountAccessMode;
 using ::chromeos::MountEntry;
 using ::chromeos::MountEventType;
-using ::chromeos::PARTITION_ERROR_INVALID_DEVICE_PATH;
-using ::chromeos::PARTITION_ERROR_NONE;
-using ::chromeos::PARTITION_ERROR_UNKNOWN;
-using ::chromeos::PartitionError;
 using ::chromeos::REMOUNT_OPTION_MOUNT_NEW_DEVICE;
 using ::chromeos::REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE;
-using ::chromeos::RENAME_ERROR_DEVICE_NOT_ALLOWED;
-using ::chromeos::RENAME_ERROR_NONE;
-using ::chromeos::RENAME_ERROR_UNKNOWN;
-using ::chromeos::RenameError;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

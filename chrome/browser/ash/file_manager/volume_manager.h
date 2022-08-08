@@ -462,15 +462,15 @@ class VolumeManager : public KeyedService,
       ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
   void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
-                     chromeos::FormatError error_code,
+                     ash::FormatError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
   void OnPartitionEvent(ash::disks::DiskMountManager::PartitionEvent event,
-                        chromeos::PartitionError error_code,
+                        ash::PartitionError error_code,
                         const std::string& device_path,
                         const std::string& device_label) override;
   void OnRenameEvent(ash::disks::DiskMountManager::RenameEvent event,
-                     chromeos::RenameError error_code,
+                     ash::RenameError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
 

@@ -186,7 +186,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   bool format_success_ = true;
   int partition_call_count_ = 0;
   std::string last_partition_device_path_;
-  PartitionError partition_error_ = PARTITION_ERROR_NONE;
+  PartitionError partition_error_ = PartitionError::kNone;
   int rename_call_count_ = 0;
   std::string last_rename_device_path_;
   std::string last_rename_volume_name_;

@@ -1155,18 +1155,18 @@ void VolumeManager::OnMountEvent(
 
 void VolumeManager::OnFormatEvent(
     ash::disks::DiskMountManager::FormatEvent event,
-    chromeos::FormatError error_code,
+    ash::FormatError error_code,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnDeviceEvent: " << event << ", " << error_code << ", "
-           << device_path;
+  DVLOG(1) << "OnDeviceEvent: " << event << ", " << static_cast<int>(error_code)
+           << ", " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::FORMAT_STARTED:
       for (auto& observer : observers_) {
         observer.OnFormatStarted(device_path, device_label,
-                                 error_code == chromeos::FORMAT_ERROR_NONE);
+                                 error_code == ash::FormatError::kNone);
       }
       return;
     case ash::disks::DiskMountManager::FORMAT_COMPLETED:
@@ -1182,7 +1182,7 @@ void VolumeManager::OnFormatEvent(
 
       for (auto& observer : observers_) {
         observer.OnFormatCompleted(device_path, device_label,
-                                   error_code == chromeos::FORMAT_ERROR_NONE);
+                                   error_code == ash::FormatError::kNone);
       }
 
       return;
@@ -1192,19 +1192,18 @@ void VolumeManager::OnFormatEvent(
 
 void VolumeManager::OnPartitionEvent(
     ash::disks::DiskMountManager::PartitionEvent event,
-    chromeos::PartitionError error_code,
+    ash::PartitionError error_code,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnPartitionEvent: " << event << ", " << error_code << ", "
-           << device_path;
+  DVLOG(1) << "OnPartitionEvent: " << event << ", "
+           << static_cast<int>(error_code) << ", " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::PARTITION_STARTED:
       for (auto& observer : observers_) {
-        observer.OnPartitionStarted(
-            device_path, device_label,
-            error_code == chromeos::PARTITION_ERROR_NONE);
+        observer.OnPartitionStarted(device_path, device_label,
+                                    error_code == ash::PartitionError::kNone);
       }
       return;
     case ash::disks::DiskMountManager::PARTITION_COMPLETED:
@@ -1212,7 +1211,7 @@ void VolumeManager::OnPartitionEvent(
       // MountPath auto-detects filesystem format if second argument is
       // empty. The third argument (mount label) is not used in a disk mount
       // operation.
-      if (error_code != chromeos::PARTITION_ERROR_NONE) {
+      if (error_code != ash::PartitionError::kNone) {
         disk_mount_manager_->MountPath(
             device_path, std::string(), std::string(), {},
             ash::MountType::kDevice, GetExternalStorageAccessMode(profile_),
@@ -1220,9 +1219,8 @@ void VolumeManager::OnPartitionEvent(
       }
 
       for (auto& observer : observers_) {
-        observer.OnPartitionCompleted(
-            device_path, device_label,
-            error_code == chromeos::PARTITION_ERROR_NONE);
+        observer.OnPartitionCompleted(device_path, device_label,
+                                      error_code == ash::PartitionError::kNone);
       }
       return;
   }
@@ -1231,18 +1229,18 @@ void VolumeManager::OnPartitionEvent(
 
 void VolumeManager::OnRenameEvent(
     ash::disks::DiskMountManager::RenameEvent event,
-    chromeos::RenameError error_code,
+    ash::RenameError error_code,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnDeviceEvent: " << event << ", " << error_code << ", "
-           << device_path;
+  DVLOG(1) << "OnDeviceEvent: " << event << ", " << static_cast<int>(error_code)
+           << ", " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::RENAME_STARTED:
       for (auto& observer : observers_) {
         observer.OnRenameStarted(device_path, device_label,
-                                 error_code == chromeos::RENAME_ERROR_NONE);
+                                 error_code == ash::RenameError::kNone);
       }
       return;
     case ash::disks::DiskMountManager::RENAME_COMPLETED:
@@ -1264,7 +1262,7 @@ void VolumeManager::OnRenameEvent(
           device_path, std::string(), mount_label, {}, ash::MountType::kDevice,
           GetExternalStorageAccessMode(profile_), base::DoNothing());
 
-      bool successfully_renamed = error_code == chromeos::RENAME_ERROR_NONE;
+      bool successfully_renamed = error_code == ash::RenameError::kNone;
       for (auto& observer : observers_)
         observer.OnRenameCompleted(device_path, device_label,
                                    successfully_renamed);

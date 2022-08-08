@@ -786,8 +786,7 @@ TEST_F(VolumeManagerTest, OnFormatEvent_Started) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnFormatEvent(DiskMountManager::FORMAT_STARTED,
-                                  chromeos::FORMAT_ERROR_NONE, "device1",
-                                  "label1");
+                                  ash::FormatError::kNone, "device1", "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -804,7 +803,7 @@ TEST_F(VolumeManagerTest, OnFormatEvent_StartFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnFormatEvent(DiskMountManager::FORMAT_STARTED,
-                                  chromeos::FORMAT_ERROR_UNKNOWN, "device1",
+                                  ash::FormatError::kUnknown, "device1",
                                   "label1");
 
   ASSERT_EQ(1U, observer.events().size());
@@ -822,8 +821,7 @@ TEST_F(VolumeManagerTest, OnFormatEvent_Completed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnFormatEvent(DiskMountManager::FORMAT_COMPLETED,
-                                  chromeos::FORMAT_ERROR_NONE, "device1",
-                                  "label1");
+                                  ash::FormatError::kNone, "device1", "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -849,7 +847,7 @@ TEST_F(VolumeManagerTest, OnFormatEvent_CompletedFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnFormatEvent(DiskMountManager::FORMAT_COMPLETED,
-                                  chromeos::FORMAT_ERROR_UNKNOWN, "device1",
+                                  ash::FormatError::kUnknown, "device1",
                                   "label1");
 
   ASSERT_EQ(1U, observer.events().size());
@@ -876,7 +874,7 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_Started) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_STARTED,
-                                     chromeos::PARTITION_ERROR_NONE, "device1",
+                                     ash::PartitionError::kNone, "device1",
                                      "label1");
 
   ASSERT_EQ(1U, observer.events().size());
@@ -894,8 +892,8 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_StartFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_STARTED,
-                                     chromeos::PARTITION_ERROR_UNKNOWN,
-                                     "device1", "label1");
+                                     ash::PartitionError::kUnknown, "device1",
+                                     "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -912,7 +910,7 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_Completed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_COMPLETED,
-                                     chromeos::PARTITION_ERROR_NONE, "device1",
+                                     ash::PartitionError::kNone, "device1",
                                      "label1");
 
   ASSERT_EQ(1U, observer.events().size());
@@ -930,8 +928,8 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_COMPLETED,
-                                     chromeos::PARTITION_ERROR_UNKNOWN,
-                                     "device1", "label1");
+                                     ash::PartitionError::kUnknown, "device1",
+                                     "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -1239,8 +1237,7 @@ TEST_F(VolumeManagerTest, OnRenameEvent_Started) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnRenameEvent(DiskMountManager::RENAME_STARTED,
-                                  chromeos::RENAME_ERROR_NONE, "device1",
-                                  "label1");
+                                  ash::RenameError::kNone, "device1", "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -1257,7 +1254,7 @@ TEST_F(VolumeManagerTest, OnRenameEvent_StartFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnRenameEvent(DiskMountManager::RENAME_STARTED,
-                                  chromeos::RENAME_ERROR_UNKNOWN, "device1",
+                                  ash::RenameError::kUnknown, "device1",
                                   "label1");
 
   ASSERT_EQ(1U, observer.events().size());
@@ -1275,8 +1272,7 @@ TEST_F(VolumeManagerTest, OnRenameEvent_Completed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnRenameEvent(DiskMountManager::RENAME_COMPLETED,
-                                  chromeos::RENAME_ERROR_NONE, "device1",
-                                  "label1");
+                                  ash::RenameError::kNone, "device1", "label1");
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
@@ -1301,7 +1297,7 @@ TEST_F(VolumeManagerTest, OnRenameEvent_CompletedFailed) {
   volume_manager()->AddObserver(&observer);
 
   volume_manager()->OnRenameEvent(DiskMountManager::RENAME_COMPLETED,
-                                  chromeos::RENAME_ERROR_UNKNOWN, "device1",
+                                  ash::RenameError::kUnknown, "device1",
                                   "label1");
 
   ASSERT_EQ(1U, observer.events().size());
