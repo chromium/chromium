@@ -35,6 +35,7 @@ namespace remoting {
 int RemoteWebAuthnMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
   base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::IO);
+  base::ThreadPoolInstance::Create("RemoteWebAuthn");
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
 
   base::CommandLine::Init(argc, argv);

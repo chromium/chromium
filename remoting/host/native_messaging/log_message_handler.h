@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 
@@ -38,9 +37,20 @@ class LogMessageHandler {
   explicit LogMessageHandler(const DelegateDeprecated& delegate);
   ~LogMessageHandler();
 
+  // When set to true, if a message is logged on the caller thread, the message
+  // will be synchronously sent to the delegate; otherwise a task will always
+  // be posted to the caller thread to handle the message. Defaults to false to
+  // prevent blocking LOG calls. Set this to false if you want to make sure a
+  // log gets handled when the caller sequence is about to be terminated.
+  void set_log_synchronously_if_possible(bool log_synchronously_if_possible) {
+    log_synchronously_if_possible_ = log_synchronously_if_possible;
+  }
+
   static const char* kDebugMessageTypeName;
 
  private:
+  // TODO(yuweih): Reimplement this class using using a message queue which is
+  // protected by |g_log_message_handler_lock|.
   static bool OnLogMessage(
       int severity, const char* file, int line,
       size_t message_start, const std::string& str);
@@ -53,6 +63,9 @@ class LogMessageHandler {
 
   Delegate delegate_;
   bool suppress_logging_;
+  bool log_synchronously_if_possible_ = false;
+  // TODO(yuweih): Replace all "thread" references in this class with
+  // "sequence".
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   logging::LogMessageHandlerFunction previous_log_message_handler_;
   base::WeakPtrFactory<LogMessageHandler> weak_ptr_factory_{this};

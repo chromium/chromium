@@ -14,14 +14,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
-#include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 
 namespace remoting {
 
@@ -62,10 +60,17 @@ RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // This makes sure the log messages below get sent to the extension before the
+  // caller sequence gets terminated.
+  log_message_handler_->set_log_synchronously_if_possible(true);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (!id_to_request_canceller_.empty()) {
     LOG(WARNING) << id_to_request_canceller_.size()
                  << "Requests are still pending at destruction.";
   }
+  HOST_LOG << "Remote WebAuthn native messaging host is being terminated";
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
@@ -109,6 +114,7 @@ void RemoteWebAuthnNativeMessagingHost::Start(
           &RemoteWebAuthnNativeMessagingHost::SendMessageToClient,
           base::Unretained(this)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  HOST_LOG << "Remote WebAuthn native messaging host has started";
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
