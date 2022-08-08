@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORD_CHECK_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORD_CHECK_DELEGATE_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -28,6 +30,7 @@ class Profile;
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
+class PasswordFeatureManager;
 class PasswordScriptsFetcher;
 }  // namespace password_manager
 
@@ -175,6 +178,11 @@ class PasswordCheckDelegate
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;
+
+  // A password feature manager instance used to determine whether to offer
+  // automated password changes.
+  const std::unique_ptr<password_manager::PasswordFeatureManager>
+      password_feature_manager_;
 
   // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.

@@ -42,6 +42,7 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
+#include "components/password_manager/core/browser/password_feature_manager_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -261,6 +262,10 @@ PasswordCheckDelegate::PasswordCheckDelegate(
                 int,
                 password_manager::CredentialUIEntry::Less>* id_generator)
     : profile_(profile),
+      password_feature_manager_(
+          std::make_unique<password_manager::PasswordFeatureManagerImpl>(
+              profile->GetPrefs(),
+              SyncServiceFactory::GetForProfile(profile))),
       saved_passwords_presenter_(presenter),
       insecure_credentials_manager_(presenter,
                                     PasswordStoreFactory::GetForProfile(
@@ -669,15 +674,10 @@ PasswordScriptsFetcher* PasswordCheckDelegate::GetPasswordScriptsFetcher()
 
 bool PasswordCheckDelegate::IsAutomatedPasswordChangeFromSettingsEnabled()
     const {
-  // Do not offer password change to non-syncing users, as it is required
-  // for generating passwords.
-  if (password_manager_util::GetPasswordSyncState(
-          SyncServiceFactory::GetForProfile(profile_)) ==
-      password_manager::SyncState::kNotSyncing) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordChange);
+  return password_feature_manager_
+             ->AreRequirementsForAutomatedPasswordChangeFulfilled() &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kPasswordChange);
 }
 
 }  // namespace extensions

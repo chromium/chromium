@@ -471,7 +471,8 @@ class LeakDetectionDelegateWithPasswordChangeTest
 
 TEST_F(LeakDetectionDelegateWithPasswordChangeTest,
        ChecksForScriptsOnSigninForm) {
-  ON_CALL(*client().GetPasswordFeatureManager(), IsGenerationEnabled())
+  ON_CALL(*client().GetPasswordFeatureManager(),
+          AreRequirementsForAutomatedPasswordChangeFulfilled)
       .WillByDefault(Return(true));
 
   const PasswordForm form = CreateTestForm();

@@ -29,6 +29,20 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   }
 }
 
+bool PasswordFeatureManagerImpl::
+    AreRequirementsForAutomatedPasswordChangeFulfilled() const {
+  // TODO(crbug.com/1349782): Re-enable for account store users once adjustments
+  // to script fetchers and WebsiteLoginManager are made.
+  switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
+    case SyncState::kNotSyncing:
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
+      return false;
+    case SyncState::kSyncingWithCustomPassphrase:
+    case SyncState::kSyncingNormalEncryption:
+      return true;
+  }
+};
+
 bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
   return features_util::IsOptedInForAccountStorage(pref_service_,
                                                    sync_service_);

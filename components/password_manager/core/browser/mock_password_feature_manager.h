@@ -16,7 +16,10 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
   ~MockPasswordFeatureManager() override;
 
   MOCK_CONST_METHOD0(IsGenerationEnabled, bool());
-
+  MOCK_METHOD(bool,
+              AreRequirementsForAutomatedPasswordChangeFulfilled,
+              (),
+              (const override));
   MOCK_CONST_METHOD0(IsOptedInForAccountStorage, bool());
   MOCK_CONST_METHOD0(ShouldShowAccountStorageOptIn, bool());
   MOCK_CONST_METHOD1(ShouldShowAccountStorageReSignin, bool(const GURL&));

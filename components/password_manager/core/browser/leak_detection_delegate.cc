@@ -92,12 +92,11 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
       false);
   if (is_leaked || force_dialog_for_testing) {
     PasswordScriptsFetcher* scripts_fetcher = nullptr;
-    // Password change scripts require password generation, so only bother
-    // querying for script availability if generation is available.
-    // Similarly, password change scripts should only be offered during sign-in
+    // Password change scripts should only be offered during sign-in
     // (not during sign-up), so don't query if this was a new-password form.
-    if (client_->GetPasswordFeatureManager()->IsGenerationEnabled() &&
-        !is_likely_signup_form_ &&
+    if (!is_likely_signup_form_ &&
+        client_->GetPasswordFeatureManager()
+            ->AreRequirementsForAutomatedPasswordChangeFulfilled() &&
         password_manager::features::IsPasswordScriptsFetchingEnabled() &&
         base::FeatureList::IsEnabled(
             password_manager::features::kPasswordChange)) {

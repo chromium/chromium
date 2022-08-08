@@ -97,3 +97,56 @@ TEST_F(PasswordFeatureManagerImplTest,
 
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
+
+TEST_F(PasswordFeatureManagerImplTest,
+       RequirementsForAutomatedPasswordChangeMetForSyncingUser) {
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(true);
+  sync_service_.SetDisableReasons({});
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
+            password_manager::SyncState::kSyncingNormalEncryption);
+
+  EXPECT_TRUE(password_feature_manager_
+                  .AreRequirementsForAutomatedPasswordChangeFulfilled());
+}
+
+TEST_F(PasswordFeatureManagerImplTest,
+       RequirementsForAutomatedPasswordChangeNotMetForNonSyncingUser) {
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetDisableReasons(
+      {syncer::SyncService::DisableReason::DISABLE_REASON_USER_CHOICE});
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetActiveDataTypes({});
+
+  ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
+            password_manager::SyncState::kNotSyncing);
+
+  EXPECT_FALSE(password_feature_manager_
+                   .AreRequirementsForAutomatedPasswordChangeFulfilled());
+}
+
+TEST_F(PasswordFeatureManagerImplTest,
+       RequirementsForAutomatedPasswordChangeNotMetForAccountStoreUser) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kEnablePasswordsAccountStorage);
+
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetDisableReasons(
+      {syncer::SyncService::DisableReason::DISABLE_REASON_USER_CHOICE});
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+
+  password_feature_manager_.OptInToAccountStorage();
+
+  ASSERT_EQ(
+      password_manager_util::GetPasswordSyncState(&sync_service_),
+      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+
+  EXPECT_FALSE(password_feature_manager_
+                   .AreRequirementsForAutomatedPasswordChangeFulfilled());
+}
