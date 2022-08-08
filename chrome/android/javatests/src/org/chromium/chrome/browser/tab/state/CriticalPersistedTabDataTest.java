@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -20,11 +23,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -94,6 +100,7 @@ public class CriticalPersistedTabDataTest {
     private static final WebContentsState WEB_CONTENTS_STATE_B =
             new WebContentsState(ByteBuffer.allocateDirect(WEB_CONTENTS_STATE_B_BYTES.length));
     private static final String EXPECTED_TITLE = "My_title";
+    private static final String MOCK_DATA_ID = "mock-id";
 
     static {
         WEB_CONTENTS_STATE.buffer().put(WEB_CONTENTS_STATE_BYTES);
@@ -111,6 +118,9 @@ public class CriticalPersistedTabDataTest {
     @Mock
     private CriticalPersistedTabData mUnused2;
 
+    @Spy
+    private MockPersistedTabDataStorage mMockPersistedTabDataStorageSpy;
+
     private static Tab mockTab(int id, boolean isEncrypted) {
         Tab tab = MockTab.createAndInitialize(id, isEncrypted);
         tab.setIsTabSaveEnabled(true);
@@ -119,6 +129,7 @@ public class CriticalPersistedTabDataTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         mStorage = (MockPersistedTabDataStorage) PersistedTabDataConfiguration.getTestConfig()
                            .getStorage();
@@ -244,6 +255,7 @@ public class CriticalPersistedTabDataTest {
                 for (boolean canGoForward : new boolean[] {false, true}) {
                     CriticalPersistedTabData spyCriticalPersistedTabData =
                             prepareCPTDShouldTabSave(canGoBack, canGoForward);
+                    spyCriticalPersistedTabData.setShouldSave();
                     spyCriticalPersistedTabData.setUrl(new GURL(UrlConstants.NTP_URL));
                     Assert.assertEquals(
                             canGoBack || canGoForward, spyCriticalPersistedTabData.shouldSave());
@@ -272,6 +284,7 @@ public class CriticalPersistedTabDataTest {
             CriticalPersistedTabData spyCriticalPersistedTabData =
                     prepareCPTDShouldTabSave(false, false);
             spyCriticalPersistedTabData.setUrl(new GURL("https://www.google.com"));
+            spyCriticalPersistedTabData.setShouldSave();
             Assert.assertTrue(spyCriticalPersistedTabData.shouldSave());
         }
     }
@@ -692,6 +705,45 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab);
         criticalPersistedTabData.deserialize(getFlatBufferWithNoWebContentsState());
         Assert.assertEquals(0, criticalPersistedTabData.getWebContentsState().buffer().limit());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testExternalShouldSave() {
+        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+            MockPersistedTabDataStorage storage = new MockPersistedTabDataStorage();
+            MockPersistedTabDataStorage spyStorage = spy(storage);
+            TabImpl tab = new MockTab(1, false);
+            CriticalPersistedTabData criticalPersistedTabData =
+                    new CriticalPersistedTabData(tab, spyStorage, MOCK_DATA_ID);
+            criticalPersistedTabData.setUrl(URL_A);
+            tab = MockTab.initializeWithCriticalPersistedTabData(tab, criticalPersistedTabData);
+            tab.registerTabSaving();
+            tab.setIsTabSaveEnabled(true);
+
+            // shouldSave flag not yet set, so save shouldn't go through
+            criticalPersistedTabData.save();
+            verify(spyStorage, times(0))
+                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+
+            // shouldSave set, so save should go through
+            criticalPersistedTabData.setShouldSave();
+            criticalPersistedTabData.save();
+            verify(spyStorage, times(1))
+                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+
+            // shouldSave reset after recent save, so save shouldn't go through
+            criticalPersistedTabData.save();
+            verify(spyStorage, times(1))
+                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+
+            // shouldSave set again so save should go through
+            criticalPersistedTabData.setShouldSave();
+            criticalPersistedTabData.save();
+            verify(spyStorage, times(2))
+                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+        }
     }
 
     private static final ByteBuffer getFlatBufferWithNoWebContentsState() {

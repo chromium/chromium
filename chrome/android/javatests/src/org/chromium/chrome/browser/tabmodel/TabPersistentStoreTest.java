@@ -1043,6 +1043,7 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (Tab tab : restoredTabs) {
                 ((TabImpl) tab).registerTabSaving();
+                CriticalPersistedTabData.from(tab).setShouldSave();
             }
         });
         return Pair.create(store, restoredTabs);

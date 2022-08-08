@@ -23,6 +23,15 @@ public interface PersistedTabDataStorage {
 
     /**
      * @param tabId identifier for the {@link Tab}
+     * @param tabDataId unique identifier representing the type {@link PersistedTabData}
+     * @param dataSupplier {@link Supplier} for serialized {@link PersistedTabData}
+     * @param onComplete {@link Callback} called after save is completed
+     */
+    void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier,
+            Callback<Integer> onComplete);
+
+    /**
+     * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
      * @param callback to pass back the seraizliaed {@link PersistedTabData} in
      */

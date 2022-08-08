@@ -48,6 +48,12 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
         mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(dataSupplier.get()));
     }
 
+    @Override
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+            Callback<Integer> callback) {
+        assert false : "save with callback unused in LevelDBPersistedTabDataStorage";
+    }
+
     private static byte[] toByteArray(ByteBuffer buffer) {
         if (buffer == null) {
             return null;

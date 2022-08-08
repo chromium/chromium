@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 
 /**
  * Attributes related to {@link TabState}
@@ -14,6 +15,7 @@ public class TabStateAttributes implements UserData {
     private static final Class<TabStateAttributes> USER_DATA_KEY = TabStateAttributes.class;
     /** Whether or not the TabState has changed. */
     private boolean mIsTabStateDirty = true;
+    private Tab mTab;
 
     /**
      * @return {@link TabStateAttributes} for a {@link Tab}
@@ -21,10 +23,12 @@ public class TabStateAttributes implements UserData {
     public static TabStateAttributes from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
         TabStateAttributes attrs = host.getUserData(USER_DATA_KEY);
-        return attrs != null ? attrs : host.setUserData(USER_DATA_KEY, new TabStateAttributes());
+        return attrs != null ? attrs : host.setUserData(USER_DATA_KEY, new TabStateAttributes(tab));
     }
 
-    private TabStateAttributes() {}
+    private TabStateAttributes(Tab tab) {
+        mTab = tab;
+    }
 
     /**
      * @return true if the {@link TabState} has been changed
@@ -41,5 +45,8 @@ public class TabStateAttributes implements UserData {
      */
     public void setIsTabStateDirty(boolean isTabStateDirty) {
         mIsTabStateDirty = isTabStateDirty;
+        if (isTabStateDirty && !mTab.isDestroyed()) {
+            CriticalPersistedTabData.from(mTab).setShouldSave();
+        }
     }
 }

@@ -249,13 +249,24 @@ public abstract class PersistedTabData implements UserData {
 
     /**
      * Save {@link PersistedTabData} to storage
-     * @param callback callback indicating success/failure
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
             mPersistedTabDataStorage.save(
                     mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
+        }
+    }
+
+    /**
+     * Save {@link PersistedTabData} to storage
+     * @param callback called after save is completed
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void save(Callback<Integer> onComplete) {
+        if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
+            mPersistedTabDataStorage.save(
+                    mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper(), onComplete);
         }
     }
 

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
@@ -57,8 +56,7 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
 
     @MainThread
     @Override
-    @VisibleForTesting
-    protected void save(
+    public void save(
             int tabId, String dataId, Supplier<ByteBuffer> data, Callback<Integer> callback) {
         addStorageRequestAndProcessNext(
                 new EncryptedFileSaveRequest(tabId, dataId, data, callback));
