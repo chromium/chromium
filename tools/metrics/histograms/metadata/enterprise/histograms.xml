@@ -2461,16 +2461,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EnterpriseCheck.IsRunningOnManagedProfileDuration" units="ms"
-    expires_after="2021-04-04">
-  <owner>twellington@google.com</owner>
-  <owner>tedchcoc@chromium.org</owner>
-  <summary>
-    Records the time it takes to calculate whether there is a profile owner app
-    on the device. Android only.
-  </summary>
-</histogram>
-
 <histogram name="EnterpriseCheck.Mac.IsCurrentUserDomainUser" enum="Boolean"
     expires_after="2022-12-31">
   <owner>pastarmovj@chromium.org</owner>

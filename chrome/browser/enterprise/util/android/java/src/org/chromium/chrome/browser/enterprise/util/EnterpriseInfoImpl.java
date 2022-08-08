@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -76,7 +75,6 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
             new AsyncTask<OwnedState>() {
                 // TODO: Unit test this function. https://crbug.com/1099262
                 private OwnedState calculateIsRunningOnManagedProfile(Context context) {
-                    long startTime = SystemClock.elapsedRealtime();
                     boolean hasProfileOwnerApp = false;
                     boolean hasDeviceOwnerApp = false;
                     PackageManager packageManager = context.getPackageManager();
@@ -99,11 +97,6 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
                         }
                         if (hasProfileOwnerApp && hasDeviceOwnerApp) break;
                     }
-
-                    long endTime = SystemClock.elapsedRealtime();
-                    RecordHistogram.recordTimesHistogram(
-                            "EnterpriseCheck.IsRunningOnManagedProfileDuration",
-                            endTime - startTime);
 
                     return new OwnedState(hasDeviceOwnerApp, hasProfileOwnerApp);
                 }
