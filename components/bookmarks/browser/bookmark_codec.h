@@ -105,6 +105,7 @@ class BookmarkCodec {
   // Allows the BookmarkClient to read and a write a string blob from the JSON
   // file. That string captures the bookmarks sync metadata.
   static const char kSyncMetadata[];
+  static const char kDateLastUsed[];
 
   // Possible values for kTypeKey.
   static const char kTypeURL[];

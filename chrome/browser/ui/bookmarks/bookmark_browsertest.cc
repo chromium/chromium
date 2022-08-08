@@ -52,8 +52,12 @@ using bookmarks::BookmarkNode;
 using bookmarks::UrlAndTitle;
 
 namespace {
+
 const char kPersistBookmarkURL[] = "http://www.cnn.com/";
 const char16_t kPersistBookmarkTitle[] = u"CNN";
+const base::Time kPersistLastUsedTime =
+    base::Time() + base::Days(7) + base::Hours(2) + base::Minutes(55) +
+    base::Seconds(24) + base::Milliseconds(133);
 
 bool IsShowingInterstitial(content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -160,8 +164,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, BookmarkBarVisibleWait) {
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
-  bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kPersistBookmarkURL),
-                                kPersistBookmarkTitle);
+  const BookmarkNode* node = bookmarks::AddIfNotBookmarked(
+      bookmark_model, GURL(kPersistBookmarkURL), kPersistBookmarkTitle);
+  bookmark_model->UpdateLastUsedTime(node, kPersistLastUsedTime);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -174,12 +179,14 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
-  std::vector<UrlAndTitle> urls;
-  bookmark_model->GetBookmarks(&urls);
+  GURL url(kPersistBookmarkURL);
+  std::vector<const BookmarkNode*> nodes;
+  bookmark_model->GetNodesByURL(url, &nodes);
 
-  ASSERT_EQ(1u, urls.size());
-  ASSERT_EQ(GURL(kPersistBookmarkURL), urls[0].url);
-  ASSERT_EQ(kPersistBookmarkTitle, urls[0].title);
+  ASSERT_EQ(1u, nodes.size());
+  ASSERT_EQ(url, nodes[0]->url());
+  ASSERT_EQ(kPersistBookmarkTitle, nodes[0]->GetTitledUrlNodeTitle());
+  EXPECT_EQ(kPersistLastUsedTime, nodes[0]->date_last_used());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.

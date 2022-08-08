@@ -230,11 +230,12 @@ class BookmarkModel : public BookmarkUndoProvider,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr);
 
-  // Adds a url at the specified position with the given |creation_time|,
-  // |meta_info| and |guid|. If no GUID is provided (i.e. nullopt), then a
-  // random one will be generated. If a GUID is provided, it must be valid.
-  // Used for bookmarks not being added from direct user actions (e.g. created
-  // via sync, locally modified bookmark or pre-existing bookmark).
+  // Adds a url at the specified position with the given `creation_time`,
+  // `meta_info`, `guid`, and `last_used_time`. If no GUID is provided
+  // (i.e. nullopt), then a random one will be generated. If a GUID is
+  // provided, it must be valid. Used for bookmarks not being added from
+  // direct user actions (e.g. created via sync, locally modified bookmark
+  // or pre-existing bookmark).
   const BookmarkNode* AddURL(
       const BookmarkNode* parent,
       size_t index,
@@ -264,7 +265,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   void ResetDateFolderModified(const BookmarkNode* node);
 
   // Updates the last used `time` for the given `id` / `url`.
-  void UpdateLastUsedTime(const BookmarkNode* node, base::Time time);
+  void UpdateLastUsedTime(const BookmarkNode* node, const base::Time time);
+
+  // Clears the last used time for the given time range. Called when the user
+  // clears their history. Time() and Time::Max() are used for min/max values.
+  void ClearLastUsedTimeInRange(const base::Time delete_begin,
+                                const base::Time delete_end);
 
   // Returns up to |max_count| bookmarks containing each term from |query| in
   // either the title, URL, or, if |match_ancestor_titles| is true, the titles
@@ -392,6 +398,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   void set_next_node_id(int64_t id) { next_node_id_ = id; }
 
   BookmarkUndoDelegate* undo_delegate() const;
+
+  // Implementation of `UpdateLastUsedTime` which gives the option to skip
+  // saving the change to `BookmarkStorage. Used to efficiently make changes
+  // to multiple bookmarks.
+  void UpdateLastUsedTimeImpl(const BookmarkNode* node, base::Time time);
+
+  void ClearLastUsedTimeInRangeRecursive(BookmarkNode* node,
+                                         const base::Time delete_begin,
+                                         const base::Time delete_end);
 
   std::unique_ptr<BookmarkClient> client_;
 

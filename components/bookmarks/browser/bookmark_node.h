@@ -139,8 +139,12 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
       const override;
 
-  // TODO(sky): Consider adding last visit time here, it'll greatly simplify
-  // HistoryContentsProvider.
+  // Returns the last time the bookmark was opened. This is only maintained
+  // for urls (no folders).
+  base::Time date_last_used() const { return date_last_used_; }
+  void set_date_last_used(const base::Time date_last_used) {
+    date_last_used_ = date_last_used;
+  }
 
  protected:
   BookmarkNode(int64_t id,
@@ -218,6 +222,8 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   std::unique_ptr<MetaInfoMap> meta_info_map_;
 
   const bool is_permanent_node_;
+
+  base::Time date_last_used_;
 };
 
 // BookmarkPermanentNode -------------------------------------------------------

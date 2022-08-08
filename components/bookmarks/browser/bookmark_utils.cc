@@ -494,14 +494,15 @@ void DeleteBookmarkFolders(BookmarkModel* model,
   }
 }
 
-void AddIfNotBookmarked(BookmarkModel* model,
-                        const GURL& url,
-                        const std::u16string& title) {
+const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
+                                       const GURL& url,
+                                       const std::u16string& title) {
+  // Nothing to do, a user bookmark with that url already exists.
   if (IsBookmarkedByUser(model, url))
-    return;  // Nothing to do, a user bookmark with that url already exists.
+    return nullptr;
   model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
   const BookmarkNode* parent = GetParentForNewNodes(model);
-  model->AddNewURL(parent, parent->children().size(), title, url);
+  return model->AddNewURL(parent, parent->children().size(), title, url);
 }
 
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {

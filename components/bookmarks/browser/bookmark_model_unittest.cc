@@ -796,6 +796,59 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   EXPECT_EQ(expected_node_removal_details[1], node_removal_details_[1]);
 }
 
+TEST_F(BookmarkModelTest, ClearLastUsedTimeInRange) {
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+
+  ClearCounts();
+
+  base::Time time = base::Time::Now();
+
+  // Add a url to bookmark bar.
+  std::u16string title(u"foo");
+  GURL url("http://foo.com");
+  const BookmarkNode* url_node =
+      model_->AddURL(bookmark_bar_node, 0, title, url);
+  model_->UpdateLastUsedTime(url_node, time);
+
+  // Add a folder with child URL.
+  const BookmarkNode* folder = model_->AddFolder(bookmark_bar_node, 0, title);
+  const BookmarkNode* folder_url_node = model_->AddURL(folder, 0, title, url);
+  model_->UpdateLastUsedTime(folder_url_node, time);
+  EXPECT_EQ(time, url_node->date_last_used());
+  EXPECT_EQ(time, folder_url_node->date_last_used());
+
+  model_->ClearLastUsedTimeInRange(time - base::Seconds(1),
+                                   time + base::Seconds(1));
+  EXPECT_EQ(base::Time(), url_node->date_last_used());
+  EXPECT_EQ(base::Time(), folder_url_node->date_last_used());
+}
+
+TEST_F(BookmarkModelTest, ClearLastUsedTimeInRangeForAllTime) {
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+
+  ClearCounts();
+
+  base::Time time = base::Time::Now();
+
+  // Add a url to bookmark bar.
+  std::u16string title(u"foo");
+  GURL url("http://foo.com");
+  const BookmarkNode* url_node =
+      model_->AddURL(bookmark_bar_node, 0, title, url);
+  model_->UpdateLastUsedTime(url_node, time);
+
+  // Add a folder with child URL.
+  const BookmarkNode* folder = model_->AddFolder(bookmark_bar_node, 0, title);
+  const BookmarkNode* folder_url_node = model_->AddURL(folder, 0, title, url);
+  model_->UpdateLastUsedTime(folder_url_node, time);
+  EXPECT_EQ(time, url_node->date_last_used());
+  EXPECT_EQ(time, folder_url_node->date_last_used());
+
+  model_->ClearLastUsedTimeInRange(base::Time(), base::Time::Max());
+  EXPECT_EQ(base::Time(), url_node->date_last_used());
+  EXPECT_EQ(base::Time(), folder_url_node->date_last_used());
+}
+
 TEST_F(BookmarkModelTest, SetTitle) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   std::u16string title(u"foo");

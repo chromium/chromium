@@ -88,4 +88,8 @@ message BookmarkSpecifics {
   // redundant to the similar field in SyncEntity. If this field in specifics is
   // set, it takes precedence over the one in SyncEntity.
   optional UniquePosition unique_position = 16;
+
+  // Introduced in M106, corresponds to BookmarkNode::date_last_used()
+  // represented as microseconds since the Windows epoch.
+  optional int64 last_used_time_us = 17;
 }
