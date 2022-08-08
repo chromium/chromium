@@ -41,6 +41,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -206,7 +207,10 @@ class IntentPickerAppGridButton : public views::Button {
   }
 
   void OnPressed(const ui::Event& event) {
-    selected_callback_.Run(IsDoubleClick(event));
+    bool should_open = IsDoubleClick(event) ||
+                       (event.IsKeyEvent() &&
+                        event.AsKeyEvent()->key_code() == ui::VKEY_RETURN);
+    selected_callback_.Run(should_open);
   }
 
   bool selected_ = false;

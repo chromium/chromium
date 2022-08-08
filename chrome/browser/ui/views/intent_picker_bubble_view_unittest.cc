@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
@@ -453,6 +454,7 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
             apps::IntentPickerCloseReason::DIALOG_DEACTIVATED);
 }
 
+// TODO(crbug.com/1330440): Fix flakiness on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_KeyboardNavigation DISABLED_KeyboardNavigation
 #else
@@ -524,4 +526,24 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
                    /*initiating_origin=*/absl::nullopt);
 
   ASSERT_FALSE(bubble_->GetSelectedIndex().has_value());
+}
+
+// TODO(crbug.com/1330440): Fix flakiness on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OpenWithReturnKey DISABLED_OpenWithReturnKey
+#else
+#define MAYBE_OpenWithReturnKey OpenWithReturnKey
+#endif
+TEST_F(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
+  AddDefaultApps();
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  GetButtonAtIndex(0)->RequestFocus();
+  EXPECT_TRUE(GetButtonAtIndex(0)->HasFocus());
+
+  event_generator_->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
