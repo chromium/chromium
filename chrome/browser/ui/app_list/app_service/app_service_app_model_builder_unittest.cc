@@ -61,7 +61,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -724,7 +723,6 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   CrostiniAppTest& operator=(const CrostiniAppTest&) = delete;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -747,7 +745,6 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -959,20 +956,18 @@ class PluginVmAppTest : public testing::Test {
  protected:
   // Required to ensure that the Plugin VM manager can be accessed in order to
   // retrieve permissions.
-  struct ScopedDBusThreadManager {
-    ScopedDBusThreadManager() {
-      chromeos::DBusThreadManager::Initialize();
+  struct ScopedDBusClients {
+    ScopedDBusClients() {
       ash::CiceroneClient::InitializeFake();
       ash::ConciergeClient::InitializeFake();
       ash::SeneschalClient::InitializeFake();
     }
-    ~ScopedDBusThreadManager() {
+    ~ScopedDBusClients() {
       ash::SeneschalClient::Shutdown();
       ash::ConciergeClient::Shutdown();
       ash::CiceroneClient::Shutdown();
-      chromeos::DBusThreadManager::Shutdown();
     }
-  } dbus_thread_manager_;
+  } dbus_clients_;
 
   // Destroys any existing builder in the correct order.
   void ResetBuilder() {

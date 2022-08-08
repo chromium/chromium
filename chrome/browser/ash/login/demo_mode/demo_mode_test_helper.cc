@@ -18,16 +18,14 @@
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace ash {
 
 DemoModeTestHelper::DemoModeTestHelper()
     : browser_process_platform_part_test_api_(
           TestingBrowserProcess::GetGlobal()->platform_part()) {
-  if (!DBusThreadManager::IsInitialized()) {
-    DBusThreadManager::Initialize();
-    dbus_thread_manager_initialized_ = true;
+  if (!ConciergeClient::Get()) {
+    concierge_client_initialized_ = true;
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
 
@@ -42,9 +40,8 @@ DemoModeTestHelper::DemoModeTestHelper()
 }
 
 DemoModeTestHelper::~DemoModeTestHelper() {
-  if (dbus_thread_manager_initialized_) {
+  if (concierge_client_initialized_) {
     ConciergeClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
   DemoSession::ShutDownIfInitialized();
   DemoSession::ResetDemoConfigForTesting();

@@ -70,8 +70,8 @@ class DemoModeTestHelper {
   component_updater::FakeCrOSComponentManager* fake_cros_component_manager_ =
       nullptr;
 
-  // True if this class initialized the DBusThreadManager.
-  bool dbus_thread_manager_initialized_ = false;
+  // True if this class initialized the ConciergeClient.
+  bool concierge_client_initialized_ = false;
 };
 
 }  // namespace ash

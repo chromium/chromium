@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 
@@ -89,9 +89,9 @@ void CrostiniTestHelper::RemoveApp(int i) {
 
 void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // Some Crostini-related tests add apps to the registry, which queues
-  // (asynchronous) icon loading requests, which depends on D-Bus. These
-  // requests are merely queued, not executed, so without further action, D-Bus
-  // can be ignored.
+  // (asynchronous) icon loading requests, which depends on the Cicerone D-Bus
+  // client. These requests are merely queued, not executed, so without further
+  // action, D-Bus can be ignored.
   //
   // Separately, the App Service is a Mojo IPC service, and explicit
   // RunUntilIdle or FlushMojoCallsForTesting calls are required to pump the
@@ -99,13 +99,13 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // Those calls have a side effect of executing those icon loading requests.
   //
   // It is simpler if those RunUntilIdle calls are unconditional, so we require
-  // D-Bus to be initialized by this point regardless of whether the App Service
+  // Cicerone to be initialized by this point, whether or not the App Service
   // is enabled. Note that we can't initialize it ourselves here because once it
   // has been initialized it must be shutdown, but it can't be shutdown until
   // after the profile (and all keyed services) have been destroyed, which we
   // can't manage because we don't own the profile.
-  CHECK(chromeos::DBusThreadManager::IsInitialized())
-      << "DBusThreadManager must be initialized before calling "
+  CHECK(ash::CiceroneClient::Get())
+      << "CiceroneClient must be initialized before calling "
          "ReInitializeAppServiceIntegration";
 
   // The App Service is originally initialized when the Profile is created,

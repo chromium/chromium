@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -31,7 +31,7 @@ class CrostiniAppsTest : public testing::Test {
   AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    ash::CiceroneClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
@@ -43,7 +43,7 @@ class CrostiniAppsTest : public testing::Test {
   void TearDown() override {
     test_helper_.reset();
     profile_.reset();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::CiceroneClient::Shutdown();
   }
 
  private:

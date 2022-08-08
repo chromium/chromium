@@ -163,7 +163,7 @@ class ArcAppTest {
   std::vector<arc::mojom::ArcPackageInfoPtr> fake_packages_;
   std::vector<arc::mojom::ShortcutInfo> fake_shortcuts_;
 
-  bool dbus_thread_manager_initialized_ = false;
+  bool concierge_client_initialized_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_TEST_H_

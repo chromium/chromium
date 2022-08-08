@@ -54,7 +54,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/test/test_gpu_service_holder.h"
@@ -105,7 +104,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   ~ShelfContextMenuTest() override = default;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
@@ -213,7 +211,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   ArcAppTest& arc_test() { return arc_test_; }
