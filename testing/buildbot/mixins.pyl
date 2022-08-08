@@ -812,6 +812,16 @@
       },
     },
   },
+  # TODO (crbug/1351123): Adding ONLY for iOS to specify T2 only due to xcode14
+  'mac_12_t2_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'mac_model': 'Macmini8,1',
+        'os': 'Mac-12',
+      },
+    },
+  },
   'mac_12_x64': {
     'swarming': {
       'dimensions': {

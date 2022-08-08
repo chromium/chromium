@@ -280,18 +280,6 @@
       'ios_runtime_cache_14_5',
     ],
   },
-  'SIM_IPHONE_6S_PLUS_15_2': {
-    'args': [
-      '--platform',
-      'iPhone 6s Plus',
-      '--version',
-      '15.2',
-    ],
-    'identifier': 'iPhone 6s Plus 15.2',
-    'mixins': [
-      'ios_runtime_cache_15_2',
-    ],
-  },
   'SIM_IPHONE_6S_PLUS_15_5': {
     'args': [
       '--platform',
@@ -326,18 +314,6 @@
     'identifier': 'iPhone 7 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
-    ],
-  },
-  'SIM_IPHONE_7_15_2': {
-    'args': [
-      '--platform',
-      'iPhone 7',
-      '--version',
-      '15.2'
-    ],
-    'identifier': 'iPhone 7 15.2',
-    'mixins': [
-      'ios_runtime_cache_15_2',
     ],
   },
   'SIM_IPHONE_7_15_5': {
@@ -386,18 +362,6 @@
     'identifier': 'iPhone SE (1st generation) 14.5',
     'mixins': [
       'ios_runtime_cache_14_5',
-    ],
-  },
-  'SIM_IPHONE_SE_1ST_GEN_15_2': {
-    'args': [
-      '--platform',
-      'iPhone SE (1st generation)',
-      '--version',
-      '15.2',
-    ],
-    'identifier': 'iPhone SE (1st generation) 15.2',
-    'mixins': [
-      'ios_runtime_cache_15_2',
     ],
   },
   'SIM_IPHONE_SE_1ST_GEN_15_5': {

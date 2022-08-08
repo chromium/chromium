@@ -5143,7 +5143,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'isolate_profile_data',
-          'mac_12_x64',
+          'mac_12_t2_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
