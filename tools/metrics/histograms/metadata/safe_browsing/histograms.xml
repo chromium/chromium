@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.DragAndDrop.Duration" units="ms"
-    expires_after="2022-09-18">
+    expires_after="2023-02-01">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
