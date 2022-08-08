@@ -45,7 +45,7 @@
         <include name="IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS" file="extensions\tts_engine_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_desktop_capture_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_logging_private_custom_bindings.js" type="BINDATA" />
-        <if expr="chromeos_ash or chromeos_lacros">
+        <if expr="is_chromeos">
           <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\enterprise_platform_keys_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS" file="extensions\enterprise_platform_keys\key_pair.js" type="BINDATA" />
