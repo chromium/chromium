@@ -70,7 +70,15 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 
   void OpenForTabDrag();
 
+  // Returns true if the tab strip is editable. Returns false if the tab strip
+  // is being dragged to prevent extensions from messing things up while that's
+  // happening.
+  bool IsTabStripEditable();
+
   views::NativeViewHost* GetNativeViewHost();
+
+  // Gets the root window of the hosted WebContents.
+  gfx::NativeWindow GetContentRootWindow();
 
   // Control button. Must only be called once.
   std::unique_ptr<views::View> CreateNewTabButton();

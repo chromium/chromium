@@ -58,6 +58,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -536,8 +537,24 @@ void WebUITabStripContainerView::OpenForTabDrag() {
   SetContainerTargetVisibility(true, WebUITabStripOpenCloseReason::kOther);
 }
 
+bool WebUITabStripContainerView::IsTabStripEditable() {
+  gfx::NativeWindow root_window = GetContentRootWindow();
+  if (root_window == nullptr)
+    return true;
+
+  aura::client::DragDropClient* dnd_client =
+      aura::client::GetDragDropClient(root_window);
+  return !(dnd_client && dnd_client->IsDragDropInProgress());
+}
+
 views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
   return web_view_->holder();
+}
+
+gfx::NativeWindow WebUITabStripContainerView::GetContentRootWindow() {
+  return GetNativeViewHost() && GetNativeViewHost()->GetNativeViewContainer()
+             ? GetNativeViewHost()->GetNativeViewContainer()->GetRootWindow()
+             : nullptr;
 }
 
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateNewTabButton() {

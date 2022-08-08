@@ -18,6 +18,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -25,6 +27,37 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+class TestDragDropClient : public aura::client::DragDropClient {
+ public:
+  // aura::client::DragDropClient:
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override {
+    drag_in_progress_ = true;
+    return ui::mojom::DragOperation::kMove;
+  }
+  void DragCancel() override {}
+  bool IsDragDropInProgress() override { return drag_in_progress_; }
+  void AddObserver(aura::client::DragDropClientObserver* observer) override {}
+  void RemoveObserver(aura::client::DragDropClientObserver* observer) override {
+  }
+
+  void set_drag_in_progress(bool drag_in_progress) {
+    drag_in_progress_ = drag_in_progress;
+  }
+
+ private:
+  bool drag_in_progress_ = false;
+};
+
+}  // namespace
 
 class WebUITabStripInteractiveTest : public InProcessBrowserTest {
  public:
@@ -129,6 +162,36 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   container->FinishAnimationForTesting();
   EXPECT_TRUE(container->GetVisible());
   EXPECT_FALSE(container->bounds().IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
+                       TabStripIsNotEditableDuringWhenDragging) {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+
+  WebUITabStripContainerView* const container = browser_view->webui_tab_strip();
+  ASSERT_NE(nullptr, container);
+
+  // Open the tab strip
+  container->SetVisibleForTesting(true);
+  browser_view->Layout();
+
+  // Make sure the tab strip's contents are fully loaded.
+  ASSERT_TRUE(
+      WaitForLoadStop(container->web_view_for_testing()->GetWebContents()));
+
+  // Set the drag and drop client with the initial drag state to false.
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(container->GetContentRootWindow(),
+                                  &drag_drop_client);
+
+  // The tab strip should be default editable.
+  EXPECT_TRUE(browser_view->IsTabStripEditable());
+
+  // Simulate a drag and drop session on the drag controller. The tab strip
+  // should no longer be editable.
+  drag_drop_client.set_drag_in_progress(true);
+  EXPECT_FALSE(browser_view->IsTabStripEditable());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
