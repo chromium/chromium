@@ -388,8 +388,10 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   //       | contents_web_view       |
   //       |          ...            |
   //       |-------------------------|
+  // In the RTL case, the bubble is aligned towards the left side of the screen
+  // and hence the x-axis offset needs to be in the opposite direction.
   return views::BubbleDialogDelegateView::GetBubbleBounds() +
-         gfx::Vector2d(-kRightMargin,
+         gfx::Vector2d(base::i18n::IsRTL() ? kRightMargin : -kRightMargin,
                        GetWidget()->client_view()->GetPreferredSize().height() +
                            kTopMargin);
 }
