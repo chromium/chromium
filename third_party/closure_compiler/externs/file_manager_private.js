@@ -756,6 +756,21 @@ chrome.fileManagerPrivate.ProgressStatus;
  */
 chrome.fileManagerPrivate.DlpMetadata;
 
+/** @enum {string} */
+chrome.fileManagerPrivate.DlpLevel = {
+  BLOCK: 'block',
+  ALLOW: 'allow',
+};
+
+/**
+ * @typedef {{
+ *   level: chrome.fileManagerPrivate.DlpLevel,
+ *   urls: !Array<string>,
+ *   components: !Array<chrome.fileManagerPrivate.VolumeType>,
+ * }}
+ */
+chrome.fileManagerPrivate.DlpRestrictionDetails;
+
 /**
  * Logout the current user for navigating to the re-authentication screen for
  * the Google account.
@@ -981,11 +996,16 @@ chrome.fileManagerPrivate.getDisallowedTransfers = function(
 chrome.fileManagerPrivate.getDlpMetadata = function(entries, callback) {};
 
 /**
- * Shows a modal containing Data Leak Prevention (DLP) Restriction Details.
+ * Retrieves Data Leak Prevention (DLP) restriction details.
  * @param {string} sourceUrl Source URL of the Entry for which the details
  *     should be shown.
+ * @param {function(!Array<chrome.fileManagerPrivate.DlpRestrictionDetails>)}
+ * callback Callback with the list of
+ * chrome.fileManagerPrivate.DlpRestrictionDetails containing summarized
+ * restriction information about the entry.
  */
-chrome.fileManagerPrivate.showDlpRestrictionDetails = function(sourceUrl) {};
+chrome.fileManagerPrivate.getDlpRestrictionDetails = function(
+    sourceUrl, callback) {};
 
 /**
  * Starts to copy an entry. If the source is a directory, the copy is done

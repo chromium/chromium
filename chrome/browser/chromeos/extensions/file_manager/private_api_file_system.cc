@@ -1117,14 +1117,14 @@ void FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata(
           converted_list)));
 }
 
-FileManagerPrivateShowDlpRestrictionDetailsFunction::
-    FileManagerPrivateShowDlpRestrictionDetailsFunction() = default;
+FileManagerPrivateGetDlpRestrictionDetailsFunction::
+    FileManagerPrivateGetDlpRestrictionDetailsFunction() = default;
 
-FileManagerPrivateShowDlpRestrictionDetailsFunction::
-    ~FileManagerPrivateShowDlpRestrictionDetailsFunction() = default;
+FileManagerPrivateGetDlpRestrictionDetailsFunction::
+    ~FileManagerPrivateGetDlpRestrictionDetailsFunction() = default;
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateShowDlpRestrictionDetailsFunction::Run() {
+FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
     return RespondNow(NoArguments());
@@ -1133,17 +1133,16 @@ FileManagerPrivateShowDlpRestrictionDetailsFunction::Run() {
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
-    return RespondNow(NoArguments());
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 
-  using extensions::api::file_manager_private::ShowDlpRestrictionDetails::
-      Params;
+  using extensions::api::file_manager_private::GetDlpRestrictionDetails::Params;
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // TODO(crbug.com/1346254): Show the modal.
+  // TODO(crbug.com/1346254): Call DlpFilesController to get the details.
 
-  return RespondNow(NoArguments());
+  return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
 }
 
 FileManagerPrivateInternalStartCopyFunction::

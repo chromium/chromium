@@ -387,6 +387,13 @@ enum UserType {
   kOrganization
 };
 
+enum DlpLevel {
+  // User cannot perform an action.
+  block,
+  // No restriction.
+  allow
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -1040,6 +1047,17 @@ dictionary DlpMetadata {
   boolean isDlpRestricted;
 };
 
+dictionary DlpRestrictionDetails {
+  // The level for which the restriction is enforced.
+  DlpLevel level;
+
+  // List of URLs for which the restriction is enforced.
+  DOMString[] urls;
+
+  // List of components for which the restriction is enforced.
+  VolumeType[] components;
+};
+
 // A Guest OS that supports guest->host file sharing. This definition should
 // match the one in file_manager_private.js.
 dictionary MountableGuest {
@@ -1106,6 +1124,11 @@ callback GetDisallowedTransfersCallback =
 // the entries.
 callback GetDlpMetadataCallback =
     void(DlpMetadata[] dlpMetadata);
+
+// |restrictionDetails| A list of DlpRestrictionDetails containing
+// summarized restriction information about an entry.
+callback GetDlpRestrictionDetailsCallback =
+    void(DlpRestrictionDetails[] restrictionDetails);
 
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
@@ -1401,10 +1424,12 @@ interface Functions {
       [instanceOf=Entry] object[] entries,
       GetDlpMetadataCallback callback);
 
-  // Shows a modal containing Data Leak Prevention (DLP) Restriction Details.
+  // Retrieves Data Leak Prevention (DLP) restriction details.
   // |sourceUrl| Source URL of the Entry for which the details should be shown.
-  static void showDlpRestrictionDetails(
-      DOMString sourceUrl);
+  // |callback| Result callback.
+  static void getDlpRestrictionDetails(
+      DOMString sourceUrl,
+      GetDlpRestrictionDetailsCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

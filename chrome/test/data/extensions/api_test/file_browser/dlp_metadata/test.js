@@ -87,9 +87,11 @@ chrome.test.getConfig(config => {
               }))
         },
         async function showDlpRestrictionDetails() {
-          chrome.fileManagerPrivate.showDlpRestrictionDetails(
-              'https://example1.com');
-          chrome.test.succeed();
+          chrome.fileManagerPrivate.getDlpRestrictionDetails(
+              'https://example1.com',
+              chrome.test.callbackPass(dlpRestrictionDetails => {
+                chrome.test.assertEq([], dlpRestrictionDetails);
+              }));
         }
       ]);
       break;
@@ -140,10 +142,12 @@ chrome.test.getConfig(config => {
                     dlpMetadata);
               }))
         },
-        async function showDlpRestrictionDetails() {
-          chrome.fileManagerPrivate.showDlpRestrictionDetails(
-              'https://example1.com');
-          chrome.test.succeed();
+        async function getDlpRestrictionDetails() {
+          chrome.fileManagerPrivate.getDlpRestrictionDetails(
+              'https://example1.com',
+              chrome.test.callbackPass(dlpRestrictionDetails => {
+                chrome.test.assertEq([], dlpRestrictionDetails);
+              }));
         }
       ]);
       break;

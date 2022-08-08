@@ -340,17 +340,17 @@ class FileManagerPrivateInternalGetDlpMetadataFunction
   std::vector<storage::FileSystemURL> source_urls_;
 };
 
-// Implements the chrome.fileManagerPrivate.showDlpRestrictionDetails method.
-class FileManagerPrivateShowDlpRestrictionDetailsFunction
+// Implements the chrome.fileManagerPrivate.getDlpRestrictionDetails method.
+class FileManagerPrivateGetDlpRestrictionDetailsFunction
     : public LoggedExtensionFunction {
  public:
-  FileManagerPrivateShowDlpRestrictionDetailsFunction();
+  FileManagerPrivateGetDlpRestrictionDetailsFunction();
 
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.showDlpRestrictionDetails",
-                             FILEMANAGERPRIVATE_SHOWDLPRESTRICTIONDETAILS)
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDlpRestrictionDetails",
+                             FILEMANAGERPRIVATE_GETDLPRESTRICTIONDETAILS)
 
  protected:
-  ~FileManagerPrivateShowDlpRestrictionDetailsFunction() override;
+  ~FileManagerPrivateGetDlpRestrictionDetailsFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
