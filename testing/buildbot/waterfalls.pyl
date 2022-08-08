@@ -1587,6 +1587,9 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'test_suites': {
+          'gtest_tests': 'lacros_device_arm_tests',
+        },
         'os_type': 'chromeos'
       },
       'lacros-arm64-generic-rel': {

@@ -2490,6 +2490,13 @@
       'lacros-amd64-generic-rel',
     ]
   },
+  'lacros_all_tast_tests jacuzzi': {
+    'modifications': {
+      'lacros-arm-generic-rel': {
+        'experiment_percentage': 5,
+      },
+    },
+  },
   'maps_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {

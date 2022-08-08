@@ -1177,6 +1177,21 @@
       ],
     },
   },
+  'LACROS_JACUZZI': {
+    'args': [
+      '--board=jacuzzi',
+      '--flash',
+    ],
+    'identifier': 'jacuzzi',
+    'swarming': {
+      'dimension_sets': [
+        {
+          'os': 'ChromeOS',
+          'device_type': 'jacuzzi',
+        }
+      ],
+    },
+  },
   'WIN10_INTEL_HD_630_STABLE': {
     'identifier': '8086:5912 or 8086:3e92',
     'mixins': [

@@ -6766,6 +6766,14 @@
       },
     },
 
+    'lacros_device_arm_tests': {
+      'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_JACUZZI',
+        ]
+      },
+    },
+
     'lacros_device_or_vm_tast_tests': {
       'lacros_all_tast_tests': {
         'variants': [
