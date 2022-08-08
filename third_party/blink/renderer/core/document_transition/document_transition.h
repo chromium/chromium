@@ -133,9 +133,7 @@ class CORE_EXPORT DocumentTransition
   // executing.
   class PostCaptureResolved : public ScriptFunction::Callable {
    public:
-    explicit PostCaptureResolved(DocumentTransition* transition,
-                                 bool success,
-                                 Document*);
+    explicit PostCaptureResolved(DocumentTransition* transition, bool success);
     ~PostCaptureResolved() override;
 
     ScriptValue Call(ScriptState*, ScriptValue) override;
@@ -146,7 +144,6 @@ class CORE_EXPORT DocumentTransition
    private:
     Member<DocumentTransition> transition_;
     const bool success_;
-    Member<Document> document_;
   };
 
   void NotifyHasChangesToCommit();
