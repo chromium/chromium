@@ -669,6 +669,16 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   if (!self.browser)
     return;
 
+  // There are some circumstances where a new tab insertion can be erroniously
+  // triggered while another web state list mutation is happening. To ensure
+  // those bugs don't become crashes, check that the web state list is OK to
+  // mutate.
+  if (self.webStateList->IsMutating()) {
+    // Shouldn't have happened!
+    DCHECK(false) << "Reentrant web state insertion!";
+    return;
+  }
+
   DCHECK(self.browserState);
   web::WebState::CreateParams params(self.browserState);
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
