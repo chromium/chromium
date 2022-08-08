@@ -287,11 +287,9 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
       MediaStreamVideoTrack::From(Component());
   if (video_track && component_->Source() &&
       component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
-    bool pan_tilt_zoom_allowed =
-        image_capture_ ? image_capture_->HasPanTiltZoomPermissionGranted()
-                       : video_track->pan_tilt_zoom_allowed();
     image_capture_ = MakeGarbageCollected<ImageCapture>(
-        context, this, pan_tilt_zoom_allowed, std::move(callback));
+        context, this, video_track->pan_tilt_zoom_allowed(),
+        std::move(callback));
   } else {
     if (execution_context_) {
       execution_context_->GetTaskRunner(TaskType::kInternalMedia)
