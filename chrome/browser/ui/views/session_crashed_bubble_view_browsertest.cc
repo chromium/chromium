@@ -52,8 +52,16 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "focus dialog" hotkey combination (Alt+Shift+A).
+// TODO(https://crbug.com/1350659): Flaky on mac-12-arm64-rel.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64) && defined(NDEBUG)
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  DISABLED_CanFocusBubbleWithFocusDialogHotkey
+#else
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  CanFocusBubbleWithFocusDialogHotkey
+#endif
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
-                       CanFocusBubbleWithFocusDialogHotkey) {
+                       MAYBE_CanFocusBubbleWithFocusDialogHotkey) {
   ShowUi("SessionCrashedBubble");
 
   views::FocusManager* focus_manager =
