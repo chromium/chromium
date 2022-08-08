@@ -11,8 +11,6 @@ namespace web {
 class WebState;
 }
 
-// Key used to store the last shown time of follow in-product help (IPH).
-extern NSString* const kFollowIPHLastShownTime;
 // Key used to store the last shown event of follow in-product help (IPH).
 extern NSString* const kFollowIPHPreviousDisplayEvents;
 // Key used to store the site host when showing the follow in-product help
@@ -30,5 +28,10 @@ FollowActionState GetFollowActionState(web::WebState* webState);
 bool IsFollowIPHShownFrequencyEligible(NSString* host);
 // Stores the Follow IPH display event with website `host`.
 void StoreFollowIPHDisplayEvent(NSString* host);
+// Removes the last follow IPH event, this is called when follow IPH is
+// triggered by experimental settings.
+// TODO(crbug.com/1340154): Remove the method when removing follow IPH
+// experimental setting.
+void RemoveLastFollowIPHDisplayEvent();
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_

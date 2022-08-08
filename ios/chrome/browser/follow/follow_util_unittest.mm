@@ -50,19 +50,12 @@ TEST_F(FollowUtilTest, TestIPHInterval) {
   // displayed.
   EXPECT_TRUE(IsFollowIPHShownFrequencyEligible(@"now.com"));
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  NSDate* tenMinutes = [NSDate dateWithTimeIntervalSinceNow:-60 * 10];
-  [defaults setObject:tenMinutes forKey:kFollowIPHLastShownTime];
+  StoreFollowIPHDisplayEvent(@"now.com");
   // Test Follow IPH can not be shown within 15 minutes from a previous Follow
   // IPH.
   EXPECT_FALSE(IsFollowIPHShownFrequencyEligible(@"now.com"));
 
   SetFollowIPHShowTimeArray();
-  // Set the IPH last show time, it should be the same as date3/ghi.com in
-  // practice.
-  [defaults setObject:[NSDate dateWithTimeIntervalSinceNow:-3600 * 20]
-               forKey:kFollowIPHLastShownTime];
   // Test Follow IPH can be shown for specific host if no Follow IPH has been
   // shown ever for it.
   EXPECT_TRUE(IsFollowIPHShownFrequencyEligible(@"now.com"));
@@ -92,4 +85,20 @@ TEST_F(FollowUtilTest, TestStoreFollowIPHDisplayEvent) {
       isEqualToString:@"ghi.com"]);
   EXPECT_TRUE([[updatedArray[1] objectForKey:kFollowIPHHost]
       isEqualToString:@"now.com"]);
+}
+
+// Tests removing the last follow IPH display event.
+TEST_F(FollowUtilTest, TestRemoveLastFollowIPHDisplayEvent) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  SetFollowIPHShowTimeArray();
+  ASSERT_EQ(
+      3, (int)[[defaults objectForKey:kFollowIPHPreviousDisplayEvents] count]);
+  RemoveLastFollowIPHDisplayEvent();
+  NSArray<NSDictionary*>* updatedArray =
+      [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
+  EXPECT_EQ(2, (int)updatedArray.count);
+  EXPECT_TRUE([[updatedArray[0] objectForKey:kFollowIPHHost]
+      isEqualToString:@"abc.com"]);
+  EXPECT_TRUE([[updatedArray[1] objectForKey:kFollowIPHHost]
+      isEqualToString:@"def.com"]);
 }

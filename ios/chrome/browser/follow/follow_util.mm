@@ -26,7 +26,6 @@ NSTimeInterval const kFollowIPHAppearanceThresholdForSiteInSeconds =
     24 * 60 * 60;
 }  // namespace
 
-NSString* const kFollowIPHLastShownTime = @"FollowIPHLastShownTime";
 NSString* const kFollowIPHPreviousDisplayEvents =
     @"FollowIPHPreviousDisplayEvents";
 NSString* const kFollowIPHHost = @"host";
@@ -66,15 +65,6 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
 #pragma mark - For Follow IPH
 bool IsFollowIPHShownFrequencyEligible(NSString* host) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastFollowIPHShownTime =
-      [defaults objectForKey:kFollowIPHLastShownTime];
-  // Return false if its too soon to show another IPH.
-  if (lastFollowIPHShownTime &&
-      [[NSDate
-          dateWithTimeIntervalSinceNow:-kFollowIPHAppearanceThresholdInSeconds]
-          compare:lastFollowIPHShownTime] == NSOrderedAscending) {
-    return false;
-  }
 
   NSArray<NSDictionary*>* followIPHPreviousDisplayEvents =
       [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
@@ -84,6 +74,14 @@ bool IsFollowIPHShownFrequencyEligible(NSString* host) {
       lastIPHDate = [event objectForKey:kFollowIPHDate];
       break;
     }
+  }
+
+  // Return false if its too soon to show another IPH.
+  if (lastIPHDate &&
+      [[NSDate
+          dateWithTimeIntervalSinceNow:-kFollowIPHAppearanceThresholdInSeconds]
+          compare:lastIPHDate] == NSOrderedAscending) {
+    return false;
   }
 
   // Return true if it is long enough to show another IPH for this specific
@@ -124,6 +122,22 @@ void StoreFollowIPHDisplayEvent(NSString* host) {
   NSDictionary* IPHPresentingEvent =
       @{kFollowIPHHost : host, kFollowIPHDate : [NSDate date]};
   [updatedDisplayEvents addObject:IPHPresentingEvent];
+
+  [defaults setObject:updatedDisplayEvents
+               forKey:kFollowIPHPreviousDisplayEvents];
+  [defaults synchronize];
+}
+
+void RemoveLastFollowIPHDisplayEvent() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSArray<NSDictionary*>* followIPHPreviousDisplayEvents =
+      [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
+
+  DCHECK(followIPHPreviousDisplayEvents);
+
+  NSMutableArray<NSDictionary*>* updatedDisplayEvents =
+      [followIPHPreviousDisplayEvents mutableCopy];
+  [updatedDisplayEvents removeLastObject];
 
   [defaults setObject:updatedDisplayEvents
                forKey:kFollowIPHPreviousDisplayEvents];

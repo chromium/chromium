@@ -168,7 +168,14 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
 
   // Always show IPH for eligible website if experimental setting is enabled.
   if (experimental_flags::ShouldAlwaysShowFollowIPH()) {
+    // Set up the recommended url property for storing the IPH displaying event,
+    // otherwise it will crash when trying to store a nil value into the last
+    // follow IPH display event. It needs to be restored after removing the IPH
+    // display event from the experiment.
+    recommended_url_ = web_page_urls.webPageURL;
     PresentFollowIPH();
+    // Restore the recommended url.
+    recommended_url_ = nil;
     return;
   }
 
@@ -269,8 +276,11 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
 void FollowTabHelper::PresentFollowIPH() {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-  if (!experimental_flags::ShouldAlwaysShowFollowIPH()) {
-    StoreFollowIPHDisplayEvent(recommended_url_.host);
+  StoreFollowIPHDisplayEvent(recommended_url_.host);
+  if (experimental_flags::ShouldAlwaysShowFollowIPH()) {
+    // Remove the follow IPH display event that just added because it's
+    // triggered by experimental settings.
+    RemoveLastFollowIPHDisplayEvent();
   }
 }
 
