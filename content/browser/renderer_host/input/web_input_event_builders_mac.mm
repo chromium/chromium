@@ -263,8 +263,30 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event) {
       ui::IsKeyUpEvent(event) ? blink::WebInputEvent::Type::kKeyUp
                               : blink::WebInputEvent::Type::kRawKeyDown,
       modifiers, ui::EventTimeStampFromSeconds([event timestamp]));
-  result.windows_key_code =
-      ui::LocatedToNonLocatedKeyboardCode(ui::KeyboardCodeFromNSEvent(event));
+
+  // Some keys have the same meaning but different locations on the keyboard:
+  // the left and right shift keys; the numeric keypad keys and their
+  // counterparts in the number row; etc. A "located" keyboard code lets us
+  // distinguish between keys with the same meaning. For example, VKEY_LSHIFT
+  // and VKEY_RSHIFT are located keyboard codes and VKEY_SHIFT is their non-
+  // located representation.
+  //
+  // When determining the windows_key_code, we want to use the non-located code
+  // for some keys (Shift, etc.). We call ui::LocatedToNonLocatedKeyboardCode()
+  // to perform this conversion. However, ui::LocatedToNonLocatedKeyboardCode()
+  // converts more keys than we'd like. In particular, it returns the
+  // non-located representations of number pad key codes. If we use these as
+  // windows key codes, key presses in the number row and the number pad will be
+  // indistinguishable (see https://crbug.com/1282730). To avoid this, when we
+  // encounter a number pad key, we'll use the located key_code itself rather
+  // than its non-located counterpart.
+  ui::KeyboardCode key_code = ui::KeyboardCodeFromNSEvent(event);
+  bool is_numeric_keypad_keycode =
+      key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_NUMPAD9;
+  result.windows_key_code = is_numeric_keypad_keycode
+                                ? key_code
+                                : ui::LocatedToNonLocatedKeyboardCode(key_code);
+
   result.native_key_code = [event keyCode];
   result.dom_code = static_cast<int>(dom_code);
   result.dom_key = DomKeyFromEvent(event);
