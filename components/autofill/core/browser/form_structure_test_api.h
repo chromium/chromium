@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -67,8 +68,7 @@ class FormStructureTestApi {
   }
 
   bool phone_rationalized(const Section& section) const {
-    auto it = form_structure_->phone_rationalized_.find(section);
-    return it != form_structure_->phone_rationalized_.end() && it->second;
+    return base::Contains(form_structure_->phone_rationalized_, section);
   }
 
   void ParseFieldTypesWithPatterns(PatternSource pattern_source) {

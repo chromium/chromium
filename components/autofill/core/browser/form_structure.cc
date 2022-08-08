@@ -1596,7 +1596,7 @@ void FormStructure::RationalizeStreetAddressAndAddressLine(
 }
 
 void FormStructure::RationalizePhoneNumbersInSection(const Section& section) {
-  if (phone_rationalized_[section])
+  if (base::Contains(phone_rationalized_, section))
     return;
   std::vector<AutofillField*> fields;
   for (size_t i = 0; i < field_count(); ++i) {
@@ -1605,7 +1605,7 @@ void FormStructure::RationalizePhoneNumbersInSection(const Section& section) {
     fields.push_back(field(i));
   }
   rationalization_util::RationalizePhoneNumberFields(fields);
-  phone_rationalized_[section] = true;
+  phone_rationalized_.insert(section);
 }
 
 void FormStructure::ApplyRationalizationsToFieldAndLog(

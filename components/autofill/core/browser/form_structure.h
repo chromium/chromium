@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -669,7 +668,7 @@ class FormStructure {
   base::TimeTicks form_parsed_timestamp_;
 
   // If phone number rationalization has been performed for a given section.
-  std::map<Section, bool> phone_rationalized_;
+  std::set<Section> phone_rationalized_;
 
   // True iff the form is a password form and the user has seen the password
   // value before accepting the prompt to save. Used for crowdsourcing.
