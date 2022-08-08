@@ -1494,7 +1494,7 @@ OTHER_BENCHMARKS = {
 OTHER_BENCHMARKS.update({
     'chrome_sizes':
     BenchmarkMetadata(
-        emails='heiserya@chromium.org, johnchen@chromium.org',
+        emails='johnchen@chromium.org',
         component='Build',
         documentation_url=(
             'https://chromium.googlesource.com/chromium/'
