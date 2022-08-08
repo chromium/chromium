@@ -225,7 +225,7 @@ public class TabModalLifetimeHandler implements NativeInitObserver, DestroyObser
             mActiveTab = null;
         }
 
-        if (BackPressManager.isEnabled()) {
+        if (mBackPressManager.has(Type.TAB_MODAL_HANDLER)) {
             mManager.removeObserver(this);
             mBackPressManager.removeHandler(Type.TAB_MODAL_HANDLER);
         }

@@ -117,6 +117,33 @@
             ]
         }
     ],
+    "AndroidBackPressRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSystemBack_2022_07_20",
+                    "params": {
+                        "system_back": "true"
+                    },
+                    "enable_features": [
+                        "BackGestureRefactorAndroid"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutSystemBack_2022_07_20",
+                    "params": {
+                        "system_back": "false"
+                    },
+                    "enable_features": [
+                        "BackGestureRefactorAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBulkTabRestore": [
         {
             "platforms": [
