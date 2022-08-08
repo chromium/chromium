@@ -1051,7 +1051,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
 #endif
 }
 
-void WebAppIntegrationTestDriver::CreateShortcutFromChromeApps(Site site) {
+void WebAppIntegrationTestDriver::CreateShortcuts(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
   AppId app_id = GetAppIdBySiteMode(site);
@@ -1113,6 +1113,7 @@ void WebAppIntegrationTestDriver::DeletePlatformShortcut(Site site) {
 #elif BUILDFLAG(IS_LINUX)
   base::FilePath desktop_shortcut_path =
       GetShortcutPath(shortcut_override_->desktop.GetPath(), app_name, app_id);
+  LOG(INFO) << desktop_shortcut_path;
   ASSERT_TRUE(base::PathExists(desktop_shortcut_path));
   base::DeleteFile(desktop_shortcut_path);
 #else

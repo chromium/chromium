@@ -22,6 +22,7 @@ check_window_controls_overlay,                         🌕, 🌕,  🌕,   🌕
 check_window_controls_overlay_toggle,                  🌕, 🌕,  🌕,   🌕,
 close_custom_toolbar,                                  🌕, 🌕,  🌕,   🌕,
 close_pwa,                                             🌕, 🌕,  🌕,   🌕,
+create_shortcuts,                                      🌕, 🌕,  🌕,   🌑,
 delete_platform_shortcut,                              🌕, 🌕,  🌕,   🌑,
 disable_window_controls_overlay,                       🌕, 🌕,  🌕,   🌕,
 enable_window_controls_overlay,                        🌕, 🌕,  🌕,   🌕,

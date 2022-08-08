@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 128) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 132) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -67,7 +67,11 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | install_policy_app_tabbed | Site | install_policy_app_tabbed_shortcut($1) & install_policy_app_tabbed_no_shortcut($1) | 59 | Parameterized |  |  |
 | install_policy_app_windowed | Site | install_policy_app_windowed_no_shortcut($1) & install_policy_app_windowed_shortcut($1) | 60 | Parameterized |  |  |
 | install_tabbed | Site | install_create_shortcut_tabbed($1) & install_policy_app_tabbed_shortcut($1) & install_policy_app_tabbed_no_shortcut($1) | 61 | Parameterized | All installation methods that result in a tabbed webapp. |  |
+| install_tabbed_with_shortcut | Site | install_create_shortcut_tabbed($1) & install_policy_app_tabbed_shortcut($1) | 128 | Parameterized | All installation methods that result in a tabbed webapp with shortcut created. |  |
+| install_tabbed_no_shortcut | Site | install_policy_app_tabbed_no_shortcut($1) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed | Site | install_create_shortcut_windowed($1) & install_omnibox_icon($1) & install_policy_app_windowed_no_shortcut($1) & install_policy_app_windowed_shortcut($1) & install_menu_option($1) | 62 | Parameterized | All installation methods that result in a windowed webapp. |  |
+| install_windowed_with_shortcut | Site | install_create_shortcut_windowed($1) & install_omnibox_icon($1) &  install_policy_app_windowed_shortcut($1) & install_menu_option($1) | 130 | Parameterized | All installation methods that result in a windowed webapp with shortcut created. |  |
+| install_windowed_no_shortcut | Site | install_policy_app_windowed_no_shortcut($1) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |
 | install_with_shortcut | Site | install_policy_app_windowed_shortcut($1) & install_policy_app_tabbed_shortcut($1) & install_create_shortcut_windowed($1) & install_omnibox_icon($1) & install_menu_option($1) & install_create_shortcut_tabbed($1) | 63 | Parameterized |  |  |
 | # Uninstall |
 | uninstall_from_os | Site |  | 87 | WIP | Uninstalls the app from OS integration - e.g. Windows Control Panel / Start menu |  |
@@ -121,7 +125,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | set_open_in_window | Site |  | 51 | Implemented | Check the "open in window" checkbox in the right-click menu of the app icon, in the app list page |  |
 | check_window_color_correct | Site |  | 77 | Not Implemented | The color of the window is correct. | P3 |
 | check_window_icon_correct |  |  | 78 | Not Implemented |  | P3 |
-| create_shortcuts | Site |  | 72 | Not Implemented | "create shortcuts" in chrome://apps | P2 |
+| create_shortcuts | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
 | delete_platform_shortcut | Site |  | 74 | Implemented | Delete the shortcut that lives on the operating system. Win/Mac/Linux only. | P2 |
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | # Launching |

@@ -214,7 +214,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromPlatformShortcut(Site site);
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);
-  void CreateShortcutFromChromeApps(Site site);
+  void CreateShortcuts(Site site);
   void NavigateBrowser(Site site);
   void NavigatePwaSiteAFooTo(Site site);
   void NavigatePwaSiteATo(Site site);
