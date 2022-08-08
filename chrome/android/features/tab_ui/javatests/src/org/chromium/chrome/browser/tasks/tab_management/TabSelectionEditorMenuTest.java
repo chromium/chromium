@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -33,7 +33,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -239,7 +238,6 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1348710")
     public void testSingleActionView_Click() throws Exception {
         List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -266,9 +264,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                 () -> { actions.get(0).addActionObserver(observer); });
         when(mSelectionDelegate.getSelectedItems())
                 .thenReturn(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_1})));
-
-        onView(allOf(withId(R.id.tab_selection_editor_action_view), isDisplayed(), isEnabled()))
-                .perform(click());
+        clickActionView(R.id.tab_selection_editor_action_view);
 
         helper.waitForCallback(0);
         Assert.assertEquals(1, processedTabs.size());
@@ -323,12 +319,12 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1348666")
     public void testSingleMenuItem_Click() throws Exception {
+        final int menuId = 50; // Arbitrary.
         List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            actions.add(new FakeTabSelectionEditorAction(getActivity(), /*menuId=*/0,
-                    ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START,
+            actions.add(new FakeTabSelectionEditorAction(getActivity(), menuId, ShowMode.MENU_ONLY,
+                    ButtonType.TEXT, IconPosition.START,
                     R.string.tab_suggestion_close_tab_action_button,
                     R.drawable.ic_group_icon_16dp));
             configureMenuWithActions(actions);
@@ -351,7 +347,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
             mToolbar.showOverflowMenu();
             actions.get(0).addActionObserver(observer);
         });
-        onView(allOf(withText("Close"), isDisplayed(), isEnabled())).perform(click());
+        clickMenuItem(menuId, "Close");
 
         helper.waitForCallback(0);
         Assert.assertEquals(1, processedTabs.size());
@@ -436,5 +432,20 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
             Assert.assertFalse(mToolbar.getMenu().findItem(1).isEnabled());
             mToolbar.hideOverflowMenu();
         });
+    }
+
+    private void clickActionView(int id) {
+        onView(withId(id)).check(matches(allOf(isDisplayed(), isEnabled())));
+        // On Android 12 perform(click()) sometimes fails to trigger the click so force the click on
+        // the view object instead.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.findViewById(id).performClick(); });
+    }
+
+    private void clickMenuItem(int id, String text) {
+        onView(withText(text)).check(matches(allOf(isDisplayed(), isEnabled())));
+        // On Android 12 perform(click()) works poorly for this as the menu item is flakily reported
+        // as < 90% visible.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mToolbar.getMenu().performIdentifierAction(id, /*flags=*/0); });
     }
 }
