@@ -906,8 +906,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, UseAutenticatedUserEmailAddress) {
 
 // Verifies that if the authenticated user's e-mail address cannot be retrieved,
 // an error message is shown.
+// TODO(crbug.com/1348198): Flaky.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
-                       FailToRetrieveAutenticatedUserEmailAddress) {
+                       DISABLED_FailToRetrieveAutenticatedUserEmailAddress) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
