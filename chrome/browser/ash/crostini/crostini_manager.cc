@@ -74,6 +74,7 @@
 namespace crostini {
 
 namespace {
+const auto kStartVmTimeout = base::Seconds(300);
 
 ash::CiceroneClient* GetCiceroneClient() {
   return ash::CiceroneClient::Get();
@@ -296,7 +297,7 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kInstallImageLoader,
        base::Hours(6)},  // May need to download DLC or component
       {mojom::InstallerState::kCreateDiskImage, base::Minutes(5)},
-      {mojom::InstallerState::kStartTerminaVm, base::Minutes(5)},
+      {mojom::InstallerState::kStartTerminaVm, kStartVmTimeout},
       {mojom::InstallerState::kStartLxd, base::Minutes(5)},
       // While CreateContainer may need to download a file, we get progress
       // messages that reset the countdown.
@@ -1490,6 +1491,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
   request.set_name(std::move(name));
   request.set_start_termina(true);
   request.set_owner_id(owner_id_);
+  request.set_timeout(static_cast<uint32_t>(kStartVmTimeout.InSeconds()));
   request.mutable_vm()->set_wayland_server(wayland_path.AsUTF8Unsafe());
   if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniGpuSupport))
     request.set_enable_gpu(true);
