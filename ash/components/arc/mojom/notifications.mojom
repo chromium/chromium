@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 27
+// Next MinVersion: 28
 
 module arc.mojom;
 
@@ -184,6 +184,10 @@ struct ArcNotificationData {
   // True if there's at least one action button enabled for the notification.
   [MinVersion=26]
   bool is_action_enabled;
+  // True if there's at least one action button on the notification that's
+  // available for the user to trigger remote input.
+  [MinVersion=27]
+  bool is_inline_reply_enabled;
 };
 
 struct ArcDoNotDisturbStatus {
@@ -225,7 +229,7 @@ enum MessageCenterVisibility {
   VISIBILITY_MESSAGE_CENTER = 1,
 };
 
-// Next Method ID: 11
+// Next Method ID: 12
 interface NotificationsHost {
   // Set the Do-Not-Disturb status on Chrome side from Android side.
   [MinVersion=18]
@@ -261,6 +265,10 @@ interface NotificationsHost {
   // Sets the lock screen setting on Chrome side from Android side. Usually
   // invoked when the setting on Android side is chagned.
   OnLockScreenSettingUpdated@10(ArcLockScreenNotificationSetting setting);
+
+  [MinVersion=27]
+  // Triggers Chrome to log that inline reply is sent for a notification.
+  LogInlineReplySent@11(string key);
 };
 
 // Deprecated method IDs: 0

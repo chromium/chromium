@@ -1392,6 +1392,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Notifications.InlineReplyEnabled" enum="BooleanEnabled"
+    expires_after="2022-10-07">
+  <owner>yaoqq@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records whether inline reply is enabled or not for an Arc notification when
+    the notification is created.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Notifications.Style" enum="ArcNotificationStyle"
     expires_after="2022-09-27">
   <owner>yaoqq@google.com</owner>

@@ -12,6 +12,9 @@ namespace ash::metrics_utils {
 // Logs if action button is enabled for Arc notification.
 void LogArcNotificationActionEnabled(bool action_enabled);
 
+// Logs if inline reply is enabled for Arc notification.
+void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled);
+
 // Logs the style of Arc rich notification.
 void LogArcNotificationStyle(arc::mojom::ArcNotificationStyle style);
 

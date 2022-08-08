@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_METRICS_UTILS_H_
 
+#include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -124,7 +125,8 @@ void LogClickedBody(const std::string& notification_id, bool is_popup);
 void LogClickedActionButton(const std::string& notification_id, bool is_popup);
 
 // Logs an InlineReplySent event.
-void LogInlineReplySent(const std::string& notification_id, bool is_popup);
+ASH_EXPORT void LogInlineReplySent(const std::string& notification_id,
+                                   bool is_popup);
 
 // Logs a ExpireToTray event for a pop-up notification.
 void LogPopupExpiredToTray(const std::string& notification_id);

@@ -63,6 +63,7 @@ class ArcNotificationManager
       arc::mojom::ArcLockScreenNotificationSettingPtr setting) override;
   void ProcessUserAction(
       arc::mojom::ArcNotificationUserActionDataPtr data) override;
+  void LogInlineReplySent(const std::string& key) override;
 
   // Methods called from ArcNotificationItem:
   void SendNotificationRemovedFromChrome(const std::string& key);

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/message_center/metrics_utils.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -224,6 +225,8 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
 
     metrics_utils::LogArcNotificationStyle(data->style);
     metrics_utils::LogArcNotificationActionEnabled(data->is_action_enabled);
+    metrics_utils::LogArcNotificationInlineReplyEnabled(
+        data->is_inline_reply_enabled);
   }
 
   std::string app_id =
@@ -351,6 +354,15 @@ void ArcNotificationManager::CancelUserAction(uint32_t id) {
   }
 
   notifications_instance->CancelDeferredUserAction(id);
+}
+
+void ArcNotificationManager::LogInlineReplySent(const std::string& key) {
+  auto it = items_.find(key);
+  if (it == items_.end()) {
+    return;
+  }
+  metrics_utils::LogInlineReplySent(it->second->GetNotificationId(),
+                                    !message_center_->IsMessageCenterVisible());
 }
 
 void ArcNotificationManager::OnNotificationRemoved(const std::string& key) {
