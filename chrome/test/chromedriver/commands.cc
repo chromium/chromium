@@ -271,7 +271,8 @@ void ExecuteSessionCommandOnSessionThread(
                   ", but failed to kill browser:" + quit_status.message();
           }
           status = Status(kUnknownError, message, status);
-        } else if (status.code() == kDisconnected) {
+        } else if (status.code() == kDisconnected ||
+                   status.code() == kTargetDetached) {
           // Some commands, like clicking a button or link which closes the
           // window, may result in a kDisconnected error code.
           std::list<std::string> web_view_ids;

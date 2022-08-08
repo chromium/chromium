@@ -55,6 +55,10 @@ Status HeapSnapshotTaker::TakeSnapshotInternal() {
   return Status(kOk);
 }
 
+bool HeapSnapshotTaker::ListensToConnections() const {
+  return false;
+}
+
 Status HeapSnapshotTaker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
                                   const base::DictionaryValue& params) {

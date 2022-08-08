@@ -6,10 +6,14 @@
 
 #include <list>
 #include <memory>
+#include <queue>
 #include <string>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -205,11 +209,13 @@ namespace {
 class MockSyncWebSocket : public SyncWebSocket {
  public:
   explicit MockSyncWebSocket(SyncWebSocket::StatusCode next_status)
-      : connected_(true),
-        id_(-1),
-        queued_messages_(1),
-        next_status_(next_status) {}
-  ~MockSyncWebSocket() override {}
+      : connected_(false), id_(-1), next_status_(next_status) {}
+  MockSyncWebSocket() : MockSyncWebSocket(SyncWebSocket::StatusCode::kOk) {}
+  ~MockSyncWebSocket() override = default;
+
+  void SetNexStatusCode(SyncWebSocket::StatusCode statusCode) {
+    next_status_ = statusCode;
+  }
 
   bool IsConnected() override { return connected_; }
 
@@ -219,20 +225,44 @@ class MockSyncWebSocket : public SyncWebSocket {
     return true;
   }
 
-  bool Send(const std::string& message) override { return false; }
+  bool Send(const std::string& message) override {
+    absl::optional<base::Value> value = base::JSONReader::Read(message);
+    if (!value) {
+      return false;
+    }
+
+    absl::optional<int> id = value->GetDict().FindInt("id");
+    if (!id) {
+      return false;
+    }
+
+    std::string responseStr;
+    base::Value::Dict response;
+    response.Set("id", *id);
+    base::Value result{base::Value::Type::DICT};
+    result.GetDict().Set("param", 1);
+    response.Set("result", result.Clone());
+    base::JSONWriter::Write(base::Value(std::move(response)), &responseStr);
+    messages_.push(responseStr);
+    return true;
+  }
 
   SyncWebSocket::StatusCode ReceiveNextMessage(
       std::string* message,
       const Timeout& timeout) override {
+    if (next_status_ == SyncWebSocket::StatusCode::kOk && !messages_.empty()) {
+      *message = messages_.front();
+      messages_.pop();
+    }
     return next_status_;
   }
 
-  bool HasNextMessage() override { return queued_messages_ > 0; }
+  bool HasNextMessage() override { return !messages_.empty(); }
 
  protected:
   bool connected_;
   int id_;
-  int queued_messages_;
+  std::queue<std::string> messages_;
   SyncWebSocket::StatusCode next_status_;
 };
 
@@ -240,6 +270,31 @@ std::unique_ptr<SyncWebSocket> CreateMockSyncWebSocket(
     SyncWebSocket::StatusCode next_status) {
   return std::make_unique<MockSyncWebSocket>(next_status);
 }
+
+class SyncWebSocketWrapper : public SyncWebSocket {
+ public:
+  explicit SyncWebSocketWrapper(SyncWebSocket* socket) : socket_(socket) {}
+  ~SyncWebSocketWrapper() override = default;
+
+  bool IsConnected() override { return socket_->IsConnected(); }
+
+  bool Connect(const GURL& url) override { return socket_->Connect(url); }
+
+  bool Send(const std::string& message) override {
+    return socket_->Send(message);
+  }
+
+  SyncWebSocket::StatusCode ReceiveNextMessage(
+      std::string* message,
+      const Timeout& timeout) override {
+    return socket_->ReceiveNextMessage(message, timeout);
+  }
+
+  bool HasNextMessage() override { return socket_->HasNextMessage(); }
+
+ private:
+  raw_ptr<SyncWebSocket> socket_;
+};
 
 }  // namespace
 
@@ -253,15 +308,20 @@ TEST(CreateChild, MultiLevel) {
   BrowserInfo browser_info;
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
                      std::move(client_uptr), nullptr, PageLoadStrategy::kEager);
+  Status status = client_ptr->ConnectIfNecessary();
+  ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> level2 =
       std::unique_ptr<WebViewImpl>(level1.CreateChild(sessionid, "1234"));
+  level2->AttachTo(client_ptr);
   sessionid = "3";
   std::unique_ptr<WebViewImpl> level3 =
       std::unique_ptr<WebViewImpl>(level2->CreateChild(sessionid, "3456"));
+  level3->AttachTo(client_ptr);
   sessionid = "4";
   std::unique_ptr<WebViewImpl> level4 =
       std::unique_ptr<WebViewImpl>(level3->CreateChild(sessionid, "5678"));
+  level4->AttachTo(client_ptr);
 }
 
 TEST(CreateChild, IsNonBlocking_NoErrors) {
@@ -275,11 +335,14 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kEager);
+  Status status = client_ptr->ConnectIfNecessary();
+  ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_FALSE(parent_view.IsNonBlocking());
 
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
+  child_view->AttachTo(client_ptr);
   ASSERT_NO_FATAL_FAILURE(child_view->IsNonBlocking());
   ASSERT_FALSE(child_view->IsNonBlocking());
 }
@@ -295,16 +358,24 @@ TEST(CreateChild, Load_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNone);
+  Status status = client_ptr->ConnectIfNecessary();
+  ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
+  child_view->AttachTo(client_ptr);
 
   ASSERT_NO_FATAL_FAILURE(child_view->Load("chrome://version", nullptr));
 }
 
 TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
+  std::unique_ptr<MockSyncWebSocket> socket =
+      std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
   SyncWebSocketFactory factory = base::BindRepeating(
-      &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kTimeout);
+      [](SyncWebSocket* socket) {
+        return std::unique_ptr<SyncWebSocket>(new SyncWebSocketWrapper(socket));
+      },
+      socket.get());
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
       std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
@@ -313,11 +384,15 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNone);
+  Status status = client_ptr->ConnectIfNecessary();
+  ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
+  child_view->AttachTo(client_ptr);
 
   // child_view gets no socket...
+  socket->SetNexStatusCode(SyncWebSocket::StatusCode::kTimeout);
   ASSERT_NO_FATAL_FAILURE(child_view->WaitForPendingNavigations(
       "1234", Timeout(base::Milliseconds(10)), true));
 }
@@ -333,9 +408,12 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNormal);
+  Status status = client_ptr->ConnectIfNecessary();
+  ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
       std::unique_ptr<WebViewImpl>(parent_view.CreateChild(sessionid, "1234"));
+  child_view->AttachTo(client_ptr);
 
   Timeout timeout(base::Milliseconds(10));
   bool result;

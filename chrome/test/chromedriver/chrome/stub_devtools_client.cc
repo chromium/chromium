@@ -19,15 +19,15 @@ const std::string& StubDevToolsClient::GetId() {
   return id_;
 }
 
+bool StubDevToolsClient::IsNull() const {
+  return false;
+}
+
 bool StubDevToolsClient::WasCrashed() {
   return false;
 }
 
 Status StubDevToolsClient::ConnectIfNecessary() {
-  return Status(kOk);
-}
-
-Status StubDevToolsClient::SetUpDevTools() {
   return Status(kOk);
 }
 
@@ -104,4 +104,12 @@ WebViewImpl* StubDevToolsClient::GetOwner() const {
 
 DevToolsClient* StubDevToolsClient::GetRootClient() {
   return this;
+}
+
+DevToolsClient* StubDevToolsClient::GetParentClient() const {
+  return nullptr;
+}
+
+bool StubDevToolsClient::IsMainPage() const {
+  return true;
 }

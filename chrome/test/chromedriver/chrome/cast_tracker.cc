@@ -17,6 +17,10 @@ CastTracker::CastTracker(DevToolsClient* client)
 
 CastTracker::~CastTracker() = default;
 
+bool CastTracker::ListensToConnections() const {
+  return false;
+}
+
 Status CastTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
                             const base::DictionaryValue& params) {

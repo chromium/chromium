@@ -5371,6 +5371,18 @@ class JavaScriptTests(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetFileUrl('focus_test.html'))
     self.checkTestResult()
 
+class VendorSpecificTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    global _VENDOR_ID
+    self._vendor_id = _VENDOR_ID
+    self._driver = self.CreateDriver()
+
+  def testGetSinks(self):
+    # Regression test for chromedriver:4176
+    # This command crashed ChromeDriver on Android
+    self._driver.GetCastSinks(self._vendor_id)
+
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
 
@@ -5409,6 +5421,9 @@ if __name__ == '__main__':
   parser.add_option(
       '', '--test-type',
       help='Select type of tests to run. Possible value: integration')
+  parser.add_option(
+      '', '--vendor',
+      help='Vendor id for vendor specific tests. Defaults to "goog"')
 
   options, args = parser.parse_args()
 
@@ -5483,6 +5498,12 @@ if __name__ == '__main__':
 
   if _ANDROID_PACKAGE_KEY:
     devil_chromium.Initialize()
+
+  global _VENDOR_ID
+  if options.vendor:
+    _VENDOR_ID = options.vendor
+  else:
+    _VENDOR_ID = 'goog'
 
   if options.filter == '':
     if _ANDROID_PACKAGE_KEY:

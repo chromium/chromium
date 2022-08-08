@@ -215,6 +215,9 @@ class Command(object):
       '/session/:sessionId/secure-payment-confirmation/set-mode')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
+  GET_CAST_SINKS = (
+      _Method.GET,
+      '/session/:sessionId/:vendorId/cast/get_sinks')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

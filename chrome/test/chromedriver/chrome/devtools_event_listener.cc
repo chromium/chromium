@@ -8,6 +8,10 @@
 
 DevToolsEventListener::~DevToolsEventListener() {}
 
+bool DevToolsEventListener::ListensToConnections() const {
+  return true;
+}
+
 Status DevToolsEventListener::OnConnected(DevToolsClient* client) {
   return Status(kOk);
 }

@@ -129,6 +129,11 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // events from it until we reconnect.
     *is_pending = false;
     return Status(kOk);
+  } else if (status.code() == kTargetDetached) {
+    // If we receive a kTargetDetached status code from Runtime.evaluate, don't
+    // wait for pending navigations to complete, since the page has been closed.
+    *is_pending = false;
+    return status;
   } else if (status.code() == kUnexpectedAlertOpen) {
     // The JS event loop is paused while modal dialogs are open, so return
     // control to the test so that it can dismiss the dialog.

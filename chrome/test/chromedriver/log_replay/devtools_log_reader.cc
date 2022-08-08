@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/test/chromedriver/log_replay/devtools_log_reader.h"
 
+#include <cctype>
 #include <iostream>
 #include <string>
 
@@ -18,6 +19,36 @@ int GetId(std::istringstream& header_stream) {
   header_stream.ignore(1);  // ignore the final parenthesis
   return id;
 }
+
+void putback(std::istringstream& stream, const std::string& str) {
+  for (auto it = str.rbegin(); it != str.rend(); ++it) {
+    stream.putback(*it);
+  }
+}
+
+// Parses the word (session_id=X) and just returns the session_id string
+bool GetSessionId(std::istringstream& header_stream, std::string* session_id) {
+  std::string spaces;
+  while (std::isspace(header_stream.peek())) {
+    char ch;
+    header_stream.get(ch);
+    spaces.push_back(ch);
+  }
+  std::string sid;  // (session_id=X)
+  header_stream >> sid;
+  if (sid.size() < 13  // (session_id=) is also valid
+      || sid.find("(session_id=") != 0 || sid.back() != ')') {
+    putback(header_stream, sid);
+    putback(header_stream, spaces);
+    return false;
+  }
+
+  // skip 12 leading characters: (session_id=
+  // and one trailing character: )
+  *session_id = sid.substr(12, sid.size() - 12 - 1);
+  return true;
+}
+
 }  // namespace
 
 LogEntry::LogEntry(std::istringstream& header_stream) {
@@ -66,6 +97,13 @@ LogEntry::LogEntry(std::istringstream& header_stream) {
           return;
         }
       }
+
+      session_id.clear();
+      if (!GetSessionId(header_stream, &session_id)) {
+        error = true;
+        LOG(ERROR) << "Could not read session_id from log entry header.";
+      }
+
       header_stream >> socket_id;
       if (socket_id == "") {
         error = true;

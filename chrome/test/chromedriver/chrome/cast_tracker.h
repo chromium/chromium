@@ -24,6 +24,7 @@ class CastTracker : public DevToolsEventListener {
   ~CastTracker() override;
 
   // DevToolsEventListener:
+  bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;

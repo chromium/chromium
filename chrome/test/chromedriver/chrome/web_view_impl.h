@@ -56,7 +56,7 @@ class WebViewImpl : public WebView {
   std::string GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
-  Status SetUpDevTools() override;
+  Status AttachTo(DevToolsClient* parent);
   Status HandleReceivedEvents() override;
   Status GetUrl(std::string* url) override;
   Status Load(const std::string& url, const Timeout* timeout) override;

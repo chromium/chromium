@@ -32,6 +32,7 @@ class HeapSnapshotTaker : public DevToolsEventListener {
   Status TakeSnapshot(std::unique_ptr<base::Value>* snapshot);
 
   // Overridden from DevToolsEventListener:
+  bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override;

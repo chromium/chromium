@@ -146,6 +146,8 @@ source_set("automation_client_lib") {
     "chrome/non_blocking_navigation_tracker.h",
     "chrome/page_load_strategy.cc",
     "chrome/page_load_strategy.h",
+    "chrome/page_tracker.cc",
+    "chrome/page_tracker.h",
     "chrome/scoped_temp_dir_with_retry.cc",
     "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",

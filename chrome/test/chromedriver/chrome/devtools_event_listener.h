@@ -21,6 +21,8 @@ class DevToolsEventListener {
  public:
   virtual ~DevToolsEventListener();
 
+  virtual bool ListensToConnections() const;
+
   // Called when a connection is made to the DevTools server.
   virtual Status OnConnected(DevToolsClient* client);
 

@@ -784,3 +784,8 @@ class ChromeDriver(object):
       return None
     return self._session_id
 
+  def GetCastSinks(self, vendorId):
+    params = {'vendorId': vendorId}
+    return self.ExecuteCommand(Command.GET_CAST_SINKS, params)
+
+

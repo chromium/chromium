@@ -26,9 +26,9 @@ class StubDevToolsClient : public DevToolsClient {
 
   // Overridden from DevToolsClient:
   const std::string& GetId() override;
+  bool IsNull() const override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
-  Status SetUpDevTools() override;
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
@@ -60,6 +60,8 @@ class StubDevToolsClient : public DevToolsClient {
   void SetOwner(WebViewImpl* owner) override;
   WebViewImpl* GetOwner() const override;
   DevToolsClient* GetRootClient() override;
+  DevToolsClient* GetParentClient() const override;
+  bool IsMainPage() const override;
 
  protected:
   const std::string id_;
