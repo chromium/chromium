@@ -64,10 +64,22 @@ struct BASE_EXPORT MemoryDumpProviderInfo
   MemoryDumpProviderInfo(const MemoryDumpProviderInfo&) = delete;
   MemoryDumpProviderInfo& operator=(const MemoryDumpProviderInfo&) = delete;
 
+  // These non-const fields below, instead, are not thread safe and can be
+  // mutated only:
+  // - On the |task_runner|, when not null (i.e. for thread-bound MDPS).
+  // - By the MDM's background thread (or in any other way that guarantees
+  //   sequencing) for non-thread-bound MDPs.
+
+  // Used to transfer ownership for UnregisterAndDeleteDumpProviderSoon().
+  // nullptr in all other cases.
+  // We need to declare this before `dump_provider`, because it might sometimes
+  // own the pointer it is referencing. Thus, we need this to be destroyed after
+  // `dump_provider`.
+  std::unique_ptr<MemoryDumpProvider> owned_dump_provider;
+
   // It is safe to access the const fields below from any thread as they are
   // never mutated.
-
-  const raw_ptr<MemoryDumpProvider, DanglingUntriaged> dump_provider;
+  const raw_ptr<MemoryDumpProvider> dump_provider;
 
   // The |options| arg passed to MDM::RegisterDumpProvider().
   const MemoryDumpProvider::Options options;
@@ -83,15 +95,6 @@ struct BASE_EXPORT MemoryDumpProviderInfo
 
   // True if the dump provider is allowed for background mode.
   const bool allowed_in_background_mode;
-
-  // These fields below, instead, are not thread safe and can be mutated only:
-  // - On the |task_runner|, when not null (i.e. for thread-bound MDPS).
-  // - By the MDM's background thread (or in any other way that guarantees
-  //   sequencing) for non-thread-bound MDPs.
-
-  // Used to transfer ownership for UnregisterAndDeleteDumpProviderSoon().
-  // nullptr in all other cases.
-  std::unique_ptr<MemoryDumpProvider> owned_dump_provider;
 
   // For fail-safe logic (auto-disable failing MDPs).
   int consecutive_failures;
