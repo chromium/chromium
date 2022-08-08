@@ -1447,6 +1447,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win7:11-', 'chrome.mac:11-', 'chrome.linux:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -4386,6 +4387,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:57-', 'chrome.mac:88-', 'chrome.linux:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -22206,6 +22208,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:66-', 'chrome.linux:66-', 'chrome.mac:66-', 'chrome_os:66-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30662,6 +30665,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       ],
       'default': True,
       'supported_on': ['chrome.win:93-', 'chrome.linux:93-', 'chrome.mac:93-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

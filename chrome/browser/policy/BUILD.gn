@@ -252,11 +252,10 @@ source_set("policy_specific_browser_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [ "test/network_time_policy_browsertest.cc" ]
-
-    if (!is_fuchsia) {
-      sources += [ "policy_startup_browsertest.cc" ]
-    }
+    sources += [
+      "policy_startup_browsertest.cc",
+      "test/network_time_policy_browsertest.cc",
+    ]
   }
 
   if (!is_chromeos) {

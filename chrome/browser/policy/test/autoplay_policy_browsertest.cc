@@ -82,7 +82,6 @@ class AutoplayPolicyTest : public PolicyTest {
   net::EmbeddedTestServer embedded_test_server2_;
 };
 
-#if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
   NavigateToTestPage();
 
@@ -100,7 +99,6 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
   EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // Flaky on Linux. See: crbug.com/1189597.
 #if BUILDFLAG(IS_LINUX)

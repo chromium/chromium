@@ -93,10 +93,8 @@ bool CanShowNTPBackgroundModule(const policy::PolicyMap& policies,
 }
 
 bool CanShowSetDefaultModule(const policy::PolicyMap& policies) {
-#if !BUILDFLAG(IS_FUCHSIA)
   if (IsPolicySetAndFalse(policies, policy::key::kDefaultBrowserSettingEnabled))
     return false;
-#endif
 
   return true;
 }
