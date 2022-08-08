@@ -4202,89 +4202,6 @@
       },
     },
 
-    'paeverywhere_common_tests': {
-      # Run popular tests other than capture_unittests, crashpad_tests,
-      # content_browsertests, and perfetto_unittests because they fail.
-      #
-      # browser_tests is said to be somewhat flaky for Mac
-      # (crbug.com/1201386), so we exclude that as well.
-      'absl_hardening_tests': {},
-      'angle_unittests': {
-        'android_args': [
-          '-v',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-      'base_unittests': {},
-      'blink_common_unittests': {},
-      'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
-      'blink_unittests': {},
-      'boringssl_crypto_tests': {},
-      'boringssl_ssl_tests': {},
-      'cast_unittests': {},
-      'components_browsertests': {},
-      'components_unittests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'content_unittests': {
-        'android_swarming': {
-          'shards': 3,
-        },
-      },
-      'crypto_unittests': {},
-      'gcm_unit_tests': {},
-      'gin_unittests': {},
-      'gl_tests': {},
-      'gl_unittests': {},
-      'google_apis_unittests': {},
-      'gpu_unittests': {},
-      'gwp_asan_unittests': {},
-      'headless_browsertests': {},
-      'headless_unittests': {},
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'ipc_tests': {},
-      'latency_unittests': {},
-      'libjingle_xmpp_unittests': {},
-      'liburlpattern_unittests': {},
-      'media_unittests': {},
-      'midi_unittests': {},
-      'mojo_unittests': {},
-      'net_unittests': {
-        'android_swarming': {
-          'shards': 3,
-        },
-      },
-      'remoting_unittests': {},
-      'services_unittests': {},
-      'shell_dialogs_unittests': {},
-      'skia_unittests': {},
-      'sql_unittests': {},
-      'storage_unittests': {},
-      'ui_base_unittests': {},
-      'ui_touch_selection_unittests': {},
-      'unit_tests': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'url_unittests': {},
-      'webkit_unit_tests': {
-        'test': 'blink_unittests',
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'wtf_unittests': {},
-      'zlib_unittests': {},
-    },
-
     'perfetto_gtests': {
       'base_unittests': {},
       'perfetto_unittests': {},
@@ -6192,12 +6109,6 @@
       'monochrome_public_apk_checker_isolated_script',
       'telemetry_android_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts_android',
-    ],
-
-    'paeverywhere_mac_gtests': [
-      'chromium_gtests_for_linux_and_mac_only',
-      'mac_specific_chromium_gtests',
-      'paeverywhere_common_tests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [

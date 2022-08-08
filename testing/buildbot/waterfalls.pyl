@@ -3510,7 +3510,7 @@
           'x86-64',
         ],
         'gtest_args': [
-          '--enable-features=PartitionAllocBackupRefPtr',
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -3724,6 +3724,18 @@
           'scripts': 'chromium_mac_scripts',
         }
       },
+      'mac-backuprefptr-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+        },
+        'mixins': [
+          'mac_10.15',
+          'x86-64',
+        ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
+        ],
+      },
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
@@ -3756,24 +3768,6 @@
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
-      },
-      'mac-paeverywhere-x64-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_mac_gtests',
-        },
-        'mixins': [
-          'mac_10.15',
-          'x86-64',
-        ],
-      },
-      'mac-paeverywhere-x64-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_mac_gtests',
-        },
-        'mixins': [
-          'mac_10.15',
-          'x86-64',
-        ],
       },
       'mac-upload-perfetto': {
         'additional_compile_targets': [ 'trace_processor_shell' ],

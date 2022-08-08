@@ -1406,6 +1406,19 @@
       "use_remoteexec": true
     }
   },
+  "mac-backuprefptr-x64-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
+      "use_remoteexec": true
+    }
+  },
   "mac-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1435,27 +1448,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "mac-paeverywhere-x64-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "none",
-      "use_goma": true
-    }
-  },
-  "mac-paeverywhere-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "none",
       "use_goma": true
     }
   },

@@ -41,7 +41,6 @@ consoles.console_view(
             "win10",
             "win11",
             "win32",
-            "paeverywhere",
             "backuprefptr",
             "buildperf",
         ],
@@ -774,22 +773,10 @@ ci.builder(
 )
 
 ci.builder(
-    name = "mac-paeverywhere-x64-fyi-dbg",
+    name = "mac-backuprefptr-x64-fyi-rel",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|mac",
-        short_name = "64dbg",
-    ),
-    cores = None,
-    notifies = ["chrome-memory-safety"],
-    os = os.MAC_ANY,
-)
-
-ci.builder(
-    name = "mac-paeverywhere-x64-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|mac",
+        category = "backuprefptr|mac",
         short_name = "64rel",
     ),
     cores = None,

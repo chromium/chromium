@@ -452,11 +452,10 @@
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
       # TODO(crbug.com/1252626): remove this after the migration.
       'mac-arm64-on-arm64-rel-reclient': 'mac_arm64_release_bot_reclient',
+      'mac-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-hermetic-upgrade-rel': 'release_bot',
-      'mac-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
-      'mac-paeverywhere-x64-fyi-rel': 'release_trybot_paeverywhere_x64',
       'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'win-annotator-rel': 'release_bot_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
@@ -2472,10 +2471,6 @@
       'debug_bot_local_build',
     ],
 
-    'debug_bot_paeverywhere_x64': [
-      'debug_bot', 'paeverywhere', 'x64',
-    ],
-
     'debug_bot_reclient': [
       'debug_bot_reclient',
     ],
@@ -3566,10 +3561,6 @@
       'release_trybot', 'disable_nacl',
     ],
 
-    'release_trybot_paeverywhere_x64': [
-      'release_trybot_minimal_symbols', 'paeverywhere', 'x64',
-    ],
-
     'release_trybot_tsan': [
       'release_trybot', 'tsan'
     ],
@@ -4410,10 +4401,6 @@
     # https://crbug.com/dawn/1200: Used to disable partition alloc while we
     # investigate a crash in the mac AMD shader compiler.
     'padisabled': {
-      'gn_args': 'use_allocator="none"',
-    },
-
-    'paeverywhere': {
       'gn_args': 'use_allocator="none"',
     },
 
