@@ -168,8 +168,8 @@ TEST_P(ButtonLayoutTest, GetPreferredSize) {
 
 TEST_P(ButtonLayoutTest, Layout) {
   AddChildViews();
+  // Layout will be done through SetBounds.
   host()->SetBounds(0, 0, GetExpectedWidth(), GetExpectedHeight());
-  layout()->Layout(host());
 
   ExpectViewBoundsEquals(host()->children()[0], GetExpectedButtonBounds(1));
   if (has_two_buttons())
