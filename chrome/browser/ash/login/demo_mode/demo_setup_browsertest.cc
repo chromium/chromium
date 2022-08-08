@@ -985,7 +985,8 @@ class DemoSetupVirtualSetRegionCodeTest : public DemoSetupArcSupportedTest {
 };
 
 // Flake on ASAN: crbug.com/1340618
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+// Flake on Linux Chrome OS: crbug.com/1351186
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
   DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet
 #else
