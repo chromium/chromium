@@ -35,9 +35,11 @@ class StandardIsolatedScriptMergeTest(unittest.TestCase):
     self.test_files = []
     self.summary = None
 
+  # pylint: disable=super-with-arguments
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
     super(StandardIsolatedScriptMergeTest, self).tearDown()
+  # pylint: enable=super-with-arguments
 
   def _write_temp_file(self, path, content):
     abs_path = os.path.join(self.temp_dir, path.replace('/', os.sep))
@@ -103,6 +105,7 @@ class OutputTest(StandardIsolatedScriptMergeTest):
       self.assertEquals(results['missing_shards'], [1])
 
 class InputParsingTest(StandardIsolatedScriptMergeTest):
+  # pylint: disable=super-with-arguments
   def setUp(self):
     super(InputParsingTest, self).setUp()
 
@@ -121,6 +124,7 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
       side_effect=mock_merge_test_results)
     m.start()
     self.addCleanup(m.stop)
+  # pylint: enable=super-with-arguments
 
   def test_simple(self):
     self._stage(TWO_COMPLETED_SHARDS,
@@ -173,9 +177,11 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
+  # pylint: disable=super-with-arguments
   def __init__(self, methodName='runTest'):
     super(CommandLineTest, self).__init__(
         methodName, standard_isolated_script_merge)
+  # pylint: enable=super-with-arguments
 
 
 if __name__ == '__main__':
