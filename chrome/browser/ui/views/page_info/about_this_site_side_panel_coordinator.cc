@@ -46,6 +46,8 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
   auto* side_panel_coordinator = browser_view->side_panel_coordinator();
   auto* registry = SidePanelRegistry::Get(web_contents());
 
+  last_url_params_ = params;
+
   // Check if the view is already registered.
   if (!registry->GetEntryForId(SidePanelEntry::Id::kAboutThisSite)) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
