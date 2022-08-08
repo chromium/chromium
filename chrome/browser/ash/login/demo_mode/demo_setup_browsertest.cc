@@ -942,16 +942,9 @@ class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// Flake on ASAN: crbug.com/1340982
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
-  DISABLED_VariantCountryCodeRegionDefaultCountryIsSet
-#else
-#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
-  VariantCountryCodeRegionDefaultCountryIsSet
-#endif
+// Flaky test: crbug.com/1340982, crbug.com/1147265
 IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
-                       MAYBE_VariantCountryCodeRegionDefaultCountryIsSet) {
+                       DISABLED_VariantCountryCodeRegionDefaultCountryIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
