@@ -1279,14 +1279,6 @@ void aom_hadamard_8x8_neon(const int16_t* src_diff,
                            tran_low_t* coeff);
 #define aom_hadamard_8x8 aom_hadamard_8x8_neon
 
-void aom_hadamard_8x8_dual_c(const int16_t* src_diff,
-                             ptrdiff_t src_stride,
-                             int16_t* coeff);
-void aom_hadamard_8x8_dual_neon(const int16_t* src_diff,
-                                ptrdiff_t src_stride,
-                                int16_t* coeff);
-#define aom_hadamard_8x8_dual aom_hadamard_8x8_dual_neon
-
 void aom_hadamard_lp_16x16_c(const int16_t* src_diff,
                              ptrdiff_t src_stride,
                              int16_t* coeff);
@@ -1302,6 +1294,14 @@ void aom_hadamard_lp_8x8_neon(const int16_t* src_diff,
                               ptrdiff_t src_stride,
                               int16_t* coeff);
 #define aom_hadamard_lp_8x8 aom_hadamard_lp_8x8_neon
+
+void aom_hadamard_lp_8x8_dual_c(const int16_t* src_diff,
+                                ptrdiff_t src_stride,
+                                int16_t* coeff);
+void aom_hadamard_lp_8x8_dual_neon(const int16_t* src_diff,
+                                   ptrdiff_t src_stride,
+                                   int16_t* coeff);
+#define aom_hadamard_lp_8x8_dual aom_hadamard_lp_8x8_dual_neon
 
 void aom_ifft16x16_float_c(const float* input, float* temp, float* output);
 #define aom_ifft16x16_float aom_ifft16x16_float_c

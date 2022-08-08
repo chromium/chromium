@@ -1392,16 +1392,6 @@ RTCD_EXTERN void (*aom_hadamard_8x8)(const int16_t* src_diff,
                                      ptrdiff_t src_stride,
                                      tran_low_t* coeff);
 
-void aom_hadamard_8x8_dual_c(const int16_t* src_diff,
-                             ptrdiff_t src_stride,
-                             int16_t* coeff);
-void aom_hadamard_8x8_dual_neon(const int16_t* src_diff,
-                                ptrdiff_t src_stride,
-                                int16_t* coeff);
-RTCD_EXTERN void (*aom_hadamard_8x8_dual)(const int16_t* src_diff,
-                                          ptrdiff_t src_stride,
-                                          int16_t* coeff);
-
 void aom_hadamard_lp_16x16_c(const int16_t* src_diff,
                              ptrdiff_t src_stride,
                              int16_t* coeff);
@@ -1421,6 +1411,16 @@ void aom_hadamard_lp_8x8_neon(const int16_t* src_diff,
 RTCD_EXTERN void (*aom_hadamard_lp_8x8)(const int16_t* src_diff,
                                         ptrdiff_t src_stride,
                                         int16_t* coeff);
+
+void aom_hadamard_lp_8x8_dual_c(const int16_t* src_diff,
+                                ptrdiff_t src_stride,
+                                int16_t* coeff);
+void aom_hadamard_lp_8x8_dual_neon(const int16_t* src_diff,
+                                   ptrdiff_t src_stride,
+                                   int16_t* coeff);
+RTCD_EXTERN void (*aom_hadamard_lp_8x8_dual)(const int16_t* src_diff,
+                                             ptrdiff_t src_stride,
+                                             int16_t* coeff);
 
 void aom_ifft16x16_float_c(const float* input, float* temp, float* output);
 #define aom_ifft16x16_float aom_ifft16x16_float_c
@@ -5847,15 +5847,15 @@ static void setup_rtcd_internal(void) {
   aom_hadamard_8x8 = aom_hadamard_8x8_c;
   if (flags & HAS_NEON)
     aom_hadamard_8x8 = aom_hadamard_8x8_neon;
-  aom_hadamard_8x8_dual = aom_hadamard_8x8_dual_c;
-  if (flags & HAS_NEON)
-    aom_hadamard_8x8_dual = aom_hadamard_8x8_dual_neon;
   aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_c;
   if (flags & HAS_NEON)
     aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_neon;
   aom_hadamard_lp_8x8 = aom_hadamard_lp_8x8_c;
   if (flags & HAS_NEON)
     aom_hadamard_lp_8x8 = aom_hadamard_lp_8x8_neon;
+  aom_hadamard_lp_8x8_dual = aom_hadamard_lp_8x8_dual_c;
+  if (flags & HAS_NEON)
+    aom_hadamard_lp_8x8_dual = aom_hadamard_lp_8x8_dual_neon;
   aom_int_pro_col = aom_int_pro_col_c;
   if (flags & HAS_NEON)
     aom_int_pro_col = aom_int_pro_col_neon;
