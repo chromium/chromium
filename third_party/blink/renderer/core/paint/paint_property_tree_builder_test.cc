@@ -7308,4 +7308,21 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilterWithTransformAndOpacity) {
   EXPECT_FALSE(properties->Effect()->HasDirectCompositingReasons());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, EffectCanUseCurrentClipAsOutputClipCrash) {
+  SetBodyInnerHTML(R"HTML(
+      <style type="text/css">
+      .c1 { transform: rotate(180deg); }
+      .c9 { position: relative; opacity: 0.1; }
+      .c9 > .c18 { position: fixed; }
+      </style>
+      <fieldset id="f" class="c1"><samp class="c9"><footer
+       class="c18"></footer></samp></fiedlset>
+  )HTML");
+
+  EXPECT_TRUE(GetLayoutObjectByElementId("f")
+                  ->SlowFirstChild()
+                  ->FirstFragment()
+                  .HasLocalBorderBoxProperties());
+}
+
 }  // namespace blink

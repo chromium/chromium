@@ -1975,7 +1975,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   const ClipPaintPropertyNodeOrAlias* new_clip = nullptr;
   const EffectPaintPropertyNodeOrAlias* new_effect = nullptr;
 
-  if (object_.HasLayer() || properties_ || IsLinkHighlighted(object_)) {
+  if (object_.HasLayer() || properties_ || IsLinkHighlighted(object_) ||
+      object_.CanContainFixedPositionObjects() ||
+      object_.CanContainAbsolutePositionObjects()) {
     new_transform = context_.current.transform;
     new_clip = context_.current.clip;
     new_effect = context_.current_effect;
