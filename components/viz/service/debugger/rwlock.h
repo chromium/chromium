@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DEBUGGER_RWLOCK_H_
 #define COMPONENTS_VIZ_SERVICE_DEBUGGER_RWLOCK_H_
 
+#include <atomic>
 #include <cstdint>
 #include <unordered_map>
 #include "components/viz/service/viz_service_export.h"
