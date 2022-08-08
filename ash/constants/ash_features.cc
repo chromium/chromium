@@ -1546,6 +1546,10 @@ const base::Feature kUploadOfficeToCloud("UploadOfficeToCloud",
 const base::Feature kUseAuthsessionAuthentication{
     "UseAuthsessionAuthentication", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Uses new AuthFactor-based API when communicating with cryptohome.
+const base::Feature kUseAuthFactors{"UseAuthFactors",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2417,6 +2421,10 @@ bool IsTrilinearFilteringEnabled() {
 
 bool IsUploadOfficeToCloudEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
+}
+
+bool IsUseAuthFactorsEnabled() {
+  return base::FeatureList::IsEnabled(kUseAuthFactors);
 }
 
 bool IsUseLoginShelfWidgetEnabled() {
