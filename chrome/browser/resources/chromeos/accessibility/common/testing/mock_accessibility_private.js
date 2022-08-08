@@ -83,6 +83,9 @@ var MockAccessibilityPrivate = {
   /** @private {Set<string>} */
   enabledFeatures_: new Set(),
 
+  /** @private {number} */
+  spokenFeedbackSilenceCount_: 0,
+
   // Methods from AccessibilityPrivate API. //
 
   onScrollableBoundsForPointRequested: {
@@ -354,6 +357,16 @@ var MockAccessibilityPrivate = {
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return MockAccessibilityPrivate.dictationBubbleProps_;
+  },
+
+  /** Simulates silencing ChromeVox */
+  silenceSpokenFeedback() {
+    this.spokenFeedbackSilenceCount_++;
+  },
+
+  /** @return {number} */
+  getSpokenFeedbackSilencedCount() {
+    return this.spokenFeedbackSilenceCount_;
   },
 
   /**

@@ -621,6 +621,26 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   WaitForCommitText(kFinalSpeechResult16);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
+  // Set up ChromeVox.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+  EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  // Not yet forced to stop.
+  EXPECT_EQ(0, sm.stop_count());
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Assert ChromeVox was asked to stop speaking at the toggle.
+  EXPECT_EQ(1, sm.stop_count());
+}
+
 IN_PROC_BROWSER_TEST_P(DictationTest, EntersInterimSpeechWhenToggledOff) {
   InstallMockInputContextHandler();
 

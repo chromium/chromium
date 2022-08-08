@@ -194,6 +194,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
       const absl::optional<std::u16string>& text,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints) = 0;
 
+  // Cancels all of spoken feedback's current and queued speech immediately.
+  virtual void SilenceSpokenFeedback() = 0;
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();

@@ -237,3 +237,40 @@ AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
   await this.assertCommittedText('New line');
   this.mockInputIme.clearLastParameters();
 });
+
+AX_TEST_F(
+    'DictationE2ETest', 'SilencesSpokenFeedbackWhenStarting', async function() {
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // Turn on ChromeVox
+      await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
+      // Wait for the callbacks to Dictation.
+      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
+
+      // Now silenceSpokenFeedback should get called when toggling Dictation on.
+      this.toggleDictationOn();
+      assertEquals(
+          1, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // It should not be called when turning Dictation off.
+      this.toggleDictationOff();
+      assertEquals(
+          1, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+    });
+
+AX_TEST_F(
+    'DictationE2ETest', 'DoesNotSilenceSpokenFeedbackUnnecessarily',
+    async function() {
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // Check that when ChromeVox is disabled we don't try to silence it when
+      // Dictation gets toggled.
+      this.toggleDictationOn();
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+      this.toggleDictationOff();
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+    });

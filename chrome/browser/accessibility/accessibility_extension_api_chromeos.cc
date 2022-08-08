@@ -864,6 +864,12 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateSilenceSpokenFeedbackFunction::Run() {
+  ash::AccessibilityController::Get()->SilenceSpokenFeedback();
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
   AccessibilityManager::Get()->InstallPumpkinForDictation(
       base::BindOnce(&AccessibilityPrivateInstallPumpkinForDictationFunction::

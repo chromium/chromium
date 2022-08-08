@@ -727,6 +727,12 @@
             "description": "Properties for the updated Dictation bubble UI."
           }
         ]
+      },
+      {
+        "name": "silenceSpokenFeedback",
+        "type": "function",
+        "description": "Cancels the current and queued speech from ChromeVox.",
+        "parameters": []
       }
     ],
     "events": [
