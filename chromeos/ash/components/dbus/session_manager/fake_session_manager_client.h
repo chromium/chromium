@@ -99,6 +99,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) override;
   void ClearForcedReEnrollmentVpd(VoidDBusMethodCallback callback) override;
+  void UnblockDevModeForEnrollment(VoidDBusMethodCallback callback) override;
+  void UnblockDevModeForInitialStateDetermination(
+      VoidDBusMethodCallback callback) override;
+  void UnblockDevModeForCarrierLock(VoidDBusMethodCallback callback) override;
   void StartTPMFirmwareUpdate(const std::string& update_mode) override;
   void RequestLockScreen() override;
   void NotifyLockScreenShown() override;
@@ -259,6 +263,18 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return clear_forced_re_enrollment_vpd_call_count_;
   }
 
+  int unblock_dev_mode_enrollment_call_count() const {
+    return unblock_dev_mode_enrollment_call_count_;
+  }
+
+  int unblock_dev_mode_init_state_call_count() const {
+    return unblock_dev_mode_init_state_call_count_;
+  }
+
+  int unblock_dev_mode_carrier_lock_call_count() const {
+    return unblock_dev_mode_carrier_lock_call_count_;
+  }
+
   void set_on_start_device_wipe_callback(base::OnceClosure callback);
   int start_device_wipe_call_count() const {
     return start_device_wipe_call_count_;
@@ -377,6 +393,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       AdbSideloadResponseCode::SUCCESS;
 
   int clear_forced_re_enrollment_vpd_call_count_ = 0;
+  int unblock_dev_mode_enrollment_call_count_ = 0;
+  int unblock_dev_mode_init_state_call_count_ = 0;
+  int unblock_dev_mode_carrier_lock_call_count_ = 0;
   // Callback which is run after calling |StartDeviceWipe| or
   // |StartRemoteDeviceWipe|.
   base::OnceClosure on_start_device_wipe_callback_;

@@ -240,6 +240,14 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Set the block_demode and check_enrollment flags to 0 in the VPD.
   virtual void ClearForcedReEnrollmentVpd(VoidDBusMethodCallback callback) = 0;
 
+  virtual void UnblockDevModeForEnrollment(VoidDBusMethodCallback callback) = 0;
+
+  virtual void UnblockDevModeForInitialStateDetermination(
+      VoidDBusMethodCallback callback) = 0;
+
+  virtual void UnblockDevModeForCarrierLock(
+      VoidDBusMethodCallback callback) = 0;
+
   // Triggers a TPM firmware update.
   virtual void StartTPMFirmwareUpdate(const std::string& update_mode) = 0;
 
