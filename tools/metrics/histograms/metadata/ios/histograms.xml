@@ -814,6 +814,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.IncognitoInterstitial"
+    enum="IncognitoInterstitialActionType" expires_after="2022-11-08">
+  <owner>qpubert@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the Incognito Interstitial is dismissed, with a value which
+    depends on what user action led to the dismissal.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IncognitoInterstitial.Settings"
+    enum="IncognitoInterstitialSettingsActionType" expires_after="2022-11-08">
+  <owner>qpubert@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the &quot;Ask to Open Links from Other Apps in Incognito&quot;
+    setting is enabled or disabled by the user.
+  </summary>
+</histogram>
+
 <histogram name="IOS.IPH.DefaultSite.Presented" enum="BooleanHit"
     expires_after="2023-02-28">
   <owner>gambard@chromium.org</owner>

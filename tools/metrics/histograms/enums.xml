@@ -50041,6 +50041,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Incognito switch and forced"/>
 </enum>
 
+<enum name="IncognitoInterstitialActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open in Chrome Incognito"/>
+  <int value="2" label="Open in Chrome (in a normal tab)"/>
+  <int value="3" label="Cancel"/>
+</enum>
+
+<enum name="IncognitoInterstitialSettingsActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
 <enum name="IncognitoMessageEvent">
   <int value="0" label="Download message shown"/>
   <int value="1" label="Download message accepted"/>

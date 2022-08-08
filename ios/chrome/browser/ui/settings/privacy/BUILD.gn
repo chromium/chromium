@@ -46,6 +46,7 @@ source_set("privacy_ui") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/incognito_interstitial:constants",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",

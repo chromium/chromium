@@ -40,6 +40,7 @@ source_set("incognito_interstitial") {
     "incognito_interstitial_coordinator_delegate.h",
   ]
   deps = [
+    ":constants",
     ":incognito_interstitial_ui",
     "//base:base",
     "//ios/chrome/app:mode",

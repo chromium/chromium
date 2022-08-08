@@ -258,6 +258,7 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(kTrendingQueriesModule);
+  config.features_enabled.push_back(kIOS3PIntentsInIncognito);
   return config;
 }
 

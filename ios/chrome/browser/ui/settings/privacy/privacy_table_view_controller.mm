@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/content_settings/core/common/features.h"
@@ -28,6 +29,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
@@ -638,6 +640,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // switchView.on is YES.
 - (void)incognitoInterstitialSwitchTapped:(UISwitch*)switchView {
   self.incognitoInterstitialPref.value = switchView.on;
+  UMA_HISTOGRAM_ENUMERATION(
+      kIncognitoInterstitialSettingsActionsHistogram,
+      switchView.on ? IncognitoInterstitialSettingsActions::kEnabled
+                    : IncognitoInterstitialSettingsActions::kDisabled);
 }
 
 // Called from the reauthentication setting's UIControlEventTouchUpInside.

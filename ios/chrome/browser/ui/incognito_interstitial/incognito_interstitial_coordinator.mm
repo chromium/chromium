@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller_delegate.h"
@@ -24,6 +26,9 @@
 @property(nonatomic, strong)
     IncognitoInterstitialViewController* incognitoInterstitialViewController;
 
+@property(nonatomic, assign)
+    IncognitoInterstitialActions incognitoInterstitialAction;
+
 @end
 
 @implementation IncognitoInterstitialCoordinator
@@ -40,6 +45,11 @@
       presentViewController:self.incognitoInterstitialViewController
                    animated:YES
                  completion:completion];
+
+  // The default recorded action is "Cancel".
+  // This value is changed right before the "Open in Chrome Incognito" or
+  // "Open in Chrome" action buttons trigger the dismissal of the interstitial.
+  self.incognitoInterstitialAction = IncognitoInterstitialActions::kCancel;
 }
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
@@ -50,6 +60,9 @@
                            weakSelf.incognitoInterstitialViewController = nil;
                            completion();
                          }];
+
+  UMA_HISTOGRAM_ENUMERATION(kIncognitoInterstitialActionsHistogram,
+                            self.incognitoInterstitialAction);
 }
 
 - (void)start {
@@ -67,7 +80,10 @@
   __weak __typeof(self) weakSelf = self;
   UrlLoadParams copyOfUrlLoadParams = self.urlLoadParams;
   void (^dismissModalsAndOpenTab)() = ^{
-    [weakSelf.tabOpener
+    __typeof(self) strongSelf = weakSelf;
+    strongSelf.incognitoInterstitialAction =
+        IncognitoInterstitialActions::kOpenInChromeIncognito;
+    [strongSelf.tabOpener
         dismissModalsAndMaybeOpenSelectedTabInMode:
             ApplicationModeForTabOpening::INCOGNITO
                                  withUrlLoadParams:copyOfUrlLoadParams
@@ -93,6 +109,8 @@
 
 - (void)didTapSecondaryActionButton {
   // Dismiss modals (including interstitial) and open link in regular tab.
+  self.incognitoInterstitialAction =
+      IncognitoInterstitialActions::kOpenInChrome;
   [self.tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:
                       ApplicationModeForTabOpening::NORMAL
                                            withUrlLoadParams:self.urlLoadParams

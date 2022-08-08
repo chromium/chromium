@@ -15,4 +15,30 @@ extern NSString* const kIncognitoInterstitialAccessibilityIdentifier;
 extern NSString* const
     kIncognitoInterstitialCancelButtonAccessibilityIdentifier;
 
+// UMA histogram names.
+extern const char kIncognitoInterstitialActionsHistogram[];
+extern const char kIncognitoInterstitialSettingsActionsHistogram[];
+
+// Enum for the IOS.IncognitoInterstitial histogram.
+// Keep in sync with "IncognitoInterstitialActionType"
+// in src/tools/metrics/histograms/enums.xml.
+enum class IncognitoInterstitialActions {
+  kUnknown = 0,  // Never logged.
+  kOpenInChromeIncognito = 1,
+  // The user chose to open link in a "normal" tab.
+  kOpenInChrome = 2,
+  kCancel = 3,
+  kMaxValue = kCancel,
+};
+
+// Enum for the IOS.IncognitoInterstitial.Settings histogram.
+// Keep in sync with "IncognitoInterstitialSettingsActionType"
+// in src/tools/metrics/histograms/enums.xml.
+enum class IncognitoInterstitialSettingsActions {
+  kUnknown = 0,  // Never logged.
+  kEnabled = 1,
+  kDisabled = 2,
+  kMaxValue = kDisabled,
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_CONSTANTS_H_

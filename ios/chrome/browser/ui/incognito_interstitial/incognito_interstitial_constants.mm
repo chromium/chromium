@@ -15,3 +15,8 @@ NSString* const kIncognitoInterstitialAccessibilityIdentifier =
 
 NSString* const kIncognitoInterstitialCancelButtonAccessibilityIdentifier =
     @"incognitoInterstitialCancelButtonAccessibilityIdentifier";
+
+const char kIncognitoInterstitialActionsHistogram[] =
+    "IOS.IncognitoInterstitial";
+const char kIncognitoInterstitialSettingsActionsHistogram[] =
+    "IOS.IncognitoInterstitial.Settings";
