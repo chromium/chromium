@@ -505,6 +505,11 @@ void EventTarget::AddedEventListener(
         UseCounter::Count(*document, WebFeature::kSlotChangeEventAddListener);
       } else if (event_type == event_type_names::kBeforematch) {
         UseCounter::Count(*document, WebFeature::kBeforematchHandlerRegistered);
+      } else if (event_type ==
+                 event_type_names::kContentvisibilityautostatechanged) {
+        UseCounter::Count(
+            *document,
+            WebFeature::kContentVisibilityAutoStateChangedHandlerRegistered);
       }
     }
   }
