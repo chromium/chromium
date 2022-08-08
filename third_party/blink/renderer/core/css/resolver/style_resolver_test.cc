@@ -1433,7 +1433,7 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
   ASSERT_EQ(properties.size(), 3u);
 
   const uint16_t kImplicitOuterLayerOrder =
-      CascadeLayerMap::kImplicitOuterLayerOrder;
+      ClampTo<uint16_t>(CascadeLayerMap::kImplicitOuterLayerOrder);
 
   // div { display: block; }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
@@ -1480,7 +1480,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
   ASSERT_EQ(properties.size(), 4u);
 
   const uint16_t kImplicitOuterLayerOrder =
-      CascadeLayerMap::kImplicitOuterLayerOrder;
+      ClampTo<uint16_t>(CascadeLayerMap::kImplicitOuterLayerOrder);
 
   // div { display: block; }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
@@ -1539,7 +1539,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   ASSERT_EQ(properties.size(), 3u);
 
   const uint16_t kImplicitOuterLayerOrder =
-      CascadeLayerMap::kImplicitOuterLayerOrder;
+      ClampTo<uint16_t>(CascadeLayerMap::kImplicitOuterLayerOrder);
 
   // div { display: block }
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kDisplay));
@@ -1593,7 +1593,7 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
   ASSERT_EQ(properties.size(), 2u);
 
   const uint16_t kImplicitOuterLayerOrder =
-      CascadeLayerMap::kImplicitOuterLayerOrder;
+      ClampTo<uint16_t>(CascadeLayerMap::kImplicitOuterLayerOrder);
 
   // @layer { target { color: red } }"
   EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kColor));

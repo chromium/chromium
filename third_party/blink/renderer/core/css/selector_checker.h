@@ -191,7 +191,11 @@ class CORE_EXPORT SelectorChecker {
 
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
-    AtomicString custom_highlight_name;
+
+    // Comes from an AtomicString, but not stored as one to avoid
+    // the cost of checking the refcount on cleaning up from every
+    // Match() call. Owned by the CSS selector it came from.
+    StringImpl* custom_highlight_name{nullptr};
 
     // From the :has() argument selector checking, we need to get the element
     // that matches the leftmost compound selector to mark all possible :has()
