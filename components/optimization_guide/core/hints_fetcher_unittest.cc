@@ -354,11 +354,11 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   absl::optional<double> value;
   for (const std::string& host : hosts) {
-    value = hosts_fetched->FindDoubleKey(HashHostForDictionary(host));
+    value = hosts_fetched.FindDouble(HashHostForDictionary(host));
     // This reduces the necessary precision for the check on the expiry time for
     // the hosts stored in the pref. The exact time is not necessary, being
     // within 10 minutes is acceptable.
@@ -382,10 +382,10 @@ TEST_P(HintsFetcherTest, HintsFetchFailsHostNotRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   for (const std::string& host : hosts) {
-    EXPECT_FALSE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
+    EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
   }
 }
 
@@ -401,17 +401,21 @@ TEST_P(HintsFetcherTest, HintsFetchClearHostsSuccessfullyFetched) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value* hosts_fetched = pref_service()->GetDictionary(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
-  for (const std::string& host : hosts) {
-    EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
+  {
+    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
+        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    for (const std::string& host : hosts) {
+      EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
+    }
   }
 
   HintsFetcher::ClearHostsSuccessfullyFetched(pref_service());
-  hosts_fetched = pref_service()->GetDictionary(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
-  for (const std::string& host : hosts) {
-    EXPECT_FALSE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
+  {
+    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
+        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    for (const std::string& host : hosts) {
+      EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
+    }
   }
 }
 
@@ -427,19 +431,22 @@ TEST_P(HintsFetcherTest, HintsFetchClearSingleFetchedHost) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value* hosts_fetched = pref_service()->GetDictionary(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
-  for (const std::string& host : hosts) {
-    EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
+  {
+    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
+        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    for (const std::string& host : hosts) {
+      EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
+    }
   }
 
   HintsFetcher::ClearSingleFetchedHost(pref_service(), "host1.com");
-  hosts_fetched = pref_service()->GetDictionary(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
+  {
+    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
+        prefs::kHintsFetcherHostsSuccessfullyFetched);
 
-  EXPECT_FALSE(
-      hosts_fetched->FindDoubleKey(HashHostForDictionary("host1.com")));
-  EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary("host2.com")));
+    EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary("host1.com")));
+    EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary("host2.com")));
+  }
 }
 
 TEST_P(HintsFetcherTest, HintsFetcherHostsCovered) {
