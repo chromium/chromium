@@ -297,6 +297,7 @@ export class FileGrid extends Grid {
       if (startIndexToGroupLabel.has(i)) {
         // For first item in each group, we add a title div before the element.
         const title = document.createElement('div');
+        title.setAttribute('role', 'heading');
         title.innerText = startIndexToGroupLabel.get(i).label;
         title.classList.add(
             'grid-title', `group-by-${fileListModel.groupByField}`);
