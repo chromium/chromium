@@ -236,6 +236,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetNeedsUnbufferedInputForDebugger(LocalFrame*, bool) override {}
   void RequestUnbufferedInputEvents(LocalFrame*) override {}
   void SetTouchAction(LocalFrame*, TouchAction) override {}
+  void SetPanAction(LocalFrame*, mojom::blink::PanAction pan_action) override {}
   void DidAssociateFormControlsAfterLoad(LocalFrame*) override {}
   String AcceptLanguages() override;
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override {}

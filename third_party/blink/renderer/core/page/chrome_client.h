@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
@@ -448,6 +449,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetNeedsUnbufferedInputForDebugger(LocalFrame*, bool) = 0;
   virtual void RequestUnbufferedInputEvents(LocalFrame*) = 0;
   virtual void SetTouchAction(LocalFrame*, TouchAction) = 0;
+  virtual void SetPanAction(LocalFrame*,
+                            mojom::blink::PanAction pan_action) = 0;
 
   // Checks if there is an opened popup, called by LayoutMenuList::showPopUp().
   virtual bool HasOpenedPopup() const = 0;

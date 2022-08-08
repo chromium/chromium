@@ -1145,6 +1145,17 @@ void ChromeClientImpl::SetTouchAction(LocalFrame* frame,
   widget->ProcessTouchAction(touch_action);
 }
 
+void ChromeClientImpl::SetPanAction(LocalFrame* frame,
+                                    mojom::blink::PanAction pan_action) {
+  DCHECK(frame);
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
+  WebFrameWidgetImpl* widget = web_frame->LocalRootFrameWidget();
+  if (!widget)
+    return;
+
+  widget->SetPanAction(pan_action);
+}
+
 void ChromeClientImpl::DidAssociateFormControlsAfterLoad(LocalFrame* frame) {
   if (auto* fill_client = AutofillClientFromFrame(frame))
     fill_client->DidAssociateFormControlsDynamically();

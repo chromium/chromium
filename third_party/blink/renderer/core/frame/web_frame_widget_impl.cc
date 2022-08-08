@@ -3488,6 +3488,16 @@ void WebFrameWidgetImpl::ProcessTouchAction(WebTouchAction touch_action) {
   widget_base_->ProcessTouchAction(touch_action);
 }
 
+void WebFrameWidgetImpl::SetPanAction(mojom::blink::PanAction pan_action) {
+  if (!widget_base_->widget_input_handler_manager())
+    return;
+  mojom::blink::WidgetInputHandlerHost* host =
+      widget_base_->widget_input_handler_manager()->GetWidgetInputHandlerHost();
+  if (!host)
+    return;
+  host->SetPanAction(pan_action);
+}
+
 void WebFrameWidgetImpl::DidHandleGestureEvent(const WebGestureEvent& event) {
 #if BUILDFLAG(IS_ANDROID) || defined(USE_AURA)
   if (event.GetType() == WebInputEvent::Type::kGestureTap) {
