@@ -234,6 +234,7 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
   create_shortcut_info.dark_mode_background_color =
       other.dark_mode_background_color;
   create_shortcut_info.display_mode = other.display_mode;
+  create_shortcut_info.display_override = other.display_override;
   create_shortcut_info.additional_search_terms = other.additional_search_terms;
   return create_shortcut_info;
 }
