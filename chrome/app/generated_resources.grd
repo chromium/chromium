@@ -3058,9 +3058,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CREATE_SHORTCUTS_START_MENU_CHKBOX" desc="Label of the checkbox to create an application shortcut in the start menu.">
           Start menu
         </message>
-        <message name="IDS_CREATE_SHORTCUTS_QUICK_LAUNCH_BAR_CHKBOX" desc="Label of the checkbox to create an application shortcut in quick launch bar.">
-          Quick launch bar
-        </message>
         <message name="IDS_PIN_TO_TASKBAR_CHKBOX" desc="Label of the checkbox to pin an application shortcut to taskbar.">
           Pin to Taskbar
         </message>
