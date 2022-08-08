@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 }
 
 // TODO(https://crbug.com/1334876): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_VerifyCanvasWebGLCaptureColor \
   DISABLED_VerifyCanvasWebGLCaptureColor
 #else
