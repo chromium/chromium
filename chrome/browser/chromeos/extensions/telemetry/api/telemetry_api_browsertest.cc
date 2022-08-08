@@ -6,12 +6,22 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -19,7 +29,9 @@ class TelemetryExtensionTelemetryApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionTelemetryApiBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ProbeServiceAsh::Factory::SetForTesting(&fake_probe_factory_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   ~TelemetryExtensionTelemetryApiBrowserTest() override = default;
 
@@ -29,17 +41,149 @@ class TelemetryExtensionTelemetryApiBrowserTest
       const TelemetryExtensionTelemetryApiBrowserTest&) = delete;
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns whether the Probe interface is available. It may
+  // not be available on earlier versions of ash-chrome.
+  bool IsServiceAvailable() const {
+    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+    return lacros_service &&
+           lacros_service->IsAvailable<crosapi::mojom::TelemetryProbeService>();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   void SetServiceForTesting(
       std::unique_ptr<FakeProbeService> fake_probe_service_impl) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_probe_factory_.SetCreateInstanceResponse(
         std::move(fake_probe_service_impl));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Replace the production Probe service with a mock for testing.
+    mojo::Remote<crosapi::mojom::TelemetryProbeService>& remote =
+        chromeos::LacrosService::Get()
+            ->GetRemote<crosapi::mojom::TelemetryProbeService>();
+    remote.reset();
+    fake_probe_service_impl->BindPendingReceiver(
+        remote.BindNewPipeAndPassReceiver());
+    fake_probe_service_impl_ = std::move(fake_probe_service_impl);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   FakeProbeServiceFactory fake_probe_factory_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<FakeProbeService> fake_probe_service_impl_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetBatteryInfo_Error) {
+                       LacrosServiceNotAvailableError) {
+  // If Probe interface is available on this version of ash-chrome, this test
+  // suite will no-op.
+  if (IsServiceAvailable()) {
+    return;
+  }
+
+  std::string service_worker = R"(
+    const tests = [
+      // Telemetry APIs.
+      async function getBatteryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getBatteryInfo(),
+            'Error: API chrome.os.telemetry.getBatteryInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getCpuInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getCpuInfo(),
+            'Error: API chrome.os.telemetry.getCpuInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getMemoryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getMemoryInfo(),
+            'Error: API chrome.os.telemetry.getMemoryInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getOemData() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOemData(),
+            'Error: API chrome.os.telemetry.getOemData failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getOsVersionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOsVersionInfo(),
+            'Error: API ' +
+            'chrome.os.telemetry.getOsVersionInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getStatefulPartitionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getStatefulPartitionInfo(),
+            'Error: API ' +
+            'chrome.os.telemetry.getStatefulPartitionInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getVpdInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getVpdInfo(),
+            'Error: API chrome.os.telemetry.getVpdInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+    ];
+
+    chrome.test.runTests([
+      async function allAPIsTested() {
+        getTestNames = function(arr) {
+          return arr.map(item => item.name);
+        }
+        getMethods = function(obj) {
+          return Object.getOwnPropertyNames(obj).filter(
+            item => typeof obj[item] === 'function');
+        }
+        apiNames = [
+          ...getMethods(chrome.os.telemetry),
+        ];
+        chrome.test.assertEq(getTestNames(tests), apiNames);
+        chrome.test.succeed();
+      },
+      ...tests
+    ]);
+  )";
+
+  CreateExtensionAndRunServiceWorker(service_worker);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetBatteryInfo_ApiInternalError) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -64,6 +208,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -136,6 +288,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -160,6 +320,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -292,6 +460,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -316,6 +492,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -361,6 +545,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -382,6 +574,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -407,6 +607,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -431,6 +639,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -479,6 +695,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -503,6 +727,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -542,6 +774,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -566,6 +806,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -648,6 +896,14 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetBatteryInfoWithoutSerialNumberPermission) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
@@ -721,6 +977,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto fake_service_impl = std::make_unique<FakeProbeService>();
@@ -744,6 +1008,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Configure FakeProbeService.
   {
     auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();

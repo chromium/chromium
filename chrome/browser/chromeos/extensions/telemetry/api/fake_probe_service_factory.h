@@ -24,8 +24,9 @@ class FakeProbeServiceFactory : public ash::ProbeServiceAsh::Factory {
 
  protected:
   // ProbeServiceAsh::Factory:
-  std::unique_ptr<crosapi::mojom::ProbeService> CreateInstance(
-      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) override;
+  std::unique_ptr<crosapi::mojom::TelemetryProbeService> CreateInstance(
+      mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver)
+      override;
 
  private:
   std::unique_ptr<FakeProbeService> fake_service_;

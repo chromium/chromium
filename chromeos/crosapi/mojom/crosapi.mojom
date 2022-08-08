@@ -63,6 +63,7 @@ import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
+import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
@@ -123,8 +124,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 93
-// Next method id: 97
+// Next version: 94
+// Next method id: 98
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -540,6 +541,12 @@ interface Crosapi {
   // task manager.
   // Added in M91.
   [MinVersion=19] BindTaskManager@24(pending_receiver<TaskManager> receiver);
+
+  // Binds the telemetry probe service to allow Lacros request telemetry data
+  // from Ash.
+  // Added in M106.
+  [MinVersion=93] BindTelemetryProbeService@97(
+      pending_receiver<crosapi.mojom.TelemetryProbeService> receiver);
 
   // Binds the test controller service, which tests can use to mutate ash. This
   // is not available on production devices.

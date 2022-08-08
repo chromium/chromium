@@ -33,15 +33,15 @@ class ProbeServieAshTest : public testing::Test {
     DebugDaemonClient::Shutdown();
   }
 
-  crosapi::mojom::ProbeServiceProxy* probe_service() const {
+  crosapi::mojom::TelemetryProbeServiceProxy* probe_service() const {
     return remote_probe_service_.get();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
-  mojo::Remote<crosapi::mojom::ProbeService> remote_probe_service_;
-  std::unique_ptr<crosapi::mojom::ProbeService> probe_service_{
+  mojo::Remote<crosapi::mojom::TelemetryProbeService> remote_probe_service_;
+  std::unique_ptr<crosapi::mojom::TelemetryProbeService> probe_service_{
       ProbeServiceAsh::Factory::Create(
           remote_probe_service_.BindNewPipeAndPassReceiver())};
 };

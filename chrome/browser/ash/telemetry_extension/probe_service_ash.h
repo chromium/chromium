@@ -11,7 +11,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
@@ -21,33 +21,35 @@ namespace cros_healthd {
 namespace mojom = ::chromeos::cros_healthd::mojom;
 }  // namespace cros_healthd
 
-class ProbeServiceAsh : public crosapi::mojom::ProbeService {
+class ProbeServiceAsh : public crosapi::mojom::TelemetryProbeService {
  public:
   class Factory {
    public:
-    static std::unique_ptr<crosapi::mojom::ProbeService> Create(
-        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
+    static std::unique_ptr<crosapi::mojom::TelemetryProbeService> Create(
+        mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver);
     static void SetForTesting(Factory* test_factory);
 
     virtual ~Factory();
 
    protected:
-    virtual std::unique_ptr<crosapi::mojom::ProbeService> CreateInstance(
-        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) = 0;
+    virtual std::unique_ptr<crosapi::mojom::TelemetryProbeService>
+    CreateInstance(mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService>
+                       receiver) = 0;
 
    private:
     static Factory* test_factory_;
   };
 
+  ProbeServiceAsh();
   ProbeServiceAsh(const ProbeServiceAsh&) = delete;
   ProbeServiceAsh& operator=(const ProbeServiceAsh&) = delete;
   ~ProbeServiceAsh() override;
 
- private:
-  explicit ProbeServiceAsh(
-      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver);
 
-  // crosapi::mojom::ProbeService override
+ private:
+  // crosapi::mojom::TelemetryProbeService override
   void ProbeTelemetryInfo(
       const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
@@ -66,7 +68,9 @@ class ProbeServiceAsh : public crosapi::mojom::ProbeService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<crosapi::mojom::ProbeService> receiver_;
+  //
+  // Support any number of connections.
+  mojo::ReceiverSet<crosapi::mojom::TelemetryProbeService> receivers_;
 };
 
 }  // namespace ash

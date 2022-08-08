@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/chromeos/extensions/api/api_sources.gni")
 import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -16,14 +17,8 @@ source_set("api") {
     "api_guard_delegate.h",
     "base_telemetry_extension_api_guard_function.cc",
     "base_telemetry_extension_api_guard_function.h",
-    "diagnostics_api.cc",
-    "diagnostics_api.h",
-    "diagnostics_api_converters.cc",
-    "diagnostics_api_converters.h",
     "hardware_info_delegate.cc",
     "hardware_info_delegate.h",
-    "remote_diagnostics_service_strategy.cc",
-    "remote_diagnostics_service_strategy.h",
     "remote_probe_service_strategy.cc",
     "remote_probe_service_strategy.h",
     "telemetry_api.cc",
@@ -33,10 +28,8 @@ source_set("api") {
   ]
 
   deps = [
-    "//ash/webui/telemetry_extension_ui/mojom",
-    "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
-    "//chrome/browser/ash/telemetry_extension",
+    "//build:chromeos_buildflags",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -51,6 +44,32 @@ source_set("api") {
     "//extensions/common",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "diagnostics_api.cc",
+      "diagnostics_api.h",
+      "diagnostics_api_converters.cc",
+      "diagnostics_api_converters.h",
+      "remote_diagnostics_service_strategy.cc",
+      "remote_diagnostics_service_strategy.h",
+    ]
+
+    deps += [
+      "//ash/webui/telemetry_extension_ui/mojom",
+      "//ash/webui/telemetry_extension_ui/services:telemetry_services",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/telemetry_extension",
+      "//components/user_manager",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//components/policy/core/common",
+    ]
+  }
 }
 
 function_registration("api_registration") {
@@ -72,36 +91,24 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "base_telemetry_extension_api_guard_function_browsertest.cc",
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
-    "diagnostics_api_browsertest.cc",
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
     "fake_diagnostics_service.cc",
     "fake_diagnostics_service.h",
-    "fake_diagnostics_service_factory.cc",
-    "fake_diagnostics_service_factory.h",
     "fake_probe_service.cc",
     "fake_probe_service.h",
-    "fake_probe_service_factory.cc",
-    "fake_probe_service_factory.h",
     "telemetry_api_browsertest.cc",
-    "telemetry_extension_capabilities_browser_test.cc",
   ]
 
   deps = [
     ":api",
     ":fake_hardware_info_delegate",
-    "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
-    "//chrome/browser/ash/telemetry_extension",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/crosapi/mojom",
-    "//chromeos/dbus",
     "//components/user_manager",
     "//content/test:test_support",
     "//extensions:test_support",
@@ -113,24 +120,47 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "base_telemetry_extension_api_guard_function_browsertest.cc",
+      "diagnostics_api_browsertest.cc",
+      "fake_diagnostics_service_factory.cc",
+      "fake_diagnostics_service_factory.h",
+      "fake_probe_service_factory.cc",
+      "fake_probe_service_factory.h",
+      "telemetry_extension_capabilities_browser_test.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/ash/telemetry_extension",
+      "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "diagnostics_api_converters_unittest.cc",
-    "telemetry_api_converters_unittest.cc",
-  ]
+  sources = [ "telemetry_api_converters_unittest.cc" ]
 
   deps = [
     ":api",
-    "//ash/webui/telemetry_extension_ui/mojom",
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "diagnostics_api_converters_unittest.cc" ]
+
+    deps += [ "//ash/webui/telemetry_extension_ui/mojom" ]
+  }
 }
 
 # This is needed as a dependency for api_guard_delegate_unittest.cc in

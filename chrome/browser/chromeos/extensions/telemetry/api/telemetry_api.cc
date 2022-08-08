@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
@@ -27,10 +28,17 @@ TelemetryApiFunctionBase::TelemetryApiFunctionBase()
 
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
-mojo::Remote<crosapi::mojom::ProbeService>&
+mojo::Remote<crosapi::mojom::TelemetryProbeService>&
 TelemetryApiFunctionBase::GetRemoteService() {
+  DCHECK(remote_probe_service_strategy_);
   return remote_probe_service_strategy_->GetRemoteService();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool TelemetryApiFunctionBase::IsCrosApiAvailable() {
+  return remote_probe_service_strategy_ != nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // OsTelemetryGetBatteryInfoFunction -------------------------------------------
 

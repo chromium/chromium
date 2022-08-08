@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -25,14 +27,16 @@ constexpr char kOemDataLogName[] = "oemdata";
 ProbeServiceAsh::Factory* ProbeServiceAsh::Factory::test_factory_ = nullptr;
 
 // static
-std::unique_ptr<crosapi::mojom::ProbeService> ProbeServiceAsh::Factory::Create(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
+std::unique_ptr<crosapi::mojom::TelemetryProbeService>
+ProbeServiceAsh::Factory::Create(
+    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
   if (test_factory_) {
     return test_factory_->CreateInstance(std::move(receiver));
   }
 
-  return base::WrapUnique<ProbeService>(
-      new ProbeServiceAsh(std::move(receiver)));
+  auto probe_service = std::make_unique<ProbeServiceAsh>();
+  probe_service->BindReceiver(std::move(receiver));
+  return probe_service;
 }
 
 // static
@@ -43,11 +47,14 @@ void ProbeServiceAsh::Factory::SetForTesting(
 
 ProbeServiceAsh::Factory::~Factory() = default;
 
-ProbeServiceAsh::ProbeServiceAsh(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+ProbeServiceAsh::ProbeServiceAsh() = default;
 
 ProbeServiceAsh::~ProbeServiceAsh() = default;
+
+void ProbeServiceAsh::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 void ProbeServiceAsh::ProbeTelemetryInfo(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
@@ -55,7 +62,8 @@ void ProbeServiceAsh::ProbeTelemetryInfo(
   GetService()->ProbeTelemetryInfo(
       converters::ConvertCategoryVector(categories),
       base::BindOnce(
-          [](crosapi::mojom::ProbeService::ProbeTelemetryInfoCallback callback,
+          [](crosapi::mojom::TelemetryProbeService::ProbeTelemetryInfoCallback
+                 callback,
              cros_healthd::mojom::TelemetryInfoPtr ptr) {
             std::move(callback).Run(
                 converters::ConvertProbePtr(std::move(ptr)));

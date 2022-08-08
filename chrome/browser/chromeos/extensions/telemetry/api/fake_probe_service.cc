@@ -18,13 +18,14 @@
 namespace chromeos {
 
 FakeProbeService::FakeProbeService() : receiver_(this) {}
+
 FakeProbeService::~FakeProbeService() {
   // Assert on the expectations.
   EXPECT_EQ(actual_requested_categories_, expected_requested_categories_);
 }
 
 void FakeProbeService::BindPendingReceiver(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 

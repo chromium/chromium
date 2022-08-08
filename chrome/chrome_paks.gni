@@ -244,8 +244,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/audio_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/browser/supervised_user/supervised_user_unscaled_resources.pak",
-        "$root_gen_dir/chrome/cloud_upload_resources.pak",
-        "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
         "$root_gen_dir/chrome/gaia_action_buttons_resources.pak",
         "$root_gen_dir/chrome/internet_config_dialog_resources.pak",
@@ -322,7 +320,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/nearby_share:resources",
         "//chrome/browser/resources/settings/chromeos:resources",
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
-        "//chrome/common/chromeos/extensions:resources",
         "//chromeos/ash/resources",
         "//chromeos/resources",
         "//ui/file_manager:file_manager_gen_resources",
@@ -348,6 +345,10 @@ template("chrome_extra_paks") {
         sources += [ "$root_gen_dir/ash/ambient/resources/ash_ambient_lottie_resources.pak" ]
         deps += [ "//ash/ambient/resources:lottie_resources" ]
       }
+    }
+    if (is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak" ]
+      deps += [ "//chrome/common/chromeos/extensions:resources" ]
     }
     if (is_linux || is_chromeos) {
       sources += [ "$root_gen_dir/chrome/webui_js_error_resources.pak" ]

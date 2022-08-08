@@ -47,8 +47,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 // Interface for getting device telemetry information. Implemented in
 // ash-chrome.
 [Stable, Uuid="f3dbbe3b-a810-43a9-889e-b130b4f94869",
-RenamedFrom="ash.health.mojom.ProbeService"]
-interface ProbeService {
+RenamedFrom="crosapi.mojom.ProbeService"]
+interface TelemetryProbeService {
   // Returns telemetry information for the desired categories.
   //
   // The request:

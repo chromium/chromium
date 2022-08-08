@@ -20,9 +20,9 @@ void FakeProbeServiceFactory::SetCreateInstanceResponse(
   fake_service_ = std::move(fake_service);
 }
 
-std::unique_ptr<crosapi::mojom::ProbeService>
+std::unique_ptr<crosapi::mojom::TelemetryProbeService>
 FakeProbeServiceFactory::CreateInstance(
-    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
   fake_service_->BindPendingReceiver(std::move(receiver));
   return std::move(fake_service_);
 }

@@ -98,6 +98,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 #include "chrome/browser/ash/sync/sync_service_factory_ash.h"
+#include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -229,6 +230,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
 #if defined(USE_CUPS)
       printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
 #endif  // defined(USE_CUPS)
+      probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
@@ -557,6 +559,11 @@ void CrosapiAsh::BindSystemDisplay(
 void CrosapiAsh::BindTaskManager(
     mojo::PendingReceiver<mojom::TaskManager> receiver) {
   task_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTelemetryProbeService(
+    mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) {
+  probe_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTimeZoneService(

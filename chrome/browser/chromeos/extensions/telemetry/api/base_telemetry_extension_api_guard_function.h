@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "extensions/browser/extension_function.h"
 
@@ -32,6 +33,10 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
   ResponseAction Run() final;
 
   virtual void RunIfAllowed() = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  virtual bool IsCrosApiAvailable() = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   void OnCanAccessApi(std::string error);

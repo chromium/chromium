@@ -4652,6 +4652,7 @@ if (is_chromeos_lacros) {
       ":sync_integration_test_support",
       ":test_support",
       "//chrome/app:command_ids",
+      "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
@@ -7981,10 +7982,17 @@ test("unit_tests") {
         "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",
         "//chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
+
+        # TODO(b/207754758): Move the following file into the appropriate target
+        "//chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
       ]
-      deps += [ "//chromeos/dbus/missive:missive" ]
-    } else {
-      sources += [ "../browser/extensions/api/messaging/native_messaging_policy_handler_unittest.cc" ]
+      deps += [
+        "//chrome/browser/chromeos/extensions/telemetry/api",
+        "//chrome/browser/chromeos/extensions/telemetry/api:fake_hardware_info_delegate",
+        "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
+        "//chrome/common/chromeos/extensions",
+        "//chromeos/dbus/missive:missive",
+      ]
     }
 
     if (is_chromeos_ash) {
@@ -7999,8 +8007,7 @@ test("unit_tests") {
         "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
 
-        # TODO(b/207754758): Move the following two files into the appropriate target
-        "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
+        # TODO(b/207754758): Move the following file into the appropriate target
         "../browser/chromeos/extensions/telemetry/chromeos_permission_messages_unittest.cc",
         "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",

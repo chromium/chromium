@@ -26,6 +26,10 @@ namespace apps {
 class DigitalGoodsFactoryAsh;
 }
 
+namespace ash {
+class ProbeServiceAsh;
+}  // namespace ash
+
 namespace crosapi {
 
 class ArcAsh;
@@ -286,6 +290,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void BindTaskManager(
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
+  void BindTelemetryProbeService(
+      mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
   void BindTimeZoneService(
@@ -480,6 +486,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
+  std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;

@@ -8,10 +8,11 @@ import("//chrome/common/features.gni")
 
 assert(enable_extensions)
 
-schema_sources_ = [
-  "diagnostics.idl",
-  "telemetry.idl",
-]
+schema_sources_ = [ "telemetry.idl" ]
+
+if (is_chromeos_ash) {
+  schema_sources_ += [ "diagnostics.idl" ]
+}
 
 chromeos_system_extensions_api_schema_sources =
     get_path_info(schema_sources_, "abspath")

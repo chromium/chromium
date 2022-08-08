@@ -25,7 +25,6 @@ source_set("telemetry_services") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/dbus",
   ]
 }
 
@@ -41,7 +40,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/dbus",
     "//testing/gmock",
     "//testing/gtest",
   ]

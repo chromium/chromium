@@ -25,7 +25,8 @@ class RemoteProbeServiceStrategy {
       delete;
   virtual ~RemoteProbeServiceStrategy();
 
-  virtual mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService() = 0;
+  virtual mojo::Remote<crosapi::mojom::TelemetryProbeService>&
+  GetRemoteService() = 0;
 };
 
 }  // namespace chromeos

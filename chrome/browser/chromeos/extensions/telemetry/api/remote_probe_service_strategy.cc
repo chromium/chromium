@@ -32,14 +32,15 @@ class RemoteProbeServiceStrategyAsh : public RemoteProbeServiceStrategy {
   ~RemoteProbeServiceStrategyAsh() override = default;
 
   // RemoteProbeServiceStrategy override:
-  mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService() override {
+  mojo::Remote<crosapi::mojom::TelemetryProbeService>& GetRemoteService()
+      override {
     return remote_probe_service_;
   }
 
  private:
-  mojo::Remote<crosapi::mojom::ProbeService> remote_probe_service_;
+  mojo::Remote<crosapi::mojom::TelemetryProbeService> remote_probe_service_;
 
-  std::unique_ptr<crosapi::mojom::ProbeService> probe_service_;
+  std::unique_ptr<crosapi::mojom::TelemetryProbeService> probe_service_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -51,8 +52,10 @@ class RemoteProbeServiceStrategyLacros : public RemoteProbeServiceStrategy {
   ~RemoteProbeServiceStrategyLacros() override = default;
 
   // RemoteProbeServiceStrategy override:
-  mojo::Remote<ash::mojom::ProbeService>& GetRemoteService() override {
-    return LacrosService::Get()->GetRemote<crosapi::mojom::ProbeService>();
+  mojo::Remote<crosapi::mojom::TelemetryProbeService>& GetRemoteService()
+      override {
+    return LacrosService::Get()
+        ->GetRemote<crosapi::mojom::TelemetryProbeService>();
   }
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -66,6 +69,10 @@ RemoteProbeServiceStrategy::Create() {
   return std::make_unique<RemoteProbeServiceStrategyAsh>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::TelemetryProbeService>()) {
+    return nullptr;
+  }
   return std::make_unique<RemoteProbeServiceStrategyLacros>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }

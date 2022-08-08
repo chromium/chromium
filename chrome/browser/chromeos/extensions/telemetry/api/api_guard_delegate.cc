@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,12 +21,19 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace content {
 class BrowserContext;
@@ -69,7 +77,12 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
         std::move(callback).Run("This extension is not installed by the admin");
         return;
       }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     } else if (!IsCurrentUserOwner()) {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    } else if (!IsCurrentUserOwner(context)) {
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(callback).Run("This extension is not run by the device owner");
       return;
     }
@@ -94,12 +107,25 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
   }
 
   bool IsUserAffiliated() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return user_manager::UserManager::Get()->GetActiveUser()->IsAffiliated();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return policy::PolicyLoaderLacros::IsMainUserAffiliated();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsCurrentUserOwner() {
     return user_manager::UserManager::Get()->IsCurrentUserOwner();
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsCurrentUserOwner(content::BrowserContext* context) {
+    return Profile::FromBrowserContext(context)->IsMainProfile();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool IsPwaUiOpenAndSecure(content::BrowserContext* context,
                             const extensions::Extension* extension) {

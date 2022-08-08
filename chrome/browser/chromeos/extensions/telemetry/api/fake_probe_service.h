@@ -14,7 +14,7 @@
 
 namespace chromeos {
 
-class FakeProbeService : public crosapi::mojom::ProbeService {
+class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
  public:
   FakeProbeService();
   FakeProbeService(const FakeProbeService&) = delete;
@@ -22,9 +22,9 @@ class FakeProbeService : public crosapi::mojom::ProbeService {
   ~FakeProbeService() override;
 
   void BindPendingReceiver(
-      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver);
 
-  // crosapi::mojom::ProbeService overrides.
+  // crosapi::mojom::TelemetryProbeService overrides.
   void ProbeTelemetryInfo(
       const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
@@ -44,7 +44,7 @@ class FakeProbeService : public crosapi::mojom::ProbeService {
           expected_requested_categories);
 
  private:
-  mojo::Receiver<crosapi::mojom::ProbeService> receiver_;
+  mojo::Receiver<crosapi::mojom::TelemetryProbeService> receiver_;
 
   // Response for a call to |ProbeTelemetryInfo|.
   crosapi::mojom::ProbeTelemetryInfoPtr telem_info_{

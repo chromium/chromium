@@ -7,15 +7,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "extensions/common/extension.h"
@@ -27,6 +24,19 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -98,13 +108,21 @@ class ApiGuardDelegateTest
     // Make sure device manufacturer is allowlisted.
     SetDeviceManufacturer(manufacturer());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
     AddUserAndLogIn();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile()->SetIsMainProfile(true);
+    ASSERT_TRUE(profile()->IsMainProfile());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Explicitly removing the user is required; otherwise ProfileHelper keeps a
     // dangling pointer to the User.
     // TODO(b/208629291): Consider removing all users from ProfileHelper in the
@@ -112,6 +130,7 @@ class ApiGuardDelegateTest
     GetFakeUserManager()->RemoveUserFromList(
         GetFakeUserManager()->GetActiveUser()->GetAccountId());
     scoped_user_manager_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -125,12 +144,13 @@ class ApiGuardDelegateTest
 
   std::string manufacturer() const { return GetParam().manufacturer; }
 
+  const extensions::Extension* extension() { return extension_.get(); }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
-
-  const extensions::Extension* extension() { return extension_.get(); }
 
   virtual void AddUserAndLogIn() {
     auto* const user_manager = GetFakeUserManager();
@@ -141,6 +161,7 @@ class ApiGuardDelegateTest
     user_manager->SwitchActiveUser(account_id);
     user_manager->SetOwnerId(account_id);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetDeviceManufacturer(std::string manufacturer) {
     hardware_info_delegate_factory_ =
@@ -188,14 +209,24 @@ class ApiGuardDelegateTest
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<HardwareInfoDelegate::Factory>
       hardware_info_delegate_factory_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* const user_manager = GetFakeUserManager();
   // Make sure the current user is not the device owner.
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
   user_manager->SetOwnerId(regular_user);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  profile()->SetIsMainProfile(false);
+  ASSERT_FALSE(profile()->IsMainProfile());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::string> future;
@@ -266,7 +297,20 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
   ApiGuardDelegateAffiliatedUserTest() = default;
   ~ApiGuardDelegateAffiliatedUserTest() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetUp() override {
+    ApiGuardDelegateTest::SetUp();
+
+    // Make sure the main user is affiliated.
+    auto init_params = crosapi::mojom::BrowserInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+    ASSERT_TRUE(policy::PolicyLoaderLacros::IsMainUserAffiliated());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddUserAndLogIn() override {
     auto* const user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
@@ -275,6 +319,7 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
     user_manager->LoginUser(account_id);
     user_manager->SwitchActiveUser(account_id);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {

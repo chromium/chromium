@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_probe_service_strategy.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -26,7 +27,11 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
  protected:
   ~TelemetryApiFunctionBase() override;
 
-  mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService();
+  mojo::Remote<crosapi::mojom::TelemetryProbeService>& GetRemoteService();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsCrosApiAvailable() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;

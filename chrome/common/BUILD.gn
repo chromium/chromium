@@ -380,10 +380,11 @@ static_library("common_lib") {
       "extensions/api/input_ime/input_components_handler.h",
     ]
     public_deps += [ "//ash/keyboard/ui" ]
-    deps += [
-      "//ash/constants",
-      "//chrome/common/chromeos/extensions",
-    ]
+    deps += [ "//ash/constants" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chrome/common/chromeos/extensions" ]
   }
 
   if (enable_nacl) {
