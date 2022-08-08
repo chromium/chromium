@@ -72,8 +72,10 @@ void SidePanelToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
 
 void SidePanelToolbarButton::ReadingListModelLoaded(
     const ReadingListModel* model) {
-  if (model->unseen_size())
+  if (model->unseen_size() &&
+      !base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
     dot_indicator_->Show();
+  }
 }
 
 void SidePanelToolbarButton::ReadingListModelBeingDeleted(
@@ -86,6 +88,10 @@ void SidePanelToolbarButton::ReadingListModelBeingDeleted(
 
 void SidePanelToolbarButton::ReadingListDidApplyChanges(
     ReadingListModel* model) {
+  // Unified side panel does not use the blue dot.
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
+    return;
+
   if (!side_panel_webview_ && reading_list_model_->unseen_size() > 0) {
     dot_indicator_->Show();
   } else {

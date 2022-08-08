@@ -45,6 +45,10 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
 };
 
 TEST_F(SidePanelToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {
+  if (browser_view()->side_panel_coordinator()) {
+    GTEST_SKIP() << "The unified side panel doesn't use the dot indicator so "
+                    "this test shouldn't run";
+  }
   // Verify the dot indicator is seen when there is an unseen entry.
   model()->AddEntry(GURL("http://foo/1"), "Tab 1",
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
