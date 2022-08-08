@@ -24,7 +24,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -341,6 +340,15 @@ void BorealisApps::SetPermission(const std::string& app_id,
   }
   profile_->GetPrefs()->SetBoolean(pref_name,
                                    permission_ptr->IsPermissionEnabled());
+}
+
+void BorealisApps::Uninstall(const std::string& app_id,
+                             UninstallSource uninstall_source,
+                             bool clear_site_data,
+                             bool report_abuse) {
+  borealis::BorealisService::GetForProfile(profile_)
+      ->AppUninstaller()
+      .Uninstall(app_id, base::DoNothing());
 }
 
 void BorealisApps::Connect(

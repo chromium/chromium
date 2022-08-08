@@ -49,7 +49,6 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -1014,6 +1013,13 @@ void ArcApps::SetPermission(const std::string& app_id,
                                              permission_type);
     }
   }
+}
+
+void ArcApps::Uninstall(const std::string& app_id,
+                        UninstallSource uninstall_source,
+                        bool clear_site_data,
+                        bool report_abuse) {
+  arc::UninstallArcApp(app_id, profile_);
 }
 
 void ArcApps::OnPreferredAppSet(

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,6 +75,10 @@ class CrostiniApps : public KeyedService,
                            base::OnceCallback<void(bool)> callback) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
+  void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse);
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

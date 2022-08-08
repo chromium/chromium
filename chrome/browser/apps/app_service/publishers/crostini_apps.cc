@@ -26,7 +26,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -174,6 +173,14 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
   }
   // TODO(crbug.com/1244506): Add launch return value.
   std::move(callback).Run(LaunchResult());
+}
+
+void CrostiniApps::Uninstall(const std::string& app_id,
+                             UninstallSource uninstall_source,
+                             bool clear_site_data,
+                             bool report_abuse) {
+  crostini::CrostiniPackageService::GetForProfile(profile_)
+      ->QueueUninstallApplication(app_id);
 }
 
 void CrostiniApps::Connect(

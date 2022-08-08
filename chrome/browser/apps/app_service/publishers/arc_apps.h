@@ -37,6 +37,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -124,6 +125,10 @@ class ArcApps : public KeyedService,
                       int64_t display_id) override;
   void SetPermission(const std::string& app_id,
                      PermissionPtr permission) override;
+  void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse);
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,

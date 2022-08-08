@@ -290,6 +290,17 @@ void PluginVmApps::SetPermission(const std::string& app_id,
                                    permission_ptr->IsPermissionEnabled());
 }
 
+void PluginVmApps::Uninstall(const std::string& app_id,
+                             UninstallSource uninstall_source,
+                             bool clear_site_data,
+                             bool report_abuse) {
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
+      ->ClearApplicationList(guest_os::VmType::PLUGIN_VM,
+                             plugin_vm::kPluginVmName, "");
+  plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
+      ->UninstallPluginVm();
+}
+
 void PluginVmApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,

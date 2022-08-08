@@ -91,6 +91,18 @@ ENUM(InstallSource,
      kBrowser          // Installed from browser.
 )
 
+// What caused the app to be uninstalled.
+// This should be kept in sync with UninstallSource in enums.xml, so entries
+// should not be re-ordered or removed. New entries should be added at the
+// bottom.
+ENUM(UninstallSource,
+     kUnknown,
+     kAppList,        // Uninstall by the user from the App List (Launcher)
+     kAppManagement,  // Uninstall by the user from the App Management page
+     kShelf,          // Uninstall by the user from the Shelf
+     kMigration       // Uninstall by app migration.
+)
+
 // The window mode that each app will open in.
 ENUM(WindowMode,
      kUnknown,
