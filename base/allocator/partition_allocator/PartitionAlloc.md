@@ -4,15 +4,18 @@ This document describes PartitionAlloc at a high level, with some architectural
 details. For implementation details, see the comments in
 `partition_alloc_constants.h`.
 
+## Quick Links
+
+* [Glossary](./glossary.md): Definitions of terms commonly used in
+  PartitionAlloc. The present document largely avoids defining terms.
+
+* [Build Config](./build_config.md): Pertinent GN args, buildflags, and
+  macros.
+
 ## Overview
 
 PartitionAlloc is a memory allocator optimized for space efficiency,
 allocation latency, and security.
-
-*** note
-This document largely avoids defining terms; consult the
-[glossary](./glossary.md) for a complete reference.
-***
 
 ### Performance
 
