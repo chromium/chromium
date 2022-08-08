@@ -3024,8 +3024,6 @@ FUNCTION_SETS = [
   ],
   [EGL_FUNCTIONS, 'egl', [
       'EGL/eglext.h',
-      # Files below are Chromium-specific and shipped with Chromium sources.
-      'EGL/eglextchromium.h',
     ],
     [
       'EGL_ANGLE_d3d_share_handle_client_buffer',
