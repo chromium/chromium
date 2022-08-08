@@ -161,4 +161,35 @@ void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
       ExtensionDownloaderTestHelper::kNeverPingedData);
 }
 
+UpdateManifestItem::UpdateManifestItem(ExtensionId id) : id(std::move(id)) {}
+UpdateManifestItem::~UpdateManifestItem() = default;
+UpdateManifestItem::UpdateManifestItem(const UpdateManifestItem&) = default;
+UpdateManifestItem& UpdateManifestItem::operator=(const UpdateManifestItem&) =
+    default;
+UpdateManifestItem::UpdateManifestItem(UpdateManifestItem&&) = default;
+UpdateManifestItem& UpdateManifestItem::operator=(UpdateManifestItem&&) =
+    default;
+
+std::string CreateUpdateManifest(
+    const std::vector<UpdateManifestItem>& extensions) {
+  std::string content =
+      "<?xml version='1.0' encoding='UTF-8'?>"
+      "<gupdate xmlns='http://www.google.com/update2/response'"
+      "                protocol='2.0'>";
+  for (const auto& update_item : extensions) {
+    content += base::StringPrintf(
+        " <app appid='%s'>"
+        "  <updatecheck",
+        update_item.id.c_str());
+    for (const auto& [name, value] : update_item.updatecheck_params) {
+      content += base::StringPrintf(" %s='%s'", name.c_str(), value.c_str());
+    }
+    content +=
+        " />"
+        " </app>";
+  }
+  content += "</gupdate>";
+  return content;
+}
+
 }  // namespace extensions

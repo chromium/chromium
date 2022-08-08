@@ -237,27 +237,6 @@ class MockUpdateService : public UpdateService {
                     base::OnceClosure callback));
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO (crbug.com/1061475) : Move this to a utility file.
-std::string CreateUpdateManifest(const std::string& extension_id,
-                                 const std::string& extension_version,
-                                 const std::string& extension_hash) {
-  return "<?xml version='1.0' encoding='UTF-8'?>"
-         "<gupdate xmlns='http://www.google.com/update2/response'"
-         "                protocol='2.0'>"
-         " <app appid='" +
-         extension_id +
-         "'>"
-         "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx'"
-         "               version='" +
-         extension_version +
-         (extension_hash.size() ? "' hash='" + extension_hash : "'") +
-         "' prodversionmin='1.1' />"
-         " </app>"
-         "</gupdate>";
-}
-#endif
-
 }  // namespace
 
 // Base class for further specialized test classes.
@@ -1247,15 +1226,11 @@ class ExtensionUpdaterTest : public testing::Test {
     {
       helper.StartUpdateCheck(std::move(fetch3));
       RunUntilIdle();
-      const std::string kNoUpdate =
-          "<?xml version='1.0' encoding='UTF-8'?>"
-          "<gupdate xmlns='http://www.google.com/update2/response'"
-          "                protocol='2.0'>"
-          " <app appid='3333'>"
-          "  <updatecheck codebase='http://example.com/extension_3.0.0.0.crx'"
-          "               version='3.0.0.0' prodversionmin='3.0.0.0' />"
-          " </app>"
-          "</gupdate>";
+      const std::string kNoUpdate = CreateUpdateManifest(
+          {UpdateManifestItem("3333")
+               .version("3.0.0.0")
+               .prodversionmin("3.0.0.0")
+               .codebase("http://example.com/extension_3.0.0.0.crx")});
       helper.test_url_loader_factory().AddResponse(fetch3_url.spec(), kNoUpdate,
                                                    net::HTTP_OK);
       // The third fetcher doesn't have an update available.
@@ -1282,15 +1257,11 @@ class ExtensionUpdaterTest : public testing::Test {
       RunUntilIdle();
       // The last fetcher has an update.
       NotificationsObserver observer;
-      const std::string kUpdateAvailable =
-          "<?xml version='1.0' encoding='UTF-8'?>"
-          "<gupdate xmlns='http://www.google.com/update2/response'"
-          "                protocol='2.0'>"
-          " <app appid='4444'>"
-          "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx'"
-          "               version='4.0.42.0' prodversionmin='4.0.42.0' />"
-          " </app>"
-          "</gupdate>";
+      const std::string kUpdateAvailable = CreateUpdateManifest(
+          {UpdateManifestItem("4444")
+               .version("4.0.42.0")
+               .prodversionmin("4.0.42.0")
+               .codebase("http://example.com/extension_1.2.3.4.crx")});
       helper.test_url_loader_factory().AddResponse(
           fetch4_url.spec(), kUpdateAvailable, net::HTTP_OK);
       EXPECT_CALL(delegate, IsExtensionPending("4444")).WillOnce(Return(false));
@@ -1649,8 +1620,12 @@ class ExtensionUpdaterTest : public testing::Test {
         CreateManifestFetchData(kUpdateURL));
     AddExtensionToFetchDataForTesting(fetch.get(), kTestExtensionId, "1.0",
                                       kUpdateURL);
-    const std::string manifest =
-        CreateUpdateManifest(kTestExtensionId, version, hash);
+    const std::string manifest = CreateUpdateManifest(
+        {UpdateManifestItem(kTestExtensionId)
+             .version(version)
+             .hash(hash)
+             .codebase("http://example.com/extension_1.2.3.4.crx")
+             .prodversionmin("1.1")});
     helper.test_url_loader_factory().AddResponse(fetch->full_url().spec(),
                                                  manifest, net::HTTP_OK);
 

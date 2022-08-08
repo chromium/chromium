@@ -75,60 +75,6 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     return helper->downloader().pending_tasks_;
   }
 
-  // Struct for creating app entries in the update manifest XML.
-  struct UpdateManifestItem {
-    explicit UpdateManifestItem(ExtensionId id) : id(std::move(id)) {}
-
-    UpdateManifestItem&& codebase(std::string value) && {
-      updatecheck_params.emplace("codebase", std::move(value));
-      return std::move(*this);
-    }
-    UpdateManifestItem&& info(std::string value) && {
-      updatecheck_params.emplace("info", std::move(value));
-      return std::move(*this);
-    }
-    UpdateManifestItem&& prodversionmin(std::string value) && {
-      updatecheck_params.emplace("prodversionmin", std::move(value));
-      return std::move(*this);
-    }
-    UpdateManifestItem&& status(std::string value) && {
-      updatecheck_params.emplace("status", std::move(value));
-      return std::move(*this);
-    }
-    UpdateManifestItem&& version(std::string value) && {
-      updatecheck_params.emplace("version", std::move(value));
-      return std::move(*this);
-    }
-
-    ExtensionId id;
-    std::map<std::string, std::string> updatecheck_params;
-  };
-
-  // A generic method to create an XML update manifest. For each extension an
-  // extension ID should be provided along with parameters of the updatecheck
-  // tag.
-  std::string CreateUpdateManifest(
-      const std::vector<UpdateManifestItem>& extensions) {
-    std::string content =
-        "<?xml version='1.0' encoding='UTF-8'?>"
-        "<gupdate xmlns='http://www.google.com/update2/response'"
-        "                protocol='2.0'>";
-    for (const auto& update_item : extensions) {
-      content += base::StringPrintf(
-          " <app appid='%s'>"
-          "  <updatecheck",
-          update_item.id.c_str());
-      for (const auto& [name, value] : update_item.updatecheck_params) {
-        content += base::StringPrintf(" %s='%s'", name.c_str(), value.c_str());
-      }
-      content +=
-          " />"
-          " </app>";
-    }
-    content += "</gupdate>";
-    return content;
-  }
-
   // Creates an update manifest for several extensions. Provided values should
   // be tuples of (extension id, version, URL to the CRX file).
   std::string CreateUpdateManifest(
@@ -141,7 +87,7 @@ class ExtensionDownloaderTest : public ExtensionsTest {
                                       .version(version)
                                       .prodversionmin("1.1"));
     }
-    return CreateUpdateManifest(extensions_raw);
+    return extensions::CreateUpdateManifest(extensions_raw);
   }
 
   // Create an update manifest with one test extension.
@@ -361,9 +307,9 @@ TEST_F(ExtensionDownloaderTest, TestNoUpdatesManifestReports) {
   GURL fetch_url = fetch->full_url();
 
   const std::string kManifest =
-      CreateUpdateManifest({UpdateManifestItem(kTestExtensionId)
-                                .status("noupdate")
-                                .info("bandwidth limit")});
+      extensions::CreateUpdateManifest({UpdateManifestItem(kTestExtensionId)
+                                            .status("noupdate")
+                                            .info("bandwidth limit")});
   helper.test_url_loader_factory().AddResponse(fetch_url.spec(), kManifest,
                                                net::HTTP_OK);
 

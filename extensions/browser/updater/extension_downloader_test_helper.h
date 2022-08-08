@@ -168,6 +168,52 @@ void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                                        const std::string& version,
                                        const GURL& update_url);
 
+// Struct for creating app entries in the update manifest XML.
+struct UpdateManifestItem {
+  explicit UpdateManifestItem(ExtensionId id);
+  ~UpdateManifestItem();
+  // We need copy items to be able to use them to initialize e.g. vector of
+  // items via {item1, item2, ...} syntax.
+  UpdateManifestItem(const UpdateManifestItem&);
+  UpdateManifestItem& operator=(const UpdateManifestItem&);
+  UpdateManifestItem(UpdateManifestItem&&);
+  UpdateManifestItem& operator=(UpdateManifestItem&&);
+
+  UpdateManifestItem&& codebase(std::string value) && {
+    updatecheck_params.emplace("codebase", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& hash(std::string value) && {
+    updatecheck_params.emplace("hash", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& info(std::string value) && {
+    updatecheck_params.emplace("info", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& prodversionmin(std::string value) && {
+    updatecheck_params.emplace("prodversionmin", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& status(std::string value) && {
+    updatecheck_params.emplace("status", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& version(std::string value) && {
+    updatecheck_params.emplace("version", std::move(value));
+    return std::move(*this);
+  }
+
+  ExtensionId id;
+  std::map<std::string, std::string> updatecheck_params;
+};
+
+// A generic method to create an XML update manifest. For each extension an
+// extension ID should be provided along with parameters of the updatecheck
+// tag.
+std::string CreateUpdateManifest(
+    const std::vector<UpdateManifestItem>& extensions);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_UPDATER_EXTENSION_DOWNLOADER_TEST_HELPER_H_
