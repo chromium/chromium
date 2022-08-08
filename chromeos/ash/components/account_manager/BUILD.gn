@@ -16,5 +16,5 @@ component("account_manager") {
 
   deps = [ "//base" ]
 
-  defines = [ "IS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
 }

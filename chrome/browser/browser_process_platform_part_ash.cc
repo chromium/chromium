@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"

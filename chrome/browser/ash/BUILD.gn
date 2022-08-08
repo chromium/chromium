@@ -1744,7 +1744,6 @@ source_set("ash") {
 
   deps = [
     "//apps",
-    "//ash/components/account_manager",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:prefs",
     "//ash/components/arc/input_overlay/resources",
@@ -1817,6 +1816,7 @@ source_set("ash") {
     "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",
     "//chrome/common/net",
+    "//chromeos/ash/components/account_manager",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus:plugin_vm_service_proto",
     "//chromeos/ash/components/dbus:vm_disk_management_proto",

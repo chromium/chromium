@@ -139,7 +139,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/components/account_manager" ]
+    deps += [ "//chromeos/ash/components/account_manager" ]
   }
 }
 
@@ -175,7 +175,7 @@ source_set("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/components/account_manager" ]
+    deps += [ "//chromeos/ash/components/account_manager" ]
   }
 
   if (is_chromeos_lacros) {

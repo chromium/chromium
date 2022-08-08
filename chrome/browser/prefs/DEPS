@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/account_manager",
   "+ash/components/audio",
   "+services/preferences/public/mojom",
 ]

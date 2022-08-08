@@ -10,5 +10,5 @@ xiyuan@chromium.org
 per-file inline_login_handler_impl*=file://chrome/credential_provider/OWNERS
 per-file inline_login_handler.*=file://chrome/credential_provider/OWNERS
 
-per-file inline_login_*_chromeos*=file://ash/components/account_manager/OWNERS
-per-file signin_helper_chromeos.*=file://ash/components/account_manager/OWNERS
+per-file inline_login_*_chromeos*=file://chromeos/ash/components/account_manager/OWNERS
+per-file signin_helper_chromeos.*=file://chromeos/ash/components/account_manager/OWNERS

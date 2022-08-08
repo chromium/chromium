@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/components/account_manager",
+  "+chromeos/ash/components/account_manager",
   "+components/account_manager_core",
   "+components/content_settings",
   "+components/google/core",

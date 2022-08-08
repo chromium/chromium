@@ -556,9 +556,6 @@ specific_include_rules = {
   "browser_process_impl.cc": [
     "+ui/message_center/message_center.h",
   ],
-  "browser_process_platform_part_chromeos.cc": [
-    "+ash/components/account_manager",
-  ],
   "input_method_engine.cc": [
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",

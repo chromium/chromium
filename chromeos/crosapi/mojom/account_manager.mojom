@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Types of accounts which can be stored in Account Manager.
 // This must be kept in sync with
-// //ash/components/account_manager/tokens.proto
+// //components/account_manager_core/chromeos/tokens.proto.
 [Stable, Extensible]
 enum AccountType {
   kUnspecified = 0,
