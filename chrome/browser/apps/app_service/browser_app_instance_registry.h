@@ -193,10 +193,8 @@ class BrowserAppInstanceRegistry
                                    aura::Window* window);
   void LacrosWindowInstanceRemoved(apps::BrowserWindowInstanceUpdate update,
                                    aura::Window* window);
-  void LacrosAppInstanceAdded(apps::BrowserAppInstanceUpdate update,
-                              aura::Window* window);
-  void LacrosAppInstanceUpdated(apps::BrowserAppInstanceUpdate update,
-                                aura::Window* window);
+  void LacrosAppInstanceAddedOrUpdated(apps::BrowserAppInstanceUpdate update,
+                                       aura::Window* window);
   void LacrosAppInstanceRemoved(apps::BrowserAppInstanceUpdate update,
                                 aura::Window* window);
 

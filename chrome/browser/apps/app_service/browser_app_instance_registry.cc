@@ -247,8 +247,9 @@ void BrowserAppInstanceRegistry::OnBrowserAppAdded(
   auto window_id = update.window_id;
   RunOrEnqueueEventForWindow(
       window_id,
-      base::BindOnce(&BrowserAppInstanceRegistry::LacrosAppInstanceAdded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(update)));
+      base::BindOnce(
+          &BrowserAppInstanceRegistry::LacrosAppInstanceAddedOrUpdated,
+          weak_ptr_factory_.GetWeakPtr(), std::move(update)));
 }
 
 void BrowserAppInstanceRegistry::OnBrowserAppUpdated(
@@ -256,8 +257,9 @@ void BrowserAppInstanceRegistry::OnBrowserAppUpdated(
   auto window_id = update.window_id;
   RunOrEnqueueEventForWindow(
       window_id,
-      base::BindOnce(&BrowserAppInstanceRegistry::LacrosAppInstanceUpdated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(update)));
+      base::BindOnce(
+          &BrowserAppInstanceRegistry::LacrosAppInstanceAddedOrUpdated,
+          weak_ptr_factory_.GetWeakPtr(), std::move(update)));
 }
 
 void BrowserAppInstanceRegistry::OnBrowserAppRemoved(
@@ -368,30 +370,42 @@ void BrowserAppInstanceRegistry::LacrosWindowInstanceRemoved(
   }
 }
 
-void BrowserAppInstanceRegistry::LacrosAppInstanceAdded(
+void BrowserAppInstanceRegistry::LacrosAppInstanceAddedOrUpdated(
     apps::BrowserAppInstanceUpdate update,
     aura::Window* window) {
   DCHECK(window);
-  auto id = update.id;
-  auto& instance = AddInstance(
-      lacros_app_instances_, id,
-      std::make_unique<BrowserAppInstance>(std::move(update), window));
-  for (auto& observer : observers_) {
-    observer.OnBrowserAppAdded(instance);
-  }
-}
-
-void BrowserAppInstanceRegistry::LacrosAppInstanceUpdated(
-    apps::BrowserAppInstanceUpdate update,
-    aura::Window* window) {
-  DCHECK(window);
+  // Create instance if it does not already eixsts, update it if exists.
+  //
+  // In some cases this may result in the removal of an instance and then
+  // immediate recreation of it with the same ID, but it's necessary to maintain
+  // app instances with a valid window.
+  //
+  // For example, if the last tab is dragged from browser A into browser B, the
+  // tab will get reparented into a different window and browser A's window is
+  // destroyed. However app instance messages and window destruction events may
+  // arrive out of order because they originate from different sources now
+  // (crosapi and wayland). If a window is destroyed first, it leaves the app
+  // instance with an invalid window for a fraction of time. Rather than making
+  // the window pointer nullable, we remove the instance and then re-add it when
+  // an instance update message reparenting the instance into a new window
+  // arrives.
   BrowserAppInstance* instance = GetInstance(lacros_app_instances_, update.id);
-  if (instance && instance->MaybeUpdate(
-                      window, update.title, update.is_browser_active,
-                      update.is_web_contents_active, update.browser_session_id,
-                      update.restored_browser_session_id)) {
+  if (instance) {
+    if (instance->MaybeUpdate(window, update.title, update.is_browser_active,
+                              update.is_web_contents_active,
+                              update.browser_session_id,
+                              update.restored_browser_session_id)) {
+      for (auto& observer : observers_) {
+        observer.OnBrowserAppUpdated(*instance);
+      }
+    }
+  } else {
+    auto id = update.id;
+    auto& instance = AddInstance(
+        lacros_app_instances_, id,
+        std::make_unique<BrowserAppInstance>(std::move(update), window));
     for (auto& observer : observers_) {
-      observer.OnBrowserAppUpdated(*instance);
+      observer.OnBrowserAppAdded(instance);
     }
   }
 }
