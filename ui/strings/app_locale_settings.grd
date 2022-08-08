@@ -231,7 +231,7 @@
         </message>
       </if>
       <!-- For ChromeOS -->
-      <if expr="chromeos_ash or chromeos_lacros">
+      <if expr="is_chromeos">
         <!-- The font name like: 'Font Name, 12px' -->
         <message name="IDS_UI_FONT_FAMILY_CROS" use_name_for_id="true">
           Roboto, 12px

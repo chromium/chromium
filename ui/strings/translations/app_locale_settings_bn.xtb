@@ -13,7 +13,7 @@
 <if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Lohit Bengali</translation>
 </if>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Bengali UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Bengali UI, sans-serif</translation>
 </if>

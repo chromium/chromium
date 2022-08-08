@@ -12,7 +12,7 @@
 <if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Arial,AnjaliOldLipi,Rachana,Kartika,sans-serif</translation>
 </if>
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
   <translation id="IDS_UI_FONT_FAMILY_CROS">Roboto, Noto Sans Malayalam UI, 13px</translation>
   <translation id="IDS_WEB_FONT_FAMILY">Roboto, Noto Sans Malayalam UI, sans-serif</translation>
 </if>
