@@ -1442,10 +1442,12 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
 
   const WritingModeConverter container_converter(
       container_writing_direction, node_info.container_physical_content_size);
+  NGAnchorEvaluatorImpl anchor_evaluator(
+      container_builder_->AnchorQuery(), container_converter,
+      candidate_writing_direction.GetWritingMode());
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
-      container_converter, container_builder_->AnchorQuery(),
-      &offset_info->disable_first_tier_cache);
+      &anchor_evaluator);
 
   const LogicalSize computed_available_size =
       ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,
@@ -1454,34 +1456,6 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   const NGBoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
       ComputePadding(node_info.constraint_space, candidate_style);
-
-  struct AnchorSizeEvaluatorImpl : public Length::AnchorEvaluator {
-    STACK_ALLOCATED();
-
-   public:
-    AnchorSizeEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
-                            const WritingMode container_writing_mode,
-                            const WritingMode self_writing_mode)
-        : anchor_query(anchor_query),
-          container_writing_mode(container_writing_mode),
-          self_writing_mode(self_writing_mode) {}
-
-    absl::optional<LayoutUnit> EvaluateAnchorSize(
-        const AtomicString& anchor_name,
-        AnchorSizeValue anchor_size_value) const override {
-      has_anchor_functions = true;
-      return anchor_query.EvaluateSize(anchor_name, anchor_size_value,
-                                       container_writing_mode,
-                                       self_writing_mode);
-    }
-
-    const NGLogicalAnchorQuery& anchor_query;
-    const WritingMode container_writing_mode;
-    const WritingMode self_writing_mode;
-    mutable bool has_anchor_functions = false;
-  } anchor_evaluator(container_builder_->AnchorQuery(),
-                     container_writing_direction.GetWritingMode(),
-                     candidate_writing_direction.GetWritingMode());
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
@@ -1531,7 +1505,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   offset_info->disable_first_tier_cache |=
-      anchor_evaluator.has_anchor_functions;
+      anchor_evaluator.HasAnchorFunctions();
   offset_info->block_estimate = node_dimensions.size.block_size;
 
   // Calculate the offsets.

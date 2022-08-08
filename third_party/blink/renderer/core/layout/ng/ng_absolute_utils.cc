@@ -264,73 +264,45 @@ bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
 NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
-    const WritingModeConverter& container_converter,
-    const NGLogicalAnchorQuery& anchor_query,
-    bool* has_anchor_functions_out) {
-  struct AnchorEvaluatorImpl : public Length::AnchorEvaluator {
-    STACK_ALLOCATED();
-
-   public:
-    AnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
-                        const WritingModeConverter& container_converter)
-        : anchor_query(anchor_query),
-          container_converter(container_converter) {}
-
-    absl::optional<LayoutUnit> EvaluateAnchor(
-        const AtomicString& anchor_name,
-        AnchorValue anchor_value) const override {
-      return anchor_query.EvaluateAnchor(anchor_name, anchor_value,
-                                         available_size, container_converter,
-                                         is_y_axis, is_right_or_bottom);
-    }
-
-    const NGLogicalAnchorQuery& anchor_query;
-    const WritingModeConverter& container_converter;
-    LayoutUnit available_size;
-    bool is_y_axis = false;
-    bool is_right_or_bottom = false;
-  } anchor_evaluator(anchor_query, container_converter);
-  bool has_anchor_functions = false;
-
+    NGAnchorEvaluatorImpl* anchor_evaluator) {
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
   const WritingDirectionMode writing_direction = style.GetWritingDirection();
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, writing_direction.GetWritingMode());
-  anchor_evaluator.available_size = available_size.width;
   absl::optional<LayoutUnit> left;
   if (const Length& left_length = style.Left(); !left_length.IsAuto()) {
+    anchor_evaluator->SetAxis(/* is_y_axis */ false,
+                              /* is_right_or_bottom */ false,
+                              available_size.width);
     left = MinimumValueForLength(left_length, available_size.width,
-                                 &anchor_evaluator);
-    has_anchor_functions = left_length.HasAnchorQueries();
+                                 anchor_evaluator);
   }
   absl::optional<LayoutUnit> right;
   if (const Length& right_length = style.Right(); !right_length.IsAuto()) {
-    anchor_evaluator.is_right_or_bottom = true;
+    anchor_evaluator->SetAxis(/* is_y_axis */ false,
+                              /* is_right_or_bottom */ true,
+                              available_size.width);
     right = MinimumValueForLength(right_length, available_size.width,
-                                  &anchor_evaluator);
-    has_anchor_functions |= right_length.HasAnchorQueries();
+                                  anchor_evaluator);
   }
 
-  anchor_evaluator.is_y_axis = true;
-  anchor_evaluator.available_size = available_size.height;
   absl::optional<LayoutUnit> top;
   if (const Length& top_length = style.Top(); !top_length.IsAuto()) {
-    anchor_evaluator.is_right_or_bottom = false;
+    anchor_evaluator->SetAxis(/* is_y_axis */ true,
+                              /* is_right_or_bottom */ false,
+                              available_size.height);
     top = MinimumValueForLength(top_length, available_size.height,
-                                &anchor_evaluator);
-    has_anchor_functions |= top_length.HasAnchorQueries();
+                                anchor_evaluator);
   }
   absl::optional<LayoutUnit> bottom;
   if (const Length& bottom_length = style.Bottom(); !bottom_length.IsAuto()) {
-    anchor_evaluator.is_right_or_bottom = true;
+    anchor_evaluator->SetAxis(/* is_y_axis */ true,
+                              /* is_right_or_bottom */ true,
+                              available_size.height);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
-                                   &anchor_evaluator);
-    has_anchor_functions |= bottom_length.HasAnchorQueries();
+                                   anchor_evaluator);
   }
-
-  if (has_anchor_functions_out)
-    *has_anchor_functions_out = has_anchor_functions;
 
   // Convert the physical insets to logical.
   PhysicalToLogical<absl::optional<LayoutUnit>&> insets(writing_direction, top,

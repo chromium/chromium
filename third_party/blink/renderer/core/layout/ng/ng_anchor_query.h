@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -107,6 +108,47 @@ class CORE_EXPORT NGLogicalAnchorQuery {
   friend class NGPhysicalAnchorQuery;
 
   HashMap<AtomicString, NGLogicalAnchorReference> anchor_references_;
+};
+
+class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
+  STACK_ALLOCATED();
+
+ public:
+  NGAnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
+                        const WritingModeConverter& container_converter,
+                        WritingMode self_writing_mode)
+      : anchor_query_(anchor_query),
+        container_converter_(container_converter),
+        self_writing_mode_(self_writing_mode) {}
+
+  // Returns true if this evaluator was invoked for `anchor()` or
+  // `anchor-size()` functions.
+  bool HasAnchorFunctions() const { return has_anchor_functions_; }
+
+  // This must be set before evaluating `anchor()` function.
+  void SetAxis(bool is_y_axis,
+               bool is_right_or_bottom,
+               LayoutUnit available_size) {
+    available_size_ = available_size;
+    is_y_axis_ = is_y_axis;
+    is_right_or_bottom_ = is_right_or_bottom;
+  }
+
+  absl::optional<LayoutUnit> EvaluateAnchor(
+      const AtomicString& anchor_name,
+      AnchorValue anchor_value) const override;
+  absl::optional<LayoutUnit> EvaluateAnchorSize(
+      const AtomicString& anchor_name,
+      AnchorSizeValue anchor_size_value) const override;
+
+ private:
+  const NGLogicalAnchorQuery& anchor_query_;
+  const WritingModeConverter& container_converter_;
+  WritingMode self_writing_mode_;
+  LayoutUnit available_size_;
+  bool is_y_axis_ = false;
+  bool is_right_or_bottom_ = false;
+  mutable bool has_anchor_functions_ = false;
 };
 
 }  // namespace blink

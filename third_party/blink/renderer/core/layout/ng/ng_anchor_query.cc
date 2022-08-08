@@ -184,4 +184,22 @@ void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_references_);
 }
 
+absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
+    const AtomicString& anchor_name,
+    AnchorValue anchor_value) const {
+  has_anchor_functions_ = true;
+  return anchor_query_.EvaluateAnchor(anchor_name, anchor_value,
+                                      available_size_, container_converter_,
+                                      is_y_axis_, is_right_or_bottom_);
+}
+
+absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
+    const AtomicString& anchor_name,
+    AnchorSizeValue anchor_size_value) const {
+  has_anchor_functions_ = true;
+  return anchor_query_.EvaluateSize(anchor_name, anchor_size_value,
+                                    container_converter_.GetWritingMode(),
+                                    self_writing_mode_);
+}
+
 }  // namespace blink
