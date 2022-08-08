@@ -53,6 +53,11 @@ public class SyncConsentFirstRunFragment
     }
 
     @Override
+    protected boolean showTangibleSyncConsentView() {
+        return false;
+    }
+
+    @Override
     protected void onSyncRefused() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
                 && mIsChild) {

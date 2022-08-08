@@ -98,7 +98,8 @@ public abstract class SyncConsentFragmentBase
     private final AccountManagerFacade mAccountManagerFacade;
     protected boolean mIsChild;
 
-    private SigninView mView;
+    private SigninView mSigninView;
+    private SyncConsentView mSyncConsentView;
     private ConsentTextTracker mConsentTextTracker;
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
@@ -182,6 +183,9 @@ public abstract class SyncConsentFragmentBase
         mProfileDataCacheObserver = this::updateProfileData;
         mCanUseGooglePlayServices = true;
     }
+
+    /** Returns whether tangible sync consent view should be shown. */
+    protected abstract boolean showTangibleSyncConsentView();
 
     /** The sync consent was refused. */
     protected abstract void onSyncRefused();
@@ -310,32 +314,11 @@ public abstract class SyncConsentFragmentBase
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
-
-        mView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
-
-        mView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
-        mView.getAcceptButton().setVisibility(View.GONE);
-        mView.getMoreButton().setVisibility(View.VISIBLE);
-        mView.getMoreButton().setOnClickListener(view -> {
-            mView.getScrollView().smoothScrollBy(0, mView.getScrollView().getHeight());
-            // TODO(https://crbug.com/821127): Revise this user action.
-            RecordUserAction.record("Signin_MoreButton_Shown");
-        });
-        mView.getScrollView().setScrolledToBottomObserver(this::showAcceptButton);
-        mView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
-
-        final Drawable endImageViewDrawable;
-        if (mIsChild) {
-            endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
-                mView.getRefuseButton().setVisibility(View.GONE);
-                mView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
-            }
+        if (showTangibleSyncConsentView()) {
+            createSyncConsentView(inflater, container);
         } else {
-            endImageViewDrawable = SigninView.getExpandArrowDrawable(getContext());
+            createSigninView(inflater, container);
         }
-        mView.getAccountPickerEndImageView().setImageDrawable(endImageViewDrawable);
 
         updateConsentText();
         final CoreAccountInfo primaryAccount =
@@ -347,14 +330,64 @@ public abstract class SyncConsentFragmentBase
         if (mIsSignedInWithoutSync) {
             mSelectedAccountName = primaryAccount.getEmail();
         }
-        setHasAccounts(true);
 
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
         if (mSelectedAccountName != null) {
             updateProfileData(mSelectedAccountName);
         }
-        return mView;
+        return mSyncConsentView != null ? mSyncConsentView : mSigninView;
+    }
+
+    private void createSyncConsentView(LayoutInflater inflater, ViewGroup container) {
+        mSyncConsentView =
+                (SyncConsentView) inflater.inflate(R.layout.sync_consent_view, container, false);
+
+        mSyncConsentView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
+        mSyncConsentView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
+        mSyncConsentView.getAcceptButton().setVisibility(View.GONE);
+        mSyncConsentView.getMoreButton().setVisibility(View.VISIBLE);
+        mSyncConsentView.getMoreButton().setOnClickListener(view -> {
+            mSyncConsentView.getScrollView().smoothScrollBy(
+                    0, mSigninView.getScrollView().getHeight());
+            // TODO(https://crbug.com/821127): Revise this user action.
+            RecordUserAction.record("Signin_MoreButton_Shown");
+        });
+        mSyncConsentView.getScrollView().setScrolledToBottomObserver(this::showAcceptButton);
+        mSyncConsentView.getDetailsDescriptionView().setMovementMethod(
+                LinkMovementMethod.getInstance());
+
+        updateSigninDetailsDescription(true);
+    }
+
+    private void createSigninView(LayoutInflater inflater, ViewGroup container) {
+        mSigninView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
+
+        mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
+        mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
+        mSigninView.getAcceptButton().setVisibility(View.GONE);
+        mSigninView.getMoreButton().setVisibility(View.VISIBLE);
+        mSigninView.getMoreButton().setOnClickListener(view -> {
+            mSigninView.getScrollView().smoothScrollBy(0, mSigninView.getScrollView().getHeight());
+            // TODO(https://crbug.com/821127): Revise this user action.
+            RecordUserAction.record("Signin_MoreButton_Shown");
+        });
+        mSigninView.getScrollView().setScrolledToBottomObserver(this::showAcceptButton);
+        mSigninView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
+
+        final Drawable endImageViewDrawable;
+        if (mIsChild) {
+            endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+                mSigninView.getRefuseButton().setVisibility(View.GONE);
+                mSigninView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
+            }
+        } else {
+            endImageViewDrawable = SigninView.getExpandArrowDrawable(getContext());
+        }
+        mSigninView.getAccountPickerEndImageView().setImageDrawable(endImageViewDrawable);
+
+        setHasAccounts(true);
     }
 
     @Override
@@ -363,7 +396,11 @@ public abstract class SyncConsentFragmentBase
         boolean cancelable = !mIsChild;
         mCanUseGooglePlayServices = ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
-        mView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
+        if (mSyncConsentView != null) {
+            mSyncConsentView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
+        } else {
+            mSigninView.getAcceptButton().setEnabled(mCanUseGooglePlayServices);
+        }
     }
 
     /**
@@ -394,17 +431,20 @@ public abstract class SyncConsentFragmentBase
      * becomes "Add account" button in this case.
      */
     private void setHasAccounts(boolean hasAccounts) {
+        assert mSigninView != null;
+
         if (hasAccounts) {
             final boolean hideAccountPicker = mIsSignedInWithoutSync
                     || (FREMobileIdentityConsistencyFieldTrial.isEnabled() && mIsChild);
-            mView.getAccountPickerView().setVisibility(
+            mSigninView.getAccountPickerView().setVisibility(
                     hideAccountPicker ? View.GONE : View.VISIBLE);
-            mConsentTextTracker.setText(mView.getAcceptButton(), R.string.signin_accept_button);
-            mView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
+            mConsentTextTracker.setText(
+                    mSigninView.getAcceptButton(), R.string.signin_accept_button);
+            mSigninView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
         } else {
-            mView.getAccountPickerView().setVisibility(View.GONE);
-            mConsentTextTracker.setText(mView.getAcceptButton(), R.string.signin_add_account);
-            mView.getAcceptButton().setOnClickListener(this::onAddAccountButtonClicked);
+            mSigninView.getAccountPickerView().setVisibility(View.GONE);
+            mConsentTextTracker.setText(mSigninView.getAcceptButton(), R.string.signin_add_account);
+            mSigninView.getAcceptButton().setOnClickListener(this::onAddAccountButtonClicked);
         }
 
         // Show "Settings" link in description only if there are accounts on the device.
@@ -417,26 +457,58 @@ public abstract class SyncConsentFragmentBase
                 : null;
         final SpanApplier.SpanInfo spanInfo =
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);
-        mConsentTextTracker.setText(mView.getDetailsDescriptionView(),
-                R.string.signin_details_description,
-                input -> SpanApplier.applySpans(input.toString(), spanInfo));
+        if (mSyncConsentView != null) {
+            mConsentTextTracker.setText(mSyncConsentView.getDetailsDescriptionView(),
+                    R.string.sync_consent_details_description,
+                    input -> SpanApplier.applySpans(input.toString(), spanInfo));
+        } else {
+            mConsentTextTracker.setText(mSigninView.getDetailsDescriptionView(),
+                    R.string.signin_details_description,
+                    input -> SpanApplier.applySpans(input.toString(), spanInfo));
+        }
     }
 
     /** Sets texts for immutable elements. Accept button text is set by {@link #setHasAccounts}. */
     private void updateConsentText() {
-        mConsentTextTracker.setText(mView.getTitleView(), R.string.signin_title);
-
-        mConsentTextTracker.setText(mView.getSyncTitleView(), R.string.signin_sync_title);
-        mConsentTextTracker.setText(
-                mView.getSyncDescriptionView(), R.string.signin_sync_description);
-
         final @StringRes int refuseButtonTextId =
                 mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
                         || mSigninAccessPoint == SigninAccessPoint.START_PAGE
                 ? R.string.no_thanks
                 : R.string.cancel;
-        mConsentTextTracker.setText(mView.getRefuseButton(), refuseButtonTextId);
-        mConsentTextTracker.setText(mView.getMoreButton(), R.string.more);
+        if (mSyncConsentView != null) {
+            updateSyncConsentViewText(refuseButtonTextId);
+        } else {
+            updateSigninViewText(refuseButtonTextId);
+        }
+    }
+
+    private void updateSyncConsentViewText(@StringRes int refuseButtonTextId) {
+        mConsentTextTracker.setText(mSyncConsentView.getTitleView(), R.string.sync_consent_title);
+        mConsentTextTracker.setText(
+                mSyncConsentView.getSubtitleView(), R.string.sync_consent_subtitle);
+
+        mConsentTextTracker.setText(
+                mSyncConsentView.getBookmarksRow(), R.string.sync_consent_bookmarks_text);
+        mConsentTextTracker.setText(
+                mSyncConsentView.getAutofillRow(), R.string.sync_consent_autofill_text);
+        mConsentTextTracker.setText(
+                mSyncConsentView.getHistoryRow(), R.string.sync_consent_history_text);
+
+        mConsentTextTracker.setText(mSyncConsentView.getRefuseButton(), refuseButtonTextId);
+        mConsentTextTracker.setText(
+                mSyncConsentView.getAcceptButton(), R.string.signin_accept_button);
+        mConsentTextTracker.setText(mSyncConsentView.getMoreButton(), R.string.more);
+    }
+
+    private void updateSigninViewText(@StringRes int refuseButtonTextId) {
+        mConsentTextTracker.setText(mSigninView.getTitleView(), R.string.signin_title);
+
+        mConsentTextTracker.setText(mSigninView.getSyncTitleView(), R.string.signin_sync_title);
+        mConsentTextTracker.setText(
+                mSigninView.getSyncDescriptionView(), R.string.signin_sync_description);
+
+        mConsentTextTracker.setText(mSigninView.getRefuseButton(), refuseButtonTextId);
+        mConsentTextTracker.setText(mSigninView.getMoreButton(), R.string.more);
     }
 
     private void updateProfileData(String accountEmail) {
@@ -445,26 +517,37 @@ public abstract class SyncConsentFragmentBase
         }
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mSelectedAccountName);
-        mView.getAccountImageView().setImageDrawable(profileData.getImage());
+        if (mSyncConsentView != null) {
+            mSyncConsentView.getAccountImageView().setImageDrawable(profileData.getImage());
+            return;
+        }
+
+        mSigninView.getAccountImageView().setImageDrawable(profileData.getImage());
 
         final String fullName = profileData.getFullName();
         if (!TextUtils.isEmpty(fullName)) {
-            mConsentTextTracker.setTextNonRecordable(mView.getAccountTextPrimary(), fullName);
+            mConsentTextTracker.setTextNonRecordable(mSigninView.getAccountTextPrimary(), fullName);
             mConsentTextTracker.setTextNonRecordable(
-                    mView.getAccountTextSecondary(), profileData.getAccountEmail());
-            mView.getAccountTextSecondary().setVisibility(View.VISIBLE);
+                    mSigninView.getAccountTextSecondary(), profileData.getAccountEmail());
+            mSigninView.getAccountTextSecondary().setVisibility(View.VISIBLE);
         } else {
             // Full name is not available, show the email in the primary TextView.
             mConsentTextTracker.setTextNonRecordable(
-                    mView.getAccountTextPrimary(), profileData.getAccountEmail());
-            mView.getAccountTextSecondary().setVisibility(View.GONE);
+                    mSigninView.getAccountTextPrimary(), profileData.getAccountEmail());
+            mSigninView.getAccountTextSecondary().setVisibility(View.GONE);
         }
     }
 
     private void showAcceptButton() {
-        mView.getAcceptButton().setVisibility(View.VISIBLE);
-        mView.getMoreButton().setVisibility(View.GONE);
-        mView.getScrollView().setScrolledToBottomObserver(null);
+        if (mSyncConsentView != null) {
+            mSyncConsentView.getAcceptButton().setVisibility(View.VISIBLE);
+            mSyncConsentView.getMoreButton().setVisibility(View.GONE);
+            mSyncConsentView.getScrollView().setScrolledToBottomObserver(null);
+        } else {
+            mSigninView.getAcceptButton().setVisibility(View.VISIBLE);
+            mSigninView.getMoreButton().setVisibility(View.GONE);
+            mSigninView.getScrollView().setScrolledToBottomObserver(null);
+        }
     }
 
     private void onAccountPickerClicked() {
@@ -515,7 +598,8 @@ public abstract class SyncConsentFragmentBase
                 .then(accountInfo -> {
                     assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
                     mConsentTextTracker.recordConsent(accountInfo.getId(),
-                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
+                            ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView,
+                            mSyncConsentView != null ? mSyncConsentView : mSigninView);
                     if (isResumed()) {
                         runStateMachineAndSignin(settingsClicked);
                     }
@@ -603,7 +687,7 @@ public abstract class SyncConsentFragmentBase
         updateAccounts(
                 AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
 
-        mView.startAnimations();
+        if (mSigninView != null) mSigninView.startAnimations();
     }
 
     @Override
@@ -611,7 +695,7 @@ public abstract class SyncConsentFragmentBase
         super.onPause();
         mAccountManagerFacade.removeObserver(this);
 
-        mView.stopAnimations();
+        if (mSigninView != null) mSigninView.stopAnimations();
     }
 
     private void selectAccount(String accountName) {
@@ -623,6 +707,15 @@ public abstract class SyncConsentFragmentBase
         if (!isResumed() || !mCanUseGooglePlayServices) {
             return;
         }
+        if (mSyncConsentView != null) {
+            final boolean selectedAccountExists = mSelectedAccountName != null
+                    && AccountUtils.findAccountByName(accounts, mSelectedAccountName) != null;
+            if (!selectedAccountExists) {
+                getActivity().finish();
+            }
+            return;
+        }
+
         if (accounts.isEmpty()) {
             mSelectedAccountName = null;
             setHasAccounts(false);
