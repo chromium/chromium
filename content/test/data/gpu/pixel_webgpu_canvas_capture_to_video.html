@@ -11,17 +11,19 @@
   <script type="text/javascript" src="pixel_webgpu_util.js"></script>
   <script type="text/javascript">
     var g_swapsBeforeAck = 15;
+    var g_videoFrameReceived = false;
 
     async function main() {
-      loadWebrtc();
-
       const gpuCanvas = document.getElementById('canvas_gpu');
-      const [device, swapChain] = await webGpuUtils.init(gpuCanvas);
+      const [device, swapChain] = await webGpuUtils.init(gpuCanvas, /*has_alpha=*/false);
       if (!device || !swapChain) {
         console.error("Failed to initialize WebGPU - skipping test");
         domAutomationController.send("FAILURE");
         return;
       }
+
+      const video = document.getElementById('video_player');
+      video.srcObject = gpuCanvas.captureStream();
 
       function render() {
         const gpuContext = gpuCanvas.getContext('webgpu');
@@ -32,100 +34,31 @@
         waitForFinish();
       }
 
+      function videoFrameReceived() {
+        g_videoFrameReceived = true;
+      }
+
       function waitForFinish() {
         if (g_swapsBeforeAck == 0) {
           domAutomationController.send("SUCCESS");
         } else {
-          g_swapsBeforeAck--;
+          // only start count down when a video frame has been received
+          if (g_videoFrameReceived)
+            g_swapsBeforeAck--;
           window.requestAnimationFrame(render);
         }
       }
 
+      // Start rendering loop
       window.requestAnimationFrame(render);
-    }
 
-    function loadWebrtc() {
-      const gpuCanvas = document.getElementById('canvas_gpu');
-      const video = document.getElementById('video_player');
-
-      const stream = gpuCanvas.captureStream();
-
-      const servers = null;
-      var pc1 = new RTCPeerConnection(servers);
-      pc1.onicecandidate = e => onIceCandidate(pc1, e);
-      var pc2 = new RTCPeerConnection(servers);
-      pc2.onicecandidate = e => onIceCandidate(pc2, e);
-
-      pc1.oniceconnectionstatechange = e => onIceStateChange(pc1, e);
-      pc2.oniceconnectionstatechange = e => onIceStateChange(pc2, e);
-      pc2.ontrack = gotRemoteStream;
-
-      stream.getTracks().forEach(
-        track => {
-          pc1.addTrack(
-            track,
-            stream
-          );
-        }
-      );
-
-      pc1.createOffer(onCreateOfferSuccess, onCreateSessionDescriptionError);
-
-      function onCreateSessionDescriptionError(error) {
-        console.error(`Failed to create session description: ${error.toString()}`);
+      // register a callback to be invoked when a video frame has been received.
+      if (video.requestVideoFrameCallback) {
+        video.requestVideoFrameCallback(videoFrameReceived);
       }
-
-      function onCreateOfferSuccess(desc) {
-        pc1.setLocalDescription(desc, () => onSetLocalSuccess(pc1), onSetSessionDescriptionError);
-        pc2.setRemoteDescription(desc, () => onSetRemoteSuccess(pc2), onSetSessionDescriptionError);
-        pc2.createAnswer(onCreateAnswerSuccess, onCreateSessionDescriptionError);
-      }
-
-      function onSetLocalSuccess(pc) {
-      }
-
-      function onSetRemoteSuccess(pc) {
-      }
-
-      function onSetSessionDescriptionError(error) {
-        console.error(`Failed to set session description: ${error.toString()}`);
-      }
-
-      function gotRemoteStream(e) {
-        if (video.srcObject !== e.streams[0]) {
-          video.srcObject = e.streams[0];
-        }
-      }
-
-      function onCreateAnswerSuccess(desc) {
-        pc2.setLocalDescription(desc, () => onSetLocalSuccess(pc2), onSetSessionDescriptionError);
-        pc1.setRemoteDescription(desc, () => onSetRemoteSuccess(pc1), onSetSessionDescriptionError);
-      }
-
-      function onIceCandidate(pc, event) {
-        getOtherPc(pc).addIceCandidate(event.candidate)
-          .then(
-            () => onAddIceCandidateSuccess(pc),
-            err => onAddIceCandidateError(pc, err)
-          );
-      }
-
-      function onAddIceCandidateSuccess(pc) {
-      }
-
-      function onAddIceCandidateError(pc, error) {
-        console.error(`${getName(pc)} failed to add ICE Candidate: ${error.toString()}`);
-      }
-
-      function onIceStateChange(pc, event) {
-      }
-
-      function getName(pc) {
-        return (pc === pc1) ? 'pc1' : 'pc2';
-      }
-
-      function getOtherPc(pc) {
-        return (pc === pc1) ? pc2 : pc1;
+      else {
+        // requestVideoFrameCallback not available
+        g_videoFrameReceived = true;
       }
     }
   </script>

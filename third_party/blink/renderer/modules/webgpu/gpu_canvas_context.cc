@@ -181,6 +181,17 @@ V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
 
+SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
+  if (!swap_buffers_)
+    return CanvasRenderingContext::CanvasRenderingContextSkColorInfo();
+  return SkColorInfo(viz::ResourceFormatToClosestSkColorType(
+                         /*gpu_compositing=*/true, swap_buffers_->Format()),
+                     alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
+                         ? kOpaque_SkAlphaType
+                         : kPremul_SkAlphaType,
+                     SkColorSpace::MakeSRGB());
+}
+
 void GPUCanvasContext::Stop() {
   UnconfigureInternal();
   stopped_ = true;
