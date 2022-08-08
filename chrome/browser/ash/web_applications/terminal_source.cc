@@ -235,3 +235,13 @@ std::string TerminalSource::GetContentSecurityPolicy(
       return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
 }
+
+// Required for wasm SharedArrayBuffer.
+std::string TerminalSource::GetCrossOriginOpenerPolicy() {
+  return "same-origin";
+}
+
+// Required for wasm SharedArrayBuffer.
+std::string TerminalSource::GetCrossOriginEmbedderPolicy() {
+  return "require-corp";
+}

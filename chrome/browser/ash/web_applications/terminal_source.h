@@ -46,6 +46,8 @@ class TerminalSource : public content::URLDataSource {
   const ui::TemplateReplacements* GetReplacements() override;
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override;
+  std::string GetCrossOriginOpenerPolicy() override;
+  std::string GetCrossOriginEmbedderPolicy() override;
 
   Profile* profile_;
   std::string source_;
