@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.tab;
 
+import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -12,6 +14,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -27,6 +30,8 @@ public class RequestDesktopUtils {
             "default_on_display_size_threshold_inches";
     private static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
             12.0;
+    private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
+    private static final String SITE_WILDCARD = "*";
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -81,7 +86,8 @@ public class RequestDesktopUtils {
     }
 
     /**
-     * Set or remove a site exception with URL for {@link ContentSettingsType.REQUEST_DESKTOP_SITE}.
+     * Set or remove a domain level exception with URL for {@link
+     * ContentSettingsType.REQUEST_DESKTOP_SITE}. Clear the subdomain level exception if any.
      * @param browserContextHandle Target browser context whose content settings needs to be
      *         updated.
      * @param url  {@link GURL} for the site that changes in desktop user agent.
@@ -89,6 +95,20 @@ public class RequestDesktopUtils {
      */
     public static void setRequestDesktopSiteContentSettingsForUrl(
             BrowserContextHandle browserContextHandle, GURL url, boolean useDesktopUserAgent) {
+        String domainAndRegistry =
+                UrlUtilities.getDomainAndRegistry(url.getSpec(), /*includePrivateRegistries*/ true);
+        // Use host only (no scheme/port/path) for ContentSettings to ensure consistency.
+        String hostPattern;
+        if (TextUtils.isEmpty(domainAndRegistry)) {
+            // Use host directly if fails to extract domain from url (e.g. ip address).
+            hostPattern = url.getHost();
+        } else {
+            hostPattern = ANY_SUBDOMAIN_PATTERN + domainAndRegistry;
+            // Clear subdomain level exception if any.
+            WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
+                    ContentSettingsType.REQUEST_DESKTOP_SITE, url.getHost(),
+                    /*secondaryPattern*/ SITE_WILDCARD, ContentSettingValues.DEFAULT);
+        }
         @ContentSettingValues
         int defaultValue = WebsitePreferenceBridge.getDefaultContentSetting(
                 browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE);
@@ -106,8 +126,11 @@ public class RequestDesktopUtils {
             contentSettingValue = blockDesktopGlobally ? ContentSettingValues.DEFAULT
                                                        : ContentSettingValues.BLOCK;
         }
-        WebsitePreferenceBridge.setContentSettingDefaultScope(browserContextHandle,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, url, url, contentSettingValue);
+
+        // Set or remove a domain level exception.
+        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, hostPattern,
+                /*secondaryPattern*/ SITE_WILDCARD, contentSettingValue);
     }
 
     /**
