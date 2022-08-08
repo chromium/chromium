@@ -178,15 +178,14 @@ class TestImporter(object):
             _log.info('Only manifest or expectations was updated; skipping the import.')
             return 0
 
-        with self._expectations_updater.prepare_smoke_tests(self.chromium_git):
-            self._commit_changes(commit_message)
-            _log.info('Changes imported and committed.')
+        self._commit_changes(commit_message)
+        _log.info('Changes imported and committed.')
 
-            if not options.auto_upload and not options.auto_update:
-                return 0
+        if not options.auto_upload and not options.auto_update:
+            return 0
 
-            self._upload_cl()
-            _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
+        self._upload_cl()
+        _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
         if not self.update_expectations_for_cl():
             return 1

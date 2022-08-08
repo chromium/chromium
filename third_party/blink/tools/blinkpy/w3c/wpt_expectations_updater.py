@@ -1000,47 +1000,6 @@ class WPTExpectationsUpdater(object):
                                                  wont_fix_file_content)
         return line_dict
 
-    @contextlib.contextmanager
-    def prepare_smoke_tests(self, chromium_git):
-        """List test cases that should be run by the smoke test builder
-
-        Add new and modified test cases to WPT_SMOKE_TESTS_FILE,
-        builder android-weblayer-pie-x86-wpt-smoketest will run those
-        tests. wpt-importer will generate initial expectations for weblayer
-        based on the result. Save and restore WPT_SMOKE_TESTS_FILE as
-        necessary.
-        """
-        _log.info('Backup file WPTSmokeTestCases.')
-        temp_dir = tempfile.gettempdir()
-        base_path = os.path.basename(WPT_SMOKE_TESTS_FILE)
-        self._saved_test_cases_file = os.path.join(temp_dir, base_path)
-        shutil.copyfile(WPT_SMOKE_TESTS_FILE, self._saved_test_cases_file)
-        tests = (self._list_add_files()
-                 + self._list_modified_files())
-
-        manifest_path = os.path.join(
-            self.finder.web_tests_dir(), "external", BASE_MANIFEST_NAME)
-        manifest = WPTManifest(self.host, manifest_path)
-        with open(WPT_SMOKE_TESTS_FILE, 'w') as out_file:
-            _log.info('Test cases to run on smoke test builder:')
-            prelen = len('external/wpt/')
-            for test in sorted(tests):
-                if test.startswith('external/wpt/') \
-                        and manifest.is_test_file(test[prelen:]):
-                    # path should be the relative path of the test case to
-                    # out/Release dir, as that will be same as that on swarming
-                    # infra. We use path instead of the test case name, because
-                    # that is needed to correctly run cases in js files
-                    path = '../../third_party/blink/web_tests/' + test
-                    _log.info('  ' + path)
-                    out_file.write(path + '\n')
-        try:
-            yield
-        finally:
-            _log.info('Restore file WPTSmokeTestCases.')
-            shutil.copyfile(self._saved_test_cases_file, WPT_SMOKE_TESTS_FILE)
-            chromium_git.commit_locally_with_message('Restore WPTSmokeTestCases')
-
     def skip_slow_timeout_tests(self, port):
         """Skip any Slow and Timeout tests found in TestExpectations.
         """

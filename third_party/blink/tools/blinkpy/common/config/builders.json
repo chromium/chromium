@@ -254,17 +254,6 @@
             "Android", "android_weblayer", "Release"
         ]
     },
-    "android-weblayer-pie-x86-wpt-smoketest": {
-        "port_name": "android-android-pie",
-        "main": "chromium.android.fyi",
-        "specifiers": [
-            "Android", "android_weblayer", "Release"
-        ],
-        "steps": {
-            "weblayer_shell_wpt (with patch, experimental)": {}
-        },
-        "is_try_builder": true
-    },
     "android-chrome-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
         "main": "chromium.android.fyi",
