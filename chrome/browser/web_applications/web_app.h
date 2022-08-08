@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -301,6 +302,10 @@ class WebApp {
     return always_show_toolbar_in_fullscreen_;
   }
 
+  const absl::optional<proto::WebAppOsIntegrationState>&
+  current_os_integration_states() const {
+    return current_os_integration_states_;
+  }
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -385,6 +390,9 @@ class WebApp {
   void SetWebAppManagementExternalConfigMap(
       ExternalConfigMap management_to_external_config_map);
   void SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip);
+  void SetCurrentOsIntegrationStates(
+      absl::optional<proto::WebAppOsIntegrationState>
+          current_os_integration_states);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -505,6 +513,8 @@ class WebApp {
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen_ = true;
 
+  absl::optional<proto::WebAppOsIntegrationState>
+      current_os_integration_states_ = absl::nullopt;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

@@ -61,6 +61,7 @@ source_set("web_applications") {
     "manifest_update_task.h",
     "os_integration/os_integration_manager.cc",
     "os_integration/os_integration_manager.h",
+    "os_integration/os_integration_sub_manager.h",
     "os_integration/url_handler_manager.cc",
     "os_integration/url_handler_manager.h",
     "os_integration/web_app_file_handler_manager.cc",

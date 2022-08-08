@@ -287,6 +287,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "MONOCHROME": [ 138, 107 ],
       "index": 2
    } ],
+   "current_os_integration_states": null,
    "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [ {
