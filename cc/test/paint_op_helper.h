@@ -196,8 +196,7 @@ class PaintOpHelper {
         const auto* op = static_cast<const SaveLayerAlphaOp*>(base_op);
         str << "SaveLayerAlphaOp(bounds="
             << PaintOpHelper::SkiaTypeToString(op->bounds)
-            << ", alpha=" << static_cast<uint32_t>(op->alpha)
-            << ")";
+            << ", alpha=" << static_cast<uint32_t>(op->alpha * 255) << ")";
         break;
       }
       case PaintOpType::Scale: {

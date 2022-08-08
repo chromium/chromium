@@ -95,7 +95,7 @@ int RecordPaintCanvas::saveLayer(const SkRect* bounds,
 }
 
 int RecordPaintCanvas::saveLayerAlpha(const SkRect* bounds, uint8_t alpha) {
-  push<SaveLayerAlphaOp>(bounds, alpha);
+  push<SaveLayerAlphaOp>(bounds, static_cast<float>(alpha / 255.0f));
   return GetCanvas()->saveLayerAlpha(bounds, alpha);
 }
 

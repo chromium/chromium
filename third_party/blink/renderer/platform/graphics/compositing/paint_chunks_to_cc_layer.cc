@@ -551,7 +551,8 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
       flags.setAlpha(alpha);
       save_layer_id = cc_list_.push<cc::SaveLayerOp>(nullptr, &flags);
     } else {
-      save_layer_id = cc_list_.push<cc::SaveLayerAlphaOp>(nullptr, alpha);
+      save_layer_id = cc_list_.push<cc::SaveLayerAlphaOp>(
+          nullptr, static_cast<float>(alpha / 255.0f));
     }
   } else {
     // Handle filter effect.
