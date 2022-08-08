@@ -189,7 +189,10 @@ class RTCVideoEncoderTest
     DVLOG(3) << __func__;
     config_ = config;
     client_ = client;
-    client_->RequireBitstreamBuffers(0, config.input_visible_size,
+
+    constexpr size_t kNumInputBuffers = 3;
+    client_->RequireBitstreamBuffers(kNumInputBuffers,
+                                     config.input_visible_size,
                                      config.input_visible_size.GetArea());
     return true;
   }
