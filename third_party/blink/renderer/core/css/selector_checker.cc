@@ -1661,7 +1661,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // elements we have a single flag for tracking whether an element may
       // match _any_ ::highlight() element (kPseudoIdHighlight).
       if (!pseudo_argument_ || pseudo_argument_ == selector.Argument()) {
-        result.custom_highlight_name = selector.Argument().Impl();
+        result.custom_highlight_name = selector.Argument();
         return true;
       }
       return false;

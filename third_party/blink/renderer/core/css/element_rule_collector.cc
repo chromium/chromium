@@ -351,13 +351,14 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       rule_set->ContainerQueryIntervals());
   Seeker<StyleScope> scope_seeker(rule_set->ScopeIntervals());
 
+  unsigned rejected = 0;
   unsigned fast_rejected = 0;
   unsigned matched = 0;
   SelectorStatisticsCollector selector_statistics_collector;
   if (perf_trace_enabled)
     selector_statistics_collector.ReserveCapacity(rules->size());
 
-  for (const RuleData& rule_data : *rules) {
+  for (const auto& rule_data : *rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
@@ -381,6 +382,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     if (UNLIKELY(part_request && part_request->for_shadow_pseudo)) {
       if (!selector.IsAllowedAfterPart()) {
         DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoPart);
+        rejected++;
         continue;
       }
       DCHECK_EQ(selector.Relation(), CSSSelector::kUAShadow);
@@ -394,10 +396,12 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     DCHECK(!context.is_inside_visited_link ||
            inside_link_ != EInsideLink::kNotInsideLink);
     if (!checker.Match(context, result)) {
+      rejected++;
       continue;
     }
     if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
         pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
+      rejected++;
       continue;
     }
     const ContainerQuery* container_query =
@@ -417,6 +421,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
           result.dynamic_pseudo == kPseudoIdNone) {
         if (!EvaluateAndAddContainerQueries(*container_query,
                                             style_recalc_context_, result_)) {
+          rejected++;
           if (AffectsAnimations(rule_data))
             result_.SetConditionallyAffectsAnimations();
           continue;
@@ -442,7 +447,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   if (!style_engine.Stats())
     return;
 
-  unsigned rejected = rules->size() - fast_rejected - matched;
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_rejected, rejected);
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_fast_rejected,
                                 fast_rejected);
@@ -877,8 +881,7 @@ void ElementRuleCollector::DidMatchRule(
 
       if (dynamic_pseudo == kPseudoIdHighlight) {
         DCHECK(result.custom_highlight_name);
-        style_->SetHasCustomHighlightName(
-            AtomicString(result.custom_highlight_name));
+        style_->SetHasCustomHighlightName(result.custom_highlight_name);
       }
     } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {
       style_->SetFirstLineDependsOnSizeContainerQueries(true);
