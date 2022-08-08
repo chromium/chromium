@@ -37,6 +37,12 @@ BASE_EXPORT double RandDouble();
 // the range [0, 1). Thread-safe.
 BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
 
+#if BUILDFLAG(IS_ANDROID)
+// Sets the implementation of RandBytes according to the corresponding
+// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
+BASE_EXPORT void ConfigureRandBytesFieldTrial();
+#endif
+
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //
 // Although implementations are required to use a cryptographically secure
