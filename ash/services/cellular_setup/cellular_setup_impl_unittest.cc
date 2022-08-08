@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/services/cellular_setup/cellular_setup_base.h"
-#include "ash/services/cellular_setup/cellular_setup_impl.h"
 #include "ash/services/cellular_setup/fake_ota_activator.h"
 #include "ash/services/cellular_setup/ota_activator_impl.h"
 #include "ash/services/cellular_setup/public/cpp/fake_activation_delegate.h"

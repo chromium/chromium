@@ -10,7 +10,6 @@
 #include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"

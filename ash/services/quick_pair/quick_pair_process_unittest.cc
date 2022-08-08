@@ -12,7 +12,6 @@
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
-#include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/callback_helpers.h"

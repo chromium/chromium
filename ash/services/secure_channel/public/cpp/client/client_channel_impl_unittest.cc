@@ -9,7 +9,6 @@
 #include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/fake_channel.h"
 #include "ash/services/secure_channel/fake_secure_channel.h"
-#include "ash/services/secure_channel/public/cpp/client/client_channel_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel_observer.h"
