@@ -51,6 +51,17 @@ void TtsAsh::RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
   if (from_primary_profile)
     primary_profile_browser_context_id_ = browser_context_id;
 
+  // Note: This is a temporary workaround for enabling Lacros tts support in ash
+  // when running Lacros tts extension api lacros browser tests.
+  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature flag
+  // in Ash before running lacros browser tests once the Lacros testing
+  // infrasture adds that support.
+  if (!tts_crosapi_util::ShouldEnableLacrosTtsSupport()) {
+    // This code path is only called when running lacros browser tests.
+    content::TtsController::GetInstance()->SetRemoteTtsEngineDelegate(
+        CrosapiTtsEngineDelegateAsh::GetInstance());
+  }
+
   mojo::Remote<mojom::TtsClient> remote(std::move(client));
   remote.set_disconnect_handler(base::BindOnce(&TtsAsh::TtsClientDisconnected,
                                                weak_ptr_factory_.GetWeakPtr(),
@@ -60,9 +71,11 @@ void TtsAsh::RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
 
 void TtsAsh::VoicesChanged(const base::UnguessableToken& browser_context_id,
                            std::vector<mojom::TtsVoicePtr> lacros_voices) {
+  if (!HasTtsClient())
+    return;
+
   // TODO(crbug.com/1251979): Support secondary profile.
-  DCHECK(HasTtsClient() &&
-         browser_context_id == primary_profile_browser_context_id_);
+  DCHECK(browser_context_id == primary_profile_browser_context_id_);
 
   std::vector<content::VoiceData> voices;
   for (const auto& mojo_voice : lacros_voices)
