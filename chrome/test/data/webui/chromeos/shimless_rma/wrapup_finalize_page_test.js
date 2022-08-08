@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {FinalizationError, FinalizationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {FinalizationError, FinalizationStatus, RmadErrorCode} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {WrapupFinalizePage} from 'chrome://shimless-rma/wrapup_finalize_page.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -82,126 +82,56 @@ export function wrapupFinalizePageTest() {
     assertEquals(1, callCount);
   });
 
-  test('FinalizationFailedBlockingRetry', async () => {
-    const resolver = new PromiseResolver();
+  test('AllErrorsTriggerFatalHardwareErrorEvent', async () => {
     await initializeFinalizePage();
 
-    const retryButton =
-        component.shadowRoot.querySelector('#retryFinalizationButton');
-    assertTrue(retryButton.hidden);
+    let hardwareErrorEventFired = false;
 
-    let callCount = 0;
-    service.retryFinalization = () => {
-      callCount++;
-      return resolver.promise;
-    };
-    service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedBlocking, 1.0, FinalizationError.kInternal,
-        0);
-    await flushTasks();
-
-    const hardwareWpDisabledDialog =
-        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
-    assertTrue(!!hardwareWpDisabledDialog);
-    assertFalse(hardwareWpDisabledDialog.open);
-
-    assertFalse(retryButton.hidden);
-    retryButton.click();
-
-    await flushTasks();
-    assertEquals(1, callCount);
-  });
-
-  test('FinalizationFailedNonBlockingRetry', async () => {
-    const resolver = new PromiseResolver();
-    await initializeFinalizePage();
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryFinalizationButton');
-    assertTrue(retryButton.hidden);
-
-    let callCount = 0;
-    service.retryFinalization = () => {
-      callCount++;
-      return resolver.promise;
-    };
-    service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedNonBlocking, 1.0, FinalizationError.kInternal,
-        0);
-    await flushTasks();
-
-    const hardwareWpDisabledDialog =
-        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
-    assertTrue(!!hardwareWpDisabledDialog);
-    assertFalse(hardwareWpDisabledDialog.open);
-
-    assertFalse(retryButton.hidden);
-    retryButton.click();
-
-    await flushTasks();
-    assertEquals(1, callCount);
-  });
-
-  test('FinalizationRetryButtonDisabled', async () => {
-    await initializeFinalizePage();
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryFinalizationButton');
-    assertFalse(retryButton.disabled);
-    component.allButtonsDisabled = true;
-    assertTrue(retryButton.disabled);
-  });
-
-  test('FinalizationFailedHardwareWpError', async () => {
-    const resolver = new PromiseResolver();
-    await initializeFinalizePage();
-
-    const hardwareWpDisabledDialog =
-        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
-    assertTrue(!!hardwareWpDisabledDialog);
-    assertFalse(hardwareWpDisabledDialog.open);
-
-    let callCount = 0;
-    service.retryFinalization = () => {
-      callCount++;
-      return resolver.promise;
+    const eventHandler = (event) => {
+      hardwareErrorEventFired = true;
+      assertEquals(RmadErrorCode.kFinalizationFailed, event.detail);
     };
 
+    component.addEventListener('fatal-hardware-error', eventHandler);
+
     service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedBlocking, 1.0,
+        FinalizationStatus.kFailedBlocking, 0.0,
         FinalizationError.kCannotEnableHardwareWp, 0);
     await flushTasks();
+    assertTrue(hardwareErrorEventFired);
 
-    assertTrue(hardwareWpDisabledDialog.open);
-
-    const tryAgainButton =
-        component.shadowRoot.querySelector('#tryAgainButton');
-    tryAgainButton.click();
-
-    assertFalse(hardwareWpDisabledDialog.open);
-    assertEquals(1, callCount);
-  });
-
-  test('FinalizationFailedSoftwareWpError', async () => {
-    const resolver = new PromiseResolver();
-    await initializeFinalizePage();
-
-    const hardwareWpDisabledDialog =
-        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
-    assertTrue(!!hardwareWpDisabledDialog);
-    assertFalse(hardwareWpDisabledDialog.open);
-
-    let callCount = 0;
-    service.retryFinalization = () => {
-      callCount++;
-      return resolver.promise;
-    };
-
+    hardwareErrorEventFired = false;
     service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedNonBlocking, 1.0,
+        FinalizationStatus.kFailedBlocking, 0.0,
         FinalizationError.kCannotEnableSoftwareWp, 0);
     await flushTasks();
+    assertTrue(hardwareErrorEventFired);
 
-    assertFalse(hardwareWpDisabledDialog.open);
+    hardwareErrorEventFired = false;
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedBlocking, 0.0, FinalizationError.kCr50, 0);
+    await flushTasks();
+    assertTrue(hardwareErrorEventFired);
+
+    hardwareErrorEventFired = false;
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedBlocking, 0.0, FinalizationError.kGbb, 0);
+    await flushTasks();
+    assertTrue(hardwareErrorEventFired);
+
+    hardwareErrorEventFired = false;
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedBlocking, 0.0, FinalizationError.kUnknown, 0);
+    await flushTasks();
+    assertTrue(hardwareErrorEventFired);
+
+    hardwareErrorEventFired = false;
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedBlocking, 0.0, FinalizationError.kInternal,
+        0);
+    await flushTasks();
+    assertTrue(hardwareErrorEventFired);
+
+    component.removeEventListener('fatal-hardware-error', eventHandler);
   });
 }

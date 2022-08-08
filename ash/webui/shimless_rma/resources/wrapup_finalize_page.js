@@ -10,15 +10,13 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
 const finalizationStatusTextKeys = {
   [FinalizationStatus.kInProgress]: 'finalizePageProgressText',
   [FinalizationStatus.kComplete]: 'finalizePageCompleteText',
-  [FinalizationStatus.kFailedBlocking]: 'finalizePageFailedBlockingText',
-  [FinalizationStatus.kFailedNonBlocking]: 'finalizePageFailedNonBlockingText',
 };
 
 /**
@@ -57,18 +55,6 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
         type: String,
         value: '',
       },
-
-      /** @protected {boolean} */
-      shouldShowSpinner_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @protected {boolean} */
-      shouldShowRetryButton_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -93,56 +79,22 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
    * @param {!FinalizationError} error
    */
   onFinalizationUpdated(status, progress, error) {
-    const isErrorStatus = status === FinalizationStatus.kFailedBlocking ||
-        status === FinalizationStatus.kFailedNonBlocking;
-    const isHardwareWpError =
-        isErrorStatus && error === FinalizationError.kCannotEnableHardwareWp;
-
-    this.finalizationMessage_ = this.i18n(
-        isHardwareWpError ? 'finalizePageProgressText' :
-                            finalizationStatusTextKeys[status]);
-
-    if (status === FinalizationStatus.kComplete) {
-      executeThenTransitionState(
-          this, () => this.shimlessRmaService_.finalizationComplete());
-      return;
-    }
-
-    this.shouldShowSpinner_ =
-        isHardwareWpError || status === FinalizationStatus.kInProgress;
-
-    if (isHardwareWpError) {
-      const dialog = /** @type {!CrDialogElement} */ (
-          this.shadowRoot.querySelector('#hardwareWpDisabledDialog'));
-      dialog.showModal();
+    if (status === FinalizationStatus.kFailedBlocking ||
+        status === FinalizationStatus.kFailedNonBlocking) {
+      this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
+        bubbles: true,
+        composed: true,
+        detail: RmadErrorCode.kFinalizationFailed,
+      }));
     } else {
-      // For other errors, continue using retry button to handle for now.
-      this.shouldShowRetryButton_ = isErrorStatus;
+      this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
+
+      if (status === FinalizationStatus.kComplete) {
+        executeThenTransitionState(
+            this, () => this.shimlessRmaService_.finalizationComplete());
+        return;
+      }
     }
-  }
-
-  /** @protected */
-  onRetryFinalizationButtonClicked_() {
-    if (!this.shouldShowRetryButton_) {
-      console.error('Finalization has not failed.');
-      return;
-    }
-
-    executeThenTransitionState(
-        this, () => this.shimlessRmaService_.retryFinalization());
-  }
-
-  /**
-   * Handles the try again button on hardwareWpDisabledDialog is clicked.
-   * @protected
-   */
-  onTryAgainButtonClick_() {
-    const dialog = /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#hardwareWpDisabledDialog'));
-    dialog.close();
-
-    executeThenTransitionState(
-        this, () => this.shimlessRmaService_.retryFinalization());
   }
 }
 

@@ -420,6 +420,24 @@ export class ShimlessRma extends ShimlessRmaBase {
       this.currentPage_.buttonNextLabelKey = e.detail;
       this.notifyPath('currentPage_.buttonNextLabelKey');
     };
+
+    /**
+     * The fatalHardwareErrorCallback_ callback is used by the finalization
+     * page and the provisioning page to tell the app that there is a fatal
+     * hardware error.
+     * @private {?Function}
+     */
+    this.fatalHardwareErrorCallback_ = (event) => {
+      const errorState = {
+        stateResult: {
+          state: State.kHardwareError,
+          canExit: false,
+          canGoBack: false,
+          error: event.detail,
+        },
+      };
+      this.showState_(errorState);
+    };
   }
 
   /** @override */
@@ -436,6 +454,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'enable-all-buttons', this.enableAllButtonsCallback_);
     window.addEventListener('click-exit-button', this.exitButtonCallback_);
     window.addEventListener('click-next-button', this.nextButtonCallback_);
+    window.addEventListener(
+        'fatal-hardware-error', this.fatalHardwareErrorCallback_);
   }
 
   /** @override */
@@ -452,6 +472,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'enable-all-buttons', this.enableAllButtonsCallback_);
     window.removeEventListener('click-exit-button', this.exitButtonCallback_);
     window.removeEventListener('click-next-button', this.nextButtonCallback_);
+    window.removeEventListener(
+        'fatal-hardware-error', this.fatalHardwareErrorCallback_);
   }
 
   /** @override */

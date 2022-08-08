@@ -7,35 +7,11 @@
     <div id="finalizationMessage" class="instructions">
       [[finalizationMessage_]]
     </div>
-    <div>
-      <cr-button id="retryFinalizationButton" class="cancel-button"
-          on-click="onRetryFinalizationButtonClicked_"
-          hidden$="[[!shouldShowRetryButton_]]"
-          disabled="[[allButtonsDisabled]]">
-        [[i18n('finalizePageFailedRetryButtonLabel')]]
-      </cr-button>
-    </div>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">
-      <paper-spinner-lite active hidden$="[[!shouldShowSpinner_]]"
-          class="large-spinner">
+      <paper-spinner-lite active class="large-spinner">
       </paper-spinner-lite>
     </div>
   </div>
 </base-page>
-
-<cr-dialog id="hardwareWpDisabledDialog" no-cancel>
-  <div slot="title">
-    [[i18n('finalizePageWpDisabledDialogTitle')]]
-  </div>
-  <div slot="body">
-    [[i18n('finalizePageWpDisabledDialogBody')]]
-  </div>
-  <div class="dialog-footer" slot="button-container">
-    <cr-button id="tryAgainButton" class="text-button action-button"
-        on-click="onTryAgainButtonClick_">
-      [[i18n('tryAgainButtonLabel')]]
-    </cr-button>
-  </div>
-</cr-dialog>
