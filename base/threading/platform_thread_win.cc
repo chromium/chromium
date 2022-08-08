@@ -373,9 +373,9 @@ bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
   return true;
 }
 
-namespace internal {
+namespace {
 
-void SetCurrentThreadTypeImpl(ThreadType thread_type,
+void SetCurrentThreadPriority(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   if (thread_type == ThreadType::kCompositing &&
       pump_type_hint == MessagePumpType::UI) {
@@ -412,6 +412,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
               ? THREAD_PRIORITY_LOWEST
               : THREAD_MODE_BACKGROUND_BEGIN;
       break;
+    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
@@ -443,6 +444,55 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       // crbug.com/1340578#c2
     }
   }
+}
+
+void SetCurrentThreadQualityOfService(ThreadType thread_type) {
+  // QoS and power throttling were introduced in Win10 1709
+  if (win::GetVersion() < win::Version::WIN10_RS3) {
+    return;
+  }
+
+  static const auto set_thread_information_fn =
+      reinterpret_cast<decltype(&::SetThreadInformation)>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "SetThreadInformation"));
+  DCHECK(set_thread_information_fn);
+
+  bool desire_ecoqos = false;
+  switch (thread_type) {
+    case ThreadType::kBackground:
+    case ThreadType::kResourceEfficient:
+      desire_ecoqos = true;
+      break;
+    case ThreadType::kDefault:
+    case ThreadType::kCompositing:
+    case ThreadType::kDisplayCritical:
+    case ThreadType::kRealtimeAudio:
+      desire_ecoqos = false;
+      break;
+  }
+
+  THREAD_POWER_THROTTLING_STATE thread_power_throttling_state{
+      .Version = THREAD_POWER_THROTTLING_CURRENT_VERSION,
+      .ControlMask =
+          desire_ecoqos ? THREAD_POWER_THROTTLING_EXECUTION_SPEED : 0ul,
+      .StateMask =
+          desire_ecoqos ? THREAD_POWER_THROTTLING_EXECUTION_SPEED : 0ul,
+  };
+  [[maybe_unused]] const BOOL success = set_thread_information_fn(
+      ::GetCurrentThread(), ::ThreadPowerThrottling,
+      &thread_power_throttling_state, sizeof(thread_power_throttling_state));
+  DPLOG_IF(ERROR, !success)
+      << "Failed to set EcoQoS to " << std::boolalpha << desire_ecoqos;
+}
+
+}  // namespace
+
+namespace internal {
+
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
+  SetCurrentThreadPriority(thread_type, pump_type_hint);
+  SetCurrentThreadQualityOfService(thread_type);
 }
 
 }  // namespace internal

@@ -143,14 +143,24 @@ class PeerConnectionStaticDeps {
         chrome_network_thread_("WebRTC_Network") {}
 
   void EnsureChromeThreadsStarted() {
-    if (!chrome_signaling_thread_.IsRunning())
-      chrome_signaling_thread_.Start();
-    if (!chrome_network_thread_.IsRunning())
-      chrome_network_thread_.Start();
+    base::ThreadType thread_type = base::ThreadType::kDefault;
+    if (base::FeatureList::IsEnabled(
+            features::kWebRtcThreadsUseResourceEfficientType)) {
+      thread_type = base::ThreadType::kResourceEfficient;
+    }
+    if (!chrome_signaling_thread_.IsRunning()) {
+      chrome_signaling_thread_.StartWithOptions(
+          base::Thread::Options(thread_type));
+    }
+    if (!chrome_network_thread_.IsRunning()) {
+      chrome_network_thread_.StartWithOptions(
+          base::Thread::Options(thread_type));
+    }
 
-    if (!chrome_worker_thread_.IsRunning())
-      chrome_worker_thread_.Start();
-
+    if (!chrome_worker_thread_.IsRunning()) {
+      chrome_worker_thread_.StartWithOptions(
+          base::Thread::Options(thread_type));
+    }
     // To allow sending to the signaling/worker threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);

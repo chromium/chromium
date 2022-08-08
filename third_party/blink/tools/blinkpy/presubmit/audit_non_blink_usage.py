@@ -111,6 +111,7 @@ _CONFIG = [
             'base::SysInfo',
             'base::ThreadChecker',
             'base::ThreadTicks',
+            'base::ThreadType',
             'base::TickClock',
             'base::Time',
             'base::TimeDelta',

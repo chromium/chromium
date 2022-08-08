@@ -1599,5 +1599,8 @@ const base::Feature kScrollUpdateOptimizations{
 const base::Feature kClipboardUnsanitizedContent{
     "ClipboardUnsanitizedContent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebRtcThreadsUseResourceEfficientType{
+    "WebRtcThreadsUseResourceEfficientType", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

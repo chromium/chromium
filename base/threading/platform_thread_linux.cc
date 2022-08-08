@@ -140,6 +140,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
                                      ThreadType thread_type) {
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kResourceEfficient:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
@@ -237,9 +238,9 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     return;
 
   switch (thread_type) {
-    case ThreadType::kDefault:
-      [[fallthrough]];
     case ThreadType::kBackground:
+    case ThreadType::kResourceEfficient:
+    case ThreadType::kDefault:
       break;
     case ThreadType::kCompositing:
     case ThreadType::kDisplayCritical:
@@ -316,8 +317,9 @@ const ThreadPriorityToNiceValuePairForTest
         {ThreadPriorityForTest::kBackground, 10},
 };
 
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[5] = {
-    {ThreadType::kBackground, 10},      {ThreadType::kDefault, 0},
+const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[6] = {
+    {ThreadType::kBackground, 10},      {ThreadType::kResourceEfficient, 0},
+    {ThreadType::kDefault, 0},
 #if BUILDFLAG(IS_CHROMEOS)
     {ThreadType::kCompositing, -8},
 #else

@@ -88,6 +88,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
     case ThreadType::kCompositing:
       break;
@@ -114,6 +115,7 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
     case ThreadType::kCompositing:
       return ThreadPriorityForTest::kNormal;

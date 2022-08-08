@@ -317,6 +317,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       priority = ThreadPriorityForTest::kBackground;
       [[NSThread currentThread] setThreadPriority:0];
       break;
+    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       // TODO(1329208): Experiment with prioritizing kCompositing on Mac like on
       // other platforms.

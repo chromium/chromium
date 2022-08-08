@@ -244,8 +244,9 @@ TEST(PlatformThreadTest, FunctionTimesTen) {
 namespace {
 
 constexpr ThreadType kAllThreadTypes[] = {
-    ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
-    ThreadType::kCompositing, ThreadType::kDefault, ThreadType::kBackground};
+    ThreadType::kRealtimeAudio,     ThreadType::kDisplayCritical,
+    ThreadType::kCompositing,       ThreadType::kDefault,
+    ThreadType::kResourceEfficient, ThreadType::kBackground};
 
 class ThreadTypeTestThread : public FunctionTestThread {
  public:
@@ -428,6 +429,8 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
     EXPECT_TRUE(PlatformThread::CanChangeThreadType(type, type));
   }
 #if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(PlatformThread::CanChangeThreadType(
+      ThreadType::kBackground, ThreadType::kResourceEfficient));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                    ThreadType::kDefault));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
@@ -437,6 +440,9 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kCompositing,
                                                    ThreadType::kBackground));
 #else
+  EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
+                                                ThreadType::kResourceEfficient),
+            kCanIncreasePriority);
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kDefault),
             kCanIncreasePriority);
@@ -470,6 +476,8 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kBackground,
                                       ThreadPriorityForTest::kBackground);
+  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
+                                      ThreadPriorityForTest::kNormal);
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
