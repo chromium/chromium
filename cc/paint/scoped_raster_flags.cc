@@ -4,41 +4,14 @@
 
 #include "cc/paint/scoped_raster_flags.h"
 
+#include <utility>
+
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_image_builder.h"
 
 namespace cc {
-ScopedRasterFlags::ScopedRasterFlags(const PaintFlags* flags,
-                                     ImageProvider* image_provider,
-                                     const SkMatrix& ctm,
-                                     int max_texture_size,
-                                     uint8_t alpha)
-    : original_flags_(flags) {
-  if (image_provider) {
-    decode_stashing_image_provider_.emplace(image_provider);
-
-    // We skip the op if any images fail to decode.
-    DecodeImageShader(ctm);
-    if (decode_failed_)
-      return;
-    DecodeRecordShader(ctm, max_texture_size);
-    if (decode_failed_)
-      return;
-    DecodeFilter();
-    if (decode_failed_)
-      return;
-  }
-
-  if (alpha != 255) {
-    DCHECK(flags->SupportsFoldingAlpha());
-    MutableFlags()->setAlpha(SkMulDiv255Round(flags->getAlpha(), alpha));
-  }
-
-  AdjustStrokeIfNeeded(ctm);
-}
-
 ScopedRasterFlags::~ScopedRasterFlags() = default;
 
 void ScopedRasterFlags::DecodeImageShader(const SkMatrix& ctm) {

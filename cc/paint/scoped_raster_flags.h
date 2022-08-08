@@ -18,11 +18,35 @@ namespace cc {
 class CC_PAINT_EXPORT ScopedRasterFlags {
  public:
   // |flags| and |image_provider| must outlive this class.
+  template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
   ScopedRasterFlags(const PaintFlags* flags,
                     ImageProvider* image_provider,
                     const SkMatrix& ctm,
                     int max_texture_size,
-                    uint8_t alpha);
+                    F alpha)
+      : original_flags_(flags) {
+    if (image_provider) {
+      decode_stashing_image_provider_.emplace(image_provider);
+
+      // We skip the op if any images fail to decode.
+      DecodeImageShader(ctm);
+      if (decode_failed_)
+        return;
+      DecodeRecordShader(ctm, max_texture_size);
+      if (decode_failed_)
+        return;
+      DecodeFilter();
+      if (decode_failed_)
+        return;
+    }
+
+    if (alpha != 1.0f) {
+      DCHECK(flags->SupportsFoldingAlpha());
+      MutableFlags()->setAlphaf(flags->getAlphaf() * alpha);
+    }
+
+    AdjustStrokeIfNeeded(ctm);
+  }
   ScopedRasterFlags(const ScopedRasterFlags&) = delete;
   ~ScopedRasterFlags();
 

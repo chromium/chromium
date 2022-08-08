@@ -175,7 +175,7 @@ void SkiaPaintCanvas::drawLine(SkScalar x0,
                                const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
 
@@ -189,7 +189,7 @@ void SkiaPaintCanvas::drawLine(SkScalar x0,
 void SkiaPaintCanvas::drawRect(const SkRect& rect, const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -201,7 +201,7 @@ void SkiaPaintCanvas::drawRect(const SkRect& rect, const PaintFlags& flags) {
 void SkiaPaintCanvas::drawIRect(const SkIRect& rect, const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -213,7 +213,7 @@ void SkiaPaintCanvas::drawIRect(const SkIRect& rect, const PaintFlags& flags) {
 void SkiaPaintCanvas::drawOval(const SkRect& oval, const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -225,7 +225,7 @@ void SkiaPaintCanvas::drawOval(const SkRect& oval, const PaintFlags& flags) {
 void SkiaPaintCanvas::drawRRect(const SkRRect& rrect, const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -239,7 +239,7 @@ void SkiaPaintCanvas::drawDRRect(const SkRRect& outer,
                                  const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -255,7 +255,7 @@ void SkiaPaintCanvas::drawRoundRect(const SkRect& rect,
                                     const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -270,7 +270,7 @@ void SkiaPaintCanvas::drawPath(const SkPath& path,
                                UsePaintCache) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(
@@ -288,7 +288,7 @@ void SkiaPaintCanvas::drawImage(const PaintImage& image,
   absl::optional<ScopedRasterFlags> scoped_flags;
   if (flags) {
     scoped_flags.emplace(flags, image_provider_, canvas_->getTotalMatrix(),
-                         GetMaxTextureSize(), 255u);
+                         GetMaxTextureSize(), 1.0f);
     if (!scoped_flags->flags())
       return;
   }
@@ -309,7 +309,7 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
   absl::optional<ScopedRasterFlags> scoped_flags;
   if (flags) {
     scoped_flags.emplace(flags, image_provider_, canvas_->getTotalMatrix(),
-                         GetMaxTextureSize(), 255u);
+                         GetMaxTextureSize(), 1.0f);
     if (!scoped_flags->flags())
       return;
   }
@@ -347,7 +347,7 @@ void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
                                    const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
-                                 255u);
+                                 1.0f);
   if (!raster_flags.flags())
     return;
   raster_flags.flags()->DrawToSk(canvas_,

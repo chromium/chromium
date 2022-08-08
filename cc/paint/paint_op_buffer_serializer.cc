@@ -320,9 +320,9 @@ bool PaintOpBufferSerializer::SerializeOpWithFlags(
     uint8_t alpha) {
   // We use a null |image_provider| here because images are decoded during
   // serialization.
-  const ScopedRasterFlags scoped_flags(&flags_op->flags, nullptr,
-                                       canvas->getTotalMatrix(),
-                                       options_.max_texture_size, alpha);
+  const ScopedRasterFlags scoped_flags(
+      &flags_op->flags, nullptr, canvas->getTotalMatrix(),
+      options_.max_texture_size, alpha / 255.0f);
   const PaintFlags* flags_to_serialize = scoped_flags.flags();
   if (!flags_to_serialize)
     return true;
