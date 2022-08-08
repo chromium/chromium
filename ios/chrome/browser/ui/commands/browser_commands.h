@@ -16,11 +16,6 @@
 // which in practice is the BrowserViewController instance displaying the tab.
 @protocol BrowserCommands <NSObject>
 
-// Closes the current tab.
-// TODO(crbug.com/1272498): Refactor this command away; call sites should close
-// via the WebStateList.
-- (void)closeCurrentTab;
-
 // Adds a page to the reading list using data in `command`.
 // TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;

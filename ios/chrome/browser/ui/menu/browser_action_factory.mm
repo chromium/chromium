@@ -13,7 +13,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -224,8 +224,8 @@
 }
 
 - (UIAction*)actionToCloseCurrentTab {
-  __weak id<BrowserCommands> handler =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  __weak id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
                       image:DefaultSymbolWithPointSize(kXMarkSymbol,

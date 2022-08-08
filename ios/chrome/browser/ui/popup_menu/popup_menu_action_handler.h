@@ -35,13 +35,14 @@ class WebNavigationBrowserAgent;
 // Dispatcher.
 @property(nonatomic, weak) id<ApplicationCommands,
                               BrowserCommands,
-                              BrowserCoordinatorCommands,
                               FindInPageCommands,
                               LoadQueryCommands,
                               TextZoomCommands>
     dispatcher;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;

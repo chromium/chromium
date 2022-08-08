@@ -206,7 +206,9 @@
                                       if ([weakSelf.dispatcher
                                               respondsToSelector:@selector
                                               (closeCurrentTab)]) {
-                                        [weakSelf.dispatcher closeCurrentTab];
+                                        [weakSelf
+                                                .browserCoordinatorCommandsHandler
+                                                    closeCurrentTab];
                                       }
                                     }],
     ]];
@@ -351,18 +353,21 @@
                                     action:^{
                                       weakSelf.navigationAgent->StopLoading();
                                     }],
-      [UIKeyCommand cr_keyCommandWithInput:@"?"
-                             modifierFlags:UIKeyModifierCommand
-                                     title:nil
-                                    action:^{
-                                      [weakSelf.dispatcher showHelpPage];
-                                    }],
+      [UIKeyCommand
+          cr_keyCommandWithInput:@"?"
+                   modifierFlags:UIKeyModifierCommand
+                           title:nil
+                          action:^{
+                            [weakSelf.browserCoordinatorCommandsHandler
+                                    showHelpPage];
+                          }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"l"
                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
                            title:nil
                           action:^{
-                            [weakSelf.dispatcher showDownloadsFolder];
+                            [weakSelf.browserCoordinatorCommandsHandler
+                                    showDownloadsFolder];
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"1"
                              modifierFlags:UIKeyModifierCommand

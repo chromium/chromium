@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
@@ -502,12 +503,14 @@ enum class IOSOverflowMenuActionType {
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;
-  self.actionHandler.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-         FindInPageCommands, LoadQueryCommands, TextZoomCommands>>(
-      self.browser->GetCommandDispatcher());
+  self.actionHandler.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
+                     LoadQueryCommands, TextZoomCommands>>(
+          self.browser->GetCommandDispatcher());
   self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
+  self.actionHandler.browserCoordinatorCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageInfoCommands);
   self.actionHandler.popupMenuCommandsHandler = HandlerForProtocol(

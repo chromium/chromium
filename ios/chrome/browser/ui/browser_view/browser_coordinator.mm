@@ -132,6 +132,7 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/page_animation_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
@@ -593,13 +594,14 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
   _keyCommandsProvider.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands,
-                     BrowserCoordinatorCommands, FindInPageCommands>>(
+      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands>>(
           _dispatcher);
   _keyCommandsProvider.omniboxHandler =
       static_cast<id<OmniboxCommands>>(_dispatcher);
   _keyCommandsProvider.bookmarksCommandsHandler =
       static_cast<id<BookmarksCommands>>(_dispatcher);
+  _keyCommandsProvider.browserCoordinatorCommandsHandler =
+      HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
 
   _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
   if (!browserState->IsOffTheRecord()) {
@@ -1283,6 +1285,36 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 - (void)focusFakebox {
   if ([self isNTPActiveForCurrentWebState]) {
     [_ntpCoordinator focusFakebox];
+  }
+}
+
+// TODO(crbug.com/1272498): Refactor this command away, and add a mediator to
+// observe the active web state closing and push updates into the BVC for UI
+// work.
+- (void)closeCurrentTab {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+
+  int active_index = webStateList->active_index();
+  if (active_index == WebStateList::kInvalidIndex)
+    return;
+
+  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.viewController);
+
+  UIView* contentArea = self.browserContainerCoordinator.viewController.view;
+  UIView* snapshotView = nil;
+
+  if (!canShowTabStrip) {
+    snapshotView = [contentArea snapshotViewAfterScreenUpdates:NO];
+    snapshotView.frame = contentArea.frame;
+  }
+
+  webStateList->CloseWebStateAt(active_index, WebStateList::CLOSE_USER_ACTION);
+
+  if (!canShowTabStrip) {
+    [contentArea addSubview:snapshotView];
+    page_animation_util::AnimateOutWithCompletion(snapshotView, ^{
+      [snapshotView removeFromSuperview];
+    });
   }
 }
 

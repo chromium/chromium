@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
@@ -74,6 +75,12 @@ class BrowserActionFactoryTest : public PlatformTest {
         startDispatchingToTarget:mock_application_settings_commands_handler_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
+    mock_browser_coordinator_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
     mock_qr_scanner_commands_handler_ =
         OCMStrictProtocolMock(@protocol(QRScannerCommands));
     [test_browser_->GetCommandDispatcher()
@@ -95,6 +102,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_application_commands_handler_;
   id mock_application_settings_commands_handler_;
+  id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;
   SceneState* scene_state_;

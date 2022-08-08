@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
@@ -97,6 +98,12 @@ class ToolbarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_application_settings_commands_handler_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
+    mock_browser_coordinator_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_browser_coordinator_commands_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
+
     mock_qr_scanner_commands_handler_ =
         OCMStrictProtocolMock(@protocol(QRScannerCommands));
     [test_browser_->GetCommandDispatcher()
@@ -159,6 +166,7 @@ class ToolbarMediatorTest : public PlatformTest {
   id strict_consumer_;
   id mock_application_commands_handler_;
   id mock_application_settings_commands_handler_;
+  id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
   id mock_load_query_commands_handler_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;

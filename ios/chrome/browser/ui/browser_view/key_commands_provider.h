@@ -21,13 +21,13 @@ class Browser;
 @interface KeyCommandsProvider : NSObject
 
 @property(nonatomic, weak) UIViewController* baseViewController;
-@property(nonatomic, weak) id<ApplicationCommands,
-                              BrowserCommands,
-                              BrowserCoordinatorCommands,
-                              FindInPageCommands>
-    dispatcher;
+@property(nonatomic, weak)
+    id<ApplicationCommands, BrowserCommands, FindInPageCommands>
+        dispatcher;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
 // Set this flag to YES when the key shortcut bound to Escape key that dismisses
