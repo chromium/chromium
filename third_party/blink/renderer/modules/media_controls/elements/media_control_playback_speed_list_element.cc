@@ -228,7 +228,7 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
         playback_speed.display_name, playback_speed.playback_rate);
     playback_speed_item->setAttribute(
         html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(std::size(kPlaybackSpeeds) + 1));
+        WTF::AtomicString::Number(std::size(kPlaybackSpeeds)));
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
                                       WTF::AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,
