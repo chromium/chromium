@@ -88,6 +88,14 @@ bool VpnProviderMatchesNetwork(const VpnProvider* provider,
   return provider->type == VpnType::kOpenVPN;
 }
 
+// crbug/1303306: 'Add VPN' button should be disabled on a locked user session
+// or before user login.
+bool CanAddVpnButtonBeEnabled(LoginStatus login_status) {
+  return login_status != LoginStatus::NOT_LOGGED_IN &&
+         login_status != LoginStatus::LOCKED &&
+         login_status != LoginStatus::KIOSK_APP;
+}
+
 // Returns the PrefService that should be used for kVpnConfigAllowed, which is
 // controlled by policy. If multiple users are logged in, the more restrictive
 // policy is most likely in the primary user.
@@ -152,12 +160,10 @@ class VPNListProviderEntry : public views::View {
                             base::Unretained(this)),
         enabled_icon, disabled_icon, button_accessible_name_id);
 
-    // 'Add VPN' is disabled in the login screen since user configured
-    // device-wide VPNs are unsupported.
     LoginStatus login_status =
         Shell::Get()->session_controller()->login_status();
     add_vpn_button->SetEnabled(enabled &&
-                               login_status != LoginStatus::NOT_LOGGED_IN);
+                               CanAddVpnButtonBeEnabled(login_status));
     tri_view->AddView(TriView::Container::END, add_vpn_button);
   }
 
