@@ -888,6 +888,15 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     // Dirty the z-order list in which we are contained.
     old_child->DirtyStackingContextZOrderLists();
     MarkAncestorChainForFlagsUpdate();
+
+    if (old_child->GetLayoutObject()
+            .StyleRef()
+            .HasStickyConstrainedPosition()) {
+      if (const auto* scroll_container =
+              old_child->ContainingScrollContainerLayer()) {
+        scroll_container->GetScrollableArea()->RemoveStickyLayer(old_child);
+      }
+    }
   }
 
   if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)
