@@ -1173,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   EXPECT_EQ(child, web_contents->GetFocusedFrame());
 
   // Generate a couple of keystrokes, which will be routed to the subframe.
-  content::DOMMessageQueue msg_queue;
+  content::DOMMessageQueue msg_queue(web_contents);
   std::string reply;
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('1'),
                    ui::DomCode::DIGIT1, ui::VKEY_1, false, false, false, false);
