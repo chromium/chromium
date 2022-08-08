@@ -1137,7 +1137,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason);
 
   ContainerQueryData* GetContainerQueryData() const;
-  void SetContainerQueryEvaluator(ContainerQueryEvaluator*);
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
   bool SkippedContainerStyleRecalc() const;
 

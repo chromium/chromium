@@ -6561,10 +6561,6 @@ ContainerQueryEvaluator* Element::GetContainerQueryEvaluator() const {
   return nullptr;
 }
 
-void Element::SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
-  EnsureElementRareData().SetContainerQueryEvaluator(evaluator);
-}
-
 bool Element::SkippedContainerStyleRecalc() const {
   if (!RuntimeEnabledFeatures::CSSContainerSkipStyleRecalcEnabled())
     return false;
