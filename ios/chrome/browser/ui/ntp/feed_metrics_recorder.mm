@@ -380,68 +380,76 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordDiscoverFeedPreviewTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedDiscoverFeedPreview];
+                                                  kTappedDiscoverFeedPreview
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedLearnMore];
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedLearnMore
+                              asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionLearnMoreTapped));
 }
 
 - (void)recordHeaderMenuManageTapped {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedManage];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedManage
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageTapped));
 }
 
 - (void)recordHeaderMenuManageActivityTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageActivity];
+                                                  kTappedManageActivity
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageActivityTapped));
 }
 
 - (void)recordHeaderMenuManageInterestsTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageInterests];
+                                                  kTappedManageInterests
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageInterestsTapped));
 }
 
 - (void)recordHeaderMenuManageHiddenTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageHidden];
+                                                  kTappedManageHidden
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageHiddenTapped));
 }
 
 - (void)recordHeaderMenuManageFollowingTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageFollowing];
+                                                  kTappedManageFollowing
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
   if (visible) {
-    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kTappedTurnOn];
+    [self
+        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOn
+                                asInteraction:NO];
     base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOn));
   } else {
-    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kTappedTurnOff];
+    [self
+        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOff
+                                asInteraction:NO];
     base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOff));
   }
 }
 
 - (void)recordOpenURLInSameTab {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedOnCard];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedOnCard
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenSameTab));
   [self recordOpenURL];
@@ -449,7 +457,8 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordOpenURLInNewTab {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedOpenInNewTab];
+                                                  kTappedOpenInNewTab
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenNewTab));
   [self recordOpenURL];
@@ -457,7 +466,8 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordOpenURLInIncognitoTab {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedOpenInNewIncognitoTab];
+                                                  kTappedOpenInNewIncognitoTab
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenIncognitoTab));
   [self recordOpenURL];
@@ -465,72 +475,80 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordAddURLToReadLater {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kAddedToReadLater];
+                                                  kAddedToReadLater
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionReadLaterTapped));
 }
 
 - (void)recordTapSendFeedback {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedSendFeedback];
+                                                  kTappedSendFeedback
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionSendFeedbackOpened));
 }
 
 - (void)recordOpenBackOfCardMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kOpenedContextMenu];
+                                                  kOpenedContextMenu
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionContextMenuOpened));
 }
 
 - (void)recordCloseBackOfCardMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kClosedContextMenu];
+                                                  kClosedContextMenu
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionCloseContextMenu));
 }
 
 - (void)recordOpenNativeBackOfCardMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kOpenedNativeActionSheet];
+                                                  kOpenedNativeActionSheet
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionNativeActionSheetOpened));
 }
 
 - (void)recordShowDialog {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kOpenedDialog];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kOpenedDialog
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionReportContentOpened));
 }
 
 - (void)recordDismissDialog {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kClosedDialog];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kClosedDialog
+                                asInteraction:YES];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionReportContentClosed));
 }
 
 - (void)recordDismissCard {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kEphemeralChange];
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kEphemeralChange
+                              asInteraction:YES];
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionHideStory));
 }
 
 - (void)recordUndoDismissCard {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kEphemeralChangeRejected];
+                                                  kEphemeralChangeRejected
+                                asInteraction:YES];
 }
 
 - (void)recordCommittDismissCard {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kEphemeralChangeCommited];
+                                                  kEphemeralChangeCommited
+                                asInteraction:YES];
 }
 
 - (void)recordShowSnackbar {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kShowSnackbar];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kShowSnackbar
+                                asInteraction:NO];
 }
 
 - (void)recordCommandID:(int)commandID {
@@ -609,12 +627,14 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 - (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown {
   if (shown) {
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kOpenedNativeContextMenu];
+                                                    kOpenedNativeContextMenu
+                                  asInteraction:YES];
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedUserActionNativeContextMenuOpened));
   } else {
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kClosedNativeContextMenu];
+                                                    kClosedNativeContextMenu
+                                  asInteraction:YES];
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedUserActionNativeContextMenuClosed));
   }
@@ -623,12 +643,14 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 - (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown {
   if (shown) {
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kOpenedNativePulldownMenu];
+                                                    kOpenedNativePulldownMenu
+                                  asInteraction:YES];
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedUserActionNativePulldownMenuOpened));
   } else {
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                    kClosedNativePulldownMenu];
+                                                    kClosedNativePulldownMenu
+                                  asInteraction:YES];
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedUserActionNativePulldownMenuClosed));
   }
@@ -653,12 +675,14 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   switch (feedType) {
     case FeedTypeDiscover:
       [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                      kDiscoverFeedSelected];
+                                                      kDiscoverFeedSelected
+                                    asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
       break;
     case FeedTypeFollowing:
       [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                      kFollowingFeedSelected];
+                                                      kFollowingFeedSelected
+                                    asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
       NSUInteger followCount = [self.followDelegate followedPublisherCount];
       if (followCount > 0 &&
@@ -726,13 +750,15 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordFollowFromMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedFollowButton];
+                                                  kTappedFollowButton
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction("MobileMenuUnfollow"));
 }
 
 - (void)recordUnfollowFromMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedUnfollowButton];
+                                                  kTappedUnfollowButton
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction("MobileMenuFollow"));
 }
 
@@ -766,25 +792,29 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
     (FollowSnackbarActionType)followSnackbarActionType {
   switch (followSnackbarActionType) {
     case FollowSnackbarActionType::kSnackbarActionGoToFeed:
-      [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedGoToFeedOnSnackbar];
+      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                      kTappedGoToFeedOnSnackbar
+                                    asInteraction:NO];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarGoToFeedButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionUndo:
       [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
+                FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar
+                                    asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kSnackbarUndoButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryFollow:
       [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedFollowTryAgainOnSnackbar];
+                FeedUserActionType::kTappedFollowTryAgainOnSnackbar
+                                    asInteraction:NO];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryFollowButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryUnfollow:
       [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
+                FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar
+                                    asInteraction:NO];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
       break;
@@ -793,45 +823,52 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 - (void)recordManagementTappedUnfollow {
   [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowOnManagementSurface];
+            FeedUserActionType::kTappedUnfollowOnManagementSurface
+                                asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManagementTappedUnfollow));
 }
 
 - (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar {
   [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
+            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction(
       kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar));
 }
 
 - (void)recordManagementTappedUnfollowTryAgainOnSnackbar {
   [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
+            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction(
       kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
 - (void)recordFirstFollowShown {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kFirstFollowSheetShown];
+                                                  kFirstFollowSheetShown
+                                asInteraction:NO];
 }
 
 - (void)recordFirstFollowTappedGoToFeed {
   [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kFirstFollowSheetTappedGoToFeed];
+            FeedUserActionType::kFirstFollowSheetTappedGoToFeed
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction(kFirstFollowGoToFeedButtonTapped));
 }
 
 - (void)recordFirstFollowTappedGotIt {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kFirstFollowSheetTappedGotIt];
+                                                  kFirstFollowSheetTappedGotIt
+                                asInteraction:NO];
   base::RecordAction(base::UserMetricsAction(kFirstFollowGotItButtonTapped));
 }
 
 - (void)recordFollowRecommendationIPHShown {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kFollowRecommendationIPHShown];
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kFollowRecommendationIPHShown
+                                asInteraction:NO];
 }
 
 #pragma mark - Private
@@ -872,10 +909,14 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
-// Records histogram metrics for Discover feed user actions.
-- (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType {
+// Records histogram metrics for Discover feed user actions. If |isInteraction|,
+// also logs an interaction to the visible feed.
+- (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType
+                                asInteraction:(BOOL)isInteraction {
   UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram, actionType);
-  [self recordInteraction];
+  if (isInteraction) {
+    [self recordInteraction];
+  }
 }
 
 // Records Feed engagement.
