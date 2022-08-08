@@ -121,7 +121,6 @@ consoles.console_view(
     ("fuchsia-fyi-atlas", "hardware", "atl"),
     ("fuchsia-fyi-sherlock", "hardware", "slk"),
     ("fuchsia-builder-perf-fyi", "fuchsia ci", "builder-perf"),
-    ("fuchsia-builder-perf-x64", "fuchsia ci", "builder-perf-x64"),
     ("fuchsia-perf-fyi", "hardware", "ast-perf"),
     ("fuchsia-perf-atlas-fyi", "hardware", "atl-perf"),
     ("fuchsia-perf-sherlock-fyi", "hardware", "slk-perf"),
