@@ -558,6 +558,8 @@ extern const base::FeatureParam<int>
     kRichAutocompletionAutocompleteNonPrefixMinChar;
 extern const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText;
 extern const base::FeatureParam<bool>
+    kRichAutocompletionAdditionalTextWithParenthesis;
+extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteShortcutText;
 extern const base::FeatureParam<int>
     kRichAutocompletionAutocompleteShortcutTextMinChar;
