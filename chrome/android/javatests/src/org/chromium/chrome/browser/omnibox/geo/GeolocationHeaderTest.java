@@ -17,8 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -309,31 +309,14 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(final @ContentSettingValues int setting) {
+        PermissionInfo infoHttps =
+                new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            PermissionInfo infoHttps =
-                    new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
-            Log.i(TAG,
-                    "[crbug/1338183] Before Settting|isNativeInitialized: "
-                            + profile.isNativeInitialized());
-            Log.i(TAG,
-                    "[crbug/1338183] Before Settting|getBrowserProfileTypeFromProfile: "
-                            + Profile.getBrowserProfileTypeFromProfile(profile));
-            Log.i(TAG,
-                    "[crbug/1338183] Before Settting|getNativeBrowserContextPointer: "
-                            + profile.getNativeBrowserContextPointer());
-
-            infoHttps.setContentSetting(profile, setting);
-
-            Log.i(TAG,
-                    "[crbug/1338183] After Settting|isNativeInitialized: "
-                            + profile.isNativeInitialized());
-            Log.i(TAG,
-                    "[crbug/1338183] Before Settting|getBrowserProfileTypeFromProfile: "
-                            + Profile.getBrowserProfileTypeFromProfile(profile));
-            Log.i(TAG,
-                    "[crbug/1338183] Before Settting|getNativeBrowserContextPointer: "
-                            + profile.getNativeBrowserContextPointer());
+            infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            return infoHttps.getContentSetting(Profile.getLastUsedRegularProfile()) == setting;
         });
     }
 }

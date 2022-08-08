@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.site_settings;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -35,7 +35,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for the PermissionInfoTest. */
@@ -86,35 +85,15 @@ public class PermissionInfoTest {
                                 /*createIfNeeded=*/true));
     }
 
-    private void setGeolocation(
-            String origin, String embedder, @ContentSettingValues int setting, Profile profile) {
-        PermissionInfo info = new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
+    private void setSettingAndExpectValue(@ContentSettingsType int type, String origin,
+            String embedder, @ContentSettingValues int setting, Profile profile,
+            @ContentSettingValues int expectedSetting) {
+        PermissionInfo info = new PermissionInfo(type, origin, embedder);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
-    }
 
-    private @ContentSettingValues int getGeolocation(
-            String origin, String embedder, Profile profile) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionInfo info =
-                    new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
-            return info.getContentSetting(profile);
-        });
-    }
-
-    private void setNotifications(
-            String origin, String embedder, @ContentSettingValues int setting, Profile profile) {
-        PermissionInfo info =
-                new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
-        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
-    }
-
-    private @ContentSettingValues int getNotifications(
-            String origin, String embedder, Profile profile) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionInfo info =
-                    new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
-            return info.getContentSetting(profile);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> { return info.getContentSetting(profile) == expectedSetting; });
     }
 
     private void resetNotificationsSettingsForTest() {
@@ -130,12 +109,10 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile primaryOTRProfile = getPrimaryOTRProfile();
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, primaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, primaryOTRProfile));
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, primaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, primaryOTRProfile));
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, primaryOTRProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, primaryOTRProfile, ContentSettingValues.ASK);
     }
 
     @Test
@@ -144,12 +121,10 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, nonPrimaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, nonPrimaryOTRProfile));
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, nonPrimaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, nonPrimaryOTRProfile));
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, nonPrimaryOTRProfile, ContentSettingValues.ASK);
     }
 
     @Test
@@ -158,12 +133,10 @@ public class PermissionInfoTest {
     @RequiresRestart
     public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, regularProfile));
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, regularProfile));
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, regularProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, regularProfile, ContentSettingValues.ASK);
     }
 
     @Test
@@ -175,12 +148,10 @@ public class PermissionInfoTest {
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, primaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, primaryOTRProfile));
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, primaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, primaryOTRProfile));
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, primaryOTRProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, primaryOTRProfile, ContentSettingValues.ASK);
     }
 
     @Test
@@ -192,12 +163,10 @@ public class PermissionInfoTest {
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, nonPrimaryOTRProfile);
-        Assert.assertEquals(ContentSettingValues.BLOCK,
-                getNotifications(DSE_ORIGIN, null, nonPrimaryOTRProfile));
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, nonPrimaryOTRProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, nonPrimaryOTRProfile));
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, nonPrimaryOTRProfile, ContentSettingValues.ASK);
     }
 
     @Test
@@ -207,11 +176,9 @@ public class PermissionInfoTest {
     public void testResetDSENotification_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         resetNotificationsSettingsForTest();
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, regularProfile));
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, regularProfile));
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.BLOCK, regularProfile, ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
+                ContentSettingValues.DEFAULT, regularProfile, ContentSettingValues.ASK);
     }
 }

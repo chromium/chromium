@@ -277,7 +277,6 @@ public class GeolocationHeader {
             // Only send X-Geo header if the user hasn't disabled geolocation for url.
             if (isLocationDisabledForUrl(profile, uri)) {
                 if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
-                Log.i(TAG, "[crbug/1338183] Site permission is missing");
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
@@ -461,23 +460,12 @@ public class GeolocationHeader {
      * geolocation infobar).
      */
     static boolean isLocationDisabledForUrl(Profile profile, Uri uri) {
-        Log.i(TAG, "[crbug/1338183] uri: " + uri);
-        Log.i(TAG, "[crbug/1338183] profile.OTR: " + profile.isOffTheRecord());
-        Log.i(TAG,
-                "[crbug/1338183] getBrowserProfileTypeFromProfile: "
-                        + Profile.getBrowserProfileTypeFromProfile(profile));
-        Log.i(TAG,
-                "[crbug/1338183] profile.getNativeBrowserContextPointer: "
-                        + profile.getNativeBrowserContextPointer());
-
         // TODO(raymes): The call to isDSEOrigin is only needed if this could be called for
         // an origin that isn't the default search engine. Otherwise remove this line.
         boolean isDSEOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
-        Log.i(TAG, "[crbug/1338183] isDSEOrigin: " + isDSEOrigin);
         @ContentSettingValues
         @Nullable
         Integer settingValue = locationContentSettingForUrl(profile, uri);
-        Log.i(TAG, "[crbug/1338183] settingValue: " + settingValue);
 
         boolean enabled = isDSEOrigin && settingValue == ContentSettingValues.ALLOW;
         return !enabled;
