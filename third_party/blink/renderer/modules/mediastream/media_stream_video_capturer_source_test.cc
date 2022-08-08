@@ -21,6 +21,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -36,41 +37,6 @@ using ::testing::InSequence;
 namespace blink {
 
 namespace {
-
-class MockVideoCapturerSource : public VideoCapturerSource {
- public:
-  MockVideoCapturerSource() {}
-
-  MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD0(GetPreferredFormats, media::VideoCaptureFormats());
-  MOCK_METHOD3(MockStartCapture,
-               void(const media::VideoCaptureParams& params,
-                    const VideoCaptureDeliverFrameCB& new_frame_callback,
-                    const RunningCallback& running_callback));
-  MOCK_METHOD0(MockStopCapture, void());
-  void StartCapture(const media::VideoCaptureParams& params,
-                    const VideoCaptureDeliverFrameCB& new_frame_callback,
-                    const VideoCaptureCropVersionCB& crop_version_callback,
-                    const RunningCallback& running_callback) override {
-    running_cb_ = running_callback;
-    capture_params_ = params;
-    MockStartCapture(params, new_frame_callback, running_callback);
-    SetRunning(true);
-  }
-  void StopCapture() override { MockStopCapture(); }
-  void SetRunning(bool is_running) {
-    RunState run_state = is_running ? RunState::kRunning : RunState::kStopped;
-    PostCrossThreadTask(*scheduler::GetSingleThreadTaskRunnerForTesting(),
-                        FROM_HERE, CrossThreadBindOnce(running_cb_, run_state));
-  }
-  const media::VideoCaptureParams& capture_params() const {
-    return capture_params_;
-  }
-
- private:
-  RunningCallback running_cb_;
-  media::VideoCaptureParams capture_params_;
-};
 
 class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
  public:

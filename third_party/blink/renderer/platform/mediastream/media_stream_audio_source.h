@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/limits.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_deliverer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -129,6 +131,11 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   bool HasSameNonReconfigurableSettings(
       MediaStreamAudioSource* other_source) const;
 
+  void KeepDeviceAliveForTransfer(
+      base::UnguessableToken session_id,
+      base::UnguessableToken transfer_id,
+      KeepDeviceAliveForTransferCallback keep_alive_cb) override;
+
   // Returns the audio processing properties associated to this source if any,
   // or nullopt otherwise.
   virtual absl::optional<blink::AudioProcessingProperties>
@@ -217,6 +224,8 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   void StopSourceOnErrorOnTaskRunner(
       media::AudioCapturerSource::ErrorCode code);
 
+  mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
+
   // True if the source of audio is a local device. False if the source is
   // remote (e.g., streamed-in from a server).
   const bool is_local_source_;
@@ -229,6 +238,8 @@ class PLATFORM_EXPORT MediaStreamAudioSource
 
   // Manages tracks connected to this source and the audio format and data flow.
   MediaStreamAudioDeliverer<MediaStreamAudioTrack> deliverer_;
+
+  mojo::Remote<mojom::blink::MediaStreamDispatcherHost> host_;
 
   // Code set if this source was closed due to an error.
   absl::optional<media::AudioCapturerSource::ErrorCode> error_code_;

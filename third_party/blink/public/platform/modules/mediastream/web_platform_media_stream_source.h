@@ -32,6 +32,8 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
                               mojom::MediaStreamRequestResult result,
                               const WebString& result_name)>;
 
+  using KeepDeviceAliveForTransferCallback = base::OnceCallback<void(bool)>;
+
   // Source constraints key for
   // https://dev.w3.org/2011/webrtc/editor/getusermedia.html.
   static const char kSourceId[];
@@ -46,6 +48,16 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
   // Returns device information about a source that has been created by a
   // JavaScript call to GetUserMedia, e.g., a camera or microphone.
   const MediaStreamDevice& device() const { return device_; }
+
+  // Keeps a MediaStreamDevice alive until the MediaStreamTrack transfer
+  // corresponding to |transfer_id| is complete.
+  virtual void KeepDeviceAliveForTransfer(
+      base::UnguessableToken session_id,
+      base::UnguessableToken transfer_id,
+      KeepDeviceAliveForTransferCallback keep_alive_cb) {
+    NOTREACHED() << "KeepDeviceAliveForTransfer is not implemented.";
+    std::move(keep_alive_cb).Run(/*device_found=*/false);
+  }
 
   // Stops the source (by calling DoStopSource()) and runs FinalizeStopSource().
   void StopSource();

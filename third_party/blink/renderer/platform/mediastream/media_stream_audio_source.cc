@@ -13,7 +13,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -170,6 +172,14 @@ bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
   return this_properties->HasSameNonReconfigurableSettings(*others_properties);
 }
 
+void MediaStreamAudioSource::KeepDeviceAliveForTransfer(
+    base::UnguessableToken session_id,
+    base::UnguessableToken transfer_id,
+    KeepDeviceAliveForTransferCallback keep_alive_cb) {
+  GetMediaStreamDispatcherHost()->KeepDeviceAliveForTransfer(
+      session_id, transfer_id, std::move(keep_alive_cb));
+}
+
 void MediaStreamAudioSource::DoChangeSource(
     const MediaStreamDevice& new_device) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -226,6 +236,15 @@ void MediaStreamAudioSource::DoStopSource() {
   LogMessage(base::StringPrintf("%s()", __func__));
   EnsureSourceIsStopped();
   is_stopped_ = true;
+}
+
+mojom::blink::MediaStreamDispatcherHost*
+MediaStreamAudioSource::GetMediaStreamDispatcherHost() {
+  if (!host_) {
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        host_.BindNewPipeAndPassReceiver());
+  }
+  return host_.get();
 }
 
 void MediaStreamAudioSource::StopAudioDeliveryTo(MediaStreamAudioTrack* track) {
