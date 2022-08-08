@@ -24,3 +24,18 @@ source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "promos_manager_unittest.mm" ]
+  deps = [
+    ":promos_manager",
+    "//base",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser:pref_names",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

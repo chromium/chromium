@@ -233,6 +233,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/passwords:unit_tests",
     "//ios/chrome/browser/policy:unit_tests",
     "//ios/chrome/browser/prerender:unit_tests",
+    "//ios/chrome/browser/promos_manager:unit_tests",
     "//ios/chrome/browser/reading_list:unit_tests",
     "//ios/chrome/browser/safe_browsing:unit_tests",
     "//ios/chrome/browser/safe_mode:unit_tests",
