@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

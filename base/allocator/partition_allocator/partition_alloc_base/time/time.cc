@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
 

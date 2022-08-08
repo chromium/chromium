@@ -5,7 +5,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
-#include "build/build_config.h"
 
 namespace partition_alloc::internal::logging {
 
