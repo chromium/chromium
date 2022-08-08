@@ -1953,6 +1953,8 @@ source_set("browser") {
     "service_worker/service_worker_updated_script_loader.h",
     "service_worker/service_worker_version.cc",
     "service_worker/service_worker_version.h",
+    "service_worker/url_loader_client_checker.cc",
+    "service_worker/url_loader_client_checker.h",
     "shared_storage/shared_storage_budget_charger.cc",
     "shared_storage/shared_storage_budget_charger.h",
     "shared_storage/shared_storage_document_service_impl.cc",

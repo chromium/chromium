@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
+#include "content/browser/service_worker/url_loader_client_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -71,7 +72,7 @@ class ServiceWorkerInstalledScriptLoader
   void OnDataAvailable(const void* data, size_t num_bytes) override {}
   void OnDataComplete() override {}
 
-  mojo::Remote<network::mojom::URLLoaderClient> client_;
+  URLLoaderClientCheckedRemote client_;
   scoped_refptr<ServiceWorkerVersion>
       version_for_main_script_http_response_info_;
   base::TimeTicks request_start_;
