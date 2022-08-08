@@ -68,6 +68,8 @@ constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
 
 using MockPlaintextPasswordCallback =
     base::MockCallback<PasswordsPrivateDelegate::PlaintextPasswordCallback>;
+using MockRequestCredentialDetailsCallback = base::MockCallback<
+    PasswordsPrivateDelegate::RequestCredentialDetailsCallback>;
 
 class MockPasswordManagerClient : public ChromePasswordManagerClient {
  public:
@@ -197,7 +199,7 @@ password_manager::PasswordForm CreateSampleForm(
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().urls.link, arg.urls.link) &&
          testing::Value(expected.get().username, arg.username) &&
-         testing::Value(expected.get().note, arg.note) &&
+         testing::Value(*expected.get().note, *arg.note) &&
          testing::Value(expected.get().stored_in, arg.stored_in) &&
          testing::Value(expected.get().is_android_credential,
                         arg.is_android_credential);
@@ -381,13 +383,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   api::passwords_private::PasswordUiEntry expected_entry1;
   expected_entry1.urls.link = "https://example1.com/";
   expected_entry1.username = "username1";
-  expected_entry1.note = "";
+  expected_entry1.note = std::make_unique<std::string>();
   expected_entry1.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.urls.link = "http://example2.com/login";
   expected_entry2.username = "";
-  expected_entry2.note = "note";
+  expected_entry2.note = std::make_unique<std::string>("note");
   expected_entry2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback,
               Run(testing::UnorderedElementsAre(
@@ -473,7 +475,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_EQ("", passwords[0].note);
+        EXPECT_THAT(passwords[0].note, Pointee(Eq("")));
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -499,8 +501,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
       .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ(sample_form.username_value,
                   base::UTF8ToUTF16(passwords[0].username));
-        EXPECT_EQ(sample_form.notes[1].value,
-                  base::UTF8ToUTF16(passwords[0].note));
+        EXPECT_THAT(passwords[0].note,
+                    Pointee(Eq(base::UTF16ToUTF8(sample_form.notes[1].value))));
       });
   delegate.GetSavedPasswordsList(callback.Get());
   int sample_form_id = delegate.GetIdForCredential(
@@ -527,7 +529,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_EQ("new note", passwords[0].note);
+        EXPECT_THAT(passwords[0].note, Pointee(Eq("new note")));
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -694,7 +696,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
       nullptr);
-  // Clipboard should not be modifiend in case Reauth failed
+  // Clipboard should not be modified in case Reauth failed
   std::u16string result;
   test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
                             /* data_dst = */ nullptr, &result);
@@ -732,6 +734,38 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
       1);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest,
+       TestPassedReauthOnRequestCredentialDetails) {
+  SetUpPasswordStores({CreateSampleForm()});
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  MockReauthCallback callback;
+  delegate.set_os_reauth_call(callback.Get());
+
+  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
+
+  MockRequestCredentialDetailsCallback password_callback;
+  EXPECT_CALL(password_callback, Run)
+      .WillOnce(
+          [&](absl::optional<api::passwords_private::PasswordUiEntry> entry) {
+            EXPECT_THAT(entry->password, Pointee(Eq("test")));
+            EXPECT_THAT(entry->username, Eq("test@gmail.com"));
+          });
+
+  delegate.RequestCredentialDetails(0, password_callback.Get(), nullptr);
+
+  histogram_tester().ExpectUniqueSample(
+      kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
+      1);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   SetUpPasswordStores({CreateSampleForm()});
 
@@ -753,6 +787,31 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_VIEW, password_callback.Get(),
       nullptr);
+
+  // Since Reauth had failed password was not viewed and metric wasn't recorded
+  histogram_tester().ExpectTotalCount(kHistogramName, 0);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       TestFailedReauthOnRequestCredentialDetails) {
+  SetUpPasswordStores({CreateSampleForm()});
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  MockReauthCallback callback;
+  delegate.set_os_reauth_call(callback.Get());
+
+  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(false); }));
+
+  MockRequestCredentialDetailsCallback password_callback;
+  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
+  delegate.RequestCredentialDetails(0, password_callback.Get(), nullptr);
 
   // Since Reauth had failed password was not viewed and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
@@ -899,7 +958,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
   expected_entry.urls.link =
       "https://play.google.com/store/apps/details?id=example.com";
   expected_entry.username = "test@gmail.com";
-  expected_entry.note = "";
+  expected_entry.note = std::make_unique<std::string>();
   expected_entry.is_android_credential = true;
   expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(

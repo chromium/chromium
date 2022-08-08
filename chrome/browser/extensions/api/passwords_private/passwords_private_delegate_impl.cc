@@ -149,6 +149,34 @@ ConvertToPasswordFormStores(
   return {};
 }
 
+extensions::api::passwords_private::PasswordUiEntry
+CreatePasswordUiEntryFromCredentialUiEntry(
+    int id,
+    const CredentialUIEntry& credential) {
+  extensions::api::passwords_private::PasswordUiEntry entry;
+  entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
+  entry.username = base::UTF16ToUTF8(credential.username);
+  // TODO(crbug.com/1345899): Fill the note field after authentication in
+  // OnRequestCredentialDetailsAuthResult
+  entry.note =
+      std::make_unique<std::string>(base::UTF16ToUTF8(credential.note.value));
+  entry.id = id;
+  entry.stored_in = extensions::StoreSetFromCredential(credential);
+  entry.is_android_credential =
+      password_manager::IsValidAndroidFacetURI(credential.signon_realm);
+  if (!credential.federation_origin.opaque()) {
+    std::u16string formatted_origin =
+        url_formatter::FormatOriginForSecurityDisplay(
+            credential.federation_origin,
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+    entry.federation_text =
+        std::make_unique<std::string>(l10n_util::GetStringFUTF8(
+            IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
+  }
+  return entry;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -354,6 +382,23 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
           weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
 }
 
+void PasswordsPrivateDelegateImpl::RequestCredentialDetails(
+    int id,
+    RequestCredentialDetailsCallback callback,
+    content::WebContents* web_contents) {
+  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // called. Note: This is safe because the |web_contents| is used before
+  // exiting this method.
+  // TODO(crbug.com/495290): Pass the native window directly to the
+  // reauth-handling code.
+  web_contents_ = web_contents;
+  password_access_authenticator_.EnsureUserIsAuthenticated(
+      GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW),
+      base::BindOnce(
+          &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
+          weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
+}
+
 void PasswordsPrivateDelegateImpl::OsReauthCall(
     password_manager::ReauthPurpose purpose,
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
@@ -393,26 +438,8 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
       current_exception_entry.id = id;
       current_exceptions_.push_back(std::move(current_exception_entry));
     } else {
-      api::passwords_private::PasswordUiEntry entry;
-      entry.urls = CreateUrlCollectionFromCredential(credential);
-      entry.username = base::UTF16ToUTF8(credential.username);
-      entry.note = base::UTF16ToUTF8(credential.note.value);
-      entry.id = id;
-      entry.stored_in = StoreSetFromCredential(credential);
-      entry.is_android_credential =
-          password_manager::IsValidAndroidFacetURI(credential.signon_realm);
-      if (!credential.federation_origin.opaque()) {
-        std::u16string formatted_origin =
-            url_formatter::FormatOriginForSecurityDisplay(
-                credential.federation_origin,
-                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-
-        entry.federation_text =
-            std::make_unique<std::string>(l10n_util::GetStringFUTF8(
-                IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
-      }
-
-      current_entries_.push_back(std::move(entry));
+      current_entries_.push_back(
+          CreatePasswordUiEntryFromCredentialUiEntry(id, credential));
     }
   }
 
@@ -648,22 +675,32 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
   } else {
     std::move(callback).Run(entry->password);
   }
+  EmitHistogramsForCredentialAccess(*entry, reason);
+}
 
-  syncer::SyncService* sync_service = nullptr;
-  if (SyncServiceFactory::HasSyncService(profile_)) {
-    sync_service = SyncServiceFactory::GetForProfile(profile_);
-  }
-  if (password_manager::sync_util::IsSyncAccountCredential(
-          entry->url, entry->username, sync_service,
-          IdentityManagerFactory::GetForProfile(profile_))) {
-    base::RecordAction(
-        base::UserMetricsAction("PasswordManager_SyncCredentialShown"));
+void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
+    int id,
+    RequestCredentialDetailsCallback callback,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(callback).Run(absl::nullopt);
+    return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.AccessPasswordInSettings",
-      ConvertPlaintextReason(reason),
-      password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
+  const CredentialUIEntry* credential = credential_id_generator_.TryGetKey(id);
+  if (!credential) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  api::passwords_private::PasswordUiEntry password_ui_entry =
+      CreatePasswordUiEntryFromCredentialUiEntry(id, *credential);
+  password_ui_entry.password =
+      std::make_unique<std::string>(base::UTF16ToUTF8(credential->password));
+  std::move(callback).Run(std::move(password_ui_entry));
+
+  EmitHistogramsForCredentialAccess(
+      *credential, api::passwords_private::PLAINTEXT_REASON_VIEW);
 }
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
@@ -716,6 +753,26 @@ void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
   for (base::OnceClosure& callback : pre_initialization_callbacks_)
     std::move(callback).Run();
   pre_initialization_callbacks_.clear();
+}
+
+void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
+    const CredentialUIEntry& entry,
+    api::passwords_private::PlaintextReason reason) {
+  syncer::SyncService* sync_service = nullptr;
+  if (SyncServiceFactory::HasSyncService(profile_)) {
+    sync_service = SyncServiceFactory::GetForProfile(profile_);
+  }
+  if (password_manager::sync_util::IsSyncAccountCredential(
+          entry.url, entry.username, sync_service,
+          IdentityManagerFactory::GetForProfile(profile_))) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_SyncCredentialShown"));
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.AccessPasswordInSettings",
+      ConvertPlaintextReason(reason),
+      password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
 }
 
 }  // namespace extensions

@@ -105,7 +105,7 @@ declare global {
         id: number;
         storedIn: PasswordStoreSet;
         isAndroidCredential: boolean;
-        note: string;
+        note?: string;
         changePasswordUrl?: string;
         hasStartableScript: boolean;
         compromisedInfo?: CompromisedInfo;
@@ -146,12 +146,16 @@ declare global {
       export function changeSavedPassword(
           id: number, params: ChangeSavedPasswordParams,
           callback?: (newId: number) => void): void;
-      export function removeSavedPassword(id: number, fromStores: PasswordStoreSet): void;
+      export function removeSavedPassword(
+          id: number, fromStores: PasswordStoreSet): void;
       export function removePasswordException(id: number): void;
       export function undoRemoveSavedPasswordOrException(): void;
       export function requestPlaintextPassword(
           id: number, reason: PlaintextReason,
           callback: (password: string) => void): void;
+      export function requestCredentialDetails(
+          id: number,
+          callback: (passwordUiEntry: PasswordUiEntry) => void): void;
       export function getSavedPasswordList(
           callback: (entries: Array<PasswordUiEntry>) => void): void;
       export function getPasswordExceptionList(

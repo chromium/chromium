@@ -97,6 +97,23 @@ class PasswordsPrivateRequestPlaintextPasswordFunction
   void GotPassword(absl::optional<std::u16string> password);
 };
 
+class PasswordsPrivateRequestCredentialDetailsFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.requestCredentialDetails",
+                             PASSWORDSPRIVATE_REQUESTCREDENTIALDETAILS)
+ protected:
+  ~PasswordsPrivateRequestCredentialDetailsFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void GotPasswordUiEntry(
+      absl::optional<api::passwords_private::PasswordUiEntry>
+          password_ui_entry);
+};
+
 class PasswordsPrivateGetSavedPasswordListFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.getSavedPasswordList",

@@ -124,6 +124,40 @@ void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
           ->id)));
 }
 
+// PasswordsPrivateRequestCredentialDetailsFunction
+ResponseAction PasswordsPrivateRequestCredentialDetailsFunction::Run() {
+  auto parameters =
+      api::passwords_private::RequestCredentialDetails::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  GetDelegate(browser_context())
+      ->RequestCredentialDetails(
+          parameters->id,
+          base::BindOnce(&PasswordsPrivateRequestCredentialDetailsFunction::
+                             GotPasswordUiEntry,
+                         this),
+          GetSenderWebContents());
+
+  // GotPasswordUiEntry() might have responded before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateRequestCredentialDetailsFunction::GotPasswordUiEntry(
+    absl::optional<api::passwords_private::PasswordUiEntry> password_ui_entry) {
+  if (password_ui_entry) {
+    Respond(ArgumentList(
+        api::passwords_private::RequestCredentialDetails::Results::Create(
+            std::move(*password_ui_entry))));
+    return;
+  }
+
+  Respond(Error(base::StringPrintf(
+      "Could not obtain password entry. Either the user is not "
+      "authenticated or no credential with id = %d could be found.",
+      api::passwords_private::RequestCredentialDetails::Params::Create(args())
+          ->id)));
+}
+
 // PasswordsPrivateGetSavedPasswordListFunction
 ResponseAction PasswordsPrivateGetSavedPasswordListFunction::Run() {
   // GetList() can immediately call GotList() (which would Respond() before

@@ -299,7 +299,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     if (this.existingEntry) {
       this.websiteUrls_ = this.existingEntry.urls;
       this.username_ = this.existingEntry.username;
-      this.note_ = this.existingEntry.note;
+      this.note_ = this.existingEntry.note || '';
     }
     this.password_ = this.getPassword_();
     if (!this.isInFederatedViewMode_) {

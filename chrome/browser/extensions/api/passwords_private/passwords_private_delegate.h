@@ -33,6 +33,8 @@ class PasswordsPrivateDelegate : public KeyedService {
  public:
   using PlaintextPasswordCallback =
       base::OnceCallback<void(absl::optional<std::u16string>)>;
+  using RequestCredentialDetailsCallback = base::OnceCallback<void(
+      absl::optional<api::passwords_private::PasswordUiEntry>)>;
 
   using RefreshScriptsIfNecessaryCallback = base::OnceClosure;
 
@@ -116,6 +118,20 @@ class PasswordsPrivateDelegate : public KeyedService {
       int id,
       api::passwords_private::PlaintextReason reason,
       PlaintextPasswordCallback callback,
+      content::WebContents* web_contents) = 0;
+
+  // Requests the full PasswordUiEntry (with filled password) with the given id.
+  // Returns the full PasswordUiEntry with |callback|. Returns |absl::nullopt|
+  // if no matching credential with |id| is found.
+  // |id| the id created when going over the list of saved passwords.
+  // |reason| The reason why the full PasswordUiEntry is requested.
+  // |callback| The callback that gets invoked with the PasswordUiEntry if it
+  // could be obtained successfully, or absl::nullopt otherwise.
+  // |web_contents| The web content object used as the UI; will be used to show
+  //     an OS-level authentication dialog if necessary.
+  virtual void RequestCredentialDetails(
+      int id,
+      RequestCredentialDetailsCallback callback,
       content::WebContents* web_contents) = 0;
 
   // Moves a list of passwords currently stored on the device to being stored in

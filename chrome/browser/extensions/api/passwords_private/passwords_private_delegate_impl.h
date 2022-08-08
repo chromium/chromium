@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
@@ -74,6 +75,9 @@ class PasswordsPrivateDelegateImpl
   void RequestPlaintextPassword(int id,
                                 api::passwords_private::PlaintextReason reason,
                                 PlaintextPasswordCallback callback,
+                                content::WebContents* web_contents) override;
+  void RequestCredentialDetails(int id,
+                                RequestCredentialDetailsCallback callback,
                                 content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
@@ -162,6 +166,12 @@ class PasswordsPrivateDelegateImpl
       PlaintextPasswordCallback callback,
       bool authenticated);
 
+  // Callback for RequestCredentialDetails() after authentication check.
+  void OnRequestCredentialDetailsAuthResult(
+      int id,
+      RequestCredentialDetailsCallback callback,
+      bool authenticated);
+
   // Callback for ExportPasswords() after authentication check.
   void OnExportPasswordsAuthResult(
       base::OnceCallback<void(const std::string&)> accepted_callback,
@@ -178,6 +188,11 @@ class PasswordsPrivateDelegateImpl
       password_manager::ReauthPurpose purpose,
       password_manager::PasswordAccessAuthenticator::AuthResultCallback
           callback);
+
+  // Records user action and emits histogram values for retrieving |entry|.
+  void EmitHistogramsForCredentialAccess(
+      const password_manager::CredentialUIEntry& entry,
+      api::passwords_private::PlaintextReason reason);
 
   // Not owned by this class.
   raw_ptr<Profile> profile_;
