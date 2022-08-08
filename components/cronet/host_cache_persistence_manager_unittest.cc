@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_cache.h"
@@ -39,7 +40,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
     net::HostCache::Key key(host, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
                             net::NetworkIsolationKey());
-    net::HostCache::Entry entry(net::OK, net::AddressList(),
+    net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
     cache_->Set(key, entry, base::TimeTicks::Now(), base::Seconds(1));
   }
@@ -71,7 +72,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
     net::HostCache::Key key3("3.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
                              net::NetworkIsolationKey());
-    net::HostCache::Entry entry(net::OK, net::AddressList(),
+    net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
 
     temp_cache.Set(key1, entry, base::TimeTicks::Now(), base::Seconds(1));

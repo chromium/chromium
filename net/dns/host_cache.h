@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
-#include "net/base/address_list.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/host_port_pair.h"
@@ -172,13 +171,12 @@ class NET_EXPORT HostCache {
 
     bool ContentsEqual(const Entry& other) const {
       return std::tie(error_, ip_endpoints_, endpoint_metadatas_, aliases_,
-                      legacy_addresses_, text_records_, hostnames_,
-                      https_record_compatibility_, canonical_names_) ==
-             std::tie(other.error_, other.ip_endpoints_,
-                      other.endpoint_metadatas_, other.aliases_,
-                      other.legacy_addresses_, other.text_records_,
-                      other.hostnames_, other.https_record_compatibility_,
-                      other.canonical_names_);
+                      text_records_, hostnames_, https_record_compatibility_,
+                      canonical_names_) ==
+             std::tie(
+                 other.error_, other.ip_endpoints_, other.endpoint_metadatas_,
+                 other.aliases_, other.text_records_, other.hostnames_,
+                 other.https_record_compatibility_, other.canonical_names_);
     }
 
     int error() const { return error_; }
@@ -204,12 +202,6 @@ class NET_EXPORT HostCache {
     }
     void set_aliases(std::set<std::string> aliases) {
       aliases_ = std::move(aliases);
-    }
-    const absl::optional<AddressList>& legacy_addresses() const {
-      return legacy_addresses_;
-    }
-    void set_legacy_addresses(absl::optional<AddressList> addresses) {
-      legacy_addresses_ = std::move(addresses);
     }
     const absl::optional<std::vector<std::string>>& text_records() const {
       return text_records_;
@@ -286,7 +278,6 @@ class NET_EXPORT HostCache {
               std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
               endpoint_metadatas,
           absl::optional<std::set<std::string>> aliases,
-          const absl::optional<AddressList>& legacy_addresses,
           absl::optional<std::vector<std::string>>&& text_results,
           absl::optional<std::vector<HostPortPair>>&& hostnames,
           absl::optional<std::vector<bool>>&& https_record_compatibility,
@@ -300,9 +291,6 @@ class NET_EXPORT HostCache {
         std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
             endpoint_metadatas) {
       endpoint_metadatas_ = std::move(endpoint_metadatas);
-    }
-    void SetResult(AddressList addresses) {
-      legacy_addresses_ = std::move(addresses);
     }
     void SetResult(std::vector<std::string> text_records) {
       text_records_ = std::move(text_records);
@@ -323,23 +311,6 @@ class NET_EXPORT HostCache {
                       int network_changes,
                       EntryStaleness* out) const;
 
-    // Merges legacy addresses from |source| into the stored list of addresses
-    // and deduplicates. The address list can be accessed with |addresses()|.
-    // This method performs a stable sort to ensure IPv6 addresses precede IPv4
-    // addresses. IP versions being equal, addresses from |*this| will precede
-    // those from |source|.
-    //
-    // Only non-failure entries (`error_` is OK or ERR_NAME_NOT_RESOLVED) can be
-    // merged. Because an ERR_NAME_NOT_RESOLVED represents success without any
-    // results, merging an OK entry with an ERR_NAME_NOT_RESOLVED entry
-    // represents merging a non-empty entry with an empty entry, resulting in
-    // non-empty and therefore OK.
-    void MergeAddressesFrom(const HostCache::Entry& source);
-
-    // Merges the legacy DNS aliases list from `source` into the stored list of
-    // DNS aliases and deduplicates.
-    void MergeDnsAliasesFrom(const HostCache::Entry& source);
-
     base::Value::Dict GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
@@ -349,7 +320,6 @@ class NET_EXPORT HostCache {
         std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
         endpoint_metadatas_;
     absl::optional<std::set<std::string>> aliases_;
-    absl::optional<AddressList> legacy_addresses_;
     absl::optional<std::vector<std::string>> text_records_;
     absl::optional<std::vector<HostPortPair>> hostnames_;
 

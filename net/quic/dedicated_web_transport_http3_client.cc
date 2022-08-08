@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/address_list.h"
 #include "net/base/port_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_network_session.h"

@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"

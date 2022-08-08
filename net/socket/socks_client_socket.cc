@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/sys_byteorder.h"
+#include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_policy.h"

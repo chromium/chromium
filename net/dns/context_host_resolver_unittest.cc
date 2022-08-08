@@ -619,13 +619,14 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
   // cache.
   base::SimpleTestTickClock clock;
   clock.Advance(base::Days(62));  // Arbitrary non-zero time.
-  AddressList expected(kEndpoint);
+  std::vector<IPEndPoint> expected({kEndpoint});
   host_cache->Set(
       HostCache::Key("example.com", DnsQueryType::UNSPECIFIED,
                      0 /* host_resolver_flags */, HostResolverSource::ANY,
                      NetworkIsolationKey()),
-      HostCache::Entry(OK, expected, HostCache::Entry::SOURCE_DNS,
-                       base::Days(1)),
+      HostCache::Entry(OK, expected,
+                       /*aliases=*/std::set<std::string>({"example.com"}),
+                       HostCache::Entry::SOURCE_DNS, base::Days(1)),
       clock.NowTicks(), base::Days(1));
   resolver->SetTickClockForTesting(&clock);
 

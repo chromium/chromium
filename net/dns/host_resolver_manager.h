@@ -53,7 +53,6 @@ class TickClock;
 
 namespace net {
 
-class AddressList;
 class DnsClient;
 class DnsProbeRunner;
 class IPAddress;
@@ -566,8 +565,6 @@ class NET_EXPORT HostResolverManager
 // This function is only exposed so it can be unit-tested.
 // TODO(tfarina): It would be better to change the tests so this function
 // gets exercised indirectly through HostResolverManager.
-NET_EXPORT_PRIVATE bool ResolveLocalHostname(base::StringPiece host,
-                                             AddressList* address_list);
 NET_EXPORT_PRIVATE bool ResolveLocalHostname(
     base::StringPiece host,
     std::vector<IPEndPoint>* address_list);

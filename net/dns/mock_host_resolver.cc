@@ -972,7 +972,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
 
   // Immediately resolve any "localhost" or recognized similar names.
   if (IsAddressType(dns_query_type) &&
-      ResolveLocalHostname(GetHostname(endpoint), addresses)) {
+      ResolveLocalHostname(GetHostname(endpoint), &addresses->endpoints())) {
     return OK;
   }
   int rv = ERR_DNS_CACHE_MISS;
@@ -1001,7 +1001,13 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
       rv = cache_result->second.error();
       if (rv == OK) {
         *addresses = AddressList::CopyWithPort(
-            cache_result->second.legacy_addresses().value(), GetPort(endpoint));
+            AddressList(*cache_result->second.ip_endpoints()),
+            GetPort(endpoint));
+        if (cache_result->second.aliases()) {
+          const auto& aliasess = *cache_result->second.aliases();
+          addresses->SetDnsAliases(
+              std::vector<std::string>(aliasess.begin(), aliasess.end()));
+        }
         *out_stale_info = std::move(stale_info);
       }
 
@@ -1036,11 +1042,17 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
     request.SetAddressResults(address_results,
                               /*staleness=*/absl::nullopt);
     error = request.resolve_error_info().error;
-    cache_entry =
-        request.address_results()
-            ? HostCache::Entry(error, *request.address_results(),
-                               HostCache::Entry::SOURCE_UNKNOWN)
-            : HostCache::Entry(error, HostCache::Entry::SOURCE_UNKNOWN);
+    if (request.address_results()) {
+      const auto& dns_aliases = request.address_results()->dns_aliases();
+      cache_entry = HostCache::Entry(
+          error, request.address_results()->endpoints(),
+          dns_aliases.empty()
+              ? std::set<std::string>()
+              : std::set<std::string>(dns_aliases.begin(), dns_aliases.end()),
+          HostCache::Entry::SOURCE_UNKNOWN);
+    } else {
+      cache_entry = HostCache::Entry(error, HostCache::Entry::SOURCE_UNKNOWN);
+    }
   } else if (absl::holds_alternative<std::vector<HostResolverEndpointResult>>(
                  result)) {
     const auto& endpoint_results =

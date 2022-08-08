@@ -577,12 +577,6 @@ std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
 
 //-----------------------------------------------------------------------------
 
-bool ResolveLocalHostname(base::StringPiece host, AddressList* address_list) {
-  address_list->clear();
-
-  return ResolveLocalHostname(host, &address_list->endpoints());
-}
-
 bool ResolveLocalHostname(base::StringPiece host,
                           std::vector<IPEndPoint>* address_list) {
   address_list->clear();
@@ -811,42 +805,21 @@ class HostResolverManager::RequestImpl
     DCHECK(!endpoint_results_.has_value());
     DCHECK(!fixed_up_dns_alias_results_.has_value());
 
-    if (results_.value().legacy_addresses().has_value()) {
-      DCHECK(!results_.value().ip_endpoints());
-      legacy_address_results_ = results_.value().legacy_addresses();
-      endpoint_results_ = HostResolver::AddressListToEndpointResults(
-          legacy_address_results_.value());
-
-      fixed_up_dns_alias_results_ = std::set<std::string>(
-          legacy_address_results_.value().dns_aliases().begin(),
-          legacy_address_results_.value().dns_aliases().end());
-
-      // Skip fixups for `include_canonical_name` requests. Just use the
-      // canonical name exactly as it was received from the system resolver.
+    endpoint_results_ = results_.value().GetEndpoints();
+    if (endpoint_results_.has_value()) {
+      DCHECK(results_.value().aliases());
+      fixed_up_dns_alias_results_ = *results_.value().aliases();
       if (parameters().include_canonical_name) {
-        DCHECK_LE(legacy_address_results_.value().dns_aliases().size(), 1u);
+        DCHECK_LE(fixed_up_dns_alias_results_.value().size(), 1u);
       } else {
-        fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
-            fixed_up_dns_alias_results_.value());
+        // Expect `aliases()` results to already be fixed up.
+        DCHECK(dns_alias_utility::FixUpDnsAliases(
+                   fixed_up_dns_alias_results_.value()) ==
+               fixed_up_dns_alias_results_.value());
       }
-    } else {
-      endpoint_results_ = results_.value().GetEndpoints();
-      if (endpoint_results_.has_value()) {
-        DCHECK(results_.value().aliases());
-        fixed_up_dns_alias_results_ = *results_.value().aliases();
 
-        if (parameters().include_canonical_name) {
-          DCHECK_LE(fixed_up_dns_alias_results_.value().size(), 1u);
-        } else {
-          // Expect `aliases()` results to already be fixed up.
-          DCHECK(dns_alias_utility::FixUpDnsAliases(
-                     fixed_up_dns_alias_results_.value()) ==
-                 fixed_up_dns_alias_results_.value());
-        }
-
-        legacy_address_results_ = HostResolver::EndpointResultToAddressList(
-            endpoint_results_.value(), fixed_up_dns_alias_results_.value());
-      }
+      legacy_address_results_ = HostResolver::EndpointResultToAddressList(
+          endpoint_results_.value(), fixed_up_dns_alias_results_.value());
     }
   }
 
@@ -1795,11 +1768,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     timeout_timer_.Stop();
 
     absl::optional<std::vector<IPEndPoint>> ip_endpoints;
-    if (results.legacy_addresses().has_value()) {
-      ip_endpoints = results.legacy_addresses().value().endpoints();
-    } else {
-      ip_endpoints = base::OptionalFromPtr(results.ip_endpoints());
-    }
+    ip_endpoints = base::OptionalFromPtr(results.ip_endpoints());
 
     if (ip_endpoints.has_value()) {
       // If there are multiple addresses, and at least one is IPv6, need to
@@ -1826,16 +1795,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       bool secure,
                       bool success,
                       std::vector<IPEndPoint> sorted) {
-    if (results.legacy_addresses().has_value()) {
-      AddressList sorted_list;
-      sorted_list.endpoints() = std::move(sorted);
-      sorted_list.SetDnsAliases(results.legacy_addresses()->dns_aliases());
-
-      results.set_legacy_addresses(std::move(sorted_list));
-    } else {
-      DCHECK(results.ip_endpoints());
-      results.set_ip_endpoints(std::move(sorted));
-    }
+    DCHECK(results.ip_endpoints());
+    results.set_ip_endpoints(std::move(sorted));
 
     if (!success) {
       OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true,
@@ -1844,8 +1805,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     // AddressSorter prunes unusable destinations.
-    if (results.legacy_addresses().value_or(AddressList()).empty() &&
-        (!results.ip_endpoints() || results.ip_endpoints()->empty()) &&
+    if ((!results.ip_endpoints() || results.ip_endpoints()->empty()) &&
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
@@ -2769,8 +2729,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // transaction, e.g. a supplemental HTTPS transaction, finds results.
     DCHECK(!key_.query_types.Has(DnsQueryType::UNSPECIFIED));
     if (HasAddressType(key_.query_types) && results.error() == OK &&
-        (!results.legacy_addresses() ||
-         results.legacy_addresses().value().empty()) &&
         (!results.ip_endpoints() || results.ip_endpoints()->empty())) {
       results.set_error(ERR_NAME_NOT_RESOLVED);
     }
@@ -2795,10 +2753,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     base::TimeDelta bounded_ttl =
         std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-    if ((results.legacy_addresses() &&
-         ContainsIcannNameCollisionIp(
-             results.legacy_addresses().value().endpoints())) ||
-        (results.ip_endpoints() &&
+    if ((results.ip_endpoints() &&
          ContainsIcannNameCollisionIp(*results.ip_endpoints()))) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
       return;
@@ -2870,15 +2825,15 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // TODO(crbug.com/846423): Consider adding MDNS-specific logging.
 
     HostCache::Entry results = mdns_task_->GetResults();
-    if (results.legacy_addresses() &&
-        ContainsIcannNameCollisionIp(
-            results.legacy_addresses().value().endpoints())) {
+
+    if ((results.ip_endpoints() &&
+         ContainsIcannNameCollisionIp(*results.ip_endpoints()))) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
-    } else {
-      // MDNS uses a separate cache, so skip saving result to cache.
-      // TODO(crbug.com/926300): Consider merging caches.
-      CompleteRequestsWithoutCache(results, absl::nullopt /* stale_info */);
+      return;
     }
+    // MDNS uses a separate cache, so skip saving result to cache.
+    // TODO(crbug.com/926300): Consider merging caches.
+    CompleteRequestsWithoutCache(results, absl::nullopt /* stale_info */);
   }
 
   void OnMdnsImmediateFailure(int rv) {

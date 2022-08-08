@@ -488,7 +488,8 @@ class TestHostResolverManager : public HostResolverManager {
   }
 };
 
-bool HasAddress(const IPAddress& search_address, const AddressList& addresses) {
+bool HasAddress(const IPAddress& search_address,
+                const std::vector<IPEndPoint>& addresses) {
   for (const auto& address : addresses) {
     if (search_address == address.address())
       return true;
@@ -497,7 +498,7 @@ bool HasAddress(const IPAddress& search_address, const AddressList& addresses) {
 }
 
 void TestBothLoopbackIPs(const std::string& host) {
-  AddressList addresses;
+  std::vector<IPEndPoint> addresses;
   EXPECT_TRUE(ResolveLocalHostname(host, &addresses));
   EXPECT_EQ(2u, addresses.size());
   EXPECT_TRUE(HasAddress(IPAddress::IPv4Localhost(), addresses));
@@ -623,7 +624,7 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
 
   void PopulateCache(const HostCache::Key& key, IPEndPoint endpoint) {
     resolver_->CacheResult(resolve_context_->host_cache(), key,
-                           HostCache::Entry(OK, AddressList(endpoint),
+                           HostCache::Entry(OK, {endpoint}, /*aliases=*/{},
                                             HostCache::Entry::SOURCE_UNKNOWN),
                            base::Seconds(1));
   }
@@ -4007,9 +4008,8 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
                        cache_entry.network_isolation_key);
     IPAddress address;
     ASSERT_TRUE(address.AssignFromIPLiteral(cache_entry.cached_ip_address));
-    HostCache::Entry entry =
-        HostCache::Entry(OK, AddressList::CreateFromIPAddress(address, 80),
-                         HostCache::Entry::SOURCE_UNKNOWN);
+    HostCache::Entry entry = HostCache::Entry(
+        OK, {{address, 80}}, /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN);
     resolve_context_->host_cache()->Set(key, entry, base::TimeTicks::Now(),
                                         base::Days(1));
   }
@@ -7858,7 +7858,7 @@ TEST_F(HostResolverManagerDnsTest, NoAdditionalDnsAliases) {
 }
 
 TEST_F(HostResolverManagerTest, ResolveLocalHostname) {
-  AddressList addresses;
+  std::vector<IPEndPoint> addresses;
 
   TestBothLoopbackIPs("localhost");
   TestBothLoopbackIPs("localhoST");
@@ -15074,17 +15074,16 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
   const NetworkIsolationKey kIsolationKey;
   const url::SchemeHostPort kEndpoint =
       url::SchemeHostPort(url::kHttpsScheme, "bootstrap", 443);
-  const AddressList kCacheAddrs = AddressList::CreateFromIPAddressList(
-      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-       {192, 0, 2, 1}},
-      {});
+  const std::vector<IPEndPoint> kCacheAddrs = {
+      {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 0},
+      {{192, 0, 2, 1}, 0}};
   const std::vector<IPEndPoint> kBootstrapAddrs = {
       {{0x20, 0x01, 0x0d, 0xb1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}, 0},
       {{192, 0, 2, 2}, 0}};
   // The mock DNS client always returns localhost.
-  const AddressList kRemoteAddrs = AddressList::CreateFromIPAddressList(
-      {IPAddress::IPv6Localhost(), IPAddress::IPv4Localhost()},
-      {});
+  const std::vector<IPEndPoint> kRemoteAddrs = {
+      {IPAddress::IPv6Localhost(), 0},
+      {IPAddress::IPv4Localhost(), 0}};
 
   static HostResolver::ResolveHostParameters bootstrap_params() {
     HostResolver::ResolveHostParameters params;
@@ -15115,7 +15114,8 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
 
   void PopulateCache(bool secure) {
     constexpr base::TimeDelta kTtl = base::Seconds(3600);
-    HostCache::Entry entry(OK, kCacheAddrs, HostCache::Entry::SOURCE_DNS, kTtl);
+    HostCache::Entry entry(OK, kCacheAddrs, /*aliases=*/{},
+                           HostCache::Entry::SOURCE_DNS, kTtl);
     resolve_context_->host_cache()->Set(MakeCacheKey(secure), std::move(entry),
                                         GetMockTickClock()->NowTicks(), kTtl);
   }

@@ -23,6 +23,7 @@
 #include "components/cronet/url_request_context_config.h"
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
@@ -68,14 +69,15 @@ const int kAgeExpiredSec = kCacheEntryTTLSec * 2;
 // correctly, we won't end up waiting this long -- it's just a backup.
 const int kWaitTimeoutSec = 1;
 
-net::AddressList MakeAddressList(const char* ip_address_str) {
+std::vector<net::IPEndPoint> MakeEndpoints(const char* ip_address_str) {
   net::IPAddress address;
   bool rv = address.AssignFromIPLiteral(ip_address_str);
   DCHECK(rv);
+  return std::vector<net::IPEndPoint>({{address, 0}});
+}
 
-  net::AddressList address_list;
-  address_list.push_back(net::IPEndPoint(address, 0u));
-  return address_list;
+net::AddressList MakeAddressList(const char* ip_address_str) {
+  return net::AddressList(MakeEndpoints(ip_address_str));
 }
 
 std::unique_ptr<net::DnsClient> CreateMockDnsClientForHosts() {
@@ -235,8 +237,9 @@ class StaleHostResolverTest : public testing::Test {
                             net::NetworkIsolationKey());
     net::HostCache::Entry entry(
         error,
-        error == net::OK ? MakeAddressList(kCacheAddress) : net::AddressList(),
-        net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
+        error == net::OK ? MakeEndpoints(kCacheAddress)
+                         : std::vector<net::IPEndPoint>(),
+        /*aliases=*/{}, net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
     base::TimeDelta age = base::Seconds(age_sec);
     base::TimeTicks then = tick_clock_.NowTicks() - age;
     resolver_->GetHostCache()->Set(key, entry, then, ttl);

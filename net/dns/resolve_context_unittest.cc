@@ -332,7 +332,8 @@ TEST_F(ResolveContextTest, HostCacheInvalidation) {
                      HostResolverSource::ANY, NetworkIsolationKey());
   context.host_cache()->Set(
       key,
-      HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
+      HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
+                       HostCache::Entry::SOURCE_UNKNOWN),
       now, base::Seconds(10));
   ASSERT_TRUE(context.host_cache()->Lookup(key, now));
 
@@ -347,7 +348,8 @@ TEST_F(ResolveContextTest, HostCacheInvalidation) {
   // Re-add to the host cache and now add some DoH server status.
   context.host_cache()->Set(
       key,
-      HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
+      HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
+                       HostCache::Entry::SOURCE_UNKNOWN),
       now, base::Seconds(10));
   context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
                               session.get());
@@ -383,7 +385,8 @@ TEST_F(ResolveContextTest, HostCacheInvalidation_SameSession) {
                      HostResolverSource::ANY, NetworkIsolationKey());
   context.host_cache()->Set(
       key,
-      HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN),
+      HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{"example.com"},
+                       HostCache::Entry::SOURCE_UNKNOWN),
       now, base::Seconds(10));
   context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
                               session.get());
