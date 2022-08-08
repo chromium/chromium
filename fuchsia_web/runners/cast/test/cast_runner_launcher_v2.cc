@@ -15,6 +15,7 @@
 #include <fuchsia/settings/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
@@ -86,15 +87,22 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
       .source = component_testing::ChildRef{kFeedbackService},
       .targets = {component_testing::ChildRef{kCastRunnerService}}});
 
+  AddSyslogRoutesFromParent(realm_builder, kCastRunnerService);
+  AddVulkanRoutesFromParent(realm_builder, kCastRunnerService);
+
+  // Run an isolated font service for cast_runner.
+  AddFontService(realm_builder, kCastRunnerService);
+
+  // Run the test-ui-stack and route the protocols needed by cast_runner to it.
+  AddTestUiStack(realm_builder, kCastRunnerService);
+
   realm_builder.AddRoute(component_testing::Route{
       .capabilities =
           {
               component_testing::Directory{.name = "config-data"},
               component_testing::Protocol{fuchsia::buildinfo::Provider::Name_},
-              component_testing::Protocol{fuchsia::fonts::Provider::Name_},
               component_testing::Protocol{
                   fuchsia::intl::PropertyProvider::Name_},
-              component_testing::Protocol{fuchsia::logger::LogSink::Name_},
               component_testing::Protocol{
                   fuchsia::media::ProfileProvider::Name_},
               component_testing::Protocol{
@@ -105,11 +113,6 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
               component_testing::Protocol{fuchsia::settings::Display::Name_},
               component_testing::Protocol{fuchsia::sys::Environment::Name_},
               component_testing::Protocol{fuchsia::sys::Loader::Name_},
-              component_testing::Protocol{fuchsia::sysmem::Allocator::Name_},
-              component_testing::Protocol{
-                  fuchsia::ui::composition::Allocator::Name_},
-              component_testing::Protocol{fuchsia::ui::scenic::Scenic::Name_},
-              component_testing::Protocol{"fuchsia.vulkan.loader.Loader"},
               component_testing::Storage{.name = "cache", .path = "/cache"},
           },
       .source = component_testing::ParentRef(),
@@ -155,6 +158,89 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
 
   realm_root_ = realm_builder.Build();
   return std::make_unique<sys::ServiceDirectory>(realm_root_->CloneRoot());
+}
+
+// static
+component_testing::RealmBuilder&
+CastRunnerLauncherV2::AddSyslogRoutesFromParent(
+    component_testing::RealmBuilder& realm_builder,
+    std::string_view child_name) {
+  return realm_builder.AddRoute(component_testing::Route{
+      .capabilities = {component_testing::Protocol{
+          fuchsia::logger::LogSink::Name_}},
+      .source = component_testing::ParentRef{},
+      .targets = {component_testing::ChildRef{child_name}}});
+}
+
+// static
+component_testing::RealmBuilder&
+CastRunnerLauncherV2::AddVulkanRoutesFromParent(
+    component_testing::RealmBuilder& realm_builder,
+    std::string_view child_name) {
+  return realm_builder.AddRoute(component_testing::Route{
+      .capabilities =
+          {component_testing::Protocol{fuchsia::sysmem::Allocator::Name_},
+           component_testing::Protocol{
+               fuchsia::tracing::provider::Registry::Name_},
+           component_testing::Protocol{"fuchsia.vulkan.loader.Loader"}},
+      .source = component_testing::ParentRef{},
+      .targets = {component_testing::ChildRef{child_name}}});
+}
+
+// static
+component_testing::RealmBuilder& CastRunnerLauncherV2::AddFontService(
+    component_testing::RealmBuilder& realm_builder,
+    std::string_view child_name) {
+  static constexpr char kFontsService[] = "isolated_fonts";
+  static constexpr char kFontsUrl[] =
+      "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm";
+  realm_builder.AddChild(kFontsService, kFontsUrl);
+  return AddSyslogRoutesFromParent(realm_builder, kFontsService)
+      .AddRoute(component_testing::Route{
+          .capabilities =
+              {
+                  component_testing::Directory{.name = "config-data",
+                                               .subdir = "fonts"},
+              },
+          .source = component_testing::ParentRef{},
+          .targets = {component_testing::ChildRef{kFontsService}}})
+      .AddRoute(component_testing::Route{
+          .capabilities =
+              {
+                  component_testing::Protocol{fuchsia::fonts::Provider::Name_},
+              },
+          .source = component_testing::ChildRef{kFontsService},
+          .targets = {component_testing::ChildRef{child_name}}});
+}
+
+// static
+component_testing::RealmBuilder& CastRunnerLauncherV2::AddTestUiStack(
+    component_testing::RealmBuilder& realm_builder,
+    std::string_view child_name) {
+  static constexpr char kTestUiStackService[] = "test_ui_stack";
+  static constexpr char kTestUiStackUrl[] =
+      "fuchsia-pkg://fuchsia.com/test-ui-stack#meta/test-ui-stack.cm";
+  realm_builder.AddChild(kTestUiStackService, kTestUiStackUrl);
+  AddSyslogRoutesFromParent(realm_builder, kTestUiStackService);
+  return AddVulkanRoutesFromParent(realm_builder, kTestUiStackService)
+      .AddRoute(component_testing::Route{
+          .capabilities =
+              {
+                  component_testing::Protocol{
+                      "fuchsia.scheduler.ProfileProvider"},
+              },
+          .source = component_testing::ParentRef(),
+          .targets = {component_testing::ChildRef{kTestUiStackService}}})
+      .AddRoute(component_testing::Route{
+          .capabilities =
+              {
+                  component_testing::Protocol{
+                      fuchsia::ui::composition::Allocator::Name_},
+                  component_testing::Protocol{
+                      fuchsia::ui::scenic::Scenic::Name_},
+              },
+          .source = component_testing::ChildRef{kTestUiStackService},
+          .targets = {component_testing::ChildRef{child_name}}});
 }
 
 }  // namespace test

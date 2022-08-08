@@ -9,6 +9,7 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include <memory>
+#include <string_view>
 
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
 #include "fuchsia_web/runners/cast/test/fake_feedback_service.h"
@@ -30,6 +31,34 @@ class CastRunnerLauncherV2 {
   std::unique_ptr<sys::ServiceDirectory> StartCastRunner();
 
  private:
+  // Adds routes to the child component named `child_name` to satisfy that
+  // child's use of syslog/client.shard.cml.
+  static component_testing::RealmBuilder& AddSyslogRoutesFromParent(
+      component_testing::RealmBuilder& realm_builder,
+      std::string_view child_name);
+
+  // Adds routes to the child component named `child_name` to satisfy that
+  // child's use of vulkan/client.shard.cml.
+  static component_testing::RealmBuilder& AddVulkanRoutesFromParent(
+      component_testing::RealmBuilder& realm_builder,
+      std::string_view child_name);
+
+  // Adds fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm as a child in the realm,
+  // routes all of its required capabilities from parent, and routes its
+  // fuchsia.fonts.Provider protocol to the child component named `child_name`
+  // in the realm.
+  static component_testing::RealmBuilder& AddFontService(
+      component_testing::RealmBuilder& realm_builder,
+      std::string_view child_name);
+
+  // Adds fuchsia-pkg://fuchsia.com/test-ui-stack#meta/test-ui-stack.cm as a
+  // child in the realm, routes all of its required capabilities from parent,
+  // and routes various of its protocols to the child component named
+  // `child_name` in the realm.
+  static component_testing::RealmBuilder& AddTestUiStack(
+      component_testing::RealmBuilder& realm_builder,
+      std::string_view child_name);
+
   const CastRunnerFeatures runner_features_;
   absl::optional<FakeFeedbackService> fake_feedback_service_;
   absl::optional<media::FakeAudioDeviceEnumeratorLocalComponent>

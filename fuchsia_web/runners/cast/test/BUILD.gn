@@ -43,6 +43,7 @@ source_set("integration") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
