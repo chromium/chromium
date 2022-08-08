@@ -82,7 +82,7 @@ function returnCustomizationId(response) {
 }
 // </if>
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 /**
  * Callback from the backend to inform if Lacros is primary or not.
  * @param {string} isPrimary True if it is primary.
@@ -124,7 +124,7 @@ function onLoadWork() {
   addWebUIListener('return-os-firmware-version', returnOsFirmwareVersion);
   addWebUIListener('return-arc-version', returnARCVersion);
   // </if>
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   addWebUIListener('return-lacros-primary', returnLacrosPrimary);
   // </if>
 
