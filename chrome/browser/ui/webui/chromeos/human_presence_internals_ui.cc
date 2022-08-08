@@ -27,6 +27,75 @@
 
 namespace {
 
+constexpr int kConsecutiveResultsFilterConfig = static_cast<int>(
+    hps::FeatureConfig::FilterConfigCase::kConsecutiveResultsFilterConfig);
+constexpr int kAverageFilterConfig = static_cast<int>(
+    hps::FeatureConfig::FilterConfigCase::kAverageFilterConfig);
+
+hps::FeatureConfig ParseFeatureConfigFromList(const base::Value::List& args) {
+  hps::FeatureConfig config;
+
+  // Check there is only one element in the list.
+  if (args.size() != 1) {
+    LOG(ERROR) << "HumanPresenceInternalsUIMessageHandler: Unexpected args "
+                  "list with size "
+               << args.size();
+    return config;
+  }
+
+  // Check the only element is a JSON dictionary.
+  const base::Value::Dict* arg0 = args[0].GetIfDict();
+  if (!arg0) {
+    LOG(ERROR) << "HumanPresenceInternalsUIMessageHandler: Unexpected arg0, "
+                  "expecting a dictionary.";
+    return config;
+  }
+
+  // Check that there is a valid filter_config_case in the map.
+  absl::optional<int> filter_config_case = arg0->FindInt("filter_config_case");
+  if (!filter_config_case.has_value() ||
+      (filter_config_case.value() != kConsecutiveResultsFilterConfig &&
+       filter_config_case.value() != kAverageFilterConfig)) {
+    LOG(ERROR) << "HumanPresenceInternalsUIMessageHandler: Unexpected "
+                  "filter_config_case.";
+    return config;
+  }
+
+  // For the case of kConsecutiveResultsFilterConfig.
+  if (filter_config_case.value() == kConsecutiveResultsFilterConfig) {
+    auto& consecutive_results_filter_config =
+        *config.mutable_consecutive_results_filter_config();
+    consecutive_results_filter_config.set_positive_score_threshold(
+        arg0->FindInt("positive_score_threshold").value_or(0));
+    consecutive_results_filter_config.set_negative_score_threshold(
+        arg0->FindInt("negative_score_threshold").value_or(0));
+    consecutive_results_filter_config.set_positive_count_threshold(
+        arg0->FindInt("positive_count_threshold").value_or(1));
+    consecutive_results_filter_config.set_negative_count_threshold(
+        arg0->FindInt("negative_count_threshold").value_or(1));
+    consecutive_results_filter_config.set_uncertain_count_threshold(
+        arg0->FindInt("uncertain_count_threshold").value_or(1));
+    return config;
+  }
+
+  // For the case of kAverageFilterConfig.
+  if (filter_config_case.value() == kAverageFilterConfig) {
+    auto& average_filter_config = *config.mutable_average_filter_config();
+    average_filter_config.set_average_window_size(
+        arg0->FindInt("average_window_size").value_or(1));
+    average_filter_config.set_positive_score_threshold(
+        arg0->FindInt("positive_score_threshold").value_or(0));
+    average_filter_config.set_negative_score_threshold(
+        arg0->FindInt("negative_score_threshold").value_or(0));
+    average_filter_config.set_default_uncertain_score(
+        arg0->FindInt("default_uncertain_score").value_or(1));
+    return config;
+  }
+
+  NOTREACHED();
+  return config;
+}
+
 // Class acting as a controller of the chrome://hps-internals WebUI.
 class HumanPresenceInternalsUIMessageHandler
     : public content::WebUIMessageHandler,
@@ -130,7 +199,8 @@ void HumanPresenceInternalsUIMessageHandler::OnShutdown() {
 void HumanPresenceInternalsUIMessageHandler::Connect(
     const base::Value::List& args) {
   if (!ash::HumanPresenceDBusClient::Get()) {
-    LOG(ERROR) << "HPS dbus client not available";
+    LOG(ERROR) << "HumanPresenceInternalsUIMessageHandler: HPS dbus client not "
+                  "available";
     return;
   }
   AllowJavascript();
@@ -177,12 +247,25 @@ void HumanPresenceInternalsUIMessageHandler::UpdateManifest(
 
 void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(
     const base::Value::List& args) {
-  if (!ash::HumanPresenceDBusClient::Get() ||
-      !hps::GetEnableLockOnLeaveConfig().has_value()) {
+  hps::FeatureConfig config;
+
+  // If the args is empty, then try to get config from finch.
+  if (args.empty()) {
+    if (!ash::HumanPresenceDBusClient::Get() ||
+        !hps::GetEnableLockOnLeaveConfig().has_value()) {
+      FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
+      return;
+    }
+    config = *hps::GetEnableLockOnLeaveConfig();
+  } else {
+    // Gets config from JSON list.
+    config = ParseFeatureConfigFromList(args);
+  }
+  if (config.filter_config_case() ==
+      hps::FeatureConfig::FilterConfigCase::FILTER_CONFIG_NOT_SET) {
     FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
     return;
   }
-  hps::FeatureConfig config(*hps::GetEnableLockOnLeaveConfig());
   config.set_report_raw_results(true);
   ash::HumanPresenceDBusClient::Get()->EnableHpsSense(config);
 }
@@ -204,12 +287,25 @@ void HumanPresenceInternalsUIMessageHandler::QueryLockOnLeave(
 
 void HumanPresenceInternalsUIMessageHandler::EnableSnoopingProtection(
     const base::Value::List& args) {
-  if (!ash::HumanPresenceDBusClient::Get() ||
-      !hps::GetEnableSnoopingProtectionConfig().has_value()) {
+  hps::FeatureConfig config;
+
+  // If the args is empty, then try to get config from finch.
+  if (args.empty()) {
+    if (!ash::HumanPresenceDBusClient::Get() ||
+        !hps::GetEnableSnoopingProtectionConfig().has_value()) {
+      FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
+      return;
+    }
+    config = *hps::GetEnableSnoopingProtectionConfig();
+  } else {
+    // Gets config from JSON list.
+    config = ParseFeatureConfigFromList(args);
+  }
+  if (config.filter_config_case() ==
+      hps::FeatureConfig::FilterConfigCase::FILTER_CONFIG_NOT_SET) {
     FireWebUIListener(hps::kHumanPresenceInternalsEnableErrorEvent);
     return;
   }
-  hps::FeatureConfig config(*hps::GetEnableSnoopingProtectionConfig());
   config.set_report_raw_results(true);
   ash::HumanPresenceDBusClient::Get()->EnableHpsNotify(config);
 }

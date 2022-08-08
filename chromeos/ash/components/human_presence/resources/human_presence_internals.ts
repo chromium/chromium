@@ -9,29 +9,43 @@ import {$} from 'chrome://resources/js/util.m.js';
 const POLL_INTERVAL_MS = 500;  // Matches hpsd polling rate.
 const MAX_HISTORY = 512 / 4;
 
+// The field number of the config in the hps::FeatureConfig proto.
+const CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_PROTO = 2;
+const AVERAGE_FILTER_CONFIG_INDEX_IN_PROTO = 3;
+// THe index of the config in the selection list in the ui.
+// This does not need to match the field above; but matching them causes less
+// confusion.
+const CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_SELECT_LIST = 2;
+const AVERAGE_FILTER_CONFIG_INDEX_IN_SELECT_LIST = 3;
+// The style to show the "Apply" button and the config panels.
+const CONFIG_DISPLAY_STYLE = 'inline-block';
+
+const FEATURE_NAME_SENSE = 'sense';
+const FEATURE_NAME_NOTIFY = 'notify';
+
 enum HpsResult {
   DISABLED = -1,
   UNKNOWN = 0,
   NEGATIVE = 1,
   POSITIVE = 2,
-};
+}
 
 interface ConnectionState {
   connected: boolean;
-};
+}
 
 interface IncomingHpsResult {
   state?: number;
   disabled?: boolean;
   inference_result?: number;
   inference_result_valid?: boolean;
-};
+}
 
 interface HpsResultState {
   result: HpsResult;
   inference_result?: number;
   inference_result_valid?: boolean;
-};
+}
 
 let g_senseState: HpsResultState = {result: HpsResult.DISABLED};
 let g_notifyState: HpsResultState = {result: HpsResult.DISABLED};
@@ -133,6 +147,11 @@ function initialize() {
   $('disable-sense').onclick = disableSense;
   $('enable-notify').onclick = enableNotify;
   $('disable-notify').onclick = disableNotify;
+  $('select-sense').onchange = () => selectFilter(FEATURE_NAME_SENSE);
+  $('select-notify').onchange = () => selectFilter(FEATURE_NAME_NOTIFY);
+  $('apply-select-sense').onclick = () => applySelectFilter(FEATURE_NAME_SENSE);
+  $('apply-select-notify').onclick = () =>
+      applySelectFilter(FEATURE_NAME_NOTIFY);
   $('show-info').onclick = showInfo;
   onConnected({connected: false});
   chrome.send('connect');
@@ -164,13 +183,103 @@ function disableNotify() {
   chrome.send('query_notify');
 }
 
+function parseFilterConfig(featureName: String) {
+  const selectFeature = $(`select-${featureName}`) as HTMLSelectElement;
+  if (selectFeature.selectedIndex !==
+          CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_SELECT_LIST &&
+      selectFeature.selectedIndex !==
+          AVERAGE_FILTER_CONFIG_INDEX_IN_SELECT_LIST) {
+    return undefined;
+  }
+
+  const filterName = selectFeature.options[selectFeature.selectedIndex]!.text;
+  const fields = new Map();
+  let filedNames: String[] = [];
+  if (selectFeature.selectedIndex ===
+      CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_SELECT_LIST) {
+    fields.set(
+        'filter_config_case', CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_PROTO);
+    filedNames = [
+      'positive_score_threshold', 'negative_score_threshold',
+      'positive_count_threshold', 'negative_count_threshold',
+      'uncertain_count_threshold'
+    ]
+  }
+
+  if (selectFeature.selectedIndex ===
+      AVERAGE_FILTER_CONFIG_INDEX_IN_SELECT_LIST) {
+    fields.set('filter_config_case', AVERAGE_FILTER_CONFIG_INDEX_IN_PROTO);
+    filedNames = [
+      'average_window_size', 'positive_score_threshold',
+      'negative_score_threshold', 'default_uncertain_score'
+    ]
+  }
+
+  // Extract each field based on the config selected.
+  for (const field of filedNames) {
+    const fieldInput =
+        $(`${featureName}-${filterName}-${field}`) as HTMLInputElement;
+    fields.set(field, parseInt(fieldInput.value, 10));
+  }
+  // Return the result as a JSON map.
+  return [Object.fromEntries(fields)];
+}
+
+function selectFilter(featureName: String) {
+  hideFilterConfigPanel(featureName);
+
+  const selectElement = $(`select-${featureName}`) as HTMLSelectElement;
+  // Show the "Apply" button.
+  if (selectElement.selectedIndex !== 0) {
+    $(`apply-select-${featureName}`).style.display = CONFIG_DISPLAY_STYLE;
+  }
+
+  // Show the config panel based on the selection.
+  if (selectElement.selectedIndex ===
+      CONSECUTIVE_RESULTS_FILTER_CONFIG_INDEX_IN_SELECT_LIST) {
+    $(`select-${featureName}-consecutive_results_filter_config`).style.display =
+        CONFIG_DISPLAY_STYLE;
+  }
+
+  if (selectElement.selectedIndex ==
+      AVERAGE_FILTER_CONFIG_INDEX_IN_SELECT_LIST) {
+    $(`select-${featureName}-average_filter_config`).style.display =
+        CONFIG_DISPLAY_STYLE;
+  }
+}
+
+function applySelectFilter(featureName: String) {
+  hideFilterConfigPanel(featureName);
+  const selectElement = $(`select-${featureName}`) as HTMLSelectElement;
+  // Apply new config if selected.
+  if (selectElement.selectedIndex !== 0) {
+    chrome.send(`disable_${featureName}`);
+    chrome.send(
+        `enable_${featureName}`, parseFilterConfig(featureName));
+    $(`apply-select-${featureName}-complete`).style.display =
+        CONFIG_DISPLAY_STYLE;
+  }
+  // Reset the selection.
+  selectElement.selectedIndex = 0;
+}
+
+function hideFilterConfigPanel(featureName: String) {
+  // Hide the label for indicating applying was complete.
+  $(`apply-select-${featureName}-complete`).style.display = 'none';
+  // Hide the "Apply" button.
+  $(`apply-select-${featureName}`).style.display = 'none';
+  // Hid both config panels.
+  $(`select-${featureName}-average_filter_config`).style.display = 'none';
+  $(`select-${featureName}-consecutive_results_filter_config`).style.display =
+      'none';
+}
+
 function showInfo() {
   ($('info-dialog') as any).showModal();
 }
 
 function updatePolling() {
-  const shouldPoll =
-      g_notifyState.result !== HpsResult.DISABLED ||
+  const shouldPoll = g_notifyState.result !== HpsResult.DISABLED ||
       g_senseState.result !== HpsResult.DISABLED;
   if (shouldPoll && g_pollTimer === undefined) {
     g_pollTimer = setInterval(recordSample, POLL_INTERVAL_MS);
@@ -189,8 +298,7 @@ function pruneSamples(container: HTMLElement) {
 }
 
 function recordSampleForFeature(state: HpsResultState, featureName: String) {
-  if (state.result === undefined)
-    return;
+  if (state.result === undefined) return;
   let sample = document.createElement('span');
   sample.className = hpsResultToClass(state.result);
   $(`${featureName}-history`).appendChild(sample);
@@ -202,10 +310,10 @@ function recordSampleForFeature(state: HpsResultState, featureName: String) {
     height = Math.max(0, Math.min(128, Math.floor(score / 2) + 64)) + 'px';
     $(`${featureName}-inference-result`).textContent = score.toString();
   } else {
-    $(`${featureName}-inference-result`).textContent = "—";
+    $(`${featureName}-inference-result`).textContent = '—';
   }
   if (!state.inference_result_valid) {
-    sample.classList.add("invalid");
+    sample.classList.add('invalid');
   }
   sample.style.height = height;
   $(`${featureName}-inference-result`).style.height = height;
@@ -216,8 +324,8 @@ function recordSampleForFeature(state: HpsResultState, featureName: String) {
 }
 
 function recordSample() {
-  recordSampleForFeature(g_senseState, 'sense');
-  recordSampleForFeature(g_notifyState, 'notify');
+  recordSampleForFeature(g_senseState, FEATURE_NAME_SENSE);
+  recordSampleForFeature(g_notifyState, FEATURE_NAME_NOTIFY);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

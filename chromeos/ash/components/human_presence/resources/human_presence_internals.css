@@ -145,3 +145,41 @@ dialog {
   margin-bottom: .5em;
   font-variant-numeric: tabular-nums;
 }
+
+.select_panel {
+  margin-top: 30px;
+}
+
+.apply-button {
+  display: none;
+  cursor: pointer;
+  width: 100px;
+  text-align: center;
+  margin-left: 10px;
+}
+
+.apply-label {
+  display: none;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.filter_config_panel {
+  display: none;
+  margin-left: -90px;
+}
+
+.filter_config_panel label {
+  width: 300px;
+  text-align: right;
+  float: left;
+  margin-top: 2px;
+}
+
+.filter_config_panel input {
+  text-align: right;
+  width: 40px;
+  float: left;
+  margin-left: 10px;
+  margin-top: 2px;
+}
