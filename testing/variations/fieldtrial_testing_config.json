@@ -9452,6 +9452,21 @@
             ]
         }
     ],
+    "UseGetrandomForRandBytes": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseGetrandomForRandBytes"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseHtmlAttributeNameLookup": [
         {
             "platforms": [
