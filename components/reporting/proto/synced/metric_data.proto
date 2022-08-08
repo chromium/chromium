@@ -239,6 +239,24 @@ message NetworksInfo {
   repeated NetworkInterface network_interfaces = 1;
 }
 
+// Touch screens info data.
+message TouchScreenInfo {
+  // The touchpad library name used by the input stack.
+  optional string library_name = 1;
+  // List of the touchscreen devices.
+  repeated TouchScreenDevice touch_screen_devices = 2;
+}
+
+// Information about the internal touch screen of a device.
+message TouchScreenDevice {
+  // Name of the device (touchscreen).
+  optional string display_name = 1;
+  // Number of touch points this device supports.
+  optional int32 touch_points = 2;
+  // True if the specified touchscreen device is stylus capable.
+  optional bool has_stylus = 3;
+}
+
 // Information about keylocker. This is supported on Intel CPUs.
 message KeylockerInfo {
   // If keylocker is supported on the devices CPUs.
@@ -263,6 +281,8 @@ message InfoData {
   optional MemoryInfo memory_info = 3;
   // Network interfaces info.
   optional NetworksInfo networks_info = 4;
+  // Touch screen info.
+  optional TouchScreenInfo touch_screen_info = 5;
 }
 
 // Audio telemetry data recorded intermittently
