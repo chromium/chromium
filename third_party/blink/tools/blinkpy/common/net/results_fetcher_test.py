@@ -30,58 +30,57 @@ import json
 import logging
 import unittest
 
+from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.results_fetcher import TestResultsFetcher, Build, filter_latest_builds
-from blinkpy.common.net.web_mock import MockWeb
+from blinkpy.common.net.web_mock import MockWeb, MockResponse
 from blinkpy.common.system.log_testing import LoggingTestCase
 
 
 class BuilderTest(LoggingTestCase):
     def setUp(self):
         self.set_logging_level(logging.DEBUG)
+        self.fetcher = TestResultsFetcher.from_host(MockHost())
 
     def test_results_url_no_build_number(self):
         self.assertEqual(
-            TestResultsFetcher().results_url('Test Builder'),
+            self.fetcher.results_url('Test Builder'),
             'https://test-results.appspot.com/data/layout_results/Test_Builder/results/layout-test-results'
         )
 
     @unittest.skip('crbug/1234319 disable to unblock the CI')
     def test_results_url_with_build_number(self):
         self.assertEqual(
-            TestResultsFetcher().results_url('Test Builder', 10),
+            self.fetcher.results_url('Test Builder', 10),
             'https://test-results.appspot.com/data/layout_results/Test_Builder/10/layout-test-results'
         )
 
     def test_results_url_with_build_number_step_name(self):
         self.assertEqual(
-            TestResultsFetcher().results_url('Test Builder', 10,
-                                             'blink_web_tests (with patch)'),
+            self.fetcher.results_url('Test Builder', 10,
+                                     'blink_web_tests (with patch)'),
             'https://test-results.appspot.com/data/layout_results/Test_Builder'
             '/10/blink_web_tests%20%28with%20patch%29/layout-test-results')
 
     def test_results_url_with_non_numeric_build_number(self):
         with self.assertRaisesRegexp(AssertionError,
                                      'expected numeric build number'):
-            TestResultsFetcher().results_url('Test Builder', 'ba5eba11')
+            self.fetcher.results_url('Test Builder', 'ba5eba11')
 
     def test_builder_results_url_base(self):
         self.assertEqual(
-            TestResultsFetcher().builder_results_url_base(
-                'WebKit Mac10.8 (dbg)'),
+            self.fetcher.builder_results_url_base('WebKit Mac10.8 (dbg)'),
             'https://test-results.appspot.com/data/layout_results/WebKit_Mac10_8__dbg_'
         )
 
     def test_accumulated_results_url(self):
         self.assertEqual(
-            TestResultsFetcher().accumulated_results_url_base(
-                'WebKit Mac10.8 (dbg)'),
+            self.fetcher.accumulated_results_url_base('WebKit Mac10.8 (dbg)'),
             'https://test-results.appspot.com/data/layout_results/WebKit_Mac10_8__dbg_/results/layout-test-results'
         )
 
     def test_fetch_web_test_results_with_no_results_fetched(self):
-        fetcher = TestResultsFetcher()
-        fetcher.web = MockWeb()
-        results = fetcher.fetch_web_test_results(fetcher.results_url('B'))
+        results = self.fetcher.fetch_web_test_results(
+            self.fetcher.results_url('B'))
         self.assertIsNone(results)
         self.assertLog([
             'DEBUG: Got 404 response from:\n'
@@ -89,8 +88,7 @@ class BuilderTest(LoggingTestCase):
         ])
 
     def test_fetch_results_with_weird_step_name(self):
-        fetcher = TestResultsFetcher()
-        fetcher.web = MockWeb(
+        self.fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=123&'
                 'callback=ADD_RESULTS&builder=builder&name=full_results.json':
@@ -108,36 +106,31 @@ class BuilderTest(LoggingTestCase):
                 }).encode('utf8', 'replace')
             })
         step_name = 'blink_web_tests on Intel GPU (with patch)'
-        results = fetcher.fetch_results(Build('builder', 123), False,
-                                        step_name)
+        results = self.fetcher.fetch_results(Build('builder', 123), False,
+                                             step_name)
         self.assertEqual(
             results._results,  # pylint: disable=protected-access
             {'passed': True})
         self.assertLog([])
 
     def test_fetch_results_without_build_number(self):
-        fetcher = TestResultsFetcher()
-        self.assertIsNone(fetcher.fetch_results(Build('builder', None)))
+        self.assertIsNone(self.fetcher.fetch_results(Build('builder', None)))
 
     def test_fetch_webdriver_results_without_build_number(self):
-        fetcher = TestResultsFetcher()
         self.assertIsNone(
-            fetcher.fetch_webdriver_test_results(
-                Build('builder', None), 'bar'))
+            self.fetcher.fetch_webdriver_test_results(Build('builder', None),
+                                                      'bar'))
         self.assertLog(
             ['DEBUG: Builder name or build number or master is None\n'])
 
     def test_fetch_webdriver_results_without_master(self):
-        fetcher = TestResultsFetcher()
         self.assertIsNone(
-            fetcher.fetch_webdriver_test_results(Build('builder', 1), ''))
+            self.fetcher.fetch_webdriver_test_results(Build('builder', 1), ''))
         self.assertLog(
             ['DEBUG: Builder name or build number or master is None\n'])
 
     def test_fetch_webdriver_test_results_with_no_results(self):
-        fetcher = TestResultsFetcher()
-        fetcher.web = MockWeb()
-        results = fetcher.fetch_webdriver_test_results(
+        results = self.fetcher.fetch_webdriver_test_results(
             Build('bar-rel', 123), 'foo.chrome')
         self.assertIsNone(results)
         self.assertLog([
@@ -148,8 +141,7 @@ class BuilderTest(LoggingTestCase):
         ])
 
     def test_fetch_webdriver_results_success(self):
-        fetcher = TestResultsFetcher()
-        fetcher.web = MockWeb(
+        self.fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=123&'
                 'master=foo.chrome&builder=bar-rel&'
@@ -159,7 +151,7 @@ class BuilderTest(LoggingTestCase):
                     'passed': True
                 }).encode('utf8', 'replace'),
             })
-        results = fetcher.fetch_webdriver_test_results(
+        results = self.fetcher.fetch_webdriver_test_results(
             Build('bar-rel', 123), 'foo.chrome')
         self.assertEqual(
             results._results,  # pylint: disable=protected-access
@@ -167,19 +159,65 @@ class BuilderTest(LoggingTestCase):
         self.assertLog([])
 
     def test_get_full_builder_url(self):
-        fetcher = TestResultsFetcher()
         self.assertEqual(
-            fetcher.get_full_builder_url('https://storage.googleapis.com',
-                                         'foo bar'),
+            self.fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                              'foo bar'),
             'https://storage.googleapis.com/foo_bar')
         self.assertEqual(
-            fetcher.get_full_builder_url('https://storage.googleapis.com',
-                                         'foo.bar'),
+            self.fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                              'foo.bar'),
             'https://storage.googleapis.com/foo_bar')
         self.assertEqual(
-            fetcher.get_full_builder_url('https://storage.googleapis.com',
-                                         'foo(bar)'),
+            self.fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                              'foo(bar)'),
             'https://storage.googleapis.com/foo_bar_')
+
+    def test_fetch_wpt_report_urls(self):
+        res = {
+            'artifacts': [{
+                'name': 'report1',
+                'artifactId': 'wpt_reports_dada.json',
+                'fetchUrl': 'https://a.b.c/report1.json',
+                'sizeBytes': '8472164'
+            }, {
+                'name': 'report2',
+                'artifactId': 'wpt_reports_dada.json',
+                'fetchUrl': 'https://a.b.c/report2.json',
+                'sizeBytes': '8455564'
+            }, {
+                'name': 'other',
+                'artifactId': 'other_dada.json',
+                'fetchUrl': 'https://a.b.c/other.json',
+                'sizeBytes': '9845'
+            }]
+        }
+        self.fetcher.web.responses.append({
+            'status_code': 200,
+            'body': json.dumps(res).encode(),
+        })
+        self.assertEqual(
+            self.fetcher.fetch_wpt_report_urls("31415926535"),
+            ['https://a.b.c/report1.json', 'https://a.b.c/report2.json'])
+
+        res = {
+            'artifacts': [{
+                'name': 'other',
+                'artifactId': 'other_dada.json',
+                'fetchUrl': 'https://a.b.c/other.json',
+                'sizeBytes': '9845'
+            }]
+        }
+        self.fetcher.web.responses.append({
+            'status_code': 200,
+            'body': json.dumps(res).encode(),
+        })
+        self.assertEqual(self.fetcher.fetch_wpt_report_urls("31415926535"), [])
+
+        self.fetcher.web.responses.append({
+            'status_code': 200,
+            'body': b'{}',
+        })
+        self.assertEqual(self.fetcher.fetch_wpt_report_urls("31415926535"), [])
 
 
 class TestResultsFetcherHelperFunctionTest(unittest.TestCase):

@@ -12,14 +12,21 @@ from blinkpy.common.path_finder import PathFinder
 class LuciAuth(object):
     def __init__(self, host):
         self._host = host
-        finder = PathFinder(host.filesystem)
+        self._finder = PathFinder(host.filesystem)
+
+    @property
+    def _luci_auth_executable(self):
         luci_auth_bin = ('luci-auth.bat'
-                         if host.platform.is_win() else 'luci-auth')
-        self._luci_auth_path = host.filesystem.join(finder.depot_tools_base(),
-                                                    luci_auth_bin)
+                         if self._host.platform.is_win() else 'luci-auth')
+        depot_tools_base = self._finder.depot_tools_base()
+        if depot_tools_base:
+            return self._host.filesystem.join(depot_tools_base, luci_auth_bin)
+        # If `//third_party/depot_tools` is not found, try using `luci-auth` in
+        # the current `PATH`.
+        return luci_auth_bin
 
     def get_access_token(self):
         # ScriptError will be raised if luci-auth fails.
         output = self._host.executive.run_command(
-            [self._luci_auth_path, 'token'])
+            [self._luci_auth_executable, 'token'])
         return output.strip()

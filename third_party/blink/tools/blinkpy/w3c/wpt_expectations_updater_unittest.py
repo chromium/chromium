@@ -9,8 +9,6 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.results_fetcher_mock import (
-    MockTestResultsFetcher, BuilderStep)
 from blinkpy.common.net.web_test_results import WebTestResult, WebTestResults
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive import ScriptError
@@ -216,7 +214,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_get_failing_results_dict_no_results(self):
         host = self.mock_host()
-        host.results_fetcher = MockTestResultsFetcher()
         host.results_fetcher.set_results_to_resultdb(Build('MOCK Try Mac10.10', 123), None)
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(

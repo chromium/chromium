@@ -37,7 +37,7 @@ import time
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.common.net.web import Web
+from blinkpy.common.net.rpc import ResultDBClient
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.web_tests.builder_list import BuilderList
@@ -76,10 +76,15 @@ class TestResultsFetcher(object):
         https://www.chromium.org/developers/the-json-test-results-format
     """
 
-    def __init__(self, builders=None):
-        self.web = Web()
+    def __init__(self, web, luci_auth, builders=None):
+        self.web = web
+        self._resultdb_client = ResultDBClient(web, luci_auth)
         self.builders = builders or BuilderList.load_default_builder_list(
             FileSystem())
+
+    @classmethod
+    def from_host(cls, host):
+        return cls(host.web, LuciAuth(host), host.builders)
 
     def results_url(self, builder_name, build_number=None, step_name=None):
         """Returns a URL for one set of archived web test results.
@@ -317,6 +322,39 @@ class TestResultsFetcher(object):
             _log.debug('Got 404 response from:\n%s', url)
             return None
         return WebTestResults.results_from_string(data)
+
+    def fetch_wpt_report_urls(self, *build_ids):
+        """Get a list of URLs pointing to a given build's wptreport artifacts.
+
+        wptreports are a wptrunner log format used to store test results.
+
+        The URLs look like:
+            https://results.usercontent.cr.dev/invocations/ \
+                task-chromium-swarm.appspot.com-58590ed6228fd611/ \
+                artifacts/wpt_reports_android_webview_01.json \
+                ?token=AXsiX2kiOiIxNjQx...
+
+        Arguments:
+            build_ids: One or more build IDs retrieved from Buildbucket.
+
+        Returns:
+            A list of URLs, sorted by (product, shard index). Note that the URLs
+            contain a time-sensitive `token` query parameter required for
+            access.
+        """
+        artifacts = self._resultdb_client.query_artifacts(
+            list(build_ids), {
+                'followEdges': {
+                    'includedInvocations': True,
+                },
+            })
+        filename_pattern = re.compile(r'wpt_reports_(.*)\.json')
+        url_to_index = {}
+        for artifact in artifacts:
+            filename_match = filename_pattern.match(artifact['artifactId'])
+            if filename_match:
+                url_to_index[artifact['fetchUrl']] = filename_match[0]
+        return sorted(url_to_index, key=url_to_index.get)
 
 
 def filter_latest_builds(builds):

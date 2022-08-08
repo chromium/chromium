@@ -40,6 +40,7 @@
 //third_party/blink/tools/blinkpy/common/net/luci_auth.py
 //third_party/blink/tools/blinkpy/common/net/network_transaction.py
 //third_party/blink/tools/blinkpy/common/net/results_fetcher.py
+//third_party/blink/tools/blinkpy/common/net/rpc.py
 //third_party/blink/tools/blinkpy/common/net/web.py
 //third_party/blink/tools/blinkpy/common/net/web_test_results.py
 //third_party/blink/tools/blinkpy/common/path_finder.py

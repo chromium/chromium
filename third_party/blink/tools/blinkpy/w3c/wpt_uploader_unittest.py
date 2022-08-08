@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
+
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.rpc_mock import MockRpc
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.wpt_uploader import WptReportUploader
 
@@ -13,41 +14,10 @@ class WptReportUploaderTest(LoggingTestCase):
         super(WptReportUploaderTest, self).setUp()
         self.host = MockHost()
 
-    def test_fetch_wpt_report_urls(self):
-        uploader = WptReportUploader(self.host)
-        uploader._rpc = MockRpc(self.host)
-        res = {'artifacts': [{'name': 'report1',
-                              'artifactId': 'wpt_reports_dada.json',
-                              'fetchUrl': 'https://a.b.c/report1.json',
-                              'sizeBytes': '8472164'},
-                             {'name': 'report2',
-                              'artifactId': 'wpt_reports_dada.json',
-                              'fetchUrl': 'https://a.b.c/report2.json',
-                              'sizeBytes': '8455564'},
-                             {'name': 'other',
-                              'artifactId': 'other_dada.json',
-                              'fetchUrl': 'https://a.b.c/other.json',
-                              'sizeBytes': '9845'}]}
-        uploader._rpc.set_response(res)
-        self.assertEqual(uploader.fetch_wpt_report_urls("31415926535"),
-                         ['https://a.b.c/report1.json',
-                          'https://a.b.c/report2.json'])
-
-        res = {'artifacts': [{'name': 'other',
-                              'artifactId': 'other_dada.json',
-                              'fetchUrl': 'https://a.b.c/other.json',
-                              'sizeBytes': '9845'}]}
-        uploader._rpc.set_response(res)
-        self.assertEqual(uploader.fetch_wpt_report_urls("31415926535"), [])
-
-        res = {}
-        uploader._rpc.set_response(res)
-        self.assertEqual(uploader.fetch_wpt_report_urls("31415926535"), [])
-
     def test_fetch_latest_complete_build(self):
         uploader = WptReportUploader(self.host)
-        uploader._rpc = MockRpc(self.host)
         builder = ("chromium", "ci", "test_builder")
+
         expected = {"id": "31415926535",
                     "builder": {"builder": "test_builder"},
                     "status": "SUCCESS",
@@ -61,12 +31,22 @@ class WptReportUploaderTest(LoggingTestCase):
                            "builder": {"builder": "test_builder"},
                            "status": "SUCCESS",
                            "number": "98"}]}
-        uploader._rpc.set_response(res)
+        self.host.results_fetcher.web.responses.append({
+            'status_code':
+            200,
+            'body':
+            json.dumps(res).encode(),
+        })
         build = uploader.fetch_latest_complete_build(*builder)
         self.assertEqual(build, expected)
 
         res = {"builds": []}
-        uploader._rpc.set_response(res)
+        self.host.results_fetcher.web.responses.append({
+            'status_code':
+            200,
+            'body':
+            json.dumps(res).encode(),
+        })
         build = uploader.fetch_latest_complete_build(*builder)
         self.assertIsNone(build)
 

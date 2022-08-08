@@ -114,7 +114,7 @@ class MockHost(MockSystemHost):
                 'is_try_builder': True,
             },
         })
-        self.results_fetcher = MockTestResultsFetcher(self.builders)
+        self.results_fetcher = MockTestResultsFetcher.from_host(self)
 
     def git(self, path=None):
         if path:
