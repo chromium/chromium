@@ -48,3 +48,8 @@
       </settings-safety-check-chrome-cleaner-child>
 </if>
     </iron-collapse>
+    <template is="dom-if" if="[[safetyCheckPermissionsEnabled_]]"
+        restamp>
+      <settings-safety-check-unused-site-permissions>
+      </settings-safety-check-unused-site-permissions>
+    </template>

@@ -397,6 +397,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
 
+  html_source->AddBoolean(
+      "safetyCheckPermissionsEnabled",
+      base::FeatureList::IsEnabled(features::kSafetyCheckPermissions));
+
   TryShowHatsSurveyWithTimeout();
 }
 

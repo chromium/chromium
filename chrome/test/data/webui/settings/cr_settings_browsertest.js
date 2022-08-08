@@ -341,6 +341,26 @@ TEST_F('CrSettingsSafetyCheckPageTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsSafetyCheckPermissionsTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/safety_check_permissions_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'features::kSafetyCheckPermissions',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsSafetyCheckPermissionsTest', 'All', function() {
+  mocha.run();
+});
+
 GEN('#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 var CrSettingsSafetyCheckChromeCleanerTest =
     class extends CrSettingsBrowserTest {

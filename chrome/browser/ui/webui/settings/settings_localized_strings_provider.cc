@@ -1947,6 +1947,8 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
     {"safetyCheckIconWarningAriaLabel",
      IDS_SETTINGS_SAFETY_CHECK_ICON_WARNING_ARIA_LABEL},
     {"safetyCheckReview", IDS_SETTINGS_SAFETY_CHECK_REVIEW},
+    {"safetyCheckUnusedSitePermissionsPrimaryLabel",
+     IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL},
     {"safetyCheckUpdatesPrimaryLabel",
      IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL},
     {"safetyCheckUpdatesButtonAriaLabel", IDS_UPDATE_RECOMMENDED_DIALOG_TITLE},

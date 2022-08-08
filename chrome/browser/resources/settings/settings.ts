@@ -76,6 +76,7 @@ export {SettingsSafetyCheckExtensionsChildElement} from './safety_check_page/saf
 export {SettingsSafetyCheckPageElement} from './safety_check_page/safety_check_page.js';
 export {SettingsSafetyCheckPasswordsChildElement} from './safety_check_page/safety_check_passwords_child.js';
 export {SettingsSafetyCheckSafeBrowsingChildElement} from './safety_check_page/safety_check_safe_browsing_child.js';
+export {SettingsSafetyCheckUnusedSitePermissionsElement} from './safety_check_page/safety_check_unused_site_permissions.js';
 export {SettingsSafetyCheckUpdatesChildElement} from './safety_check_page/safety_check_updates_child.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';

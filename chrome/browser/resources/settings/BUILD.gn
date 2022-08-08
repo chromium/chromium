@@ -204,6 +204,7 @@ build_webui("build") {
     "safety_check_page/safety_check_page.ts",
     "safety_check_page/safety_check_passwords_child.ts",
     "safety_check_page/safety_check_safe_browsing_child.ts",
+    "safety_check_page/safety_check_unused_site_permissions.ts",
     "safety_check_page/safety_check_updates_child.ts",
     "search_engines_page/omnibox_extension_entry.ts",
     "search_engines_page/search_engine_delete_confirmation_dialog.ts",

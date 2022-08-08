@@ -92,6 +92,8 @@ non_preprocessed_files = [
   "reset_page_test.ts",
   "reset_profile_banner_test.ts",
   "safety_check_page_test.ts",
+  "safety_check_permissions_test.ts",
+  "safety_check_test_utils.ts",
   "search_engines_page_test.ts",
   "search_page_test.ts",
   "search_settings_test.ts",
