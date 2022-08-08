@@ -66,8 +66,8 @@ extern const char kAutofillIOSDelayBetweenFieldsName[];
 extern const char kAutofillIOSDelayBetweenFieldsDescription[];
 
 // Title and description for the flag to parse IBAN fields in Autofill.
-extern const char kAutofillParseIbanFieldsName[];
-extern const char kAutofillParseIbanFieldsDescription[];
+extern const char kAutofillParseIBANFieldsName[];
+extern const char kAutofillParseIBANFieldsDescription[];
 
 // Title and description for the flag to parse promo code fields in Autofill.
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];

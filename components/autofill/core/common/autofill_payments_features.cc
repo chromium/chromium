@@ -161,7 +161,7 @@ const base::Feature kAutofillFillMerchantPromoCodeFields{
 
 // When enabled, Autofill will attempt to find International Bank Account Number
 // (IBAN) fields when parsing forms.
-const base::Feature kAutofillParseIbanFields{"AutofillParseIbanFields",
+const base::Feature kAutofillParseIBANFields{"AutofillParseIBANFields",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, Autofill will attempt to find merchant promo/coupon/gift code

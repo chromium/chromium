@@ -57158,6 +57158,7 @@ from previous Chrome versions.
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
   <int value="-1165112418" label="PwaUpdateDialogForName:enabled"/>
+  <int value="-1164940780" label="AutofillParseIBANFields:disabled"/>
   <int value="-1164858657" label="CrostiniUsbAllowUnsupported:disabled"/>
   <int value="-1164578922" label="BookmarksRefresh:enabled"/>
   <int value="-1163777157" label="ContextualSearchSimplifiedServer:disabled"/>
@@ -57921,7 +57922,6 @@ from previous Chrome versions.
   <int value="-693881124"
       label="AutofillEnableSupportForMoreStructureInNames:disabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
-  <int value="-688419609" label="AutofillParseIbanFields:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>
   <int value="-686788480" label="OsSettingsAppNotificationsPage:enabled"/>
@@ -61157,6 +61157,7 @@ from previous Chrome versions.
   <int value="1383197819" label="IncognitoScreenshot:enabled"/>
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>
+  <int value="1384102751" label="AutofillParseIBANFields:enabled"/>
   <int value="1384614036" label="disable-unified-media-pipeline"/>
   <int value="1385833812" label="WinrtGeolocationImplementation:disabled"/>
   <int value="1386300777"
@@ -62256,7 +62257,6 @@ from previous Chrome versions.
   <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
-  <int value="2103706493" label="AutofillParseIbanFields:enabled"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>
   <int value="2104439359"
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>

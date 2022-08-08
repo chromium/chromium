@@ -8898,9 +8898,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kIgnoreSyncEncryptionKeysLongMissing)},
 
     {"autofill-parse-iban-fields",
-     flag_descriptions::kAutofillParseIbanFieldsName,
-     flag_descriptions::kAutofillParseIbanFieldsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillParseIbanFields)},
+     flag_descriptions::kAutofillParseIBANFieldsName,
+     flag_descriptions::kAutofillParseIBANFieldsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillParseIBANFields)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-fido-progress-dialog",

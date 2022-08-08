@@ -76,8 +76,8 @@ const char kAutofillIOSDelayBetweenFieldsDescription[] =
     "Delay between the different fields of a form being autofilled. In "
     "milliseconds.";
 
-const char kAutofillParseIbanFieldsName[] = "Parse IBAN fields in forms";
-const char kAutofillParseIbanFieldsDescription[] =
+const char kAutofillParseIBANFieldsName[] = "Parse IBAN fields in forms";
+const char kAutofillParseIBANFieldsDescription[] =
     "When enabled, Autofill will attempt to find International Bank Account "
     "Number (IBAN) fields when parsing forms.";
 
