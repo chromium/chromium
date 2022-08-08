@@ -164,7 +164,7 @@ def _GenerateSequenceOfRandomTokens():
     """
     result = random.choice(BASE_TOKENS)
 
-    for _ in xrange(random.randint(1, MAX_NUM_OF_TOKENS)):
+    for _ in range(random.randint(1, MAX_NUM_OF_TOKENS)):
         # Get random token.
         token = random.choice(TOKENS)
 

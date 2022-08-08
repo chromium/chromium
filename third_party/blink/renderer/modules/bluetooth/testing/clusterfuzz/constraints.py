@@ -79,20 +79,29 @@ def _GetFuzzedJsString(s):
     Returns:
       A single line string surrounded by quotes.
     """
+
+    def _PostProcFuzzyStr(fuzzed):
+        # Escape 'escape' characters.
+        fuzzed = fuzzed.replace('\\', r'\\')
+        # Escape quote characters.
+        fuzzed = fuzzed.replace('\'', r'\'')
+        # Put everything in a single line.
+        fuzzed = '\\n'.join(fuzzed.split())
+        return _ToJsStr(fuzzed)
+
     while True:
         fuzzed_string = fuzzy_types.FuzzyString(s)
-        try:
-            fuzzed_string = fuzzed_string.decode('utf8')
-        except UnicodeDecodeError:
-            print 'Can\'t decode fuzzed string. Trying again.'
+        if isinstance(fuzzed_string, bytes):
+            try:
+                fuzzed_string = fuzzed_string.decode('utf-8')
+            except UnicodeDecodeError:
+                print("Can't decode fuzzed bytes. Trying again.")
+                continue
+            else:
+                return _PostProcFuzzyStr(fuzzed_string)
         else:
-            # Escape 'escape' characters.
-            fuzzed_string = fuzzed_string.replace('\\', r'\\')
-            # Escape quote characters.
-            fuzzed_string = fuzzed_string.replace('\'', r'\'')
-            # Put everything in a single line.
-            fuzzed_string = '\\n'.join(fuzzed_string.split())
-            return _ToJsStr(fuzzed_string)
+            assert isinstance(fuzzed_string, str)
+            return _PostProcFuzzyStr(fuzzed_string)
 
 
 def _get_array_of_random_ints(max_length, max_value):
@@ -101,7 +110,7 @@ def _get_array_of_random_ints(max_length, max_value):
     exp_max_value = math.log(max_value, 2)
     return '[{}]'.format(', '.join(
         str(utils.UniformExpoInteger(0, exp_max_value))
-        for _ in xrange(length)))
+        for _ in range(length)))
 
 
 def _get_typed_array():
@@ -389,7 +398,7 @@ def get_pick_a_service():
         ' service = Array.isArray(services)'\
         ' ? services[{} % services.length]'\
         ' : services'
-    return string.format(random.randint(0, sys.maxint))
+    return string.format(random.randint(0, sys.maxsize))
 
 
 def get_pick_a_characteristic():
@@ -401,7 +410,7 @@ def get_pick_a_characteristic():
         ' characteristic = Array.isArray(characteristics)'\
         ' ? characteristics[{} % characteristics.length]'\
         ' : characteristics'
-    return string.format(random.randint(0, sys.maxint))
+    return string.format(random.randint(0, sys.maxsize))
 
 
 def get_reload_id():

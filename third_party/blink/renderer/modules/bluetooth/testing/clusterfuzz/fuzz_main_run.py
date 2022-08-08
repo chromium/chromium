@@ -20,12 +20,11 @@ from fuzzer_helpers import FillInParameter
 import parameter_fuzzer
 import test_case_fuzzer
 
-JS_FILES_AND_PARAMETERS = ((u'testharness.js', u'INCLUDE_TESTHARNESS'),
-                           (u'testharnessreport.js',
-                            u'INCLUDE_REPORT'), (u'bluetooth-test.js',
-                                                 u'INCLUDE_BLUETOOTH_TEST'),
-                           (u'bluetooth-fake-devices.js',
-                            u'INCLUDE_BLUETOOTH_FAKE_DEVICES'))
+JS_FILES_AND_PARAMETERS = (('testharness.js', 'INCLUDE_TESTHARNESS'),
+                           ('testharnessreport.js', 'INCLUDE_REPORT'),
+                           ('bluetooth-test.js', 'INCLUDE_BLUETOOTH_TEST'),
+                           ('bluetooth-fake-devices.js',
+                            'INCLUDE_BLUETOOTH_FAKE_DEVICES'))
 
 SCRIPT_PREFIX = '<script type="text/javascript">\n'
 SCRIPT_SUFFIX = '\n</script>\n'
@@ -81,14 +80,13 @@ def FuzzTemplate(template_path, resources_path):
       resources_path: Path to the js files that need to be included.
 
     Returns:
-      A string containing the test case.
+      A binary string containing the test case.
     """
-    print 'Generating test file based on {}'.format(template_path)
+    print('Generating test file based on {}'.format(template_path))
 
     # Read the template.
-    template_file_handle = open(template_path)
-    template_file_data = template_file_handle.read().decode('utf-8')
-    template_file_handle.close()
+    with open(template_path, 'r', encoding='utf-8') as template_in:
+        template_file_data = template_in.read()
 
     # Generate a test file based on the template.
     generated_test = test_case_fuzzer.GenerateTestFile(template_file_data)
@@ -98,9 +96,9 @@ def FuzzTemplate(template_path, resources_path):
     # Add includes
     for (js_file_name, include_parameter) in JS_FILES_AND_PARAMETERS:
         # Read js file.
-        js_file_handle = open(os.path.join(resources_path, js_file_name))
-        js_file_data = js_file_handle.read().decode('utf-8')
-        js_file_handle.close()
+        js_file_path = os.path.join(resources_path, js_file_name)
+        with open(js_file_path, 'r', encoding='utf-8') as js_in:
+            js_file_data = js_in.read()
 
         js_file_data = (SCRIPT_PREFIX + js_file_data + SCRIPT_SUFFIX)
 
@@ -128,8 +126,8 @@ def WriteTestFile(test_file_data, test_file_prefix, output_dir):
         prefix=test_file_prefix, suffix='.html', dir=output_dir)
 
     with os.fdopen(file_descriptor, 'wb') as output:
-        print 'Writing {} bytes to \'{}\''.format(
-            len(test_file_data), file_path)
+        print('Writing {} bytes to \'{}\''.format(len(test_file_data),
+                                                  file_path))
         output.write(test_file_data)
 
     return file_path
@@ -138,10 +136,10 @@ def WriteTestFile(test_file_data, test_file_prefix, output_dir):
 def main():
     args = _GetArguments()
 
-    print 'Generating {} test file(s).'.format(args.no_of_files)
-    print 'Writing test files to: \'{}\''.format(args.output_dir)
+    print('Generating {} test file(s).'.format(args.no_of_files))
+    print('Writing test files to: \'{}\''.format(args.output_dir))
     if args.input_dir:
-        print 'Reading data bundle from: \'{}\''.format(args.input_dir)
+        print('Reading data bundle from: \'{}\''.format(args.input_dir))
 
     # Get Templates
     current_path = os.path.dirname(os.path.realpath(__file__))
@@ -165,8 +163,8 @@ def main():
                                        args.output_dir)
 
         if args.content_shell_dir:
-            print '{} --run-web-tests {}'.format(args.content_shell_dir,
-                                                 test_file_path)
+            print('{} --run-web-tests {}'.format(args.content_shell_dir,
+                                                 test_file_path))
 
 
 if __name__ == '__main__':

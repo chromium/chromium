@@ -13,8 +13,6 @@ import sys
 import textwrap
 
 from . import utils
-if sys.version_info.major == 3:
-  unichr = chr    # pylint: disable=redefined-builtin
 
 
 def FuzzyInt(n):
@@ -37,36 +35,33 @@ def FuzzyInt(n):
 def FuzzyString(s):
   """Returns a string derived from the input by one of several mutations."""
   # First try some mutations that try to recognize certain types of strings
-  try:
-    s.decode("utf-8")  # These mutations only make sense for textual data
-  except UnicodeDecodeError:
-    pass
-  else:
-    chained_mutations = [
-      FuzzIntsInString,
-      FuzzBase64InString,
-      FuzzListInString,
-    ]
-    original = s
-    for mutation in chained_mutations:
-      s = mutation(s)
-      # Stop if we've modified the string and our coin comes up heads
-      if s != original and random.getrandbits(1):
-        return s
+  assert isinstance(s, str)
+  chained_mutations = [
+    FuzzIntsInString,
+    FuzzBase64InString,
+    FuzzListInString,
+  ]
+  original = s
+  for mutation in chained_mutations:
+    s = mutation(s)
+    # Stop if we've modified the string and our coin comes up heads
+    if s != original and random.getrandbits(1):
+      return s
 
   # If we're still here, apply a more generic mutation
   mutations = [
-    lambda s: "".join(random.choice(string.printable) for i in
+    lambda _: "".join(random.choice(string.printable) for _ in
       range(utils.UniformExpoInteger(0, 14))),
-    lambda s: "".join(unichr(random.randint(0, sys.maxunicode)) for i in
-      range(utils.UniformExpoInteger(0, 14))).encode("utf-8"),
-    lambda s: os.urandom(utils.UniformExpoInteger(0, 14)),
+    # We let through the surrogate. The decode exception is handled at caller.
+    lambda _: "".join(chr(random.randint(0, sys.maxunicode)) for _ in
+      range(utils.UniformExpoInteger(0, 14))).encode('utf-8', 'surrogatepass'),
+    lambda _: os.urandom(utils.UniformExpoInteger(0, 14)),
     lambda s: s * utils.UniformExpoInteger(1, 5),
     lambda s: s + "A" * utils.UniformExpoInteger(0, 14),
     lambda s: "A" * utils.UniformExpoInteger(0, 14) + s,
     lambda s: s[:-random.randint(1, max(1, len(s) - 1))],
     lambda s: textwrap.fill(s, random.randint(1, max(1, len(s) - 1))),
-    lambda s: "",
+    lambda _: "",
   ]
   return random.choice(mutations)(s)
 

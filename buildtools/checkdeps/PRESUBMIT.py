@@ -9,12 +9,12 @@ USE_PYTHON3 = True
 
 
 def CheckChange(input_api, output_api):
-  results = []
-  results.extend(input_api.canned_checks.RunUnitTests(
+  return input_api.canned_checks.RunUnitTests(
       input_api, output_api,
       [input_api.os_path.join(input_api.PresubmitLocalPath(),
-                              'checkdeps_test.py')]))
-  return results
+                              'checkdeps_test.py')],
+                              # `run_on_python3` defaults to `True`.
+                              run_on_python2=not USE_PYTHON3)
 
 
 # Mandatory entrypoint.
