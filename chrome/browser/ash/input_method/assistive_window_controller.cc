@@ -143,7 +143,6 @@ void AssistiveWindowController::AcceptSuggestion(
 void AssistiveWindowController::HideSuggestion() {
   suggestion_text_ = base::EmptyString16();
   confirmed_length_ = 0;
-  tracking_last_suggestion_ = false;
   if (suggestion_window_view_)
     suggestion_window_view_->GetWidget()->Close();
   if (grammar_suggestion_window_)
@@ -177,7 +176,6 @@ void AssistiveWindowController::ShowSuggestion(
     // Since there is only one suggestion text in ShowSuggestion, we default to
     // vertical layout.
     InitSuggestionWindow(ui::ime::SuggestionWindowView::Orientation::kVertical);
-  tracking_last_suggestion_ = suggestion_text_ == details.text;
   suggestion_text_ = details.text;
   confirmed_length_ = details.confirmed_length;
   suggestion_window_view_->Show(details);
