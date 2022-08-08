@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">کابل می‌تواند بر عملکرد تأثیر بگذارد</translation>
 <translation id="2903844815300039659">متصل به <ph name="NAME" /> با <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">نماگرفت‌ها</translation>
+<translation id="2925246975070834767">بزرگ‌نمایی خودکار را امتحان کنید تا در مرکز صفحه قرار بگیرید. آن را در «تنظیمات فوری» روشن کنید.</translation>
 <translation id="2941112035454246133">کم</translation>
 <translation id="2942350706960889382">ذره‌بین متصل</translation>
 <translation id="2942516765047364088">موقعیت قفسه</translation>
@@ -469,6 +470,7 @@
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
+<translation id="3724279623330129812">بزرگ‌نمایی خودکار دوربین را در مرکز قرار داد</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
@@ -633,6 +635,7 @@
 <translation id="4628757576491864469">دستگاه‌ها</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، رده‌بندی با ستاره <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ظرف یک روز آینده، دستگاه را به نسخه قبلی تغییر دهید}one{ظرف # روز آینده، دستگاه را به نسخه قبلی تغییر دهید}other{ظرف # روز آینده، دستگاه را به نسخه قبلی تغییر دهید}}</translation>
+<translation id="4633636853437260449">‏برای حذف، Ctrl+W را فشار دهید</translation>
 <translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
 <translation id="4644727592819780893">ناحیه بسیار کوچک است و نمی‌توان آن را در پیش‌نمای دوربین نشان داد</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، توصیه برنامه</translation>

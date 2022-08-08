@@ -327,6 +327,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2894949423239620203">Mae'n bosib bod y cebl yn effeithio ar berfformiad</translation>
 <translation id="2903844815300039659">Wedi cysylltu â <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Sgrinluniau</translation>
+<translation id="2925246975070834767">Rhowch gynnig ar awtochwyddo fel y byddwch yng nghanol y sgrîn. Trowch ef ymlaen yn y Gosodiadau Cyflym.</translation>
 <translation id="2941112035454246133">Isel</translation>
 <translation id="2942350706960889382">Chwyddwr sydd wedi'i Docio</translation>
 <translation id="2942516765047364088">lleoliad y silff</translation>
@@ -469,6 +470,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
 <translation id="371370241367527062">Meicroffon blaen</translation>
 <translation id="3713734891607377840">Agor pan fydd wedi'i gwblhau</translation>
+<translation id="3724279623330129812">Gwnaeth awtochwyddo ganoli'r camera</translation>
 <translation id="3726171378575546917">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, a <ph name="UNAVAILABLE_APPS_COUNT" /> arall ar y ddyfais hon.</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3742055079367172538">Wedi tynnu sgrinlun</translation>
@@ -633,6 +635,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4628757576491864469">Dyfeisiau</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Sgôr seren <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn diwrnod}zero{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}two{Newid dyfais i'r fersiwn flaenorol o fewn # ddiwrnod}few{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}many{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}other{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}}</translation>
+<translation id="4633636853437260449">Pwyswch Ctrl+W i ddileu</translation>
 <translation id="4642092649622328492">Tynnu sgrinlun rhannol</translation>
 <translation id="4644727592819780893">Rhanbarth yn rhy fach i ffitio camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Argymhelliad ap</translation>

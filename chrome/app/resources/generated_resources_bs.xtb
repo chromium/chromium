@@ -7982,6 +7982,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8666759526542103597">O personalizaciji oglasa zasnovanoj na pregledniku</translation>
 <translation id="8667328578593601900">Stranica <ph name="FULLSCREEN_ORIGIN" /> sada je na cijelom zaslonu i onemogućila je pokazivač miša.</translation>
 <translation id="8667760277771450375">Istražujemo načine da ograničimo unakrsno praćenje web lokacija pružajući mogućnost web lokacijama da zaustave neželjene sadržaje i prevare.</translation>
+<translation id="8668378421690365723">Vaš uređaj možda više neće funkcionirati ispravno i možete naići na probleme sa sigurnošću i performansama.</translation>
 <translation id="8669284339312441707">Toplije</translation>
 <translation id="8670537393737592796">Da se brzo vratite ovdje, instalirajte aplikaciju <ph name="APP_NAME" /> klikom na dugme za instaliranje</translation>
 <translation id="867085395664725367">Došlo je do privremene greške servera.</translation>
@@ -8467,6 +8468,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Da dobijete najbolje iskustvo, instalirajte <ph name="DEVICE_OS" /> na interni disk. Također ga možete instalirati kasnije s ekrana za prijavu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ako niste spremni da instalirate, možete ga pokrenuti s USB-a da isprobate. Na taj način ćete zadržati postojeći OS i podatke, ali su moguća ograničenja pohrane i performansi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Otvori kao zakačenu karticu</translation>
+<translation id="9123287046453017203">Vaš uređaj nije ažuriran</translation>
 <translation id="9124003689441359348">Sačuvane lozinke će se prikazati ovdje</translation>
 <translation id="9126149354162942022">Boja kursora</translation>
 <translation id="9128317794749765148">Postavljanje nije dovršeno</translation>

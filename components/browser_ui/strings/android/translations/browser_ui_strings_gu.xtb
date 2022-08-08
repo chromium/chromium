@@ -32,7 +32,6 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />ને ARનો વપરાશ કરવા દેવા માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માંથી પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> પરથી</translation>
 <translation id="1887786770086287077">આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
-<translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1919345977826869612">જાહેરાતો</translation>
 <translation id="1919950603503897840">સંપર્કો પસંદ કરો</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2687403674020088961">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="2704606927547763573">કૉપિ કર્યું</translation>
-<translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2717722538473713889">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="2750481671343847896">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે.</translation>
 <translation id="2785051990912111074">આ પસંદગી <ph name="WEBSITE" /> માટે કુકીને સાફ કરશે</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">સાઇટને તમારા કૅમેરાના ઉપયોગની મંજૂરી આપતાં પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="4505788138578415521">URL મોટી કરી છે</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
-<translation id="4566417217121906555">માઇક્રોફોન મ્યૂટ કરો</translation>
 <translation id="4570913071927164677">વિગતો</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">સ્ક્રીનની ટોચની નજીક વિકલ્પ ઉપલબ્ધ છે</translation>
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
-<translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'ને કાઢી નાખો</translation>
 <translation id="528192093759286357">પૂર્ણસ્ક્રીનથી બહાર નીકળવા માટે ઉપરથી ખેંચો અને પાછળ બટનને ટચ કરો.</translation>
 <translation id="5300589172476337783">બતાવો</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{વપરાશમાંની 1 કુકી}one{વપરાશમાંની # કુકી}other{વપરાશમાંની # કુકી}}</translation>
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="848952951823693243">હંમેશાં મોબાઇલ સાઇટની વિનંતી કરો</translation>
-<translation id="8499083585497694743">માઇક્રોફોન અનમ્યૂટ કરો</translation>
 <translation id="851751545965956758">સાઇટને ડિવાઇસ સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="857943718398505171">મંજૂર (ભલામણ કરેલ)</translation>

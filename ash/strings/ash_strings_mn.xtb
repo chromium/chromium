@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
 <translation id="1467432559032391204">Зүүн</translation>
+<translation id="146902737843070955">Таны администратор энэ өөрчлөлтийг хүссэн</translation>
 <translation id="147310119694673958">Утасны батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Хөвж буй хандалтын цэс</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Календарийн харагдах байдлыг нээхийн тулд enter товчийг дарна уу</translation>
@@ -838,6 +839,7 @@
 <translation id="5779721926447984944">Бэхэлсэн файлууд</translation>
 <translation id="5788127256798019331">Файлуудыг тоглуулах</translation>
 <translation id="5790085346892983794">Амжилттай гүйцэтгэлээ</translation>
+<translation id="5804651031882187592">"SIM-г түгжих" тохиргоог унтраах</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />-г идэвхжүүлэхийн тулд товших</translation>
 <translation id="5825969630400862129">Холбогдсон төхөөрөмжүүдийн тохиргоо</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>

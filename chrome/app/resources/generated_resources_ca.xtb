@@ -7960,6 +7960,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8666759526542103597">Sobre la personalització d'anuncis basada en el navegador</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> es visualitza a pantalla completa i ha desactivat el cursor del ratolí.</translation>
 <translation id="8667760277771450375">Estem explorant maneres de restringir el seguiment entre llocs web i de, alhora, permetre que els llocs web aturin el frau i el contingut brossa publicitari.</translation>
+<translation id="8668378421690365723">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment.</translation>
 <translation id="8669284339312441707">Més càlid</translation>
 <translation id="8670537393737592796">Per tornar aquí ràpidament, instal·la <ph name="APP_NAME" /> fent clic al botó d'instal·lació</translation>
 <translation id="867085395664725367">S'ha produït un error temporal del servidor.</translation>
@@ -8443,6 +8444,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per gaudir de la millor experiència possible, instal·la <ph name="DEVICE_OS" /> al disc intern. També pots instal·lar-lo més tard des de la pantalla d'inici de sessió.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no estàs a punt per instal·lar-lo, pots executar-lo des de l'USB per provar-lo. Aquesta acció conservarà el teu sistema operatiu i les teves dades actuals, però és possible que vegis límits d'emmagatzematge i de rendiment.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Obre-ho com a pestanya reduïda</translation>
+<translation id="9123287046453017203">El dispositiu no està actualitzat</translation>
 <translation id="9124003689441359348">Les contrasenyes desades es mostraran aquí</translation>
 <translation id="9126149354162942022">Color del cursor</translation>
 <translation id="9128317794749765148">No s'ha pogut completar la configuració</translation>

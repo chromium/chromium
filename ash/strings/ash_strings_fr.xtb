@@ -327,6 +327,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur les performances</translation>
 <translation id="2903844815300039659">Connecté à <ph name="NAME" /> – <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
+<translation id="2925246975070834767">Essayez le zoom automatique pour être au centre de l'écran. Activez-le dans les Réglages rapides.</translation>
 <translation id="2941112035454246133">Faible</translation>
 <translation id="2942350706960889382">Loupe ancrée</translation>
 <translation id="2942516765047364088">Position de l'étagère</translation>
@@ -633,6 +634,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note : <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 jour}one{Rétablir une version antérieure de l'appareil d'ici # jour}other{Rétablir une version antérieure de l'appareil d'ici # jours}}</translation>
+<translation id="4633636853437260449">Appuyez sur Ctrl+W pour supprimer</translation>
 <translation id="4642092649622328492">Faire une capture d'écran partielle</translation>
 <translation id="4644727592819780893">La surface de prise de vue est trop petite pour l'appareil photo</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>

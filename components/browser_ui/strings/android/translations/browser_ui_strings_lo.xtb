@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ໃຊ້ AR, ກະລຸນາເປີດກ້ອງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="1864927262126810325">ຈາກ <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
-<translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1919345977826869612">ໂຄສະນາ</translation>
 <translation id="1919950603503897840">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
 <translation id="2687403674020088961">ບລັອກຄຸກກີ້ທັງໝົດ (ບໍ່ແນະນຳ)</translation>
 <translation id="2704606927547763573">ອັດ​ສຳ​ເນົາ​ແລ້ວ</translation>
-<translation id="2713106313042589954">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="2717722538473713889">ທີ່ຢູ່ອີເມວ</translation>
 <translation id="2750481671343847896">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້.</translation>
 <translation id="2785051990912111074">ຕົວເລືອກນີ້ຈະລຶບລ້າງຄຸກກີ້ສຳລັບ <ph name="WEBSITE" /></translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="4505788138578415521">ຂະຫຍາຍ URL ແລ້ວ</translation>
 <translation id="4534723447064627427">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເຂົ້າເຖິງໄມໂຄຣໂຟນ, ກະລຸນາເປີດໄມໂຄຣໂຟນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
-<translation id="4566417217121906555">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="4570913071927164677">ລາຍລະອຽດ</translation>
 <translation id="4645575059429386691">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="4670064810192446073">ເວີຊົວ ຣິອາຣິທີ</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">ຕົວເລືອກມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5197729504361054390">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ທ່ານເລືອກຈະຖືກແບ່ງປັນກັບ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">ເຂົ້າເບິ່ງມື້ນີ້</translation>
-<translation id="5225463052809312700">ເປີດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="5264323282659631142">ລຶບ '<ph name="CHIP_LABEL" />' ອອກ</translation>
 <translation id="528192093759286357">ລາກຈາກດ້ານເທິງ ແລ້ວແຕະປຸ່ມກັບຄືນ ເພື່ອອອກຈາກເຕັມຈໍ.</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ມີການນຳໃຊ້ຄຸກກີ້ 1 ລາຍການ}other{ມີການນຳໃຊ້ຄຸກກີ້ # ລາຍການ}}</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="848952951823693243">ຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ</translation>
-<translation id="8499083585497694743">ເຊົາປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="851751545965956758">ບລັອກບໍ່ໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ກັບອຸປະກອນ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="857943718398505171">ອະ​ນຸ​ຍາດ​ແລ້ວ (ແນະ​ນຳ​ໃຫ້)</translation>

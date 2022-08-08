@@ -285,10 +285,12 @@
 <translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
+<translation id="3495810061346586977">ეს ფაილი კონფიდენციალურია და ექვემდებარე ადმინისტრატორის მიერ დადგენილი წესებით განსაზღვრულ შეზღუდვებს. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">საქაღალდე</translation>
+<translation id="3548125359243647069">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ.</translation>
 <translation id="3549797760399244642">drive.google.com-ზე გადასვლა…</translation>
 <translation id="3553048479571901246">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, დააკოპირეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
 <translation id="3556731189587832921">ინგლისური (აშშ) საერთაშორისო PC კლავიატურით</translation>
@@ -614,6 +616,7 @@
 <translation id="6267547857941397424">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დაკავშირება</translation>
 <translation id="6269630227984243955">მალაიური</translation>
 <translation id="6287852322318138013">აირჩიეთ პროგრამა ამ ფაილის გასახსნელად</translation>
+<translation id="6295542640242147836">SIM ბარათის ჩაკეტვა</translation>
 <translation id="6296410173147755564">PUK-კოდი არასწორია</translation>
 <translation id="6312403991423642364">ქსელის უცნობი შეცდომა</translation>
 <translation id="6317608858038767920">სახელების მორგებული სერვერი <ph name="INPUT_INDEX" /></translation>
@@ -723,6 +726,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> გბაიტი</translation>
 <translation id="7191454237977785534">ფაილის შენახვა, როგორც</translation>
 <translation id="7229570126336867161">საჭიროა EVDO</translation>
+<translation id="7230898482850090046">თქვენმა ადმინისტრატორმა მოითხოვა „SIM ბარათის ჩაკეტვის“ პარამეტრის გამორთვა</translation>
 <translation id="7238097264433196391">დისკის სახელი</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, დეტალები</translation>
 <translation id="7246947237293279874">FTP პროქსი-სერვერი</translation>
@@ -755,6 +759,7 @@
 <translation id="7505167922889582512">დამალული ფაილების ჩვენება</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="751507702149411736">ბელორუსული</translation>
+<translation id="7521790570754130607">მობილური ინტერნეტის გამოსაყენებლად საჭიროა PIN-კოდის გამოყენება</translation>
 <translation id="7532029025027028521">სპარსული ტრანსლიტერაცია</translation>
 <translation id="7544830582642184299">მიეცით Linux აპებს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
 <translation id="7547009467130558110">ბოტასი</translation>
@@ -779,6 +784,7 @@
 <translation id="76959938259365003">წაშლილები ვერ გასუფთავდა.</translation>
 <translation id="770015031906360009">ბერძნული</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> დაკოპირდა.</translation>
+<translation id="7708271999969613024">ამ ქსელის გამოსაყენებლად უნდა შეიყვანოთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="7711920809702896782">სურათის ინფორმაცია</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7730494089396812859">ღრუბელოვანი სივრცის სარეზერვო მეხსიერების დეტალების ჩვენება</translation>
@@ -874,6 +880,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>
 <translation id="8456681095658380701">არასწორი სახელი</translation>
+<translation id="8457767749626250697">თქვენი SIM-ბარათი ჩაკეტილია</translation>
 <translation id="8459404855768962328">ამ ერთეულის კოპირების შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
 <translation id="8461467696380332069">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „თაროზე ჩამაგრება“.</translation>
 <translation id="8461914792118322307">პროქსი</translation>

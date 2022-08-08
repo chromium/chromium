@@ -32,7 +32,6 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> колдонмосуна AR'ди колдоонуусуна уруксат берүү үчүн камераны <ph name="BEGIN_LINK" />Android жөндөөлөрүнөн<ph name="END_LINK" /> күйгүзүңүз.</translation>
 <translation id="1864927262126810325">Төмөнкүдөн: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
-<translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919950603503897840">Байланыштарды тандоо</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2687403674020088961">Бардык cookie файлдарды бөгөттөө (сунушталбайт)</translation>
 <translation id="2704606927547763573">Көчүрүлдү</translation>
-<translation id="2713106313042589954">Камераны өчүрүү</translation>
 <translation id="2717722538473713889">Электрондук почта даректери</translation>
 <translation id="2750481671343847896">Сайттар идентификациялык кызматтарда кирүү сурамдарын көрсөтүшү мүмкүн.</translation>
 <translation id="2785051990912111074">Ушуну менен <ph name="WEBSITE" /> сайтынын cookie файлдары тазаланат</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">Сайттар камераңызды колдоноордон мурун уруксат суралсын (сунушталат)</translation>
 <translation id="4505788138578415521">URL жайылып көрсөтүлдү</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> колдонмосуна микрофонго кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Жөндөөлөрүнөн<ph name="END_LINK" /> микрофонду күйгүзүңүз.</translation>
-<translation id="4566417217121906555">Микрофондун үнүн өчүрүү</translation>
 <translation id="4570913071927164677">Чоо-жайы</translation>
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">Параметр экрандын жогору жагында берилген</translation>
 <translation id="5197729504361054390">Сиз тандаган байланыштар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> менен бөлүшүлөт.</translation>
 <translation id="5216942107514965959">Бүгүн акыркы жолу кирген</translation>
-<translation id="5225463052809312700">Камераны күйгүзүү</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" өчүрүү</translation>
 <translation id="528192093759286357">Толук экрандан чыгуу үчүн жогорудан ылдый сүйрөп келип, "Артка" деген баскычка тийип коюңуз.</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
@@ -243,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
+<translation id="6467852467360539617">Маалыматты тазалоо жана уруксаттарды баштапкы абалга келтирүү</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6545864417968258051">Bluetooth түзмөктөрүн издөө</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}}</translation>
@@ -282,6 +279,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> нерсе тандалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> дайындарын колдонууга уруксат берилди</translation>
 <translation id="7302486331832100261">Адатта билдирмелерди өчүрөсүз. Уруксат берүү үчүн "Чоо-жайын" таптап коюңуз.</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> параметрлери</translation>
 <translation id="7423098979219808738">Адегенде сура</translation>
 <translation id="7423538860840206698">Алмашуу буферин окуу бөгөттөлгөн</translation>
 <translation id="7425915948813553151">Сайттар үчүн караңгы тема</translation>
@@ -341,7 +339,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie файлы колдонулууда}other{# cookie файлы колдонулууда}}</translation>
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="848952951823693243">Мобилдик сайт ар дайым суралсын</translation>
-<translation id="8499083585497694743">Микрофондун үнүн чыгаруу</translation>
 <translation id="851751545965956758">Сайттардын түзмөктөргө туташуусун бөгөттөө</translation>
 <translation id="8525306231823319788">Толук экран</translation>
 <translation id="857943718398505171">Уруксат берилген (сунушталат)</translation>

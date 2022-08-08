@@ -7946,6 +7946,7 @@
 <translation id="8666759526542103597">关于基于浏览器的广告个性化</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 现处于全屏模式并已隐藏鼠标指针。</translation>
 <translation id="8667760277771450375">我们正在探索如何既能让网站阻止垃圾广告和欺诈行为，又能限制跨网站跟踪。</translation>
+<translation id="8668378421690365723">您的设备可能会无法继续正常运行，而且可能会遇到安全问题和性能问题。</translation>
 <translation id="8669284339312441707">暖色调</translation>
 <translation id="8670537393737592796">若要快速返回到这里，请点击安装按钮以安装“<ph name="APP_NAME" />”</translation>
 <translation id="867085395664725367">服务器发生了暂时性错误。</translation>
@@ -8429,6 +8430,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>
+<translation id="9123287046453017203">您设备上的 OS 不是最新版本</translation>
 <translation id="9124003689441359348">已保存的密码将显示在这里</translation>
 <translation id="9126149354162942022">光标颜色</translation>
 <translation id="9128317794749765148">无法完成设置</translation>

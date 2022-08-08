@@ -32,7 +32,6 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Iturburua: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919345977826869612">Iragarkiak</translation>
 <translation id="1919950603503897840">Hautatu kontaktuak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
-<translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2717722538473713889">Helbide elektronikoak</translation>
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
 <translation id="2785051990912111074"><ph name="WEBSITE" /> webgunearen cookieak ezabatuko dira</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">Webguneei kamera erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4505788138578415521">URLa zabalduta dago</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa atzitzeko baimena emateko, mikrofonoa atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="4566417217121906555">Desaktibatu mikrofonoa</translation>
 <translation id="4570913071927164677">Xehetasunak</translation>
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">Aukera pantailaren goialdean dago</translation>
 <translation id="5197729504361054390">Hautatzen dituzun kontaktuak <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webgunearekin partekatuko dira.</translation>
 <translation id="5216942107514965959">Gaur bisitatu duzu azkenengoz</translation>
-<translation id="5225463052809312700">Aktibatu kamera</translation>
 <translation id="5264323282659631142">Kendu "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta ukitu Atzera botoia.</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
@@ -243,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Ez utzi webguneei errealitate birtualeko gailuak eta datuak erabiltzen</translation>
 <translation id="6447842834002726250">Cookieak</translation>
+<translation id="6467852467360539617">Garbitu datuak eta berrezarri baimenak</translation>
 <translation id="6527303717912515753">Partekatu</translation>
 <translation id="6545864417968258051">Bluetooth bidezko gailuen bilaketa</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}}</translation>
@@ -282,6 +279,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
 <translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Jakinarazpenak blokeatu ohi dituzu. Baimena emateko, sakatu "Xehetasunak".</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> domeinuaren ezarpenak</translation>
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
 <translation id="7425915948813553151">Webguneetarako gai iluna</translation>
@@ -341,7 +339,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Erabiltzen den 1 cookie}other{Erabiltzen diren # cookie}}</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="848952951823693243">Eskatu beti mugikorretarako webgunea</translation>
-<translation id="8499083585497694743">Aktibatu mikrofonoa</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>

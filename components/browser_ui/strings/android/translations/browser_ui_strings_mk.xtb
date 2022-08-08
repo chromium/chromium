@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Од <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
-<translation id="1915307458270490472">Спушти</translation>
 <translation id="1919345977826869612">Реклами</translation>
 <translation id="1919950603503897840">Изберете контакти</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2704606927547763573">Копирано</translation>
-<translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2717722538473713889">Адреси за е-пошта</translation>
 <translation id="2750481671343847896">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација.</translation>
 <translation id="2785051990912111074">Изборов ќе ги избрише колачињата за <ph name="WEBSITE" /></translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">Прво прашај пред да дозволиш сајтовите да ја користат камерата (се препорачува)</translation>
 <translation id="4505788138578415521">URL-адресата е проширена</translation>
 <translation id="4534723447064627427">За да овозможите <ph name="APP_NAME" /> да пристапува до вашиот микрофон, вклучете ја дозволата за микрофонот и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
-<translation id="4566417217121906555">Исклучете звук на микрофонот</translation>
 <translation id="4570913071927164677">Детали</translation>
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">Опцијата е достапна речиси најгоре на екранот</translation>
 <translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
-<translation id="5225463052809312700">Вклучи ја камерата</translation>
 <translation id="5264323282659631142">Отстранете го „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Повлечете од врвот и допрете го копчето Назад за да излезете од цел екран.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -343,7 +339,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Се користи 1 колаче}one{Се користи # колаче}other{Се користат # колачиња}}</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="848952951823693243">Секогаш барај сајт за мобилен</translation>
-<translation id="8499083585497694743">Вклучи го звукот на микрофонот</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>

@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="1864927262126810325">来自<ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
-<translation id="1915307458270490472">中止</translation>
 <translation id="1919345977826869612">广告</translation>
 <translation id="1919950603503897840">选择联系人</translation>
 <translation id="1923695749281512248">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，共 <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2704606927547763573">已复制</translation>
-<translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
 <translation id="2785051990912111074">此选项会清除 <ph name="WEBSITE" /> 的 Cookie</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
 <translation id="4505788138578415521">网址已展开</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
-<translation id="4566417217121906555">将麦克风静音</translation>
 <translation id="4570913071927164677">详情</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟实境</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
-<translation id="5225463052809312700">开启摄像头</translation>
 <translation id="5264323282659631142">移除“<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">从顶部向下拖动并触摸“返回”按钮，即可退出全屏模式。</translation>
 <translation id="5300589172476337783">显示</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{正在使用 1 个 Cookie}other{正在使用 # 个 Cookie}}</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="848952951823693243">始终请求访问移动网站</translation>
-<translation id="8499083585497694743">将麦克风取消静音</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="857943718398505171">允许（推荐）</translation>

@@ -32,7 +32,6 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />ৰ পৰা</translation>
 <translation id="1887786770086287077">এই ডিভাইচটোত অৱস্থান এক্সেছ বন্ধ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
-<translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1919345977826869612">বিজ্ঞাপনসমূহ</translation>
 <translation id="1919950603503897840">সম্পৰ্কসমূহ বাছনি কৰক</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
 <translation id="2687403674020088961">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="2704606927547763573">প্ৰতিলিপি কৰা হ'ল</translation>
-<translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
 <translation id="2717722538473713889">ইমেইল ঠিকনাবোৰ</translation>
 <translation id="2750481671343847896">ছাইটবিলাকে পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব পাৰে।</translation>
 <translation id="2785051990912111074">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ কুকি মচিব</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">আপোনাৰ কেমেৰা ছাইটসমূহক ব্যৱহাৰ কৰিবলৈ দিয়াৰ পূর্বে অনুমতি ল'বলৈ দিয়ক(চুপাৰিছ কৰা)</translation>
 <translation id="4505788138578415521">URL বিস্তাৰ কৰা হৈছে</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />ক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো মাইক্ৰ’ফ’ন অন কৰক।</translation>
-<translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="4570913071927164677">সবিশেষ</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
-<translation id="5225463052809312700">কেমেৰা অন কৰক</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ আঁতৰাওক</translation>
 <translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীণৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১ টা কুকি ব্যৱহাৰ হৈ আছে}one{# টা কুকি ব্যৱহাৰ হৈ আছে}other{# টা কুকি ব্যৱহাৰ হৈ আছে}}</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="848952951823693243">সদায়েই ম’বাইল ছাইট অনুৰোধ কৰিব</translation>
-<translation id="8499083585497694743">মাইক্ৰ’ফ’ন আনমিউট কৰক</translation>
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>

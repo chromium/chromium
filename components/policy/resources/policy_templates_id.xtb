@@ -4200,6 +4200,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
 <translation id="546726650689747237">Penundaan peredupan layar saat menggunakan daya AC</translation>
+<translation id="546830339470589966">Pelengkapan otomatis domain untuk tiket Kerberos baru</translation>
 <translation id="5469143988693423708">Pengguna diaktifkan untuk menjalankan Crostini</translation>
 <translation id="5469825884154817306">Blokir gambar di situs ini</translation>
 <translation id="5470500958458209831">URL tempat playbook Ansible dapat didownload.</translation>
@@ -5065,6 +5066,10 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="6384542789059421431">Izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
 <translation id="6394350458541421998">Kebijakan ini tidak lagi digunakan sejak <ph name="PRODUCT_OS_NAME" /> versi 29. Gunakan kebijakan PresentationScreenDimDelayScale sebagai gantinya.</translation>
+<translation id="6396956366662970339">Menentukan apakah model pengisian daya adaptif akan diizinkan untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai.
+
+      Jika perangkat mengaktifkan AC (pengisian daya adaptif), model pengisian daya adaptif akan mengevaluasi apakah proses pengisian daya harus ditunda untuk memperpanjang masa pakai baterai. Jika proses pengisian daya ditunda, model pengisian daya adaptif akan menghentikan proses pengisian daya pada level tertentu (misalnya 80%), lalu kembali mengisi daya perangkat sampai 100% saat pengguna memerlukannya.
+      Jika kebijakan ini disetel ke Benar (True), model pengisian daya adaptif akan diaktifkan dan diizinkan untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai. Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, model pengisian daya adaptif tidak akan memengaruhi proses pengisian daya.</translation>
 <translation id="6397588391180665797">Melaporkan konfigurasi jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
@@ -6398,6 +6403,10 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="7771298620150437359">Mengonfigurasi konten dan urutan bahasa pilihan</translation>
+<translation id="7773790010815041731">Aplikasi Chrome tidak digunakan lagi di <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="LINUX_OS_NAME" />.
+      Jika kebijakan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan terus mengizinkan Aplikasi Chrome dijalankan di platform berikut hingga tanggal akhir saat dukungan Aplikasi Chrome dihapus di semua platform, yakni Juni 2022.
+      Jika kebijakan ini dinonaktifkan atau tidak disetel, Aplikasi Chrome mungkin tidak diizinkan berjalan, bergantung pada status peluncuran penghentian.
+      Dalam kasus apa pun, Aplikasi Chrome yang diinstal otomatis oleh kebijakan akan terus diizinkan.</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
 <translation id="777734450201217641">Mengaktifkan pintasan fitur aksesibilitas di layar login.
 
@@ -7509,6 +7518,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Untuk informasi selengkapnya tentang pola input yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="9010080992450148617">Mengaktifkan pengiriman download ke Google untuk pemindaian mendalam bagi pengguna yang terdaftar di Program Perlindungan Lanjutan</translation>
+<translation id="9012101302849557459">Memperluas dukungan untuk Aplikasi Chrome di <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="LINUX_OS_NAME" />.</translation>
 <translation id="9013875414788074110">Selama proses login, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
 
       Jika kebijakan ini ditetapkan ke nilai -1, pengguna dapat menjalankan autentikasi offline tanpa batas waktu. Jika ditetapkan ke nilai lain, kebijakan ini akan menentukan durasi waktu sejak autentikasi online terakhir, yang setelah itu pengguna harus menggunakan autentikasi online lagi.

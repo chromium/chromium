@@ -7967,6 +7967,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8666759526542103597">Teave brauseripõhise reklaamide isikupärastamise kohta</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> on nüüd täisekraanil ja teie hiirekursor on keelatud.</translation>
 <translation id="8667760277771450375">Katsetame uusi viise, kuidas piirata saitidevahelist jälgimist, võimaldades saitidel samas blokeerida rämpsreklaamid ja pettused.</translation>
+<translation id="8668378421690365723">Teie seade ei pruugi enam korralikult töötada ning võib esineda turva- ja toimivusprobleeme.</translation>
 <translation id="8669284339312441707">Soojem</translation>
 <translation id="8670537393737592796">Kiirelt siia naasmiseks installige rakendus <ph name="APP_NAME" />, klõpsates installimisnupul</translation>
 <translation id="867085395664725367">Ilmnes serveri ajutine viga.</translation>
@@ -8450,6 +8451,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Parima kasutuskogemuse saamiseks installige <ph name="DEVICE_OS" /> oma sisemisele kettale. Saate selle hiljem installida ka sisselogimiskuval.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kui te pole installimiseks valmis, saate rakendust proovida, käitades selle USB-seadmelt. See säilitab teie olemasoleva operatsioonisüsteemi ja andmed, kuid kehtida võivad salvestusruumi- ja jõudluspiirangud.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Ava kinnitatud vahelehel</translation>
+<translation id="9123287046453017203">Teie seade pole ajakohane</translation>
 <translation id="9124003689441359348">Salvestatud paroolid kuvatakse siin</translation>
 <translation id="9126149354162942022">Kursori värv</translation>
 <translation id="9128317794749765148">Seadistust ei õnnestunud lõpule viia</translation>

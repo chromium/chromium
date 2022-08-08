@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">O <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
-<translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1919345977826869612">Hysbysebion</translation>
 <translation id="1919950603503897840">Dewis cysylltiadau</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2687403674020088961">Rhwystro pob cwci (ni argymhellir)</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
-<translation id="2713106313042589954">Diffodd y camera</translation>
 <translation id="2717722538473713889">Cyfeiriadau e-bost</translation>
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="2785051990912111074">Bydd y dewis hwn yn clirio cwcis ar gyfer <ph name="WEBSITE" /></translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch camera (argymhellir)</translation>
 <translation id="4505788138578415521">URL wedi'i ehangu</translation>
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
-<translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">Mae'r opsiwn ar gael yn agos at frig y sgrîn</translation>
 <translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
-<translation id="5225463052809312700">Troi'r camera ymlaen</translation>
 <translation id="5264323282659631142">Tynnu '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Llusgwch o'r brig a chyffyrddwch â'r botwm nôl i adael y sgrîn lawn.</translation>
 <translation id="5300589172476337783">Arddangos</translation>
@@ -243,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Rhwystro gwefannau rhag defnyddio eich dyfais rhithwrionedd a'i data</translation>
 <translation id="6447842834002726250">Cwcis</translation>
+<translation id="6467852467360539617">Clirio data ac ailosod caniatadau</translation>
 <translation id="6527303717912515753">Rhannu</translation>
 <translation id="6545864417968258051">Sganio Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall wedi'u rhwystro}zero{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}two{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}few{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}many{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}other{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}}</translation>
@@ -282,6 +279,7 @@
 <translation id="7250468141469952378">Mae <ph name="ITEM_COUNT" /> wedi'u dewis</translation>
 <translation id="7260727271532453612">Caniateir <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Rydych fel arfer yn rhwystro hysbysiadau. I'w caniatáu, tapiwch Manylion.</translation>
+<translation id="7383715096023715447">Gosodiadau ar gyfer <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Gofyn yn gyntaf</translation>
 <translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>
 <translation id="7425915948813553151">Thema dywyll ar gyfer gwefannau</translation>
@@ -341,7 +339,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Mae 1 cwci yn cael ei ddefnyddio}zero{Mae # cwci yn cael eu defnyddio}two{Mae # gwci yn cael eu defnyddio}few{Mae # chwci yn cael eu defnyddio}many{Mae # chwci yn cael eu defnyddio}other{Mae # cwci yn cael eu defnyddio}}</translation>
 <translation id="8487700953926739672">Ar gael all-lein</translation>
 <translation id="848952951823693243">Gofyn am wefan symudol bob amser</translation>
-<translation id="8499083585497694743">Dad-ddistewi'r meicroffon</translation>
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="857943718398505171">Caniateir (argymhellir)</translation>

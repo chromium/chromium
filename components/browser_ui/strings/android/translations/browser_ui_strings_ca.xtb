@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
-<translation id="1915307458270490472">Penja</translation>
 <translation id="1919345977826869612">Anuncis</translation>
 <translation id="1919950603503897840">Selecciona contactes</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2704606927547763573">Copiada</translation>
-<translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
 <translation id="2750481671343847896">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="2785051990912111074">Amb aquesta opció, s'esborraran les galetes per a <ph name="WEBSITE" /></translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
-<translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
-<translation id="5225463052809312700">Activa la càmera</translation>
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 galeta en ús}other{# galetes en ús}}</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="848952951823693243">Sol·licita sempre el lloc web per a mòbils</translation>
-<translation id="8499083585497694743">Deixa de silenciar el micròfon</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>

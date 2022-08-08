@@ -4177,6 +4177,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5464816904705580310">Configurazione delle impostazioni per gli utenti gestiti.</translation>
 <translation id="5466596281866046569">Segnala informazioni sulle applicazioni</translation>
 <translation id="546726650689747237">Ritardo oscuramento schermo in caso di utilizzo di CA</translation>
+<translation id="546830339470589966">Completa automaticamente il dominio per i nuovi ticket Kerberos</translation>
 <translation id="5469143988693423708">L'utente è abilitato a eseguire Crostini</translation>
 <translation id="5469825884154817306">Blocca immagini su questi siti</translation>
 <translation id="5470500958458209831">L'URL da cui è possibile scaricare il playbook Ansible.</translation>
@@ -5018,6 +5019,10 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
+<translation id="6396956366662970339">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
+
+      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
+      Se questo criterio viene impostato su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria. Se questo criterio viene impostato su False o se non viene configurato, il modello di ricarica adattiva non influisce sulla procedura di ricarica.</translation>
 <translation id="6397588391180665797">Consente di segnalare eventi di configurazione di rete degli utenti su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -6353,6 +6358,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="7771298620150437359">Configura i contenuti e l'ordine delle lingue preferite</translation>
+<translation id="7773790010815041731">Le app di Chrome sono state ritirate su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />.
+      Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.
+      Se questo criterio viene disattivato o se non viene configurato, potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.
+      In ogni caso, continueranno a essere consentite le app di Chrome con installazione forzata in base al criterio.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 
@@ -7456,6 +7465,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Per informazioni dettagliate sui pattern di input validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
 <translation id="9010080992450148617">Attiva invio download a Google per scansione approfondita per utenti iscritti al programma di protezione avanzata</translation>
+<translation id="9012101302849557459">Estendi il supporto delle app di Chrome su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" /></translation>
 <translation id="9013875414788074110">Durante l'accesso, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
 
       Quando la norma è impostata sul valore -1, l'utente può eseguire per sempre l'autenticazione offline. Quando la norma è impostata su qualsiasi altro valore, questo specifica il periodo di tempo trascorso dall'ultima autenticazione online, dopo il quale l'utente dovrà eseguire nuovamente l'autenticazione.

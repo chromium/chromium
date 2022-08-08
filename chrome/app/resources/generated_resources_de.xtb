@@ -7954,6 +7954,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8666759526542103597">Informationen zu browserbasierter personalisierter Werbung</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> wird nun im Vollbildmodus angezeigt und hat deinen Cursor deaktiviert.</translation>
 <translation id="8667760277771450375">Wir probieren neue Optionen aus, um websiteübergreifendes Tracking einzuschränken. Gleichzeitig geben wir Websites die Möglichkeit, Werbespam und Betrug zu bekämpfen.</translation>
+<translation id="8668378421690365723">Dein Gerät funktioniert dann möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten.</translation>
 <translation id="8669284339312441707">Wärmer</translation>
 <translation id="8670537393737592796">Installiere <ph name="APP_NAME" />, um schnell hierher zurückzukehren, indem du oben auf die Installationsschaltfläche klickst</translation>
 <translation id="867085395664725367">Ein temporärer Serverfehler ist aufgetreten.</translation>
@@ -8437,6 +8438,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Für optimale Leistung solltest du <ph name="DEVICE_OS" /> auf dem internen Laufwerk installieren. Eine Installation ist aber auch später über den Anmeldebildschirm möglich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zum Ausprobieren kannst du es erst einmal über den USB-Stick ausführen. So behältst du dein vorhandenes Betriebssystem und deine Daten. Speicherplatz und Leistung sind jedoch möglicherweise begrenzt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>
+<translation id="9123287046453017203">Dein Gerät ist nicht auf dem neuesten Stand</translation>
 <translation id="9124003689441359348">Hier werden gespeicherte Passwörter angezeigt</translation>
 <translation id="9126149354162942022">Cursorfarbe</translation>
 <translation id="9128317794749765148">Einrichtung nicht abgeschlossen</translation>

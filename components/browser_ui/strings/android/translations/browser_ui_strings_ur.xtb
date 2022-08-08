@@ -32,7 +32,6 @@
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> سے</translation>
 <translation id="1887786770086287077">‏مقام کی رسائی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
-<translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1919345977826869612">اشتہارات</translation>
 <translation id="1919950603503897840">رابطے منتخب کریں</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2687403674020088961">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2704606927547763573">کاپی کیا</translation>
-<translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2717722538473713889">ای میل پتے</translation>
 <translation id="2750481671343847896">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں۔</translation>
 <translation id="2785051990912111074">یہ انتخاب <ph name="WEBSITE" /> کے لیے کوکیز کو صاف کرے گا</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">سائٹس کو آپ کا کیمرا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4505788138578415521">‏URL کو پھیلا دیا گیا</translation>
 <translation id="4534723447064627427">‏<ph name="APP_NAME" /> کو اپنے مائیکروفون تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی مائیکروفون آن کریں۔</translation>
-<translation id="4566417217121906555">مائیکروفون کو خاموش کریں</translation>
 <translation id="4570913071927164677">تفاصیل</translation>
 <translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
-<translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5264323282659631142">’<ph name="CHIP_LABEL" />‘ ہٹائیں</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
@@ -341,7 +337,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 زیر استعمال کوکی}other{# زیر استعمال کوکیز}}</translation>
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
 <translation id="848952951823693243">ہمیشہ موبائل سائٹ کی درخواست کریں</translation>
-<translation id="8499083585497694743">مائیکروفون کی آواز چالو کریں</translation>
 <translation id="851751545965956758">سائٹس کو آلات سے منسلک ہونے سے مسدود کریں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>

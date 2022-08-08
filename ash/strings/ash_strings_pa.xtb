@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">ਕੇਬਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
+<translation id="2925246975070834767">ਸਵੈ ਜ਼ੂਮ ਵਰਤ ਕੇ ਦੇਖੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਹੋਵੋਗੇ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2941112035454246133">ਘੱਟ</translation>
 <translation id="2942350706960889382">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
 <translation id="2942516765047364088">ਸ਼ੈਲਫ ਪੋਜੀਸ਼ਨ</translation>
@@ -634,6 +635,7 @@
 <translation id="4628757576491864469">ਡਿਵਾਈਸਾਂ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ਤਾਰਾ ਰੇਟਿੰਗ <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
+<translation id="4633636853437260449">ਮਿਟਾਉਣ ਲਈ Ctrl+W ਦਬਾਓ</translation>
 <translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="4644727592819780893">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਫਿੱਟ ਆਉਣ ਲਈ ਇਲਾਕਾ ਬਹੁਤ ਛੋਟਾ ਹੈ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ਐਪ ਸਿਫ਼ਾਰਸ਼</translation>

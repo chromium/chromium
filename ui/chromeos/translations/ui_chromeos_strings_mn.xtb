@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">Португал</translation>
 <translation id="3524311639100184459">Анхааруулга: Эдгээр файл нь түр зуурын файлууд бөгөөд дискийн зайг чөлөөлөхийн тулд автоматаар устгаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Хавтас</translation>
+<translation id="3548125359243647069">ПИН-г хэт олон удаа буруу оруулсан байна.</translation>
 <translation id="3549797760399244642">drive.google.com руу очно уу...</translation>
 <translation id="3553048479571901246">Файлуудыг <ph name="APP_NAME" />-р нээхийн тулд эхлээд тэдгээрийг Windows-н файлын фолдерт хуулна уу.</translation>
 <translation id="3556731189587832921">Олон улсын компьютерын гартай англи (АНУ)</translation>
@@ -612,6 +613,7 @@
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
 <translation id="6269630227984243955">Малай</translation>
 <translation id="6287852322318138013">Аппликейшнээ сонгоод файлаа нээ</translation>
+<translation id="6295542640242147836">SIM-г түгжих</translation>
 <translation id="6296410173147755564">PUK буруу байна</translation>
 <translation id="6312403991423642364">Сүлжээний алдаа мэдэгдэхгүй байна</translation>
 <translation id="6317608858038767920">Захиалгат нэрийн сервер <ph name="INPUT_INDEX" /></translation>
@@ -721,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>
 <translation id="7229570126336867161">EVDO хэрэгтэй байна</translation>
+<translation id="7230898482850090046">Таны администратор танаас "SIM-г түгжих" тохиргоог унтраахыг хүссэн</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
@@ -753,6 +756,7 @@
 <translation id="7505167922889582512">Далд файлуудыг харуулах</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="751507702149411736">Беларус</translation>
+<translation id="7521790570754130607">Мобайл дата ашиглахын тулд ПИН шаардлагатай</translation>
 <translation id="7532029025027028521">Перс галиг</translation>
 <translation id="7544830582642184299">Linux-н аппуудад Google Драйвынхаа файлуудад хандах зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="7547009467130558110">Пүүз</translation>
@@ -777,6 +781,7 @@
 <translation id="76959938259365003">Хогийн савыг хоосолж чадсангүй.</translation>
 <translation id="770015031906360009">Грек</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" />-г хуулсан.</translation>
+<translation id="7708271999969613024">Энэ сүлжээг ашиглахын тулд та оператор компаниас олгосон 8 оронтой Блокоос гаргах хувийн түлхүүр (PUK)-г оруулах шаардлагатай.</translation>
 <translation id="7711920809702896782">Зургийн мэдээлэл</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7730494089396812859">Cloud-н дэлгэрэнгүй мэдээллийг харуулах</translation>
@@ -872,6 +877,7 @@
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>
 <translation id="8456681095658380701">Хүчин төгөлдөр бус нэр</translation>
+<translation id="8457767749626250697">Таны SIM-г түгжсэн</translation>
 <translation id="8459404855768962328">Энэ зүйлийг хуулснаар үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
 <translation id="8461467696380332069">Тавиур дахь файлууддаа шуурхай хандахын тулд файл дээр хулганын баруун талыг товшиж, "Тавиурт бэхлэх"-ийг сонгоно уу.</translation>
 <translation id="8461914792118322307">Прокси</translation>

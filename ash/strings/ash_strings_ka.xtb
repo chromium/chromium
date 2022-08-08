@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
+<translation id="146902737843070955">თქვენმა ადმინისტრატორმა მოითხოვა ეს ცვლილება</translation>
 <translation id="147310119694673958">ტელეფონის ბატარეა: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">მარტივი წვდომის მოლივლივე მენიუ</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, კალენდრის ხედის გასახსნელად დააჭირეთ კლავიშს „Enter“</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">ჩამაგრებული ფაილები</translation>
 <translation id="5788127256798019331">Play ფაილები</translation>
 <translation id="5790085346892983794">წარმატება</translation>
+<translation id="5804651031882187592">გამორთეთ „SIM ბარათის ჩაკეტვის“ პარამეტრი</translation>
 <translation id="5805809050170488595">დააწკაპუნეთ, <ph name="NETWORK_NAME" /> რომ გაააქტიუროთ</translation>
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>

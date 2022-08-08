@@ -289,6 +289,7 @@
 <translation id="3522708245912499433">โปรตุเกส</translation>
 <translation id="3524311639100184459">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
+<translation id="3548125359243647069">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป</translation>
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
@@ -615,6 +616,7 @@
 <translation id="6267547857941397424">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
 <translation id="6269630227984243955">มาเลย์</translation>
 <translation id="6287852322318138013">เลือกแอปที่จะเปิดไฟล์นี้</translation>
+<translation id="6295542640242147836">ล็อกซิม</translation>
 <translation id="6296410173147755564">PUK ไม่ถูกต้อง</translation>
 <translation id="6312403991423642364">ข้อผิดพลาดเครือข่ายที่ไม่รู้จัก</translation>
 <translation id="6317608858038767920"><ph name="INPUT_INDEX" /> ของ Nameserver ที่กำหนดเอง</translation>
@@ -724,6 +726,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">บันทึกแฟ้มเป็น</translation>
 <translation id="7229570126336867161">ต้องใช้ EVDO</translation>
+<translation id="7230898482850090046">ผู้ดูแลระบบขอให้คุณปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="7238097264433196391">ชื่อไดรฟ์</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, รายละเอียด</translation>
 <translation id="7246947237293279874">พร็อกซี FTP</translation>
@@ -756,6 +759,7 @@
 <translation id="7505167922889582512">แสดงไฟล์ที่ซ่อนไว้</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="751507702149411736">เบลารุส</translation>
+<translation id="7521790570754130607">ต้องมี PIN เพื่อใช้อินเทอร์เน็ตมือถือ</translation>
 <translation id="7532029025027028521">เปอร์เซีย (การทับศัพท์)</translation>
 <translation id="7544830582642184299">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="7547009467130558110">รองเท้าผ้าใบ</translation>
@@ -780,6 +784,7 @@
 <translation id="76959938259365003">ล้างข้อมูลในถังขยะไม่สำเร็จ</translation>
 <translation id="770015031906360009">กรีก</translation>
 <translation id="7705251383879779343">คัดลอก <ph name="FILE_NAME" /> แล้ว</translation>
+<translation id="7708271999969613024">หากต้องการใช้เครือข่ายนี้ คุณต้องป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการ</translation>
 <translation id="7711920809702896782">ข้อมูลรูปภาพ</translation>
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7730494089396812859">แสดงรายละเอียดของข้อมูลสำรองในระบบคลาวด์</translation>
@@ -875,6 +880,7 @@
 <translation id="8437209419043462667">สหรัฐอเมริกา</translation>
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>
 <translation id="8456681095658380701">ชื่อไม่ถูกต้อง</translation>
+<translation id="8457767749626250697">ซิมล็อกอยู่</translation>
 <translation id="8459404855768962328">การคัดลอกรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
 <translation id="8461467696380332069">คลิกขวาที่ไฟล์แล้วเลือก "ปักหมุดที่ชั้นวาง" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="8461914792118322307">พร็อกซี</translation>

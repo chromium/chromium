@@ -32,7 +32,6 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ആപ്പിനെ AR ഉപയോഗിക്കാൻ അനുവദിക്കുന്നതിന് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ക്യാമറ ഓണാക്കുക.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="1887786770086287077">ഈ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ആക്‌സസ് ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
-<translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
 <translation id="1919950603503897840">കോൺടാക്റ്റുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -79,7 +78,6 @@
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2687403674020088961">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
-<translation id="2713106313042589954">ക്യാമറ ഓഫാക്കുക</translation>
 <translation id="2717722538473713889">ഇമെയിൽ വിലാസങ്ങൾ</translation>
 <translation id="2750481671343847896">ഐഡന്റിറ്റി സേവനങ്ങളിൽ നിന്നുള്ള സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കാൻ സൈറ്റുകൾക്ക് കഴിയും.</translation>
 <translation id="2785051990912111074">ഇത് തിരഞ്ഞെടുക്കുന്നതിലൂടെ <ph name="WEBSITE" /> എന്നതിനുള്ള കുക്കികൾ മായ്ക്കും</translation>
@@ -156,7 +154,6 @@
 <translation id="4479647676395637221">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ആദ്യം ചോദിക്കുക (ശുപാർശചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="4505788138578415521">URL വികസിപ്പിച്ചു</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ആപ്പിനെ നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> മൈക്രോഫോൺ ഓണാക്കുക.</translation>
-<translation id="4566417217121906555">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="4570913071927164677">വിശദാംശങ്ങൾ</translation>
 <translation id="4645575059429386691">നിങ്ങളുടെ രക്ഷിതാവ് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4670064810192446073">വെർച്വൽ റിയാലിറ്റി</translation>
@@ -181,7 +178,6 @@
 <translation id="5186036860380548585">സ്‌ക്രീനിന്റെ മുകളിൽ ഓപ്‌ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5197729504361054390">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന കോൺടാക്‌റ്റുകൾ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5216942107514965959">അവസാനം സന്ദർശിച്ചത് ഇന്നാണ്</translation>
-<translation id="5225463052809312700">ക്യാമറ ഓണാക്കുക</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' നീക്കംചെയ്യുക</translation>
 <translation id="528192093759286357">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട് ബാക്ക് ബട്ടണിൽ സ്‌പർശിക്കുക.</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
@@ -343,7 +339,6 @@
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ഒരു കുക്കി ഉപയോഗത്തിലാണ്}other{# കുക്കികൾ ഉപയോഗത്തിലാണ്}}</translation>
 <translation id="8487700953926739672">ഓഫ്‌ലൈനില്‍ ലഭ്യമാണ്</translation>
 <translation id="848952951823693243">എല്ലായ്‌പ്പോഴും മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
-<translation id="8499083585497694743">മൈക്രോഫോൺ അൺമ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="851751545965956758">ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="857943718398505171">അനുവദിച്ചിരിക്കുന്നു (ശുപാർശചെയ്‌തത്)</translation>
