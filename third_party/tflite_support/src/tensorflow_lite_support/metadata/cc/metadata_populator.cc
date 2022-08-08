@@ -19,8 +19,6 @@ limitations under the License.
 #include <cstring>
 #include <functional>
 
-#include "contrib/minizip/ioapi.h"
-#include "contrib/minizip/zip.h"
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow_lite_support/cc/common.h"
@@ -28,6 +26,8 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
+#include "third_party/zlib/contrib/minizip/ioapi.h"
+#include "third_party/zlib/contrib/minizip/zip.h"
 
 namespace tflite {
 namespace metadata {

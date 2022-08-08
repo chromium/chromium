@@ -19,7 +19,7 @@ limitations under the License.
 #include <cstdlib>
 
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "contrib/minizip/ioapi.h"
+#include "third_party/zlib/contrib/minizip/ioapi.h"
 
 namespace tflite {
 namespace metadata {

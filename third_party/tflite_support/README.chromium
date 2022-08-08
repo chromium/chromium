@@ -36,6 +36,8 @@ is a no-op in chromium builds and upsets clang.
   * This patch intentionally does not apply because it was made with
   `--irreversible-delete` because it is deleting a large .tflite file causing
   the chromium-presubmit bot to fail.
+10) Fix minizip path inclusion. Upstream uses contrib/minizip/, but chromium
+uses third_party/zlib/contrib/minizip/.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:
