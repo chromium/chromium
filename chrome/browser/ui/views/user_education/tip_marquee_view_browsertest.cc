@@ -36,6 +36,6 @@ IN_PROC_BROWSER_TEST_F(TipMarqueeViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TipMarqueeViewBrowserTest, TipStartsExpanded) {
   tip_marquee_view()->SetTip(u"Tip Text");
-  tab_strip_region_view()->Layout();
+  RunScheduledLayouts();
   EXPECT_EQ(tip_marquee_view()->GetPreferredSize(), tip_marquee_view()->size());
 }
