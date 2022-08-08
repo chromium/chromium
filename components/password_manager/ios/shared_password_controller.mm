@@ -577,7 +577,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // added elements to the form.
   if (!triggeredByFormChange) {
     _passwordManager->OnPasswordFormsRendered(_delegate.passwordManagerDriver,
-                                              forms, true);
+                                              forms);
   }
 }
 

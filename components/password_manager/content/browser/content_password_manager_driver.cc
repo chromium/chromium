@@ -265,8 +265,7 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
 }
 
 void ContentPasswordManagerDriver::PasswordFormsRendered(
-    const std::vector<autofill::FormData>& raw_forms,
-    bool did_stop_loading) {
+    const std::vector<autofill::FormData>& raw_forms) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
@@ -280,7 +279,7 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
   for (auto& form : forms)
     SetFrameAndFormMetaData(render_frame_host_, form);
 
-  GetPasswordManager()->OnPasswordFormsRendered(this, forms, did_stop_loading);
+  GetPasswordManager()->OnPasswordFormsRendered(this, forms);
 }
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(

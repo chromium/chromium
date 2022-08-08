@@ -142,8 +142,7 @@ class FakeMojoPasswordManagerDriver
       const std::vector<autofill::FormData>& forms_data) override;
 
   void PasswordFormsRendered(
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) override;
+      const std::vector<autofill::FormData>& visible_forms_data) override;
 
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
 

@@ -132,8 +132,7 @@ class MockPasswordManager : public PasswordManager {
   MOCK_METHOD(void,
               OnPasswordFormsRendered,
               (PasswordManagerDriver * driver,
-               const std::vector<autofill::FormData>&,
-               bool),
+               const std::vector<autofill::FormData>&),
               (override));
   MOCK_METHOD(void,
               OnPasswordFormSubmitted,
@@ -354,9 +353,9 @@ TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormsRendered) {
 
   EXPECT_CALL(password_manager_,
               OnPasswordFormsRendered(
-                  _, ElementsAre(FormDataEqualTo(ExpectedFormData())), _));
+                  _, ElementsAre(FormDataEqualTo(ExpectedFormData()))));
 
-  driver()->PasswordFormsRendered({form}, false);
+  driver()->PasswordFormsRendered({form});
 }
 
 TEST_F(ContentPasswordManagerDriverURLTest, PasswordFormSubmitted) {

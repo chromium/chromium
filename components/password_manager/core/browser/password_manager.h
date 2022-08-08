@@ -77,8 +77,7 @@ class PasswordManager : public PasswordManagerInterface {
       const std::vector<autofill::FormData>& forms_data) override;
   void OnPasswordFormsRendered(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) override;
+      const std::vector<autofill::FormData>& visible_forms_data) override;
   void OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                const autofill::FormData& form_data) override;
   void OnPasswordFormCleared(PasswordManagerDriver* driver,

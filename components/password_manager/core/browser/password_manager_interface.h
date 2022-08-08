@@ -36,8 +36,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // Handles password forms being rendered.
   virtual void OnPasswordFormsRendered(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) = 0;
+      const std::vector<autofill::FormData>& visible_forms_data) = 0;
 
   // Handles a password form being submitted.
   virtual void OnPasswordFormSubmitted(PasswordManagerDriver* driver,

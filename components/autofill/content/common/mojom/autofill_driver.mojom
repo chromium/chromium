@@ -106,10 +106,8 @@ interface PasswordManagerDriver {
   PasswordFormsParsed(array<FormData> forms_data);
 
   // Notification that initial layout has occurred and the following password
-  // forms are visible on the page (e.g. not set to display:none.), and whether
-  // all frames in the page have been rendered.
-  PasswordFormsRendered(array<FormData> visible_forms_data,
-                        bool did_stop_loading);
+  // forms are visible on the page (e.g. not set to display:none.).
+  PasswordFormsRendered(array<FormData> visible_forms_data);
 
   // Notification that this password form was submitted by the user.
   PasswordFormSubmitted(FormData form_data);

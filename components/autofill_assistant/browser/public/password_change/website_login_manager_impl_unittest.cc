@@ -406,7 +406,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordNewLogin) {
 
   // The user submits the an entirely new credential.
   password_manager_->OnPasswordFormsParsed(&driver_, {form.form_data});
-  password_manager_->OnPasswordFormsRendered(&driver_, {form.form_data}, true);
+  password_manager_->OnPasswordFormsRendered(&driver_, {form.form_data});
   password_manager_->OnPasswordFormSubmitted(&driver_, form.form_data);
   EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
   EXPECT_TRUE(manager_->ReadyToSaveSubmittedPassword());

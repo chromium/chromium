@@ -544,10 +544,10 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
   void PasswordFormsParsed(const std::vector<FormData>& forms_data) override {
     DeferMsg(&mojom::PasswordManagerDriver::PasswordFormsParsed, forms_data);
   }
-  void PasswordFormsRendered(const std::vector<FormData>& visible_forms_data,
-                             bool did_stop_loading) override {
+  void PasswordFormsRendered(
+      const std::vector<FormData>& visible_forms_data) override {
     DeferMsg(&mojom::PasswordManagerDriver::PasswordFormsRendered,
-             visible_forms_data, did_stop_loading);
+             visible_forms_data);
   }
   void PasswordFormSubmitted(const FormData& form_data) override {
     DeferMsg(&mojom::PasswordManagerDriver::PasswordFormSubmitted, form_data);
@@ -1329,10 +1329,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     // Send the PasswordFormsRendered message regardless of whether
     // |password_forms_data| is empty. The empty |password_forms_data| are a
     // possible signal to the browser that a pending login attempt succeeded.
-    WebFrame* main_frame = render_frame()->GetWebFrame()->Top();
-    bool did_stop_loading = !main_frame || !main_frame->IsLoading();
-    GetPasswordManagerDriver().PasswordFormsRendered(password_forms_data,
-                                                     did_stop_loading);
+    GetPasswordManagerDriver().PasswordFormsRendered(password_forms_data);
   } else {
     // If there is a password field, but the list of password forms is empty for
     // some reason, add a dummy form to the list. It will cause a request to the

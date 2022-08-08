@@ -54,9 +54,7 @@ class MockPasswordManager : public PasswordManagerInterface {
               (override));
   MOCK_METHOD(void,
               OnPasswordFormsRendered,
-              (PasswordManagerDriver*,
-               const std::vector<autofill::FormData>&,
-               bool),
+              (PasswordManagerDriver*, const std::vector<autofill::FormData>&),
               (override));
   MOCK_METHOD(void,
               OnPasswordFormSubmitted,

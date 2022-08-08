@@ -4192,8 +4192,7 @@ class MockPrerenderPasswordManagerDriver
               (override));
   MOCK_METHOD(void,
               PasswordFormsRendered,
-              (const std::vector<autofill::FormData>& visible_form_data,
-               bool load_completed),
+              (const std::vector<autofill::FormData>& visible_form_data),
               (override));
   MOCK_METHOD(void,
               PasswordFormSubmitted,
@@ -4259,9 +4258,8 @@ class MockPrerenderPasswordManagerDriver
             });
     ON_CALL(*this, PasswordFormsRendered)
         .WillByDefault(
-            [this](const std::vector<autofill::FormData>& visible_form_data,
-                   bool load_completed) {
-              impl_->PasswordFormsRendered(visible_form_data, load_completed);
+            [this](const std::vector<autofill::FormData>& visible_form_data) {
+              impl_->PasswordFormsRendered(visible_form_data);
               RemoveWaitType(WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_RENDERED);
             });
     ON_CALL(*this, PasswordFormSubmitted)

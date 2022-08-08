@@ -37,8 +37,7 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
   void PasswordFormsParsed(
       const std::vector<autofill::FormData>& raw_forms_data) override {}
   void PasswordFormsRendered(
-      const std::vector<autofill::FormData>& raw_visible_forms_data,
-      bool did_stop_loading) override {}
+      const std::vector<autofill::FormData>& raw_visible_forms_data) override {}
   void PasswordFormSubmitted(const autofill::FormData& raw_form_data) override {
   }
   void InformAboutUserInput(const autofill::FormData& raw_form_data) override {

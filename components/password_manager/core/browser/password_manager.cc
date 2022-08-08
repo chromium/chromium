@@ -902,8 +902,7 @@ bool PasswordManager::ShouldBlockPasswordForSameOriginButDifferentScheme(
 
 void PasswordManager::OnPasswordFormsRendered(
     password_manager::PasswordManagerDriver* driver,
-    const std::vector<FormData>& visible_forms_data,
-    bool did_stop_loading) {
+    const std::vector<FormData>& visible_forms_data) {
   CreatePendingLoginManagers(driver, visible_forms_data);
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
@@ -940,16 +939,6 @@ void PasswordManager::OnPasswordFormsRendered(
   visible_forms_data_.insert(visible_forms_data_.end(),
                              visible_forms_data.begin(),
                              visible_forms_data.end());
-  if (!did_stop_loading &&
-      !submitted_manager->GetSubmittedForm()
-           ->form_data.is_gaia_with_skip_save_password_form) {
-    // |form_data.is_gaia_with_skip_save_password_form| = true means that this
-    // is a Chrome sign-in page. Chrome sign-in pages are redirected to an empty
-    // pages, and for some reasons |did_stop_loading| might be false. So
-    // |did_stop_loading| is ignored for them.
-    return;
-  }
-
   if (!driver->IsInPrimaryMainFrame() &&
       submitted_manager->driver_id() != driver->GetId()) {
     // Frames different from the main frame and the frame of the submitted form
