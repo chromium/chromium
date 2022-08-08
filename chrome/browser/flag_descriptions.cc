@@ -5940,6 +5940,11 @@ const char kCrOSEnforceSystemAecNsAgcDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
+const char kCrosPrivacyHubFutureName[] =
+    "Enable ChromeOS Privacy Hub future features";
+const char kCrosPrivacyHubFutureDescription[] =
+    "Enables ChromeOS Privacy Hub future features.";
+
 const char kDeprecateLowUsageCodecsName[] = "Deprecates low usage media codecs";
 const char kDeprecateLowUsageCodecsDescription[] =
     "Deprecates low usage codecs. Disable this feature to allow playback of "

@@ -1085,6 +1085,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cros-privacy-hub-future",
+    "owners": [ "chromeos-privacyhub@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "crosh-swa",
     "owners": [ "joelhockey", "benwells" ],
     "expiry_milestone": 110

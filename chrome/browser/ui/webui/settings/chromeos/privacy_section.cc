@@ -342,6 +342,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("showPrivacyHub",
                           ash::features::IsCrosPrivacyHubEnabled());
 
+  html_source->AddBoolean("showPrivacyHubFuture",
+                          ash::features::IsCrosPrivacyHubFutureEnabled());
+
   html_source->AddString(
       "smartPrivacyDesc",
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));

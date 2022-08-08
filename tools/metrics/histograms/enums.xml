@@ -56341,6 +56341,7 @@ from previous Chrome versions.
       label="AutofillEnableUpdateVirtualCardEnrollment:disabled"/>
   <int value="-1643224308"
       label="OmniboxMostVisitedTilesTitleWrapAround:disabled"/>
+  <int value="-1642244779" label="CrosPrivacyHubFuture:disabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
@@ -59804,6 +59805,7 @@ from previous Chrome versions.
   <int value="518419320" label="RemoteCopyProgressNotification:disabled"/>
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
   <int value="519623921" label="SafeModeForCachedFlags:enabled"/>
+  <int value="520270438" label="CrosPrivacyHubFuture:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>

@@ -3398,6 +3398,9 @@ extern const char kCrOSDspBasedAgcAllowedDescription[];
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
 
+extern const char kCrosPrivacyHubFutureName[];
+extern const char kCrosPrivacyHubFutureDescription[];
+
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];
 
