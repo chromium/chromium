@@ -68,5 +68,8 @@ test(() => {
   assert_equals(rect.y, 100);
 }, 'Range.getBoundingClientRect() returns the actual rendered location');
 
-// TODO(crbug.com/1309178): Test Element.offsetTop and Element.offsetLeft
+test(() => {
+  assert_equals(anchored.offsetLeft, 200);
+  assert_equals(anchored.offsetTop, 100);
+}, 'Element.offset* return adjusted offsets');
 </script>
