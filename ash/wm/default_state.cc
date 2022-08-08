@@ -563,8 +563,15 @@ void DefaultState::ReenterToCurrentState(
   }
 
   // When reentering a state, use the saved `snap_ratio_`.
-  UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
-                        window_state->snap_ratio());
+  if (window_state->IsSnapped()) {
+    UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                          window_state->snap_ratio().has_value()
+                              ? window_state->snap_ratio()
+                              : absl::make_optional(kDefaultSnapRatio));
+  } else {
+    UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
+                          absl::nullopt);
+  }
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
