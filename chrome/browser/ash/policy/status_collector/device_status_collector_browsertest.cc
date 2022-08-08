@@ -81,7 +81,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
@@ -884,11 +883,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::KioskCryptohomeRemover::RegisterPrefs(local_state_.registry());
 
     // Use FakeUpdateEngineClient.
-    chromeos::DBusThreadManager::Initialize();
     update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
-    // Async tasks posted when calling `chromeos::DBusThreadManager::Initialize`
-    // need to be flushed.
-    base::RunLoop().RunUntilIdle();
 
     chromeos::CrasAudioHandler::InitializeForTesting();
     ash::UserDataAuthClient::InitializeFake();

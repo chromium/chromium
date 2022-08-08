@@ -48,7 +48,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -201,7 +200,6 @@ class ChildStatusCollectorTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
 
-    chromeos::DBusThreadManager::Initialize();
     // Use FakeUpdateEngineClient.
     ash::UpdateEngineClient::InitializeFakeForTest();
     ash::CiceroneClient::InitializeFake();
