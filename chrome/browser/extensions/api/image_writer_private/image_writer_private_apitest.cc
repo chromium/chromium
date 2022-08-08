@@ -28,7 +28,7 @@ class ImageWriterPrivateApiTest : public ExtensionApiTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-    test_utils_.SetUp(true);
+    test_utils_.SetUp();
 
     ASSERT_TRUE(test_utils_.FillFile(test_utils_.GetImagePath(),
                                      image_writer::kImagePattern,
