@@ -60,9 +60,10 @@ TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecorded) {
       GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime);
   EXPECT_TRUE(last_ignore_time.has_value());
   {
-    auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 1);
-    EXPECT_EQ(base::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
+    const auto& dict =
+        prefs()->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
+    EXPECT_EQ(base::ValueToTime(dict.Find(kIphLastIgnoreTime)),
               last_ignore_time.value());
   }
 }
@@ -78,9 +79,10 @@ TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecordUpdated) {
   EXPECT_NE(GetTimeWebAppPref(prefs(), app_id, kIphLastIgnoreTime).value(),
             last_ignore_time.value());
   {
-    auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 2);
-    EXPECT_NE(base::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
+    const auto& dict =
+        prefs()->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 2);
+    EXPECT_NE(base::ValueToTime(dict.Find(kIphLastIgnoreTime)),
               last_ignore_time.value());
   }
 }
@@ -89,14 +91,16 @@ TEST_F(WebAppPrefsUtilsTest, TestIphInstallResetCounters) {
   RecordInstallIphIgnored(prefs(), app_id, base::Time::Now());
   EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 1);
   {
-    auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 1);
+    const auto& dict =
+        prefs()->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 1);
   }
   RecordInstallIphInstalled(prefs(), app_id);
   EXPECT_EQ(GetIntWebAppPref(prefs(), app_id, kIphIgnoreCount).value_or(0), 0);
   {
-    auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
-    EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 0);
+    const auto& dict =
+        prefs()->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+    EXPECT_EQ(dict.FindInt(kIphIgnoreCount).value_or(0), 0);
   }
 }
 
