@@ -258,12 +258,12 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
   SetIsModal(true);
-  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // Throw away the AX cache first, so the subsequent steps don't have a chance
   // of queuing up AX events on objects that would be invalidated when the cache
   // is thrown away.
   InertSubtreesChanged(document, old_modal_dialog);
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
     if (LocalDOMWindow* window = GetDocument().domWindow()) {
