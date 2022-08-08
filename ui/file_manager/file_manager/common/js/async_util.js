@@ -53,7 +53,6 @@ AsyncUtil.ConcurrentQueue = class {
     this.limit_ = limit;
     this.added_ = [];
     this.running_ = [];
-    this.executeId_ = 0;
     this.cancelled_ = false;
   }
 
@@ -89,7 +88,7 @@ AsyncUtil.ConcurrentQueue = class {
       console.warn('Queue is cancelled. Cannot add a new task.');
     } else {
       this.added_.push(task);
-      this.maybeExecute_();
+      this.scheduleNext_();
     }
   }
 
@@ -100,10 +99,6 @@ AsyncUtil.ConcurrentQueue = class {
   cancel() {
     this.cancelled_ = true;
     this.added_ = [];
-    if (this.executeId_) {
-      clearTimeout(this.executeId_);
-      this.executeId_ = 0;
-    }
   }
 
   /**
@@ -120,9 +115,6 @@ AsyncUtil.ConcurrentQueue = class {
    * the queue.
    */
   maybeExecute_() {
-    // Clear the setTimeout ID so that next call to scheduleNext_, if it takes
-    // place, schedules another execution of this method.
-    this.executeId_ = 0;
     if (this.added_.length > 0) {
       if (this.running_.length < this.limit_) {
         this.execute_(this.added_.shift());
@@ -173,9 +165,8 @@ AsyncUtil.ConcurrentQueue = class {
    * the queue.
    */
   scheduleNext_() {
-    if (this.executeId_ === 0) {
-      this.executeId_ = setTimeout(() => this.maybeExecute_(), 0);
-    }
+    // TODO(1350885): Use setTimeout(()=>{this.maybeExecute();});
+    this.maybeExecute_();
   }
 
   /**

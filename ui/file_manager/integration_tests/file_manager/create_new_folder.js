@@ -67,6 +67,7 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   // Check: a new folder should be shown in the file list.
   let files = [[newFolderName, '--', 'Folder', '']].concat(
       TestEntryInfo.getExpectedRows(initialEntrySet));
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Check: a new folder should be present in the directory tree.
   const newSubtreeChildItem =
@@ -112,6 +113,7 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   // Check: the test folder should be shown in the file list.
   files = [[newFolderName, '--', 'Folder', '']].concat(
       TestEntryInfo.getExpectedRows(initialEntrySet));
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Check: the test folder should be present in the directory tree.
   const testSubtreeChildItem =
