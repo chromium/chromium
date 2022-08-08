@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":all_inputs_disabled_test",
     ":critical_error_page_test",
     ":fake_shimless_rma_service_test",
+    ":hardware_error_page_test",
     ":onboarding_choose_destination_page_test",
     ":onboarding_choose_wipe_device_page_test",
     ":onboarding_choose_wp_disable_method_page_test",
@@ -77,6 +78,16 @@ js_library("fake_shimless_rma_service_test") {
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:shimless_rma_types",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("hardware_error_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:hardware_error_page",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

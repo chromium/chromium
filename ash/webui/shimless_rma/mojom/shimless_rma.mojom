@@ -67,6 +67,7 @@ enum State {
   kWaitForManualWPEnable,
   kFinalize,
   kRepairComplete,
+  kHardwareError,
 };
 
 // Defined error codes.

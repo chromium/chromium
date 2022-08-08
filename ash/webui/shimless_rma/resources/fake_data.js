@@ -134,6 +134,12 @@ export const fakeStates = [
     canGoBack: false,
     error: RmadErrorCode.kOk,
   },
+  {
+    state: State.kHardwareError,
+    canExit: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk,
+  },
 ];
 
 /** @type {!Array<string>} */

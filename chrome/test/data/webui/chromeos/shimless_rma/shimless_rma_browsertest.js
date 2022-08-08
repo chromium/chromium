@@ -49,6 +49,7 @@ const debug_suites_list = [
   'AllInputsDisabledTest',
   'CriticalErrorPageTest',
   'FakeShimlessRmaServiceTestSuite',
+  'HardwareErrorPageTest',
   'OnboardingChooseDestinationPageTest',
   'OnboardingChooseWipeDevicePageTest',
   'OnboardingChooseWpDisableMethodPageTest',

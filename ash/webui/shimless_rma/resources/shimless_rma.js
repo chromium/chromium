@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './critical_error_page.js';
+import './hardware_error_page.js';
 import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wipe_device_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
@@ -213,6 +214,13 @@ export const StateComponentMapping = {
   },
   [State.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',
+    requiresReloadWhenShown: false,
+    buttonNext: ButtonState.HIDDEN,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
+  },
+  [State.kHardwareError]: {
+    componentIs: 'hardware-error-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,

@@ -3200,6 +3200,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" desc="Label for the button that attempts to cancel RMA and reboot the device.">
         Restart
       </message>
+      <!-- Hardware error page -->
+      <message name="IDS_SHIMLESS_RMA_HARDWARE_ERROR_TITLE" desc="The title for the hardware error page. Hardware errors occur on the finalization and the provisioning step and can only be resolved by replacing the main board.">
+        Can't complete repair
+      </message>
+      <message name="IDS_SHIMLESS_RMA_HARDWARE_ERROR_MESSAGE" desc="The message for the hardware error explaining how to fix it.">
+        Something went wrong. This is most likely due to a hardware issue. Replace the main board and try the repair process again.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_HARDWARE_SHUTDOWN_BUTTON" desc="Label for the shut down button on the hardware error page.">
+        Shut down
+      </message>
       <!-- Wipe device page -->
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">
         Device is going to the same user. Erase user data?
