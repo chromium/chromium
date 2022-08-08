@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.Erle{WebRTCEchoCancellerEstimate}"
-    units="dB" expires_after="2022-09-13">
+    units="dB" expires_after="2023-08-08">
   <owner>gustaf@chromium.org</owner>
   <owner>peah@chromium.org</owner>
   <summary>
@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.Erl{WebRTCEchoCancellerEstimate}"
-    units="dB (shifted)" expires_after="2022-09-13">
+    units="dB (shifted)" expires_after="2023-08-08">
   <owner>gustaf@chromium.org</owner>
   <owner>peah@chromium.org</owner>
   <summary>
