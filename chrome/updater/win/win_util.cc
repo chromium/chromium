@@ -48,21 +48,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
-ProcessFilterName::ProcessFilterName(const std::wstring& process_name)
-    : process_name_(process_name) {}
-
-bool ProcessFilterName::Includes(const base::ProcessEntry& entry) const {
-  return base::EqualsCaseInsensitiveASCII(entry.exe_file(), process_name_);
-}
-
 namespace {
-
-// The number of iterations to poll if a process is stopped correctly.
-const unsigned int kMaxProcessQueryIterations = 50;
-
-// The sleep time in ms between each poll.
-const unsigned int kProcessQueryWaitTimeMs = 100;
 
 HRESULT IsUserRunningSplitToken(bool& is_split_token) {
   HANDLE token = NULL;
@@ -136,8 +122,7 @@ HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
 }
 
 bool IsExplorerRunningAtMediumOrLower() {
-  ProcessFilterName filter(L"EXPLORER.EXE");
-  base::ProcessIterator iter(&filter);
+  base::NamedProcessIterator iter(L"EXPLORER.EXE", nullptr);
   while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
     MANDATORY_LEVEL level = MandatoryLevelUntrusted;
     if (SUCCEEDED(GetProcessIntegrityLevel(process_entry->pid(), &level)) &&
@@ -201,29 +186,6 @@ NamedObjectAttributes::~NamedObjectAttributes() = default;
 HRESULT HRESULTFromLastError() {
   const auto error_code = ::GetLastError();
   return (error_code != NO_ERROR) ? HRESULT_FROM_WIN32(error_code) : E_FAIL;
-}
-
-bool IsProcessRunning(const wchar_t* executable) {
-  base::NamedProcessIterator iter(executable, nullptr);
-  const base::ProcessEntry* entry = iter.NextProcessEntry();
-  return entry != nullptr;
-}
-
-bool WaitForProcessesStopped(const wchar_t* executable) {
-  DCHECK(executable);
-  VLOG(1) << "Wait for processes '" << executable << "'.";
-
-  // Wait until the process is completely stopped.
-  for (unsigned int iteration = 0; iteration < kMaxProcessQueryIterations;
-       ++iteration) {
-    if (!IsProcessRunning(executable))
-      return true;
-    ::Sleep(kProcessQueryWaitTimeMs);
-  }
-
-  // The process didn't terminate.
-  LOG(ERROR) << "Cannot stop process '" << executable << "', timeout.";
-  return false;
 }
 
 // This sets up COM security to allow NetworkService, LocalService, and System

@@ -16,24 +16,35 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace base {
 class CommandLine;
 class Value;
 class Version;
 }  // namespace base
 
-class GURL;
-
 namespace updater {
-
 enum class UpdaterScope;
+}  // namespace updater
 
-namespace test {
+namespace updater::test {
 
 class ScopedServer;
 
-// Returns the path to the updater executable (in the build output directory).
+// Returns the path to the updater installer program (in the build output
+// directory). This is typically the updater setup, or the updater itself for
+// the platforms where a setup program is not provided.
 base::FilePath GetSetupExecutablePath();
+
+// Returns the names for processes which may be running during unit tests.
+std::vector<base::FilePath::StringType> GetTestProcessNames();
+
+// Ensures test processes are not running after the function is called.
+void CleanProcesses();
+
+// Verifies that test processes are not running.
+void ExpectCleanProcesses();
 
 // Prints the updater.log file to stdout.
 void PrintLog(UpdaterScope scope);
@@ -228,7 +239,6 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
 void RunOfflineInstall(UpdaterScope scope);
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_

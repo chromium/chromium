@@ -14,9 +14,6 @@ class CommandLine;
 
 namespace updater {
 
-// The name of the service executable used for tests.
-extern const wchar_t kTestServiceExecutableName[];
-
 // The name of the executable used for tests.
 extern const wchar_t kTestProcessExecutableName[];
 

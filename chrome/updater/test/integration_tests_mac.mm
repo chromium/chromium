@@ -137,6 +137,8 @@ absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
+  CleanProcesses();
+
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
@@ -191,6 +193,8 @@ void Clean(UpdaterScope scope) {
 }
 
 void ExpectClean(UpdaterScope scope) {
+  ExpectCleanProcesses();
+
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 

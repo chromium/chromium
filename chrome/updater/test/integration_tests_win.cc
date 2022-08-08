@@ -48,6 +48,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -66,8 +67,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace updater {
-namespace test {
+namespace updater::test {
 namespace {
 
 constexpr wchar_t kDidRun[] = L"dr";
@@ -323,7 +323,7 @@ void CheckInstallation(UpdaterScope scope,
 // Returns true is any updater process is found running in any session in the
 // system, regardless of its path.
 bool IsUpdaterRunning() {
-  return IsProcessRunning(GetExecutableRelativePath().value().c_str());
+  return test::IsProcessRunning(GetExecutableRelativePath().value());
 }
 
 void SleepFor(int seconds) {
@@ -481,6 +481,8 @@ absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
 }
 
 void Clean(UpdaterScope scope) {
+  CleanProcesses();
+
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
   for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_TRUE(DeleteRegKey(root, key));
@@ -558,6 +560,7 @@ void ExpectInstalled(UpdaterScope scope) {
 }
 
 void ExpectClean(UpdaterScope scope) {
+  ExpectCleanProcesses();
   CheckInstallation(scope, CheckInstallationStatus::kCheckIsNotInstalled,
                     CheckInstallationVersions::kCheckActiveAndSxS);
 }
@@ -1365,5 +1368,4 @@ void RunOfflineInstall(UpdaterScope scope) {
   DeleteRegKey(key_hive, kTestRegKey);
 }
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test

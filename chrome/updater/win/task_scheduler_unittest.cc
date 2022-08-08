@@ -33,6 +33,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -69,7 +70,7 @@ class TaskSchedulerTests : public ::testing::Test {
     task_scheduler_ = TaskScheduler::CreateInstance();
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
-    ASSERT_FALSE(IsProcessRunning(kTestProcessExecutableName));
+    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
     EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
   }
 
@@ -78,7 +79,9 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
 
     // Make sure every processes launched with scheduled task are completed.
-    ASSERT_TRUE(WaitForProcessesStopped(kTestProcessExecutableName));
+    test::WaitForProcessesToExit(kTestProcessExecutableName,
+                                 TestTimeouts::action_max_timeout());
+    EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
 
     DeleteLogFile();
   }

@@ -666,6 +666,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
         "//chrome/updater/win/installer:installer_unittest",
+        "//chrome/updater/win/test:updater_test_process",
       ]
 
       data = [

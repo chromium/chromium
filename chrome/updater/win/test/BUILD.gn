@@ -38,8 +38,6 @@ source_set("test_executables") {
     "test_executables.h",
   ]
 
-  data_deps = [ ":updater_test_process" ]
-
   deps = [
     ":test_common",
     ":test_strings",

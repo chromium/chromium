@@ -21,6 +21,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -48,6 +49,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/server.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -59,8 +61,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace updater {
-namespace test {
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/win/test/test_executables.h"
+#endif
+
+namespace updater::test {
 namespace {
 
 constexpr char kSelfUpdateCRXName[] = "updater_selfupdate.crx3";
@@ -656,5 +661,45 @@ void ExpectLastStarted(UpdaterScope updater_scope) {
                    .is_null());
 }
 
-}  // namespace test
-}  // namespace updater
+std::vector<base::FilePath::StringType> GetTestProcessNames() {
+#if BUILDFLAG(IS_MAC)
+  return {
+      GetExecutableRelativePath().value(),
+      GetSetupExecutablePath().value(),
+  };
+#elif BUILDFLAG(IS_WIN)
+  return {
+      GetExecutableRelativePath().value(),
+      GetSetupExecutablePath().value(),
+      kTestProcessExecutableName,
+      []() {
+        const base::FilePath test_executable =
+            base::FilePath::FromASCII(kExecutableName);
+        return test_executable.RemoveExtension()
+            .AppendASCII(kExecutableSuffix)
+            .Append(test_executable.Extension())
+            .value();
+      }(),
+  };
+#else
+  NOTREACHED();
+  return {};
+#endif
+}
+
+void CleanProcesses() {
+  for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
+    EXPECT_TRUE(KillProcesses(process_name, -1));
+    EXPECT_TRUE(
+        WaitForProcessesToExit(process_name, TestTimeouts::action_timeout()));
+    EXPECT_FALSE(IsProcessRunning(process_name));
+  }
+}
+
+void ExpectCleanProcesses() {
+  for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
+    EXPECT_FALSE(IsProcessRunning(process_name));
+  }
+}
+
+}  // namespace updater::test
