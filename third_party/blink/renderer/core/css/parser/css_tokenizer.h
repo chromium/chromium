@@ -19,25 +19,41 @@ namespace blink {
 
 class CSSTokenizerInputStream;
 
-class CORE_EXPORT CSSTokenizer {
-  DISALLOW_NEW();
-
+// Base class for all CSSTokenizer implementations.
+class CORE_EXPORT CSSTokenizerBase {
  public:
-  CSSTokenizer(const String&, wtf_size_t offset = 0);
+  virtual ~CSSTokenizerBase() = default;
+
+  virtual wtf_size_t Offset() const = 0;
+  virtual wtf_size_t PreviousOffset() const = 0;
+  virtual StringView StringRangeAt(wtf_size_t start,
+                                   wtf_size_t length) const = 0;
+  virtual CSSParserToken TokenizeSingle() = 0;
+  virtual CSSParserToken TokenizeSingleWithComments() = 0;
+  virtual wtf_size_t TokenCount() = 0;
+};
+
+class CORE_EXPORT CSSTokenizer : public CSSTokenizerBase {
+ public:
+  // Immediately tokenizes the input string and saves the resulting tokens in
+  // the returned tokenizer, which can be iterated on later.
+  static std::unique_ptr<CSSTokenizerBase> CreateCachedTokenizer(
+      const String& input);
+
+  explicit CSSTokenizer(const String&, wtf_size_t offset = 0);
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
   Vector<CSSParserToken, 32> TokenizeToEOF();
-  wtf_size_t TokenCount();
+  wtf_size_t TokenCount() override;
 
-  wtf_size_t Offset() const { return input_.Offset(); }
-  wtf_size_t PreviousOffset() const { return prev_offset_; }
-  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;
+  wtf_size_t Offset() const override { return input_.Offset(); }
+  wtf_size_t PreviousOffset() const override { return prev_offset_; }
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const override;
+  CSSParserToken TokenizeSingle() override;
+  CSSParserToken TokenizeSingleWithComments() override;
 
  private:
-  CSSParserToken TokenizeSingle();
-  CSSParserToken TokenizeSingleWithComments();
-
   CSSParserToken NextToken();
 
   UChar Consume();

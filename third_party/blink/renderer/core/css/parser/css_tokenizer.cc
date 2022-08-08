@@ -14,6 +14,106 @@ namespace blink {
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
+namespace {
+
+// To avoid resizing we err on the side of reserving too much space.
+// Most strings we tokenize have about 3.5 to 5 characters per token.
+constexpr wtf_size_t kEstimatedCharactersPerToken = 3;
+
+// A tokenizer which contains an already tokenized list of tokens. This can be
+// used transparently in place of CSSTokenizer.
+class CachedCSSTokenizer : public CSSTokenizerBase {
+ public:
+  CachedCSSTokenizer(const String& input,
+                     Vector<CSSParserToken> tokens,
+                     Vector<wtf_size_t> offsets,
+                     Vector<String> string_pool)
+      : input_(input),
+        tokens_(std::move(tokens)),
+        offsets_(std::move(offsets)),
+        string_pool_(std::move(string_pool)) {
+    DCHECK_EQ(tokens_.size(), offsets_.size() - 1);
+  }
+
+  wtf_size_t Offset() const override { return offsets_[index_]; }
+
+  wtf_size_t PreviousOffset() const override {
+    if (index_ == 0)
+      return 0;
+    return offsets_[index_ - 1];
+  }
+
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const override {
+    return input_.RangeAt(start, length);
+  }
+
+  CSSParserToken TokenizeSingle() override {
+    while (true) {
+      const CSSParserToken token = NextToken();
+      if (token.GetType() == kCommentToken)
+        continue;
+      return token;
+    }
+  }
+
+  CSSParserToken TokenizeSingleWithComments() override { return NextToken(); }
+
+  wtf_size_t TokenCount() override { return index_; }
+
+ private:
+  CSSParserToken NextToken() {
+    if (index_ >= tokens_.size()) {
+      DCHECK_EQ(tokens_.back().GetType(), kEOFToken);
+      return tokens_.back();
+    }
+    return tokens_[index_++];
+  }
+
+  // Holds the source text of this sheet.
+  CSSTokenizerInputStream input_;
+
+  // The full list of tokens in the sheet.
+  Vector<CSSParserToken> tokens_;
+
+  // Offsets into the source text for each token.
+  Vector<wtf_size_t> offsets_;
+
+  // String pool to hold allocated strings, taken from CSSTokenizer.
+  Vector<String> string_pool_;
+
+  // The current token index.
+  wtf_size_t index_ = 0;
+};
+
+}  // namespace
+
+// static
+std::unique_ptr<CSSTokenizerBase> CSSTokenizer::CreateCachedTokenizer(
+    const String& input) {
+  CSSTokenizer tokenizer(input);
+
+  Vector<CSSParserToken> tokens;
+
+  // This holds offsets into the source text for each token.
+  Vector<wtf_size_t> offsets;
+
+  wtf_size_t reserved_size = (tokenizer.input_.length() - tokenizer.Offset()) /
+                             kEstimatedCharactersPerToken;
+  tokens.ReserveInitialCapacity(reserved_size);
+  offsets.ReserveInitialCapacity(reserved_size);
+
+  offsets.push_back(0);
+  while (true) {
+    const CSSParserToken token = tokenizer.NextToken();
+    tokens.push_back(token);
+    offsets.push_back(tokenizer.Offset());
+    if (token.GetType() == kEOFToken)
+      break;
+  }
+  return std::make_unique<CachedCSSTokenizer>(
+      input, std::move(tokens), std::move(offsets),
+      std::move(tokenizer.string_pool_));
+}
 
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
@@ -29,10 +129,9 @@ CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
 }
 
 Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
-  // To avoid resizing we err on the side of reserving too much space.
-  // Most strings we tokenize have about 3.5 to 5 characters per token.
   Vector<CSSParserToken, 32> tokens;
-  tokens.ReserveInitialCapacity((input_.length() - Offset()) / 3);
+  tokens.ReserveInitialCapacity((input_.length() - Offset()) /
+                                kEstimatedCharactersPerToken);
 
   while (true) {
     const CSSParserToken token = NextToken();
