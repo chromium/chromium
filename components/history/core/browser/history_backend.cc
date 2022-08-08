@@ -1771,9 +1771,15 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
 }
 
 base::Time HistoryBackend::FindMostRecentClusteredTime() {
-  // TODO(manukh): Implement. Since we don't have persisted clustered visits
-  //  yet, there are no visits to take the timestamp of.
-  return base::Time::Now() - base::Days(kExpireDaysThreshold);
+  TRACE_EVENT0("browser", "HistoryBackend::FindMostRecentClusteredTime");
+  if (!db_)
+    return base::Time::Min();
+  const auto clusters =
+      GetMostRecentClusters(base::Time::Min(), base::Time::Max(), 1);
+  return clusters.empty() ? base::Time::Min()
+                          : clusters[0]
+                                .GetMostRecentVisit()
+                                .annotated_visit.visit_row.visit_time;
 }
 
 void HistoryBackend::ReplaceClusters(
@@ -1809,7 +1815,6 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id) {
     return {};
 
   Cluster cluster = db_->GetCluster(cluster_id);
-  cluster.cluster_id = cluster_id;
   cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id));
   return cluster;
 }

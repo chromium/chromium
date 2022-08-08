@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_to_iso8601.h"
 #include "components/history/core/browser/history_service.h"
@@ -19,19 +18,6 @@
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 
 namespace history_clusters {
-
-namespace {
-
-// Get the most recent `ClusterVisit` in `cluster`.
-history::ClusterVisit GetMostRecentClusterVisit(history::Cluster cluster) {
-  return *base::ranges::min_element(
-      cluster.visits, [](auto time1, auto time2) { return time1 < time2; },
-      [](const auto& cluster_visit) {
-        return cluster_visit.annotated_visit.visit_row.visit_time;
-      });
-}
-
-}  // namespace
 
 HistoryClustersServiceTaskGetMostRecentClusters::
     HistoryClustersServiceTaskGetMostRecentClusters(
@@ -191,7 +177,8 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
   auto continuation_params =
       clusters.empty() ? QueryClustersContinuationParams::DoneParams()
                        : QueryClustersContinuationParams{
-                             GetMostRecentClusterVisit(clusters[0])
+                             clusters[0]
+                                 .GetMostRecentVisit()
                                  .annotated_visit.visit_row.visit_time,
                              true, false, true, false};
   done_ = true;

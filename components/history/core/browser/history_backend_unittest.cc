@@ -3760,6 +3760,26 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
 }
 
+TEST_F(HistoryBackendTest, FindMostRecentClusteredTime) {
+  // Should return `Min()` when there are no clusters
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), base::Time::Min());
+
+  // Add 1 cluster with multiple visits.
+  AddAnnotatedVisit(50);
+  AddAnnotatedVisit(20);
+  AddAnnotatedVisit(60);
+  backend_->ReplaceClusters({}, CreateClusters({{1, 2, 3}}));
+
+  // Should return the max time across all visits in the cluster.
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(20));
+
+  // Add another cluster.
+  backend_->ReplaceClusters({}, CreateClusters({{1}}));
+
+  // Should return the max time across all clusters.
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(20));
+}
+
 TEST_F(HistoryBackendTest, ReplaceClusters) {
   {
     SCOPED_TRACE("Add clusters");
@@ -3859,7 +3879,8 @@ TEST_F(HistoryBackendTest, GetCluster) {
   EXPECT_EQ(cluster.label, u"label");
   EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
 
-  VerifyCluster(backend_->GetCluster(3), {3});
+  // Verify non-existent clusters aren't returned.
+  VerifyCluster(backend_->GetCluster(2), {0});
 }
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {

@@ -983,6 +983,8 @@ struct Cluster {
   Cluster& operator=(Cluster&&);
   ~Cluster();
 
+  const ClusterVisit& GetMostRecentVisit() const;
+
   std::vector<std::u16string> GetKeywords() const;
 
   int64_t cluster_id = 0;

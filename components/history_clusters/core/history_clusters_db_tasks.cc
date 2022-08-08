@@ -17,7 +17,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 
-namespace history_clusters {
+namespace {
 
 // Is the transition user-visible.
 bool IsTransitionUserVisible(int32_t transition) {
@@ -27,6 +27,10 @@ bool IsTransitionUserVisible(int32_t transition) {
          !ui::PageTransitionCoreTypeIs(page_transition,
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 }
+
+}  // namespace
+
+namespace history_clusters {
 
 // static
 base::Time GetAnnotatedVisitsToCluster::GetBeginTimeOnDayBoundary(
@@ -121,12 +125,14 @@ history::QueryOptions GetAnnotatedVisitsToCluster::GetHistoryQueryOptions(
   // 1st, set `continuation_time`, either from `continuation_params_`for
   // continuation requests or computed for initial requests.
   base::Time continuation_time;
-  if (continuation_params_.is_continuation)
+  if (continuation_params_.is_continuation) {
     continuation_time = continuation_params_.continuation_time;
-  else if (recent_first_)
+  } else if (recent_first_) {
     continuation_time = now;
-  else
-    continuation_time = backend->FindMostRecentClusteredTime();
+  } else {
+    continuation_time =
+        std::max(backend->FindMostRecentClusteredTime(), begin_time_limit_);
+  }
 
   // 2nd, derive the other boundary, approximately 1 day before or after
   // `continuation_time`, depending on `recent_first`, and rounded to a day

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/history/core/browser/page_usage_data.h"
 
 namespace history {
@@ -497,6 +498,14 @@ Cluster::Cluster(Cluster&&) = default;
 Cluster& Cluster::operator=(const Cluster&) = default;
 Cluster& Cluster::operator=(Cluster&&) = default;
 Cluster::~Cluster() = default;
+
+const ClusterVisit& Cluster::GetMostRecentVisit() const {
+  return *base::ranges::min_element(
+      visits, [](auto time1, auto time2) { return time1 < time2; },
+      [](const auto& cluster_visit) {
+        return cluster_visit.annotated_visit.visit_row.visit_time;
+      });
+}
 
 std::vector<std::u16string> Cluster::GetKeywords() const {
   std::vector<std::u16string> keywords;
