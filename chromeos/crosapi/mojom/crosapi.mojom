@@ -872,8 +872,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known after
 // the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 52
-// Next id: 52
+// Next version: 53
+// Next id: 53
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1198,6 +1198,10 @@ struct BrowserInitParams {
   // multitask menu will be enabled.
   [MinVersion=51]
   bool enable_float_window@51;
+
+  // True if this is a device with cloud gaming features enabled.
+  [MinVersion=52]
+  bool is_cloud_gaming_device@52;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

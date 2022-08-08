@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chromeos/constants/chromeos_features.h"
+
 #include "base/feature_list.h"
 
-namespace chromeos {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
 
-namespace features {
+namespace chromeos::features {
 
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
@@ -51,7 +54,11 @@ const base::Feature kQuickAnswersForMoreLocales{
     "QuickAnswersForMoreLocales", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsCloudGamingDeviceEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
+#else
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
+#endif
 }
 
 bool IsDarkLightModeEnabled() {
@@ -70,5 +77,4 @@ bool IsQuickAnswersForMoreLocalesEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersForMoreLocales);
 }
 
-}  // namespace features
-}  // namespace chromeos
+}  // namespace chromeos::features

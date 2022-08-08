@@ -25,13 +25,28 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kCursiveStylusPreinstall,
     &kCursiveManagedStylusPreinstall,
     &kMessagesPreinstall,
-    &::chromeos::features::kCloudGamingDevice,
 #endif
 };
 
 bool g_always_enabled_for_testing = false;
 
 namespace {
+
+struct FeatureWithEnabledFunction {
+  const char* const name;
+  bool (*enabled_func)();
+};
+
+// Features which have a function to be run to determine whether they are
+// enabled. Prefer using a base::Feature with |kPreinstalledAppInstallFeatures|
+// when possible.
+const FeatureWithEnabledFunction
+    kPreinstalledAppInstallFeaturesWithEnabledFunctions[] = {
+#if BUILDFLAG(IS_CHROMEOS)
+        {chromeos::features::kCloudGamingDevice.name,
+         &chromeos::features::IsCloudGamingDeviceEnabled}
+#endif
+};
 
 // Checks if the feature being passed matches any of the migration features
 // above.
@@ -103,6 +118,12 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
 
     if (feature->name == feature_name)
       return base::FeatureList::IsEnabled(*feature);
+  }
+
+  for (const auto& feature :
+       kPreinstalledAppInstallFeaturesWithEnabledFunctions) {
+    if (feature.name == feature_name)
+      return feature.enabled_func();
   }
 
   return false;

@@ -691,6 +691,13 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     ]
   }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/constants",
+      "//chromeos/startup",
+    ]
+  }
 }
 
 group("browser_tests") {

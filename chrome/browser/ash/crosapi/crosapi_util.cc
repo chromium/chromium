@@ -36,6 +36,7 @@
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -572,6 +573,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
   params->enable_float_window =
       base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
+  params->is_cloud_gaming_device =
+      chromeos::features::IsCloudGamingDeviceEnabled();
 
   return params;
 }

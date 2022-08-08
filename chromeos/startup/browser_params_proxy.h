@@ -118,6 +118,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsFloatWindowEnabled() const;
 
+  bool IsCloudGamingDevice() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

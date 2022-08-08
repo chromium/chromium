@@ -234,4 +234,8 @@ bool BrowserParamsProxy::IsFloatWindowEnabled() const {
   return BrowserInitParams::Get()->enable_float_window;
 }
 
+bool BrowserParamsProxy::IsCloudGamingDevice() const {
+  return BrowserInitParams::Get()->is_cloud_gaming_device;
+}
+
 }  // namespace chromeos
