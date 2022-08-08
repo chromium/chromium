@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
@@ -543,7 +543,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Windows and macOS depend on policy - see policy_test.js for their
     // testing coverage.
     model.set('documentSettings.isModifiable', false);
-    // <if expr="is_linux or chromeos_ash or chromeos_lacros">
+    // <if expr="is_linux or is_chromeos">
     // Always available for PDFs on Linux and ChromeOS
     assertTrue(model.settings.rasterize.available);
     assertFalse(model.settings.rasterize.setFromUi);
@@ -587,7 +587,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.pagesPerSheet.available);
   });
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   test('pin', function() {
     // Make device unmanaged.
     loadTimeData.overrideValues({isEnterpriseManaged: false});

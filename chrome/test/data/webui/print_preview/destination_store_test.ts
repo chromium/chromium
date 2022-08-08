@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -30,14 +30,14 @@ const destination_store_test = {
     MultipleRecentDestinationsOneRequest:
         'multiple recent destinations one request',
     DefaultDestinationSelectionRules: 'default destination selection rules',
-    // <if expr="not chromeos_ash and not chromeos_lacros">
+    // <if expr="not is_chromeos">
     SystemDefaultPrinterPolicy: 'system default printer policy',
     // </if>
     KioskModeSelectsFirstPrinter: 'kiosk mode selects first printer',
     NoPrintersShowsError: 'no printers shows error',
     RecentSaveAsPdf: 'recent save as pdf',
     LoadAndSelectDestination: 'select loaded destination',
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     LoadSaveToDriveCros: 'load Save to Drive Cros',
     DriveNotMounted: 'drive not mounted',
     // </if>
@@ -67,7 +67,7 @@ suite(destination_store_test.suiteName, function() {
 
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
     // </if>
 
@@ -216,10 +216,10 @@ suite(destination_store_test.suiteName, function() {
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
           const expectedPrinters =
-              // <if expr="chromeos_ash or chromeos_lacros">
+              // <if expr="is_chromeos">
               7;
           // </if>
-          // <if expr="not chromeos_ash and not chromeos_lacros">
+          // <if expr="not is_chromeos">
           6;
           // </if>
           assertEquals(expectedPrinters, reportedPrinters.length);
@@ -249,7 +249,7 @@ suite(destination_store_test.suiteName, function() {
         });
       });
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   /**
    * Tests that if the system default printer policy is enabled the system
    * default printer is automatically selected even if the user has recent
@@ -420,7 +420,7 @@ suite(destination_store_test.suiteName, function() {
             });
       });
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
       assert(destination_store_test.TestNames.LoadSaveToDriveCros), function() {

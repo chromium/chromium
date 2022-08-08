@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BackgroundGraphicsModeRestriction, CrButtonElement, CrCheckboxElement, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PolicyObjectEntry, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl, SerializedSettings} from 'chrome://print/print_preview.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {ColorModeRestriction, DuplexMode, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
 // </if>
 
@@ -12,7 +12,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -72,7 +72,7 @@ suite(policy_tests.suiteName, function() {
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
     // </if>
     const pluginProxy = new TestPluginProxy();
@@ -382,7 +382,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   // Tests different scenarios of color printing policy.
   test(assert(policy_tests.TestNames.ColorPolicy), async () => {
     const tests = [

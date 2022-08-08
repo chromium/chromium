@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl,
-        // <if expr="chromeos_ash or chromeos_lacros">
+        // <if expr="is_chromeos">
         PrintPreviewDestinationDialogCrosElement,
         // </if>
-        // <if expr="not chromeos_ash and not chromeos_lacros">
+        // <if expr="not is_chromeos">
         PrintPreviewDestinationDialogElement,
         // </if>
         PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
@@ -14,7 +14,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -32,10 +32,10 @@ const destination_dialog_test = {
 Object.assign(window, {destination_dialog_test: destination_dialog_test});
 
 suite(destination_dialog_test.suiteName, function() {
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   let dialog: PrintPreviewDestinationDialogCrosElement;
   // </if>
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   let dialog: PrintPreviewDestinationDialogElement;
   // </if>
 
@@ -57,7 +57,7 @@ suite(destination_dialog_test.suiteName, function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
     // </if>
     destinationStore = createDestinationStore();
@@ -70,10 +70,10 @@ suite(destination_dialog_test.suiteName, function() {
 
   function finishSetup() {
     // Set up dialog
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     dialog = document.createElement('print-preview-destination-dialog-cros');
     // </if>
-    // <if expr="not chromeos_ash and not chromeos_lacros">
+    // <if expr="not is_chromeos">
     dialog = document.createElement('print-preview-destination-dialog');
     // </if>
     dialog.destinationStore = destinationStore;

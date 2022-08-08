@@ -92,7 +92,7 @@ export function getCddTemplate(
       },
     },
   };
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   template.capabilities!.printer.pin = {supported: true};
   // </if>
   return template;
@@ -276,10 +276,10 @@ export function getExtensionDestinations(): ExtensionPrinters {
 export function getDestinations(localDestinations: LocalDestinationInfo[]):
     Destination[] {
   const destinations: Destination[] = [];
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   const origin = DestinationOrigin.LOCAL;
   // </if>
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   const origin = DestinationOrigin.CROS;
   // </if>
   // Five destinations. FooDevice is the system default.
@@ -362,7 +362,7 @@ export function createDestinationStore(): DestinationStore {
       testListenerElement.addWebUIListener.bind(testListenerElement));
 }
 
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 /**
  * @return The Google Drive destination.
  */

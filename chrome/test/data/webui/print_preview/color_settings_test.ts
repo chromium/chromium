@@ -54,7 +54,7 @@ suite('ColorSettingsTest', function() {
     assertTrue(colorSection.getSetting('color').setFromUi);
   });
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   // Tests that if the setting is enforced by enterprise policy it is
   // disabled.
   test('disabled by policy', function() {

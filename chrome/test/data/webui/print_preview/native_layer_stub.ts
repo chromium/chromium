@@ -153,7 +153,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     if (printerId === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return Promise.resolve(getPdfPrinter());
     }
-    // <if expr="chromeos_ash or chromeos_lacros">
+    // <if expr="is_chromeos">
     if (printerId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return Promise.resolve(getPdfPrinter());
     }

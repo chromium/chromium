@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ColorModeRestriction, Destination, DestinationOrigin, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 import {PinModeRestriction} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
@@ -251,7 +251,7 @@ suite('ModelSettingsPolicyTest', function() {
     });
   });
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   test('pin managed', function() {
     [{
       // No policies, settings is modifiable.
