@@ -97,6 +97,24 @@ enum class MigrationMode {
   kMove = 1,  // Migrate using `MoveMigrator`.
 };
 
+// Specifies the mode Lacros is currently running.
+// This enum is different from LacrosAvailability in the way that
+// it describes the mode Lacros is running at a given point in time
+// which can be influenced by multiple factors such as flags,
+// while LacrosAvailability describes the policy that dictates how
+// Lacros is supposed to be launched.
+enum class LacrosMode {
+  // Indicates that Lacros is disabled. Ash is the only browser.
+  kDisabled = 0,
+  // Indicates that Lacros is enabled but Ash browser is the
+  // primary browser.
+  kSideBySide = 1,
+  // Indicates that Lacros is the primary browser. Ash is also available.
+  kPrimary = 2,
+  // Indicates that Lacros is the only available browser.
+  kOnly = 3,
+};
+
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
@@ -206,6 +224,10 @@ bool IsLacrosPrimaryBrowser();
 // `IsLacrosPrimaryBrowser()`.
 bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
+
+// Returns the current mode Lacros is running.
+// See LacrosMode definition for a full list of modes.
+LacrosMode GetLacrosMode();
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Passing absl::nullopt will reset the state.

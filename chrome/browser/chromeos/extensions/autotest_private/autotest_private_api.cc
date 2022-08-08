@@ -1972,6 +1972,22 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
   }
 }
 
+// static
+api::autotest_private::LacrosMode
+AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
+    crosapi::browser_util::LacrosMode lacrosMode) {
+  switch (lacrosMode) {
+    case crosapi::browser_util::LacrosMode::kDisabled:
+      return api::autotest_private::LacrosMode::LACROS_MODE_DISABLED;
+    case crosapi::browser_util::LacrosMode::kSideBySide:
+      return api::autotest_private::LacrosMode::LACROS_MODE_SIDEBYSIDE;
+    case crosapi::browser_util::LacrosMode::kPrimary:
+      return api::autotest_private::LacrosMode::LACROS_MODE_PRIMARY;
+    case crosapi::browser_util::LacrosMode::kOnly:
+      return api::autotest_private::LacrosMode::LACROS_MODE_ONLY;
+  }
+}
+
 ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
   auto* browser_manager = crosapi::BrowserManager::Get();
@@ -1981,6 +1997,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   result->SetBoolKey("isKeepAlive", browser_manager->IsKeepAliveEnabled());
   result->SetStringKey("lacrosPath",
                        browser_manager->lacros_path().MaybeAsASCII());
+  result->SetStringKey("mode", api::autotest_private::ToString(ToLacrosMode(
+                                   crosapi::browser_util::GetLacrosMode())));
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
