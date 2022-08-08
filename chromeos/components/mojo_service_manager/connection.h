@@ -19,9 +19,9 @@ namespace chromeos::mojo_service_manager {
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
 bool BootstrapServiceManagerConnection();
 
-// Returns whether connects to the mojo service manager.
+// Returns whether the mojo remote is bound to the mojo service manager.
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
-bool IsServiceManagerConnected();
+bool IsServiceManagerBound();
 
 // Resets the connection to the mojo service manager.
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)

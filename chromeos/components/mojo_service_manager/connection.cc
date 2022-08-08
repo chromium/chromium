@@ -135,10 +135,7 @@ bool BootstrapServiceManagerConnection() {
   return false;
 }
 
-bool IsServiceManagerConnected() {
-  // is_bound() will be the same as is_connected() because we crash on
-  // disconnecting.
-  DCHECK_EQ(GetRemote().is_bound(), GetRemote().is_connected());
+bool IsServiceManagerBound() {
   return GetRemote().is_bound();
 }
 
