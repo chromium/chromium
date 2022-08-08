@@ -50,14 +50,13 @@ base::Value TargetInfoToValue(
 }
 
 absl::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
-    const base::Value& value) {
-  const std::string* fcm_token = value.FindStringKey(kDeviceFcmToken);
+    const base::Value::Dict& dict) {
+  const std::string* fcm_token = dict.FindString(kDeviceFcmToken);
   if (!fcm_token)
     return absl::nullopt;
 
-  const std::string* base64_p256dh = value.FindStringKey(kDeviceP256dh);
-  const std::string* base64_auth_secret =
-      value.FindStringKey(kDeviceAuthSecret);
+  const std::string* base64_p256dh = dict.FindString(kDeviceP256dh);
+  const std::string* base64_auth_secret = dict.FindString(kDeviceAuthSecret);
 
   std::string p256dh, auth_secret;
   if (!base64_p256dh || !base64_auth_secret ||
@@ -112,9 +111,10 @@ void SharingSyncPreference::RegisterProfilePrefs(
 
 absl::optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey()
     const {
-  const base::Value* vapid_key = prefs_->GetDictionary(prefs::kSharingVapidKey);
+  const base::Value::Dict& vapid_key =
+      prefs_->GetValueDict(prefs::kSharingVapidKey);
   const std::string* base64_private_key =
-      vapid_key->FindStringKey(kVapidECPrivateKey);
+      vapid_key.FindString(kVapidECPrivateKey);
 
   if (!base64_private_key)
     return absl::nullopt;
@@ -154,12 +154,12 @@ void SharingSyncPreference::ClearVapidKeyChangeObserver() {
 
 absl::optional<SharingSyncPreference::FCMRegistration>
 SharingSyncPreference::GetFCMRegistration() const {
-  const base::Value* registration =
-      prefs_->GetDictionary(prefs::kSharingFCMRegistration);
+  const base::Value::Dict& registration =
+      prefs_->GetValueDict(prefs::kSharingFCMRegistration);
   const std::string* authorized_entity_ptr =
-      registration->FindStringKey(kRegistrationAuthorizedEntity);
+      registration.FindString(kRegistrationAuthorizedEntity);
   const base::Value* timestamp_value =
-      registration->FindKey(kRegistrationTimestamp);
+      registration.Find(kRegistrationTimestamp);
   if (!timestamp_value)
     return absl::nullopt;
 
@@ -239,15 +239,15 @@ void SharingSyncPreference::ClearLocalSharingInfo() {
 // static
 absl::optional<syncer::DeviceInfo::SharingInfo>
 SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
-  const base::Value* registration =
-      prefs->GetDictionary(prefs::kSharingLocalSharingInfo);
+  const base::Value::Dict& registration =
+      prefs->GetValueDict(prefs::kSharingLocalSharingInfo);
 
-  const base::Value* vapid_target_info_value =
-      registration->FindDictKey(kSharingInfoVapidTargetInfo);
-  const base::Value* sender_id_target_info_value =
-      registration->FindDictKey(kSharingInfoSenderIdTargetInfo);
-  const base::Value* enabled_features_value =
-      registration->FindListKey(kSharingInfoEnabledFeatures);
+  const base::Value::Dict* vapid_target_info_value =
+      registration.FindDict(kSharingInfoVapidTargetInfo);
+  const base::Value::Dict* sender_id_target_info_value =
+      registration.FindDict(kSharingInfoSenderIdTargetInfo);
+  const base::Value::List* enabled_features_value =
+      registration.FindList(kSharingInfoEnabledFeatures);
   if (!vapid_target_info_value || !sender_id_target_info_value ||
       !enabled_features_value) {
     return absl::nullopt;
@@ -259,7 +259,7 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
     return absl::nullopt;
 
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
-  for (auto& value : enabled_features_value->GetListDeprecated()) {
+  for (auto& value : *enabled_features_value) {
     DCHECK(value.is_int());
     int feature_value = value.GetInt();
     // Filter invalid enums from other browser versions.
