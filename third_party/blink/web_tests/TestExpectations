@@ -1481,13 +1481,6 @@ crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-008.html [ Fail
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
 
-# We don't support requesting flex line breaks and it is not clear that we should.
-# See https://lists.w3.org/Archives/Public/www-style/2015May/0065.html
-crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-horiz-001a.html [ Failure ]
-crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-horiz-001b.html [ Failure ]
-crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-vert-001a.html [ Failure ]
-crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-vert-001b.html [ Failure ]
-
 # We don't currently support visibility: collapse in flexbox
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-baseline-001.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-001.html [ Failure ]
