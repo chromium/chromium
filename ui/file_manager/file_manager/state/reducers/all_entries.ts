@@ -88,9 +88,15 @@ export function cacheEntries(currentState: State, action: Action): State {
       return currentState;
     }
 
+    // TODO(lucmult): Find a correct way to grab the VolumeManager.
+    const volumeManager = window.fileManager?.volumeManager as any;
+    const volumeInfo = volumeManager?.getVolumeInfo(entry as Entry);
+    const volumeType = volumeInfo?.volumeType;
+
     const entryData = allEntries[key] || {};
     allEntries[key] = Object.assign(entryData, {
-      entry: entry,
+      entry,
+      volumeType,
     });
 
     currentState.allEntries = allEntries;

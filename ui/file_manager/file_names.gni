@@ -260,6 +260,7 @@ ts_files = [
   "file_manager/state/reducers/root.ts",
   "file_manager/state/reducers/all_entries.ts",
   "file_manager/state/reducers/current_directory.ts",
+  "file_manager/state/reducers/search.ts",
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
   "file_manager/widgets/xf_breadcrumb.ts",

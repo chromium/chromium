@@ -35,3 +35,15 @@ export function getStore(): Store {
 
   return store;
 }
+
+export function getEmptyState(): State {
+  // TODO(b/241707820): Migrate State to allow optional attributes.
+  return {
+    allEntries: {},
+    currentDirectory: undefined,
+    search: {
+      term: undefined,
+      status: undefined,
+    },
+  };
+}

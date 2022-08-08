@@ -7,6 +7,7 @@ import {Action, Actions, ChangeDirectoryAction} from '../actions.js';
 
 import {cacheEntries, clearCachedEntries} from './all_entries.js';
 import {changeDirectory} from './current_directory.js';
+import {search} from './search.js';
 
 /**
  * Root reducer for Files app.
@@ -26,6 +27,11 @@ export function rootReducer(currentState: State, action: Action): State {
 
     case Actions.CLEAR_STALE_CACHED_ENTRIES:
       return clearCachedEntries(state, action);
+
+    case Actions.SEARCH:
+      return Object.assign(state, {
+        search: search(state, action),
+      });
 
     default:
       console.error(`invalid action: ${action.type}`);

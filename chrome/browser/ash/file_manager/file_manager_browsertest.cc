@@ -1134,6 +1134,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("drivePressEnterToSearch").FilesSwa(),
         TestCase("driveSearchAlwaysDisplaysMyDrive"),
         TestCase("driveSearchAlwaysDisplaysMyDrive").FilesSwa(),
+        TestCase("driveSearchAlwaysDisplaysMyDrive")
+            .FilesSwa()
+            .FilesExperimental(),
         TestCase("drivePressClearSearch"),
         TestCase("drivePressClearSearch").FilesSwa(),
         TestCase("drivePressCtrlAFromSearch"),
@@ -1742,6 +1745,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("showMyFiles").EnableTrash().FilesSwa(),
         TestCase("myFilesDisplaysAndOpensEntries"),
         TestCase("myFilesDisplaysAndOpensEntries").FilesSwa(),
+        TestCase("myFilesDisplaysAndOpensEntries")
+            .FilesSwa()
+            .FilesExperimental(),
         TestCase("myFilesFolderRename"),
         TestCase("myFilesFolderRename").FilesSwa(),
         TestCase("myFilesUpdatesWhenAndroidVolumeMounts").DontMountVolumes(),

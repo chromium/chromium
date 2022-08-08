@@ -32,7 +32,7 @@ export function changeDirectory(
   }
 
   const components =
-      PathComponent.computeComponentsFromEntry(fileData.entry, volumeManager);
+      PathComponent.computeComponentsFromEntry(fileData.entry!, volumeManager);
 
   return Object.assign(currentState.currentDirectory || {}, {
     status: action.status,

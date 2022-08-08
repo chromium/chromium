@@ -5,7 +5,8 @@
 import '../widgets/xf_breadcrumb.js';
 
 import {metrics} from '../common/js/metrics.js';
-import {CurrentDirectory, PropStatus, State} from '../externs/ts/state.js';
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/actions.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';
@@ -31,16 +32,34 @@ export class BreadcrumbContainer {
   }
 
   onStateChanged(state: State) {
-    const currentDir = state.currentDirectory;
-    const key = currentDir && currentDir.key;
-    if (!key || !currentDir) {
+    const {currentDirectory, search} = state;
+    let key = currentDirectory && currentDirectory.key;
+    if (!key || !currentDirectory) {
       this.hide_();
       return;
     }
 
-    if (currentDir.status == PropStatus.SUCCESS &&
+    // If the current location is somewhere in Drive, all files in Drive can
+    // be listed as search results regardless of current location.
+    // In this case, showing current location is confusing, so use the Drive
+    // root "My Drive" as the current location.
+    if (search && search.term && search.status === PropStatus.SUCCESS) {
+      const entry = state.allEntries[currentDirectory.key];
+      if (entry && entry.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+        const root = currentDirectory.pathComponents[0];
+        if (root) {
+          key = root.key;
+          this.show_(root.key!, [root]);
+          return;
+        }
+      }
+    }
+
+    if (currentDirectory.status == PropStatus.SUCCESS &&
         this.currentFileKey_ !== key) {
-      this.show_(state.currentDirectory);
+      this.show_(
+          state.currentDirectory?.key || '',
+          state.currentDirectory?.pathComponents || []);
     }
   }
 
@@ -51,22 +70,20 @@ export class BreadcrumbContainer {
     }
   }
 
-  private show_(currentDir?: CurrentDirectory) {
+  private show_(key: FileKey, pathComponents: PathComponent[]) {
     let breadcrumb = document.querySelector('xf-breadcrumb');
     if (!breadcrumb) {
       breadcrumb = document.createElement('xf-breadcrumb');
+      breadcrumb.id = 'breadcrumbs';
       breadcrumb.addEventListener(
           BREADCRUMB_CLICKED, this.breadcrumbClick_.bind(this));
       this.container_.appendChild(breadcrumb);
     }
 
-    const path = !currentDir ?
-        '' :
-        currentDir.pathComponents.map(p => p.label).join('/');
+    const path = pathComponents.map(p => p.label).join('/');
     breadcrumb!.path = path;
-    this.currentFileKey_ = currentDir ? currentDir.key : null;
-    this.pathKeys_ =
-        currentDir ? currentDir.pathComponents.map(p => p.key) : [];
+    this.currentFileKey_ = key;
+    this.pathKeys_ = pathComponents.map(p => p.key);
   }
 
   private breadcrumbClick_(event: BreadcrumbClickedEvent) {

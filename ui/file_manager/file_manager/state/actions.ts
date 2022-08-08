@@ -20,6 +20,7 @@ export interface Action extends BaseAction {
 export const enum Actions {
   CHANGE_DIRECTORY = 'change-directory',
   CLEAR_STALE_CACHED_ENTRIES = 'clear-stale-cached-entries',
+  SEARCH = 'search',
 }
 
 /** Action to request to change the Current Directory. */
@@ -27,6 +28,12 @@ export interface ChangeDirectoryAction extends Action {
   newDirectory?: Entry;
   key: FileKey;
   status: PropStatus;
+}
+
+/** Action to update the search state. */
+export interface SearchAction extends Action {
+  term?: string;
+  status?: PropStatus;
 }
 
 /** Factory for the ChangeDirectoryAction. */
@@ -38,5 +45,14 @@ export function changeDirectory(
     newDirectory: to,
     key: toKey ? toKey : to!.toURL(),
     status: status ? status : PropStatus.STARTED,
+  };
+}
+
+export function searchAction(
+    {term, status}: {term?: string, status?: PropStatus}): SearchAction {
+  return {
+    type: Actions.SEARCH,
+    term,
+    status,
   };
 }

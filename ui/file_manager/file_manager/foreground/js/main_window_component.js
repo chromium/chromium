@@ -8,6 +8,8 @@ import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {changeDirectory} from '../../state/actions.js';
+import {getStore} from '../../state/store.js';
 
 import {AppStateController} from './app_state_controller.js';
 import {FileFilter} from './directory_contents.js';
@@ -417,16 +419,27 @@ export class MainWindowComponent {
     switch (util.getKeyModifiers(event) + event.key) {
       case 'Backspace':  // Backspace => Up one directory.
         event.preventDefault();
-        const components =
-            this.ui_.breadcrumbController.getCurrentPathComponents();
-        if (components.length < 2) {
-          break;
+        if (util.isFilesAppExperimental()) {
+          const store = getStore();
+          const state = store.getState();
+          const components = state.currentDirectory?.pathComponents;
+          if (!components || components.length < 2) {
+            break;
+          }
+          const parent = components[components.length - 2];
+          store.dispatch(changeDirectory({toKey: parent.key}));
+        } else {
+          const components =
+              this.ui_.breadcrumbController.getCurrentPathComponents();
+          if (components.length < 2) {
+            break;
+          }
+          const parentPathComponent = components[components.length - 2];
+          parentPathComponent.resolveEntry().then((parentEntry) => {
+            this.directoryModel_.changeDirectoryEntry(
+                /** @type {!DirectoryEntry} */ (parentEntry));
+          });
         }
-        const parentPathComponent = components[components.length - 2];
-        parentPathComponent.resolveEntry().then((parentEntry) => {
-          this.directoryModel_.changeDirectoryEntry(
-              /** @type {!DirectoryEntry} */ (parentEntry));
-        });
         break;
 
       case 'Enter':  // Enter => Change directory or perform default action.

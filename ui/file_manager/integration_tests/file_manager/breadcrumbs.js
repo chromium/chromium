@@ -282,7 +282,7 @@ testcase.breadcrumbsMainButtonClick = async () => {
 
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
-      appId, ['bread-crumb[path="My files/Downloads"']);
+      appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
 };
 
 /**
@@ -317,7 +317,7 @@ testcase.breadcrumbsMainButtonEnterKey = async () => {
 
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
-      appId, ['bread-crumb[path="My files/Downloads"']);
+      appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
 };
 
 /**
@@ -512,7 +512,7 @@ testcase.breadcrumbsEliderMenuItemClick = async () => {
 
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
-      appId, ['bread-crumb[path="My files/Downloads"']);
+      appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
 };
 
 /**

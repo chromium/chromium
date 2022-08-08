@@ -20,7 +20,7 @@ import {PropStatus, State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {changeDirectory} from '../../state/actions.js';
+import {changeDirectory, searchAction} from '../../state/actions.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
@@ -1679,7 +1679,14 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
-      this.onSearchCompleted_ = onSearchRescan;
+      this.onSearchCompleted_ = (...args) => {
+        // Notify the caller via callback, for non-store based callers.
+        onSearchRescan(...args);
+
+        // Notify the store-aware parts.
+        this.store_.dispatch(
+            searchAction({term: query, status: PropStatus.SUCCESS}));
+      };
       this.onClearSearch_ = onClearSearch;
       this.addEventListener('scan-completed', this.onSearchCompleted_);
       this.clearAndScan_(newDirContents, callback);
@@ -1705,6 +1712,8 @@ export class DirectoryModel extends EventTarget {
       this.onClearSearch_();
       this.onClearSearch_ = null;
     }
+
+    this.store_.dispatch(searchAction({}));
   }
 
   /**

@@ -8,7 +8,7 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {Actions, changeDirectory} from '../actions.js';
-import {getStore, Store} from '../store.js';
+import {getEmptyState, getStore, Store} from '../store.js';
 
 import {clearCachedEntries} from './all_entries.js';
 
@@ -24,10 +24,7 @@ export function setUp() {
     volumeManager: volumeManager,
   };
 
-  store.init({
-    allEntries: {},
-    currentDirectory: undefined,
-  });
+  store.init(getEmptyState());
 
   fileSystem = volumeManager.getCurrentProfileVolumeInfo(
                                 'downloads')!.fileSystem as MockFileSystem;

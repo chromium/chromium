@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../files_app_entry_interfaces.js';
 
 /**
  * The data for each individual file/entry.
  * @typedef {{
  *   entry: (Entry|FilesAppEntry),
+ *   volumeType: (VolumeManagerCommon.VolumeType|null),
  * }}
  */
 export let FileData;
@@ -47,10 +49,20 @@ export const PropStatus = {
 export let CurrentDirectory;
 
 /**
+ * Data for search. It should be empty `{}` when the user isn't searching.
+ * @typedef {{
+ *   status: (PropStatus|undefined),
+ *   term: (string|undefined),
+ * }}
+ */
+export let SearchData;
+
+/**
  * Files app's state.
  * @typedef {{
  *   allEntries: !Object<string, FileData>,
  *   currentDirectory: (CurrentDirectory|undefined),
+ *   search: (!SearchData|undefined),
  * }}
  */
 export let State;
