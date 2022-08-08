@@ -9,7 +9,7 @@
 
 struct UrlAndId {
   GURL url;
-  int64_t id;
+  int64_t id = -1;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_URL_AND_ID_H_
