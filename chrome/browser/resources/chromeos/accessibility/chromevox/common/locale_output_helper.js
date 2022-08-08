@@ -48,7 +48,8 @@ export class LocaleOutputHelper {
   /**
    * Computes |this.currentLocale_| and |outputString|, and returns them.
    * @param {string} text
-   * @param {AutomationNode} contextNode The AutomationNode that owns |text|.
+   * @param {chrome.automation.AutomationNode} contextNode The AutomationNode
+   *     that owns |text|.
    * @return {!{text: string, locale: string}}
    */
   computeTextAndLocale(text, contextNode) {

@@ -8,4 +8,3 @@
  */
 
 goog.require('QueueMode');
-goog.require('TreeDumper');

@@ -10,7 +10,6 @@ goog.require('AbstractEarcons');
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
 goog.require('QueueMode');
-goog.require('TreeDumper');
 goog.require('TtsInterface');
 
 goog.require('constants');

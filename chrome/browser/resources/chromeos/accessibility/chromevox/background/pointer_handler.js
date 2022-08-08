@@ -15,6 +15,7 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {Output} from './output/output.js';
 
+const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;

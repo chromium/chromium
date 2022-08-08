@@ -6,6 +6,8 @@
  * @fileoverview Class definitions of log that are stored in LogStore
  */
 
+import {TreeDumper} from './tree_dumper.js';
+
 /**
  * List of all types of logs supported.
  * Note that filter type checkboxes are shown in this order at the log page.

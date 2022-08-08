@@ -14,7 +14,6 @@ goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');
 goog.require('RecoveryStrategy');
-goog.require('TreeDumper');
 goog.require('TtsCategory');
 
 goog.require('constants');

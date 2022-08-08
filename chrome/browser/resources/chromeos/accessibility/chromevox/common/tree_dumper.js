@@ -6,12 +6,9 @@
  * @fileoverview Dumps a log of the accessibility tree.
  */
 
-goog.provide('SimpleAutomationNode');
-goog.provide('TreeDumper');
-
 const AutomationNode = chrome.automation.AutomationNode;
 
-SimpleAutomationNode = class {
+class SimpleAutomationNode {
   /**
    * @param {!AutomationNode} node
    */
@@ -57,14 +54,14 @@ SimpleAutomationNode = class {
       return this.logStr;
     };
   }
-};
+}
 
 /**
  * Structure of accessibility tree.
  * This constructor will traverse whole tree to save the tree structure.
  * This should only be called when the user intended to do so.
  */
-TreeDumper = class {
+export class TreeDumper {
   /**
    * @param {!AutomationNode} root
    */
@@ -116,4 +113,4 @@ TreeDumper = class {
     const treeStr = this.createTreeRecursive_(this.rootNode, 0);
     return treeStr;
   }
-};
+}
