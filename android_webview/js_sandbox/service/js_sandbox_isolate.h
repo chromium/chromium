@@ -41,7 +41,7 @@ class FdWithLength;
 
 class JsSandboxIsolate {
  public:
-  JsSandboxIsolate();
+  explicit JsSandboxIsolate(jlong max_heap_size_bytes = 0);
   ~JsSandboxIsolate();
 
   using FinishedCallback = base::OnceCallback<void(const std::string&)>;
@@ -116,6 +116,7 @@ class JsSandboxIsolate {
   base::Lock named_fd_lock_;
   std::unordered_map<std::string, FdWithLength> named_fd_
       GUARDED_BY(named_fd_lock_);
+  jlong isolate_max_heap_size_bytes_;
 };
 }  // namespace android_webview
 

@@ -25,7 +25,12 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     private long mJsSandboxIsolate;
 
     JsSandboxIsolate() {
-        mJsSandboxIsolate = JsSandboxIsolateJni.get().createNativeJsSandboxIsolateWrapper();
+        mJsSandboxIsolate = JsSandboxIsolateJni.get().createNativeJsSandboxIsolateWrapper(0);
+    }
+
+    JsSandboxIsolate(long maxHeapSizeBytes) {
+        mJsSandboxIsolate =
+                JsSandboxIsolateJni.get().createNativeJsSandboxIsolateWrapper(maxHeapSizeBytes);
     }
 
     @Override
@@ -98,7 +103,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
     @NativeMethods
     public interface Natives {
-        long createNativeJsSandboxIsolateWrapper();
+        long createNativeJsSandboxIsolateWrapper(long maxHeapSizeBytes);
 
         void initializeEnvironment();
 

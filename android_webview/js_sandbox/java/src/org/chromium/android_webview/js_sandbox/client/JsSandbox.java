@@ -133,6 +133,14 @@ public class JsSandbox implements AutoCloseable {
      */
     public static final String WASM_COMPILATION = "WASM_COMPILATION";
 
+    /**
+     * Feature for {@link #isFeatureSupported(String)}.
+     *
+     * When this feature is present,
+     * {@link JsSandbox#createIsolate(IsolateSettings)} can be used.
+     */
+    public static final String ISOLATE_MAX_HEAP_SIZE = "ISOLATE_MAX_HEAP_SIZE";
+
     private HashSet<String> mClientSideFeatureSet;
 
     static class ConnectionSetup implements ServiceConnection {
@@ -260,7 +268,8 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Creates and returns an {@link JsIsolate} within which JS can be executed.
+     * Creates and returns an {@link JsIsolate} within which JS can be executed with default
+     * settings.
      */
     @NonNull
     public JsIsolate createIsolate() {
@@ -269,16 +278,45 @@ public class JsSandbox implements AutoCloseable {
                 throw new IllegalStateException(
                         "Attempting to createIsolate on a service that isn't connected");
             }
+            IJsSandboxIsolate isolateStub;
             try {
-                IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
-                Executor mainExecutor;
-                mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
-                JsIsolate isolate = new JsIsolate(isolateStub, this, mainExecutor);
-                mActiveIsolateSet.add(isolate);
-                return isolate;
+                isolateStub = mJsSandboxService.createIsolate();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
+            return createJsIsolateLocked(isolateStub);
+        }
+    }
+
+    /**
+     * Creates and returns an {@link JsIsolate} within which JS can be executed with the specified
+     * settings.
+     *
+     * @param settings configuration used to set up the isolate
+     */
+    @NonNull
+    public JsIsolate createIsolate(IsolateSettings settings) {
+        synchronized (mLock) {
+            if (mJsSandboxService == null) {
+                throw new IllegalStateException(
+                        "Attempting to createIsolate on a service that isn't connected");
+            }
+            IJsSandboxIsolate isolateStub;
+            try {
+                if (settings.getMaxHeapSizeBytes() == 0) {
+                    isolateStub = mJsSandboxService.createIsolate();
+                } else {
+                    isolateStub = mJsSandboxService.createIsolateWithMaxHeapSizeBytes(
+                            settings.getMaxHeapSizeBytes());
+                    if (isolateStub == null) {
+                        throw new RuntimeException(
+                                "Service implementation doesn't support setting maximum heap size");
+                    }
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+            return createJsIsolateLocked(isolateStub);
         }
     }
 
@@ -300,6 +338,18 @@ public class JsSandbox implements AutoCloseable {
             mClientSideFeatureSet.add(PROVIDE_CONSUME_ARRAY_BUFFER);
             mClientSideFeatureSet.add(WASM_COMPILATION);
         }
+        if (features.contains(IJsSandboxService.ISOLATE_MAX_HEAP_SIZE_LIMIT)) {
+            mClientSideFeatureSet.add(ISOLATE_MAX_HEAP_SIZE);
+        }
+    }
+
+    @GuardedBy("mLock")
+    private JsIsolate createJsIsolateLocked(IJsSandboxIsolate isolateStub) {
+        Executor mainExecutor;
+        mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
+        JsIsolate isolate = new JsIsolate(isolateStub, this, mainExecutor);
+        mActiveIsolateSet.add(isolate);
+        return isolate;
     }
 
     /**

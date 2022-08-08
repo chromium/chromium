@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -115,10 +116,11 @@ FdWithLength::FdWithLength(int fd_input, ssize_t len) {
   length = len;
 }
 
-JsSandboxIsolate::JsSandboxIsolate() {
+JsSandboxIsolate::JsSandboxIsolate(jlong max_heap_size_bytes) {
+  isolate_max_heap_size_bytes_ = max_heap_size_bytes;
   control_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
   isolate_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::TaskPriority::USER_VISIBLE,
+      {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   control_task_runner_->PostTask(
@@ -304,11 +306,20 @@ void JsSandboxIsolate::DeleteSelf() {
 
 // Called from isolate thread.
 void JsSandboxIsolate::InitializeIsolateOnThread() {
+  std::unique_ptr<v8::Isolate::CreateParams> params =
+      gin::IsolateHolder::getDefaultIsolateParams();
+  if (isolate_max_heap_size_bytes_ > 0) {
+    if ((uint64_t)isolate_max_heap_size_bytes_ < UINT_MAX) {
+      params->constraints.ConfigureDefaultsFromHeapSize(
+          0, isolate_max_heap_size_bytes_);
+    } else {
+      params->constraints.ConfigureDefaultsFromHeapSize(0, UINT_MAX);
+    }
+  }
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
       base::ThreadTaskRunnerHandle::Get(),
       gin::IsolateHolder::AccessMode::kSingleThread,
-      gin::IsolateHolder::IsolateType::kUtility,
-      gin::IsolateHolder::getDefaultIsolateParams());
+      gin::IsolateHolder::IsolateType::kUtility, std::move(params));
   v8::Isolate* isolate = isolate_holder_->isolate();
   v8::Isolate::Scope isolate_scope(isolate);
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
@@ -515,8 +526,9 @@ static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
 }
 
 static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
-    JNIEnv* env) {
-  JsSandboxIsolate* processor = new JsSandboxIsolate();
+    JNIEnv* env,
+    jlong max_heap_size_bytes) {
+  JsSandboxIsolate* processor = new JsSandboxIsolate(max_heap_size_bytes);
   return reinterpret_cast<intptr_t>(processor);
 }
 
