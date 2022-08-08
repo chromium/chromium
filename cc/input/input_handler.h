@@ -675,8 +675,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // together.
   CompositorDelegateForInput& compositor_delegate_;
 
-  raw_ptr<InputHandlerClient, DanglingUntriaged> input_handler_client_ =
-      nullptr;
+  raw_ptr<InputHandlerClient> input_handler_client_ = nullptr;
 
   // An object to implement the ScrollElasticityHelper interface and
   // hold all state related to elasticity. May be nullptr if never requested.

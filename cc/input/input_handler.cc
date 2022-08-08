@@ -1084,8 +1084,7 @@ void InputHandler::TickAnimations(base::TimeTicks monotonic_time) {
 
 void InputHandler::WillShutdown() {
   if (input_handler_client_) {
-    input_handler_client_->WillShutdown();
-    input_handler_client_ = nullptr;
+    input_handler_client_.ExtractAsDangling()->WillShutdown();
   }
 
   if (scroll_elasticity_helper_)
