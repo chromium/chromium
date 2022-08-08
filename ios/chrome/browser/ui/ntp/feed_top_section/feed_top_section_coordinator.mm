@@ -34,6 +34,7 @@
 @synthesize viewController = _viewController;
 
 - (void)start {
+  DCHECK(self.ntpDelegate);
   FeedTopSectionViewController* feedTopSectionViewController =
       [[FeedTopSectionViewController alloc] init];
   _viewController = feedTopSectionViewController;
@@ -56,6 +57,7 @@
   feedTopSectionMediator.signinPromoMediator = signinPromoViewMediator;
   feedTopSectionViewController.signinPromoDelegate = signinPromoViewMediator;
   feedTopSectionViewController.delegate = feedTopSectionMediator;
+  feedTopSectionViewController.ntpDelegate = self.ntpDelegate;
   self.feedTopSectionMediator = feedTopSectionMediator;
   [feedTopSectionMediator setUp];
 }

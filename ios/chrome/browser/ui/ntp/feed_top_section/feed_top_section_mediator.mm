@@ -75,7 +75,12 @@
   if (shouldShowSigninPromo) {
     [self.signinPromoMediator signinPromoViewIsVisible];
   } else {
-    [self.signinPromoMediator signinPromoViewIsHidden];
+    // When the sign-in view is closed, the promo state changes, but
+    // -[SigninPromoViewMediator signinPromoViewIsHidden] should not be
+    // called because it's already hidden.
+    if (!self.signinPromoMediator.invalidClosedOrNeverVisible) {
+      [self.signinPromoMediator signinPromoViewIsHidden];
+    }
   }
   // TODO(crbug.com/1331010): Update pref if needed.
 

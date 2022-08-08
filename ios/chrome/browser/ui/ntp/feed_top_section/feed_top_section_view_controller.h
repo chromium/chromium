@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
+@protocol NewTabPageDelegate;
+
 // View Controller that contains all the elements of the Feed Top section.
 @interface FeedTopSectionViewController
     : UIViewController <FeedTopSectionConsumer>
@@ -20,6 +22,9 @@
 
 // Delegate to handle interactions of the signin promo.
 @property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoDelegate;
+
+// Delegate for NTP related actions.
+@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
 @end
 

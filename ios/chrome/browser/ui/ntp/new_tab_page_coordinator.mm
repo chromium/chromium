@@ -1183,6 +1183,7 @@ namespace {
       [[FeedTopSectionCoordinator alloc]
           initWithBaseViewController:self.ntpViewController
                              browser:self.browser];
+  feedTopSectionCoordinator.ntpDelegate = self;
   [feedTopSectionCoordinator start];
   return feedTopSectionCoordinator;
 }

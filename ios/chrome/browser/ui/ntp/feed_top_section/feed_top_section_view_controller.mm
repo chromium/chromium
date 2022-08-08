@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -49,40 +49,71 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 // FeedTopSectionConsumer
 @synthesize shouldShowSigninPromo = _shouldShowSigninPromo;
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    // Create `contentStack` early so we can set up the promo before
+    // `viewDidLoad`.
+    _contentStack = [[UIStackView alloc] init];
+    _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
+    _contentStack.axis = UILayoutConstraintAxisVertical;
+    _contentStack.distribution = UIStackViewDistributionFill;
+    // TODO(crbug.com/1331010): Update background color for the view.
+    _contentStack.layoutMarginsRelativeArrangement = YES;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.contentStack = [[UIStackView alloc] init];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.contentStack.translatesAutoresizingMaskIntoConstraints = NO;
-  self.contentStack.axis = UILayoutConstraintAxisVertical;
-  self.contentStack.distribution = UIStackViewDistributionFill;
-  // TODO(crbug.com/1331010): Update background color for the view.
-  self.contentStack.layoutMarginsRelativeArrangement = YES;
-  self.contentStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kContentStackVerticalPadding, kContentStackHorizontalPadding,
-      kContentStackVerticalPadding, kContentStackHorizontalPadding);
-
-  self.promoViewContainer = [[UIView alloc] init];
-  self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  self.promoViewContainer.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  self.promoViewContainer.layer.cornerRadius = kPromoViewContainerBorderRadius;
-
-  self.promoView = [self createPromoView];
-  [self.promoViewContainer addSubview:self.promoView];
-
-  [self.contentStack addArrangedSubview:self.promoViewContainer];
-
   [self.view addSubview:self.contentStack];
-  [self applyConstraints];
+  [self applyGeneralConstraints];
 }
 
 #pragma mark - FeedTopSectionConsumer
 
-- (void)setShouldShowSigninPromo:(BOOL)shouldShow {
+- (void)setShouldShowSigninPromo:(BOOL)shouldShowSigninPromo {
+  if (_shouldShowSigninPromo == shouldShowSigninPromo) {
+    return;
+  }
   // TODO(crbug.com/1331010): Handle targeting of the promo.
-  _shouldShowSigninPromo = shouldShow;
-  self.promoView.hidden = _shouldShowSigninPromo;
+  _shouldShowSigninPromo = shouldShowSigninPromo;
+  [self updateFeedSigninPromoVisibility];
+}
+
+- (void)updateFeedSigninPromoVisibility {
+  if (self.shouldShowSigninPromo) {
+    DCHECK(!self.promoViewContainer);
+    DCHECK(!self.promoView);
+    self.promoViewContainer = [[UIView alloc] init];
+    self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    self.promoViewContainer.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    self.promoViewContainer.layer.cornerRadius =
+        kPromoViewContainerBorderRadius;
+    self.contentStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+        kContentStackVerticalPadding, kContentStackHorizontalPadding,
+        kContentStackVerticalPadding, kContentStackHorizontalPadding);
+
+    self.promoView = [self createPromoView];
+    [self.promoViewContainer addSubview:self.promoView];
+
+    [self.contentStack addArrangedSubview:self.promoViewContainer];
+    [self applyPromoViewConstraints];
+  } else {
+    DCHECK(self.promoViewContainer);
+    DCHECK(self.promoView);
+    [self.contentStack willRemoveSubview:self.promoViewContainer];
+    [self.promoViewContainer willRemoveSubview:self.promoView];
+    [self.promoView removeFromSuperview];
+    [self.promoViewContainer removeFromSuperview];
+    self.promoViewContainer = nil;
+    self.promoView = nil;
+    self.contentStack.directionalLayoutMargins =
+        NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  }
+  [self.ntpDelegate updateFeedLayout];
 }
 
 - (void)updateSigninPromoWithConfigurator:
@@ -102,8 +133,22 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 #pragma mark - Private
 
+- (void)applyPromoViewConstraints {
+  [NSLayoutConstraint activateConstraints:@[
+    // Anchor promo and its container.
+    [self.promoViewContainer.heightAnchor
+        constraintEqualToAnchor:self.promoView.heightAnchor],
+    [self.promoViewContainer.widthAnchor
+        constraintEqualToAnchor:self.promoView.widthAnchor],
+    [self.promoView.centerXAnchor
+        constraintEqualToAnchor:self.promoViewContainer.centerXAnchor],
+    [self.promoView.centerYAnchor
+        constraintEqualToAnchor:self.promoViewContainer.centerYAnchor],
+  ]];
+}
+
 // Applies constraints.
-- (void)applyConstraints {
+- (void)applyGeneralConstraints {
   [NSLayoutConstraint activateConstraints:@[
     // Anchor content stack.
     [self.contentStack.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -114,15 +159,6 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
     [self.contentStack.widthAnchor
         constraintEqualToConstant:MIN(kDiscoverFeedContentWidth,
                                       self.view.frame.size.width)],
-    // Anchor promo and its container.
-    [self.promoViewContainer.heightAnchor
-        constraintEqualToAnchor:self.promoView.heightAnchor],
-    [self.promoViewContainer.widthAnchor
-        constraintEqualToAnchor:self.promoView.widthAnchor],
-    [self.promoView.centerXAnchor
-        constraintEqualToAnchor:self.promoViewContainer.centerXAnchor],
-    [self.promoView.centerYAnchor
-        constraintEqualToAnchor:self.promoViewContainer.centerYAnchor],
   ]];
 }
 

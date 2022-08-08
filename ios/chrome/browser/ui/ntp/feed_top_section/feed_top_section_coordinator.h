@@ -9,10 +9,15 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@protocol NewTabPageDelegate;
+
 // The top-level owner of the feed top section.
 @interface FeedTopSectionCoordinator : ChromeCoordinator
 
 @property(nonatomic, readonly, strong) UIViewController* viewController;
+
+// Delegate for NTP related actions.
+@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
 @end
 
