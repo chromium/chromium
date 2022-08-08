@@ -58,9 +58,6 @@ class LogManager {
 
   // This is the preferred way to submitting log entries.
   virtual LogBufferSubmitter Log() = 0;
-
-  // Returns a LogBufferSubmitter that ignores all input.
-  static LogBufferSubmitter DevNull();
 };
 
 inline LogBuffer::IsActive IsLoggingActive(LogManager* log_manager) {

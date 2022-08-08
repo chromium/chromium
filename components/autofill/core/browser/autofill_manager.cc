@@ -641,11 +641,9 @@ void AutofillManager::ParseFormsAsync(
   for (const FormData& form_data : forms) {
     bool is_new_form = !base::Contains(form_structures_, form_data.global_id());
     if (num_managed_forms + is_new_form > kAutofillManagerMaxFormCacheSize) {
-      if (log_manager_) {
-        log_manager_->Log()
-            << LoggingScope::kAbortParsing
-            << LogMessage::kAbortParsingTooManyForms << form_data;
-      }
+      LOG_AF(log_manager_) << LoggingScope::kAbortParsing
+                           << LogMessage::kAbortParsingTooManyForms
+                           << form_data;
       continue;
     }
 
@@ -738,10 +736,8 @@ void AutofillManager::ParseFormAsync(
   bool is_new_form = !base::Contains(form_structures_, form_data.global_id());
   if (form_structures_.size() + is_new_form >
       kAutofillManagerMaxFormCacheSize) {
-    if (log_manager_) {
-      log_manager_->Log() << LoggingScope::kAbortParsing
-                          << LogMessage::kAbortParsingTooManyForms << form_data;
-    }
+    LOG_AF(log_manager_) << LoggingScope::kAbortParsing
+                         << LogMessage::kAbortParsingTooManyForms << form_data;
     return;
   }
 
