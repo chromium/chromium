@@ -8,7 +8,12 @@ source_set("promos_manager") {
     "promos_manager.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ ":features" ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+  ]
 }
 
 source_set("features") {

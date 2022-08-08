@@ -464,7 +464,7 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
 PromosManager* ApplicationContextImpl::GetPromosManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (IsFullscreenPromosManagerEnabled() && !promos_manager_) {
-    promos_manager_ = std::make_unique<PromosManager>();
+    promos_manager_ = std::make_unique<PromosManager>(GetLocalState());
   }
   return promos_manager_.get();
 }
