@@ -1262,6 +1262,44 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
+     TransferClosedMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  std::unique_ptr<MockMediaStreamVideoSource> mock_source(
+      base::WrapUnique(new MockMediaStreamVideoSource()));
+  MediaStreamDevice device;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  device.set_session_id(token);
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      false /* remote */, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
+  component->SetContentHint(
+      static_cast<WebMediaStreamTrack::ContentHintType>(666));
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component);
+  blink_track->stopTrack(scope.GetExecutionContext());
+
+  // Transferring a closed MediaStreamTrack should throw an error.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("InvalidStateError", script_state,
+                                           exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
      TransferMediaStreamTrackInvalidContentHintFails) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),

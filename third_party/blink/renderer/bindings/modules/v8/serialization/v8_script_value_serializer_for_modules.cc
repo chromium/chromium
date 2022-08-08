@@ -613,6 +613,11 @@ bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
 bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
     MediaStreamTrack* track,
     ExceptionState& exception_state) {
+  if (track->Ended()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "MediaStreamTrack has ended.");
+    return false;
+  }
   if (!track->serializable_session_id()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
