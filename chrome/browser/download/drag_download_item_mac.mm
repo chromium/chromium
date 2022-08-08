@@ -58,12 +58,14 @@ void DragDownloadItem(const download::DownloadItem* download,
                                  download->GetTargetFilePath().value())];
   NSDraggingItem* file_item =
       [[[NSDraggingItem alloc] initWithPasteboardWriter:file_url] autorelease];
-  NSImage* file_image = icon->ToNSImage();
-  NSSize image_size = file_image.size;
-  NSRect image_rect = NSMakeRect(current_position.x - image_size.width / 2,
-                                 current_position.y - image_size.height / 2,
-                                 image_size.width, image_size.height);
-  [file_item setDraggingFrame:image_rect contents:file_image];
+  if (icon) {
+    NSImage* file_image = icon->ToNSImage();
+    NSSize image_size = file_image.size;
+    NSRect image_rect = NSMakeRect(current_position.x - image_size.width / 2,
+                                   current_position.y - image_size.height / 2,
+                                   image_size.width, image_size.height);
+    [file_item setDraggingFrame:image_rect contents:file_image];
+  }
 
   // Synthesize a drag event, since we don't have access to the actual event
   // that initiated a drag (possibly consumed by the Web UI, for example).
