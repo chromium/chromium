@@ -38,7 +38,7 @@ export const PasswordRequestorMixin = dedupingMixin(
                 });
           });
           // </if>
-          // <if expr="not (chromeos_ash or chromeos_lacros)">
+          // <if expr="not is_chromeos">
           return PasswordManagerImpl.getInstance().requestPlaintextPassword(
               id, reason);
           // </if>

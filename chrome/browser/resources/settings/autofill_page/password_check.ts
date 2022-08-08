@@ -395,7 +395,7 @@ export class SettingsPasswordCheckElement extends
                   PasswordCheckInteraction.EDIT_PASSWORD);
             },
             _error => {
-              // <if expr="not (chromeos_ash or chromeos_lacros)">
+              // <if expr="not is_chromeos">
               this.activePassword_ = null;
               this.onPasswordEditDialogClosed_();
               // </if>

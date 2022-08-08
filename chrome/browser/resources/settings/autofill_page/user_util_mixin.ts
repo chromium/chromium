@@ -119,7 +119,7 @@ export const UserUtilMixin = dedupingMixin(
               syncBrowserProxy.sendSyncPrefsChanged();
 
 
-              // <if expr="not (chromeos_ash or chromeos_lacros)">
+              // <if expr="not is_chromeos">
               // For non-ChromeOS, non-Lacros, also check whether accounts are
               // available.
               const storedAccountsChanged = (accounts: StoredAccount[]) => {
