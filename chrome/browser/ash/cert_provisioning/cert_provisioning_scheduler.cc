@@ -293,13 +293,10 @@ void CertProvisioningSchedulerImpl::DailyUpdateWorkers() {
 void CertProvisioningSchedulerImpl::DeserializeWorkers() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value* saved_workers =
-      pref_service_->Get(GetPrefNameForSerialization(cert_scope_));
-  if (!saved_workers) {
-    return;
-  }
+  const base::Value::Dict& saved_workers =
+      pref_service_->GetValueDict(GetPrefNameForSerialization(cert_scope_));
 
-  for (const auto kv : saved_workers->DictItems()) {
+  for (const auto kv : saved_workers) {
     const base::Value& saved_worker = kv.second;
 
     std::unique_ptr<CertProvisioningWorker> worker =
