@@ -4,13 +4,13 @@
 
 #include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
 
-#include <utility>
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 
 namespace {
 base::TimeDelta ComputeTimeUntilNextRefresh(
@@ -27,15 +27,29 @@ base::TimeDelta ComputeTimeUntilNextRefresh(
   return refresh_period - elapsed_time;
 }
 
+sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+MakeDegradedRecoverabilityState(bool is_recoverability_degraded,
+                                const base::Time& last_refresh_time) {
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_is_recoverability_degraded(
+      is_recoverability_degraded);
+  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
+      syncer::TimeToProtoTime(last_refresh_time));
+  return degraded_recoverability_state;
+}
+
 }  // namespace
 
 namespace syncer {
 
 DegradedRecoverabilityScheduler::DegradedRecoverabilityScheduler(
+    TrustedVaultConnection* connection,
     Delegate* delegate,
-    base::RepeatingClosure refresh_callback)
-    : delegate_(delegate),
-      refresh_callback_(std::move(refresh_callback)),
+    const CoreAccountInfo& account_info)
+    : connection_(connection),
+      delegate_(delegate),
+      account_info_(account_info),
       current_refresh_period_(kLongDegradedRecoverabilityRefreshPeriod) {
   // TODO(crbug.com/1247990): read `last_refresh_time_`, convert it to
   // TimeTicks, and schedule next refresh.
@@ -56,9 +70,6 @@ void DegradedRecoverabilityScheduler::StartShortIntervalRefreshing() {
 }
 
 void DegradedRecoverabilityScheduler::RefreshImmediately() {
-  // TODO(crbug.com/1247990): Currently if the timer is not running, then this
-  // means that Refresh() has just invoked. Probably this would be changed
-  // later, then we need to take care.
   if (!next_refresh_timer_.IsRunning()) {
     return;
   }
@@ -73,25 +84,34 @@ void DegradedRecoverabilityScheduler::Start() {
 }
 
 void DegradedRecoverabilityScheduler::Refresh() {
-  // TODO(crbug.com/1247990): To be implemented, make sure the to schedule the
-  // next Refresh() after the current one is completed.
-  NOTIMPLEMENTED();
-  last_refresh_time_ = base::TimeTicks::Now();
-  delegate_->WriteDegradedRecoverabilityState(GetDegradedRecoverabilityState());
-  refresh_callback_.Run();
-  next_refresh_timer_.Start(FROM_HERE, current_refresh_period_, this,
-                            &DegradedRecoverabilityScheduler::Refresh);
+  // Since destroying the request object causes actual request cancellation, so
+  // it's safe to use base::Unretained() here.
+  ongoing_get_recoverability_request_ =
+      connection_->DownloadIsRecoverabilityDegraded(
+          account_info_,
+          base::BindOnce(&DegradedRecoverabilityScheduler::
+                             OnRecoverabilityIsDegradedDownloaded,
+                         base::Unretained(this)));
 }
 
-sync_pb::LocalTrustedVaultDegradedRecoverabilityState
-DegradedRecoverabilityScheduler::GetDegradedRecoverabilityState() const {
-  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
-      degraded_recoverability_state;
-  // TODO(crbug.com/1247990): Should set `is_recoverability_degraded` once the
-  // connection passed to the scheduler.
-  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
-      TimeToProtoTime(base::Time::Now()));
-  return degraded_recoverability_state;
+void DegradedRecoverabilityScheduler::OnRecoverabilityIsDegradedDownloaded(
+    TrustedVaultRecoverabilityStatus status) {
+  switch (status) {
+    case TrustedVaultRecoverabilityStatus::kDegraded:
+      is_recoverability_degraded_ = true;
+      break;
+    case TrustedVaultRecoverabilityStatus::kNotDegraded:
+      is_recoverability_degraded_ = false;
+      break;
+    case TrustedVaultRecoverabilityStatus::kError:
+      // TODO(crbug.com/1247990): To be handled.
+      break;
+  }
+  last_refresh_time_ = base::TimeTicks::Now();
+  delegate_->WriteDegradedRecoverabilityState(MakeDegradedRecoverabilityState(
+      is_recoverability_degraded_, base::Time::Now()));
+  next_refresh_timer_.Start(FROM_HERE, current_refresh_period_, this,
+                            &DegradedRecoverabilityScheduler::Refresh);
 }
 
 }  // namespace syncer

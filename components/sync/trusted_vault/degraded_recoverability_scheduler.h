@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
 
+#include <memory>
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class LocalTrustedVaultDegradedRecoverabilityState;
@@ -38,11 +42,10 @@ class DegradedRecoverabilityScheduler {
     virtual void OnDegradedRecoverabilityChanged(bool value) = 0;
   };
 
-  // TODO(crbug.com/1247990): `refresh_callback` is currently used for testing,
-  // should be replaced with the connection calls once it passed to the
-  // scheduler.
-  DegradedRecoverabilityScheduler(Delegate* delegate,
-                                  base::RepeatingClosure refresh_callback);
+  // `connection` and `delegate` must not be null and must outlive this object.
+  DegradedRecoverabilityScheduler(TrustedVaultConnection* connection,
+                                  Delegate* delegate,
+                                  const CoreAccountInfo& account_info);
   DegradedRecoverabilityScheduler(const DegradedRecoverabilityScheduler&) =
       delete;
   DegradedRecoverabilityScheduler& operator=(
@@ -56,18 +59,22 @@ class DegradedRecoverabilityScheduler {
  private:
   void Start();
   void Refresh();
-  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
-  GetDegradedRecoverabilityState() const;
+  void OnRecoverabilityIsDegradedDownloaded(
+      TrustedVaultRecoverabilityStatus status);
 
+  const raw_ptr<TrustedVaultConnection> connection_;
   const raw_ptr<Delegate> delegate_;
-  base::RepeatingClosure refresh_callback_;
+  CoreAccountInfo account_info_;
   // A "timer" takes care of invoking Refresh() in the future, once after a
   // `current_refresh_period_` delay has elapsed.
   base::OneShotTimer next_refresh_timer_;
   base::TimeDelta current_refresh_period_;
+  bool is_recoverability_degraded_;
   // The last time Refresh has executed, it's initially null until the first
   // Refresh() execution.
   base::TimeTicks last_refresh_time_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_get_recoverability_request_;
 };
 
 }  // namespace syncer

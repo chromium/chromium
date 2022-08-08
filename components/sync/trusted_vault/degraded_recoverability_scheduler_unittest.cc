@@ -5,13 +5,30 @@
 #include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace syncer {
+namespace {
+using testing::_;
+using testing::Eq;
+
+CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
+  CoreAccountInfo account_info;
+  account_info.gaia = gaia_id;
+  return account_info;
+}
 
 MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
   const sync_pb::LocalTrustedVaultDegradedRecoverabilityState& given_state =
@@ -22,8 +39,40 @@ MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
              expected_state.last_refresh_time_millis_since_unix_epoch();
 }
 
-namespace syncer {
-namespace {
+class MockTrustedVaultConnection : public TrustedVaultConnection {
+ public:
+  MockTrustedVaultConnection() = default;
+  ~MockTrustedVaultConnection() override = default;
+  MOCK_METHOD(std::unique_ptr<Request>,
+              RegisterAuthenticationFactor,
+              (const CoreAccountInfo& account_info,
+               const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+               int last_trusted_vault_key_version,
+               const SecureBoxPublicKey& authentication_factor_public_key,
+               AuthenticationFactorType authentication_factor_type,
+               absl::optional<int> authentication_factor_type_hint,
+               RegisterAuthenticationFactorCallback callback),
+              (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              RegisterDeviceWithoutKeys,
+              (const CoreAccountInfo& account_info,
+               const SecureBoxPublicKey& device_public_key,
+               RegisterDeviceWithoutKeysCallback callback),
+              (override));
+  MOCK_METHOD(
+      std::unique_ptr<Request>,
+      DownloadNewKeys,
+      (const CoreAccountInfo& account_info,
+       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
+       DownloadNewKeysCallback callback),
+      (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadIsRecoverabilityDegraded,
+              (const CoreAccountInfo& account_info,
+               IsRecoverabilityDegradedCallback callback),
+              (override));
+};
 
 class MockDelegate : public DegradedRecoverabilityScheduler::Delegate {
  public:
@@ -43,8 +92,18 @@ class DegradedRecoverabilitySchedulerTest : public ::testing::Test {
   ~DegradedRecoverabilitySchedulerTest() override = default;
 
   void SetUp() override {
+    ON_CALL(connection_, DownloadIsRecoverabilityDegraded(
+                             Eq(MakeAccountInfoWithGaiaId("user")), _))
+        .WillByDefault(
+            [&](const CoreAccountInfo&,
+                MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                    callback) {
+              std::move(callback).Run(
+                  TrustedVaultRecoverabilityStatus::kDegraded);
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
     scheduler_ = std::make_unique<DegradedRecoverabilityScheduler>(
-        &delegate_, refresh_callback_.Get());
+        &connection_, &delegate_, MakeAccountInfoWithGaiaId("user"));
     // Moving the time forward by one millisecond to make sure that the first
     // refresh had called.
     task_environment().FastForwardBy(base::Milliseconds(1));
@@ -52,46 +111,42 @@ class DegradedRecoverabilitySchedulerTest : public ::testing::Test {
 
   DegradedRecoverabilityScheduler& scheduler() { return *scheduler_.get(); }
 
-  base::MockCallback<base::RepeatingClosure>& refresh_callback() {
-    return refresh_callback_;
-  }
-
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
  protected:
+  testing::NiceMock<MockTrustedVaultConnection> connection_;
   testing::NiceMock<MockDelegate> delegate_;
-  base::MockCallback<base::RepeatingClosure> refresh_callback_;
   std::unique_ptr<DegradedRecoverabilityScheduler> scheduler_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(DegradedRecoverabilitySchedulerTest, ShouldRefreshOnceWhenInitialize) {
+  testing::NiceMock<MockTrustedVaultConnection> connection;
   testing::NiceMock<MockDelegate> delegate;
-  base::MockCallback<base::RepeatingClosure> refresh_callback;
-  EXPECT_CALL(refresh_callback, Run());
+  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   std::unique_ptr<DegradedRecoverabilityScheduler> scheduler =
-      std::make_unique<DegradedRecoverabilityScheduler>(&delegate,
-                                                        refresh_callback.Get());
+      std::make_unique<DegradedRecoverabilityScheduler>(
+          &connection, &delegate, MakeAccountInfoWithGaiaId("user"));
   task_environment().FastForwardBy(base::Milliseconds(1));
 }
 
 TEST_F(DegradedRecoverabilitySchedulerTest, ShouldRefreshImmediately) {
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   scheduler().RefreshImmediately();
 }
 
 TEST_F(DegradedRecoverabilitySchedulerTest, ShouldRefreshOncePerLongPeriod) {
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(kLongDegradedRecoverabilityRefreshPeriod +
                                    base::Milliseconds(1));
 }
 
 TEST_F(DegradedRecoverabilitySchedulerTest, ShouldSwitchToShortPeriod) {
   scheduler().StartShortIntervalRefreshing();
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(kShortDegradedRecoverabilityRefreshPeriod +
                                    base::Milliseconds(1));
 }
@@ -99,10 +154,10 @@ TEST_F(DegradedRecoverabilitySchedulerTest, ShouldSwitchToShortPeriod) {
 TEST_F(DegradedRecoverabilitySchedulerTest, ShouldSwitchToLongPeriod) {
   scheduler().StartShortIntervalRefreshing();
   scheduler().StartLongIntervalRefreshing();
-  EXPECT_CALL(refresh_callback(), Run()).Times(0);
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded).Times(0);
   task_environment().FastForwardBy(kShortDegradedRecoverabilityRefreshPeriod +
                                    base::Milliseconds(1));
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(kLongDegradedRecoverabilityRefreshPeriod +
                                    base::Milliseconds(1));
 }
@@ -112,7 +167,7 @@ TEST_F(DegradedRecoverabilitySchedulerTest,
   task_environment().FastForwardBy(kShortDegradedRecoverabilityRefreshPeriod -
                                    base::Seconds(1));
   scheduler().StartShortIntervalRefreshing();
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
 }
 
@@ -120,23 +175,55 @@ TEST_F(DegradedRecoverabilitySchedulerTest,
        ShouldSwitchToShortPeriodAndRefreshImmediately) {
   task_environment().FastForwardBy(kShortDegradedRecoverabilityRefreshPeriod +
                                    base::Seconds(1));
-  EXPECT_CALL(refresh_callback(), Run());
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded);
   scheduler().StartShortIntervalRefreshing();
   task_environment().FastForwardBy(base::Milliseconds(1));
 }
 
 TEST_F(DegradedRecoverabilitySchedulerTest,
-       ShouldWriteTheStateImmediatelyWithCurrentTime) {
+       ShouldWriteTheStateImmediatelyWithRecoverabilityDegradedAndCurrentTime) {
   sync_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
+  degraded_recoverability_state.set_is_recoverability_degraded(true);
   // Since the time is not moving, the `Time::Now()` is the expected to be
   // written.
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
       TimeToProtoTime(base::Time::Now()));
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded(
+                               Eq(MakeAccountInfoWithGaiaId("user")), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                        callback) {
+        std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
   EXPECT_CALL(delegate_,
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
-  EXPECT_CALL(refresh_callback(), Run());
+  scheduler().RefreshImmediately();
+}
+
+TEST_F(
+    DegradedRecoverabilitySchedulerTest,
+    ShouldWriteTheStateImmediatelyWithRecoverabilityNotDegradedAndCurrentTime) {
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_is_recoverability_degraded(false);
+  // Since the time is not moving, the `Time::Now()` is the expected to be
+  // written.
+  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
+      TimeToProtoTime(base::Time::Now()));
+  EXPECT_CALL(connection_, DownloadIsRecoverabilityDegraded(
+                               Eq(MakeAccountInfoWithGaiaId("user")), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    MockTrustedVaultConnection::IsRecoverabilityDegradedCallback
+                        callback) {
+        std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  EXPECT_CALL(delegate_,
+              WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
+                  degraded_recoverability_state)));
   scheduler().RefreshImmediately();
 }
 
