@@ -62,17 +62,17 @@ class DesktopResizerX11 : public DesktopResizer {
   // Create a mode, and attach it to the output. If the mode already exists, it
   // is left unchanged.
   void CreateMode(x11::RandR::Output output,
-                  const char* name,
+                  const std::string& name,
                   int width,
                   int height);
 
   // Remove the specified mode from the output, and delete it. If the mode is in
   // use, it is not deleted.
-  void DeleteMode(x11::RandR::Output output, const char* name);
+  void DeleteMode(x11::RandR::Output output, const std::string& name);
 
-  // Switch the output to the specified mode. If name is nullptr, the output is
+  // Switch the output to the specified mode. If name is empty, the output is
   // disabled instead, which is required before changing its resolution.
-  void SwitchToMode(x11::RandR::Output output, const char* name);
+  void SwitchToMode(x11::RandR::Output output, const std::string& name);
 
   raw_ptr<x11::Connection> connection_;
   const raw_ptr<x11::RandR> randr_ = nullptr;

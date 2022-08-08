@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/future.h"
@@ -36,10 +38,6 @@
 //   2. Delete the CRD mode, if it exists.
 //   3. Create the CRD mode at the new resolution.
 //   4. Set the Output to the CRD mode (which re-enables it).
-//
-// Name consistency will allow a future CL to disable resize-to-client if the
-// user has changed the mode to something other than "Chrome Remote Desktop
-// client resolution". It doesn't make the code significantly more complex.
 
 namespace {
 
@@ -165,8 +163,8 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
 
   // Ignore X errors encountered while resizing the display. We might hit an
   // error, for example if xrandr has been used to add a mode with the same
-  // name as our temporary mode, or to remove the "client resolution" mode. We
-  // don't want to terminate the process if this happens.
+  // name as our mode, or to remove it. We don't want to terminate the process
+  // if this happens.
   x11::ScopedIgnoreErrors ignore_errors(connection_);
 
   // Grab the X server while we're changing the display resolution. This ensures
@@ -176,13 +174,47 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
   if (!resources_.Refresh(randr_, root_))
     return;
 
-  // TODO(crbug.com/1326339): Instead of hard-coding the first output, find the
-  // one attached to the RANDR monitor |screen_id|.
-  x11::RandR::Output output = resources_.get()->outputs[0];
-  if (exact_resize_)
-    SetResolutionNewMode(output, resolution);
-  else
-    SetResolutionExistingMode(resolution);
+  // RANDR does not allow fetching information on a particular monitor. So
+  // fetch all of them and try to find the requested monitor.
+  auto reply = randr_->GetMonitors({root_}).Sync();
+  if (!reply) {
+    return;
+  }
+
+  for (const auto& monitor : reply->monitors) {
+    if (static_cast<webrtc::ScreenId>(monitor.name) != screen_id) {
+      continue;
+    }
+
+    if (monitor.outputs.size() != 1) {
+      // This implementation only supports resizing a Monitor attached to a
+      // single output. The case where size() > 1 should never occur with
+      // Xorg+video-dummy.
+      // TODO(crbug.com/1326339): Maybe support resizing a Monitor not
+      // attached to any Output?
+      LOG(ERROR) << "Monitor " << screen_id
+                 << " has unexpected #outputs: " << monitor.outputs.size();
+      return;
+    }
+
+    if (!monitor.automatic) {
+      // This implementation only supports resizing synthesized Monitors which
+      // automatically track their Outputs.
+      // TODO(crbug.com/1326339): Maybe support resizing manually-created
+      // Monitors?
+      LOG(ERROR) << "Not resizing Monitor " << screen_id
+                 << " that was created manually.";
+      return;
+    }
+
+    auto output = monitor.outputs[0];
+    if (exact_resize_)
+      SetResolutionNewMode(output, resolution);
+    else
+      SetResolutionExistingMode(resolution);
+    return;
+  }
+  LOG(ERROR) << "Monitor " << screen_id << " not found.";
 }
 
 void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
@@ -193,8 +225,10 @@ void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
 void DesktopResizerX11::SetResolutionNewMode(
     x11::RandR::Output output,
     const ScreenResolution& resolution) {
-  // The name of the mode representing the current client view resolution.
-  const char* kModeName = "Chrome Remote Desktop client resolution";
+  // The name of the mode representing the current client view resolution. This
+  // must be unique per Output, so that Outputs can be resized independently.
+  std::string mode_name =
+      "CRD_" + base::NumberToString(base::to_underlying(output));
 
   // Actually do the resize operation, preserving the current mode name. Note
   // that we have to detach the output from the mode in order to delete the
@@ -208,15 +242,15 @@ void DesktopResizerX11::SetResolutionNewMode(
       PixelsToMillimeters(resolution.dimensions().width(), kDefaultDPI);
   uint32_t height_mm =
       PixelsToMillimeters(resolution.dimensions().height(), kDefaultDPI);
-  SwitchToMode(output, nullptr);
+  SwitchToMode(output, std::string());
   randr_->SetScreenSize(
       {root_, static_cast<uint16_t>(resolution.dimensions().width()),
        static_cast<uint16_t>(resolution.dimensions().height()), width_mm,
        height_mm});
-  DeleteMode(output, kModeName);
-  CreateMode(output, kModeName, resolution.dimensions().width(),
+  DeleteMode(output, mode_name);
+  CreateMode(output, mode_name, resolution.dimensions().width(),
              resolution.dimensions().height());
-  SwitchToMode(output, kModeName);
+  SwitchToMode(output, mode_name);
 }
 
 void DesktopResizerX11::SetResolutionExistingMode(
@@ -242,14 +276,14 @@ void DesktopResizerX11::SetResolutionExistingMode(
 }
 
 void DesktopResizerX11::CreateMode(x11::RandR::Output output,
-                                   const char* name,
+                                   const std::string& name,
                                    int width,
                                    int height) {
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
-  mode.name_len = strlen(name);
-  randr_->CreateMode({root_, mode, name});
+  mode.name_len = name.size();
+  randr_->CreateMode({root_, mode, name.c_str()});
 
   if (!resources_.Refresh(randr_, root_))
     return;
@@ -265,7 +299,7 @@ void DesktopResizerX11::CreateMode(x11::RandR::Output output,
 }
 
 void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
-                                   const char* name) {
+                                   const std::string& name) {
   x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
   if (mode_id != kInvalidMode) {
     randr_->DeleteOutputMode({output, mode_id});
@@ -275,10 +309,10 @@ void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
 }
 
 void DesktopResizerX11::SwitchToMode(x11::RandR::Output output,
-                                     const char* name) {
+                                     const std::string& name) {
   auto mode_id = kInvalidMode;
   std::vector<x11::RandR::Output> outputs;
-  if (name) {
+  if (!name.empty()) {
     mode_id = resources_.GetIdForMode(name);
     if (mode_id == kInvalidMode) {
       LOG(ERROR) << "No ID found for mode: " << name;
@@ -298,9 +332,9 @@ void DesktopResizerX11::SwitchToMode(x11::RandR::Output output,
 
   x11::RandR::Crtc crtc = output_info->crtc;
   if (crtc == kDisabledCrtc) {
-    // The output is disabled. If |name| is nullptr, the caller requested the
+    // The output is disabled. If |name| is empty, the caller requested the
     // output be disabled, so there is nothing further to do.
-    if (!name)
+    if (name.empty())
       return;
 
     // |crtcs| is the set of CRTCs that this output is allowed to attach to.
