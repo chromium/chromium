@@ -8956,14 +8956,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingAutoDisplayIntentPicker)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    {"enable-biometric-authentication-in-settings",
-     flag_descriptions::kEnableBiometricAuthenticationInSettingsName,
-     flag_descriptions::kEnableBiometricAuthenticationInSettingsDescription,
-     kOsMac | kOsWin,
+
+#if BUILDFLAG(IS_MAC)
+    {"biometric-authentication-in-settings",
+     flag_descriptions::kBiometricAuthenticationInSettingsName,
+     flag_descriptions::kBiometricAuthenticationInSettingsDescription, kOsMac,
      FEATURE_VALUE_TYPE(
-         password_manager::features::kEnableBiometricAuthenticationInSettings)},
-#endif
+         password_manager::features::kBiometricAuthenticationInSettings)},
+#endif  // BUILDFLAG(IS_MAC)
 
     {"autofill-enable-remade-downstream-metrics",
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,

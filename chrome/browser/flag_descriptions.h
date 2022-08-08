@@ -2458,6 +2458,9 @@ extern const char kWin10TabSearchCaptionButtonDescription[];
 
 #if BUILDFLAG(IS_MAC)
 
+extern const char kBiometricAuthenticationInSettingsName[];
+extern const char kBiometricAuthenticationInSettingsDescription[];
+
 #if BUILDFLAG(ENABLE_PRINTING)
 extern const char kCupsIppPrintingBackendName[];
 extern const char kCupsIppPrintingBackendDescription[];
@@ -2494,9 +2497,6 @@ extern const char kUseAngleName[];
 
 extern const char kUseAngleDefault[];
 extern const char kUseAngleGL[];
-
-extern const char kEnableBiometricAuthenticationInSettingsName[];
-extern const char kEnableBiometricAuthenticationInSettingsDescription[];
 
 extern const char kBiometricAuthenticationForFillingName[];
 extern const char kBiometricAuthenticationForFillingDescription[];

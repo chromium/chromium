@@ -57201,8 +57201,6 @@ from previous Chrome versions.
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
-  <int value="-1130756844"
-      label="EnableBiometricAuthenticationInSettings:disabled"/>
   <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
   <int value="-1128912963" label="MediaControlsExpandGesture:disabled"/>
   <int value="-1128221789"
@@ -58292,6 +58290,7 @@ from previous Chrome versions.
   <int value="-448929520" label="TranslateMessageUI:enabled"/>
   <int value="-447986568" label="WebNotesDynamicTemplates:disabled"/>
   <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>
+  <int value="-447104608" label="BiometricAuthenticationInSettings:enabled"/>
   <int value="-446879089" label="BluetoothSessionizedMetrics:enabled"/>
   <int value="-446560063" label="finch-seed-min-update-period"/>
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
@@ -60622,8 +60621,6 @@ from previous Chrome versions.
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
-  <int value="1059157909"
-      label="EnableBiometricAuthenticationInSettings:enabled"/>
   <int value="1059283439"
       label="OmniboxClobberTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
@@ -60910,6 +60907,7 @@ from previous Chrome versions.
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
   <int value="1235800887" label="V8Ignition:enabled"/>
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>
+  <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
   <int value="1237297772" label="no-pings"/>
   <int value="1237659269"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:enabled"/>

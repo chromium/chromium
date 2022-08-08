@@ -21,6 +21,12 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const base::Feature kBiometricAuthenticationForFilling;
+#endif
+#if BUILDFLAG(IS_MAC)
+extern const base::Feature kBiometricAuthenticationInSettings;
+#endif
 extern const base::Feature kBiometricTouchToFill;
 extern const base::Feature kDetectFormSubmissionOnFormClear;
 extern const base::Feature kForceEnablePasswordDomainCapabilities;
@@ -55,10 +61,6 @@ extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kPasswordStrengthIndicator;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kSecondaryServerFieldPredictions;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const base::Feature kBiometricAuthenticationForFilling;
-extern const base::Feature kEnableBiometricAuthenticationInSettings;
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const base::Feature kSkipUndecryptablePasswords;
 #endif

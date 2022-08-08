@@ -11,6 +11,18 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Enables biometric authentication before form filling.
+const base::Feature kBiometricAuthenticationForFilling = {
+    "BiometricAuthenticationForFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// Enables biometric authentication in settings.
+const base::Feature kBiometricAuthenticationInSettings = {
+    "BiometricAuthenticationInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -175,17 +187,6 @@ const base::Feature kSecondaryServerFieldPredictions = {
 // Enables the password strength indicator.
 const base::Feature kPasswordStrengthIndicator = {
     "PasswordStrengthIndicator", base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Enables biometric authentication before form filling.
-const base::Feature kBiometricAuthenticationForFilling = {
-    "BiometricAuthenticationForFilling", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables biometric authentication in settings.
-const base::Feature kEnableBiometricAuthenticationInSettings = {
-    "EnableBiometricAuthenticationInSettings",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Displays at least the decryptable and never saved logins in the password

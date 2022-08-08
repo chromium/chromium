@@ -4304,6 +4304,11 @@ const char kWin10TabSearchCaptionButtonDescription[] =
 
 #if BUILDFLAG(IS_MAC)
 
+const char kBiometricAuthenticationInSettingsName[] =
+    "Biometric authentication in settings";
+const char kBiometricAuthenticationInSettingsDescription[] =
+    "Enables biometric authentication in settings to view/edit/copy a password";
+
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kCupsIppPrintingBackendName[] = "CUPS IPP Printing Backend";
 const char kCupsIppPrintingBackendDescription[] =
@@ -4355,10 +4360,7 @@ const char kSystemColorChooserDescription[] =
 const char kUseAngleName[] = "Choose ANGLE graphics backend";
 const char kUseAngleDefault[] = "Default";
 const char kUseAngleGL[] = "OpenGL";
-const char kEnableBiometricAuthenticationInSettingsName[] =
-    "Biometric authentication in settings";
-const char kEnableBiometricAuthenticationInSettingsDescription[] =
-    "Enables biometric authentication in settings to view/edit/copy a password";
+
 const char kBiometricAuthenticationForFillingName[] =
     "Biometric authentication reauth before filling";
 const char kBiometricAuthenticationForFillingDescription[] =

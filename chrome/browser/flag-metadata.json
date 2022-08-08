@@ -639,6 +639,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "biometric-authentication-in-settings",
+    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap", "vsemeniuk@google.com" ],
     "expiry_milestone": 108
@@ -1674,11 +1679,6 @@
     "name": "enable-background-blur",
     "owners": [ "newcomer" ],
     "expiry_milestone": 86
-  },
-  {
-    "name": "enable-biometric-authentication-in-settings",
-    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
-    "expiry_milestone": 110
   },
   {
     "name": "enable-bluetooth-spp-in-serial-api",
