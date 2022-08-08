@@ -499,6 +499,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(EQUAL, 0), 15, 90));
     return config;
   }
+  if (kIPHShoppingListMenuItemFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 1);
+    config->trigger = EventConfig("shopping_list_menu_item_iph_triggered",
+                                  Comparator(EQUAL, 0), 7, 7);
+    config->event_configs.insert(
+        EventConfig("shopping_list_menu_item_iph_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config->used = EventConfig("shopping_list_track_price_from_menu",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
