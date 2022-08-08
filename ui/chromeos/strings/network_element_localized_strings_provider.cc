@@ -489,7 +489,7 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_NETWORK_ERROR_CANNOT_CHANGE_SHARED_CONFIG},
       {"Error.PolicyControlled", IDS_NETWORK_ERROR_POLICY_CONTROLLED},
       {"networkErrorNoUserCertificate", IDS_NETWORK_ERROR_NO_USER_CERT},
-      {chromeos::NetworkConnectionHandler::kErrorPassphraseRequired,
+      {ash::NetworkConnectionHandler::kErrorPassphraseRequired,
        IDS_NETWORK_ERROR_PASSPHRASE_REQUIRED},
       {"networkErrorUnknown", IDS_NETWORK_ERROR_UNKNOWN},
       {"networkErrorNotAvailableForNetworkAuth",

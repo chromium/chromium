@@ -18,7 +18,7 @@ namespace dbus {
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 class CellularConnectionHandler;
 class NetworkConnectionHandler;
@@ -180,11 +180,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   base::WeakPtrFactory<CellularESimInstaller> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::CellularESimInstaller;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_INSTALLER_H_

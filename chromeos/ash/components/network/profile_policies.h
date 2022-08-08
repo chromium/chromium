@@ -202,4 +202,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::ProfilePolicies;
+}
+
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_

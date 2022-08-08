@@ -24,7 +24,7 @@
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char kNetworkMetadataPref[] = "network_metadata";
@@ -152,7 +152,7 @@ void NetworkMetadataStore::OwnSharedNetworksOnFirstUserLogin() {
   network_state_handler_->GetNetworkListByType(
       NetworkTypePattern::WiFi(), /*configured_only=*/true,
       /*visible_only=*/false, /*limit=*/0, &networks);
-  for (const chromeos::NetworkState* network : networks) {
+  for (const NetworkState* network : networks) {
     if (network->IsPrivate()) {
       continue;
     }
@@ -173,7 +173,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
 
   NET_LOG(EVENT) << "Updating networks from sync to disable HiddenSSID.";
   int total_count = 0;
-  for (const chromeos::NetworkState* network : networks) {
+  for (const NetworkState* network : networks) {
     if (!network->hidden_ssid()) {
       continue;
     }
@@ -199,7 +199,7 @@ void NetworkMetadataStore::LogHiddenNetworkAge() {
       NetworkTypePattern::WiFi(), /*configured_only=*/true,
       /*visible_only=*/false, /*limit=*/0, &networks);
 
-  for (const chromeos::NetworkState* network : networks) {
+  for (const NetworkState* network : networks) {
     if (!network->hidden_ssid()) {
       continue;
     }
@@ -396,7 +396,7 @@ void NetworkMetadataStore::SetLastConnectedTimestamp(
 
 base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
     const std::string& network_guid) {
-  DCHECK(base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration));
+  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
 
   const NetworkState* network =
       network_state_handler_->GetNetworkStateFromGuid(network_guid);
@@ -558,4 +558,4 @@ void NetworkMetadataStore::RemoveObserver(NetworkMetadataObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace chromeos
+}  // namespace ash

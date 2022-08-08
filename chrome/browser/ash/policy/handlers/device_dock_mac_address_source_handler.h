@@ -8,9 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
-namespace chromeos {
+namespace ash {
 class NetworkDeviceHandler;
-}  // namespace chromeos
+}
 
 namespace policy {
 
@@ -20,7 +20,7 @@ class DeviceDockMacAddressHandler {
  public:
   DeviceDockMacAddressHandler(
       ash::CrosSettings* cros_settings,
-      chromeos::NetworkDeviceHandler* network_device_handler);
+      ash::NetworkDeviceHandler* network_device_handler);
 
   DeviceDockMacAddressHandler(const DeviceDockMacAddressHandler&) = delete;
   DeviceDockMacAddressHandler& operator=(const DeviceDockMacAddressHandler&) =
@@ -32,7 +32,7 @@ class DeviceDockMacAddressHandler {
   void OnDockMacAddressSourcePolicyChanged();
 
   ash::CrosSettings* cros_settings_;
-  chromeos::NetworkDeviceHandler* network_device_handler_;
+  ash::NetworkDeviceHandler* network_device_handler_;
   base::CallbackListSubscription dock_mac_address_source_policy_subscription_;
   base::WeakPtrFactory<DeviceDockMacAddressHandler> weak_factory_{this};
 };

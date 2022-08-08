@@ -290,4 +290,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
 }  // namespace onc
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::onc {
+using ::chromeos::onc::Validator;
+}
+
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_

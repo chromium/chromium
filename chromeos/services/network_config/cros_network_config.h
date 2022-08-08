@@ -8,9 +8,17 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,13 +26,11 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-
+namespace ash {
 class CellularESimProfileHandler;
-class ManagedNetworkConfigurationHandler;
-class NetworkConnectionHandler;
-class NetworkDeviceHandler;
-class NetworkStateHandler;
+}
+
+namespace chromeos {
 
 namespace network_config {
 
@@ -44,7 +50,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler,
       CellularInhibitor* cellular_inhibitor,
-      CellularESimProfileHandler* cellular_esim_profile_handler,
+      ash::CellularESimProfileHandler* cellular_esim_profile_handler,
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler,
@@ -186,7 +192,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   NetworkStateHandler* network_state_handler_;    // Unowned
   NetworkDeviceHandler* network_device_handler_;  // Unowned
   CellularInhibitor* cellular_inhibitor_;         // Unowned
-  CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
+  ash::CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
   ManagedNetworkConfigurationHandler*
       network_configuration_handler_;                       // Unowned
   NetworkConnectionHandler* network_connection_handler_;    // Unowned

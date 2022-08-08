@@ -26,4 +26,9 @@ class ShillPropertyChangedObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::ShillPropertyChangedObserver;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_SHILL_PROPERTY_CHANGED_OBSERVER_H_

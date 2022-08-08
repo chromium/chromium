@@ -31,12 +31,6 @@
 
 namespace chromeos {
 
-class NetworkDeviceHandler;
-class NetworkProfileHandler;
-class NetworkConfigurationHandler;
-class NetworkConnectionHandler;
-class ManagedNetworkConfigurationHandler;
-
 namespace sync_wifi {
 
 namespace {

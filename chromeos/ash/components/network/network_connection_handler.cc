@@ -29,7 +29,7 @@
 #include "net/cert/x509_certificate.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Static constants.
 const char NetworkConnectionHandler::kErrorNotFound[] = "not-found";
@@ -161,4 +161,4 @@ NetworkConnectionHandler::InitializeForTesting(
   return base::WrapUnique(handler);
 }
 
-}  // namespace chromeos
+}  // namespace ash

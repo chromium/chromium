@@ -12,8 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -24,13 +22,14 @@ namespace dbus {
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 class CellularESimInstaller;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
+enum class HermesResponseStatus;
 
 // Handles provisioning eSIM profiles via policy.
 //
@@ -122,8 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
@@ -145,6 +143,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   base::WeakPtrFactory<CellularPolicyHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_POLICY_HANDLER_H_

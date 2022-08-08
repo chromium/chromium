@@ -17,19 +17,18 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 class CellularESimProfileHandler;
 class CellularInhibitor;
 class ManagedCellularPrefHandler;
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
+class NetworkState;
 
 // Handles Uninstallation of an eSIM profile and it's corresponding network.
 //
@@ -202,18 +201,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<CellularESimUninstallHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::CellularESimUninstallHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CellularESimUninstallHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_UNINSTALL_HANDLER_H_

@@ -122,7 +122,7 @@ TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
-          chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
+          AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
   // Toast should not be displayed.
@@ -134,7 +134,7 @@ TEST_F(AutoConnectNotifierTest, AutoConnectDueToLoginOnly) {
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
-          chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN);
+          AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN);
   SuccessfullyJoinWifiNetwork();
 
   // Toast should not be displayed.
@@ -146,7 +146,7 @@ TEST_F(AutoConnectNotifierTest, NoConnectionBeforeTimerExpires) {
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
-          chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
+          AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
 
   // No connection occurs.
   ASSERT_TRUE(mock_notification_timer_->IsRunning());
@@ -167,7 +167,7 @@ TEST_F(AutoConnectNotifierTest, ConnectToConnectedNetwork) {
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
-          chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
+          AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
   // Toast should not be displayed.
@@ -179,7 +179,7 @@ TEST_F(AutoConnectNotifierTest, ToastDisplayed) {
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
       ->NotifyAutoConnectInitiatedForTest(
-          chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
+          AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
   VerifyAutoConnectToastVisibility(/*visible=*/true);

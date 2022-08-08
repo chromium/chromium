@@ -103,7 +103,7 @@ void TrafficCountersHandler::OnNetworkStateListReceived(
 }
 
 bool TrafficCountersHandler::GetAutoResetEnabled(std::string guid) {
-  chromeos::NetworkMetadataStore* metadata_store =
+  NetworkMetadataStore* metadata_store =
       NetworkHandler::Get()->network_metadata_store();
   DCHECK(metadata_store);
   const base::Value* enabled =
@@ -147,7 +147,7 @@ void TrafficCountersHandler::OnManagedPropertiesReceived(
 // the reset day the following month.
 bool TrafficCountersHandler::ShouldReset(std::string guid,
                                          base::Time last_reset_time) {
-  chromeos::NetworkMetadataStore* metadata_store =
+  NetworkMetadataStore* metadata_store =
       NetworkHandler::Get()->network_metadata_store();
   DCHECK(metadata_store);
   const base::Value* reset_day_ptr =

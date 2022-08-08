@@ -14,8 +14,6 @@
 #include "chromeos/ash/components/network/network_connect.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_state_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_connection_handler.h"
 
 class PrefService;
 
@@ -28,6 +26,8 @@ namespace ash {
 namespace device_sync {
 class DeviceSyncClient;
 }
+
+class NetworkConnectionHandler;
 
 namespace tether {
 

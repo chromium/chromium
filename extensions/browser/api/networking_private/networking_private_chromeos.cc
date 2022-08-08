@@ -39,8 +39,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using ::ash::NetworkCertificateHandler;
 using ::ash::NetworkTypePattern;
-using chromeos::NetworkCertificateHandler;
 using chromeos::NetworkHandler;
 using chromeos::NetworkStateHandler;
 using extensions::NetworkingPrivateDelegate;
@@ -53,7 +53,7 @@ chromeos::NetworkStateHandler* GetStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
 }
 
-chromeos::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
+ash::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
   return NetworkHandler::Get()->managed_network_configuration_handler();
 }
 
@@ -521,7 +521,7 @@ void NetworkingPrivateChromeOS::StartConnect(const std::string& guid,
       service_path, std::move(success_callback),
       base::BindOnce(&NetworkHandlerFailureCallback,
                      std::move(failure_callback)),
-      true /* check_error_state */, chromeos::ConnectCallbackMode::ON_STARTED);
+      true /* check_error_state */, ash::ConnectCallbackMode::ON_STARTED);
 }
 
 void NetworkingPrivateChromeOS::StartDisconnect(

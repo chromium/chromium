@@ -30,7 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -704,4 +704,4 @@ NetworkConfigurationHandler::InitializeForTest(
   return handler;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -205,7 +205,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   // Configuration that is currently in use.
   raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
 
-  base::ScopedObservation<chromeos::NetworkConfigurationHandler,
+  base::ScopedObservation<ash::NetworkConfigurationHandler,
                           ash::NetworkConfigurationObserver>
       network_configuration_observer_{this};
 
@@ -250,7 +250,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   friend class VpnServiceForExtensionAsh;
 
   // Callback for
-  // chromeos::NetworkConfigurationHandler::GetShillProperties(...); parses
+  // ash::NetworkConfigurationHandler::GetShillProperties(...); parses
   // the |configuration_properties| dictionary and tries to add a new
   // configuration provided that it belongs to some enabled extension.
   void OnGetShillProperties(

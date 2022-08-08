@@ -23,7 +23,7 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -252,9 +252,8 @@ bool UIProxyConfigService::MergeEnforcedProxyConfig(
   net::ProxyConfigService::ConfigAvailability network_availability =
       net::ProxyConfigService::CONFIG_UNSET;
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  if (chromeos::GetProxyConfig(profile_prefs_, local_state_prefs_, *network,
-                               network_profile_handler_, &network_config,
-                               &onc_source)) {
+  if (GetProxyConfig(profile_prefs_, local_state_prefs_, *network,
+                     network_profile_handler_, &network_config, &onc_source)) {
     // Network is private or shared with user using shared proxies.
     NET_LOG(EVENT) << "UIProxyConfigService for "
                    << (profile_prefs_ ? "user" : "login")
@@ -329,4 +328,4 @@ void UIProxyConfigService::OnPreferenceChanged(const std::string& pref_name) {
     network_state_handler_->SendUpdateNotificationForNetwork(network->path());
 }
 
-}  // namespace chromeos
+}  // namespace ash

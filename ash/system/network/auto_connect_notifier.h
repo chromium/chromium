@@ -22,10 +22,9 @@ namespace ash {
 // Notifies the user when a managed device policy auto-connects to a secure
 // network after the user has explicitly requested another network connection.
 // See https://crbug.com/764000 for details.
-class ASH_EXPORT AutoConnectNotifier
-    : public NetworkConnectionObserver,
-      public NetworkStateHandlerObserver,
-      public chromeos::AutoConnectHandler::Observer {
+class ASH_EXPORT AutoConnectNotifier : public NetworkConnectionObserver,
+                                       public NetworkStateHandlerObserver,
+                                       public AutoConnectHandler::Observer {
  public:
   AutoConnectNotifier();
 
@@ -40,7 +39,7 @@ class ASH_EXPORT AutoConnectNotifier
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
 
-  // chromeos::AutoConnectHandler::Observer:
+  // AutoConnectHandler::Observer:
   void OnAutoConnectedInitiated(int auto_connect_reasons) override;
 
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer) {

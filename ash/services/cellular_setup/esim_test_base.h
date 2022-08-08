@@ -9,26 +9,19 @@
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/test/task_environment.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/cellular_inhibitor.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/cellular_connection_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/cellular_esim_installer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_configuration_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_device_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_profile_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
+class CellularInhibitor;
+class CellularConnectionHandler;
+class CellularESimInstaller;
+class CellularESimUninstallHandler;
+class NetworkConfigurationHandler;
+class NetworkDeviceHandler;
+class NetworkProfileHandler;
 class FakeNetworkConnectionHandler;
 class TestCellularESimProfileHandler;
 

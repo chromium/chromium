@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for tracking the creation of VPN networks,
 // recording the provider type and whether it was configured manually or via
@@ -48,6 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) VpnNetworkMetricsHelper
       network_configuration_observation_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_VPN_NETWORK_METRICS_HELPER_H_

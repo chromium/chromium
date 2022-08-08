@@ -26,7 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1259,4 +1259,4 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
       CellularMetricsLogger::ConnectionState::kDisconnected, 2);
 }
 
-}  // namespace chromeos
+}  // namespace ash

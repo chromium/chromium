@@ -12,7 +12,7 @@
 namespace crosapi {
 
 // Implements the crosapi GeolocationService interface. Lives in ash-chrome on
-// the UI thread. Queries chromeos::GeolocationHandler for wifi access point
+// the UI thread. Queries ash::GeolocationHandler for wifi access point
 // data.
 class GeolocationServiceAsh : public mojom::GeolocationService {
  public:

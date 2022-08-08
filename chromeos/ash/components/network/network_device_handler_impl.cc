@@ -32,7 +32,7 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -414,7 +414,7 @@ void NetworkDeviceHandlerImpl::ApplyMACAddressRandomizationToShill() {
 void NetworkDeviceHandlerImpl::ApplyWakeOnWifiAllowedToShill() {
   // Get the setting from feature flags.
   wake_on_wifi_allowed_ =
-      base::FeatureList::IsEnabled(chromeos::features::kWakeOnWifiAllowed);
+      base::FeatureList::IsEnabled(features::kWakeOnWifiAllowed);
   ApplyWifiFeatureToShillIfSupported(
       shill::kWakeOnWiFiAllowedProperty, wake_on_wifi_allowed_,
       shill::kWakeOnWiFiSupportedProperty, &wake_on_wifi_supported_);
@@ -576,4 +576,4 @@ const DeviceState* NetworkDeviceHandlerImpl::GetWifiDeviceState() {
       NetworkTypePattern::WiFi());
 }
 
-}  // namespace chromeos
+}  // namespace ash

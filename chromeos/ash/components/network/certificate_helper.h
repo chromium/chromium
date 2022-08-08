@@ -54,8 +54,8 @@ std::string GetCertAsciiNameOrNickname(CERTCertificate* cert_handle);
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::certificate {
-using ::chromeos::certificate::GetCertType;
+namespace ash {
+namespace certificate = ::chromeos::certificate;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CERTIFICATE_HELPER_H_

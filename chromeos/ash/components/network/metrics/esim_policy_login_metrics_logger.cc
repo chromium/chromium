@@ -9,7 +9,7 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -173,4 +173,4 @@ ESimPolicyLoginMetricsLogger::GetESimPolicyStatusAtLogin(
   return ESimPolicyStatusAtLogin::kNoCellularNetworks;
 }
 
-}  // namespace chromeos
+}  // namespace ash

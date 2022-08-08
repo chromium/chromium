@@ -5,13 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_device_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_test_helper_base.h"
 
 namespace ash {
+
+class NetworkDeviceHandler;
+class NetworkStateHandler;
 
 // Helper class for tests that use NetworkStateHandler and/or
 // NetworkDeviceHandler. Handles initialization and shutdown of Shill and Hermes

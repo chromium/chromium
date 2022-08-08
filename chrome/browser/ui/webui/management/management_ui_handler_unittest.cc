@@ -387,7 +387,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     SetUpConnectManager();
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
+    ash::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
     // The |DeviceSettingsTestBase| setup above instantiates
     // |FakeShillManagerClient| with a default environment which will post
     // tasks on the current thread to setup a initial network configuration with

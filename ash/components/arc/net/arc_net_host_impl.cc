@@ -70,16 +70,16 @@ chromeos::NetworkStateHandler* GetStateHandler() {
   return chromeos::NetworkHandler::Get()->network_state_handler();
 }
 
-chromeos::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
+ash::ManagedNetworkConfigurationHandler* GetManagedConfigurationHandler() {
   return chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler();
 }
 
-chromeos::NetworkConnectionHandler* GetNetworkConnectionHandler() {
+ash::NetworkConnectionHandler* GetNetworkConnectionHandler() {
   return chromeos::NetworkHandler::Get()->network_connection_handler();
 }
 
-chromeos::NetworkProfileHandler* GetNetworkProfileHandler() {
+ash::NetworkProfileHandler* GetNetworkProfileHandler() {
   return chromeos::NetworkHandler::Get()->network_profile_handler();
 }
 
@@ -810,7 +810,7 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
                      std::move(split_callback.first)),
       base::BindOnce(&StartConnectFailureCallback,
                      std::move(split_callback.second)),
-      false /* check_error_state */, chromeos::ConnectCallbackMode::ON_STARTED);
+      false /* check_error_state */, ash::ConnectCallbackMode::ON_STARTED);
 }
 
 void ArcNetHostImpl::StartDisconnect(const std::string& guid,
@@ -908,8 +908,7 @@ void ArcNetHostImpl::ConnectArcVpn(const std::string& service_path,
   GetNetworkConnectionHandler()->ConnectToNetwork(
       service_path, base::BindOnce(&ArcVpnSuccessCallback),
       base::BindOnce(&ArcVpnErrorCallback, "connecting ARC VPN"),
-      false /* check_error_state */,
-      chromeos::ConnectCallbackMode::ON_COMPLETED);
+      false /* check_error_state */, ash::ConnectCallbackMode::ON_COMPLETED);
 }
 
 base::Value ArcNetHostImpl::TranslateStringListToValue(

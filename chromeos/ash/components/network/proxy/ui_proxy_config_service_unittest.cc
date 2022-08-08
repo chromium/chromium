@@ -25,7 +25,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -966,4 +966,4 @@ TEST_F(UIProxyConfigServiceTest, ExtensionPrefOverridesOncPolicy) {
   EXPECT_EQ(*expected, config);
 }
 
-}  // namespace chromeos
+}  // namespace ash

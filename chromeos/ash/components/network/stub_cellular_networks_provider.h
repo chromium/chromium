@@ -9,7 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Provides stub cellular for use by NetworkStateHandler. In this context,
 // cellular stub networks correspond to networks shown exposed by
@@ -79,6 +79,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
   base::flat_map<std::string, std::string> iccid_to_guid_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_STUB_CELLULAR_NETWORKS_PROVIDER_H_

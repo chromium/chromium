@@ -14,7 +14,7 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -262,4 +262,4 @@ void GeolocationHandler::AddCellTowerFromDict(const base::Value& entry) {
   cell_towers_.push_back(ct);
 }
 
-}  // namespace chromeos
+}  // namespace ash

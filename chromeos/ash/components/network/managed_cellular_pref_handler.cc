@@ -11,12 +11,12 @@
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 void ManagedCellularPrefHandler::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(ash::prefs::kManagedCellularIccidSmdpPair);
+  registry->RegisterDictionaryPref(prefs::kManagedCellularIccidSmdpPair);
 }
 
 ManagedCellularPrefHandler::ManagedCellularPrefHandler() = default;
@@ -62,7 +62,7 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
   NET_LOG(EVENT) << "Adding iccid smdp pair to device pref, iccid: " << iccid
                  << ", smdp: " << smdp_address;
   ::prefs::ScopedDictionaryPrefUpdate update(
-      device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
+      device_prefs_, prefs::kManagedCellularIccidSmdpPair);
   update->SetString(iccid, smdp_address);
   network_state_handler_->SyncStubCellularNetworks();
   NotifyManagedCellularPrefChanged();
@@ -80,7 +80,7 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
   NET_LOG(EVENT) << "Removing iccid smdp pair from device pref, iccid: "
                  << iccid;
   ::prefs::ScopedDictionaryPrefUpdate update(
-      device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
+      device_prefs_, prefs::kManagedCellularIccidSmdpPair);
   update->Remove(iccid);
   network_state_handler_->SyncStubCellularNetworks();
   NotifyManagedCellularPrefChanged();
@@ -93,8 +93,8 @@ const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
     return nullptr;
   }
   const base::Value::Dict& iccid_smdp_pairs =
-      device_prefs_->GetValueDict(ash::prefs::kManagedCellularIccidSmdpPair);
+      device_prefs_->GetValueDict(prefs::kManagedCellularIccidSmdpPair);
   return iccid_smdp_pairs.FindString(iccid);
 }
 
-}  // namespace chromeos
+}  // namespace ash

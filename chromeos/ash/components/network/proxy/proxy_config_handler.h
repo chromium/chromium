@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/onc/onc_constants.h"
 
@@ -16,8 +18,6 @@ class PrefService;
 class ProxyConfigDictionary;
 
 namespace chromeos {
-
-class NetworkProfileHandler;
 
 namespace proxy_config {
 
@@ -44,8 +44,9 @@ void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace ash {
 namespace proxy_config {
+using ::chromeos::proxy_config::GetProxyConfigForNetwork;
 using ::chromeos::proxy_config::SetProxyConfigForNetwork;
-}
+}  // namespace proxy_config
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROXY_PROXY_CONFIG_HANDLER_H_

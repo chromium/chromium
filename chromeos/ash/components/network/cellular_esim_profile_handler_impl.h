@@ -16,13 +16,11 @@
 class PrefService;
 class PrefRegistrySimple;
 
-namespace chromeos {
-
-namespace network_ui {
-
+namespace chromeos::network_ui {
 class NetworkConfigMessageHandler;
+}
 
-}  // namespace network_ui
+namespace ash {
 
 // CellularESimProfileHandler implementation which utilizes the local state
 // PrefService to track eSIM profiles.
@@ -57,7 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
  private:
   friend class CellularESimProfileHandlerImplTest;
-  friend class network_ui::NetworkConfigMessageHandler;
+  friend class chromeos::network_ui::NetworkConfigMessageHandler;
 
   // CellularESimProfileHandler:
   void InitInternal() override;
@@ -97,8 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::flat_set<std::string> paths_pending_auto_refresh_;
@@ -106,11 +103,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   base::WeakPtrFactory<CellularESimProfileHandlerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::CellularESimProfileHandlerImpl;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CellularESimProfileHandlerImpl;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_PROFILE_HANDLER_IMPL_H_

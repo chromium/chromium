@@ -41,7 +41,7 @@
 #include "net/cert/x509_certificate.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1141,4 +1141,4 @@ void NetworkConnectionHandlerImpl::HandleShillDisconnectSuccess(
     std::move(success_callback).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

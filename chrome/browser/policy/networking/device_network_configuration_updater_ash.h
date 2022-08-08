@@ -16,17 +16,14 @@
 
 namespace ash {
 class CrosSettings;
+class ManagedNetworkConfigurationHandler;
+class NetworkDeviceHandler;
 }  // namespace ash
 
 namespace base {
 class DictionaryValue;
 class ListValue;
 }  // namespace base
-
-namespace chromeos {
-class ManagedNetworkConfigurationHandler;
-class NetworkDeviceHandler;
-}  // namespace chromeos
 
 namespace policy {
 
@@ -57,16 +54,16 @@ class DeviceNetworkConfigurationUpdaterAsh
   static std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
   CreateForDevicePolicy(
       PolicyService* policy_service,
-      chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
-      chromeos::NetworkDeviceHandler* network_device_handler,
+      ash::ManagedNetworkConfigurationHandler* network_config_handler,
+      ash::NetworkDeviceHandler* network_device_handler,
       ash::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
  private:
   DeviceNetworkConfigurationUpdaterAsh(
       PolicyService* policy_service,
-      chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
-      chromeos::NetworkDeviceHandler* network_device_handler,
+      ash::ManagedNetworkConfigurationHandler* network_config_handler,
+      ash::NetworkDeviceHandler* network_device_handler,
       ash::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
@@ -79,9 +76,9 @@ class DeviceNetworkConfigurationUpdaterAsh
   void OnDataRoamingSettingChanged();
 
   // Pointer to the global singleton or a test instance.
-  chromeos::ManagedNetworkConfigurationHandler* const network_config_handler_;
+  ash::ManagedNetworkConfigurationHandler* const network_config_handler_;
 
-  chromeos::NetworkDeviceHandler* const network_device_handler_;
+  ash::NetworkDeviceHandler* const network_device_handler_;
   ash::CrosSettings* const cros_settings_;
   base::CallbackListSubscription data_roaming_setting_subscription_;
 

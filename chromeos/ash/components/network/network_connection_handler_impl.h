@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 // Implementation of NetworkConnectionHandler.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
@@ -179,8 +179,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // Local references to the associated handler instances.
   NetworkCertLoader* network_cert_loader_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   NetworkConfigurationHandler* configuration_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_configuration_handler_ = nullptr;
@@ -195,6 +194,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   bool certificates_loaded_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_

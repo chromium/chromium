@@ -13,6 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
@@ -24,8 +26,6 @@ class WifiConfigurationSpecifics;
 }
 
 namespace chromeos {
-
-class NetworkMetadataStore;
 
 namespace sync_wifi {
 

@@ -40,7 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -105,7 +105,7 @@ base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
   return base::Value(std::move(sim_slot_infos));
 }
 
-class TestObserver final : public chromeos::NetworkStateHandlerObserver {
+class TestObserver final : public NetworkStateHandlerObserver {
  public:
   explicit TestObserver(NetworkStateHandler* handler) : handler_(handler) {}
 
@@ -124,7 +124,7 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   void NetworkListChanged() override {
     NetworkStateHandler::NetworkStateList networks;
     handler_->GetNetworkListByType(
-        chromeos::NetworkTypePattern::Default(), false /* configured_only */,
+        NetworkTypePattern::Default(), false /* configured_only */,
         false /* visible_only */, 0 /* no limit */, &networks);
     network_count_ = networks.size();
     ++network_list_changed_count_;
@@ -2699,4 +2699,4 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   run_loop.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

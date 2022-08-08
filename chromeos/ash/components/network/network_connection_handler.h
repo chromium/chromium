@@ -13,19 +13,11 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/cellular_connection_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // The NetworkConnectionHandler class is used to manage network connection
 // requests. This is the only class that should make Shill Connect calls.
@@ -44,6 +36,11 @@ namespace chromeos {
 // configuration calls.
 
 enum class ConnectCallbackMode { ON_STARTED, ON_COMPLETED };
+
+class CellularConnectionHandler;
+class NetworkConfigurationHandler;
+class NetworkStateHandler;
+class ManagedNetworkConfigurationHandler;
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
  public:
@@ -255,12 +252,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   base::WeakPtrFactory<NetworkConnectionHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::ConnectCallbackMode;
-using ::chromeos::NetworkConnectionHandler;
-}
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ConnectCallbackMode;
+using ::ash::NetworkConnectionHandler;
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 ManagedNetworkConfigurationHandler::~ManagedNetworkConfigurationHandler() =
     default;
@@ -34,4 +34,4 @@ ManagedNetworkConfigurationHandler::InitializeForTesting(
   return base::WrapUnique(handler);
 }
 
-}  // namespace chromeos
+}  // namespace ash

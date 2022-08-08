@@ -20,7 +20,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Class to watch sms without Libcros.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
@@ -103,6 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_SMS_HANDLER_H_

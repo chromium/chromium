@@ -15,12 +15,7 @@
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// TODO(https://crbug.com/1164001): remove when GeolocationHandler move to ash.
 namespace ash {
-class SimpleGeolocationWirelessTest;
-}  // namespace ash
-
-namespace chromeos {
 
 // This class provices Shill Wifi Access Point and Cell Tower data. It
 // currently relies on polling because that is the usage model in
@@ -66,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
  private:
   friend class NetworkHandler;
   friend class GeolocationHandlerTest;
-  friend class ash::SimpleGeolocationWirelessTest;
+  friend class SimpleGeolocationWirelessTest;
 
   GeolocationHandler();
 
@@ -100,11 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
   base::WeakPtrFactory<GeolocationHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when move to ash.
-namespace ash {
-using ::chromeos::GeolocationHandler;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_GEOLOCATION_HANDLER_H_

@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class ProhibitedTechnologiesHandlerTest : public testing::Test {
  public:
@@ -256,4 +256,4 @@ TEST_F(ProhibitedTechnologiesHandlerTest,
       NetworkTypePattern::Cellular()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

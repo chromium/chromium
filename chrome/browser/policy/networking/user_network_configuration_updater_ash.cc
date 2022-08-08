@@ -61,7 +61,7 @@ UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
     Profile* profile,
     const user_manager::User& user,
     PolicyService* policy_service,
-    chromeos::ManagedNetworkConfigurationHandler* network_config_handler) {
+    ash::ManagedNetworkConfigurationHandler* network_config_handler) {
   std::unique_ptr<UserNetworkConfigurationUpdaterAsh> updater(
       new UserNetworkConfigurationUpdaterAsh(profile, user, policy_service,
                                              network_config_handler));
@@ -108,7 +108,7 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
     Profile* profile,
     const user_manager::User& user,
     PolicyService* policy_service,
-    chromeos::ManagedNetworkConfigurationHandler* network_config_handler)
+    ash::ManagedNetworkConfigurationHandler* network_config_handler)
     : UserNetworkConfigurationUpdater(policy_service),
       user_(&user),
       network_config_handler_(network_config_handler) {

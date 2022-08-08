@@ -14,19 +14,18 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class CellularESimProfileHandler;
 class CellularMetricsLoggerTest;
 class ESimFeatureUsageMetrics;
 class NetworkConnectionHandler;
+class NetworkState;
 
 // Cellular network SIM types.
 enum class SimType {
@@ -417,8 +416,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   bool is_cellular_available_ = false;
 
   NetworkStateHandler* network_state_handler_ = nullptr;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
@@ -457,6 +455,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   std::unique_ptr<ESimFeatureUsageMetrics> esim_feature_usage_metrics_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_METRICS_LOGGER_H_

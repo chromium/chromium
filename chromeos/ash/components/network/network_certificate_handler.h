@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class maintains user and server CA certificate lists for network
 // configuration UI.
@@ -105,6 +105,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
   std::vector<Certificate> client_certificates_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkCertificateHandler;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERTIFICATE_HANDLER_H_

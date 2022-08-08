@@ -32,7 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -138,8 +138,7 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
   std::map<std::string, std::string> updated_configurations_;
 };
 
-class TestNetworkStateHandlerObserver
-    : public chromeos::NetworkStateHandlerObserver {
+class TestNetworkStateHandlerObserver : public NetworkStateHandlerObserver {
  public:
   TestNetworkStateHandlerObserver() = default;
 
@@ -160,7 +159,7 @@ class TestNetworkStateHandlerObserver
     return iter == property_updates_.end() ? 0 : iter->second;
   }
 
-  // chromeos::NetworkStateHandlerObserver overrides:
+  // NetworkStateHandlerObserver overrides:
   void NetworkListChanged() override { ++network_list_changed_count_; }
   void NetworkPropertiesUpdated(const NetworkState* network) override {
     property_updates_[network->path()]++;
@@ -794,4 +793,4 @@ TEST_F(NetworkConfigurationHandlerTest, AlwaysOnVpn) {
   EXPECT_EQ(vpn_package, package_result);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -23,10 +23,6 @@
 
 class Profile;
 
-namespace chromeos {
-class NetworkStateHandler;
-}
-
 namespace session_manager {
 class SessionManager;
 }  // namespace session_manager
@@ -36,6 +32,8 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace ash {
+
+class NetworkStateHandler;
 
 namespace secure_channel {
 class SecureChannelClient;
@@ -69,7 +67,7 @@ class TetherService
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      chromeos::NetworkStateHandler* network_state_handler,
+      NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager);
   TetherService(const TetherService&) = delete;
   TetherService& operator=(const TetherService&) = delete;
@@ -129,9 +127,9 @@ class TetherService
   virtual bool HasSyncedTetherHosts() const;
 
   virtual void UpdateTetherTechnologyState();
-  chromeos::NetworkStateHandler::TechnologyState GetTetherTechnologyState();
+  NetworkStateHandler::TechnologyState GetTetherTechnologyState();
 
-  chromeos::NetworkStateHandler* network_state_handler() {
+  NetworkStateHandler* network_state_handler() {
     return network_state_handler_;
   }
 
@@ -271,9 +269,8 @@ class TetherService
   device_sync::DeviceSyncClient* device_sync_client_;
   secure_channel::SecureChannelClient* secure_channel_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  chromeos::NetworkStateHandler* network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          NetworkStateHandlerObserver>
+  NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   session_manager::SessionManager* session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;

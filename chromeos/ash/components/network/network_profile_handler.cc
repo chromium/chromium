@@ -20,7 +20,7 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -282,4 +282,4 @@ NetworkProfileHandler::InitializeForTesting() {
   return base::WrapUnique(handler);
 }
 
-}  // namespace chromeos
+}  // namespace ash

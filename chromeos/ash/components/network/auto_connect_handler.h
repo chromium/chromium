@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
     : public LoginState::Observer,
@@ -138,8 +138,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   ClientCertResolver* client_cert_resolver_;
   NetworkConnectionHandler* network_connection_handler_;
   NetworkStateHandler* network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   ManagedNetworkConfigurationHandler* managed_configuration_handler_;
 
@@ -175,6 +174,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   base::WeakPtrFactory<AutoConnectHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_AUTO_CONNECT_HANDLER_H_

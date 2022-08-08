@@ -22,7 +22,7 @@
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Measures the time from which this function is called to when |callback|
@@ -347,4 +347,4 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
                           /*service_path=*/absl::nullopt);
 }
 
-}  // namespace chromeos
+}  // namespace ash

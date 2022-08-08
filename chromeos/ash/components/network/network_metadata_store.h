@@ -25,7 +25,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace chromeos {
+namespace ash {
 
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
@@ -167,8 +167,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   NetworkConfigurationHandler* network_configuration_handler_;
   NetworkConnectionHandler* network_connection_handler_;
   NetworkStateHandler* network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   PrefService* profile_pref_service_;
   PrefService* device_pref_service_;
@@ -177,11 +176,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   base::WeakPtrFactory<NetworkMetadataStore> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::NetworkMetadataStore;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkMetadataStore;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_METADATA_STORE_H_

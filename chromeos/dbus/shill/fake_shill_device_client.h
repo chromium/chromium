@@ -173,4 +173,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::FakeShillDeviceClient;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_FAKE_SHILL_DEVICE_CLIENT_H_

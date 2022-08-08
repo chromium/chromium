@@ -166,7 +166,7 @@ chromeos::NetworkStateHandler* network_state_handler() {
   return chromeos::NetworkHandler::Get()->network_state_handler();
 }
 
-chromeos::ManagedNetworkConfigurationHandler*
+ash::ManagedNetworkConfigurationHandler*
 managed_network_configuration_handler() {
   return chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler();

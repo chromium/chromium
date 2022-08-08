@@ -46,8 +46,8 @@ DeviceNetworkConfigurationUpdaterAsh::~DeviceNetworkConfigurationUpdaterAsh() =
 std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
 DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
     PolicyService* policy_service,
-    chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
-    chromeos::NetworkDeviceHandler* network_device_handler,
+    ash::ManagedNetworkConfigurationHandler* network_config_handler,
+    ash::NetworkDeviceHandler* network_device_handler,
     ash::CrosSettings* cros_settings,
     const DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher&
         device_asset_id_fetcher) {
@@ -61,8 +61,8 @@ DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
 
 DeviceNetworkConfigurationUpdaterAsh::DeviceNetworkConfigurationUpdaterAsh(
     PolicyService* policy_service,
-    chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
-    chromeos::NetworkDeviceHandler* network_device_handler,
+    ash::ManagedNetworkConfigurationHandler* network_config_handler,
+    ash::NetworkDeviceHandler* network_device_handler,
     ash::CrosSettings* cros_settings,
     const DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher&
         device_asset_id_fetcher)

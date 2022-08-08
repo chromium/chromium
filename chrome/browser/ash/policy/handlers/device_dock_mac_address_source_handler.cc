@@ -18,7 +18,7 @@ namespace policy {
 
 DeviceDockMacAddressHandler::DeviceDockMacAddressHandler(
     ash::CrosSettings* cros_settings,
-    chromeos::NetworkDeviceHandler* network_device_handler)
+    ash::NetworkDeviceHandler* network_device_handler)
     : cros_settings_(cros_settings),
       network_device_handler_(network_device_handler) {
   dock_mac_address_source_policy_subscription_ =

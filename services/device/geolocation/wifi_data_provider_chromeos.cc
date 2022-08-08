@@ -159,7 +159,7 @@ bool WifiDataProviderChromeOs::GetAccessPointData(
   DCHECK(NetworkHandler::Get()->task_runner()->BelongsToCurrentThread());
 
   // If wifi isn't enabled, we've effectively completed the task.
-  chromeos::GeolocationHandler* const geolocation_handler =
+  ash::GeolocationHandler* const geolocation_handler =
       NetworkHandler::Get()->geolocation_handler();
   if (!geolocation_handler || !geolocation_handler->wifi_enabled())
     return true;  // Access point list is empty, no more data.

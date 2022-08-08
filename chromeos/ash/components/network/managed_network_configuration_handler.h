@@ -15,8 +15,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_policy_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_profile.h"
 #include "components/onc/onc_constants.h"
 
@@ -24,10 +22,11 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class NetworkConfigurationHandler;
 class NetworkDeviceHandler;
+class NetworkPolicyObserver;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 
@@ -251,12 +250,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       UIProxyConfigService* ui_proxy_config_service);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ManagedNetworkConfigurationHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ManagedNetworkConfigurationHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_H_

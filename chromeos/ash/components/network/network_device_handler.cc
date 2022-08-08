@@ -7,7 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/network/network_device_handler_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 const char NetworkDeviceHandler::kErrorDeviceMissing[] = "device-missing";
 const char NetworkDeviceHandler::kErrorFailure[] = "failure";
@@ -32,4 +32,4 @@ NetworkDeviceHandler::InitializeForTesting(
   return base::WrapUnique(handler);
 }
 
-}  // namespace chromeos
+}  // namespace ash

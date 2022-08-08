@@ -28,7 +28,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -787,4 +787,4 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kUnmanagedSimPinUnlockSuccessHistogram, 2);
 }
-}  // namespace chromeos
+}  // namespace ash

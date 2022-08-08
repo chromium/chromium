@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkStateHandler;
 class NetworkConfigurationHandler;
@@ -33,6 +33,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HiddenNetworkHandler {
   NetworkConfigurationHandler* network_configuration_handler_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_HIDDEN_NETWORK_HANDLER_H_

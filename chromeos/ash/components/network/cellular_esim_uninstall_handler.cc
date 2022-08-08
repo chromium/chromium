@@ -22,7 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 const base::TimeDelta CellularESimUninstallHandler::kNetworkListWaitTimeout =
@@ -525,4 +525,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace chromeos
+}  // namespace ash

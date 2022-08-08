@@ -52,7 +52,7 @@
 namespace test_utils = ::chromeos::onc::test_utils;
 using base::test::DictionaryHasValues;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1235,7 +1235,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSimLockPolicy);
+  feature_list.InitAndEnableFeature(features::kSimLockPolicy);
 
   // Set 'AllowCellularSimLock' policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
@@ -1441,4 +1441,4 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   ASSERT_EQ(policy_after_pref, "Direct");
 }
 
-}  // namespace chromeos
+}  // namespace ash

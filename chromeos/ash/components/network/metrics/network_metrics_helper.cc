@@ -52,7 +52,7 @@ const char kWifi[] = "WiFi";
 const char kWifiOpen[] = "WiFi.SecurityOpen";
 const char kWifiPasswordProtected[] = "WiFi.SecurityPasswordProtected";
 
-chromeos::NetworkStateHandler* GetNetworkStateHandler() {
+NetworkStateHandler* GetNetworkStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
 }
 

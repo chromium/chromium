@@ -4,8 +4,8 @@ sync_wifi is a component which provides the necessary APIs to sync Wi-Fi
 credentials across devices.  This component will receive changes from the
 Chrome sync server as well as monitor local changes to the network list
 and keep the two network lists in sync with each other.  Local changes will
-be monitored using chromeos::NetworkStateHandler and updated using
-chromeos::NetworkConfigurationHandler.  Changes from the server will be
+be monitored using ash::NetworkStateHandler and updated using
+ash::NetworkConfigurationHandler.  Changes from the server will be
 received through the syncer::ModelTypeSyncBridge interface.
 
 Only password protected networks which were added by the specific user will be

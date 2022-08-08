@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/network/network_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 ProhibitedTechnologiesHandler::ProhibitedTechnologiesHandler() = default;
 
@@ -129,4 +129,4 @@ void ProhibitedTechnologiesHandler::RemoveGloballyProhibitedTechnology(
   EnforceProhibitedTechnologies();
 }
 
-}  // namespace chromeos
+}  // namespace ash

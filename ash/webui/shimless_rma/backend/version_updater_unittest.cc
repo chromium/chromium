@@ -109,7 +109,7 @@ class VersionUpdaterTest : public testing::Test {
     ::onc::RegisterProfilePrefs(user_prefs_.registry());
     ::onc::RegisterPrefs(local_state_.registry());
 
-    ui_proxy_config_service_ = std::make_unique<chromeos::UIProxyConfigService>(
+    ui_proxy_config_service_ = std::make_unique<UIProxyConfigService>(
         &user_prefs_, &local_state_,
         network_state_helper().network_state_handler(),
         network_profile_handler_.get());

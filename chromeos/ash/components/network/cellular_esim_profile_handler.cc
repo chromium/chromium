@@ -7,7 +7,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Delay before profile refresh callback is called. This ensures that eSIM
@@ -158,4 +158,4 @@ void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
       kProfileRefreshCallbackDelay);
 }
 
-}  // namespace chromeos
+}  // namespace ash

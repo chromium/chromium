@@ -13,7 +13,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 class AutoConnectHandler;
 class CellularConnectionHandler;
@@ -168,11 +168,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   bool is_enterprise_managed_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to  ash/components/.
-namespace ash {
-using ::chromeos::NetworkHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_HANDLER_H_

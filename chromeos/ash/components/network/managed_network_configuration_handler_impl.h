@@ -17,6 +17,8 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_profile_observer.h"
 #include "chromeos/ash/components/network/policy_applicator.h"
 #include "chromeos/ash/components/network/profile_policies.h"
@@ -25,12 +27,11 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class CellularPolicyHandler;
 class ManagedCellularPrefHandler;
 class NetworkConfigurationHandler;
-struct NetworkProfile;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 
@@ -339,6 +340,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_

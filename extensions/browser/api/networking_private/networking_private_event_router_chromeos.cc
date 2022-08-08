@@ -55,7 +55,7 @@ api::networking_private::CaptivePortalStatus GetCaptivePortalStatus(
 class NetworkingPrivateEventRouterImpl
     : public NetworkingPrivateEventRouter,
       public ash::NetworkStateHandlerObserver,
-      public chromeos::NetworkCertificateHandler::Observer {
+      public ash::NetworkCertificateHandler::Observer {
  public:
   explicit NetworkingPrivateEventRouterImpl(content::BrowserContext* context);
 

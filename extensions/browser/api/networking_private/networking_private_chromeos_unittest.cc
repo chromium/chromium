@@ -134,7 +134,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void SetUpNetworkPolicy() {
-    chromeos::ManagedNetworkConfigurationHandler* config_handler =
+    ash::ManagedNetworkConfigurationHandler* config_handler =
         chromeos::NetworkHandler::Get()
             ->managed_network_configuration_handler();
 

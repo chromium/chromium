@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,8 +20,6 @@ class WifiConfigurationSpecifics;
 }
 
 namespace chromeos {
-
-class NetworkMetadataStore;
 
 namespace sync_wifi {
 

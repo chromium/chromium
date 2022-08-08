@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/network/network_activation_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 
-namespace chromeos {
+namespace ash {
 
 // The NetworkActivationHandlerImpl class allows making service specific
 // calls required for activation on mobile networks.
@@ -41,6 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
   void HandleShillSuccess(base::OnceClosure success_callback);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_ACTIVATION_HANDLER_IMPL_H_

@@ -25,7 +25,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
@@ -338,4 +338,4 @@ TEST_F(CellularInhibitorTest, FailureScanningChangeTimeout) {
       /*expected_count=*/1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

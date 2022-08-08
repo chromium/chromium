@@ -207,10 +207,10 @@ class WifiLanMediumTest : public ::testing::Test {
 
     if (use_managed_config_handler) {
       network_profile_handler_ =
-          chromeos::NetworkProfileHandler::InitializeForTesting();
+          ash::NetworkProfileHandler::InitializeForTesting();
 
       network_configuration_handler_ =
-          chromeos::NetworkConfigurationHandler::InitializeForTest(
+          ash::NetworkConfigurationHandler::InitializeForTest(
               cros_network_config_helper_->network_state_helper()
                   .network_state_handler(),
               cros_network_config_helper_->network_device_handler());
@@ -220,15 +220,14 @@ class WifiLanMediumTest : public ::testing::Test {
       ::onc::RegisterProfilePrefs(user_prefs_.registry());
       ::onc::RegisterPrefs(local_state_.registry());
 
-      ui_proxy_config_service_ =
-          std::make_unique<chromeos::UIProxyConfigService>(
-              &user_prefs_, &local_state_,
-              cros_network_config_helper_->network_state_helper()
-                  .network_state_handler(),
-              network_profile_handler_.get());
+      ui_proxy_config_service_ = std::make_unique<ash::UIProxyConfigService>(
+          &user_prefs_, &local_state_,
+          cros_network_config_helper_->network_state_helper()
+              .network_state_handler(),
+          network_profile_handler_.get());
 
       managed_network_config_handler_ =
-          chromeos::ManagedNetworkConfigurationHandler::InitializeForTesting(
+          ash::ManagedNetworkConfigurationHandler::InitializeForTesting(
               cros_network_config_helper_->network_state_helper()
                   .network_state_handler(),
               network_profile_handler_.get(),
@@ -317,11 +316,11 @@ class WifiLanMediumTest : public ::testing::Test {
   // Local IP fetching:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<chromeos::NetworkProfileHandler> network_profile_handler_;
-  std::unique_ptr<chromeos::NetworkConfigurationHandler>
+  std::unique_ptr<ash::NetworkProfileHandler> network_profile_handler_;
+  std::unique_ptr<ash::NetworkConfigurationHandler>
       network_configuration_handler_;
-  std::unique_ptr<chromeos::UIProxyConfigService> ui_proxy_config_service_;
-  std::unique_ptr<chromeos::ManagedNetworkConfigurationHandler>
+  std::unique_ptr<ash::UIProxyConfigService> ui_proxy_config_service_;
+  std::unique_ptr<ash::ManagedNetworkConfigurationHandler>
       managed_network_config_handler_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       cros_network_config_helper_;

@@ -33,7 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -513,4 +513,4 @@ TEST_F(CellularESimInstallerTest, ConfigureESimServiceFailure) {
   EXPECT_FALSE(service_path.has_value());
 }
 
-}  // namespace chromeos
+}  // namespace ash

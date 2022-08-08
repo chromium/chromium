@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 
-namespace chromeos {
+namespace ash {
 
 // The NetworkActivationHandler class allows making service specific
 // calls required for activation on mobile networks.
@@ -36,11 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
   NetworkActivationHandler() = default;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::NetworkActivationHandler;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_ACTIVATION_HANDLER_H_

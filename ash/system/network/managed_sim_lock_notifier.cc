@@ -143,7 +143,7 @@ void ManagedSimLockNotifier::OnCellularNetworksList(
     if (network->type_state->get_cellular()->sim_lock_enabled) {
       ShowNotification();
       if (network->type_state->get_cellular()->sim_locked) {
-        chromeos::CellularMetricsLogger::RecordSimLockNotificationLockType(
+        CellularMetricsLogger::RecordSimLockNotificationLockType(
             network->type_state->get_cellular()->sim_lock_type);
       }
       return;
@@ -155,16 +155,16 @@ void ManagedSimLockNotifier::OnCellularNetworksList(
 
 void ManagedSimLockNotifier::Close(bool by_user) {
   if (by_user) {
-    chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
-        chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed);
+    CellularMetricsLogger::RecordSimLockNotificationEvent(
+        CellularMetricsLogger::SimLockNotificationEvent::kDismissed);
   }
 }
 
 void ManagedSimLockNotifier::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked);
+  CellularMetricsLogger::RecordSimLockNotificationEvent(
+      CellularMetricsLogger::SimLockNotificationEvent::kClicked);
 
   // When clicked, open the SIM Unlock dialog in Cellular settings if
   // we can open WebUI settings, otherwise do nothing.
@@ -199,8 +199,8 @@ void ManagedSimLockNotifier::ShowNotification() {
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
   message_center->AddNotification(std::move(notification));
-  chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown);
+  CellularMetricsLogger::RecordSimLockNotificationEvent(
+      CellularMetricsLogger::SimLockNotificationEvent::kShown);
 }
 
 void ManagedSimLockNotifier::RemoveNotification() {

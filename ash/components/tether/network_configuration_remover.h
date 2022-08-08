@@ -7,10 +7,9 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-
 namespace ash {
+
+class ManagedNetworkConfigurationHandler;
 
 namespace tether {
 

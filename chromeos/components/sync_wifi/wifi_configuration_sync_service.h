@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -22,8 +24,6 @@ class ModelTypeControllerDelegate;
 }  // namespace syncer
 
 namespace chromeos {
-
-class NetworkMetadataStore;
 
 namespace sync_wifi {
 

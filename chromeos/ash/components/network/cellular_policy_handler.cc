@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/network/policy_util.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -376,4 +376,4 @@ bool CellularPolicyHandler::HasNonCellularInternetConnectivity() {
          default_network->IsOnline();
 }
 
-}  // namespace chromeos
+}  // namespace ash

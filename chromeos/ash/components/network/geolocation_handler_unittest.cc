@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class GeolocationHandlerTest : public testing::Test {
  public:
@@ -200,4 +200,4 @@ TEST_F(GeolocationHandlerTest, MultipleGeolocations) {
   EXPECT_EQ("101", cell_towers_[0].mnc);
 }
 
-}  // namespace chromeos
+}  // namespace ash

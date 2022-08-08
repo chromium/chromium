@@ -18,9 +18,12 @@
 
 class Profile;
 
-namespace ash::onc {
+namespace ash {
+class ManagedNetworkConfigurationHandler;
+namespace onc {
 class CertificateImporter;
-}
+}  // namespace onc
+}  // namespace ash
 
 namespace base {
 class ListValue;
@@ -35,10 +38,6 @@ class NSSCertDatabase;
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 }  // namespace net
-
-namespace chromeos {
-class ManagedNetworkConfigurationHandler;
-}  // namespace chromeos
 
 namespace policy {
 
@@ -68,7 +67,7 @@ class UserNetworkConfigurationUpdaterAsh
       Profile* profile,
       const user_manager::User& user,
       PolicyService* policy_service,
-      chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
+      ash::ManagedNetworkConfigurationHandler* network_config_handler);
 
   // Helper method to expose |SetClientCertificateImporter| for usage in tests.
   // Note that the CertificateImporter is only used for importing client
@@ -89,7 +88,7 @@ class UserNetworkConfigurationUpdaterAsh
       Profile* profile,
       const user_manager::User& user,
       PolicyService* policy_service,
-      chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
+      ash::ManagedNetworkConfigurationHandler* network_config_handler);
 
   // NetworkConfigurationUpdater:
   void ImportClientCertificates() override;
@@ -117,7 +116,7 @@ class UserNetworkConfigurationUpdaterAsh
   const raw_ptr<const user_manager::User> user_;
 
   // Pointer to the global singleton or a test instance.
-  const raw_ptr<chromeos::ManagedNetworkConfigurationHandler>
+  const raw_ptr<ash::ManagedNetworkConfigurationHandler>
       network_config_handler_;
 
   // Certificate importer to be used for importing policy defined client

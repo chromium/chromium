@@ -11,7 +11,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -43,4 +43,4 @@ void NetworkActivationHandlerImpl::HandleShillSuccess(
     std::move(success_callback).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

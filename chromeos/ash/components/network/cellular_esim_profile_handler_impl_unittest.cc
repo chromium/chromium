@@ -24,7 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kDefaultCellularDevicePath[] = "stub_cellular_device";
@@ -593,4 +593,4 @@ TEST_F(CellularESimProfileHandlerImplTest, DisableActiveESimProfile) {
                                      /*expected_count=*/1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

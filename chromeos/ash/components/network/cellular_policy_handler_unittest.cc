@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -374,7 +374,7 @@ TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
   // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kCellularUseSecondEuicc);
+  feature_list.InitAndEnableFeature(features::kCellularUseSecondEuicc);
   SetupEuicc2();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -516,4 +516,4 @@ TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -110,13 +110,13 @@ class ConnectionInfoMetricsLoggerTest : public testing::Test {
   }
 
   void TriggerUserInitiatedConnectSuccess(const std::string& service_path) {
-    chromeos::NetworkHandler::Get()
+    NetworkHandler::Get()
         ->connection_info_metrics_logger_->ConnectSucceeded(service_path);
   }
 
   void TriggerUserInitiatedConnectFailure(const std::string& service_path,
                                           const std::string& error_name) {
-    chromeos::NetworkHandler::Get()
+    NetworkHandler::Get()
         ->connection_info_metrics_logger_->ConnectFailed(service_path,
                                                          error_name);
   }
@@ -257,4 +257,4 @@ TEST_F(ConnectionInfoMetricsLoggerTest, MultipleNetworksStatusRecorded) {
                                        ShillConnectResult::kSuccess, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

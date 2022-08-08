@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 base::flat_set<std::string> GetEuiccPathsFromHermes() {
@@ -349,4 +349,4 @@ void CellularESimProfileHandlerImpl::OnProfileDisabled(
   hermes_metrics::LogDisableProfileResult(status);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 void GetIccids(const NetworkStateHandler::ManagedStateList& network_list,
@@ -225,4 +225,4 @@ bool StubCellularNetworksProvider::RemoveStubCellularNetworks(
   return network_removed;
 }
 
-}  // namespace chromeos
+}  // namespace ash

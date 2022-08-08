@@ -21,7 +21,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 class NetworkStateHandler;
 
@@ -156,11 +156,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   base::WeakPtrFactory<CellularESimProfileHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::CellularESimProfileHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CellularESimProfileHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_PROFILE_HANDLER_H_

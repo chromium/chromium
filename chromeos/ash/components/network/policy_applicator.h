@@ -15,11 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/network_profile.h"
 
 namespace chromeos {
 
-class ManagedCellularPrefHandler;
 class NetworkUIData;
 
 // This class compares (entry point is Run()) |modified_policies| with the
@@ -166,5 +167,10 @@ class PolicyApplicator {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::PolicyApplicator;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_APPLICATOR_H_

@@ -8,10 +8,10 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 HiddenNetworkHandler::HiddenNetworkHandler() {
-  DCHECK(base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration));
+  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
 }
 
 void HiddenNetworkHandler::Init(
@@ -21,4 +21,4 @@ void HiddenNetworkHandler::Init(
   network_configuration_handler_ = network_configuration_handler;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -290,8 +290,8 @@ TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
 
   EXPECT_TRUE(GetManagedSimLockNotification());
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
 
   // Notification will disappear if user turns off Cellular.
   SetCellularEnabled(false);
@@ -313,18 +313,18 @@ TEST_F(ManagedSimLockNotifierTest, NotificationClicked) {
   ClickOnNotification();
 
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
 
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked, 1);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kClicked, 1);
 
   // Notification will be dismissed by the system, in which case we shouldn't
   // be emitting the dismissed by user metric.
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 0);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 0);
 }
 
 TEST_F(ManagedSimLockNotifierTest, NotificationDismissedByUser) {
@@ -338,16 +338,16 @@ TEST_F(ManagedSimLockNotifierTest, NotificationDismissedByUser) {
   RemoveNotification(/*by_user=*/true);
 
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
 
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked, 0);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kClicked, 0);
 
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
-      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 1);
+      CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 1);
 }
 
 TEST_F(ManagedSimLockNotifierTest, SIMLockTypeMetrics) {
@@ -360,11 +360,11 @@ TEST_F(ManagedSimLockNotifierTest, SIMLockTypeMetrics) {
 
   EXPECT_TRUE(GetManagedSimLockNotification());
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationLockType,
-      chromeos::CellularMetricsLogger::SimPinLockType::kPinLocked, 1);
+      CellularMetricsLogger::kSimLockNotificationLockType,
+      CellularMetricsLogger::SimPinLockType::kPinLocked, 1);
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationLockType,
-      chromeos::CellularMetricsLogger::SimPinLockType::kPukLocked, 0);
+      CellularMetricsLogger::kSimLockNotificationLockType,
+      CellularMetricsLogger::SimPinLockType::kPukLocked, 0);
 
   SetCellularSimLockEnabled(false);
   SetAllowCellularSimLock(true);
@@ -375,11 +375,11 @@ TEST_F(ManagedSimLockNotifierTest, SIMLockTypeMetrics) {
 
   EXPECT_TRUE(GetManagedSimLockNotification());
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationLockType,
-      chromeos::CellularMetricsLogger::SimPinLockType::kPinLocked, 1);
+      CellularMetricsLogger::kSimLockNotificationLockType,
+      CellularMetricsLogger::SimPinLockType::kPinLocked, 1);
   histograms.ExpectBucketCount(
-      chromeos::CellularMetricsLogger::kSimLockNotificationLockType,
-      chromeos::CellularMetricsLogger::SimPinLockType::kPukLocked, 1);
+      CellularMetricsLogger::kSimLockNotificationLockType,
+      CellularMetricsLogger::SimPinLockType::kPukLocked, 1);
 }
 
 }  // namespace ash

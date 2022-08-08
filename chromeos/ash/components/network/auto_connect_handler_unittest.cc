@@ -35,7 +35,7 @@
 #include "net/test/test_data_directory.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -835,4 +835,4 @@ TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyWiFiToConnectIfAvailable) {
   EXPECT_EQ(0, test_observer_->num_auto_connect_events());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -15,14 +15,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
 
@@ -31,8 +27,10 @@ class Location;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
+class DeviceState;
+class NetworkStateHandlerObserver;
 class NetworkStateHandlerTest;
 
 // Class for tracking the list of visible networks and their properties.
@@ -796,11 +794,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkStateHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkStateHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_HANDLER_H_

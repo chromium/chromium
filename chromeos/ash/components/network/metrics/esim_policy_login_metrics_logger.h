@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 
 class ManagedNetworkConfigurationHandler;
 class NetworkStateHandler;
@@ -113,6 +113,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ESimPolicyLoginMetricsLogger
   bool is_enterprise_managed_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_ESIM_POLICY_LOGIN_METRICS_LOGGER_H_

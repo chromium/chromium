@@ -41,7 +41,7 @@
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -769,4 +769,4 @@ base::Time ClientCertResolver::Now() const {
   return base::Time::Now();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -17,4 +17,9 @@ enum class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillSimulatedResult {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::FakeShillSimulatedResult;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_FAKE_SHILL_SIMULATED_RESULT_H_

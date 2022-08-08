@@ -21,7 +21,7 @@ void DoWifiScanTaskOnNetworkHandlerThread(
   std::vector<mojom::AccessPointDataPtr> ap_data_vector;
 
   // If wifi isn't enabled, we've effectively completed the task.
-  chromeos::GeolocationHandler* const geolocation_handler =
+  ash::GeolocationHandler* const geolocation_handler =
       ash::NetworkHandler::Get()->geolocation_handler();
   if (!geolocation_handler || !geolocation_handler->wifi_enabled()) {
     std::move(callback).Run(true, true, base::TimeDelta(),

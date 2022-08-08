@@ -20,8 +20,6 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
@@ -30,9 +28,10 @@ class Clock;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class ManagedNetworkConfigurationHandler;
+class NetworkState;
 
 namespace internal {
 struct NetworkAndMatchingCert;
@@ -157,8 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
   // Unowned associated (global or test) instance.
   NetworkStateHandler* network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Unowned associated (global or test) instance.
@@ -172,6 +170,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   base::WeakPtrFactory<ClientCertResolver> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CLIENT_CERT_RESOLVER_H_

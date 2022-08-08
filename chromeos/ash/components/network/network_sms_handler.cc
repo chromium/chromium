@@ -30,7 +30,7 @@ const size_t kMaxReceivedMessages = 100;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 const char NetworkSmsHandler::kNumberKey[] = "number";
@@ -376,4 +376,4 @@ void NetworkSmsHandler::OnObjectPathChanged(const base::Value& object_path) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

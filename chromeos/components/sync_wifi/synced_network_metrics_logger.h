@@ -9,17 +9,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_state.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-class NetworkStateHandler;
-class NetworkConnectionHandler;
 
 namespace sync_wifi {
 

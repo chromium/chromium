@@ -15,10 +15,10 @@ namespace {
 constexpr char kServicePrefix[] = "/service/";
 constexpr char kUnknownId[] = "<none>";
 
-chromeos::NetworkStateHandler* GetNetworkStateHandler() {
-  if (!chromeos::NetworkHandler::IsInitialized())
+ash::NetworkStateHandler* GetNetworkStateHandler() {
+  if (!ash::NetworkHandler::IsInitialized())
     return nullptr;
-  return chromeos::NetworkHandler::Get()->network_state_handler();
+  return ash::NetworkHandler::Get()->network_state_handler();
 }
 
 }  // namespace

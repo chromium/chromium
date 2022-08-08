@@ -50,7 +50,7 @@
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1307,4 +1307,4 @@ void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(
     observer.PolicyAppliedToNetwork(service_path);
 }
 
-}  // namespace chromeos
+}  // namespace ash

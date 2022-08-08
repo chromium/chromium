@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
@@ -507,4 +507,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace chromeos
+}  // namespace ash

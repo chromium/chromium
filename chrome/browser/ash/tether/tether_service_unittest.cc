@@ -154,10 +154,9 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
       chromeos::NetworkStateHandler* network_state_handler,
-      chromeos::ManagedNetworkConfigurationHandler*
-          managed_network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       chromeos::NetworkConnect* network_connect,
-      chromeos::NetworkConnectionHandler* network_connection_handler,
+      NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
     active_tether_component_ =

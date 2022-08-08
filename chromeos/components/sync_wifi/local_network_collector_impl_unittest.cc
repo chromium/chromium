@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/local_network_collector_impl.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
@@ -28,12 +29,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-class NetworkDeviceHandler;
-class NetworkProfileHandler;
-class NetworkConfigurationHandler;
-class NetworkConnectionHandler;
-class ManagedNetworkConfigurationHandler;
 
 namespace sync_wifi {
 

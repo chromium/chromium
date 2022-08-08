@@ -119,8 +119,8 @@ void AutoConnectNotifier::OnAutoConnectedInitiated(int auto_connect_reasons) {
   // policy or certificate. Other reasons (e.g., joining a network due to login)
   // do not require that a notification be shown.
   const int kManagedNetworkReasonsBitmask =
-      chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
-      chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED;
+      AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
+      AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED;
   if (!(auto_connect_reasons & kManagedNetworkReasonsBitmask))
     return;
 

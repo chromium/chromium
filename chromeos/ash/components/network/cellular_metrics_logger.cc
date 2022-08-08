@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1053,4 +1053,4 @@ void CellularMetricsLogger::OnShuttingDown() {
   esim_feature_usage_metrics_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

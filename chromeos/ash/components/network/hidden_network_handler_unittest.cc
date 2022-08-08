@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class HiddenNetworkHandlerTest : public ::testing::Test {
  public:
@@ -40,4 +40,4 @@ TEST_F(HiddenNetworkHandlerTest, CanConstruct) {
   EXPECT_TRUE(true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

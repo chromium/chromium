@@ -43,7 +43,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1279,4 +1279,4 @@ TEST_F(NetworkConnectionHandlerImplTest,
             GetResultAndReset());
 }
 
-}  // namespace chromeos
+}  // namespace ash

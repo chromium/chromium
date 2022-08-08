@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -174,4 +174,4 @@ TEST_F(NetworkSmsHandlerTest, SmsHandlerDeviceObjectPathChange) {
   EXPECT_NE(messages.find(kMessage1), messages.end());
 }
 
-}  // namespace chromeos
+}  // namespace ash

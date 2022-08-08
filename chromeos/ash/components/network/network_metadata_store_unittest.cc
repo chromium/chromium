@@ -29,7 +29,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class TestNetworkMetadataObserver : public NetworkMetadataObserver {
  public:
@@ -462,8 +462,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ash::features::kHiddenNetworkMigration);
+  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::Now().UTCMidnight());
@@ -472,8 +471,7 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampDefault) {
 TEST_F(NetworkMetadataStoreTest,
        NetworkCreationTimestampIsEventuallyOverwritten) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ash::features::kHiddenNetworkMigration);
+  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::Now().UTCMidnight());
@@ -486,8 +484,7 @@ TEST_F(NetworkMetadataStoreTest,
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonWifi) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ash::features::kHiddenNetworkMigration);
+  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigEthernet);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid3),
             base::Time::UnixEpoch());
@@ -495,8 +492,7 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonWifi) {
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonExistentNetwork) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ash::features::kHiddenNetworkMigration);
+  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::UnixEpoch());
   // Fast forward 2 weeks to check that creation timestamp is always
@@ -615,4 +611,4 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
   EXPECT_TRUE(value->is_none());
 }
 
-}  // namespace chromeos
+}  // namespace ash

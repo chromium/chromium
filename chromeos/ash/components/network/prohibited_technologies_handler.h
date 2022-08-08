@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
     : public LoginState::Observer,
@@ -68,6 +68,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   bool user_policy_applied_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROHIBITED_TECHNOLOGIES_HANDLER_H_

@@ -29,7 +29,7 @@ namespace dbus {
 class ObjectPath;
 }
 
-namespace chromeos {
+namespace ash {
 
 // The NetworkConfigurationHandler class is used to create and configure
 // networks in ChromeOS. It mostly calls through to the Shill service API, and
@@ -228,8 +228,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
 
   // Unowned associated Network*Handlers (global or test instance).
   NetworkStateHandler* network_state_handler_;
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   NetworkDeviceHandler* network_device_handler_;
 
@@ -248,11 +247,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   base::WeakPtrFactory<NetworkConfigurationHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkConfigurationHandler;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkConfigurationHandler;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONFIGURATION_HANDLER_H_

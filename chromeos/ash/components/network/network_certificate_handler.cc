@@ -10,7 +10,7 @@
 #include "net/base/hash_value.h"
 #include "net/cert/x509_util_nss.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -115,4 +115,4 @@ void NetworkCertificateHandler::ProcessCertificates(
     observer.OnCertificatesChanged();
 }
 
-}  // namespace chromeos
+}  // namespace ash

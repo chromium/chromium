@@ -31,7 +31,7 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -93,7 +93,7 @@ bool ShouldIncludeNetworkInList(const NetworkState* network_state,
 
   if (network_state->type() == shill::kTypeVPN) {
     if (network_state->GetVpnProviderType() == shill::kProviderIKEv2 &&
-        !base::FeatureList::IsEnabled(ash::features::kEnableIkev2Vpn)) {
+        !base::FeatureList::IsEnabled(features::kEnableIkev2Vpn)) {
       return false;
     }
   }
@@ -2246,4 +2246,4 @@ void NetworkStateHandler::ProcessIsUserLoggedIn(
   is_user_logged_in_ = profile_list.GetListDeprecated().size() > 1;
 }
 
-}  // namespace chromeos
+}  // namespace ash
