@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -44,6 +46,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Tests for {@link StatusView} and {@link StatusViewBinder}.
@@ -188,5 +192,36 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
         onView(withId(R.id.location_bar_status)).check((view, e) -> {
             assertEquals(expectedPadding, view.getPaddingEnd());
         });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testStatusViewAnimationStatusResetOnHide() {
+        runOnUiThreadBlocking(() -> {
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
+            assertTrue(mStatusView.isStatusIconAnimating());
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, false);
+            assertFalse(mStatusView.isStatusIconAnimating());
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testStatusViewAnimationStatusResetAfterDuration()
+            throws ExecutionException, InterruptedException {
+        runOnUiThreadBlocking(() -> {
+            mStatusView.setIconAnimationDurationForTesting(50);
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(StatusProperties.ANIMATIONS_ENABLED, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
+            assertTrue(mStatusView.isStatusIconAnimating());
+        });
+
+        CriteriaHelper.pollUiThread(() -> !mStatusView.isStatusIconAnimating(), 300, 20);
     }
 }

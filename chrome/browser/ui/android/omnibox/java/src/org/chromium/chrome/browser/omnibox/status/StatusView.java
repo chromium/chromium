@@ -27,6 +27,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.R;
@@ -83,6 +84,7 @@ public class StatusView extends LinearLayout {
 
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    private Integer mIconAnimationDurationForTests;
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
@@ -160,7 +162,7 @@ public class StatusView extends LinearLayout {
             mIconView.setVisibility(View.VISIBLE);
             mIconView.animate()
                     .alpha(1.0f)
-                    .setDuration(ICON_ANIMATION_DURATION_MS)
+                    .setDuration(getIconAnimationDuration())
                     .withEndAction(() -> {
                         mAnimatingStatusIconShow = false;
                         allowBrowserControlsHide();
@@ -180,7 +182,7 @@ public class StatusView extends LinearLayout {
             // back and forth between secure and insecure sites, which seems like a glitch.
             // See bug: crbug.com/919449
             mIconView.animate()
-                    .setDuration(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0)
+                    .setDuration(mAnimationsEnabled ? getIconAnimationDuration() : 0)
                     .alpha(0.0f)
                     .withEndAction(() -> {
                         mIconView.setVisibility(View.GONE);
@@ -224,7 +226,7 @@ public class StatusView extends LinearLayout {
                 if (transitionType == IconTransitionType.CROSSFADE) {
                     mIsAnimatingStatusIconChange = true;
                     mCurrentTransitionDuration =
-                            mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0;
+                            mAnimationsEnabled ? getIconAnimationDuration() : 0;
                     if (mCurrentTransitionDuration > 0) {
                         keepControlsShownForAnimation();
                     }
@@ -238,7 +240,7 @@ public class StatusView extends LinearLayout {
                             .rotationBy(ICON_ROTATION_DEGREES)
                             .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
                             .withStartAction(
-                                    () -> { newImage.startTransition(ICON_ANIMATION_DURATION_MS); })
+                                    () -> { newImage.startTransition(getIconAnimationDuration()); })
                             .withEndAction(() -> {
                                 mIsAnimatingStatusIconChange = false;
                                 allowBrowserControlsHide();
@@ -562,7 +564,18 @@ public class StatusView extends LinearLayout {
         allowBrowserControlsHide();
     }
 
+    private int getIconAnimationDuration() {
+        return mIconAnimationDurationForTests == null ? ICON_ANIMATION_DURATION_MS
+                                                      : mIconAnimationDurationForTests;
+    }
+
+    @VisibleForTesting
     TouchDelegate getTouchDelegateForTesting() {
         return mTouchDelegate;
+    }
+
+    @VisibleForTesting
+    void setIconAnimationDurationForTesting(int duration) {
+        mIconAnimationDurationForTests = duration;
     }
 }
