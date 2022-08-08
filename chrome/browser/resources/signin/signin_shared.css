@@ -37,7 +37,7 @@ cr-button + cr-button {
   margin-inline-start: 8px;
 }
 
-<if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
+<if expr="is_macosx or is_linux or is_chromeos">
 .action-container {
   flex-flow: row-reverse;
   justify-content: flex-start;
