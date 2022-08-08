@@ -80,11 +80,8 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
-        browser(), base::BindRepeating([]() {
-          return static_cast<content::PageNavigator*>(nullptr);
-        }),
-        nullptr);
+    bookmark_menu_delegate_ =
+        std::make_unique<BookmarkMenuDelegate>(browser(), nullptr);
   }
 
   void NewAndInitDelegateForPermanent() {

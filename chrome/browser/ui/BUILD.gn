@@ -993,6 +993,8 @@ static_library("ui") {
       "bookmarks/bookmark_utils_desktop.h",
       "bookmarks/recently_used_folders_combo_model.cc",
       "bookmarks/recently_used_folders_combo_model.h",
+      "bookmarks/test_bookmark_navigation_wrapper.cc",
+      "bookmarks/test_bookmark_navigation_wrapper.h",
       "breadcrumb_manager_browser_agent.cc",
       "breadcrumb_manager_browser_agent.h",
       "browser.cc",

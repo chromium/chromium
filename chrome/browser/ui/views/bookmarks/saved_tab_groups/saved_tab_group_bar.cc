@@ -135,20 +135,9 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     if (group->saved_tabs().empty())
       return;
-    chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(),
-                              group->saved_guid(), group->saved_tabs().size());
+    chrome::OpenSavedTabGroup(browser_, group->saved_guid(),
+                              group->saved_tabs().size());
   }
-}
-
-base::RepeatingCallback<content::PageNavigator*()>
-SavedTabGroupBar::GetPageNavigatorGetter() {
-  auto getter = [](base::WeakPtr<SavedTabGroupBar> saved_tab_group_bar)
-      -> content::PageNavigator* {
-    if (!saved_tab_group_bar)
-      return nullptr;
-    return saved_tab_group_bar->page_navigator_;
-  };
-  return base::BindRepeating(getter, weak_ptr_factory_.GetWeakPtr());
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {

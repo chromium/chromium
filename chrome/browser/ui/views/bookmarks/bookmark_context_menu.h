@@ -38,14 +38,12 @@ class BookmarkContextMenuObserver {
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                             public views::MenuDelegate {
  public:
-  // |browser| is used to open the bookmark manager, and is NULL in tests.
-  // |get_navigator| is used to get the current PageNavigator for opening
-  // bookmarks.
+  // |browser| is used to open bookmarks as well as the bookmark manager, and
+  // is NULL in tests.
   BookmarkContextMenu(
       views::Widget* parent_widget,
       Browser* browser,
       Profile* profile,
-      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
       BookmarkLaunchLocation opened_from,
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& selection,

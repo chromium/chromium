@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -50,9 +51,6 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             this,
             browser,
             browser->profile(),
-            base::BindRepeating(
-                [](content::PageNavigator* navigator) { return navigator; },
-                browser),
             BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU,
             bookmark->parent(),
             {bookmark}))) {
@@ -141,10 +139,7 @@ void BookmarksPageHandler::OpenBookmark(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
-  content::OpenURLParams params(bookmark_node->url(), content::Referrer(),
-                                open_location,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser->OpenURL(params);
+  chrome::OpenAllIfAllowed(browser, {bookmark_node}, open_location, false);
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
   RecordBookmarkLaunch(
       parent_folder_depth > 0 ? BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_SUBFOLDER

@@ -19,7 +19,6 @@
 #include "ui/views/widget/widget.h"
 
 using bookmarks::BookmarkNode;
-using content::PageNavigator;
 
 namespace {
 
@@ -43,7 +42,6 @@ BookmarkContextMenu::BookmarkContextMenu(
     views::Widget* parent_widget,
     Browser* browser,
     Profile* profile,
-    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection,
@@ -53,7 +51,6 @@ BookmarkContextMenu::BookmarkContextMenu(
           this,
           browser,
           profile,
-          std::move(get_navigator),
           opened_from,
           parent,
           selection)),

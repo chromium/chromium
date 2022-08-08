@@ -26,10 +26,6 @@ namespace bookmarks {
 class ManagedBookmarkService;
 }
 
-namespace content {
-class PageNavigator;
-}
-
 namespace ui {
 class OSExchangeData;
 }
@@ -57,10 +53,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     HIDE_PERMANENT_FOLDERS
   };
 
-  BookmarkMenuDelegate(
-      Browser* browser,
-      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
-      views::Widget* parent);
+  BookmarkMenuDelegate(Browser* browser, views::Widget* parent);
 
   BookmarkMenuDelegate(const BookmarkMenuDelegate&) = delete;
   BookmarkMenuDelegate& operator=(const BookmarkMenuDelegate&) = delete;
@@ -195,8 +188,6 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
-
-  base::RepeatingCallback<content::PageNavigator*()> get_navigator_;
 
   // Parent of menus.
   raw_ptr<views::Widget> parent_;

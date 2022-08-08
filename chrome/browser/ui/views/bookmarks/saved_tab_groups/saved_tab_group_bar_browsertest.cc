@@ -40,11 +40,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
         {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
                           favicon::GetDefaultFavicon(), guid)},
         guid));
-    chrome::OpenSavedTabGroup(
-        browser(), base::BindLambdaForTesting([=]() {
-          return static_cast<content::PageNavigator*>(browser());
-        }),
-        guid, 1);
+    chrome::OpenSavedTabGroup(browser(), guid, 1);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
@@ -57,11 +53,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   {  // The STG is already opened in the saved tab group
     const int original_model_count = model->GetTabCount();
 
-    chrome::OpenSavedTabGroup(
-        browser(), base::BindLambdaForTesting([=]() {
-          return static_cast<content::PageNavigator*>(browser());
-        }),
-        guid, 1);
+    chrome::OpenSavedTabGroup(browser(), guid, 1);
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
     EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
@@ -86,11 +78,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
         {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
                           favicon::GetDefaultFavicon(), guid)},
         guid));
-    chrome::OpenSavedTabGroup(
-        browser(), base::BindLambdaForTesting([=]() {
-          return static_cast<content::PageNavigator*>(browser());
-        }),
-        guid, 1);
+    chrome::OpenSavedTabGroup(browser(), guid, 1);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
 
@@ -103,11 +91,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
 
   {  // Attempt to reopen the STG, it should not open.
     const int original_tab_count = model->count();
-    chrome::OpenSavedTabGroup(
-        browser(), base::BindLambdaForTesting([=]() {
-          return static_cast<content::PageNavigator*>(browser());
-        }),
-        guid, 1);
+    chrome::OpenSavedTabGroup(browser(), guid, 1);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_EQ(saved_tab_group, nullptr);

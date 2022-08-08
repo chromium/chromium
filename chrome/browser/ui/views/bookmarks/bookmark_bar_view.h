@@ -371,13 +371,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
   size_t GetIndexForButton(views::View* button);
 
-  // Returns a callback that fetches the content::PageNavigator for
-  // opening bookmarks. This callback is passed to menus, eventually
-  // used by chrome::OpenAllIfAllowed(). A callback is used since
-  // opening many bookmarks is asynchronous and |page_navigator_| may
-  // change in the meantime.
-  base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
-
   // Returns the target drop BookmarkNode parent pointer and updates `index`
   // with the right value.
   const bookmarks::BookmarkNode* GetParentNodeAndIndexForDrop(size_t& index);

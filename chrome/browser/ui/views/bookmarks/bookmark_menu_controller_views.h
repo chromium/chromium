@@ -22,10 +22,6 @@ namespace bookmarks {
 class BookmarkNode;
 }
 
-namespace content {
-class PageNavigator;
-}
-
 namespace ui {
 class OSExchangeData;
 }
@@ -46,13 +42,11 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
  public:
   // Creates a BookmarkMenuController showing the children of |node| starting
   // at |start_child_index|.
-  BookmarkMenuController(
-      Browser* browser,
-      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
-      views::Widget* parent,
-      const bookmarks::BookmarkNode* node,
-      size_t start_child_index,
-      bool for_drop);
+  BookmarkMenuController(Browser* browser,
+                         views::Widget* parent,
+                         const bookmarks::BookmarkNode* node,
+                         size_t start_child_index,
+                         bool for_drop);
 
   BookmarkMenuController(const BookmarkMenuController&) = delete;
   BookmarkMenuController& operator=(const BookmarkMenuController&) = delete;

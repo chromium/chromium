@@ -16,6 +16,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
+struct NavigateParams;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -24,9 +25,23 @@ class BookmarkNode;
 namespace content {
 class BrowserContext;
 class PageNavigator;
+class NavigationHandle;
 }
 
 namespace chrome {
+
+// Wraps bookmark navigations to support view testing.
+class BookmarkNavigationWrapper {
+ public:
+  virtual ~BookmarkNavigationWrapper() = default;
+
+  // Wraps browser_navigator::Navigate.
+  virtual base::WeakPtr<content::NavigationHandle> NavigateTo(
+      NavigateParams* params);
+
+  // Provide an instance for use in testing.
+  static void SetInstanceForTesting(BookmarkNavigationWrapper* instance);
+};
 
 using TabGroupData =
     std::pair<absl::optional<tab_groups::TabGroupId>, std::u16string>;
@@ -46,31 +61,27 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 // PageNavigator used for opening the bookmarks. It may be called
 // arbitrarily later as long as |browser| is alive. If it is not
 // callable or returns null, this will fail gracefully.
-void OpenAllIfAllowed(
-    Browser* browser,
-    base::OnceCallback<content::PageNavigator*()> get_navigator,
-    const std::vector<const bookmarks::BookmarkNode*>& nodes,
-    WindowOpenDisposition initial_disposition,
-    bool add_to_group);
+void OpenAllIfAllowed(Browser* browser,
+                      const std::vector<const bookmarks::BookmarkNode*>& nodes,
+                      WindowOpenDisposition initial_disposition,
+                      bool add_to_group);
 
 // Opens all the bookmarks in |nodes| that are of type url and all the child
 // bookmarks that are of type url for folders in |nodes|. |initial_disposition|
 // dictates how the first URL is opened, all subsequent URLs are opened as
-// background tabs. |navigator| is used to open the URLs.
+// background tabs.
 //
 // This does not prompt the user. It will open an arbitrary number of
 // bookmarks immediately.
-void OpenAllNow(content::PageNavigator* navigator,
+void OpenAllNow(Browser* browser,
                 const std::vector<const bookmarks::BookmarkNode*>& nodes,
                 WindowOpenDisposition initial_disposition,
                 content::BrowserContext* browser_context);
 
 // Tries to open all urls in |group|. If there are many, prompts the user first.
-void OpenSavedTabGroup(
-    Browser* browser,
-    base::OnceCallback<content::PageNavigator*()> get_navigator,
-    const base::GUID& saved_group_id,
-    const size_t num_tabs);
+void OpenSavedTabGroup(Browser* browser,
+                       const base::GUID& saved_group_id,
+                       const size_t num_tabs);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs

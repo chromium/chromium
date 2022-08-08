@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -330,6 +331,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     static_cast<TestBrowserWindow*>(browser_->window())
         ->SetNativeWindow(window()->GetNativeWindow());
 
+    chrome::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
+
     // Verify the layout triggered by the initial size preserves the overflow
     // state calculated in GetPreferredSizeForContents().
     EXPECT_TRUE(GetBookmarkButton(5)->GetVisible());
@@ -401,6 +404,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   raw_ptr<BookmarkModel> model_ = nullptr;
   raw_ptr<BookmarkBarView> bb_view_ = nullptr;
   TestingPageNavigator navigator_;
+  TestingBookmarkNavigationWrapper wrapper_;
 
  private:
   void AddTestData(bool big_menu) {
@@ -593,8 +597,8 @@ class BookmarkBarViewTest1 : public BookmarkBarViewEventTestBase {
   void Step3() {
     // We should have navigated to URL f1a.
     const auto& f1 = model_->bookmark_bar_node()->children().front();
-    ASSERT_EQ(navigator_.last_url(), f1->children().front()->url());
-    ASSERT_FALSE(PageTransitionIsWebTriggerable(navigator_.last_transition()));
+    ASSERT_EQ(wrapper_.last_url(), f1->children().front()->url());
+    ASSERT_FALSE(PageTransitionIsWebTriggerable(wrapper_.last_transition()));
 
     // Make sure button is no longer pushed.
     views::LabelButton* button = GetBookmarkButton(0);
@@ -722,7 +726,7 @@ class BookmarkBarViewTest3 : public BookmarkBarViewEventTestBase {
     ASSERT_TRUE(child_menu->GetSubmenu()->IsShowing());
 
     // Nothing should have been selected.
-    EXPECT_EQ(GURL(), navigator_.last_url());
+    EXPECT_EQ(GURL(), wrapper_.last_url());
 
     // Hide menu.
     menu->GetMenuController()->Cancel(views::MenuController::ExitType::kAll);
@@ -813,9 +817,9 @@ class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
   }
 
   void Step4() {
-    EXPECT_EQ(navigator_.last_url(),
+    EXPECT_EQ(wrapper_.last_url(),
               model_->other_node()->children().front()->url());
-    ASSERT_FALSE(PageTransitionIsWebTriggerable(navigator_.last_transition()));
+    ASSERT_FALSE(PageTransitionIsWebTriggerable(wrapper_.last_transition()));
     Done();
   }
 
@@ -878,9 +882,9 @@ class BookmarkBarViewTest6 : public BookmarkBarViewEventTestBase {
   }
 
   void Step3() {
-    ASSERT_EQ(navigator_.last_url(),
+    ASSERT_EQ(wrapper_.last_url(),
               model_->bookmark_bar_node()->children()[6]->url());
-    ASSERT_FALSE(PageTransitionIsWebTriggerable(navigator_.last_transition()));
+    ASSERT_FALSE(PageTransitionIsWebTriggerable(wrapper_.last_transition()));
     Done();
   }
 };
@@ -1167,8 +1171,8 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
 
   void Step9() {
     const auto& f1 = model_->bookmark_bar_node()->children().front();
-    ASSERT_EQ(navigator_.last_url(), f1->children().front()->url());
-    ASSERT_FALSE(PageTransitionIsWebTriggerable(navigator_.last_transition()));
+    ASSERT_EQ(wrapper_.last_url(), f1->children().front()->url());
+    ASSERT_FALSE(PageTransitionIsWebTriggerable(wrapper_.last_transition()));
     Done();
   }
 };
@@ -2075,9 +2079,9 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
   }
 
   void Step5() {
-    EXPECT_EQ(navigator_.last_url(),
+    EXPECT_EQ(wrapper_.last_url(),
               model_->other_node()->children().front()->url());
-    ASSERT_FALSE(PageTransitionIsWebTriggerable(navigator_.last_transition()));
+    ASSERT_FALSE(PageTransitionIsWebTriggerable(wrapper_.last_transition()));
     Done();
   }
 
@@ -2267,10 +2271,10 @@ class BookmarkBarViewTest27 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    ASSERT_EQ(2u, navigator_.urls().size());
-    EXPECT_EQ(navigator_.urls()[0],
+    ASSERT_EQ(2u, wrapper_.urls().size());
+    EXPECT_EQ(wrapper_.urls()[0],
               model_->bookmark_bar_node()->children()[0]->children()[0]->url());
-    EXPECT_EQ(navigator_.urls()[1],
+    EXPECT_EQ(wrapper_.urls()[1],
               model_->bookmark_bar_node()->children()[0]->children()[2]->url());
     Done();
   }
@@ -2297,10 +2301,10 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    ASSERT_EQ(2u, navigator_.urls().size());
-    EXPECT_EQ(navigator_.urls()[0],
+    ASSERT_EQ(2u, wrapper_.urls().size());
+    EXPECT_EQ(wrapper_.urls()[0],
               model_->bookmark_bar_node()->children()[0]->children()[0]->url());
-    EXPECT_EQ(navigator_.urls()[1],
+    EXPECT_EQ(wrapper_.urls()[1],
               model_->bookmark_bar_node()->children()[0]->children()[2]->url());
     Done();
   }

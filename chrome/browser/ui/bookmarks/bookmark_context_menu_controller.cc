@@ -44,7 +44,6 @@
 
 using base::UserMetricsAction;
 using bookmarks::BookmarkNode;
-using content::PageNavigator;
 
 namespace {
 
@@ -116,7 +115,6 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     BookmarkContextMenuControllerDelegate* delegate,
     Browser* browser,
     Profile* profile,
-    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection)
@@ -124,7 +122,6 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       delegate_(delegate),
       browser_(browser),
       profile_(profile),
-      get_navigator_(std::move(get_navigator)),
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
@@ -248,8 +245,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       if (action)
         base::RecordAction(*action);
 
-      chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection_,
-                               initial_disposition,
+      chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
                                id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
       break;
     }

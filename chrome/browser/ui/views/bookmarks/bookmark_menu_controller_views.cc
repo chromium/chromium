@@ -24,15 +24,12 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;
 
-BookmarkMenuController::BookmarkMenuController(
-    Browser* browser,
-    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
-    views::Widget* parent,
-    const BookmarkNode* node,
-    size_t start_child_index,
-    bool for_drop)
-    : menu_delegate_(
-          new BookmarkMenuDelegate(browser, std::move(get_navigator), parent)),
+BookmarkMenuController::BookmarkMenuController(Browser* browser,
+                                               views::Widget* parent,
+                                               const BookmarkNode* node,
+                                               size_t start_child_index,
+                                               bool for_drop)
+    : menu_delegate_(new BookmarkMenuDelegate(browser, parent)),
       node_(node),
       observer_(nullptr),
       for_drop_(for_drop),

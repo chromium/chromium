@@ -271,12 +271,9 @@ IN_PROC_BROWSER_TEST_F(
   const int incognito_tabs =
       incognito_browser->tab_strip_model()->GetTabCount();
 
-  chrome::OpenAllIfAllowed(
-      incognito_browser, base::BindLambdaForTesting([=]() {
-        return static_cast<content::PageNavigator*>(incognito_browser);
-      }),
-      {incognito_folder}, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      /* add_to_group =*/true);
+  chrome::OpenAllIfAllowed(incognito_browser, {incognito_folder},
+                           WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                           /* add_to_group =*/true);
 
   EXPECT_EQ(incognito_tabs,
             incognito_browser->tab_strip_model()->GetTabCount());
