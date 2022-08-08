@@ -1137,8 +1137,9 @@ class SearchPreloadUnifiedHoldbackBrowserTest
 
 // Tests that we log correct metrics for Prerender holdback in case of Search
 // Prerender.
+// TODO(https://crbug.com/1350862): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedHoldbackBrowserTest,
-                       PrerenderUnifiedHoldbackTest) {
+                       DISABLED_PrerenderUnifiedHoldbackTest) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
