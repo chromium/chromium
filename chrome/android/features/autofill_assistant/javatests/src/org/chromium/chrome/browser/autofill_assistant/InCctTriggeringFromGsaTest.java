@@ -152,4 +152,47 @@ public class InCctTriggeringFromGsaTest {
                                    .forceSettingsChangeNotificationForTesting());
         waitUntilViewMatchesCondition(withText("TriggerScript"), isDisplayed());
     }
+    /**
+     * Tests a simple trigger heuristic that checks URLs for the appearance of https://cowin.gov.in.
+     *
+     * {
+     *   "intent":"COWIN_VACCINATION",
+     *   "heuristics":[
+     *     {
+     *       "conditionSet":{
+     *         "urlMatches":".*cart.*"
+     *       }
+     *     }
+     *   ],
+     *   "enabledInCustomTabs:true,
+     * }
+     */
+    @Test
+    @MediumTest
+    // clang-format off
+    @CommandLineFlags.
+    Add({"enable-features=AutofillAssistantUrlHeuristic1<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:json_parameters/"
+              +"%7B%22intent%22%3A%22COWIN_VACCINATION%22%2C%22heuristics%22%3A%5B%7B%22"
+              +"conditionSet%22%3A%7B%22urlMatches%22%3A%22.%2Acart.%2A%22%7D%7D%5D%2C%22"
+              +"enabledInCustomTabs%22%3Atrue%2C%22enabledForSignedOutUsers%22%3Atrue%7D"})
+    // clang-format on
+    public void
+    triggerImplicitlyOnSupportedSiteNewConfig() {
+        AutofillAssistantTestServiceRequestSender testServiceRequestSender =
+                new AutofillAssistantTestServiceRequestSender();
+        testServiceRequestSender.setNextResponse(
+                /* httpStatus = */ 200, createDefaultTriggerScriptResponse("TriggerScript"));
+        testServiceRequestSender.scheduleForInjection();
+
+        mTestRule.loadUrl(getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED));
+        onView(withText("TriggerScript")).check(doesNotExist());
+
+        mTestRule.loadUrl(getTargetWebsiteUrl(TEST_PAGE_SUPPORTED));
+        // Note: allow for some extra time here to account for both the navigation and the start.
+        waitUntilViewMatchesCondition(
+                withText("TriggerScript"), isDisplayed(), 2 * DEFAULT_MAX_TIME_TO_POLL);
+
+        }
 }
