@@ -74878,14 +74878,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Password rejected in modal dialog (obsolete)"/>
 </enum>
 
-<enum name="PasswordImportFromCSVResult">
-  <int value="0" label="Password import succeeded"/>
-  <int value="1" label="Password import failed due to IO error"/>
-  <int value="2" label="Password import failed due to malformed CSV"/>
-  <int value="3" label="Password import failed due to missing content"/>
-  <int value="4" label="Boundary value"/>
-</enum>
-
 <enum name="PasswordLeakDetectionDialogDismissalReason">
   <int value="0" label="No direct user interaction"/>
   <int value="1" label="Clicked Close"/>

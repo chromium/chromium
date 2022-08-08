@@ -1622,16 +1622,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ImportPasswordFromCSVResult"
-    enum="PasswordImportFromCSVResult" expires_after="2023-01-01">
-  <owner>vasilii@chromium.org</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    The response code of successful or failed password import attempt from a CSV
-    file. Recorded when the user imports passwords within the password settings.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
     expires_after="2022-10-16">
   <owner>djean@chromium.org</owner>
