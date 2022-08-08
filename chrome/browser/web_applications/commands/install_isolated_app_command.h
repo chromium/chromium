@@ -16,7 +16,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
-struct WebAppInstallInfo;
 
 namespace web_app {
 class WebAppDataRetriever;
@@ -64,7 +63,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
-  void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
+  void FinalizeInstall();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

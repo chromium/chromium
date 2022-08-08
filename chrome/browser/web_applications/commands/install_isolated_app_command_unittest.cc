@@ -64,28 +64,11 @@ GURL CreateDefaultManifestURL() {
   return GURL{"http://defaul-non-empty-url.com/manifest.json"};
 }
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo(
-    GURL start_url,
-    base::StringPiece manifest_id) {
-  WebAppInstallInfo install_info;
-  install_info.start_url = start_url;
-  install_info.manifest_id = std::string{manifest_id};
-
-  return std::make_unique<WebAppInstallInfo>(std::move(install_info));
-}
-
-std::unique_ptr<WebAppInstallInfo> CreateDefaultWebAppInstallInfo() {
-  return CreateWebAppInstallInfo(
-      /*start_url=*/GURL{"http://test-start-url.com"},
-      /*manifest_id=*/"test manifest id");
-}
-
 std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever() {
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       std::make_unique<NiceMock<MockDataRetriever>>();
 
-  ON_CALL(*fake_data_retriever, GetWebAppInstallInfo(_, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<1>(CreateDefaultWebAppInstallInfo()));
+  EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
 
   ON_CALL(*fake_data_retriever,
           CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
@@ -241,29 +224,8 @@ TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {
               Eq(WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef));
 }
 
-TEST_F(InstallIsolatedAppCommandTest, SuccessWhenAppIsInstallable) {
-  SetPrepareForLoadResultLoaded();
-
-  ExpectLoadedForURL("http://test-url-example.com");
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever();
-
-  ON_CALL(*fake_data_retriever, GetWebAppInstallInfo(_, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<1>(CreateWebAppInstallInfo(
-          /*start_url=*/GURL{"http://test-start-url.com"},
-          /*manifest_id=*/"test manifest id")));
-
-  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
-                             std::move(fake_data_retriever)),
-              IsInstallationOk());
-
-  WebAppInstallInfo install_info = *install_finalizer().web_app_info();
-  EXPECT_THAT(install_info.manifest_id, Eq("test manifest id"));
-}
-
 TEST_F(InstallIsolatedAppCommandTest,
-       PassesWebAppInstallInfoFromDataRetrieverToInstallFinalizer) {
+       InstallationFinalizedWithManagementApiInstallSource) {
   SetPrepareForLoadResultLoaded();
 
   ExpectLoadedForURL("http://test-url-example.com");
@@ -271,44 +233,14 @@ TEST_F(InstallIsolatedAppCommandTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever();
 
-  ON_CALL(*fake_data_retriever, GetWebAppInstallInfo(_, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<1>(CreateWebAppInstallInfo(
-          /*start_url=*/GURL{"http://test-start-url.com"},
-          /*manifest_id=*/"different test manifest id")));
-
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               IsInstallationOk());
-
-  EXPECT_THAT(install_finalizer().web_app_info(),
-              Pointee(Field(&WebAppInstallInfo::manifest_id,
-                            Eq("different test manifest id"))));
 
   EXPECT_THAT(install_finalizer().finalize_options_list(),
               ElementsAre(Field(
                   &WebAppInstallFinalizer::FinalizeOptions::install_surface,
                   Eq(webapps::WebappInstallSource::MANAGEMENT_API))));
-}
-
-TEST_F(InstallIsolatedAppCommandTest, FailsWhenGetWebAppInstallInfoFails) {
-  SetPrepareForLoadResultLoaded();
-
-  ExpectLoadedForURL("http://test-url-example.com");
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever();
-
-  // |nullptr| indicates an error during |GetWebAppInstallInfo|.
-  //
-  // See |web_app::WebAppDataRetriever::GetWebAppInstallInfoCallback|
-  // documentation.
-  ON_CALL(*fake_data_retriever, GetWebAppInstallInfo(_, IsNotNullCallback()))
-      .WillByDefault(
-          RunOnceCallback<1>(std::unique_ptr<WebAppInstallInfo>(nullptr)));
-
-  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
-                             std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
@@ -442,33 +374,6 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
           /*manifest_url=*/CreateDefaultManifestURL(),
           /*valid_manifest_for_web_app=*/true,
           /*is_installable=*/false));
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
-                             std::move(fake_data_retriever)),
-              Not(IsInstallationOk()));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
-              base::BucketsAre(base::Bucket(false, 1)));
-}
-
-TEST_F(InstallIsolatedAppCommandMetricsTest,
-       ReportsAnErrorWhenGetWebAppInstallInfoFails) {
-  SetPrepareForLoadResultLoaded();
-
-  ExpectLoadedForURL("http://test-url-example.com");
-
-  std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      CreateDefaultDataRetriever();
-
-  // |nullptr| indicates an error during |GetWebAppInstallInfo|.
-  //
-  // See |web_app::WebAppDataRetriever::GetWebAppInstallInfoCallback|
-  // documentation.
-  ON_CALL(*fake_data_retriever, GetWebAppInstallInfo(_, IsNotNullCallback()))
-      .WillByDefault(
-          RunOnceCallback<1>(std::unique_ptr<WebAppInstallInfo>(nullptr)));
 
   base::HistogramTester histogram_tester;
 

@@ -89,6 +89,15 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
     return;
   }
 
+  // TODO(kuragin): Fix order of calls to the data retrieve.
+  //
+  // The order should be:
+  //  1. |GetWebAppInstallInfo|
+  //  2. |CheckInstallabilityAndRetrieveManifest|
+  //  3. |GetIcons|
+  //
+  // See install from sync command unit-test for details:
+  // https://crsrc.org/c/chrome/browser/web_applications/commands/install_from_sync_command_unittest.cc;l=333;drc=ddce2fc4e67fd4500d29cbe5f4993b3fb8e4e2ba
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       shared_web_contents(),
       /*bypass_service_worker_check=*/false,
@@ -129,32 +138,12 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   DCHECK(!manifest_url.is_empty())
       << "must not be empty if manifest is not empty.";
 
-  // TODO(kuragin): Fix order of calls to the data retrieve.
-  //
-  // The order should be:
-  //  1. |GetWebAppInstallInfo|
-  //  2. |CheckInstallabilityAndRetrieveManifest|
-  //  3. |GetIcons|
-  //
-  // See install from sync command unit-test for details:
-  // https://crsrc.org/c/chrome/browser/web_applications/commands/install_from_sync_command_unittest.cc;l=333;drc=ddce2fc4e67fd4500d29cbe5f4993b3fb8e4e2ba
-  data_retriever_->GetWebAppInstallInfo(
-      shared_web_contents(),
-      base::BindOnce(&InstallIsolatedAppCommand::OnGetWebAppInstallInfo,
-                     weak_factory_.GetWeakPtr()));
+  FinalizeInstall();
 }
 
-void InstallIsolatedAppCommand::OnGetWebAppInstallInfo(
-    std::unique_ptr<WebAppInstallInfo> install_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (install_info == nullptr) {
-    ReportFailure();
-    return;
-  }
-
+void InstallIsolatedAppCommand::FinalizeInstall() {
   install_finalizer_.FinalizeInstall(
-      *install_info,
+      WebAppInstallInfo{},
       // TODO(kuragin): Add Isolated app specific install source
       // `WebappInstallSource::ISOLATED_APP_DEV_INSTALL`.
       WebAppInstallFinalizer::FinalizeOptions{
