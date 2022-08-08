@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
@@ -515,11 +516,14 @@
     // An action is already in progress, ignore user's request.
     return;
   }
+  signin_metrics::ProfileSignout signout_source_metric =
+      signin_metrics::USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
                             rect:itemView.frame
-                            view:itemView];
+                            view:itemView
+                      withSource:signout_source_metric];
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
   _signoutCoordinator.completion = ^(BOOL success) {
     [weakSelf handleAuthenticationOperationDidFinish];

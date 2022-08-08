@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 
+namespace signin_metrics {
+enum ProfileSignout : int;
+}  // namespace signin_metrics
+
 class Browser;
 @class SignoutActionSheetCoordinator;
 
@@ -43,6 +47,8 @@ class Browser;
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
                                       view:(UIView*)view
+                                withSource:(signin_metrics::ProfileSignout)
+                                               signout_source_metric
     NS_DESIGNATED_INITIALIZER;
 
 // The delegate.

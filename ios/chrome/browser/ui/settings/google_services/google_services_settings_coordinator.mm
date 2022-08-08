@@ -207,7 +207,8 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             rect:targetRect
-                            view:self.viewController.view];
+                            view:self.viewController.view
+                      withSource:signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.delegate = self;
   self.signoutActionSheetCoordinator.completion = ^(BOOL success) {

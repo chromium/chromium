@@ -46,6 +46,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   CGRect _rect;
   // View for the popovert alert.
   __weak UIView* _view;
+  // Source of the sign-out action. For histogram if the sign-out occurs.
+  signin_metrics::ProfileSignout _signout_source_metric;
 }
 
 // Service for managing identity authentication.
@@ -63,11 +65,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
-                                      view:(UIView*)view {
+                                      view:(UIView*)view
+                                withSource:(signin_metrics::ProfileSignout)
+                                               signout_source_metric {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _rect = rect;
     _view = view;
+    _signout_source_metric = signout_source_metric;
   }
   return self;
 }
@@ -288,12 +293,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   __weak SignoutActionSheetCoordinator* weakSelf = self;
   self.authenticationService->SignOut(
       signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
-        if (!weakSelf) {
+        __strong SignoutActionSheetCoordinator* strongSelf = weakSelf;
+        if (!strongSelf) {
           return;
         }
-        [weakSelf.delegate
-            signoutActionSheetCoordinatorAllowUserInteraction:weakSelf];
-        weakSelf.completion(YES);
+        [strongSelf.delegate
+            signoutActionSheetCoordinatorAllowUserInteraction:strongSelf];
+        strongSelf.completion(YES);
       });
   // Get UMA metrics on the usage of different options for signout available
   // for users with non-managed accounts.
