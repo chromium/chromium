@@ -334,7 +334,7 @@ class FileSystem(object):
             except exceptions.WindowsError:
                 time.sleep(sleep_interval)
                 retry_timeout_sec -= sleep_interval
-                if retry_timeout_sec < 0 and not retry:
+                if retry_timeout_sec < 0 or not retry:
                     raise
 
     def rmtree(self, path, ignore_errors=True, onerror=None):
