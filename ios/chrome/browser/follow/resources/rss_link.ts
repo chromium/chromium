@@ -8,9 +8,8 @@ import {gCrWeb} from "//ios/web/public/js_messaging/resources/gcrweb.js";
  * @fileoverview Functions used to parse RSS links from a web page.
  */
 
-
 /* Gets RSS links. */
-gCrWeb.rssLink.getRSSLinks = function(): string[] {
+function getRSSLinks(): string[] {
   const linkTags = document.head.getElementsByTagName('link');
   const rssLinks: string[] = [];
 
@@ -27,3 +26,5 @@ gCrWeb.rssLink.getRSSLinks = function(): string[] {
   }
   return rssLinks;
 }
+
+gCrWeb.rssLink = {getRSSLinks};
