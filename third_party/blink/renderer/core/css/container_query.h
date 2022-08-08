@@ -24,6 +24,8 @@ class CORE_EXPORT ContainerSelector {
   explicit ContainerSelector(AtomicString name) : name_(std::move(name)) {}
   explicit ContainerSelector(PhysicalAxes physical_axes)
       : physical_axes_(physical_axes) {}
+  ContainerSelector(AtomicString name, LogicalAxes physical_axes)
+      : name_(std::move(name)), logical_axes_(physical_axes) {}
   ContainerSelector(AtomicString name, const MediaQueryExpNode&);
 
   const AtomicString& Name() const { return name_; }

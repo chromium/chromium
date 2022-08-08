@@ -1631,7 +1631,8 @@ Response InspectorDOMAgent::getContainerForNode(
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   Element* container = style_resolver.FindContainerForElement(
       element,
-      ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom))));
+      ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom)),
+                        kLogicalAxisInline));
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return Response::Success();
