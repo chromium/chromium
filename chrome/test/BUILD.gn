@@ -2669,7 +2669,6 @@ if (!is_android) {
       sources += [
         "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
         "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
@@ -3869,7 +3868,6 @@ if (!is_android) {
         "../browser/ash/web_applications/shortcut_customization_app_integration_browsertest.cc",
         "../browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_browsertest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
-        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_data_transfer_notifier_browsertest.cc",
@@ -9592,6 +9590,7 @@ if (!is_android) {
       deps += [
         "//ash/components/login/auth",
         "//ash/constants",
+        "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
@@ -9626,7 +9625,33 @@ if (!is_android) {
         "//chromeos/ui/base",
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
+        "//components/reporting/client:report_queue",
+        "//components/reporting/client:test_support",
+        "//components/reporting/storage:test_support",
+        "//components/reporting/util:test_callbacks_support",
       ]
+
+      sources += [
+        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
+        "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",
+        "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h",
+        "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.cc",
+        "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h",
+        "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
+        "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
+        "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.cc",
+        "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
+        "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
+        "../browser/printing/test_print_preview_dialog_cloned_observer.h",
+        "../browser/printing/test_print_view_manager_for_request_preview.cc",
+        "../browser/printing/test_print_view_manager_for_request_preview.h",
+      ]
+
+      if (enable_basic_printing) {
+        deps += [ "//components/printing/common:mojo_interfaces" ]
+      }
     }
 
     if (is_chromeos_lacros) {

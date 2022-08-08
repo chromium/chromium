@@ -74,10 +74,8 @@ constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
 constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kSrcPattern[] = "example.com";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLabel[] = "label";
 const std::u16string kApplicationTitle = u"example.com";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -547,9 +545,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1262948): Enable and modify for lacros.
-IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
+// Test is flaky on Lacros: https://crbug.com/1344827
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PrintingWarned DISABLED_PrintingWarned
+#else
+#define MAYBE_PrintingWarned PrintingWarned
+#endif
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       MAYBE_PrintingWarned) {
   SetupDlpRulesManager();
   SetupReportQueue();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
@@ -602,8 +605,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 }
 
+// Test is flaky on Lacros: https://crbug.com/1344827
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TabShareWarnedDuringAllowed DISABLED_TabShareWarnedDuringAllowed
+#else
+#define MAYBE_TabShareWarnedDuringAllowed TabShareWarnedDuringAllowed
+#endif
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
-                       TabShareWarnedDuringAllowed) {
+                       MAYBE_TabShareWarnedDuringAllowed) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
@@ -662,7 +671,5 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_EQ(events_.size(), 2u);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy
