@@ -12,6 +12,7 @@
 
 namespace ash {
 
+class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
 class AmbientMultiScreenMetricsRecorder;
 class AmbientViewDelegateImpl;
@@ -31,6 +32,7 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   // slideshow UI should be rendered instead.
   AmbientContainerView(
       AmbientViewDelegateImpl* delegate,
+      AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<AmbientAnimationStaticResources>
           animation_static_resources,
       AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);

@@ -44,6 +44,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientMultiScreenMetricsRecorder;
@@ -203,6 +204,8 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
+  std::unique_ptr<AmbientAnimationProgressTracker>
+      ambient_animation_progress_tracker_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;

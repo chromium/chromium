@@ -5,7 +5,9 @@
 #include "ash/ambient/ui/ambient_animation_player.h"
 
 #include <string>
+#include <utility>
 
+#include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
@@ -49,32 +51,57 @@ absl::optional<base::TimeDelta> FindCycleRestartTimestamp(
 }  // namespace
 
 AmbientAnimationPlayer::AmbientAnimationPlayer(
-    views::AnimatedImageView* animated_image_view)
-    : animated_image_view_(animated_image_view) {
+    views::AnimatedImageView* animated_image_view,
+    AmbientAnimationProgressTracker* progress_tracker)
+    : animated_image_view_(animated_image_view),
+      progress_tracker_(progress_tracker) {
   DCHECK(animated_image_view_);
   lottie::Animation* animation = animated_image_view_->animated_image();
   DCHECK(animation);
-  absl::optional<base::TimeDelta> cycle_restart_timestamp_found =
-      FindCycleRestartTimestamp(*animation->skottie());
-  if (cycle_restart_timestamp_found.has_value()) {
-    cycle_restart_timestamp_ = *cycle_restart_timestamp_found;
-    if (cycle_restart_timestamp_ >= animation->GetAnimationDuration()) {
-      LOG(DFATAL) << "Animation has invalid cycle restart timestamp "
-                  << cycle_restart_timestamp_ << ". Total cycle duration "
-                  << animation->GetAnimationDuration();
-    }
+  DCHECK(progress_tracker_);
+  lottie::Animation::PlaybackConfig playback_config;
+  // If there are existing animations in this ambient mode session, start
+  // playing from the existing animations' timestamps. This gives rough
+  // synchronization across animations. The animations' timestamps should not
+  // diverge over time because AnimatedImageView makes time steps that
+  // ultimately reflect real time (i.e. it does not step by a fixed amount each
+  // frame). Thus, there may be transient periods where the animations diverge
+  // due to random system instability, but they should all converge again
+  // eventually.
+  if (progress_tracker_->HasActiveAnimations()) {
+    AmbientAnimationProgressTracker::ImmutableParams immutable_params =
+        progress_tracker_->GetImmutableParams();
+    AmbientAnimationProgressTracker::Progress global_progress =
+        progress_tracker_->GetGlobalProgress();
+    playback_config = {
+        immutable_params.scheduled_cycles,
+        global_progress.current_timestamp * immutable_params.total_duration,
+        global_progress.num_completed_cycles, immutable_params.style};
   } else {
-    DVLOG(1) << "Restart marker not found in animation. Defaulting to cycle "
-                "restart at timestamp 0";
-    DCHECK(cycle_restart_timestamp_.is_zero());
+    absl::optional<base::TimeDelta> cycle_restart_timestamp_found =
+        FindCycleRestartTimestamp(*animation->skottie());
+    if (cycle_restart_timestamp_found.has_value()) {
+      cycle_restart_timestamp_ = *cycle_restart_timestamp_found;
+      if (cycle_restart_timestamp_ >= animation->GetAnimationDuration()) {
+        LOG(DFATAL) << "Animation has invalid cycle restart timestamp "
+                    << cycle_restart_timestamp_ << ". Total cycle duration "
+                    << animation->GetAnimationDuration();
+      }
+    } else {
+      DVLOG(1) << "Restart marker not found in animation. Defaulting to cycle "
+                  "restart at timestamp 0";
+      DCHECK(cycle_restart_timestamp_.is_zero());
+    }
+    playback_config = lottie::Animation::PlaybackConfig(
+        {{base::TimeDelta(), animation->GetAnimationDuration()},
+         {cycle_restart_timestamp_, animation->GetAnimationDuration()}},
+        /*initial_offset=*/base::TimeDelta(), /*initial_completed_cycles=*/0,
+        lottie::Animation::Style::kLoop);
   }
   animation->SetPlaybackSpeed(
       AmbientUiModel::Get()->animation_playback_speed());
-  animated_image_view_->Play(lottie::Animation::PlaybackConfig(
-      {{base::TimeDelta(), animation->GetAnimationDuration()},
-       {cycle_restart_timestamp_, animation->GetAnimationDuration()}},
-      /*initial_offset=*/base::TimeDelta(),
-      /*initial_completed_cycles=*/0, lottie::Animation::Style::kLoop));
+  progress_tracker_->RegisterAnimation(animation);
+  animated_image_view_->Play(std::move(playback_config));
 }
 
 AmbientAnimationPlayer::~AmbientAnimationPlayer() {

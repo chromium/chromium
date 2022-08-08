@@ -175,9 +175,11 @@ std::unique_ptr<views::Border> CreateMediaStringBorder(
 
 AmbientAnimationView::AmbientAnimationView(
     AmbientViewDelegateImpl* view_delegate,
+    AmbientAnimationProgressTracker* progress_tracker,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
     AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder)
     : view_delegate_(view_delegate),
+      progress_tracker_(progress_tracker),
       static_resources_(std::move(static_resources)),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
@@ -372,8 +374,8 @@ void AmbientAnimationView::StartPlayingAnimation() {
   animation_player_.reset();
   // |animated_image_view_| is owned by the base |View| class and outlives the
   // |animation_player_|, so it's safe to pass a raw ptr here.
-  animation_player_ =
-      std::make_unique<AmbientAnimationPlayer>(animated_image_view_);
+  animation_player_ = std::make_unique<AmbientAnimationPlayer>(
+      animated_image_view_, progress_tracker_.get());
   view_delegate_->NotifyObserversMarkerHit(
       AmbientPhotoConfig::Marker::kUiStartRendering);
   last_jitter_timestamp_ = base::TimeTicks::Now();

@@ -30,6 +30,7 @@ namespace ash {
 
 class AmbientAnimationAttributionProvider;
 class AmbientAnimationPlayer;
+class AmbientAnimationProgressTracker;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
 class AmbientMultiScreenMetricsRecorder;
@@ -43,6 +44,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   AmbientAnimationView(
       AmbientViewDelegateImpl* view_delegate,
+      AmbientAnimationProgressTracker* progress_tracker,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources,
       AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
@@ -62,7 +64,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void ApplyJitter();
 
   const base::raw_ptr<AmbientViewDelegateImpl> view_delegate_;
-
+  const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
   AmbientAnimationPhotoProvider animation_photo_provider_;

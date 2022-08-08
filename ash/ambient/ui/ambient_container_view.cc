@@ -29,6 +29,7 @@ namespace ash {
 
 AmbientContainerView::AmbientContainerView(
     AmbientViewDelegateImpl* delegate,
+    AmbientAnimationProgressTracker* progress_tracker,
     std::unique_ptr<AmbientAnimationStaticResources> animation_static_resources,
     AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder) {
   DCHECK(delegate);
@@ -50,7 +51,7 @@ AmbientContainerView::AmbientContainerView(
           : AmbientAnimationTheme::kSlideshow;
   if (animation_static_resources) {
     main_rendering_view = AddChildView(std::make_unique<AmbientAnimationView>(
-        delegate, std::move(animation_static_resources),
+        delegate, progress_tracker, std::move(animation_static_resources),
         multi_screen_metrics_recorder));
   } else {
     main_rendering_view = AddChildView(std::make_unique<PhotoView>(delegate));

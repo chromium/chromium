@@ -17,6 +17,7 @@
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
@@ -638,10 +639,14 @@ void AmbientController::OnEnabledPrefChanged() {
     fingerprint_->AddFingerprintObserver(
         fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
 
+    ambient_animation_progress_tracker_ =
+        std::make_unique<AmbientAnimationProgressTracker>();
   } else {
     DVLOG(1) << "Ambient mode disabled";
 
     CloseUi();
+
+    ambient_animation_progress_tracker_.reset();
 
     for (const auto* pref_name :
          {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
@@ -797,7 +802,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
   AmbientAnimationTheme current_theme = GetCurrentTheme();
   auto container_view = std::make_unique<AmbientContainerView>(
-      &delegate_,
+      &delegate_, ambient_animation_progress_tracker_.get(),
       AmbientAnimationStaticResources::Create(current_theme,
                                               /*serializable=*/true),
       multi_screen_metrics_recorder_.get());

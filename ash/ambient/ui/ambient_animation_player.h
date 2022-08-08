@@ -16,6 +16,8 @@ class AnimatedImageView;
 
 namespace ash {
 
+class AmbientAnimationProgressTracker;
+
 // Plays an AnimatedImageView in a loop until destruction. The "looping" logic
 // meets ambient mode's custom requirements: The lottie animation may optionally
 // have a "marker" embedded in it. The "marker" is a timestamp set by the motion
@@ -42,13 +44,15 @@ class ASH_EXPORT AmbientAnimationPlayer {
  public:
   // Starts playing the |animated_image_view| immediately upon construction.
   explicit AmbientAnimationPlayer(
-      views::AnimatedImageView* animated_image_view);
+      views::AnimatedImageView* animated_image_view,
+      AmbientAnimationProgressTracker* progress_tracker);
   AmbientAnimationPlayer(const AmbientAnimationPlayer&) = delete;
   AmbientAnimationPlayer& operator=(const AmbientAnimationPlayer&) = delete;
   ~AmbientAnimationPlayer();
 
  private:
   const base::raw_ptr<views::AnimatedImageView> animated_image_view_;
+  const base::raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   base::TimeDelta cycle_restart_timestamp_;
 };
 
