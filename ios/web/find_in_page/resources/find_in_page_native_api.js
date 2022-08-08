@@ -2,7 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CSS_CLASS_NAME_SELECT, Match, PartialMatch, Replacement, Section, Timer} from '//ios/web/find_in_page/resources/find_in_page.js';
+import {
+  Match,
+  PartialMatch,
+  Replacement,
+  Section,
+  Timer
+} from '//ios/web/find_in_page/resources/find_in_page.js';
+
+import {
+  CSS_CLASS_NAME,
+  CSS_CLASS_NAME_SELECT,
+  CSS_STYLE_ID,
+  IGNORE_NODE_NAMES,
+  MAX_VISIBLE_ELEMENTS,
+  TIMEOUT
+} from '//ios/web/find_in_page/resources/find_in_page_constants.js';
+
+import {
+  createRegex,
+  escapeHTML
+} from '//ios/web/find_in_page/resources/find_in_page_utils.js';
 
 /**
  * Based on code from the Google iOS app.
@@ -121,7 +141,6 @@ let visibleMatchCount_ = 0;
  */
 let visibleMatchesCountIndexIterator_ = 0;
 
-
 /**
  * Process all PartialMatches inside current Section. For current Section's
  * node.textContent, all texts that are match results will be wrapped in
@@ -152,7 +171,7 @@ function processPartialMatchesInCurrentSection() {
     // Create the <chrome_find> Node for matching text.
     let newNode = oldNode.ownerDocument.createElement('chrome_find');
     newNode.setAttribute('class', CSS_CLASS_NAME);
-    newNode.innerHTML = escapeHTML_(oldNode.textContent.substring(
+    newNode.innerHTML = escapeHTML(oldNode.textContent.substring(
         partialMatch.begin - section.begin, partialMatch.end - section.begin));
     newNodes.push(newNode);
     previousEnd = partialMatch.end;
@@ -180,12 +199,6 @@ function processPartialMatchesInCurrentSection() {
 let styleElement_ = null;
 
 /**
- * Maximum number of visible elements to count
- * @type {number}
- */
-const MAX_VISIBLE_ELEMENTS = 100;
-
-/**
  * A search is in progress.
  * @type {boolean}
  */
@@ -199,39 +212,6 @@ let searchInProgress_ = false;
 let searchStateIsClean_ = true;
 
 /**
- * Node names that are not going to be processed.
- * @type {Object}
- */
-const IGNORE_NODE_NAMES = new Set([
-  'SCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME',
-  'NOSCRIPT'
-]);
-
-/**
- * Class name of CSS element that highlights matches with yellow.
- * @type {string}
- */
-const CSS_CLASS_NAME = 'find_in_page';
-
-/**
- * ID of CSS style.
- * @type {string}
- */
-const CSS_STYLE_ID = '__gCrWeb.findInPageStyle';
-
-/**
- * Result passed back to app to indicate pumpSearch has reached timeout.
- * @type {number}
- */
-const TIMEOUT = -1;
-
-/**
- * Regex to escape regex special characters in a string.
- * @type {RegExp}
- */
-const REGEX_ESCAPER = /([.?*+^$[\]\\(){}|-])/g;
-
-/**
  * @return {Match} The currently selected Match. Returns null if no
  * currently selected match.
  */
@@ -240,16 +220,6 @@ function getCurrentSelectedMatch_() {
     return null;
   }
   return __gCrWeb.findInPage.matches[selectedMatchIndex_];
-};
-
-/**
- * Creates the regex needed to find the text.
- * @param {string} findText Phrase to look for.
- * @return {RegExp} regex needed to find the text.
- */
-function getRegex_(findText) {
-  let regexString = '(' + escapeRegex_(findText) + ')';
-  return new RegExp(regexString, 'ig');
 };
 
 /**
@@ -283,7 +253,7 @@ __gCrWeb.findInPage.findString = function(string, timeout) {
   // Index tracking variables so search can be broken up into multiple calls.
   visibleMatchesCountIndexIterator_ = 0;
 
-  __gCrWeb.findInPage.regex = getRegex_(string);
+  __gCrWeb.findInPage.regex = createRegex(string);
 
   searchInProgress_ = true;
 
@@ -629,36 +599,4 @@ __gCrWeb.findInPage.stop = function() {
     cleanUp_();
   }
   __gCrWeb.findInPage.hasInitialized = false;
-};
-
-/**
- * Helper function to find the absolute position of an element on the page.
- * @param {Element} elem Element to check.
- * @return {Array<number>} [x, y] positions.
- */
-function findAbsolutePosition_(elem) {
-  let boundingRect = elem.getBoundingClientRect();
-  return [
-    boundingRect.left + window.pageXOffset,
-    boundingRect.top + window.pageYOffset
-  ];
-};
-
-/**
- * @param {string} text Text to escape.
- * @return {string} escaped text.
- */
-function escapeHTML_(text) {
-  let unusedDiv = document.createElement('div');
-  unusedDiv.innerText = text;
-  return unusedDiv.innerHTML;
-};
-
-/**
- * Escapes regexp special characters.
- * @param {string} text Text to escape.
- * @return {string} escaped text.
- */
-function escapeRegex_(text) {
-  return text.replace(REGEX_ESCAPER, '\\$1');
 };

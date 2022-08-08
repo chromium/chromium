@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Class name of CSS element that selects a highlighted match with orange.
- * @type {string}
- */
-const CSS_CLASS_NAME_SELECT = 'find_selected';
+import {CSS_CLASS_NAME_SELECT}
+    from '//ios/web/find_in_page/resources/find_in_page_constants.js';
 
 /**
  * Returns the width of the document.body.  Sometimes though the body lies to
@@ -272,4 +269,4 @@ class Timer {
   }
 }
 
-export {CSS_CLASS_NAME_SELECT, Match, PartialMatch, Replacement, Section, Timer}
+export {Match, PartialMatch, Replacement, Section, Timer}
