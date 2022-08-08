@@ -9,6 +9,7 @@
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 
@@ -38,7 +39,7 @@ void ReceiverSessionClient::SetDemuxerConnector(
               media::VideoCodec::kH264,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
               media::VideoCodec::kVP8),
-          video_only_receiver_ ? std::vector<openscreen::cast::AudioCodec>()
+          video_only_receiver_ ? cast_streaming::ToAudioCaptureConfigCodecs()
                                : cast_streaming::ToAudioCaptureConfigCodecs(
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
                                      media::AudioCodec::kAAC,

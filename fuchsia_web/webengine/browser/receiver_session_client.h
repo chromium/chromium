@@ -7,10 +7,8 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/callback.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/openscreen/src/cast/common/public/message_port.h"
 
 namespace cast_streaming {
 class ReceiverSession;
