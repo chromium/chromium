@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -14,6 +16,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using user_manager::User;
@@ -125,6 +128,11 @@ TEST_F(CrosapiUtilTest, EmptyDeviceSettings) {
             crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
   EXPECT_EQ(settings->device_restricted_managed_guest_session_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
+  EXPECT_EQ(settings->report_device_network_status,
+            crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
+  EXPECT_TRUE(settings->report_upload_frequency.is_null());
+  EXPECT_TRUE(
+      settings->report_device_network_telemetry_collection_rate_ms.is_null());
 }
 
 TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
@@ -142,6 +150,21 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   testing_profile_.ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kReportDeviceNetworkStatus, true);
+
+  const int64_t kReportUploadFrequencyMs = base::Hours(1).InMilliseconds();
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetInteger(ash::kReportUploadFrequency, kReportUploadFrequencyMs);
+
+  const int64_t kReportDeviceNetworkTelemetryCollectionRateMs =
+      base::Minutes(15).InMilliseconds();
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetInteger(ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+                   kReportDeviceNetworkTelemetryCollectionRateMs);
 
   base::Value allowlist(base::Value::Type::LIST);
   base::Value ids(base::Value::Type::DICTIONARY);
@@ -173,6 +196,11 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
       true);
   EXPECT_EQ(settings->usb_detachable_allow_list->usb_device_ids[0]->product_id,
             3);
+  EXPECT_EQ(settings->report_device_network_status,
+            crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
+  EXPECT_EQ(settings->report_upload_frequency->value, kReportUploadFrequencyMs);
+  EXPECT_EQ(settings->report_device_network_telemetry_collection_rate_ms->value,
+            kReportDeviceNetworkTelemetryCollectionRateMs);
 }
 
 }  // namespace crosapi

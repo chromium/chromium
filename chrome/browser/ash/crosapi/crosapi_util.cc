@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -673,6 +674,30 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
             device_restricted_managed_guest_session_enabled
                 ? MojoOptionalBool::kTrue
                 : MojoOptionalBool::kFalse;
+      }
+
+      bool report_device_network_status = true;
+      if (cros_settings->GetBoolean(ash::kReportDeviceNetworkStatus,
+                                    &report_device_network_status)) {
+        result->report_device_network_status = report_device_network_status
+                                                   ? MojoOptionalBool::kTrue
+                                                   : MojoOptionalBool::kFalse;
+      }
+
+      int report_upload_frequency;
+      if (cros_settings->GetInteger(ash::kReportUploadFrequency,
+                                    &report_upload_frequency)) {
+        result->report_upload_frequency =
+            crosapi::mojom::NullableInt64::New(report_upload_frequency);
+      }
+
+      int report_device_network_telemetry_collection_rate_ms;
+      if (cros_settings->GetInteger(
+              ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+              &report_device_network_telemetry_collection_rate_ms)) {
+        result->report_device_network_telemetry_collection_rate_ms =
+            crosapi::mojom::NullableInt64::New(
+                report_device_network_telemetry_collection_rate_ms);
       }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "
