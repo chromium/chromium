@@ -287,13 +287,9 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
 }
 
 void AddArmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
-  // On ARM we're enabling the sandbox before the X connection is made,
-  // so we need to allow access to |.Xauthority|.
-  static const char kXAuthorityPath[] = "/home/chronos/.Xauthority";
   static const char kLdSoCache[] = "/etc/ld.so.cache";
 
   // Files needed by the ARM GPU userspace.
-  permissions->push_back(BrokerFilePermission::ReadOnly(kXAuthorityPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLdSoCache));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLibGlesPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLibEglPath));
