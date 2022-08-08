@@ -112,11 +112,12 @@ class IDLOutFile(object):
 
     if not self.always_write:
       if os.path.isfile(filename):
-        oldtext = open(filename, 'rb').read()
-        if self.IsEquivalent_(oldtext):
-          if GetOption('verbose'):
-            InfoOut.Log('Output %s unchanged.' % self.filename)
-          return False
+        with open(filename, 'r', encoding='utf-8') as fin:
+          oldtext = fin.read()
+          if self.IsEquivalent_(oldtext):
+            if GetOption('verbose'):
+              InfoOut.Log('Output %s unchanged.' % self.filename)
+            return False
 
     if GetOption('diff'):
       for line in difflib.unified_diff(oldtext.split('\n'), outtext.split('\n'),
@@ -134,9 +135,8 @@ class IDLOutFile(object):
         os.makedirs(basepath)
 
       if not GetOption('test'):
-        outfile = open(filename, 'wb')
-        outfile.write(outtext)
-        outfile.close();
+        with open(filename, 'w', newline='\n', encoding='utf=8') as fout:
+          fout.write(outtext)
         InfoOut.Log('Output %s written.' % self.filename)
       return True
 

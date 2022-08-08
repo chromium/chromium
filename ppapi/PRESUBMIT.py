@@ -6,16 +6,26 @@ import io
 import os
 import re
 import subprocess
+import sys
+
+
+# In this file `sys.executable` is used instead of
+# `input_api.python3_executable` because on Windows
+# `input_api.python3_executable` is `vpython3.bat` whereas `sys.executable` is
+# `python.exe`. If `input_api.python3_executable` is used, we need to explicitly
+# pass `shell=True` to `subprocess.Popen()`, which is a security risk
+# (https://docs.python.org/3/library/subprocess.html#security-considerations).
+#
+# TODO: Investigate the incompatibility of `input_api.python3_executable` on
+# Windows, for this particular PRESUBMIT script.
 
 
 USE_PYTHON3 = True
 
 
-def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False,
-                   shell=False):
+def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
   results = []
   p = subprocess.Popen(cmd, cwd=cwd,
-                       shell=shell,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
   (_, p_stderr) = p.communicate()
@@ -40,16 +50,12 @@ def RunUnittests(input_api, output_api):
     if name_parts[0:2] == ['ppapi', 'generators']:
       generator_files.append(filename)
   if generator_files != []:
-    # TODO(crbug.com/1222512): Use sys.executable instead of
-    # input_api.python_executable once idl_tests.py is py3 compatible, drop
-    # shell=True in RunCmdAndCheck.
-    cmd = [input_api.python_executable, 'idl_tests.py']
+    cmd = [sys.executable, 'idl_tests.py']
     ppapi_dir = input_api.PresubmitLocalPath()
     results.extend(RunCmdAndCheck(cmd,
                                   'PPAPI IDL unittests failed.',
                                   output_api,
-                                  os.path.join(ppapi_dir, 'generators'),
-                                  shell=input_api.is_windows))
+                                  os.path.join(ppapi_dir, 'generators')))
   return results
 
 
@@ -162,11 +168,8 @@ def CheckUpdatedNaClSDK(input_api, output_api):
   #     The command line is too long.
   files_per_command = 25 if input_api.is_windows else 1000
   results = []
-  for i in range(0, len(nacl_sdk_files), files_per_command):
-    # TODO(crbug.com/1222512): Use sys.executable instead of
-    # input_api.python_executable once idl_tests.py is py3 compatible, drop
-    # shell=True.
-    cmd = [input_api.python3_executable, verify_ppapi_py
+  for i in range(len(nacl_sdk_files), files_per_command):
+    cmd = [sys.executable, verify_ppapi_py
            ] + nacl_sdk_files[i:i + files_per_command]
     results.extend(
         RunCmdAndCheck(
@@ -176,8 +179,7 @@ def CheckUpdatedNaClSDK(input_api, output_api):
                 'To ignore a file, add it to IGNORED_FILES in '
                 'native_client_sdk/src/build_tools/verify_ppapi.py)',
                 output_api,
-                warning=True,
-                shell=input_api.is_windows))
+                warning=True))
   return results
 
 # Verify that changes to ppapi/thunk/interfaces_* files have a corresponding
@@ -346,10 +348,7 @@ def CheckChange(input_api, output_api):
   #   --diff to generate a unified diff
   #   --out to pick which files to examine (only the ones in the CL)
   ppapi_dir = input_api.PresubmitLocalPath()
-  # TODO(crbug.com/1222512): Use sys.executable instead of
-  # input_api.python_executable once idl_tests.py is py3 compatible, drop
-  # shell=True in RunCmdAndCheck.
-  cmd = [input_api.python_executable, 'generator.py',
+  cmd = [sys.executable, 'generator.py',
          '--wnone', '--diff', '--test','--cgen', '--range=start,end']
 
   # Only generate output for IDL files references (as *.h or *.idl) in this CL
@@ -357,8 +356,7 @@ def CheckChange(input_api, output_api):
   cmd_results = RunCmdAndCheck(cmd,
                                'PPAPI IDL Diff detected: Run the generator.',
                                output_api,
-                               os.path.join(ppapi_dir, 'generators'),
-                               shell=input_api.is_windows)
+                               os.path.join(ppapi_dir, 'generators'))
   if cmd_results:
     results.extend(cmd_results)
 
