@@ -144,6 +144,10 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// Returns the DMStorage under which the Device Management policies are
+// persisted. For Windows, this is `%ProgramFiles(x86)%\{CompanyName}\Policies`
+// for security.
+// For other platforms, this is `{UpdaterVersionedPath}\Policies`.
 scoped_refptr<DMStorage> GetDefaultDMStorage();
 
 }  // namespace updater

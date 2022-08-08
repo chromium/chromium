@@ -11,18 +11,26 @@
 
 #include "base/base64.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 
@@ -209,15 +217,27 @@ DMStorage::GetOmahaPolicySettings() const {
 }
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
+#if BUILDFLAG(IS_WIN)
+  base::FilePath program_filesx86_dir;
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86,
+                              &program_filesx86_dir)) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<DMStorage>(
+      program_filesx86_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+          .AppendASCII(kPolicyCacheSubfolder));
+
+#else   // BUILDFLAG(IS_WIN)
+
   const absl::optional<base::FilePath> updater_versioned_path =
       GetVersionedDataDirectory(GetUpdaterScope());
   if (!updater_versioned_path)
     return nullptr;
-
   base::FilePath policy_cache_folder =
       updater_versioned_path->AppendASCII(kPolicyCacheSubfolder);
-
   return base::MakeRefCounted<DMStorage>(policy_cache_folder);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace updater
