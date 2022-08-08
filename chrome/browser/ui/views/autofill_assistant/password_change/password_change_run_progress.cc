@@ -292,6 +292,11 @@ void PasswordChangeRunProgress::SetAnimationEndedCallback(
           .icon->SetAnimationEndedCallback(std::move(callback));
 }
 
+void PasswordChangeRunProgress::StopAnimation() {
+  progress_step_ui_elements_[current_progress_step_]
+      .icon->StopPulsingAnimation();
+}
+
 void PasswordChangeRunProgress::OnLastProgressBarAnimationCompleted() {
   progress_step_ui_elements_
       [autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END]

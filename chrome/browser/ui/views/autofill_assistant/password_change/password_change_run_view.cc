@@ -251,6 +251,16 @@ void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
   SetDescription(std::u16string());
 }
 
+void PasswordChangeRunView::ShowErrorScreen() {
+  password_change_run_progress_->StopAnimation();
+  SetTopIcon(
+      autofill_assistant::password_change::TopIcon::TOP_ICON_ERROR_OCCURRED);
+  SetTitle(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_TITLE));
+  SetDescription(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_DESCRIPTION));
+}
+
 void PasswordChangeRunView::ShowCompletionScreen(
     base::RepeatingClosure done_button_callback) {
   show_completion_screen_done_button_callback_ =

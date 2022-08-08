@@ -72,6 +72,7 @@ class PasswordChangeRunView : public views::View,
   void ShowStartingScreen(const GURL& url) override;
   void ShowCompletionScreen(
       base::RepeatingClosure done_button_callback) override;
+  void ShowErrorScreen() override;
   void OnControllerGone() override;
 
   // Returns a weak pointer to itself.

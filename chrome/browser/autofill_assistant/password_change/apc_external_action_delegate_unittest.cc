@@ -242,6 +242,23 @@ TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
   action_delegate()->ShowStartingScreen(url);
 }
 
+TEST_F(ApcExternalActionDelegateTest, ShowCompletionScreen) {
+  const GURL url(kUrl);
+
+  base::RepeatingClosure show_completion_screen_callback;
+  EXPECT_CALL(*display(),
+              ShowCompletionScreen(show_completion_screen_callback));
+
+  action_delegate()->ShowCompletionScreen(show_completion_screen_callback);
+}
+
+TEST_F(ApcExternalActionDelegateTest, ShowErrorScreen) {
+  const GURL url(kUrl);
+
+  EXPECT_CALL(*display(), ShowErrorScreen());
+
+  action_delegate()->ShowErrorScreen();
+}
 TEST_F(ApcExternalActionDelegateTest, ReceiveInvalidAction) {
   autofill_assistant::external::Action empty_action;
 

@@ -70,6 +70,9 @@ class PasswordChangeRunController {
   virtual void ShowCompletionScreen(
       base::RepeatingClosure done_button_callback) = 0;
 
+  // Shows the error screen.
+  virtual void ShowErrorScreen() = 0;
+
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;
 

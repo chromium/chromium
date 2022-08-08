@@ -70,6 +70,7 @@ class PasswordChangeRunDisplay {
   virtual void ShowStartingScreen(const GURL& url) = 0;
   virtual void ShowCompletionScreen(
       base::RepeatingClosure done_button_callback) = 0;
+  virtual void ShowErrorScreen() = 0;
 
   // Notifies the view that the controller was destroyed so that the view
   // can close itself.

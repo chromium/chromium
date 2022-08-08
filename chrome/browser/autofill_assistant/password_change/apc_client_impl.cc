@@ -191,7 +191,7 @@ void ApcClientImpl::OnRunComplete(
     apc_external_action_delegate_->ShowCompletionScreen(base::BindRepeating(
         &ApcClientImpl::Stop, base::Unretained(this), result.success));
   } else {
-    // TODO(crbug.com/1324089): Handle failed result.
+    apc_external_action_delegate_->ShowErrorScreen();
     Stop(result.success);
   }
 }

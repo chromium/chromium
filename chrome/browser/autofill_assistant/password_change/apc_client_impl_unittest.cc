@@ -64,6 +64,7 @@ class MockApcExternalActionDelegate : public ApcExternalActionDelegate {
 
   MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));
   MOCK_METHOD(void, ShowCompletionScreen, (base::RepeatingClosure), (override));
+  MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, SetupDisplay, (), (override));
 };
 
@@ -351,7 +352,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   EXPECT_TRUE(client->IsRunning());
 
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
-      /* success= */ true};
+      .success = true};
 
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kNotShown));
@@ -367,6 +368,39 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   std::move(show_completion_screen_callback).Run();
 
   EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, CreateAndStartApcFlow_ScriptFails) {
+  raw_ptr<ApcClient> client =
+      ApcClient::GetOrCreateForWebContents(web_contents());
+
+  // Prepare to extract the callback to the coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  base::MockCallback<ApcClient::ResultCallback> result_callback1,
+      result_callback2;
+  EXPECT_CALL(*coordinator(), PerformOnboarding)
+      .WillOnce(MoveArg<0>(&coordinator_callback));
+
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
+                result_callback1.Get());
+
+  // Prepare to extract the callback to the external script controller.
+  base::OnceCallback<void(
+      autofill_assistant::HeadlessScriptController::ScriptResult)>
+      external_script_controller_callback;
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
+      .Times(1)
+      .WillOnce(MoveArg<1>(&external_script_controller_callback));
+
+  // Successful onboarding.
+  std::move(coordinator_callback).Run(true);
+
+  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
+      .success = false};
+
+  EXPECT_CALL(*apc_external_action_delegate(), ShowErrorScreen());
+
+  std::move(external_script_controller_callback).Run(script_result);
 }
 
 TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromSettings) {

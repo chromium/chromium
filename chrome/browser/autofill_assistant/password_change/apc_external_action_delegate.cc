@@ -243,6 +243,10 @@ void ApcExternalActionDelegate::ShowCompletionScreen(
       std::move(onShowCompletionScreenDoneButtonClicked));
 }
 
+void ApcExternalActionDelegate::ShowErrorScreen() {
+  password_change_run_display_->ShowErrorScreen();
+}
+
 void ApcExternalActionDelegate::Show(
     base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display) {
   password_change_run_display_ = password_change_run_display;

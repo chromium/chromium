@@ -51,6 +51,7 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
               ShowCompletionScreen,
               (base::RepeatingClosure done_button_callback),
               (override));
+  MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, OnGeneratedPasswordSelected, (bool), (override));
   base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

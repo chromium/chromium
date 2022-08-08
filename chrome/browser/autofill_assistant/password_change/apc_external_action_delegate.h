@@ -82,6 +82,7 @@ class ApcExternalActionDelegate
   void ShowStartingScreen(const GURL& url) override;
   void ShowCompletionScreen(
       base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) override;
+  void ShowErrorScreen() override;
 
  private:
   friend class ApcExternalActionDelegateTest;
