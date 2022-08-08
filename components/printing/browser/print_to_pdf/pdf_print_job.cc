@@ -25,7 +25,7 @@ PdfPrintJob::PdfPrintJob(content::WebContents* contents,
 
 PdfPrintJob::~PdfPrintJob() {
   // The callback is supposed to be consumed at this point confirming
-  // that job result was reported to the job starter.
+  // that the job result was reported to the job starter.
   DCHECK(!print_to_pdf_callback_);
 }
 
@@ -44,7 +44,7 @@ void PdfPrintJob::StartJob(
   }
 
   absl::variant<printing::PageRanges, PdfPrintResult> pages =
-      print_to_pdf::TextPageRangesToPageRanges(page_ranges);
+      TextPageRangesToPageRanges(page_ranges);
   if (absl::holds_alternative<PdfPrintResult>(pages)) {
     std::move(callback).Run(absl::get<PdfPrintResult>(pages), nullptr);
     return;

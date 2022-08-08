@@ -68,7 +68,7 @@ class PdfPrintJob : public content::WebContentsObserver {
       base::ReadOnlySharedMemoryRegion region);
 
   void ReportMemoryRegion(const base::ReadOnlySharedMemoryRegion& region);
-  void FailJob(print_to_pdf::PdfPrintResult result);
+  void FailJob(PdfPrintResult result);
 
   raw_ptr<content::RenderFrameHost> printing_rfh_;
   PrintToPdfCallback print_to_pdf_callback_;
