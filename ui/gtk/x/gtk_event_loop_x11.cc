@@ -24,13 +24,17 @@ x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   if (!gtk::GtkCheckVersion(4)) {
     auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
     DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
+    x11::Window window = x11::Window::None;
+    if (key->window)
+      window = static_cast<x11::Window>(gdk_x11_window_get_xid(key->window));
+
     x11::KeyEvent key_event{
         .opcode = key->type == GdkKeyPress() ? x11::KeyEvent::Press
                                              : x11::KeyEvent::Release,
         .detail = static_cast<x11::KeyCode>(key->hardware_keycode),
         .time = static_cast<x11::Time>(key->time),
         .root = ui::GetX11RootWindow(),
-        .event = static_cast<x11::Window>(gdk_x11_window_get_xid(key->window)),
+        .event = window,
         .state = BuildXkbStateFromGdkEvent(key->state, key->group),
         .same_screen = true,
     };
