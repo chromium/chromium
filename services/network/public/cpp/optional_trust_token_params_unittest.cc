@@ -26,7 +26,7 @@ namespace {
 OptionalTrustTokenParams NonemptyTrustTokenParams() {
   return mojom::TrustTokenParams(
       mojom::TrustTokenOperationType::kRedemption,
-      mojom::TrustTokenRefreshPolicy::kRefresh,
+      mojom::TrustTokenRefreshPolicy::kRefresh, "custom_key_commitment",
       mojom::TrustTokenSignRequestData::kInclude,
       /*include_timestamp_header=*/true,
       std::vector<url::Origin>{url::Origin::Create(GURL("https://issuer.com"))},

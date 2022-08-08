@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
+#include "services/network/trust_tokens/trust_token_key_commitment_parser.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "url/url_constants.h"
@@ -50,6 +51,7 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
     mojom::TrustTokenRefreshPolicy refresh_policy,
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+    absl::optional<std::string> custom_key_commitment,
     std::unique_ptr<KeyPairGenerator> key_pair_generator,
     std::unique_ptr<Cryptographer> cryptographer,
     net::NetLogWithSource net_log)
@@ -57,6 +59,7 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
       refresh_policy_(refresh_policy),
       token_store_(token_store),
       key_commitment_getter_(std::move(key_commitment_getter)),
+      custom_key_commitment_(custom_key_commitment),
       key_pair_generator_(std::move(key_pair_generator)),
       cryptographer_(std::move(cryptographer)),
       net_log_(std::move(net_log)) {
@@ -81,6 +84,18 @@ void TrustTokenRequestRedemptionHelper::Begin(
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL (request destination)");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+    return;
+  }
+
+  if (custom_key_commitment_) {
+    mojom::TrustTokenKeyCommitmentResultPtr keys =
+        TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);
+    if (!keys) {
+      LogOutcome(net_log_, kBegin, "Failed to parse custom keys");
+      std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+      return;
+    }
+    OnGotKeyCommitment(request, std::move(done), std::move(keys));
     return;
   }
 

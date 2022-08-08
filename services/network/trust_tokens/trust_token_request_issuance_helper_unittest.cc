@@ -162,7 +162,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfTooManyIssuers) {
   }
 
   TrustTokenRequestIssuanceHelper helper(
-      toplevel, store.get(), g_fixed_key_commitment_getter.get(),
+      toplevel, store.get(), g_fixed_key_commitment_getter.get(), absl::nullopt,
       std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
@@ -188,7 +188,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfAtCapacity) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), g_fixed_key_commitment_getter.get(),
+      store.get(), g_fixed_key_commitment_getter.get(), absl::nullopt,
       std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
@@ -211,7 +211,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfKeyCommitmentFails) {
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(issuer, nullptr);
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::make_unique<MockCryptographer>(),
+      store.get(), getter.get(), absl::nullopt,
+      std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
@@ -236,8 +237,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -260,8 +261,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfAddingKeyFails) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -288,8 +289,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -321,8 +322,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -361,8 +362,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsLoadFlag) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -390,8 +391,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -424,8 +425,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, TreatsEmptyHeaderAsSuccess) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -469,8 +470,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseIsUnusable) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -513,8 +514,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, Success) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -555,8 +556,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, AssociatesIssuerWithToplevel) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -598,8 +599,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, StoresObtainedTokens) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -664,8 +665,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, DiscardDataResponseSuccess) {
   // ReasonableKeyCommitmentGetter is for issuer1
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   // request is from issuer1
@@ -733,8 +734,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -800,8 +801,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -858,8 +859,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -890,7 +891,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsUnsuitableInsecureIssuer) {
   auto store = TrustTokenStore::CreateForTesting();
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), g_fixed_key_commitment_getter.get(),
+      store.get(), g_fixed_key_commitment_getter.get(), absl::nullopt,
       std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
@@ -906,7 +907,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
   auto store = TrustTokenStore::CreateForTesting();
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), g_fixed_key_commitment_getter.get(),
+      store.get(), g_fixed_key_commitment_getter.get(), absl::nullopt,
       std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
@@ -935,8 +936,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RespectsMaximumBatchsize) {
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
-      std::make_unique<MockLocalOperationDelegate>(),
+      store.get(), ReasonableKeyCommitmentGetter(), absl::nullopt,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
       base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
 
   auto request = MakeURLRequest("https://issuer.com/");
@@ -944,6 +945,90 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RespectsMaximumBatchsize) {
 
   ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
             mojom::TrustTokenOperationStatus::kOk);
+}
+
+// Check that attempting to issue with custom key commitments fails if custom
+// key commitments are invalid.
+TEST_F(TrustTokenRequestIssuanceHelperTest, BadCustomKeys) {
+  auto store = TrustTokenStore::CreateForTesting();
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      store.get(), g_fixed_key_commitment_getter.get(), "junk keys",
+      std::make_unique<MockCryptographer>(),
+      std::make_unique<MockLocalOperationDelegate>(),
+      base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
+
+  auto request = MakeURLRequest("https://issuer.com/");
+
+  EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kInvalidArgument);
+}
+
+// Check that a successful end-to-end Begin/Finalize flow with custom key
+// commitments stores the obtained trust tokens in the trust token store.
+TEST_F(TrustTokenRequestIssuanceHelperTest, CustomKeysStoresObtainedTokens) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  SuitableTrustTokenOrigin issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  // Have the Trust Tokens issuance conclude by the underlying cryptographic
+  // library returning one signed, unblinded token associated with the same
+  // returned from the key commitment.
+  auto unblinded_tokens = std::make_unique<UnblindedTokens>();
+  unblinded_tokens->body_of_verifying_key =
+      ReasonableKeyCommitmentResult()->keys.front()->body;
+  unblinded_tokens->tokens.push_back("a signed, unblinded token");
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginIssuance(_))
+      .WillOnce(
+          Return(std::string("this string contains some blinded tokens")));
+  EXPECT_CALL(*cryptographer, ConfirmIssuance(_))
+      .WillOnce(Return(ByMove(std::move((unblinded_tokens)))));
+
+  base::Time one_minute_from_now = base::Time::Now() + base::Minutes(1);
+  int64_t one_minute_from_now_in_micros =
+      (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
+
+  const std::string basic_key = base::StringPrintf(
+      R"({ "TrustTokenV3PMB": {
+            "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5,
+            "keys": {"1": { "Y": "akey", "expiry": "%s" }}
+         }})",
+      base::NumberToString(one_minute_from_now_in_micros).c_str());
+
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      store.get(), ReasonableKeyCommitmentGetter(), basic_key,
+      std::move(cryptographer), std::make_unique<MockLocalOperationDelegate>(),
+      base::BindRepeating(&IsCurrentOperatingSystem), g_metrics_delegate.get());
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(issuer);
+
+  ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(
+      kTrustTokensSecTrustTokenHeader,
+      "response from issuer (this value will be ignored, since "
+      "Cryptographer::ConfirmResponse is mocked out)");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // After the operation has successfully finished, the trust tokens parsed from
+  // the server response should be in the store.
+  auto match_all_keys =
+      base::BindRepeating([](const std::string&) { return true; });
+  EXPECT_THAT(
+      store->RetrieveMatchingTokens(issuer, std::move(match_all_keys)),
+      ElementsAre(Property(&TrustToken::body, "a signed, unblinded token")));
 }
 
 class TrustTokenRequestIssuanceHelperTestWithPlatformIssuance
@@ -1018,7 +1103,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::move(cryptographer),
+      store.get(), getter.get(), absl::nullopt, std::move(cryptographer),
       std::move(local_operation_delegate),
       base::BindRepeating([](mojom::TrustTokenKeyCommitmentResult::Os os) {
         return os == mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
@@ -1088,7 +1173,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::move(cryptographer),
+      store.get(), getter.get(), absl::nullopt, std::move(cryptographer),
       std::move(local_operation_delegate),
       base::BindRepeating([](mojom::TrustTokenKeyCommitmentResult::Os os) {
         return os == mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
@@ -1124,7 +1209,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::make_unique<MockCryptographer>(),
+      store.get(), getter.get(), absl::nullopt,
+      std::make_unique<MockCryptographer>(),
       std::make_unique<MockLocalOperationDelegate>(),
       // Fail to match to the current OS...
       base::BindLambdaForTesting(
@@ -1168,7 +1254,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::move(cryptographer),
+      store.get(), getter.get(), absl::nullopt, std::move(cryptographer),
       std::make_unique<MockLocalOperationDelegate>(),
       // Fail to match to the current OS...
       base::BindLambdaForTesting(
@@ -1235,7 +1321,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      store.get(), getter.get(), std::move(cryptographer),
+      store.get(), getter.get(), absl::nullopt, std::move(cryptographer),
       std::move(local_operation_delegate),
       base::BindRepeating(&IsCurrentOperatingSystem), metrics_delegate.get());
 

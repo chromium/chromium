@@ -129,6 +129,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
       mojom::TrustTokenRefreshPolicy refresh_policy,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+      absl::optional<std::string> custom_key_commitment,
       std::unique_ptr<KeyPairGenerator> key_pair_generator,
       std::unique_ptr<Cryptographer> cryptographer,
       net::NetLogWithSource net_log = net::NetLogWithSource());
@@ -214,6 +215,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
 
   const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
+  absl::optional<std::string> custom_key_commitment_;
   const std::unique_ptr<KeyPairGenerator> key_pair_generator_;
   const std::unique_ptr<Cryptographer> cryptographer_;
   net::NetLogWithSource net_log_;

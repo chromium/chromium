@@ -58,6 +58,7 @@ TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
   auto trust_token_params = network::mojom::blink::TrustTokenParams::New(
       network::mojom::TrustTokenOperationType::kRedemption,
       network::mojom::TrustTokenRefreshPolicy::kUseCached,
+      /* custom_key_commitment=*/"custom_key_commitment",
       network::mojom::TrustTokenSignRequestData::kInclude,
       /* include_timestamp_header=*/true, issuers, additional_signed_headers,
       /* possibly_unsafe_additional_signing_data=*/"ccc");

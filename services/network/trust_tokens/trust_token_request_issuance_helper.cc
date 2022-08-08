@@ -23,6 +23,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
+#include "services/network/trust_tokens/trust_token_key_commitment_parser.h"
 #include "services/network/trust_tokens/trust_token_key_filtering.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
@@ -92,6 +93,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
     SuitableTrustTokenOrigin top_level_origin,
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+    absl::optional<std::string> custom_key_commitment,
     std::unique_ptr<Cryptographer> cryptographer,
     std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate,
     base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
@@ -101,6 +103,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
     : top_level_origin_(std::move(top_level_origin)),
       token_store_(token_store),
       key_commitment_getter_(std::move(key_commitment_getter)),
+      custom_key_commitment_(custom_key_commitment),
       cryptographer_(std::move(cryptographer)),
       local_operation_delegate_(std::move(local_operation_delegate)),
       is_current_os_callback_(std::move(is_current_os_callback)),
@@ -130,6 +133,18 @@ void TrustTokenRequestIssuanceHelper::Begin(
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+    return;
+  }
+
+  if (custom_key_commitment_) {
+    mojom::TrustTokenKeyCommitmentResultPtr keys =
+        TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);
+    if (!keys) {
+      LogOutcome(net_log_, kBegin, "Failed to parse custom keys");
+      std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+      return;
+    }
+    OnGotKeyCommitment(request, std::move(done), std::move(keys));
     return;
   }
 

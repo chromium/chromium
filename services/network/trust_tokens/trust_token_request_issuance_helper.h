@@ -146,6 +146,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       SuitableTrustTokenOrigin top_level_origin,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+      absl::optional<std::string> custom_key_commitment,
       std::unique_ptr<Cryptographer> cryptographer,
       std::unique_ptr<LocalTrustTokenOperationDelegate>
           local_operation_delegate,
@@ -270,6 +271,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   const SuitableTrustTokenOrigin top_level_origin_;
   const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
+  absl::optional<std::string> custom_key_commitment_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 

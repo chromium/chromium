@@ -123,6 +123,10 @@ struct TrustTokenParams {
   // redeem a new token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
 
+  // "custom_key_commitment" stores a custom key commitment that should be
+  // used for this operation if set.
+  string? custom_key_commitment;
+
   // The remaining members are used only when "type" is "kSigning": these
   // parameters specify the manner in which the outgoing request should be
   // signed, including optionally specifying additional data to add in
