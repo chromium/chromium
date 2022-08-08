@@ -22,9 +22,9 @@ namespace viz {
 
 OverlayCacheKey::OverlayCacheKey(
     const OverlayProposedCandidate& proposed_candidate) {
-  // Rounding the display_rect here matches the behaviour of Ozone when testing
+  // Rounding the display_rect here matches the behaviour of DRM when testing
   // OverlayCandidates.
-  display_rect = gfx::ToNearestRect(proposed_candidate.candidate.display_rect);
+  display_rect = gfx::ToRoundedRect(proposed_candidate.candidate.display_rect);
   strategy = proposed_candidate.strategy->GetUMAEnum();
 }
 
