@@ -89,7 +89,7 @@
       <ph name="PLATFORM_TEXT">$1<ex>Goto the wrench menu and choose Fix It.</ex></ph>
     </message>
   </if>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="ChromeOS instructions for disabling use of a proxy server.">
       You can disable any proxies configured for a connection from the settings page.
     </message>
@@ -361,7 +361,7 @@
       If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE" desc="Label for the link that invokes the connection diagnostic tool on the error page displayed in a list of suggestions. The suggestions list is prefixed with 'Try:'.">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>

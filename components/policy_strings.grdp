@@ -318,7 +318,7 @@ Additional details:
 <ph name="DEBUG_INFO">$1<ex>ERROR: Field name 'SomeRandomField' is unknown. (at toplevel)</ex></ph>
     </message>
   </if>
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_SCOPE_ERROR" desc="Text displayed in the status column when a policy is set in an unsupported scope.">
       Policy scope is not supported.
     </message>

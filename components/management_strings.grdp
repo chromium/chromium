@@ -79,7 +79,7 @@
   </if>
   
   <!-- ChromeOS managed status section -->
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
       This device and account are not managed by a company or other organization.
     </message>
@@ -99,7 +99,7 @@
   chrome://management for managed devices, please add it to
   go/chrome-policy-privacy-note-mappings
   -->
-  <if expr="chromeos_ash or chromeos_lacros">
+  <if expr="is_chromeos">
     <!-- Strings related to Local trust roots section -->
     <message name="IDS_MANAGEMENT_LOCAL_TRUST_ROOTS" desc="Title of the types of local trust roots section of the page">
       Custom root certificates
