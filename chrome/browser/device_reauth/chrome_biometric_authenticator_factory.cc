@@ -9,6 +9,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
 #endif
 
 // static
@@ -33,6 +35,8 @@ ChromeBiometricAuthenticatorFactory::GetOrCreateBiometricAuthenticator() {
         (new BiometricAuthenticatorAndroid(
              std::make_unique<BiometricAuthenticatorBridgeImpl>()))
             ->GetWeakPtr();
+#elif BUILDFLAG(IS_MAC)
+    biometric_authenticator_ = (new BiometricAuthenticatorMac())->GetWeakPtr();
 #else
     NOTREACHED();
 #endif

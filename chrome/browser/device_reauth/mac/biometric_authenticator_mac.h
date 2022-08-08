@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
 
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "components/device_reauth/biometric_authenticator.h"
 
 namespace device {
@@ -15,10 +17,8 @@ class TouchIdContext;
 }  // namespace fido
 }  // namespace device
 
-class BiometricAuthenticatorMac : public device_reauth::BiometricAuthenticator {
+class BiometricAuthenticatorMac : public ChromeBiometricAuthenticatorCommon {
  public:
-  BiometricAuthenticatorMac();
-
   // Returns true, when biometrics are available and also the device screen lock
   // is setup, false otherwise.
   bool CanAuthenticate(
@@ -49,11 +49,13 @@ class BiometricAuthenticatorMac : public device_reauth::BiometricAuthenticator {
   void Cancel(device_reauth::BiometricAuthRequester requester) override;
 
  private:
+  friend class ChromeBiometricAuthenticatorFactory;
+  BiometricAuthenticatorMac();
   ~BiometricAuthenticatorMac() override;
 
   // TouchId authenticator object that will handle biometric authentication
   // itself
-  std::unique_ptr<device::fido::mac::TouchIdContext> touchIdAuthObject_;
+  std::unique_ptr<device::fido::mac::TouchIdContext> touch_id_auth_context_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
