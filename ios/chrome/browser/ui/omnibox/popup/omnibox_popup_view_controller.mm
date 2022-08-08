@@ -195,11 +195,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
     self.highlightedIndexPath = nil;
   }
 
-  // This view controller does not support multiple sections yet. Multi-section
-  // support only exists in the Swift version of the popup.
-  DCHECK(result.count == 1)
-      << "OmniboxPopupRow assumes there's only one suggestion group.";
-
   self.currentResult = result;
 
   [self.tableView reloadData];
@@ -238,25 +233,38 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
     return;
   }
 
-  if (path.row == 0) {
-    // Can't move up from first row. Call the delegate again so that the inline
-    // autocomplete text is set again (in case the user exited the inline
-    // autocomplete).
-    [self.delegate autocompleteResultConsumer:self
-                              didHighlightRow:self.highlightedIndexPath.row
-                                    inSection:0];
-    return;
+  BOOL isCurrentHighlightedRowFirstInSection = (path.row == 0);
+  if (isCurrentHighlightedRowFirstInSection) {
+    NSInteger previousSection = path.section - 1;
+    NSInteger previousSectionCount =
+        (previousSection >= 0)
+            ? [self.tableView numberOfRowsInSection:previousSection]
+            : 0;
+    BOOL prevSectionHasItems = previousSectionCount > 0;
+    if (prevSectionHasItems) {
+      path = [NSIndexPath indexPathForRow:previousSectionCount - 1
+                                inSection:previousSection];
+    } else {
+      // Can't move up from first row. Call the delegate again so that the
+      // inline autocomplete text is set again (in case the user exited the
+      // inline autocomplete).
+      [self.delegate
+          autocompleteResultConsumer:self
+                     didHighlightRow:self.highlightedIndexPath.row
+                           inSection:self.highlightedIndexPath.section];
+      return;
+    }
+  } else {
+    path = [NSIndexPath indexPathForRow:path.row - 1 inSection:path.section];
   }
 
   [self unhighlightRowAtIndexPath:self.highlightedIndexPath];
-  self.highlightedIndexPath =
-      [NSIndexPath indexPathForRow:self.highlightedIndexPath.row - 1
-                         inSection:0];
+  self.highlightedIndexPath = path;
   [self highlightRowAtIndexPath:self.highlightedIndexPath];
 
   [self.delegate autocompleteResultConsumer:self
                             didHighlightRow:self.highlightedIndexPath.row
-                                  inSection:0];
+                                  inSection:self.highlightedIndexPath.section];
 }
 
 - (void)highlightPreviousSuggestion {
@@ -267,27 +275,38 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   }
 
   NSIndexPath* path = self.highlightedIndexPath;
+  BOOL isCurrentHighlightedRowLastInSection =
+      path.row == [self.tableView numberOfRowsInSection:path.section] - 1;
+  if (isCurrentHighlightedRowLastInSection) {
+    NSInteger nextSection = path.section + 1;
+    BOOL nextSectionHasItems =
+        [self.tableView numberOfSections] > nextSection &&
+        [self.tableView numberOfRowsInSection:nextSection] > 0;
 
-  if (path.row == [self.tableView numberOfRowsInSection:0] - 1) {
-    // Can't go below last row. Call the delegate again so that the inline
-    // autocomplete text is set again (in case the user exited the inline
-    // autocomplete).
-    [self.delegate autocompleteResultConsumer:self
-                              didHighlightRow:self.highlightedIndexPath.row
-                                    inSection:0];
-    return;
+    if (nextSectionHasItems) {
+      path = [NSIndexPath indexPathForRow:0 inSection:nextSection];
+    } else {
+      // Can't go below last row. Call the delegate again so that the inline
+      // autocomplete text is set again (in case the user exited the inline
+      // autocomplete).
+      [self.delegate
+          autocompleteResultConsumer:self
+                     didHighlightRow:self.highlightedIndexPath.row
+                           inSection:self.highlightedIndexPath.section];
+      return;
+    }
+  } else {
+    path = [NSIndexPath indexPathForRow:path.row + 1 inSection:path.section];
   }
 
   // There is a row below, move highlight there.
   [self unhighlightRowAtIndexPath:self.highlightedIndexPath];
-  self.highlightedIndexPath =
-      [NSIndexPath indexPathForRow:self.highlightedIndexPath.row + 1
-                         inSection:0];
+  self.highlightedIndexPath = path;
   [self highlightRowAtIndexPath:self.highlightedIndexPath];
 
   [self.delegate autocompleteResultConsumer:self
                             didHighlightRow:self.highlightedIndexPath.row
-                                  inSection:0];
+                                  inSection:self.highlightedIndexPath.section];
 }
 
 - (void)keyCommandReturn {
@@ -321,7 +340,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(0U, (NSUInteger)indexPath.section);
   DCHECK_LT((NSUInteger)indexPath.row,
             self.currentResult[indexPath.section].suggestions.count);
   NSUInteger row = indexPath.row;
@@ -339,20 +357,16 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  DCHECK_EQ(1U, (NSUInteger)self.currentResult.count);
   return self.currentResult.count;
 }
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  DCHECK_EQ(0U, (NSUInteger)section);
   return self.currentResult[section].suggestions.count;
 }
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(0U, (NSUInteger)indexPath.section);
-
   // iOS doesn't check -numberOfRowsInSection before checking
   // -canEditRowAtIndexPath in a reload call. If `indexPath.row` is too large,
   // simple return `NO`.
@@ -367,7 +381,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 - (void)tableView:(UITableView*)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
      forRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(0U, (NSUInteger)indexPath.section);
   DCHECK_LT((NSUInteger)indexPath.row,
             self.currentResult[indexPath.section].suggestions.count);
   if (editingStyle == UITableViewCellEditingStyleDelete) {
@@ -410,14 +423,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 }
 
 #pragma mark Action for append UIButton
-
-// Action handler for when the button is tapped.
-- (void)trailingButtonTapped:(id)sender {
-  NSUInteger row = [sender tag];
-  [self.delegate autocompleteResultConsumer:self
-                 didTapTrailingButtonForRow:row
-                                  inSection:0];
-}
 
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute {
@@ -464,8 +469,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 // Customize the appearance of table view cells.
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(0U, (NSUInteger)indexPath.section);
-
   DCHECK_LT((NSUInteger)indexPath.row,
             self.currentResult[indexPath.section].suggestions.count);
   OmniboxPopupRowCell* cell = [self.tableView
