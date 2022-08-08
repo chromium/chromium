@@ -375,7 +375,8 @@ def _launch_test(options, forward_args, gtest_filter_autofill,
     command_args.append('--autofill-server-type=%s ' % full_cache_type)
 
   if options.command_file:
-    command_args.append('--command_file=%s' % options.command_file)
+    command_args.append('--command_file=%s' %
+                        os.path.expanduser(options.command_file))
 
   if options.store_log:
     if not os.path.isdir(_LOG_DATA_DIR_PATH):
