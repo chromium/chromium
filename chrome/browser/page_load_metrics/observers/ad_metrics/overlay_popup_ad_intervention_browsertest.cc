@@ -87,8 +87,16 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 0);
 }
 
+// TODO(https://crbug.com/1350894): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define OverlayPopupAd_AdInterventionTriggered \
+  DISABLED_OverlayPopupAd_AdInterventionTriggered
+#else
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
+  OverlayPopupAd_AdInterventionTriggered
+#endif
 IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
-                       OverlayPopupAd_AdInterventionTriggered) {
+                       MAYBE_OverlayPopupAd_AdInterventionTriggered) {
   base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
