@@ -43,7 +43,7 @@ export class BreadcrumbContainer {
     // be listed as search results regardless of current location.
     // In this case, showing current location is confusing, so use the Drive
     // root "My Drive" as the current location.
-    if (search && search.term && search.status === PropStatus.SUCCESS) {
+    if (search && search.query && search.status === PropStatus.SUCCESS) {
       const entry = state.allEntries[currentDirectory.key];
       if (entry && entry.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
         const root = currentDirectory.pathComponents[0];

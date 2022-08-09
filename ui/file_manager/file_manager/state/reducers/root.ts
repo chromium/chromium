@@ -10,8 +10,12 @@ import {changeDirectory} from './current_directory.js';
 import {search} from './search.js';
 
 /**
- * Root reducer for Files app.
- * It dispatches to other reducers to update different parts of the State.
+ * Root reducer for the State for Files app.
+ * It dispatches the ` action` to other reducers that update each part of the
+ * State.
+ *
+ * Every top-level attribute of the State should have its reducer being called
+ * from here.
  */
 export function rootReducer(currentState: State, action: Action): State {
   // Before any actual Reducer, we cache the entries, so the reducers can just

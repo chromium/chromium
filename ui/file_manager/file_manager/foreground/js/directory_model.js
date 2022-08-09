@@ -1678,7 +1678,7 @@ export class DirectoryModel extends EventTarget {
 
         // Notify the store-aware parts.
         this.store_.dispatch(
-            searchAction({term: query, status: PropStatus.SUCCESS}));
+            searchAction({query: query, status: PropStatus.SUCCESS}));
       };
       this.addEventListener('scan-completed', this.onSearchCompleted_);
       this.clearAndScan_(newDirContents, callback);

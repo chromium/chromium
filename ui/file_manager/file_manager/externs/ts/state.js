@@ -52,7 +52,7 @@ export let CurrentDirectory;
  * Data for search. It should be empty `{}` when the user isn't searching.
  * @typedef {{
  *   status: (PropStatus|undefined),
- *   term: (string|undefined),
+ *   query: (string|undefined),
  * }}
  */
 export let SearchData;

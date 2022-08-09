@@ -42,7 +42,7 @@ export function getEmptyState(): State {
     allEntries: {},
     currentDirectory: undefined,
     search: {
-      term: undefined,
+      query: undefined,
       status: undefined,
     },
   };

@@ -42,7 +42,7 @@ export interface ClearStaleCachedEntriesAction extends BaseAction {
 export interface SearchAction extends BaseAction {
   type: ActionType.SEARCH;
   payload: {
-    term?: string,
+    query?: string,
     status?: PropStatus,
   };
 }
@@ -62,11 +62,12 @@ export function changeDirectory(
 }
 
 export function searchAction(
-    {term, status}: {term?: string, status?: PropStatus}): SearchAction {
+    {query: query, status}: {query?: string, status?: PropStatus}):
+    SearchAction {
   return {
     type: ActionType.SEARCH,
     payload: {
-      term,
+      query: query,
       status,
     },
   };
