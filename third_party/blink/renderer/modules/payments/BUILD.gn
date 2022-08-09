@@ -12,8 +12,6 @@ blink_modules_sources("payments") {
     "abort_payment_respond_with_observer.h",
     "address_init_type_converter.cc",
     "address_init_type_converter.h",
-    "basic_card_helper.cc",
-    "basic_card_helper.h",
     "can_make_payment_event.cc",
     "can_make_payment_event.h",
     "can_make_payment_respond_with_observer.cc",

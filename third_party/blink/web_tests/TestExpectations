@@ -6167,7 +6167,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 # Flakes that surfaced on the mac12 and mac12-arm64 waterfall
 crbug.com/1249176 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12 ] virtual/basic-card-enabled/payments/payment-request-interface.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe-in-multicol.sub.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] fast/js/instanceof-test.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]

@@ -618,12 +618,6 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
-    "prefix": "basic-card-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["payments/payment-request-interface.html", "http/tests/payments/payment-instruments.html"],
-    "args": ["--enable-blink-features=PaymentRequestBasicCard", "--enable-features=PaymentRequestBasicCard"]
-  },
-  {
     "prefix": "json-modules",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],

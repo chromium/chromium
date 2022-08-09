@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/payments/basic_card_helper.h"
 #include "third_party/blink/renderer/modules/payments/payment_manager.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -317,35 +316,8 @@ void PaymentInstruments::OnRequestPermission(
 
   instrument->method =
       details->hasMethod() ? details->method() : WTF::g_empty_string;
-
-  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
-          resolver->GetExecutionContext()) &&
-      details->hasCapabilities()) {
-    v8::Local<v8::String> value;
-    if (!v8::JSON::Stringify(resolver->GetScriptState()->GetContext(),
-                             details->capabilities().V8Value().As<v8::Object>())
-             .ToLocal(&value)) {
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          resolver->GetScriptState()->GetIsolate(),
-          "Capabilities should be a JSON-serializable object"));
-      return;
-    }
-    instrument->stringified_capabilities = ToCoreString(value);
-    if (instrument->method == "basic-card") {
-      ExceptionState exception_state(resolver->GetScriptState()->GetIsolate(),
-                                     ExceptionState::kSetterContext,
-                                     "PaymentInstruments", "set");
-      BasicCardHelper::ParseBasiccardData(details->capabilities(),
-                                          instrument->supported_networks,
-                                          exception_state);
-      if (exception_state.HadException()) {
-        resolver->Reject(exception_state);
-        return;
-      }
-    }
-  } else {
-    instrument->stringified_capabilities = WTF::g_empty_string;
-  }
+  // TODO(crbug.com/1209835): Remove stringified_capabilities entirely.
+  instrument->stringified_capabilities = WTF::g_empty_string;
 
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kPaymentHandler);
@@ -394,23 +366,7 @@ void PaymentInstruments::onGetPaymentInstrument(
   }
   instrument->setIcons(icons);
   instrument->setMethod(stored_instrument->method);
-  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
-          resolver->GetExecutionContext()) &&
-      !stored_instrument->stringified_capabilities.IsEmpty()) {
-    ExceptionState exception_state(resolver->GetScriptState()->GetIsolate(),
-                                   ExceptionState::kGetterContext,
-                                   "PaymentInstruments", "get");
-    instrument->setCapabilities(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    FromJSONString(resolver->GetScriptState()->GetIsolate(),
-                                   resolver->GetScriptState()->GetContext(),
-                                   stored_instrument->stringified_capabilities,
-                                   exception_state)));
-    if (exception_state.HadException()) {
-      resolver->Reject(exception_state);
-      return;
-    }
-  }
+
   resolver->Resolve(instrument);
 }
 

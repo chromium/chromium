@@ -181,8 +181,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_background_sync_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_barcode_detector_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_barcode_detector_options.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_basic_card_request.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_basic_card_request.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_before_install_prompt_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_before_install_prompt_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.cc",

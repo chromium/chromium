@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_android_pay_method_data.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_basic_card_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
@@ -45,7 +44,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/payments/basic_card_helper.h"
 #include "third_party/blink/renderer/modules/payments/html_iframe_element_payments.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_method_change_event.h"
@@ -434,14 +432,9 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   }
 
   // Parse method data to avoid parsing JSON in the browser.
-  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
-          &execution_context) &&
-      supported_method == "basic-card") {
-    BasicCardHelper::ParseBasiccardData(input, output->supported_networks,
-                                        exception_state);
-  } else if (supported_method == kSecurePaymentConfirmationMethod &&
-             RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
-                 &execution_context)) {
+  if (supported_method == kSecurePaymentConfirmationMethod &&
+      RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+          &execution_context)) {
     UseCounter::Count(&execution_context,
                       WebFeature::kSecurePaymentConfirmation);
     output->secure_payment_confirmation =

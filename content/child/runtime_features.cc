@@ -254,7 +254,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
     {wf::EnableWebPaymentAPICSP, features::kWebPaymentAPICSP},
     {wf::EnablePaymentRequest, features::kWebPayments},
-    {wf::EnablePaymentRequestBasicCard, features::kPaymentRequestBasicCard},
     {wf::EnablePercentBasedScrolling, features::kWindowsScrollingPersonality},
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
     {wf::EnablePictureInPicture, media::kPictureInPicture},

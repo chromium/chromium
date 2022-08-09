@@ -131,7 +131,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnablePaymentApp(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebPaymentAPICSP(bool);
   BLINK_PLATFORM_EXPORT static void EnablePaymentRequest(bool);
-  BLINK_PLATFORM_EXPORT static void EnablePaymentRequestBasicCard(bool);
   BLINK_PLATFORM_EXPORT static void EnablePaymentRequestRequiresUserActivation(
       bool);
   BLINK_PLATFORM_EXPORT static void EnablePercentBasedScrolling(bool);
