@@ -13,6 +13,8 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
@@ -57,13 +59,19 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   void DownloadIcons();
 
+  void LoadUrl(GURL url);
   void OnLoadUrl(WebAppUrlLoaderResult result);
+
+  void CheckInstallabilityAndRetrieveManifest();
   void OnCheckInstallabilityAndRetrieveManifest(
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
-  void FinalizeInstall();
+  absl::optional<WebAppInstallInfo> CreateInstallInfoFromManifest(
+      const blink::mojom::Manifest& manifest,
+      const GURL& manifest_url);
+  void FinalizeInstall(const WebAppInstallInfo& info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

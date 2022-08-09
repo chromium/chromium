@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -12,20 +13,40 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 namespace web_app {
+
+namespace {
+
+bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
+  return result == WebAppUrlLoader::Result::kUrlLoaded;
+}
+
+absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
+  std::string dest;
+  if (!base::UTF16ToUTF8(src.data(), src.length(), &dest)) {
+    return absl::nullopt;
+  }
+  return dest;
+}
+
+}  // namespace
 
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     base::StringPiece url,
@@ -58,14 +79,6 @@ InstallIsolatedAppCommand::~InstallIsolatedAppCommand() {
   DCHECK(callback_.is_null());
 }
 
-namespace {
-
-bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
-  return result == WebAppUrlLoader::Result::kUrlLoaded;
-}
-
-}  // namespace
-
 void InstallIsolatedAppCommand::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -74,6 +87,12 @@ void InstallIsolatedAppCommand::Start() {
     ReportFailure();
     return;
   }
+
+  LoadUrl(url);
+}
+
+void InstallIsolatedAppCommand::LoadUrl(GURL url) {
+  DCHECK(url.is_valid());
 
   url_loader_.LoadUrl(url, shared_web_contents(),
                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
@@ -89,6 +108,10 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
     return;
   }
 
+  CheckInstallabilityAndRetrieveManifest();
+}
+
+void InstallIsolatedAppCommand::CheckInstallabilityAndRetrieveManifest() {
   // TODO(kuragin): Fix order of calls to the data retrieve.
   //
   // The order should be:
@@ -104,6 +127,29 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
       base::BindOnce(
           &InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest,
           weak_factory_.GetWeakPtr()));
+}
+
+absl::optional<WebAppInstallInfo>
+InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
+    const blink::mojom::Manifest& manifest,
+    const GURL& manifest_url) {
+  WebAppInstallInfo info;
+  UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
+
+  if (!manifest.id.has_value()) {
+    return absl::nullopt;
+  }
+
+  // In other installations the best-effort encoding is fine, but for isolated
+  // apps we have the opportunity to report this error.
+  if (absl::optional<std::string> encoded_id = UTF16ToUTF8(*manifest.id);
+      encoded_id.has_value()) {
+    info.manifest_id = *encoded_id;
+  } else {
+    return absl::nullopt;
+  }
+
+  return info;
 }
 
 void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
@@ -138,12 +184,18 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   DCHECK(!manifest_url.is_empty())
       << "must not be empty if manifest is not empty.";
 
-  FinalizeInstall();
+  if (absl::optional<WebAppInstallInfo> install_info =
+          CreateInstallInfoFromManifest(*opt_manifest, manifest_url);
+      install_info.has_value()) {
+    FinalizeInstall(*install_info);
+  } else {
+    ReportFailure();
+  }
 }
 
-void InstallIsolatedAppCommand::FinalizeInstall() {
+void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
   install_finalizer_.FinalizeInstall(
-      WebAppInstallInfo{},
+      info,
       // TODO(kuragin): Add Isolated app specific install source
       // `WebappInstallSource::ISOLATED_APP_DEV_INSTALL`.
       WebAppInstallFinalizer::FinalizeOptions{
