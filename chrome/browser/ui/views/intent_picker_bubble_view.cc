@@ -525,7 +525,7 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   }
 
   DCHECK(intent_picker_bubble_->HasCandidates());
-  widget->Show();
+  intent_picker_bubble_->ShowForReason(DisplayReason::USER_GESTURE);
 
   intent_picker_bubble_->SelectDefaultItem();
   return widget;
