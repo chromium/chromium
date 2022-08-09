@@ -5096,7 +5096,6 @@ test("unit_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
-    "//chrome/browser/feature_guide/notifications:unit_tests",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",

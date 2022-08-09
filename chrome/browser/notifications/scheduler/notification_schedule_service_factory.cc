@@ -9,8 +9,6 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
-#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service_factory.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_impl.h"
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"

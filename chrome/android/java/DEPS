@@ -10,7 +10,6 @@ include_rules = [
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel",
   "+chrome/browser/thumbnail/generator/android/java",
-  "+chrome/browser/ui/android/default_browser_promo",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/download/android/java",
   "+components/image_fetcher/android/java",

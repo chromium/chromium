@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -167,11 +166,7 @@ public abstract class AsyncInitializationActivity
 
     @Override
     public final void setContentViewAndLoadLibrary(Runnable onInflationCompleteCallback) {
-        boolean enableInstantStart = isInstantStartEnabled() && !mHadWarmStart;
         mOnInflationCompleteCallback = onInflationCompleteCallback;
-        if (enableInstantStart) {
-            triggerLayoutInflation();
-        }
 
         // Start loading libraries. It happens before triggerLayoutInflation() for regular startup,
         // but after triggerLayoutInflation() for instant start because we prioritize a Java UI and
@@ -185,9 +180,7 @@ public abstract class AsyncInitializationActivity
             mNativeInitializationController.startBackgroundTasks(shouldAllocateChildConnection());
         }
 
-        if (!enableInstantStart) {
-            triggerLayoutInflation();
-        }
+        triggerLayoutInflation();
         if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onSetContentView();
     }
 
@@ -225,9 +218,6 @@ public abstract class AsyncInitializationActivity
         assert firstDrawView != null;
         FirstDrawDetector.waitForFirstDraw(firstDrawView, () -> {
             mFirstDrawComplete = true;
-            StartSurfaceConfiguration.recordHistogram(FIRST_DRAW_COMPLETED_TIME_MS_UMA,
-                    SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
-                    isInstantStartEnabled());
             if (!mStartupDelayed) {
                 onFirstDrawComplete();
             }

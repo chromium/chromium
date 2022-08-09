@@ -9,13 +9,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -42,32 +39,6 @@ public class LogoLoadHelper {
         mProfileSupplier = profileSupplier;
         mLogoClickedCallback = logoClickedCallback;
         mLogoView = logoView;
-    }
-
-    /**
-     * If it's on Start surface homepage, load search provider logo; If it's not on start surface
-     * homepage, destroy mLogoDelegate.
-     */
-    public void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
-        if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            if (mProfileSupplier.hasValue()) {
-                loadSearchProviderLogo();
-                return;
-            }
-            assert mCallbackController != null;
-            new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
-                assert profile != null : "Unexpectedly null profile from TabModel.";
-                loadSearchProviderLogo();
-            }));
-        } else if ((startSurfaceState == StartSurfaceState.NOT_SHOWN
-                           || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                           || startSurfaceState == StartSurfaceState.DISABLED)
-                && mLogoDelegate != null) {
-            mHasLogoLoadedForCurrentSearchEngine = false;
-            // Destroy |mLogoDelegate| when hiding Start surface homepage to save memory.
-            mLogoDelegate.destroy();
-            mLogoDelegate = null;
-        }
     }
 
     /**
@@ -114,8 +85,7 @@ public class LogoLoadHelper {
 
         // If default search engine is google and doodle is not supported, doesn't bother to fetch
         // logo image.
-        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
-                && !StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue()) {
+        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
             return;
         }
 

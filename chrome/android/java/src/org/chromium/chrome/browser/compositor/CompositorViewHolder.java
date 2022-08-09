@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
@@ -1345,7 +1344,7 @@ public class CompositorViewHolder extends FrameLayout
         // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
         // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
         // will be reset.
-        if (tab != null && !StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup()) {
+        if (tab != null) {
             tab.loadIfNeeded();
         }
 

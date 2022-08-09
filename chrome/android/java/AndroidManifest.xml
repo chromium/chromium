@@ -616,9 +616,6 @@ by a child template that "extends" this file.
             android:documentLaunchMode="always"
             android:noHistory="true"/>
 
-        <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
-            android:exported="false"/>
-
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$CompleteNotificationReceiver"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"

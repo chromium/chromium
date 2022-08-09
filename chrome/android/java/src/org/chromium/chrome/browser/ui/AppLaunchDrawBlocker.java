@@ -71,7 +71,6 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Boolean> mShouldIgnoreIntentSupplier;
     private final Supplier<Boolean> mIsTabletSupplier;
     private final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
-    private final Supplier<Boolean> mIsInstantStartEnabledSupplier;
 
     /**
      * Whether to return false from #onPreDraw of the content view to prevent drawing the browser UI
@@ -97,8 +96,7 @@ public class AppLaunchDrawBlocker {
             @NonNull Supplier<View> viewSupplier, @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
             @NonNull Supplier<Boolean> isTabletSupplier,
-            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
-            @NonNull Supplier<Boolean> isInstantStartEnabledSupplier) {
+            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mViewSupplier = viewSupplier;
         mInflationObserver = new InflationObserver() {
@@ -125,7 +123,6 @@ public class AppLaunchDrawBlocker {
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
         mIsTabletSupplier = isTabletSupplier;
         mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
-        mIsInstantStartEnabledSupplier = isInstantStartEnabledSupplier;
     }
 
     /** Unregister lifecycle observers. */
@@ -164,12 +161,10 @@ public class AppLaunchDrawBlocker {
     /** Only block the draw if we believe the initial tab will be the NTP. */
     private void maybeBlockDraw() {
         if (mShouldShowOverviewPageOnStartSupplier.get()) {
-            if (!mIsInstantStartEnabledSupplier.get()) {
-                mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
-                mBlockDrawForOverviewPage = true;
-                ViewDrawBlocker.blockViewDrawUntilReady(
-                        mViewSupplier.get(), () -> !mBlockDrawForOverviewPage);
-            }
+            mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
+            mBlockDrawForOverviewPage = true;
+            ViewDrawBlocker.blockViewDrawUntilReady(
+                    mViewSupplier.get(), () -> !mBlockDrawForOverviewPage);
             return;
         }
 

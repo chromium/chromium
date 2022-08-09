@@ -8,7 +8,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/metadata_writer.h"
-#include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
@@ -133,10 +132,6 @@ void ChromeStartModel::ExecuteModelWithInput(const std::vector<float>& inputs,
   const int mv_clicks = inputs[3];
   float result = 0;
   int threshold = 1;
-
-  // StartSurfaceConfiguration.USER_CLICK_THRESHOLD_PARAM
-  threshold = base::GetFieldTrialParamByFeatureAsInt(
-      chrome::android::kStartSurfaceAndroid, "user_clicks_threshold", 1);
 
   if (mv_clicks >= threshold) {
     result = 1;  // Enable Start

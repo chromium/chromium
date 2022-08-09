@@ -9,7 +9,6 @@ import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
-import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchBackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -61,8 +60,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new UpdateTask();
             case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
                 return new BackgroundSyncBackgroundTask();
-            case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:
-                return new NotificationSchedulerTask();
             case TaskIds.NOTIFICATION_TRIGGER_JOB_ID:
                 return new NotificationTriggerBackgroundTask();
             case TaskIds.PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID:

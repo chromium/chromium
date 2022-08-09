@@ -17,9 +17,7 @@ import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,39 +111,11 @@ public class ChromeCachedFlags {
                 new ArrayList<CachedFieldTrialParameter>() {
                     {
                         add(ChimeFeatures.ALWAYS_REGISTER);
-                        add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS);
                         add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
-                        add(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS);
-                        add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
-                        add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
-                        add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
-                        add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
-                        add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
-                        add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
-                        add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
-                        add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
-                        add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
-                        add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
-                        add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
-                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
-                        add(StartSurfaceConfiguration
-                                .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
-                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS);
-                        add(StartSurfaceConfiguration.SPARE_RENDERER_DELAY_MS);
-                        add(StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES);
-                        add(StartSurfaceConfiguration.START_SURFACE_EXCLUDE_QUERY_TILES);
-                        add(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB);
-                        add(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY);
-                        add(StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START);
-                        add(StartSurfaceConfiguration.START_SURFACE_VARIATION);
-                        add(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY);
-                        add(StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE);
-                        add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
-                        add(StartSurfaceConfiguration.WARM_UP_RENDERER);
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
                         add(PaintPreviewTabService.ALLOW_SRP);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
