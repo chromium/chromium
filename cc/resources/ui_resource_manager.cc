@@ -65,10 +65,11 @@ void UIResourceManager::RecreateUIResources() {
 
 base::flat_map<UIResourceId, gfx::Size> UIResourceManager::GetUIResourceSizes()
     const {
-  base::flat_map<UIResourceId, gfx::Size> result;
+  base::flat_map<UIResourceId, gfx::Size>::container_type items(
+      ui_resource_client_map_.size());
   for (const auto pair : ui_resource_client_map_)
-    result.emplace(pair.first, pair.second.size);
-  return result;
+    items.push_back({pair.first, pair.second.size});
+  return base::flat_map<UIResourceId, gfx::Size>(std::move(items));
 }
 
 std::vector<UIResourceRequest> UIResourceManager::TakeUIResourcesRequests() {
