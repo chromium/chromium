@@ -32,7 +32,7 @@ def CheckCharacterComposerData(input_api, output_api):
   # to ensure that it is not hand-editied and stays in sync with the sources.
   (tempfd, tempname) = input_api.tempfile.mkstemp()
   os.close(tempfd)
-  generator = [input_api.python_executable,
+  generator = [input_api.python3_executable,
                CHARACTER_COMPOSER_DATA_GENERATOR,
                '--output',
                tempname,

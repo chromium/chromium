@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -68,6 +68,8 @@ import unicodedata
 # Global error counter.
 g_fail = 0
 
+unichr_compat = chr if sys.version_info[0] == 3 else unichr
+
 class Key(str):
   """Represents an element of a composition sequence.
 
@@ -87,8 +89,8 @@ class Key(str):
     - Key('Compose', 0)
     """
     global g_fail
-    if character > 0xFFFF:
-      print '{}: unsupported non-BMP character {}'.format(location, character)
+    if character is not None and character > 0xFFFF:
+      print('{}: unsupported non-BMP character {}'.format(location, character))
       g_fail += 1
       s = 'ERROR'
     elif key is None:
@@ -98,7 +100,8 @@ class Key(str):
     elif key.lower() == 'compose':
       s = 'D0000'
     else:
-      print '{}: unexpected combination {}<{}>'.format(location, key, character)
+      print('{}: unexpected combination {}<{}>'
+            .format(location, key, character))
       g_fail += 1
       s = 'ERROR'
     return str.__new__(cls, s)
@@ -112,7 +115,7 @@ class Key(str):
   def UnicodeName(self):
     v = self.CharacterCode()
     try:
-      return unicodedata.name(unichr(v)).lower()
+      return unicodedata.name(unichr_compat(v)).lower()
     except ValueError:
       return 'U+{:04X}'.format(v)
 
@@ -236,8 +239,8 @@ class Lexer:
         except KeyError:
           g_fail += 1
           character = None
-          print '{}: unknown character name "{}"'.format(location,
-                                                         s.encode('utf-8'))
+          print('{}: unknown character name "{}"'.format(location,
+                                                         s.encode('utf-8')))
     return Key(key, character, location)
 
   def Where(self):
@@ -265,8 +268,8 @@ class Parser:
         break
       if t and t != 'EOL' and t.Kind() != 'dead_key':
         g_fail += 1
-        print ('{}: sequence does not begin with Compose or Dead key'
-               .format(self._lexer.Where()))
+        print('{}: sequence does not begin with Compose or Dead key'
+              .format(self._lexer.Where()))
         break
       while t and t != 'EOL':
         seq.append(t)
@@ -421,7 +424,7 @@ def main(argv):
 
   parse_tree = Parser(Lexer(Input(args.inputs))).Parse()
 
-  with (sys.stdout if args.output == '-' else open(args.output, 'wb')) as out:
+  with (sys.stdout if args.output == '-' else open(args.output, 'w')) as out:
     out.write('// Copyright 2015 The Chromium Authors. All rights reserved.\n')
     out.write('// Use of this source code is governed by a BSD-style license')
     out.write(' that can be\n// found in the LICENSE file.\n\n')
