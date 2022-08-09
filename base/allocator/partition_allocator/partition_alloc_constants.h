@@ -251,8 +251,11 @@ constexpr size_t kNumPools = 3;
 // the actual size, unless PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE is set, which
 // allows to choose a different size at initialization time for certain
 // configurations.
-#if BUILDFLAG(IS_ANDROID)
-// Special-case Android, which incurs test failures with larger GigaCage.
+//
+// Special-case Android and iOS, which incur test failures with larger
+// GigaCage. Regardless, allocating >8GiB with malloc() on these platforms is
+// unrealistic as of 2022.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 16 * kGiB;
