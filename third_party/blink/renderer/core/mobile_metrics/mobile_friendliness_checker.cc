@@ -410,6 +410,21 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 
 }  // namespace
 
+MobileFriendlinessChecker* MobileFriendlinessChecker::Create(
+    LocalFrameView& frame_view) {
+  // Only run the mobile friendliness checker for the outermost main
+  // frame. The checker will iterate through all local frames in the
+  // current blink::Page. Also skip the mobile friendliness checks for
+  // "non-ordinary" pages by checking IsLocalFrameClientImpl(), since
+  // it's not useful to generate mobile friendliness metrics for
+  // devtools, svg, etc.
+  if (!frame_view.GetFrame().Client()->IsLocalFrameClientImpl() ||
+      !frame_view.GetFrame().IsOutermostMainFrame()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<MobileFriendlinessChecker>(frame_view);
+}
+
 MobileFriendlinessChecker* MobileFriendlinessChecker::From(
     const Document& document) {
   DCHECK(document.GetFrame());
