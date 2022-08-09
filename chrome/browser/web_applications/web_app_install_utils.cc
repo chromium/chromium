@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <map>
 #include <ostream>
 #include <set>
@@ -17,6 +18,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_map.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -26,6 +29,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -42,6 +46,7 @@
 #include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -595,38 +600,66 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   web_app_info->tab_strip = manifest.tab_strip;
 }
 
-base::flat_set<GURL> GetValidIconUrlsToDownload(
-    const WebAppInstallInfo& web_app_info) {
-  base::flat_set<GURL> web_app_info_icon_urls;
-  // App icons.
+namespace {
+
+std::vector<GURL> GetAppIconUrls(const WebAppInstallInfo& web_app_info) {
+  std::vector<GURL> urls;
+
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    if (!info.url.is_valid())
-      continue;
-    web_app_info_icon_urls.insert(info.url);
+    urls.push_back(info.url);
   }
 
-  // Shortcut icons.
-  for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
+  return urls;
+}
+
+std::vector<GURL> GetShortcutIcons(const WebAppInstallInfo& web_app_info) {
+  std::vector<GURL> urls;
+  for (const WebAppShortcutsMenuItemInfo& shortcut :
+       web_app_info.shortcuts_menu_item_infos) {
     for (IconPurpose purpose : kIconPurposes) {
-      for (const auto& icon :
+      for (const WebAppShortcutsMenuItemInfo::Icon& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        if (!icon.url.is_valid())
-          continue;
-        web_app_info_icon_urls.insert(icon.url);
+        urls.push_back(icon.url);
       }
     }
   }
 
-  // File handling icons.
-  for (const auto& file_handler : web_app_info.file_handlers) {
-    for (const auto& icon : file_handler.downloaded_icons) {
-      if (!icon.url.is_valid())
-        continue;
-      web_app_info_icon_urls.insert(icon.url);
+  return urls;
+}
+
+std::vector<GURL> GetFileHandlingIcons(const WebAppInstallInfo& web_app_info) {
+  std::vector<GURL> urls;
+
+  for (const apps::FileHandler& file_handler : web_app_info.file_handlers) {
+    for (const apps::IconInfo& icon : file_handler.downloaded_icons) {
+      urls.push_back(icon.url);
     }
   }
 
-  return web_app_info_icon_urls;
+  return urls;
+}
+
+base::flat_set<GURL> RemoveDuplicates(const std::vector<GURL>& from_urls) {
+  return base::flat_set<GURL>{from_urls};
+}
+
+void RemoveInvalidUrls(std::vector<GURL>& urls) {
+  base::EraseIf(urls, [](const GURL& url) { return !url.is_valid(); });
+}
+
+}  // namespace
+
+base::flat_set<GURL> GetValidIconUrlsToDownload(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<GURL> icon_urls;
+
+  base::Extend(icon_urls, GetAppIconUrls(web_app_info));
+  base::Extend(icon_urls, GetShortcutIcons(web_app_info));
+  base::Extend(icon_urls, GetFileHandlingIcons(web_app_info));
+
+  RemoveInvalidUrls(std::ref(icon_urls));
+
+  return RemoveDuplicates(icon_urls);
 }
 
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
