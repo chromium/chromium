@@ -1430,16 +1430,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // Tells the delegate that the user tapped the item with identifier
 // corresponding to `indexPath`.
+// TODO(crbug.com/1350453): Use the "Primary Action" APIs for collection views
+// when running under iOS16 instead of overloading selection changes to handle
+// cell taps.
 - (void)tappedItemAtIndexPath:(NSIndexPath*)indexPath {
+  // Speculative fix for crbug.com/1134663, where this method is called while
+  // updates from a tab insertion are processing.
+  // *** Do not add any code before this check. ***
+  if (self.updating)
+    return;
+
   if ([self isIndexPathForPlusSignCell:indexPath]) {
     [self.delegate didTapPlusSignInGridViewController:self];
     return;
   }
-
-  // Speculative fix for crbug.com/1134663, where this method is called while
-  // updates from a tab insertion are processing.
-  if (self.updating)
-    return;
 
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, self.items.count);
