@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -322,7 +321,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             mCard.setBillingAddressId(
                     ((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
             PersonalDataManager.getInstance().updateServerCardBillingAddress(mCard);
-            SettingsAutofillAndPaymentsObserver.getInstance().notifyOnCreditCardUpdated(mCard);
         }
         return true;
     }

@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -27,9 +26,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentAppCreator;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
-import org.chromium.chrome.browser.payments.CardEditor;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
@@ -51,7 +48,6 @@ import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.payments.AbortReason;
-import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
@@ -72,7 +68,6 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
-import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
@@ -122,20 +117,17 @@ public class PaymentUiService
     private final String mMerchantName;
     private final Map<String, CurrencyFormatter> mCurrencyFormatterMap;
     private final AddressEditor mAddressEditor;
-    private final CardEditor mCardEditor;
     private final PaymentUisShowStateReconciler mPaymentUisShowStateReconciler;
     private final PaymentRequestParams mParams;
     private final JourneyLogger mJourneyLogger;
 
     private PaymentRequestUI mPaymentRequestUI;
     private ShoppingCart mUiShoppingCart;
-    private boolean mMerchantSupportsAutofillCards;
     private boolean mHasInitialized;
     private boolean mHasClosed;
     private SectionInformation mPaymentMethodsSection;
     private SectionInformation mShippingAddressesSection;
     private ContactDetailsSection mContactSection;
-    private AutofillPaymentAppCreator mAutofillPaymentAppCreator;
     private boolean mHaveRequestedAutofillData = true;
     private List<AutofillProfile> mAutofillProfiles;
     private TabModelSelector mObservedTabModelSelector;
@@ -290,10 +282,6 @@ public class PaymentUiService
         // Do not persist changes on disk in OffTheRecord mode.
         mAddressEditor = new AddressEditor(
                 AddressEditor.Purpose.PAYMENT_REQUEST, /*saveToDisk=*/!isOffTheRecord);
-        // PaymentRequest card editor does not show the organization name in the dropdown with the
-        // billing address labels.
-        mCardEditor = new CardEditor(
-                webContents, mAddressEditor, /*includeOrgLabel=*/false, isOffTheRecord);
         mJourneyLogger = journeyLogger;
         mWebContents = webContents;
         mTopLevelOriginFormattedForDisplay = topLevelOrigin;
@@ -342,15 +330,6 @@ public class PaymentUiService
      */
     public boolean isPaymentRequestUiAlive() {
         return mPaymentRequestUI != null;
-    }
-
-    /**
-     * @return Whether the merchant supports autofill cards. It can be used only after
-     *         initialize() is invoked.
-     */
-    public boolean merchantSupportsAutofillCards() {
-        assert mHasInitialized;
-        return mMerchantSupportsAutofillCards;
     }
 
     /** @return The payment apps. */
@@ -402,20 +381,6 @@ public class PaymentUiService
         updateAppModifiedTotals();
 
         SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(this);
-    }
-
-    /** Set the AutofillPaymentAppCreator. */
-    public void setAutofillPaymentAppCreator(AutofillPaymentAppCreator autofillPaymentAppCreator) {
-        mAutofillPaymentAppCreator = autofillPaymentAppCreator;
-    }
-
-    /**
-     * @return Whether user can add credit card. It can be used only after
-     *         initialize() is invoked.
-     */
-    public boolean canUserAddCreditCard() {
-        assert mHasInitialized;
-        return mMerchantSupportsAutofillCards;
     }
 
     /**
@@ -476,7 +441,6 @@ public class PaymentUiService
     @Override
     public void onAddressUpdated(AutofillAddress address) {
         address.setShippingAddressLabelWithCountry();
-        mCardEditor.updateBillingAddressIfComplete(address);
 
         if (mShippingAddressesSection != null) {
             mShippingAddressesSection.addAndSelectOrUpdateItem(address);
@@ -499,48 +463,6 @@ public class PaymentUiService
         // SUGGESTIONS_LIMIT addresses, so we may want to add back previously ignored addresses.
     }
 
-    // Implement SettingsAutofillAndPaymentsObserver.Observer:
-    @Override
-    public void onCreditCardUpdated(CreditCard card) {
-        assert mHasInitialized;
-        if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null
-                || mAutofillPaymentAppCreator == null) {
-            return;
-        }
-
-        PaymentApp updatedAutofillCard = mAutofillPaymentAppCreator.createPaymentAppForCard(card);
-
-        // Can be null when the card added through settings does not match the requested card
-        // network or is invalid, because autofill settings do not perform the same level of
-        // validation as Basic Card implementation in Chrome.
-        if (updatedAutofillCard == null) return;
-
-        mPaymentMethodsSection.addAndSelectOrUpdateItem(updatedAutofillCard);
-
-        updateAppModifiedTotals();
-
-        if (mPaymentRequestUI != null) {
-            mPaymentRequestUI.updateSection(
-                    PaymentRequestUI.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
-        }
-    }
-
-    // Implement SettingsAutofillAndPaymentsObserver.Observer:
-    @Override
-    public void onCreditCardDeleted(String guid) {
-        assert mHasInitialized;
-        if (!mMerchantSupportsAutofillCards || mPaymentMethodsSection == null) return;
-
-        mPaymentMethodsSection.removeAndUnselectItem(guid);
-
-        updateAppModifiedTotals();
-
-        if (mPaymentRequestUI != null) {
-            mPaymentRequestUI.updateSection(
-                    PaymentRequestUI.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
-        }
-    }
-
     /**
      * Initializes the payment UI service.
      * @param details The PaymentDetails provided by the merchant.
@@ -548,13 +470,6 @@ public class PaymentUiService
     public void initialize(PaymentDetails details) {
         assert !mParams.hasClosed();
         updateDetailsOnPaymentRequestUI(details);
-        for (PaymentMethodData method : mParams.getMethodData().values()) {
-            mCardEditor.addAcceptedPaymentMethodIfRecognized(method);
-        }
-        // Checks whether the merchant supports autofill cards before show is called.
-        mMerchantSupportsAutofillCards =
-                PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
-                && BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
 
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles = Collections.unmodifiableList(
@@ -1045,8 +960,6 @@ public class PaymentUiService
                     // Sets or updates the shipping address label.
                     editedAddress.setShippingAddressLabelWithCountry();
 
-                    mCardEditor.updateBillingAddressIfComplete(editedAddress);
-
                     // A partial or complete address came back from the editor (could have been from
                     // adding/editing or cancelling out of the edit flow).
                     if (!editedAddress.isComplete()) {
@@ -1188,7 +1101,7 @@ public class PaymentUiService
         }
 
         mPaymentRequestUI = new PaymentRequestUI(activity, /*client=*/this,
-                mMerchantSupportsAutofillCards, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
+                /*canAddCards=*/false, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
                 mMerchantName, mTopLevelOriginFormattedForDisplay,
                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents),
                 new ShippingStrings(mParams.getPaymentOptions().shippingType),
@@ -1218,7 +1131,6 @@ public class PaymentUiService
         }
 
         mAddressEditor.setEditorDialog(mPaymentRequestUI.getEditorDialog());
-        mCardEditor.setEditorDialog(mPaymentRequestUI.getCardEditorDialog());
         if (mContactEditor != null) {
             mContactEditor.setEditorDialog(mPaymentRequestUI.getEditorDialog());
         }
@@ -1290,43 +1202,6 @@ public class PaymentUiService
                 PaymentRequestUI.DataType.SHIPPING_ADDRESSES, firstCompleteAddressIndex, addresses);
     }
 
-    /**
-     * Edit the credit cards on the PaymentRequest UI.
-     * @param toEdit The AutofillPaymentInstrument whose credit card is to replace those on the UI,
-     *         allowed to be null.
-     */
-    private void editCard(@Nullable final AutofillPaymentInstrument toEdit) {
-        mCardEditor.edit(toEdit, new Callback<AutofillPaymentInstrument>() {
-            @Override
-            public void onResult(AutofillPaymentInstrument editedCard) {
-                if (mPaymentRequestUI == null) return;
-
-                if (editedCard != null) {
-                    // A partial or complete card came back from the editor (could have been from
-                    // adding/editing or cancelling out of the edit flow).
-                    if (!editedCard.isComplete()) {
-                        // If the card is not complete, unselect it (editor can return incomplete
-                        // information when cancelled).
-                        mPaymentMethodsSection.setSelectedItemIndex(
-                                SectionInformation.NO_SELECTION);
-                    } else if (toEdit == null) {
-                        // Card is complete and we were in the "Add flow": add an item to the list.
-                        mPaymentMethodsSection.addAndSelectItem(editedCard);
-                    }
-                    // If card is complete and (toEdit != null), no action needed: the card was
-                    // already selected in the UI.
-                }
-                // If |editedCard| is null, the user has cancelled out of the "Add flow". No action
-                // to take (if another card was selected prior to the add flow, it will stay
-                // selected).
-
-                updateAppModifiedTotals();
-                mPaymentRequestUI.updateSection(
-                        PaymentRequestUI.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
-            }
-        });
-    }
-
     // Implements PaymentRequestUi.Delegate:
     @Override
     public void getSectionInformation(@PaymentRequestUI.DataType final int optionType,
@@ -1392,8 +1267,10 @@ public class PaymentUiService
             editContactOnPaymentRequestUI(null);
             return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
         } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
-            editCard(null);
-            return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+            // TODO(https://crbug.com/1209835): Either remove DataType.PAYMENT_METHODS entirely, or
+            // just remove this branch.
+            assert false : "Cannot edit PAYMENT_METHODS";
+            return PaymentRequestUI.SelectionResult.NONE;
         }
 
         return PaymentRequestUI.SelectionResult.NONE;
@@ -1417,8 +1294,10 @@ public class PaymentUiService
         }
 
         if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
-            editCard((AutofillPaymentInstrument) option);
-            return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+            // TODO(https://crbug.com/1209835): Either remove DataType.PAYMENT_METHODS entirely, or
+            // just remove this branch.
+            assert false : "Cannot edit PAYMENT_METHODS";
+            return PaymentRequestUI.SelectionResult.NONE;
         }
 
         assert false;
@@ -1540,14 +1419,10 @@ public class PaymentUiService
             }
             onSelectedPaymentMethodUpdated();
             PaymentApp paymentApp = (PaymentApp) option;
-            if (paymentApp instanceof AutofillPaymentInstrument) {
-                AutofillPaymentInstrument card = (AutofillPaymentInstrument) paymentApp;
 
-                if (!card.isComplete()) {
-                    editCard(card);
-                    return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
-                }
-            }
+            // TODO(https://crbug.com/1209835): AutofillPaymentInstrument should probably no longer
+            // be a PaymentApp subclass.
+            assert !(paymentApp instanceof AutofillPaymentInstrument);
 
             updateOrderSummary(paymentApp);
             mPaymentMethodsSection.setSelectedItem(option);
@@ -1604,11 +1479,10 @@ public class PaymentUiService
         PersonalDataManager.getInstance().normalizeAddress(address.getProfile(), /*delegate=*/this);
     }
 
-    /** @return Whether at least one payment app (including basic-card payment app) is available. */
+    /** @return Whether at least one payment app is available. */
     public boolean hasAvailableApps() {
         assert mHasInitialized;
-        return (mPaymentMethodsSection != null && !mPaymentMethodsSection.isEmpty())
-                || mMerchantSupportsAutofillCards;
+        return mPaymentMethodsSection != null && !mPaymentMethodsSection.isEmpty();
     }
 
     /** Close the instance. Do not use this instance any more after calling this method. */

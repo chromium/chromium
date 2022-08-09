@@ -498,15 +498,7 @@ public class ChromePaymentRequestService
         mPaymentUiService.setPaymentApps(pendingApps);
 
         int missingFields = 0;
-        if (mPaymentUiService.getPaymentApps().isEmpty()) {
-            if (mPaymentUiService.merchantSupportsAutofillCards()) {
-                // Record all fields if basic-card is supported but no card exists.
-                missingFields = AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED
-                        | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_CARDHOLDER
-                        | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_NUMBER
-                        | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS;
-            }
-        } else {
+        if (!mPaymentUiService.getPaymentApps().isEmpty()) {
             PaymentApp firstApp = mPaymentUiService.getPaymentApps().get(0);
             if (firstApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
                 missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
@@ -527,7 +519,8 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public boolean isPaymentSheetBasedPaymentAppSupported() {
-        return mPaymentUiService.canUserAddCreditCard();
+        // TODO(crbug.com/1209835): Remove this method entirely.
+        return false;
     }
 
     // Implements BrowserPaymentRequest:
