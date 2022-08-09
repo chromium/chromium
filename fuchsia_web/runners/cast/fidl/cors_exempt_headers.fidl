@@ -11,6 +11,6 @@ using fuchsia.web;
 @discoverable
 protocol CorsExemptHeaderProvider {
     GetCorsExemptHeaderNames() -> (struct {
-        header_names vector<bytes:fuchsia.web.MAX_HEADERS_COUNT>:MAX;
+        header_names vector<vector<uint8>:fuchsia.web.MAX_HEADERS_COUNT>:MAX;
     });
 };
