@@ -88,8 +88,10 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   }
 
  private:
-  const raw_ptr<HostResolverManager, DanglingUntriaged> manager_;
   std::unique_ptr<HostResolverManager> owned_manager_;
+  // `manager_` might point to `owned_manager_`. It must be declared last and
+  // cleared first.
+  const raw_ptr<HostResolverManager> manager_;
   std::unique_ptr<ResolveContext> resolve_context_;
 
   // If true, the context is shutting down. Subsequent request Start() calls
