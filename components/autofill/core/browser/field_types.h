@@ -239,7 +239,9 @@ enum ServerFieldType {
   PHONE_HOME_NUMBER_PREFIX = 123,
   PHONE_HOME_NUMBER_SUFFIX = 124,
 
-  // IBAN data.
+  // International Bank Account Number (IBAN) details are usually entered on
+  // banking and merchant websites used to make international transactions.
+  // See https://en.wikipedia.org/wiki/International_Bank_Account_Number.
   IBAN_VALUE = 125,
   // No new types can be added without a corresponding change to the Autofill
   // server.
