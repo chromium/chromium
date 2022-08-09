@@ -100,7 +100,7 @@ public class CouponPersistedTabDataTest {
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab,
                 new CouponPersistedTabData.Coupon(
                         SERIALIZE_DESERIALIZE_NAME, SERIALIZE_DESERIALIZE_CODE));
-        ByteBuffer serialized = couponPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = couponPersistedTabData.getSerializer().get();
         CouponPersistedTabData deserialized = new CouponPersistedTabData(tab);
         Assert.assertTrue(deserialized.deserialize(serialized));
         Assert.assertEquals(SERIALIZE_DESERIALIZE_NAME, deserialized.getCoupon().couponName);
@@ -120,7 +120,7 @@ public class CouponPersistedTabDataTest {
     public void testSerializeDeserializeNoRemainingBytes() throws ExecutionException {
         Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> new MockTab(1, false));
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab, null);
-        ByteBuffer serialized = couponPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = couponPersistedTabData.getSerializer().get();
         CouponPersistedTabData deserialized = new CouponPersistedTabData(tab);
         Assert.assertFalse(serialized.hasRemaining());
         Assert.assertFalse(deserialized.deserialize(serialized));

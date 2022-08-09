@@ -8,7 +8,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.nio.ByteBuffer;
@@ -42,14 +41,15 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer) {
         // TODO(crbug.com/1221571) update LevelDB storage in native to use ByteBuffer instead
         // of byte[] to avoid conversion
-        mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(dataSupplier.get()));
+        serializer.preSerialize();
+        mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(serializer.get()));
     }
 
     @Override
-    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer,
             Callback<Integer> callback) {
         assert false : "save with callback unused in LevelDBPersistedTabDataStorage";
     }

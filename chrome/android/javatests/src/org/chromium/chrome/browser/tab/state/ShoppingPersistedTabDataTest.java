@@ -116,7 +116,7 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setCurrencyCode(
                 ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE);
         shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.google.com"));
-        ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
         deserialized.deserialize(serialized);
         Assert.assertEquals(
@@ -155,7 +155,7 @@ public class ShoppingPersistedTabDataTest {
                     shoppingPersistedTabData.setPreviousPriceMicros(containsPriceDrop
                                     ? 30_000_000L
                                     : ShoppingPersistedTabData.NO_PRICE_KNOWN);
-                    ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+                    ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
                     ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
                     deserialized.deserialize(serialized);
                     MetricsResult metricsResult = deserialized.getPriceDropMetricsLoggerForTesting()
@@ -689,7 +689,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         shoppingPersistedTabData.setPriceMicros(42_000_000L, null);
-        ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         ShoppingPersistedTabData deserialized =
@@ -709,7 +709,7 @@ public class ShoppingPersistedTabDataTest {
         supplier.set(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.setMainOfferId(ShoppingPersistedTabDataTestUtils.FAKE_OFFER_ID);
-        ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
         deserialized.deserialize(serialized);
         Assert.assertEquals(

@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -137,7 +136,7 @@ public class PersistedTabDataTest {
         }
 
         @Override
-        public Supplier<ByteBuffer> getSerializeSupplier() {
+        public Serializer<ByteBuffer> getSerializer() {
             // Verify anything before the supplier is called on the UI thread
             ThreadUtils.assertOnUiThread();
             return () -> {
@@ -146,7 +145,7 @@ public class PersistedTabDataTest {
                 // {@link CriticalPersistedTabData} may unnecessarily consume
                 // the UI thread and cause jank.
                 ThreadUtils.assertOnBackgroundThread();
-                return super.getSerializeSupplier().get();
+                return super.getSerializer().get();
             };
         }
     }
@@ -156,9 +155,9 @@ public class PersistedTabDataTest {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
         }
         @Override
-        public Supplier<ByteBuffer> getSerializeSupplier() {
+        public Serializer<ByteBuffer> getSerializer() {
             return () -> {
-                // OutOfMemoryError thrown on getSerializeSupplier.get();
+                // OutOfMemoryError thrown on getSerializer.get();
                 throw new OutOfMemoryError("Out of memory error");
             };
         }
@@ -169,8 +168,8 @@ public class PersistedTabDataTest {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
         }
         @Override
-        public Supplier<ByteBuffer> getSerializeSupplier() {
-            // OutOfMemoryError thrown on getSerializeSupplier
+        public Serializer<ByteBuffer> getSerializer() {
+            // OutOfMemoryError thrown on getSerializer
             throw new OutOfMemoryError("Out of memory error");
         }
     }

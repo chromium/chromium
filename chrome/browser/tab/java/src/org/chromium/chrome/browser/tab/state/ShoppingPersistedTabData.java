@@ -17,7 +17,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.DoNotClassMerge;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.commerce.PriceUtils;
@@ -937,7 +936,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public Supplier<ByteBuffer> getSerializeSupplier() {
+    public Serializer<ByteBuffer> getSerializer() {
         ShoppingPersistedTabDataProto.Builder builder =
                 ShoppingPersistedTabDataProto.newBuilder()
                         .setPriceMicros(mPriceDropData.priceMicros)

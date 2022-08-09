@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -127,7 +126,7 @@ public class CouponPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    Supplier<ByteBuffer> getSerializeSupplier() {
+    Serializer<ByteBuffer> getSerializer() {
         CouponPersistedTabDataProto.Builder builder = CouponPersistedTabDataProto.newBuilder();
         if (mCoupon != null) {
             if (mCoupon.promoCode != null) {

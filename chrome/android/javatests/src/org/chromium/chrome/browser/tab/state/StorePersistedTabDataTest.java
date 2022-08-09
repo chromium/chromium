@@ -292,7 +292,7 @@ public class StorePersistedTabDataTest {
         StorePersistedTabData storePersistedTabData = new StorePersistedTabData(tab,
                 new StorePersistedTabData.StoreHours(
                         SERIALIZE_DESERIALIZE_OPENING_TIME, SERIALIZE_DESERIALIZE_CLOSING_TIME));
-        ByteBuffer serialized = storePersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized = storePersistedTabData.getSerializer().get();
         StorePersistedTabData deserialized = new StorePersistedTabData(tab);
         deserialized.deserialize(serialized);
         Assert.assertEquals(

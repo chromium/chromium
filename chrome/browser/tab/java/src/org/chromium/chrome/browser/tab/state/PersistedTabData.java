@@ -273,33 +273,41 @@ public abstract class PersistedTabData implements UserData {
     /**
      * @return {@link Supplier} for {@link PersistedTabData} in serialized form.
      */
-    abstract Supplier<ByteBuffer> getSerializeSupplier();
+    abstract Serializer<ByteBuffer> getSerializer();
 
     @VisibleForTesting
-    protected Supplier<ByteBuffer> getOomAndMetricsWrapper() {
-        final Supplier<ByteBuffer> supplier = getSerializeSupplierWithOomSoftFallback();
-        return () -> {
-            if (supplier == null) return null;
-            ByteBuffer res;
-            try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
-                res = supplier.get();
-            } catch (OutOfMemoryError oe) {
-                Log.e(TAG,
-                        "Out of memory error when attempting to save PersistedTabData. Details: "
-                                + oe.getMessage());
-                res = null;
+    protected Serializer<ByteBuffer> getOomAndMetricsWrapper() {
+        final Serializer<ByteBuffer> serializer = getSerializerWithOomSoftFallback();
+        return new Serializer<ByteBuffer>() {
+            @Override
+            public ByteBuffer get() {
+                if (serializer == null) return null;
+                ByteBuffer res;
+                try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
+                    res = serializer.get();
+                } catch (OutOfMemoryError oe) {
+                    Log.e(TAG,
+                            "Out of memory error when attempting to save PersistedTabData."
+                                    + " Details: " + oe.getMessage());
+                    res = null;
+                }
+                // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not
+                // null/out of memory
+                RecordHistogram.recordBooleanHistogram(
+                        "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
+                return res;
             }
-            // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out
-            // of memory
-            RecordHistogram.recordBooleanHistogram(
-                    "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
-            return res;
+
+            @Override
+            public void preSerialize() {
+                serializer.preSerialize();
+            }
         };
     }
 
-    private Supplier<ByteBuffer> getSerializeSupplierWithOomSoftFallback() {
+    private Serializer<ByteBuffer> getSerializerWithOomSoftFallback() {
         try {
-            return getSerializeSupplier();
+            return getSerializer();
         } catch (OutOfMemoryError oe) {
             Log.e(TAG,
                     "Out of memory error when attempting to save PersistedTabData "
