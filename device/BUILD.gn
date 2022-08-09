@@ -275,6 +275,7 @@ test("device_unittests") {
       "bluetooth/dbus/bluetooth_gatt_application_service_provider_unittest.cc",
       "bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_unittest.cc",
       "bluetooth/floss/bluetooth_floss_unittest.cc",
+      "bluetooth/floss/exported_callback_manager_unittest.cc",
       "bluetooth/floss/floss_adapter_client_unittest.cc",
       "bluetooth/floss/floss_manager_client_unittest.cc",
       "bluetooth/test/bluetooth_test_bluez.cc",

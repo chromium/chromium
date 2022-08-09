@@ -118,6 +118,8 @@ const char FlossDBusClient::kErrorInvalidParameters[] =
     "org.chromium.Error.InvalidParameters";
 const char FlossDBusClient::kErrorInvalidReturn[] =
     "org.chromium.Error.InvalidReturn";
+const char FlossDBusClient::kErrorDoesNotExist[] =
+    "org.chromium.Error.DoesNotExist";
 
 // Default error handler for dbus clients is to just print the error right now.
 // TODO(abps) - Deprecate this once error handling is implemented in the upper

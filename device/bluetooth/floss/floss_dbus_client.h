@@ -183,6 +183,9 @@ class FlossDBusClient {
   // Error: Invalid return.
   static const char DEVICE_BLUETOOTH_EXPORT kErrorInvalidReturn[];
 
+  // Error: does not exist.
+  static const char DEVICE_BLUETOOTH_EXPORT kErrorDoesNotExist[];
+
   // Generalized DBus serialization (used for generalized method call
   // invocation).
   template <typename T>
