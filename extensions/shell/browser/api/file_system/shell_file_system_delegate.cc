@@ -63,6 +63,28 @@ int ShellFileSystemDelegate::GetDescriptionIdForAcceptType(
   return 0;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool ShellFileSystemDelegate::IsGrantable(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  return false;
+}
+
+void ShellFileSystemDelegate::RequestFileSystem(
+    content::BrowserContext* browser_context,
+    scoped_refptr<ExtensionFunction> requester,
+    const Extension& extension,
+    std::string volume_id,
+    bool writable,
+    FileSystemCallback success_callback,
+    ErrorCallback error_callback) {}
+
+void ShellFileSystemDelegate::GetVolumeList(
+    content::BrowserContext* browser_context,
+    VolumeListCallback success_callback,
+    ErrorCallback error_callback) {}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 SavedFilesServiceInterface* ShellFileSystemDelegate::GetSavedFilesService(
     content::BrowserContext* browser_context) {
   return apps::SavedFilesService::Get(browser_context);

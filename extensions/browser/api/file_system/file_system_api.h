@@ -248,34 +248,7 @@ class FileSystemRestoreEntryFunction : public FileSystemEntryFunction {
   ResponseAction Run() override;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Stub for non Chrome OS operating systems.
-class FileSystemRequestFileSystemFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
-                             FILESYSTEM_REQUESTFILESYSTEM)
-
- protected:
-  ~FileSystemRequestFileSystemFunction() override;
-
-  // ExtensionFunction overrides.
-  ExtensionFunction::ResponseAction Run() override;
-};
-
-// Stub for non Chrome OS operating systems.
-class FileSystemGetVolumeListFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
-                             FILESYSTEM_GETVOLUMELIST)
-
- protected:
-  ~FileSystemGetVolumeListFunction() override;
-
-  // ExtensionFunction overrides.
-  ExtensionFunction::ResponseAction Run() override;
-};
-
-#else
+#if BUILDFLAG(IS_CHROMEOS)
 // Requests a file system for the specified volume id.
 class FileSystemRequestFileSystemFunction : public ExtensionFunction {
  public:
@@ -313,7 +286,33 @@ class FileSystemGetVolumeListFunction : public ExtensionFunction {
   void OnGotVolumeList(const std::vector<api::file_system::Volume>& volumes);
   void OnError(const std::string& error);
 };
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+// Stub for non Chrome OS operating systems.
+class FileSystemRequestFileSystemFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
+                             FILESYSTEM_REQUESTFILESYSTEM)
+
+ protected:
+  ~FileSystemRequestFileSystemFunction() override;
+
+  // ExtensionFunction overrides.
+  ExtensionFunction::ResponseAction Run() override;
+};
+
+// Stub for non Chrome OS operating systems.
+class FileSystemGetVolumeListFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
+                             FILESYSTEM_GETVOLUMELIST)
+
+ protected:
+  ~FileSystemGetVolumeListFunction() override;
+
+  // ExtensionFunction overrides.
+  ExtensionFunction::ResponseAction Run() override;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
 

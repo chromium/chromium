@@ -7,6 +7,8 @@
 
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 
+#include "build/build_config.h"
+
 namespace extensions {
 
 class ShellFileSystemDelegate : public FileSystemDelegate {
@@ -36,6 +38,20 @@ class ShellFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_accept,
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsGrantable(content::BrowserContext* browser_context,
+                   const Extension& extension) override;
+  void RequestFileSystem(content::BrowserContext* browser_context,
+                         scoped_refptr<ExtensionFunction> requester,
+                         const Extension& extension,
+                         std::string volume_id,
+                         bool writable,
+                         FileSystemCallback success_callback,
+                         ErrorCallback error_callback) override;
+  void GetVolumeList(content::BrowserContext* browser_context,
+                     VolumeListCallback success_callback,
+                     ErrorCallback error_callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
 };

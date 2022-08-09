@@ -68,7 +68,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using storage::IsolatedContext;
 
@@ -90,10 +90,10 @@ const char kRetainEntryError[] = "Could not retain file entry.";
 const char kRetainEntryIncognitoError[] =
     "Could not retain file entry in incognito mode";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedOnNonKioskSessionError[] =
     "Operation only supported for kiosk apps running in a kiosk session.";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -1044,30 +1044,14 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+#if BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
+
+FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() =
     default;
 
-ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
-  using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
-
-FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
-
-ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
-#else
-
-FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() {}
-
-FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() {}
+FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+    default;
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
@@ -1106,9 +1090,11 @@ void FileSystemRequestFileSystemFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
 
-FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() {}
+/******** FileSystemGetVolumeListFunction ********/
 
-FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() {}
+FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() = default;
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
   FileSystemDelegate* delegate =
@@ -1136,6 +1122,29 @@ void FileSystemGetVolumeListFunction::OnGotVolumeList(
 void FileSystemGetVolumeListFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
+
+FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+    default;
+
+ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
+  using file_system::RequestFileSystem::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+
+/******** FileSystemGetVolumeListFunction ********/
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
+
+ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

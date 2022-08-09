@@ -29,8 +29,8 @@ namespace file_system_api {
 // TestingConsentProviderDelegate.
 // This class may post callbacks given to it, but does not asynchronously call
 // itself. It is generally safe to use a temporary ConsentProvider.
-// TODO(michaelpg): Make this easier to use by replacing member functions with
-// static methods.
+// TODO(crbug.com/1351493): Make this easier to use, perhaps by replacing member
+// functions with static methods.
 class ConsentProvider {
  public:
   enum Consent { CONSENT_GRANTED, CONSENT_REJECTED, CONSENT_IMPOSSIBLE };

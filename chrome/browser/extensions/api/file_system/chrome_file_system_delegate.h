@@ -16,9 +16,9 @@
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 class BrowserContext;
@@ -26,7 +26,7 @@ class BrowserContext;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace file_system_api {
 
 extern const char kConsentImpossible[];
@@ -39,7 +39,7 @@ extern const char kVolumeNotFoundError[];
 const char* ConsentResultToError(ConsentProvider::Consent result);
 
 }  // namespace file_system_api
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeFileSystemDelegate : public FileSystemDelegate {
  public:
@@ -68,7 +68,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_accept,
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsGrantable(content::BrowserContext* browser_context,
                    const Extension& extension) override;
   void RequestFileSystem(content::BrowserContext* browser_context,
@@ -81,7 +81,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
   void GetVolumeList(content::BrowserContext* browser_context,
                      VolumeListCallback success_callback,
                      ErrorCallback error_callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
 };

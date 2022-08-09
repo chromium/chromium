@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,10 +18,6 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class ExtensionFunction;
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -77,7 +74,7 @@ class FileSystemDelegate {
   // string ID is found.
   virtual int GetDescriptionIdForAcceptType(const std::string& accept_type) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Checks whether the extension can be granted access.
   virtual bool IsGrantable(content::BrowserContext* browser_context,
                            const Extension& extension) = 0;
@@ -96,7 +93,7 @@ class FileSystemDelegate {
   virtual void GetVolumeList(content::BrowserContext* browser_context,
                              VolumeListCallback success_callback,
                              ErrorCallback error_callback) = 0;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   virtual SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) = 0;

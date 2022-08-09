@@ -35,15 +35,15 @@
 #include "base/mac/foundation_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/event_router.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
 namespace file_system = api::file_system;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using file_system_api::ConsentProvider;
 using file_system_api::ConsentProviderDelegate;
 
@@ -72,7 +72,7 @@ const char* ConsentResultToError(ConsentProvider::Consent result) {
 }
 
 }  // namespace file_system_api
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 /******** ChromeFileSystemDelegate ********/
 
@@ -165,7 +165,7 @@ int ChromeFileSystemDelegate::GetDescriptionIdForAcceptType(
   return 0;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool ChromeFileSystemDelegate::IsGrantable(
     content::BrowserContext* browser_context,
     const Extension& extension) {
@@ -189,7 +189,7 @@ void ChromeFileSystemDelegate::GetVolumeList(
     content::BrowserContext* browser_context,
     VolumeListCallback success_callback,
     ErrorCallback error_callback) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 SavedFilesServiceInterface* ChromeFileSystemDelegate::GetSavedFilesService(
     content::BrowserContext* browser_context) {

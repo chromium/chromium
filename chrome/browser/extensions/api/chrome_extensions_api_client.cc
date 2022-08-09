@@ -72,6 +72,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_lacros.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.h"
 #endif
 
@@ -391,6 +392,8 @@ MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateAsh;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateLacros;
 #else
   using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegate;
 #endif

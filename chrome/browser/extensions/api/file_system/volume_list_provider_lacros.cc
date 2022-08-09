@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/file_system/volume_list_provider_lacros.h"
 
 #include "base/logging.h"
+#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_lacros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/lacros/lacros_service.h"
 
@@ -26,9 +27,7 @@ void VolumeListProviderLacros::Start() {
 void VolumeListProviderLacros::OnVolumeListChanged(
     std::vector<crosapi::mojom::VolumePtr> volume_list) {
   DCHECK(profile_);
-
-  // TODO(crbug.com/1263204): Add and call
-  // file_system_api::DispatchVolumeListChangeEventLacros().
+  file_system_api::DispatchVolumeListChangeEventLacros(profile_, volume_list);
 }
 
 }  // namespace extensions
