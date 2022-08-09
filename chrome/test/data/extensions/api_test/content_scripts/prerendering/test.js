@@ -132,6 +132,8 @@ async function testWithAboutBlankIframe(details) {
 chrome.test.getConfig(async config => {
   testServerPort = config.testServer.port;
 
+  // TODO(https://crbug.com/3731231): Add more tests for
+  // `match_origin_as_fallback` and manifest v3.
   chrome.test.runTests([
     testWithIframe,
     testWithAboutBlankIframe,
