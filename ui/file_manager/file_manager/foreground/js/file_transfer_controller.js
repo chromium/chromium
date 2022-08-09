@@ -6,9 +6,10 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
-import {getDirectory, getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
+import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {getEnabledTrashVolumeURLs} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -948,12 +949,37 @@ export class FileTransferController {
    * @param {!Event} event A dragleave event of DOM.
    * @private
    */
-  onDrop_(onlyIntoDirectories, event) {
+  async onDrop_(onlyIntoDirectories, event) {
     if (onlyIntoDirectories && !this.dropTarget_) {
       return;
     }
     const destinationEntry =
         this.destinationEntry_ || this.directoryModel_.getCurrentDirEntry();
+    if (destinationEntry.rootType === VolumeManagerCommon.RootType.TRASH &&
+        this.canTrashSelection_(destinationEntry, event.dataTransfer)) {
+      event.preventDefault();
+      const sourceURLs =
+          (event.dataTransfer.getData('fs/sources') || '').split('\n');
+      const {entries, failureUrls} =
+          await FileTransferController.URLsToEntriesWithAccess(sourceURLs);
+
+      // The list of entries should not be special entries (e.g. Camera, Linux
+      // files) and should not already exist in Trash (i.e. you can't trash
+      // something that's already trashed).
+      const isModifiableAndNotInTrashRoot = entry => {
+        return !util.isNonModifiable(this.volumeManager_, entry) &&
+            !util.isTrashEntry(entry);
+      };
+      const canTrashEntries = entries && entries.length > 0 &&
+          entries.every(isModifiableAndNotInTrashRoot);
+      if (canTrashEntries && (!failureUrls || failureUrls.length === 0)) {
+        startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
+            /*params=*/ {});
+      }
+      this.clearDropTarget_();
+      return;
+    }
     if (!this.canPasteOrDrop_(event.dataTransfer, destinationEntry)) {
       return;
     }
@@ -1335,6 +1361,13 @@ export class FileTransferController {
       return false;  // Unsupported type of content.
     }
 
+    // A drop on the Trash root should always perform a "Send to Trash"
+    // operation.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.TRASH) {
+      return this.canTrashSelection_(destinationLocationInfo, clipboardData);
+    }
+
     const sourceUrls = (clipboardData.getData('fs/sources') || '').split('\n');
     if (this.getSourceRootURL_(
             clipboardData, this.getDragAndDropGlobalData_()) !==
@@ -1539,6 +1572,16 @@ export class FileTransferController {
           DropEffectType.NONE,
           strf('DROP_TARGET_FOLDER_NO_MOVE_PERMISSION', destinationEntry.name));
     }
+    // Files can be dragged onto the TrashRootEntry, but they must reside on a
+    // volume that is trashable.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.TRASH) {
+      const effect = (this.canTrashSelection_(
+                         destinationLocationInfo, event.dataTransfer)) ?
+          DropEffectType.MOVE :
+          DropEffectType.NONE;
+      return new DropEffectAndLabel(effect, null);
+    }
     if (util.isDropEffectAllowed(event.dataTransfer.effectAllowed, 'move')) {
       if (!util.isDropEffectAllowed(event.dataTransfer.effectAllowed, 'copy')) {
         return new DropEffectAndLabel(DropEffectType.MOVE, null);
@@ -1555,6 +1598,65 @@ export class FileTransferController {
       }
     }
     return new DropEffectAndLabel(DropEffectType.COPY, null);
+  }
+
+  /**
+   * Identifies if the current selection can be sent to the trash. Items can be
+   * dragged and dropped onto the TrashRootEntry, but they must all come from a
+   * valid location that supports trash.
+   * The URLs are compared against the volumes that are enabled for trashing.
+   * This is to avoid blocking the drag drop operation with resolution of the
+   * URLs to entries. This has the unfortunate side effect of not being able to
+   * identify any non modifiable entries after a directory change but prior to
+   * the drop event occurring.
+   * @param {DirectoryEntry|FilesAppDirEntry|EntryLocation|null}
+   *     destinationEntry The destination for the current selection.
+   * @param {DataTransfer} clipboardData Data transfer object.
+   * @returns {boolean} True if the selection can be trashed, false otherwise.
+   * @private
+   */
+  canTrashSelection_(destinationEntry, clipboardData) {
+    if (!util.isTrashEnabled() || !destinationEntry) {
+      return false;
+    }
+    if (destinationEntry.rootType !== VolumeManagerCommon.RootType.TRASH) {
+      return false;
+    }
+    if (!clipboardData) {
+      return false;
+    }
+    const enabledTrashURLs = getEnabledTrashVolumeURLs(this.volumeManager_);
+    // When the dragDrop event starts the selectionHandler_ contains the initial
+    // selection, this is preferable to identify whether the selection is
+    // available or not as the sources have resolved entries already.
+    const {entries} = this.selectionHandler_.selection;
+    if (entries && entries.length > 0) {
+      for (const entry of entries) {
+        if (util.isNonModifiable(this.volumeManager_, entry)) {
+          return false;
+        }
+        const entryURL = entry.toURL();
+        if (enabledTrashURLs.some(
+                volumeURL => entryURL.startsWith(volumeURL))) {
+          continue;
+        }
+        return false;
+      }
+      return true;
+    }
+    // If the selection is cleared the directory may have changed but the drag
+    // event is still active. The only way to validate if the selection is
+    // trashable now is to compare the `sourceRootURL` against the enabled trash
+    // locations.
+    // TODO(b/241517469): At this point the sourceRootURL may be on an enabled
+    // location but the entry may not be trashable (e.g. Downloads and the
+    // Camera folder). When the drop event occurs the URLs get resolved to
+    // entries to ensure the operation can occur, but this may result in a move
+    // operation showing as allowed when the drop doesn't accept it.
+    const sourceRootURL =
+        this.getSourceRootURL_(clipboardData, this.getDragAndDropGlobalData_());
+    return enabledTrashURLs.some(
+        volumeURL => sourceRootURL.startsWith(volumeURL));
   }
 
   /**

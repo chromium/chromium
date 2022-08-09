@@ -2150,6 +2150,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashDoubleClickOnFileInTrashRootShowsDialog").EnableTrash(),
         TestCase("trashDoubleClickOnFileInTrashRootShowsDialog")
             .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashDragDropRootAcceptsEntries").EnableTrash().FilesSwa(),
+        TestCase("trashDragDropFromDisallowedRootsFails")
+            .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashDragDropNonModifiableEntriesCantBeTrashed")
+            .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashDragDropRootPerformsTrashAction")
+            .EnableTrash()
             .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

@@ -7,7 +7,7 @@ import {testcase} from '../testcase.js';
 
 import {expandTreeItem, IGNORE_APP_ERRORS, mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
-import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Delete files in MyFiles and ensure they are moved to /.Trash.
@@ -421,4 +421,185 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
       'fakeMouseDoubleClick', appId,
       ['#file-list [file-name="My files › Downloads › hello.txt"]']);
   await remoteCall.waitForElement(appId, '.files-alert-dialog');
+};
+
+/**
+ * Tests that dragging an accepted file over Trash shows that it accepts the
+ * action and performs a trash operation (move a move).
+ */
+testcase.trashDragDropRootAcceptsEntries = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source = '#file-list [file-name="hello.txt"] .entry-name';
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="Trash"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: drag hovering should navigate the file list.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Trash');
+
+  // Check: the target should have accepts class.
+  const willAcceptDrop = '#directory-tree [entry-label="Trash"].accepts';
+  await remoteCall.waitForElement(appId, willAcceptDrop);
+
+  // Check: the target should not have denies class.
+  const willDenyDrop = '#directory-tree [entry-label="Trash"].denies';
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+
+  // Send a dragdrop event to the target to start a trash operation.
+  const dragLeave = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // The Trash root should not have either accepts nor denies after stopping the
+  // dragdrop event.
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+};
+
+/**
+ * Tests that dragging a file from a location that Trash is not enabled (Android
+ * files in this case) shows it is denied.
+ */
+testcase.trashDragDropFromDisallowedRootsFails = async () => {
+  // Open Files app on Play Files.
+  await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
+  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+
+  // Wait for the file list to appear.
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Set the source of the drag event to the name of the file.
+  const source = `#file-list li[file-name="${
+      BASIC_ANDROID_ENTRY_SET[0].nameText}"] .entry-name`;
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target to be visible.
+  const target = '#directory-tree [entry-label="Trash"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and hover it over the target.
+  const skipDrop = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Wait for the directory to change to the Trash root.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Trash');
+
+  // The Trash root in the directory tree shouldn't have the accepts class.
+  const willAcceptDrop = '#directory-tree [entry-label="Trash"].accepts';
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+
+  // The Trash root should have a denies class.
+  const willDenyDrop = '#directory-tree [entry-label="Trash"].denies';
+  await remoteCall.waitForElement(appId, willDenyDrop);
+
+  // Send a dragleave event to the target to stop the drag event.
+  const dragLeave = true;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
+      'fakeDragLeaveOrDrop failed');
+
+  // The Trash root should not have either accepts nor denies after stopping the
+  // dragdrop event.
+  await remoteCall.waitForElementLost(appId, willAcceptDrop);
+  await remoteCall.waitForElementLost(appId, willDenyDrop);
+};
+
+/**
+ * Tests that dragging and dropping on the Trash root actually trashes the item
+ * and it appears in Trash after drop completed.
+ */
+testcase.trashDragDropRootPerformsTrashAction = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source = '#file-list [file-name="hello.txt"] .entry-name';
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="Trash"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Send a dragdrop event to the target to start a trash operation.
+  const skipDrop = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Wait for element to disappear from the "Downloads" view, this indicates it
+  // should be in trash.
+  await remoteCall.waitForElementLost(appId, source);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+};
+
+/**
+ * Tests that dragging an entry that is non-modifiable (Downloads in this case)
+ * should not be allowed despite residing in a trashable location.
+ */
+testcase.trashDragDropNonModifiableEntriesCantBeTrashed = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Navigate to My files.
+  await navigateWithDirectoryTree(appId, '/My files');
+
+  // Use Downloads entry as the drag source. Although this is technically a
+  // folder and resides on a trashable location "My files", it is a special
+  // entry so we should disallow this from being acceptable as a drop target on
+  // Trash.
+  const source = '#file-list [file-name="Downloads"] .entry-name';
+
+  // Select the source file.
+  await remoteCall.waitAndClickElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target = '#directory-tree [entry-label="Trash"]';
+  await remoteCall.waitForElement(appId, target);
+
+  // Send a dragdrop event to the target to try Trash the downloads folder.
+  const skipDrop = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Navigate to Trash to ensure Downloads wasn't sent there.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Ensure the Downloads entry doesn't exist in Trash.
+  await remoteCall.waitForElement(appId, `[scan-completed="Trash"]`);
+  await remoteCall.waitForFiles(appId, []);
 };

@@ -88,6 +88,25 @@ TrashConfig.CONFIG = [
 ];
 
 /**
+ * Returns a list of strings that represent volumes that are enabled for Trash.
+ * Used to validate drag drop data without resolving the URLs to Entry's.
+ * @param {!VolumeManager} volumeManager
+ * @returns {!Array<!string>}
+ */
+export function getEnabledTrashVolumeURLs(volumeManager) {
+  const urls = [];
+  for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
+    const volumeInfo = volumeManager.volumeInfoList.item(i);
+    for (const config of TrashConfig.CONFIG) {
+      if (volumeInfo.volumeType === config.volumeType) {
+        urls.push(volumeInfo.fileSystem.root.toURL());
+      }
+    }
+  }
+  return urls;
+}
+
+/**
  * Wrapper for /.Trash/files and /.Trash/info directories.
  */
 export class TrashDirs {

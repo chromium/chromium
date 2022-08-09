@@ -418,10 +418,15 @@ export class VolumeManagerImpl extends EventTarget {
     const volumeInfo = this.getVolumeInfo(entry);
 
     if (util.isFakeEntry(entry)) {
-      const isReadOnly =
-          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
-          !util.isRecentsFilterV2Enabled() :
-          true;
+      // Aggregated views like RECENTS and TRASH exist as fake entries but may
+      // actually defer their logic to some underlying implementation or
+      // delegate to the location filesystem.
+      let isReadOnly = true;
+      if ((entry.rootType === VolumeManagerCommon.RootType.RECENT &&
+           util.isRecentsFilterV2Enabled()) ||
+          entry.rootType === VolumeManagerCommon.RootType.TRASH) {
+        isReadOnly = false;
+      }
       return new EntryLocationImpl(
           volumeInfo, assert(entry.rootType),
           true /* The entry points a root directory. */, isReadOnly);
