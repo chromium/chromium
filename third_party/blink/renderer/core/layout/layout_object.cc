@@ -1106,8 +1106,6 @@ LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
   bool found_column_spanner = IsColumnSpanAll();
   for (LayoutBlock* ancestor = ContainingBlock(); ancestor;
        ancestor = ancestor->ContainingBlock()) {
-    if (ancestor->IsColumnSpanAll())
-      found_column_spanner = true;
     if (ancestor->IsFragmentationContextRoot()) {
       // Column spanners do not participate in the fragmentation context
       // of their nearest fragmentation context, but rather the next above,
@@ -1116,6 +1114,8 @@ LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
         return ancestor->ContainingFragmentationContextRoot();
       return ancestor;
     }
+    if (ancestor->IsColumnSpanAll())
+      found_column_spanner = true;
   }
   return nullptr;
 }
