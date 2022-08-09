@@ -58,6 +58,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -2588,8 +2589,19 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
   if (!elv) {
     return mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler;
   }
-  // TODO(crbug.com/1347319): implement nop handler detection.
-  return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope handle_scope(isolate);
+  // TODO(crbug.com/1349613): revisit the way to implement this.
+  // The following code returns kEmptyFetchHandler if all handlers are nop.
+  for (RegisteredEventListener& e : *elv) {
+    EventTarget* et = EventTarget::Create(ScriptController()->GetScriptState());
+    v8::Local<v8::Value> v =
+        To<JSBasedEventListener>(e.Callback())->GetEffectiveFunction(*et);
+    if (!v.As<v8::Function>()->Experimental_IsNopFunction()) {
+      return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
+    }
+  }
+  return mojom::blink::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
 }
 
 }  // namespace blink

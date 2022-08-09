@@ -420,6 +420,8 @@ class ServiceWorkerDatabase {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, InvalidWebFeature);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
                            NoCrossOriginEmbedderPolicyValue);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, NoFetchHandlerType);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, FetchHandlerType);
 };
 
 }  // namespace storage

@@ -939,6 +939,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
             blink::ServiceWorkerStatusCode::kOk);
   EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::EXISTS,
             version_->fetch_handler_existence());
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerType::kNotSkippable,
+            version_->fetch_handler_type());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
@@ -948,6 +950,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
             blink::ServiceWorkerStatusCode::kOk);
   EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST,
             version_->fetch_handler_existence());
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerType::kNoHandler,
+            version_->fetch_handler_type());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       InstallEmptyFetchHandler) {
+  StartServerAndNavigateToSetup();
+  ASSERT_EQ(Install("/service_worker/empty_fetch_event.js"),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::EXISTS,
+            version_->fetch_handler_existence());
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler,
+            version_->fetch_handler_type());
 }
 
 // Check that fetch event handler added in the install event should result in a

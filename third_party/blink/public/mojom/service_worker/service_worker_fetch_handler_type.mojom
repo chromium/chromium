@@ -9,4 +9,5 @@ module blink.mojom;
 enum ServiceWorkerFetchHandlerType {
   kNoHandler,
   kNotSkippable,
+  kEmptyFetchHandler,
 };
