@@ -23,8 +23,6 @@ enum class Nestable : uint8_t {
 // Contains data about a pending task. Stored in TaskQueue and DelayedTaskQueue
 // for use by classes that queue and execute tasks.
 struct BASE_EXPORT PendingTask {
-  static constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
-
   PendingTask();
   PendingTask(const Location& posted_from,
               OnceClosure task,

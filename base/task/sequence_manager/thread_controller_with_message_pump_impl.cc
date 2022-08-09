@@ -48,12 +48,11 @@ const Feature kRunTasksByBatches = {"RunTasksByBatches",
 
 std::atomic_bool g_align_wake_ups = false;
 std::atomic_bool g_run_tasks_by_batches = false;
-std::atomic<TimeDelta> g_task_leeway{WakeUp::kDefaultLeeway};
 
 TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
   if (g_align_wake_ups.load(std::memory_order_relaxed)) {
     TimeTicks aligned_run_time = wake_up.earliest_time().SnappedToNextTick(
-        TimeTicks(), g_task_leeway.load(std::memory_order_relaxed));
+        TimeTicks(), base::GetTaskLeeway());
     return std::min(aligned_run_time, wake_up.latest_time());
   }
   return wake_up.time;
@@ -64,7 +63,6 @@ TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
 // static
 void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
   g_align_wake_ups = FeatureList::IsEnabled(kAlignWakeUps);
-  g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
   g_run_tasks_by_batches.store(FeatureList::IsEnabled(kRunTasksByBatches),
                                std::memory_order_relaxed);
 }
@@ -74,8 +72,6 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
   g_align_wake_ups.store(
       kAlignWakeUps.default_state == FEATURE_ENABLED_BY_DEFAULT,
       std::memory_order_relaxed);
-  g_task_leeway.store(kTaskLeewayParam.default_value,
-                      std::memory_order_relaxed);
   g_run_tasks_by_batches.store(
       kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
       std::memory_order_relaxed);

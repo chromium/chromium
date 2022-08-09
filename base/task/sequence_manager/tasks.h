@@ -78,8 +78,6 @@ enum class WakeUpResolution { kLow, kHigh };
 
 // Represents a time at which a task wants to run.
 struct WakeUp {
-  static constexpr TimeDelta kDefaultLeeway = PendingTask::kDefaultLeeway;
-
   // is_null() for immediate wake up.
   TimeTicks time;
   // These are meaningless if is_immediate().

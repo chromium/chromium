@@ -43,6 +43,7 @@ include_rules = [
   "+base/task/sequence_manager/time_domain.h",
   "+base/task/simple_task_executor.h",
   "+base/task/task_executor.h",
+  "+base/task/task_features.h",
   "+base/task/task_traits.h",
   "+base/threading/platform_thread.h",
   "+base/threading/sequenced_task_runner_handle.h",

@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/common/lazy_now.h"
+#include "base/task/task_features.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -84,7 +85,7 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
       // WakeUpResolution::kLow is always used for throttled tasks since those
       // tasks can tolerate having their execution being delayed.
       return base::sequence_manager::WakeUp{
-          allowed_run_time, base::sequence_manager::WakeUp::kDefaultLeeway,
+          allowed_run_time, base::GetTaskLeeway(),
           base::sequence_manager::WakeUpResolution::kLow};
     }
   }

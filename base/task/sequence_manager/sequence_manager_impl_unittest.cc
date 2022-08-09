@@ -123,7 +123,7 @@ void PrintTo(const RunnerType type, std::ostream* os) {
   *os << ToString(type);
 }
 
-constexpr TimeDelta kLeeway = sequence_manager::WakeUp::kDefaultLeeway;
+constexpr TimeDelta kLeeway = kDefaultLeeway;
 
 using MockTask = MockCallback<base::RepeatingCallback<void()>>;
 
@@ -938,11 +938,11 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting_FlexiblePreferEarly) {
             sequence_manager()->GetPendingWakeUp(&lazy_now));
 
   // The task doesn't run before the delay has completed.
-  FastForwardBy(kDelay - WakeUp::kDefaultLeeway - Milliseconds(1));
+  FastForwardBy(kDelay - kLeeway - Milliseconds(1));
   EXPECT_TRUE(run_order.empty());
 
   // After the delay has completed, the task runs normally.
-  FastForwardBy(WakeUp::kDefaultLeeway + Milliseconds(1));
+  FastForwardBy(kLeeway + Milliseconds(1));
   EXPECT_THAT(run_order, ElementsAre(1u));
   EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
 }

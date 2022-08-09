@@ -29,7 +29,7 @@ namespace {
 
 constexpr TimeDelta kLongerDelay = Hours(3);
 constexpr TimeDelta kLongDelay = Hours(1);
-constexpr TimeDelta kLeeway = PendingTask::kDefaultLeeway;
+constexpr TimeDelta kLeeway = base::kDefaultLeeway;
 
 class MockCallback {
  public:

@@ -72,7 +72,6 @@ void DelayedTaskManager::Start(
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
     align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
-    task_leeway_ = kTaskLeewayParam.Get();
     std::tie(process_ripe_tasks_time, delay_policy) =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
   }
@@ -193,7 +192,7 @@ std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
   if (align_wake_ups_) {
     TimeTicks aligned_run_time =
         ripest_delayed_task.task.earliest_delayed_run_time().SnappedToNextTick(
-            TimeTicks(), task_leeway_);
+            TimeTicks(), base::GetTaskLeeway());
     delayed_run_time = std::min(
         aligned_run_time, ripest_delayed_task.task.latest_delayed_run_time());
   }

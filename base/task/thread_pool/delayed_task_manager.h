@@ -132,7 +132,6 @@ class BASE_EXPORT DelayedTaskManager {
   int pending_high_res_task_count_ GUARDED_BY(queue_lock_){0};
 
   bool align_wake_ups_ GUARDED_BY(queue_lock_) = false;
-  TimeDelta task_leeway_ GUARDED_BY(queue_lock_){PendingTask::kDefaultLeeway};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
