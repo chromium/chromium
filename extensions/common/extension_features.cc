@@ -100,6 +100,6 @@ const base::Feature kExtensionsMenuAccessControl{
 // creating the script context too early which can be bad for performance.
 const base::Feature kAvoidEarlyExtensionScriptContextCreation{
     "AvoidEarlyExtensionScriptContextCreation",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace extensions_features
