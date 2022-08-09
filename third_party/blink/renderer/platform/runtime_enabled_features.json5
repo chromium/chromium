@@ -2560,7 +2560,7 @@
     },
     {
       name: "WebCodecsDequeueEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebGLColorManagement",

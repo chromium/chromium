@@ -173,6 +173,7 @@ interface AudioDecoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -180,6 +181,7 @@ interface AudioDecoder : EventTarget
     method decode
     method flush
     method reset
+    setter ondequeue
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
     getter maxChannelCount
@@ -188,6 +190,7 @@ interface AudioEncoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -195,6 +198,7 @@ interface AudioEncoder : EventTarget
     method encode
     method flush
     method reset
+    setter ondequeue
 interface AudioListener
     attribute @@toStringTag
     getter forwardX
@@ -8231,6 +8235,7 @@ interface VideoDecoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -8238,10 +8243,12 @@ interface VideoDecoder : EventTarget
     method decode
     method flush
     method reset
+    setter ondequeue
 interface VideoEncoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -8249,6 +8256,7 @@ interface VideoEncoder : EventTarget
     method encode
     method flush
     method reset
+    setter ondequeue
 interface VideoFrame
     attribute @@toStringTag
     getter codedHeight
