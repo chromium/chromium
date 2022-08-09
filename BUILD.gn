@@ -80,8 +80,6 @@ group("gn_all") {
     ":gn_visibility",
     "//base:base_perftests",
     "//base:base_unittests",
-    "//chrome/installer",
-    "//chrome/updater",
     "//codelabs",
     "//components:components_unittests",
     "//components/gwp_asan:gwp_asan_unittests",
@@ -147,6 +145,13 @@ group("gn_all") {
     ]
   }
 
+  if (!is_castos) {
+    deps += [
+      "//chrome/installer",
+      "//chrome/updater",
+    ]
+  }
+
   if (enable_ppapi) {
     deps += [
       "//ppapi:ppapi_unittests",
@@ -161,11 +166,14 @@ group("gn_all") {
     ]
   }
 
+  if (!is_ios && !is_castos) {
+    deps += [ "//chrome/test:unit_tests" ]
+  }
+
   if (!is_ios) {
     deps += [
       ":chromedriver",
       "//cc:cc_unittests",
-      "//chrome/test:unit_tests",
       "//components:components_browsertests",
       "//components/policy:policy_templates",
       "//components/url_formatter/tools:format_url",
@@ -236,7 +244,9 @@ group("gn_all") {
       "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     ]
     if (!is_android) {
-      deps += [ "//chrome/test:telemetry_perf_unittests" ]
+      if (!is_castos) {
+        deps += [ "//chrome/test:telemetry_perf_unittests" ]
+      }
     } else {
       import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
       foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
@@ -478,7 +488,6 @@ group("gn_all") {
   if (is_linux || is_chromeos) {
     # The following are definitely linux-only.
     deps += [
-      "//chrome:xdg_mime",
       "//net:disk_cache_memory_test",
       "//net:quic_client",
       "//net:quic_server",
@@ -487,6 +496,10 @@ group("gn_all") {
     ]
     if (!is_clang) {
       deps += [ "//testing:empty_main" ]
+    }
+
+    if (!is_castos) {
+      deps += [ "//chrome:xdg_mime" ]
     }
 
     if (use_dbus) {
@@ -538,10 +551,15 @@ group("gn_all") {
       "//ui/compositor:compositor_unittests",
     ]
 
-    if (!is_android) {
+    if (!is_android && !is_castos) {
       deps += [
         "//chrome/test:load_library_perf_tests",
         "//chrome/test:sync_performance_tests",
+      ]
+    }
+
+    if (!is_android) {
+      deps += [
         "//courgette:courgette",
         "//courgette:courgette_fuzz",
         "//courgette:courgette_minimal_tool",
@@ -602,7 +620,6 @@ group("gn_all") {
 
   if (is_linux || is_chromeos_lacros) {
     deps += [
-      "//chrome/test:chrome_app_unittests",
       "//gpu/khronos_glcts_support:khronos_glcts_test",
       "//media/cast:cast_benchmarks",
       "//media/cast:tap_proxy",
@@ -611,7 +628,11 @@ group("gn_all") {
       "//ui/snapshot:snapshot_unittests",
     ]
 
-    if (!is_debug && !is_component_build) {
+    if (!is_castos) {
+      deps += [ "//chrome/test:chrome_app_unittests" ]
+    }
+
+    if (!is_debug && !is_component_build && !is_castos) {
       deps += [ "//chrome/tools/service_discovery_sniffer" ]
     }
   }
@@ -681,10 +702,6 @@ group("gn_all") {
       "//chromecast:cast_shell",
       "//chromecast/cast_core:core_runtime_simple",
     ]
-
-    if (enable_extensions && use_aura) {
-      deps += [ "//chrome/browser/resources/chromeos/accessibility:build" ]
-    }
   }
 
   if (is_mac || is_win || is_android || is_linux || is_chromeos) {
@@ -1062,7 +1079,7 @@ if (!is_ios) {
       if (is_android && !is_cast_android) {
         deps += [ "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk" ]
       }
-    } else {
+    } else if (!is_castos) {
       deps = [
         "//chrome/test/chromedriver:chromedriver",
         "//chrome/test/chromedriver:chromedriver_unittests",
@@ -1095,7 +1112,7 @@ if (!is_ios) {
     ]
   }
 
-  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android) {
+  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
     # WPT Webdriver tests runner
     # chrome/test/chromedriver/test/run_webdriver_tests.py
     script_test("webdriver_wpt_tests") {
@@ -1731,8 +1748,6 @@ if (enable_js_type_check) {
   group("webui_closure_compile") {
     testonly = true
     data_deps = [
-      "chrome/browser/resources:closure_compile",
-      "chrome/test:closure_compile",
       "components/neterror/resources:closure_compile",
       "components/security_interstitials:closure_compile",
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
@@ -1742,6 +1757,12 @@ if (enable_js_type_check) {
       data_deps += [
         "ash/webui:closure_compile",
         "ui/file_manager:closure_compile",
+      ]
+    }
+    if (!is_castos) {
+      data_deps += [
+        "chrome/browser/resources:closure_compile",
+        "chrome/test:closure_compile",
       ]
     }
   }

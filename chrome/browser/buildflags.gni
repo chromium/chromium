@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/toolchain/gcc_toolchain.gni")
-import("//chromecast/chromecast.gni")
 
 declare_args() {
   # Chromium Updater is a cross-platform updater for desktop clients built using

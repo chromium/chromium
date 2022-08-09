@@ -4,7 +4,6 @@
 
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chromebox_for_meetings/buildflags.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
@@ -3912,12 +3911,7 @@ static_library("ui") {
       ]
     }
   } else {  # 'OS!="win"
-    # The Cast Linux build sets toolkit_views to false, but many files in this
-    # target include views-related files unconditionally, causing `gn check`
-    # to fail on this variant. Since this target is only referenced (but not
-    # compiled) on this variant, it's okay to add this "incorrect" dependency
-    # to Cast Linux builds so that `gn check` passes.
-    if (toolkit_views || is_castos) {
+    if (toolkit_views) {
       public_deps += [
         "//ui/views",
         "//ui/views/controls/webview",

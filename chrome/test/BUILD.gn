@@ -8758,27 +8758,6 @@ test("unit_tests") {
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }
 
-  # This target gets pulled in in Chromecast builds, even though it doesn't get
-  # built or used there. The below files cause "gn check" failures in ways that
-  # would be resolvable only by adding "nogncheck" on the includes in question.
-  # Rather than doing that, simply eliminate the files from being visible to
-  # GN.
-  # NOTE: A natural idea would be to set sources to the empty set here, but
-  # that surprisingly turns out to cause its own "gn check" problems as various
-  # utility headers are contained in those sources that other test targets in
-  # //chrome include.
-  # TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
-  # on Chromecast and remove this section entirely.
-  if (is_castos) {
-    sources -= [
-      "../browser/enterprise/connectors/connectors_service_unittest.cc",
-      "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
-      "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
-      "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",
-      "../browser/ui/webui/management/management_ui_handler_unittest.cc",
-    ]
-  }
-
   if (is_chrome_branded && !is_android) {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",

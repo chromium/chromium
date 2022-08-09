@@ -65,7 +65,7 @@ source_set("mixers") {
   }
 }
 
-if (!is_ios && !is_android && !is_castos) {
+if (!is_ios && !is_android) {
   executable("dump_colors") {
     testonly = true
 
