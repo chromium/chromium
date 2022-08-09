@@ -592,12 +592,12 @@ void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,
           },
           weak_ptr_factory_.GetWeakPtr()))
       .Once()
-      .SetOpacity(std::move(layer_to_show), 0.0f)
-      .SetOpacity(std::move(layer_to_hide), 1.0f)
+      .SetOpacity(layer_to_show, 0.0f)
+      .SetOpacity(layer_to_hide, 1.0f)
       .Then()
       .SetDuration(base::Milliseconds(kFadeDurationMs))
-      .SetOpacity(std::move(layer_to_show), 1.0f)
-      .SetOpacity(std::move(layer_to_hide), 0.0f);
+      .SetOpacity(layer_to_show, 1.0f)
+      .SetOpacity(layer_to_hide, 0.0f);
 }
 
 void SavedDeskItemView::ContentsChanged(views::Textfield* sender,
