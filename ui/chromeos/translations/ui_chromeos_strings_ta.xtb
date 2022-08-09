@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
 <translation id="2563185590376525700">தவளை</translation>
-<translation id="2570012981255377263">உங்கள் சமீபத்திய ஃபைல்கள் இங்கே காட்டப்படும்</translation>
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
 <translation id="2579959351793446050">ஒடியா</translation>
 <translation id="2602810353103180630">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி தடுத்துள்ளார், விவரங்கள்</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">‘நீக்கியவையில்’ உள்ளவற்றை நீக்கு</translation>
 <translation id="5163869187418756376">பகிர்வு தோல்வியடைந்தது. உங்கள் இணைப்பைச் சரிபார்த்து, பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="516592729076796170">US புரோகிராமர் டிவோரக்</translation>
+<translation id="5172749059808361023">கட்டுப்பாடு விவரங்கள்</translation>
 <translation id="5177526793333269655">சிறுபட காட்சி</translation>
 <translation id="5194713942430106590">நெடுவரிசையை ஏறுவரிசைப்படுத்த கிளிக் செய்யவும்.</translation>
 <translation id="5211614973734216083">ஃபாரோசே</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">தமிழ் - Tamil99 கீபோர்டு</translation>
 <translation id="5633226425545095130">இந்த ஃபைலை நகர்த்தினால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட ஃபோல்டரைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
 <translation id="5649768706273821470">கேள்</translation>
-<translation id="5665074015635552640">உங்கள் சமீபத்திய வீடியோக்கள் இங்கே காட்டப்படும்</translation>
 <translation id="5669691691057771421">புதிய பின்னை உள்ளிடவும்</translation>
 <translation id="5678784840044122290">இந்த Linux ஆப்ஸ் உங்கள் முனையத்திற்குள் இருக்கும், அத்துடன் உங்கள் தொடக்கியிலும் ஒரு ஐகான் காண்பிக்கப்படலாம்.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />காப்பகம் அல்லது விர்ச்சுவல் வட்டிலிருந்து இணைப்பை நீக்க முடியவில்லை<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> உள்ளது</translation>
 <translation id="6935521024859866267">தலைகீழ்</translation>
 <translation id="6943836128787782965">HTTP தோல்வியடைந்தது</translation>
-<translation id="6945604978460872381">உங்கள் சமீபத்திய ஆவணங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="6949408524333579394">செர்பியன் ஒலிபெயர்ப்பு</translation>
 <translation id="6954309393500027528">இந்த ஃபைலை நகலெடுத்து ஒட்டுவதை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="6960565108681981554">இயக்கப்படவில்லை. சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">பிறருடன் பகிர்</translation>
 <translation id="7297443947353982503">பயனர்பெயர்/கடவுச்சொல் தவறானது அல்லது EAP-அங்கீகாரம் தோல்வி</translation>
 <translation id="7309413087278791451">ஜெர்மன் (பெல்ஜியம்)</translation>
-<translation id="7313374447885864533">உங்கள் சமீபத்திய ஆடியோ ஃபைல்கள் இங்கே காட்டப்படும்</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
 <translation id="7343393116438664539">வியட்நாமீஸ் (டெலெக்ஸ்)</translation>
 <translation id="7357762654218998920">இந்த ஃபைல் வகை ஆதரிக்கப்படவில்லை. ChromeOSஸில் ஃபைல்களைத் திறப்பது குறித்து <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" />.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">ஒரே பெயருடைய ஃபைல்  அல்லது கோப்பகம் ஏற்கனவே உள்ளன.</translation>
 <translation id="8372369524088641025">மோசமான WEP விசை</translation>
 <translation id="8372852072747894550">கிரேக்கம்</translation>
-<translation id="8384716930968677505">உங்கள் சமீபத்திய படங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="8386903983509584791">ஸ்கேன் செய்வது முடிந்தது</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> பிரிக்கப்பட்டது.</translation>
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>

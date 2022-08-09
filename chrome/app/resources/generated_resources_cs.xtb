@@ -1129,6 +1129,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2048653237708779538">Akce není k dispozici</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2052572566310583903">Nainstalováno v jiných vašich zařízeních</translation>
+<translation id="2053105195397337973">Zkoumáme možnosti, jak zabránit sledování a zároveň webům umožnit potírání reklamního spamu a podvodů.</translation>
 <translation id="2053312383184521053">Údaje o stavu nečinnosti</translation>
 <translation id="2054240652864153171">Vymazat data webu pro <ph name="SITE_NAME" /> rozsegmentovaná na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Z těchto webů budete odhlášeni (i na otevřených kartách)</translation>
@@ -1269,7 +1270,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2173801458090845390">Přidat do tohoto zařízení ID požadavku</translation>
 <translation id="2175384018164129879">&amp;Spravovat vyhledávače a vyhledávání na webech</translation>
-<translation id="2175607476662778685">panel Snadné spuštění</translation>
 <translation id="217576141146192373">Tiskárnu nelze přidat. Zkontrolujte konfiguraci tiskárny a zkuste to znovu.</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2177950615300672361">Anonymní karta: <ph name="TAB_NAME" /></translation>
@@ -4959,6 +4959,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5747552184818312860">Konec platnosti</translation>
 <translation id="5747785204778348146">Pro vývojáře – nestabilní</translation>
 <translation id="5747809636523347288">Vl&amp;ožit a přejít na adresu <ph name="URL" /></translation>
+<translation id="5751345516399502412">Zkontrolovat připravenost tetheringu</translation>
 <translation id="5755022574660047665">vzpomínky z Fotek Google</translation>
 <translation id="5756163054456765343">C&amp;entrum nápovědy</translation>
 <translation id="5757375109985023827">Vyberte kartu, jejíž náhled chcete zobrazit</translation>
@@ -7218,6 +7219,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7939062555109487992">Upřesnit možnosti</translation>
 <translation id="7939328347457537652">Spravovat certifikáty zařízení</translation>
 <translation id="7939412583708276221">Přesto ponechat</translation>
+<translation id="7941179291434537290">Připravenost tetheringu:</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943368935008348579">Stahování souborů PDF</translation>
 <translation id="7943837619101191061">Přidat umístění...</translation>
@@ -7550,7 +7552,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8248887045858762645">Tip pro Chrome</translation>
 <translation id="8249048954461686687">Složka OEM</translation>
 <translation id="8249615410597138718">Odeslat na vaše zařízení</translation>
-<translation id="8249672078237421304">Nabízet překlad stránek v jazycích, kterým byste nemuseli rozumět</translation>
 <translation id="8250210000648910632">Nedostatek úložného prostoru</translation>
 <translation id="8251441930213048644">Obnovit</translation>
 <translation id="8251509999076836464">Párování se zařízením <ph name="DEVICE_NAME" /></translation>
@@ -7746,6 +7747,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8439506636278576865">Nabízet překlad stránek v tomto jazyce</translation>
 <translation id="8440630305826533614">Aplikace pro Linux</translation>
 <translation id="844063558976952706">Vždy na tomto webu</translation>
+<translation id="8441313165929432954">Povolit/zakázat tethering</translation>
 <translation id="8443795068008423036">Aktualizujte zařízení a zkuste to znovu</translation>
 <translation id="8446884382197647889">Další informace</translation>
 <translation id="8447409163267621480">Zahrňte klávesu Ctrl nebo Alt</translation>

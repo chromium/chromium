@@ -327,6 +327,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2894949423239620203">Laidas gali turėti įtakos našumui</translation>
 <translation id="2903844815300039659">Prisijungėte prie „<ph name="NAME" />“, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Užfiksuoti ekrano vaizdai</translation>
+<translation id="2925246975070834767">Išbandykite automatinio mastelio keitimo funkciją, kad būtumėte ekrano centre. Įjunkite šią funkciją sparčiuosiuose nustatymuose.</translation>
 <translation id="2941112035454246133">Žema</translation>
 <translation id="2942350706960889382">Prie doko prijungtas didintuvas</translation>
 <translation id="2942516765047364088">Lentynos pozicija</translation>
@@ -469,6 +470,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
+<translation id="3724279623330129812">Automatinis mastelio keitimas fotoaparato centre</translation>
 <translation id="3726171378575546917">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS_ONE" />“, „<ph name="UNAVAILABLE_APPS_TWO" />“ ir dar <ph name="UNAVAILABLE_APPS_COUNT" /> program.</translation>
 <translation id="3735740477244556633">Rūšiuoti pagal</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
@@ -633,6 +635,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4628757576491864469">Įrenginiai</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, įvertinimas žvaigždutėmis <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per dieną}one{Grąžinkite ankstesnę įrenginio versiją per # dieną}few{Grąžinkite ankstesnę įrenginio versiją per # dienas}many{Grąžinkite ankstesnę įrenginio versiją per # dienos}other{Grąžinkite ankstesnę įrenginio versiją per # dienų}}</translation>
+<translation id="4633636853437260449">Paspauskite „Ctrl“ + W, kad ištrintumėte</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
 <translation id="4644727592819780893">Sritis per maža, kad būtų galima pateikti fotoaparato peržiūroje</translation>
 <translation id="4648249871170053485">„<ph name="APP_NAME" />“, programos rekomendacija</translation>

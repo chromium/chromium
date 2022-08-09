@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Wiedergabe/Pause</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
+<translation id="1207734034680156868">Vorschläge basieren auf deiner Beschreibung</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1236400083787698183">Führe vor dem Neustart einen Powerwash deines Geräts durch. Bei Geräten mit Klappmechanismus: Warte, bis der Powerwash abgeschlossen ist, bevor du das Gerät zuklappst. Ein Powerwash kann bis zu einer Minute lang dauern.</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
@@ -697,7 +698,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
-<translation id="6995564396478647735">Der Schreibschutz muss aktiviert sein</translation>
 <translation id="7005833343836210400">Das Gerät ist offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -808,7 +808,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="80398733265834479">Automatischen Farbmodus aktivieren</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8045012663542226664">Mikrofon stummschalten</translation>
-<translation id="8063022551652308521">Der Schreibschutz ist noch deaktiviert. Bitte aktiviere ihn, um fortzufahren.</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="808894953321890993">Passwort ändern</translation>

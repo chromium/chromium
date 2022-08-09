@@ -1137,6 +1137,7 @@
 <translation id="2048653237708779538">কোনো কার্য নাই</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2052572566310583903">আপোনাৰ অন্য ডিভাইচত ইনষ্টল কৰা</translation>
+<translation id="2053105195397337973">আমি বিজ্ঞাপনৰ স্পাম আৰু প্ৰৱঞ্চনা ৰোধ কৰিবলৈ ছাইটসমূহক সক্ষম কৰাৰ লগতে ট্ৰেকিং সীমিত কৰাৰ উপায় অন্বেষণ কৰি আছোঁ।</translation>
 <translation id="2053312383184521053">নিষ্ক্ৰিয় স্থিতিৰ ডেটা</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />ত বিভাজন কৰা <ph name="SITE_NAME" />ৰ বাবে ছাইটৰ ডেটা মচিবনে?</translation>
 <translation id="2055585478631012616">খোলা থকা টেবসমূহকে ধৰি আপুনি এই ছাইটসমূহৰ পৰা ছাইন আউট হৈ যাব</translation>
@@ -1277,7 +1278,6 @@
 <translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2173801458090845390">এই ডিভাইচত প্ৰয়োজনীয় ID যোগ কৰক</translation>
 <translation id="2175384018164129879">&amp;সন্ধান ইঞ্জিন আৰু Site Search পৰিচালনা কৰক</translation>
-<translation id="2175607476662778685">দ্ৰুত লঞ্চ বাৰ</translation>
 <translation id="217576141146192373">প্ৰিণ্টাৰটো যোগ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰিণ্টাৰটোৰ কনফিগাৰেশ্বন পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="2177950615300672361">ইনক'গনিট' টেব: <ph name="TAB_NAME" /></translation>
@@ -4973,6 +4973,7 @@
 <translation id="5747552184818312860">এই সময়ত ম্যাদ উকলিব</translation>
 <translation id="5747785204778348146">বিকাশকৰ্তা - বিকাশ সম্পূৰ্ণ হোৱা নাই</translation>
 <translation id="5747809636523347288">পে&amp;ষ্ট কৰি <ph name="URL" />লৈ যাওক</translation>
+<translation id="5751345516399502412">টেডাৰিঙৰ প্ৰস্তুতি পৰীক্ষা কৰক</translation>
 <translation id="5755022574660047665">Google Photosত থকা স্মৃতি</translation>
 <translation id="5756163054456765343">&amp;সহায় কেন্দ্ৰ</translation>
 <translation id="5757375109985023827">পূৰ্বদৰ্শন কৰিবলৈ এটা টেব বাছনি কৰক</translation>
@@ -7231,6 +7232,7 @@
 <translation id="7939062555109487992">উচ্চখাপৰ বিকল্প</translation>
 <translation id="7939328347457537652">ডিভাইচৰ প্ৰমাণপত্ৰ পৰিচালনা কৰক</translation>
 <translation id="7939412583708276221">যিকোনো প্ৰকাৰে ৰাখক</translation>
+<translation id="7941179291434537290">টেডাৰিঙৰ প্ৰস্তুতি:</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7943368935008348579">PDF ডাউনল’ড কৰক</translation>
 <translation id="7943837619101191061">অৱস্থান যোগ কৰক...</translation>
@@ -7562,7 +7564,6 @@
 <translation id="8248887045858762645">Chrome সম্পর্কীয় পৰামৰ্শ</translation>
 <translation id="8249048954461686687">OEM ফ'ল্ডাৰ</translation>
 <translation id="8249615410597138718">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
-<translation id="8249672078237421304">কোনো পৃষ্ঠা আপুনি পঢ়িব নোৱাৰা ভাষাত থাকিলে সেয়া অনুবাদ কৰি লোৱাৰ সুবিধা প্ৰদান কৰক</translation>
 <translation id="8250210000648910632">ষ্ট’ৰেজ খালী ঠাই নাই</translation>
 <translation id="8251441930213048644">এতিয়া ৰিফ্রেশ্ব কৰক</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" />ৰ সৈতে পেয়াৰ কৰি থকা হৈছে</translation>
@@ -7758,6 +7759,7 @@
 <translation id="8439506636278576865">এই ভাষাত পৃষ্ঠাসমূহ অনুবাদৰ সুবিধা দিয়ে</translation>
 <translation id="8440630305826533614">Linux এপ্</translation>
 <translation id="844063558976952706">এই ছাইটটোত সদায়</translation>
+<translation id="8441313165929432954">টেডাৰিং সক্ষম/অক্ষম কৰক</translation>
 <translation id="8443795068008423036">অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচটো আপ টু ডে’ট হৈ থকাটো নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="8446884382197647889">অধিক জানক</translation>
 <translation id="8447409163267621480">হয় Ctrl নহয় Alt অন্তৰ্ভুক্ত কৰক</translation>

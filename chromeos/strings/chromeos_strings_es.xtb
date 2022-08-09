@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Reproducir/Pausar</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
+<translation id="1207734034680156868">Las sugerencias se basan en tu descripción</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1236400083787698183">Antes de reiniciar el dispositivo, haz un Powerwash. Si el dispositivo tiene una tapa, espera a que se complete el Powerwash y, después, ciérrala. Este proceso puede tardar hasta un minuto.</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -696,7 +697,6 @@
 <translation id="6961170852793647506">Para empezar, coloca el documento en el escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión del firmware</translation>
-<translation id="6995564396478647735">Asegúrate de que la protección contra escritura esté activada</translation>
 <translation id="7005833343836210400">El dispositivo no tiene conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
@@ -807,7 +807,6 @@
 <translation id="80398733265834479">Habilitar modo de color automático</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8045012663542226664">Silenciar micrófono</translation>
-<translation id="8063022551652308521">La protección contra escritura sigue desactivada. Para continuar, actívala.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde aplicaciones Android</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>

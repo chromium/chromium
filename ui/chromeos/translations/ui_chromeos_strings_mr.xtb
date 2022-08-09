@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">ऑथेंटिकेशन प्रमाणपत्र नेटवर्कद्वारे नाकारले</translation>
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2563185590376525700">बेडूक</translation>
-<translation id="2570012981255377263">तुमच्या अलीकडील फाइल येथे दिसतील</translation>
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
+<translation id="3495810061346586977">ही फाइल गोपनीय आहे आणि अ‍ॅडमिनिस्ट्रेटर धोरणाच्या निर्बंधांच्या अधीन आहे. <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
 <translation id="3524311639100184459">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -485,6 +485,7 @@
 <translation id="5159560892333415631">ट्रॅश रिकामा करा</translation>
 <translation id="5163869187418756376">सामायिकरण अयशस्वी. तुमचे कनेक्शन तपासा आणि नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="516592729076796170">यूएस प्रोग्रामर द्वोराक</translation>
+<translation id="5172749059808361023">निर्बंध तपशील</translation>
 <translation id="5177526793333269655">थंबनेल व्ह्यू</translation>
 <translation id="5194713942430106590">स्तंभाची चढत्या क्रमाने क्रमवारी लावण्यासाठी क्लिक करा.</translation>
 <translation id="5211614973734216083">फारोसे</translation>
@@ -541,7 +542,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5625294776298156701">Tamil99 कीबोर्डसह तमिळ</translation>
 <translation id="5633226425545095130">हा आयटम हलवल्याने, शेअर केलेले '<ph name="DESTINATION_NAME" />' हे फोल्डर पाहू शकणाऱ्या प्रत्येकासोबत तो शेअर होईल.</translation>
 <translation id="5649768706273821470">ऐका</translation>
-<translation id="5665074015635552640">तुमचे अलीकडील व्हिडिओ येथे दिसतील</translation>
 <translation id="5669691691057771421">नवीन पिन एंटर करा</translation>
 <translation id="5678784840044122290">तुमच्या टर्मिनलमध्ये Linux ॲप्लिकेशन उपलब्ध असेल आणि तुमच्या लॉंचरमध्ये आयकन देखील दिसू शकेल.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />संग्रहण किंवा आभासी डिस्कमधून डिस्कनेक्ट करू शकत नाही<ph name="END_BOLD" />
@@ -686,7 +686,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
     <ph name="FILE_COUNT" />आढळले</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6943836128787782965">HTTP अयशस्वी झाले</translation>
-<translation id="6945604978460872381">तुमचे अलीकडील दस्तऐवज येथे दिसतील</translation>
 <translation id="6949408524333579394">सर्बियन लिप्यंतरण</translation>
 <translation id="6954309393500027528">ही फाइल पेस्ट करणे हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने ब्लॉक केले आहे</translation>
 <translation id="6960565108681981554">अ‍ॅक्टिव्हेट केलेले नाही. तुमच्या वाहकाशी संपर्क साधा.</translation>
@@ -734,7 +733,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7295662345261934369">इतरांशी शेअर करा</translation>
 <translation id="7297443947353982503">वापरकर्ता नाव/पासवर्ड चुकीचा किंवा EAP-ऑथेंटिकेशन अयशस्वी</translation>
 <translation id="7309413087278791451">जर्मन (बेल्जियम)</translation>
-<translation id="7313374447885864533">तुमच्या अलीकडील ऑडिओ फाइल येथे दिसतील</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7343393116438664539">व्हिएतनामी टेलेक्स</translation>
 <translation id="7357762654218998920">या फाइल प्रकाराला सपोर्ट नाही. ChromeOS वर फाइल उघडण्याविषयी <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
@@ -864,7 +862,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8342318071240498787">समान नावाची एखादी फाइल किंवा डिरेक्टरी आधीपासूनच अस्तित्वात आहे.</translation>
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
-<translation id="8384716930968677505">तुमच्या अलीकडील इमेज येथे दिसतील</translation>
 <translation id="8386903983509584791">स्कॅन पूर्ण झाले</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> काढली आहे.</translation>
 <translation id="8395901698320285466">परिमाण</translation>

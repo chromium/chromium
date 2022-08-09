@@ -100,6 +100,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="1467432559032391204">Doľava</translation>
+<translation id="146902737843070955">O túto zmenu požiadal váš správca</translation>
 <translation id="147310119694673958">Batéria telefónu <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Plávajúca ponuka dostupnosti</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, stlačením klávesa Enter otvorte zobrazenie kalendára</translation>
@@ -837,6 +838,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5779721926447984944">Pripnuté súbory</translation>
 <translation id="5788127256798019331">Súbory Play</translation>
 <translation id="5790085346892983794">Úspešné</translation>
+<translation id="5804651031882187592">Vypnutie nastavenia Uzamknúť SIM</translation>
 <translation id="5805809050170488595">Kliknutím aktivujte <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Nastavenia pripojených zariadení</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>

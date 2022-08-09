@@ -1278,7 +1278,6 @@
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2173801458090845390">הוספת מזהה דרישה למכשיר זה</translation>
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
-<translation id="2175607476662778685">סרגל הפעלה מהירה</translation>
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2177950615300672361">כרטיסייה אנונימית: <ph name="TAB_NAME" /></translation>
@@ -7570,7 +7569,6 @@
 <translation id="8248887045858762645">‏טיפ ל-Chrome</translation>
 <translation id="8249048954461686687">‏תיקיית OEM</translation>
 <translation id="8249615410597138718">שליחה אל המכשירים שלך</translation>
-<translation id="8249672078237421304">אני רוצה לקבל הצעות לתרגום דפים שאינם בשפה שאני קורא</translation>
 <translation id="8250210000648910632">אין יותר נפח אחסון פנוי</translation>
 <translation id="8251441930213048644">יש לרענן עכשיו</translation>
 <translation id="8251509999076836464">מתבצעת התאמה ל-<ph name="DEVICE_NAME" /></translation>
@@ -7982,6 +7980,7 @@
 <translation id="8666759526542103597">מידע על התאמה אישית של מודעות על סמך הדפדפן</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> כעת במסך מלא וסמן העכבר שלך הושבת.</translation>
 <translation id="8667760277771450375">אנחנו בוחנים דרכים חדשות להגביל מעקב בין-אתרים ולאפשר לאתרים לעצור ניסיונות הונאה וספאם של מודעות.</translation>
+<translation id="8668378421690365723">יכול להיות שהמכשיר שלך לא יעבוד כמו שצריך ושיהיו בעיות באבטחה ובביצועים.</translation>
 <translation id="8669284339312441707">חמים יותר</translation>
 <translation id="8670537393737592796">כדי לחזור לכאן במהירות, יש ללחוץ על לחצן ההתקנה ולהתקין את <ph name="APP_NAME" /></translation>
 <translation id="867085395664725367">התרחשה שגיאת שרת זמנית.</translation>
@@ -8467,6 +8466,7 @@
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את <ph name="DEVICE_OS" /> בדיסק הפנימי. יש לך גם אפשרות להתקין בשלב מאוחר יותר ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אם עדיין לא מתאים לך להתקין, אפשר להריץ את המערכת מ-USB ולנסות אותה. מערכת ההפעלה והנתונים הנוכחיים שלך ימשיכו לפעול, אבל ייתכן שיהיו מגבלות על נפח אחסון וביצועים.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">פתיחה ככרטיסייה מוצמדת</translation>
+<translation id="9123287046453017203">המכשיר שלך לא מעודכן</translation>
 <translation id="9124003689441359348">כאן יופיעו הסיסמאות ששמרת</translation>
 <translation id="9126149354162942022">צבע הסמן</translation>
 <translation id="9128317794749765148">לא ניתן היה להשלים את ההגדרה</translation>

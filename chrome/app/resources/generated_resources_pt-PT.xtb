@@ -1127,6 +1127,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2048653237708779538">Ação não disponível</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2052572566310583903">Instalada nos seus outros dispositivos</translation>
+<translation id="2053105195397337973">Estamos a explorar formas de restringir a monitorização enquanto permitimos que os sites acabem com as fraudes e o spam de anúncios.</translation>
 <translation id="2053312383184521053">Dados do estado inativo</translation>
 <translation id="2054240652864153171">Limpar os dados de sites para <ph name="SITE_NAME" /> particionado em <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">A sua sessão nestes sites será terminada, incluindo em separadores abertos.</translation>
@@ -1267,7 +1268,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2173801458090845390">Adicionar ID de requisição a este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Gerir motores de pesquisa e a pesquisa de sites</translation>
-<translation id="2175607476662778685">Barra de início rápido</translation>
 <translation id="217576141146192373">Não é possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177950615300672361">Separador de navegação anónima: <ph name="TAB_NAME" /></translation>
@@ -1869,6 +1869,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2727633948226935816">Não lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
 <translation id="2729314457178420145">Limpar também os dados de navegação (<ph name="URL" />), o que poderá terminar a sua sessão em Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">O Chrome está a encontrar novas formas de reduzir a monitorização e dar-lhe ainda mais segurança enquanto navega. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> e permite-lhe geri-los. Em seguida, os sites que visita podem pedir ao Chrome os seus interesses para lhe mostrar anúncios.</translation>
 <translation id="2730029791981212295">A fazer uma cópia de segurança das aplicações e dos ficheiros do Linux…</translation>
 <translation id="2730901670247399077">Sugestões de emojis</translation>
 <translation id="273093730430620027">Esta página está a aceder à sua câmara.</translation>
@@ -4557,6 +4558,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5350293332385664455">Desativar Assistente Google</translation>
 <translation id="535123479159372765">Texto copiado de outro dispositivo</translation>
 <translation id="5352033265844765294">Carimbo de data/hora</translation>
+<translation id="5352257124367865087">Gerir autorizações de sites</translation>
 <translation id="5353252989841766347">Exportar palavras-passe do Chrome</translation>
 <translation id="5355099869024327351">Permita que o Assistente lhe mostre notificações.</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
@@ -4963,6 +4965,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5747552184818312860">Expira</translation>
 <translation id="5747785204778348146">Programador – instável</translation>
 <translation id="5747809636523347288">Co&amp;lar e ir para <ph name="URL" /></translation>
+<translation id="5751345516399502412">Verificar prontidão da ligação (à Internet) via telemóvel</translation>
 <translation id="5755022574660047665">memórias do Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de Ajuda</translation>
 <translation id="5757375109985023827">Selecione um separador para pré-visualizar</translation>
@@ -5058,6 +5061,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Sugerir novos conteúdos a explorar</translation>
 <translation id="5846200638699387931">Erro de sintaxe de relação: <ph name="ERROR_LINE" />.</translation>
+<translation id="5846504156837627898">Gerir autorizações de sites</translation>
 <translation id="5846807460505171493">Instale atualizações e apps. Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e apps a partir da Google, do seu operador e do fabricante do dispositivo, possivelmente através de dados móveis. Algumas destas apps podem disponibilizar compras na app.</translation>
 <translation id="5849212445710944278">Já adicionada</translation>
 <translation id="5851868085455377790">Emissor</translation>
@@ -5623,6 +5627,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6398715114293939307">Remover a Google Play Store</translation>
 <translation id="6398765197997659313">Sair do modo de ecrã inteiro</translation>
 <translation id="6399774419735315745">Espiã</translation>
+<translation id="6400360390396538896">Sempre em <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Para enviar este separador para outro dispositivo, inicie sessão no Chrome nesse dispositivo</translation>
 <translation id="6401597285454423070">O seu computador contém um dispositivo de segurança com TPM (Trusted Platform Module, Módulo de plataforma fidedigna), que é usado para implementar várias funcionalidades de segurança essenciais no ChromeOS. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=tpm para saber mais</translation>
 <translation id="6404187344102273690">Jogos do Chromebook</translation>
@@ -7221,6 +7226,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7939062555109487992">Opções avançadas</translation>
 <translation id="7939328347457537652">Gerir certificados do dispositivo</translation>
 <translation id="7939412583708276221">Manter na mesma</translation>
+<translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
 <translation id="7943837619101191061">Adicionar Localização...</translation>
@@ -7553,7 +7559,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8248887045858762645">Sugestão do Chrome</translation>
 <translation id="8249048954461686687">Pasta OEM</translation>
 <translation id="8249615410597138718">Enviar para os seus dispositivos</translation>
-<translation id="8249672078237421304">Sugerir a tradução de páginas que não estejam num idioma que o utilizador saiba ler</translation>
 <translation id="8250210000648910632">Sem espaço de armazenamento</translation>
 <translation id="8251441930213048644">Atualizar agora</translation>
 <translation id="8251509999076836464">A sincronizar com <ph name="DEVICE_NAME" /></translation>
@@ -7749,6 +7754,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8439506636278576865">Oferecer para traduzir páginas neste idioma</translation>
 <translation id="8440630305826533614">Apps para Linux</translation>
 <translation id="844063558976952706">Sempre neste Website</translation>
+<translation id="8441313165929432954">Ativar/desativar ligação (à Internet) via telemóvel</translation>
 <translation id="8443795068008423036">Certifique-se de que o seu dispositivo está atualizado e tente novamente</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8447409163267621480">Inclua Ctrl ou Alt.</translation>

@@ -327,6 +327,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2894949423239620203">Prestandan kan påverkas av kabeln</translation>
 <translation id="2903844815300039659">Ansluten till <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Skärmbilder/skärminspelningar</translation>
+<translation id="2925246975070834767">Testa automatisk zoom så att du hamnar i mitten av skärmen. Aktivera det i snabbinställningarna.</translation>
 <translation id="2941112035454246133">Låg</translation>
 <translation id="2942350706960889382">Dockad skärmförstoring</translation>
 <translation id="2942516765047364088">Hyllposition</translation>
@@ -469,6 +470,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
+<translation id="3724279623330129812">Kameran har centrerats med automatisk zoom</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
@@ -633,6 +635,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, betyg <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Byt till en tidigare version av enheten inom en dag}other{Byt till en tidigare version av enheten inom # dagar}}</translation>
+<translation id="4633636853437260449">Radera genom att trycka på Ctrl + W</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4644727592819780893">Området är för litet för att visas i kameran</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, apprekommendation</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certyfikat uwierzytelniania został odrzucony przez sieć</translation>
 <translation id="255937426064304553">amerykańska klawiatura międzynarodowa</translation>
 <translation id="2563185590376525700">Żaba</translation>
-<translation id="2570012981255377263">Tutaj będą się pojawiać ostatnie pliki</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
 <translation id="2602810353103180630">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
+<translation id="3495810061346586977">Ten plik jest poufny i podlega zasadom administratora. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3522708245912499433">Portugalski</translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">Tamilski z klawiaturą Tamil99</translation>
 <translation id="5633226425545095130">Przeniesienie tego elementu spowoduje jego udostępnienie wszystkim osobom, które mogą widzieć udostępniony folder „<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="5649768706273821470">Posłuchaj</translation>
-<translation id="5665074015635552640">Tutaj będą pojawiać się ostatnie filmy</translation>
 <translation id="5669691691057771421">Wpisz nowy kod PIN</translation>
 <translation id="5678784840044122290">Aplikacja na Linuksa będzie dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nie można odłączyć archiwum lub dysku wirtualnego<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     Znaleziono <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Do góry nogami</translation>
 <translation id="6943836128787782965">Wykonanie metody GET protokołu HTTP nie powiodło się.</translation>
-<translation id="6945604978460872381">Tutaj będą się pojawiać ostatnie dokumenty</translation>
 <translation id="6949408524333579394">Serbski – transliteracja</translation>
 <translation id="6954309393500027528">Administrator zablokował możliwość wklejenia tego pliku</translation>
 <translation id="6960565108681981554">Nie aktywowano. Skontaktuj się ze swoim operatorem.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">Udostępnij innym</translation>
 <translation id="7297443947353982503">Niepoprawna nazwa użytkownika lub hasło albo uwierzytelnianie EAP nie powiodło się</translation>
 <translation id="7309413087278791451">Niemiecki (Belgia)</translation>
-<translation id="7313374447885864533">Tutaj będą się pojawiać ostatnie pliki audio</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7343393116438664539">Wietnamski teleks</translation>
 <translation id="7357762654218998920">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Dowiedz się więcej<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">Plik lub katalog o tej nazwie już istnieje.</translation>
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8372852072747894550">Grecki</translation>
-<translation id="8384716930968677505">Tutaj będą się pojawiać ostatnie zdjęcia</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
 <translation id="8387733224523483503">Element <ph name="FILE_NAME" /> został wyodrębniony.</translation>
 <translation id="8395901698320285466">Wymiary</translation>

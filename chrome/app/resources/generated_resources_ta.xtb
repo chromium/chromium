@@ -1139,6 +1139,7 @@
 <translation id="2048653237708779538">இச்செயலைச் செய்ய இயலாது</translation>
 <translation id="2050339315714019657">செங்குத்து நிலை</translation>
 <translation id="2052572566310583903">உங்களின் பிற சாதனங்களில் நிறுவப்பட்டுள்ளது</translation>
+<translation id="2053105195397337973">விளம்பர ஸ்பேம் &amp; மோசடியைத் தடுப்பதற்குத் தளங்களை அனுமதிப்பதுடன், கண்காணிப்பைத் தடுப்பதற்கான வழிகளையும் நாங்கள் கண்டறிந்து வருகிறோம்.</translation>
 <translation id="2053312383184521053">செயல்படா நிலையில் இருக்கும் தரவு</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> இல் பார்ட்டிஷன் செய்யப்பட்ட <ph name="SITE_NAME" /> தளத் தரவை அழிக்கவா?</translation>
 <translation id="2055585478631012616">திறந்துள்ள தாவல்களில் உள்ளவை உட்பட இந்தத் தளங்களிலிருந்து வெளியேற்றப்படுவீர்கள்</translation>
@@ -1279,7 +1280,6 @@
 <translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="2173801458090845390">இந்தச் சாதனத்தில் கோரிக்கை ஐடியைச் சேர்</translation>
 <translation id="2175384018164129879">தேடல் இன்ஜின்களையும் தளத்தில் தேடியவற்றையும் நிர்வகித்தல்</translation>
-<translation id="2175607476662778685">விரைவு தொடக்கப் பட்டி</translation>
 <translation id="217576141146192373">பிரிண்ட்டரைச் சேர்க்க முடியவில்லை. உங்கள் பிரிண்ட்டரின் உள்ளமைவைச் சரிபார்த்த பிறகு மீண்டும் முயலவும்.</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
 <translation id="2177950615300672361">மறைநிலைத் தாவல்: <ph name="TAB_NAME" /></translation>
@@ -4977,6 +4977,7 @@
 <translation id="5747552184818312860">காலாவதியாகும் தேதி</translation>
 <translation id="5747785204778348146">டெவெலப்பர் - நிலையற்றது</translation>
 <translation id="5747809636523347288"><ph name="URL" /> எனும் இணைப்பை ஒட்டி அங்கு செல்</translation>
+<translation id="5751345516399502412">இணைப்பு முறையின் தயார்நிலையைச் சரிபார்</translation>
 <translation id="5755022574660047665">Google Photosஸில் உள்ள நினைவுகள்</translation>
 <translation id="5756163054456765343">உதவி மையம்</translation>
 <translation id="5757375109985023827">மாதிரிக்காட்சியைப் பார்க்க, ஒரு பக்கத்தைத் தேர்ந்தெடுக்கவும்</translation>
@@ -7234,6 +7235,7 @@
 <translation id="7939062555109487992">மேம்பட்ட விருப்பங்கள்</translation>
 <translation id="7939328347457537652">சாதனத்தின் சான்றிதழ்களை நிர்வகி</translation>
 <translation id="7939412583708276221">எப்படியும் வைத்திரு</translation>
+<translation id="7941179291434537290">இணைப்புமுறையின் தயார்நிலை:</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7943368935008348579">PDFகளைப் பதிவிறக்கு</translation>
 <translation id="7943837619101191061">இடத்தைச் சேர்...</translation>
@@ -7566,7 +7568,6 @@
 <translation id="8248887045858762645">Chrome உதவிக்குறிப்பு</translation>
 <translation id="8249048954461686687">OEM ஃபோல்டர்</translation>
 <translation id="8249615410597138718">என் சாதனங்களுக்கு அனுப்பு</translation>
-<translation id="8249672078237421304">நான் படிக்கும் மொழியில் இல்லாத பக்கங்களை மொழிபெயர்ப்பதற்கான விருப்பத்தை வழங்கு</translation>
 <translation id="8250210000648910632">சேமிப்பிடம் நிரம்பிவிட்டது</translation>
 <translation id="8251441930213048644">இப்போது ரெஃப்ரெஷ் செய்</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> உடன் இணைக்கிறது</translation>
@@ -7762,6 +7763,7 @@
 <translation id="8439506636278576865">பக்கங்களை இந்த மொழியில் மொழிபெயர்ப்பதற்கான அனுமதி</translation>
 <translation id="8440630305826533614">Linux ஆப்ஸ்</translation>
 <translation id="844063558976952706">இந்த தளத்திற்கு எப்போதும்</translation>
+<translation id="8441313165929432954">இணைப்பு முறையை இயக்குதல்/முடக்குதல்</translation>
 <translation id="8443795068008423036">உங்கள் சாதனம் சமீபத்திய பதிப்பில் இயங்குவதை உறுதிசெய்து மீண்டும் முயலவும்</translation>
 <translation id="8446884382197647889">மேலும் அறிக</translation>
 <translation id="8447409163267621480">கன்ட்ரோல் அல்லது ஆல்ட் விசையைப் பயன்படுத்தித் தொடங்கவும்</translation>

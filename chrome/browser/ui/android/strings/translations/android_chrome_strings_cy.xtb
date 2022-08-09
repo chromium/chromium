@@ -200,6 +200,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2046634576464120978">Wedi methu â chofrestru</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Chwilio'r rhyngrwyd</translation>
+<translation id="2053105195397337973">Rydym yn archwilio ffyrdd o gyfyngu ar olrhain tra'n galluogi gwefannau i atal sothach hysbysebion a thwyll.</translation>
 <translation id="2056878612599315956">Cafodd y wefan ei seibio</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad wedi methu}zero{Mae # lawrlwythiad wedi methu}two{Mae # lawrlwythiad wedi methu}few{Mae # lawrlwythiad wedi methu}many{Mae # lawrlwythiad wedi methu}other{Mae # lawrlwythiad wedi methu}}</translation>
 <translation id="2067805253194386918">testun</translation>
@@ -234,6 +235,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2239812875700136898">Rheoli'ch straeon o'r botwm Dewisiadau ar gyfer Discover</translation>
 <translation id="2248941474044011069">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google</translation>
 <translation id="2259659629660284697">Allforio cyfrineiriau…</translation>
+<translation id="2276231040576210443">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK1" />gosodiadau<ph name="END_LINK1" />. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="2276696007612801991">Mewngofnodwch i'ch cyfrif Google i wirio eich cyfrineiriau</translation>
 <translation id="2278052315791335171">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Agor ap ar gyfer <ph name="APPNAME" />?</translation>
@@ -307,6 +309,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
 <translation id="2707726405694321444">Ail-lwytho'r dudalen</translation>
+<translation id="2709516037105925701">Awtolenwi</translation>
 <translation id="271033894570825754">Newydd</translation>
 <translation id="2711073837061989559">Profion</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
@@ -395,12 +398,12 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3114507951000454849">Darllen y newyddion heddiw <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">wedi cysylltu â</translation>
 <translation id="3123734510202723619">Cyhoeddiadau</translation>
+<translation id="3130863904455712965">Hanes a rhagor</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Tudalen hafan Chrome</translation>
 <translation id="3166827708714933426">Llwybrau byr tabiau a ffenestri</translation>
 <translation id="316694332262407393">Mae Chrome eisoes yn rhedeg yma.</translation>
 <translation id="3169472444629675720">Darganfod</translation>
-<translation id="3169523567916669830">Yn ystod y profion, gallwch weld a chael gwared ar bynciau sydd o ddiddordeb y mae gwefannau yn eu defnyddio i ddangos hysbysebion i chi. Mae Chrome yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
 <translation id="3187472288455401631">Mesur hysbysebion</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
 <translation id="3208584281581115441">Gwirio nawr</translation>
@@ -543,6 +546,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3981902534690264083">Gall hysbysebwyr ddeall sut mae hysbysebion yn perfformio</translation>
 <translation id="3985215325736559418">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
+<translation id="3999683152997576765">Gallwch weld a dileu pynciau o ddiddordeb y mae gwefannau'n eu defnyddio i ddangos hysbysebion i chi. Mae Chrome yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
 <translation id="4000212216660919741">Hafan All-lein</translation>
 <translation id="4016425174436051808">Methu â dilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# awr}zero{# awr}two{# awr}few{# awr}many{# awr}other{# awr}}</translation>
@@ -1298,6 +1302,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8037801708772278989">Newydd ei wirio</translation>
 <translation id="804335162455518893">Ni chanfuwyd cerdyn SD.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab anhysbys}zero{<ph name="TAB_COUNT_NORMAL" /> tab anhysbys}two{<ph name="TAB_COUNT_NORMAL" /> dab anhysbys}few{<ph name="TAB_COUNT_NORMAL" /> thab anhysbys}many{<ph name="TAB_COUNT_NORMAL" /> thab anhysbys}other{<ph name="TAB_COUNT_NORMAL" /> tab anhysbys}}</translation>
+<translation id="8048728378294435881">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ar gael</translation>
 <translation id="8058655154417507695">Blwyddyn darfod</translation>
 <translation id="8058746566562539958">Agor mewn tab Chrome newydd</translation>
@@ -1431,7 +1436,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8664215986015753476">Defnyddiwch Chrome eich ffordd chi</translation>
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
 <translation id="8666759526542103597">Ynglŷn â phersonoleiddio hysbysebion ar sail Porwr</translation>
-<translation id="8667760277771450375">Rydym yn archwilio ffyrdd i gyfyngu ar olrhain traws-wefan tra'n galluogi gwefannau i stopio sothach hysbysebion a thwyll.</translation>
 <translation id="8676789164135894283">Gwiriadau mewngofnodi</translation>
 <translation id="867767487203716855">Diweddariad nesaf</translation>
 <translation id="8683039184091909753">llun</translation>

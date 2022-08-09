@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
 <translation id="255937426064304553">ABD uluslararası</translation>
 <translation id="2563185590376525700">Kurbağa</translation>
-<translation id="2570012981255377263">Son dosyalarınız burada gösterilir</translation>
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">Tamil99 klavye ile Tamilce</translation>
 <translation id="5633226425545095130">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre taşınırsa bu klasörü görebilen herkesle paylaşılır.</translation>
 <translation id="5649768706273821470">Dinle</translation>
-<translation id="5665074015635552640">Son videolarınız burada gösterilir</translation>
 <translation id="5669691691057771421">Yeni PIN'i girin</translation>
 <translation id="5678784840044122290">Linux uygulaması sizin Terminalinizde mevcut. Ayrıca Başlatıcınızda bir simgesini görebilirsiniz.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arşivle veya sanal diskle olan bağlantı kesilemiyor<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     <ph name="FILE_COUNT" /> bulundu</translation>
 <translation id="6935521024859866267">Baş Aşağı</translation>
 <translation id="6943836128787782965">HTTP get işlevi başarısız oldu</translation>
-<translation id="6945604978460872381">Son dokümanlarınız burada gösterilir</translation>
 <translation id="6949408524333579394">Sırpça Harf Çevirisi</translation>
 <translation id="6954309393500027528">Bu dosyayı yapıştırma işlevi, yöneticiniz tarafından engellendi</translation>
 <translation id="6960565108681981554">Etkin değil. Operatörünüzle iletişime geçin.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Başkalarıyla paylaş</translation>
 <translation id="7297443947353982503">Kullanıcı adı/şifre yanlış veya EAP yetkilendirmesi başarısız oldu</translation>
 <translation id="7309413087278791451">Almanca (Belçika)</translation>
-<translation id="7313374447885864533">Son ses dosyalarınız burada gösterilir</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7343393116438664539">Vietnamca Teleks</translation>
 <translation id="7357762654218998920">Bu dosya türü desteklenmiyor. ChromeOS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Aynı adda bir dosya veya dizin zaten var.</translation>
 <translation id="8372369524088641025">Hatalı WEP anahtarı</translation>
 <translation id="8372852072747894550">Yunanca</translation>
-<translation id="8384716930968677505">Son resimleriniz burada gösterilir</translation>
 <translation id="8386903983509584791">Tarama tamamlandı</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> çıkarıldı.</translation>
 <translation id="8395901698320285466">Boyutlar</translation>

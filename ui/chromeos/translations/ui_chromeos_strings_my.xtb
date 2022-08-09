@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">ကွန်ရက်မှ စစ်မှန်ကြောင်းသက်သေပြချက်လက်မှတ်ကို ငြင်းပယ်ခဲ့သည်</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">ဖား</translation>
-<translation id="2570012981255377263">လတ်တလောဖိုင်များသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="2578394532502990878">တမီးလ် အသံထွက်</translation>
 <translation id="2579959351793446050">အိုဒီယာ</translation>
 <translation id="2602810353103180630">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
+<translation id="3495810061346586977">ဤဖိုင်ကလျှို့ဝှက်ဖြစ်ပြီး စီမံခန့်ခွဲသူ၏မူဝါဒဖြင့် ကန့်သတ်ချက်များနှင့်အညီ ဖြစ်သည်။ <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Tamil99 ကီးဘုတ်ဖြင့် တမီးလ်</translation>
 <translation id="5633226425545095130">ဤဖိုင်ကိုရွှေ့သောအခါ မျှဝေထားသောဖိုင်တွဲ ‘<ph name="DESTINATION_NAME" />’ ကို ကြည့်ခွင့်ရသူတိုင်းနှင့် မျှဝေပါမည်။</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
-<translation id="5665074015635552640">လတ်တလောဗီဒီယိုဖိုင်များသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="5669691691057771421">ပင်နံပါတ်အသစ်ကို ထည့်ပါ</translation>
 <translation id="5678784840044122290">Linux အပလီကေးရှင်းကို သင်၏ Terminal အတွင်းတွင်ရနိုင်ပြီး သင်၏ Launcher တွင်လည်း သင်္ကေတပြနိုင်ပါသည်။</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />မှတ်တမ်းဟောင်း သို့မဟုတ် ဒစ်ခ်အတုကို ချိတ်ဆက်မှုဖြုတ်၍မရပါ<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> တွေ့ပါသည်</translation>
 <translation id="6935521024859866267">ဇောက်ထိုး မိုးမျှော်</translation>
 <translation id="6943836128787782965">HTTP မှာ မအောင်မြင်ခဲ့</translation>
-<translation id="6945604978460872381">လတ်တလောမှတ်တမ်းများသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="6949408524333579394">ဆားဘီးယား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="6954309393500027528">ဤဖိုင်ကူးယူခြင်းကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="6960565108681981554">ဖွင့်မထားပါ။ သင်၏ မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">အခြားသူများနှင့် မျှဝေရန်</translation>
 <translation id="7297443947353982503">အသုံးပြုသူအမည်/ လျှို့ဝှက်စာလုံး မမှန်ကန်ပါ သို့မဟုတ် EAP-auth မအောင်မြင်ပါ</translation>
 <translation id="7309413087278791451">ဂျာမန် (ဘယ်လ်ဂျီယမ်)</translation>
-<translation id="7313374447885864533">လတ်တလောအသံဖိုင်များသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7343393116438664539">ဗီယက်နမ် Telex</translation>
 <translation id="7357762654218998920">ဤဖိုင်အမျိုးအစားကို မပံ့ပိုးပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" />။</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">တူညီသည့် အမည်ဖြင့် ဖိုင်တစ်ဖိုင် သို့မဟုတ် လမ်းကြောင်းတစ်ခု ရှိပြီးဖြစ်သည်။</translation>
 <translation id="8372369524088641025">WEP သော့ မကောင်းပါ</translation>
 <translation id="8372852072747894550">ဂရိ</translation>
-<translation id="8384716930968677505">လတ်တလောပုံများသည် ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="8386903983509584791">ရှာဖွေပြီးပါပြီ</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ထုတ်ယူပြီးပြီ။</translation>
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>

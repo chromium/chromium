@@ -1132,6 +1132,7 @@
 <translation id="2048653237708779538">ಯಾವುದೇ ಕ್ರಿಯೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="2052572566310583903">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2053105195397337973">ಜಾಹೀರಾತು ಸ್ಪ್ಯಾಮ್ ಮತ್ತು ವಂಚನೆಯನ್ನು ನಿಲ್ಲಿಸಲು ಸೈಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವಾಗ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸುವ ಮಾರ್ಗಗಳನ್ನು ನಾವು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುತ್ತಿದ್ದೇವೆ.</translation>
 <translation id="2053312383184521053">ತಟಸ್ಥ ಸ್ಥಿತಿಯ ಡೇಟಾ</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> ನಲ್ಲಿ ವಿಭಜಿಸಲಾದ <ph name="SITE_NAME" /> ನ ಸೈಟ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="2055585478631012616">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -1272,7 +1273,6 @@
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2173801458090845390">ಈ ಸಾಧನಕ್ಕೆ ನಿಯೋಜನ ಐಡಿ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2175384018164129879">&amp;ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="2175607476662778685">ಶೀಘ್ರ ಆರಂಭಗೊಳ್ಳುವ ಬಾರ್</translation>
 <translation id="217576141146192373">ಪ್ರಿಂಟರ್ ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಿಂಟರ್‌ನ ಕಾನ್ಫಿಗರೇಶನ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="2177950615300672361">ಅದೃಶ್ಯ ಟ್ಯಾಬ್: <ph name="TAB_NAME" /></translation>
@@ -4971,6 +4971,7 @@
 <translation id="5747552184818312860">ಅವಧಿ ಮೀರುವುದು</translation>
 <translation id="5747785204778348146">ಡೆವಲಪರ್ - ಅಸ್ಥಿರ</translation>
 <translation id="5747809636523347288">ಅಂ&amp;ಟಿಸಿ ಮತ್ತು <ph name="URL" /> ಗೆ ಹೋಗಿ</translation>
+<translation id="5751345516399502412">ಟೆಥರಿಂಗ್ ಸಿದ್ಧತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5755022574660047665">Google Photos ನಲ್ಲಿನ ನೆನಪುಗಳು</translation>
 <translation id="5756163054456765343">ಸ&amp;ಹಾಯ ಕೇಂದ್ರ</translation>
 <translation id="5757375109985023827">ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲು ಟ್ಯಾಬ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -7230,6 +7231,7 @@
 <translation id="7939062555109487992">ಸುಧಾರಿತ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7939328347457537652">ಸಾಧನ ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7939412583708276221">ಹೇಗಾದರೂ ಇರಿಸಿ</translation>
+<translation id="7941179291434537290">ಟೆಥರಿಂಗ್ ಸಿದ್ಧತೆ:</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7943368935008348579">PDF ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7943837619101191061">ಸ್ಥಳ ಸೇರಿಸಿ...</translation>
@@ -7559,7 +7561,6 @@
 <translation id="8248887045858762645">Chrome ಸಲಹೆ</translation>
 <translation id="8249048954461686687">OEM ಫೊಲ್ಡರ್</translation>
 <translation id="8249615410597138718">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
-<translation id="8249672078237421304">ನೀವು ಓದುವ ಭಾಷೆಯಲ್ಲಿಲ್ಲದ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲು ನೀಡುತ್ತದೆ</translation>
 <translation id="8250210000648910632">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳಾವಕಾಶ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="8251441930213048644">ಈಗ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> ಗೆ ಜೋಡಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -7755,6 +7756,7 @@
 <translation id="8439506636278576865">ಪುಟಗಳನ್ನು ಈ ಭಾಷೆಯಲ್ಲಿ ಅನುವಾದ ಮಾಡಲು ಅವಕಾಶ</translation>
 <translation id="8440630305826533614">Linux ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="844063558976952706">ಯಾವಾಗಲೂ ಈ ಸೈಟ್‌ನಲ್ಲಿ</translation>
+<translation id="8441313165929432954">ಟೆಥರಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ/ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8443795068008423036">ನಿಮ್ಮ ಸಾಧನವು ಅಪ್‌ ಟು ಡೇಟ್‌‌ ಆಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8446884382197647889">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8447409163267621480">Ctrl ಅಥವಾ Alt ಅನ್ನು ಒಳಗೊಂಡಿದೆ</translation>

@@ -1127,6 +1127,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2048653237708779538">Acció no disponible</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2052572566310583903">Instal·lada als altres dispositius teus</translation>
+<translation id="2053105195397337973">Estem explorant maneres de restringir el seguiment i de, alhora, permetre que els llocs web aturin el frau i el contingut brossa publicitari.</translation>
 <translation id="2053312383184521053">Dades de l'estat d'inactivitat</translation>
 <translation id="2054240652864153171">Vols esborrar les dades del lloc web <ph name="SITE_NAME" /> amb particions a <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Se't tancarà la sessió d'aquests llocs web, també de les pestanyes obertes</translation>
@@ -1267,7 +1268,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2173302385160625112">Comprova la connexió a Internet</translation>
 <translation id="2173801458090845390">Afegeix l'identificador de sol·licitud a aquest dispositiu</translation>
 <translation id="2175384018164129879">&amp;Gestiona els motors de cerca i les cerques al lloc web</translation>
-<translation id="2175607476662778685">Barra d'inici ràpid</translation>
 <translation id="217576141146192373">No es pot afegir la impressora. Comprova'n la configuració i torna-ho a provar.</translation>
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2177950615300672361">Pestanya d'incògnit: <ph name="TAB_NAME" /></translation>
@@ -4959,6 +4959,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5747552184818312860">Caduca el dia</translation>
 <translation id="5747785204778348146">Desenvolupador: inestable</translation>
 <translation id="5747809636523347288">Engan&amp;xa i ves a <ph name="URL" /></translation>
+<translation id="5751345516399502412">Comprova la preparació de la compartició de xarxa</translation>
 <translation id="5755022574660047665">records de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entre d'ajuda</translation>
 <translation id="5757375109985023827">Selecciona una pestanya per previsualitzar-la</translation>
@@ -7215,6 +7216,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7939062555109487992">Opcions avançades</translation>
 <translation id="7939328347457537652">Gestiona els certificats del dispositiu</translation>
 <translation id="7939412583708276221">Continua de totes maneres</translation>
+<translation id="7941179291434537290">Preparació de la compartició de xarxa:</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943368935008348579">Baixa els fitxers PDF</translation>
 <translation id="7943837619101191061">Afegeix una ubicació...</translation>
@@ -7547,7 +7549,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8248887045858762645">Consell de Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
 <translation id="8249615410597138718">Envia als teus dispositius</translation>
-<translation id="8249672078237421304">Proposa'm traduir les pàgines escrites en un idioma que no entenc</translation>
 <translation id="8250210000648910632">No queda espai d'emmagatzematge</translation>
 <translation id="8251441930213048644">Actualitza ara</translation>
 <translation id="8251509999076836464">S'està vinculant a <ph name="DEVICE_NAME" /></translation>
@@ -7744,6 +7745,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8439506636278576865">Proposa'm traduir pàgines en aquest idioma</translation>
 <translation id="8440630305826533614">Aplicacions per a Linux</translation>
 <translation id="844063558976952706">Sempre en aquest lloc</translation>
+<translation id="8441313165929432954">Activa o desactiva la compartició de xarxa</translation>
 <translation id="8443795068008423036">Comprova que el dispositiu estigui actualitzat i torna-ho a provar</translation>
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8447409163267621480">Inclou la tecla Ctrl o Alt</translation>

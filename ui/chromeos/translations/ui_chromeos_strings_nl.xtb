@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
 <translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
 <translation id="2563185590376525700">Kikker</translation>
-<translation id="2570012981255377263">Je recente bestanden zie je hier</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
@@ -285,10 +284,12 @@
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
+<translation id="3495810061346586977">Dit bestand is vertrouwelijk en valt onder beperkingen van het beheerdersbeleid. <ph name="BEGIN_LINK_HELP" />Meer informatie<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3522708245912499433">Portugees</translation>
 <translation id="3524311639100184459">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Map</translation>
+<translation id="3548125359243647069">Je hebt te vaak een verkeerde pincode opgegeven.</translation>
 <translation id="3549797760399244642">Ga naar drive.google.com...</translation>
 <translation id="3553048479571901246">Als je bestanden wilt openen met <ph name="APP_NAME" />, kopieer je ze eerst naar de bestandsmap van Windows.</translation>
 <translation id="3556731189587832921">Engels (VS) met internationaal pc-toetsenbord</translation>
@@ -543,7 +544,6 @@
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
 <translation id="5633226425545095130">Als je dit item verplaatst, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
 <translation id="5649768706273821470">Luisteren</translation>
-<translation id="5665074015635552640">Je recente video's zie je hier</translation>
 <translation id="5669691691057771421">Nieuwe pincode opgeven</translation>
 <translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
@@ -616,6 +616,7 @@
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, verbinden</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Een app selecteren om dit bestand te openen</translation>
+<translation id="6295542640242147836">Simkaart vergrendelen</translation>
 <translation id="6296410173147755564">Ongeldige pukcode</translation>
 <translation id="6312403991423642364">Onbekende netwerkfout</translation>
 <translation id="6317608858038767920">Aangepaste naamserver <ph name="INPUT_INDEX" /></translation>
@@ -688,7 +689,6 @@
     <ph name="FILE_COUNT" /> gevonden</translation>
 <translation id="6935521024859866267">Ondersteboven</translation>
 <translation id="6943836128787782965">Ophalen van HTTP mislukt</translation>
-<translation id="6945604978460872381">Je recente documenten zie je hier</translation>
 <translation id="6949408524333579394">Servisch (transliteratie)</translation>
 <translation id="6954309393500027528">Plakken van dit bestand is geblokkeerd door je beheerder</translation>
 <translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
@@ -725,6 +725,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Bestand opslaan als</translation>
 <translation id="7229570126336867161">EVDO vereist</translation>
+<translation id="7230898482850090046">Je beheerder heeft je gevraagd de instelling Simkaart vergrendelen uit te zetten</translation>
 <translation id="7238097264433196391">Drive-naam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
@@ -736,7 +737,6 @@
 <translation id="7295662345261934369">Delen met anderen</translation>
 <translation id="7297443947353982503">Gebruikersnaam/wachtwoord onjuist of EAP-verificatie mislukt</translation>
 <translation id="7309413087278791451">Duits (België)</translation>
-<translation id="7313374447885864533">Je recente audiobestanden zie je hier</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7343393116438664539">Vietnamees (Telex)</translation>
 <translation id="7357762654218998920">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
@@ -757,6 +757,7 @@
 <translation id="7505167922889582512">Verborgen bestanden bekijken</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="751507702149411736">Wit-Russisch</translation>
+<translation id="7521790570754130607">Een pincode is vereist om mobiele data te gebruiken</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
 <translation id="7544830582642184299">Linux-apps toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="7547009467130558110">Sneaker</translation>
@@ -781,6 +782,7 @@
 <translation id="76959938259365003">Kan de prullenbak niet leegmaken.</translation>
 <translation id="770015031906360009">Grieks</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> gekopieerd.</translation>
+<translation id="7708271999969613024">Als je dit netwerk wilt gebruiken, moet je de 8-cijferige pukcode opgeven die je van je provider hebt gekregen.</translation>
 <translation id="7711920809702896782">Afbeeldingsgegevens</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7730494089396812859">Details van cloudback-up bekijken</translation>
@@ -866,7 +868,6 @@
 <translation id="8342318071240498787">Er bestaat al een bestand of map met dezelfde naam.</translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
-<translation id="8384716930968677505">Je recente afbeeldingen zie je hier</translation>
 <translation id="8386903983509584791">Scan voltooid</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> geëxtraheerd.</translation>
 <translation id="8395901698320285466">Afmetingen</translation>
@@ -876,6 +877,7 @@
 <translation id="8437209419043462667">Amerikaans</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
 <translation id="8456681095658380701">Ongeldige naam</translation>
+<translation id="8457767749626250697">Je simkaart is vergrendeld</translation>
 <translation id="8459404855768962328">Als je dit item kopieert, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
 <translation id="8461467696380332069">Klik met de rechtermuisknop op een bestand en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
 <translation id="8461914792118322307">Proxy</translation>

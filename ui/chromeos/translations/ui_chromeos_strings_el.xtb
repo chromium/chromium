@@ -185,7 +185,6 @@
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
-<translation id="2570012981255377263">Τα πρόσφατα αρχεία σας θα εμφανίζονται εδώ</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
 <translation id="2602810353103180630">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
@@ -555,7 +554,6 @@
 <translation id="5625294776298156701">Ταμίλ με πληκτρολόγιο Tamil99</translation>
 <translation id="5633226425545095130">Με τη μετακίνηση αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ακρόαση</translation>
-<translation id="5665074015635552640">Τα πρόσφατα βίντεό σας θα εμφανίζονται εδώ</translation>
 <translation id="5669691691057771421">Εισαγωγή νέου κωδικού PIN</translation>
 <translation id="5678784840044122290">Η εφαρμογή Linux θα είναι διαθέσιμη στο τερματικό σας και μπορεί επίσης να εμφανίζει ένα εικονίδιο στην Εφαρμογή εκκίνησης.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Δεν είναι δυνατή η αποσύνδεση από κάποιο αρχείο ή εικονικό δίσκο<ph name="END_BOLD" />
@@ -701,7 +699,6 @@
     Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία</translation>
 <translation id="6935521024859866267">Ανάποδα</translation>
 <translation id="6943836128787782965">Η λήψη HTTP απέτυχε</translation>
-<translation id="6945604978460872381">Τα πρόσφατα έγγραφά σας θα εμφανίζονται εδώ</translation>
 <translation id="6949408524333579394">Μεταγραφή σε Σερβικά</translation>
 <translation id="6954309393500027528">Η επικόλληση αυτού του αρχείου αποκλείστηκε από τον διαχειριστή σας</translation>
 <translation id="6960565108681981554">Δεν έχει ενεργοποιηθεί. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε.</translation>
@@ -749,7 +746,6 @@
 <translation id="7295662345261934369">Κοινοποίηση σε άλλα άτομα</translation>
 <translation id="7297443947353982503">Εσφαλμένο όνομα χρήστη/κωδικός πρόσβασης ή αποτυχία EAP-auth</translation>
 <translation id="7309413087278791451">Γερμανικά (Βέλγιο)</translation>
-<translation id="7313374447885864533">Τα πρόσφατα αρχεία ήχου σας θα εμφανίζονται εδώ</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7343393116438664539">Βιετναμικά Telex</translation>
 <translation id="7357762654218998920">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
@@ -884,7 +880,6 @@
 <translation id="8342318071240498787">Υπάρχει ήδη αρχείο ή κατάλογος με το ίδιο όνομα.</translation>
 <translation id="8372369524088641025">Εσφαλμένο κλειδί WEP</translation>
 <translation id="8372852072747894550">Ελληνικά</translation>
-<translation id="8384716930968677505">Οι πρόσφατες εικόνες σας θα εμφανίζονται εδώ</translation>
 <translation id="8386903983509584791">Η σάρωση ολοκληρώθηκε</translation>
 <translation id="8387733224523483503">Έγινε εξαγωγή του στοιχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Διαστάσεις</translation>

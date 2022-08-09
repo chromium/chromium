@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">再生と一時停止</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
+<translation id="1207734034680156868">説明に基づいて選ばれたヘルプ記事です</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
 <translation id="1236400083787698183">再起動する前に、デバイスで Powerwash を実行してください。折りたたみ式のデバイスの場合は、Powerwash が完了するまで待ってからカバーを閉じてください。Powerwash が完了するまでに 1 分ほどかかることがあります。</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
@@ -697,7 +698,6 @@
 <translation id="6961170852793647506">まずスキャナにドキュメントを置きます</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
-<translation id="6995564396478647735">書き込み保護がオンになっていることを確認してください</translation>
 <translation id="7005833343836210400">デバイスはオフラインです</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
@@ -808,7 +808,6 @@
 <translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8045012663542226664">マイクのミュート</translation>
-<translation id="8063022551652308521">書き込み保護はまだオフになっています。続行するには、書き込み保護をオンにしてください。</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="808894953321890993">パスワードの変更</translation>

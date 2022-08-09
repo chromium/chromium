@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
+<translation id="146902737843070955">管理員已要求這項變更</translation>
 <translation id="147310119694673958">手機電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />，㩒 Enter 制就可以開日曆檢視畫面</translation>
@@ -470,7 +471,7 @@
 <translation id="3708186454126126312">之前已連接的裝置</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
-<translation id="3724279623330129812">自動放大功能已將拍攝對象置於鏡頭畫面中央</translation>
+<translation id="3724279623330129812">自動縮放功能已將拍攝對象置於鏡頭畫面中央</translation>
 <translation id="3726171378575546917">此裝置上未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
@@ -836,6 +837,7 @@
 <translation id="5779721926447984944">已固定的檔案</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>

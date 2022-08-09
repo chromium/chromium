@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Godkendelsescertifikatet blev afvist af netværk</translation>
 <translation id="255937426064304553">Amerikansk (internationalt)</translation>
 <translation id="2563185590376525700">Frø</translation>
-<translation id="2570012981255377263">Dine seneste filer vises her</translation>
 <translation id="2578394532502990878">Tamil fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Lyt</translation>
-<translation id="5665074015635552640">Dine seneste videoer vises her</translation>
 <translation id="5669691691057771421">Angiv ny pinkode</translation>
 <translation id="5678784840044122290">Linux-appen er tilgængelig i din terminal, og der vises muligvis også et ikon for appen på din appliste.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Forbindelsen til et arkiv eller en virtuel disk kan ikke afbrydes<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     Der blev fundet <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">På hovedet</translation>
 <translation id="6943836128787782965">Det lykkedes ikke at hente HTTP</translation>
-<translation id="6945604978460872381">Dine seneste dokumenter vises her</translation>
 <translation id="6949408524333579394">Serbisk translitteration</translation>
 <translation id="6954309393500027528">Din administrator har blokeret for indsætning af denne fil</translation>
 <translation id="6960565108681981554">Ikke aktiveret. Kontakt dit mobilselskab.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Del med andre</translation>
 <translation id="7297443947353982503">Brugernavn/adgangskode er forkert, eller også mislykkedes EAP-godkendelsen</translation>
 <translation id="7309413087278791451">Tysk (Belgien)</translation>
-<translation id="7313374447885864533">Dine seneste lydfiler vises her</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
 <translation id="7357762654218998920">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Der findes allerede en fil eller en mappe med samme navn.</translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
-<translation id="8384716930968677505">Dine seneste billeder vises her</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ud.</translation>
 <translation id="8395901698320285466">Mål</translation>

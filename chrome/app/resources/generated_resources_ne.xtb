@@ -1124,6 +1124,7 @@
 <translation id="2048653237708779538">कारबाही उपलब्ध छैन</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2052572566310583903">तपाईंका अन्य डिभाइसमा इन्स्टल गरिएका एप</translation>
+<translation id="2053105195397337973">हामी साइटहरूलाई विज्ञापनमार्फत गरिने स्प्याम र ठगी रोकथाम गर्न दिने तर साइटमा गरिने गतिविधि भने ट्र्याक गर्न नदिने विभिन्न उपायहरूको परीक्षण गरिरहेका छौँ।</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति लगत</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> मा पार्टिसन गरिएको <ph name="SITE_NAME" /> को साइट डेटा मेटाउने हो?</translation>
 <translation id="2055585478631012616">तपाईं खुला ट्याबहरूका साथै यी साइटहरूबाट साइन आउट हुनु हुने छ</translation>
@@ -1264,7 +1265,6 @@
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2173801458090845390">यो डिभाइसमा माग ID थप्नुहोस्‌</translation>
 <translation id="2175384018164129879">&amp;साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="2175607476662778685">द्रुत सुरुवात पट्टी</translation>
 <translation id="217576141146192373">प्रिन्टर थप्न सकिएन। कृपया आफ्नो प्रिन्टरको कन्फिगुरेसन जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2177950615300672361">इन्कग्निटो ट्याब: <ph name="TAB_NAME" /></translation>
@@ -4957,6 +4957,7 @@
 <translation id="5747552184818312860">म्याद सकिन्छ</translation>
 <translation id="5747785204778348146">विकासकर्ता - अस्थिर</translation>
 <translation id="5747809636523347288">टाँस्नुहोस् र <ph name="URL" /> मा जानुहोस्</translation>
+<translation id="5751345516399502412">टेदरिङको उपलब्धता जाँच्नुहोस्</translation>
 <translation id="5755022574660047665">Google Photos मा भएका स्मरणीय क्षणहरू</translation>
 <translation id="5756163054456765343">मद्द&amp;त केन्द्र</translation>
 <translation id="5757375109985023827">प्रिभ्यू हेर्न कुनै ट्याब चयन गर्नुहोस्</translation>
@@ -7213,6 +7214,7 @@
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
 <translation id="7939328347457537652">डिभाइसका प्रमाणपत्रहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7939412583708276221">जसो भएता पनि राख्नुहोस्</translation>
+<translation id="7941179291434537290">टेदरिङको उपलब्धता:</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943368935008348579">PDF फाइलहरू डाउनलोड गरियोस्</translation>
 <translation id="7943837619101191061">स्थान थप्नुहोस्...</translation>
@@ -7544,7 +7546,6 @@
 <translation id="8248887045858762645">Chrome सम्बन्धी सुझाव</translation>
 <translation id="8249048954461686687">OEM फोल्डर</translation>
 <translation id="8249615410597138718">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
-<translation id="8249672078237421304">तपाईंले पढ्नुहुने भाषामा नरहेका पृष्ठहरूलाई अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="8250210000648910632">भण्डारणमा खाली ठाउँ सकिएको छ</translation>
 <translation id="8251441930213048644">अब पुनः ताजा गर्नुहोस्</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> सँग कनेक्ट गरिँदै छ</translation>
@@ -7740,6 +7741,7 @@
 <translation id="8439506636278576865">यस भाषामा पृष्ठहरू अनुवाद प्रस्ताव गर्नुहोस्</translation>
 <translation id="8440630305826533614">Linux का एपहरू</translation>
 <translation id="844063558976952706">सधैँ यो साइटमा</translation>
+<translation id="8441313165929432954">टेदरिङ अन/अफ गर्नुहोस्</translation>
 <translation id="8443795068008423036">आफ्नो डिभाइस अप टु डेट छ भन्ने कुरा सुनिश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8447409163267621480">Ctrl वा Alt कुञ्जी समावेश गर्नुहोस्</translation>

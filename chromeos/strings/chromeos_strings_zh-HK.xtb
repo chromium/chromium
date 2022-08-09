@@ -27,7 +27,7 @@
 <translation id="1199355487114804640">播放/暫停</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
-<translation id="1207734034680156868">系統是根據你的說明提供建議</translation>
+<translation id="1207734034680156868">系統是根據您的描述提供建議</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
 <translation id="1236400083787698183">重新開機前請先在裝置上執行 Powerwash。如果裝置有蓋，請等待 Powerwash 完成，然後才關上蓋。Powerwash 需要最多一分鐘才能完成。</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
@@ -698,7 +698,6 @@
 <translation id="6961170852793647506">如要開始，請將文件放到掃瞄器上</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6977381486153291903">韌體版本</translation>
-<translation id="6995564396478647735">確認已開啟「寫入保護」功能</translation>
 <translation id="7005833343836210400">裝置已離線</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
@@ -809,7 +808,6 @@
 <translation id="80398733265834479">啟用自動調色模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8045012663542226664">將麥克風設定為靜音</translation>
-<translation id="8063022551652308521">「寫入保護」功能仍然關閉。如要繼續，請開啟該功能。</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="808894953321890993">變更密碼</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">تمّ رفض شهادة المصادقة بواسطة الشبكة</translation>
 <translation id="255937426064304553">الأمريكية الدولية</translation>
 <translation id="2563185590376525700">ضفدع</translation>
-<translation id="2570012981255377263">ستظهر هنا أحدث الملفات.</translation>
 <translation id="2578394532502990878">التاميلية الصوتية</translation>
 <translation id="2579959351793446050">الأوديا</translation>
 <translation id="2602810353103180630">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، حجب المشرف هذه الشبكة، التفاصيل</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">إفراغ المهملات</translation>
 <translation id="5163869187418756376">تعذّرت المشاركة. تحقق من اتصالك وأعد المحاولة لاحقًا.</translation>
 <translation id="516592729076796170">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
+<translation id="5172749059808361023">تفاصيل القيود</translation>
 <translation id="5177526793333269655">عرض الصور المصغرة</translation>
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
 <translation id="5211614973734216083">الفاروية</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">استماع</translation>
-<translation id="5665074015635552640">ستظهر هنا أحدث الفيديوهات.</translation>
 <translation id="5669691691057771421">إدخال رقم التعريف الشخصي الجديد</translation>
 <translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     تم العثور على <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">رأسًا على عقب</translation>
 <translation id="6943836128787782965">‏تعذّر الحصول على HTTP</translation>
-<translation id="6945604978460872381">ستظهر هنا أحدث المستندات.</translation>
 <translation id="6949408524333579394">تحويل صوتي إلى اللغة الصربية</translation>
 <translation id="6954309393500027528">حظَر المشرف لصق هذا الملف.</translation>
 <translation id="6960565108681981554">لم يتم تفعيل الشبكة. يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">المشاركة مع الآخرين</translation>
 <translation id="7297443947353982503">‏اسم المستخدم/كلمة المرور غير صحيحة أو تعذّرت مصادقة EAP</translation>
 <translation id="7309413087278791451">الألمانية (بلجيكا)</translation>
-<translation id="7313374447885864533">ستظهر هنا أحدث الملفات الصوتية.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7343393116438664539">‏الفيتنامية باستخدام لوحة مفاتيح Telex</translation>
 <translation id="7357762654218998920">‏هذا النوع من الملفات غير متوافق. <ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /> حول فتح الملفات على نظام التشغيل Chrome</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">هناك ملف أو دليل موجود بهذا الاسم فعلاً.</translation>
 <translation id="8372369524088641025">‏مفتاح WEP غير صالح</translation>
 <translation id="8372852072747894550">اليونانية</translation>
-<translation id="8384716930968677505">ستظهر هنا أحدث الصور.</translation>
 <translation id="8386903983509584791">اكتملت عملية الفحص.</translation>
 <translation id="8387733224523483503">تم استخراج <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">الأبعاد</translation>

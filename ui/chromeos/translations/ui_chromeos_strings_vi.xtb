@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Chứng chỉ xác thực bị mạng từ chối</translation>
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="2563185590376525700">Ếch</translation>
-<translation id="2570012981255377263">Các tệp gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
 <translation id="2579959351793446050">Tiếng Odia</translation>
 <translation id="2602810353103180630">Mạng <ph name="NETWORK_INDEX" /> trong tổng số <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên của bạn đã chặn, Thông tin chi tiết</translation>
@@ -285,10 +284,12 @@
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
+<translation id="3495810061346586977">Tệp này được bảo mật và phải tuân thủ các hạn chế theo chính sách dành cho quản trị viên. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
 <translation id="3524311639100184459">Lưu ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Thư mục</translation>
+<translation id="3548125359243647069">Bạn đã nhập sai mã PIN quá nhiều lần.</translation>
 <translation id="3549797760399244642">Truy cập drive.google.com...</translation>
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
@@ -542,7 +543,6 @@
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Nghe</translation>
-<translation id="5665074015635552640">Các video gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="5669691691057771421">Nhập mã PIN mới</translation>
 <translation id="5678784840044122290">Ứng dụng Linux sẽ có trong Thiết bị của bạn và cũng có thể hiển thị một biểu tượng trong Trình chạy.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Không thể ngắt kết nối khỏi vùng lưu trữ hoặc ổ đĩa ảo<ph name="END_BOLD" />
@@ -615,6 +615,7 @@
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
+<translation id="6295542640242147836">Khoá SIM</translation>
 <translation id="6296410173147755564">Mã PUK không hợp lệ</translation>
 <translation id="6312403991423642364">Lỗi mạng không xác định</translation>
 <translation id="6317608858038767920">Máy chủ định danh tùy chỉnh <ph name="INPUT_INDEX" /></translation>
@@ -687,7 +688,6 @@
     Đã tìm thấy <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Lộn ngược</translation>
 <translation id="6943836128787782965">HTTP gặp lỗi</translation>
-<translation id="6945604978460872381">Các tài liệu gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="6949408524333579394">Tiếng Serbia (chuyển tự)</translation>
 <translation id="6954309393500027528">Quản trị viên của bạn đã chặn thao tác dán tệp này</translation>
 <translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
@@ -724,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Lưu tệp dưới dạng</translation>
 <translation id="7229570126336867161">Cần có EVDO</translation>
+<translation id="7230898482850090046">Quản trị viên đã yêu cầu bạn tắt chế độ cài đặt "Khoá SIM"</translation>
 <translation id="7238097264433196391">Tên ổ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Thông tin chi tiết</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
@@ -735,7 +736,6 @@
 <translation id="7295662345261934369">Chia sẻ với những người khác</translation>
 <translation id="7297443947353982503">Tên người dùng/mật khẩu không đúng hoặc xác thực EAP không thành công</translation>
 <translation id="7309413087278791451">Tiếng Đức (Bỉ)</translation>
-<translation id="7313374447885864533">Các tệp âm thanh gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7343393116438664539">Tiếng Việt (Telex)</translation>
 <translation id="7357762654218998920">Loại tệp này không được hỗ trợ. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
@@ -756,6 +756,7 @@
 <translation id="7505167922889582512">Hiển thị các tệp ẩn</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="751507702149411736">Tiếng Bê-la-rút</translation>
+<translation id="7521790570754130607">Bạn cần nhập mã PIN để dùng dữ liệu di động</translation>
 <translation id="7532029025027028521">Tiếng Ba Tư (chuyển tự)</translation>
 <translation id="7544830582642184299">Cho phép các ứng dụng Linux truy cập vào tệp trên Google Drive. Các thay đổi sẽ đồng bộ hóa với những thiết bị khác mà bạn có.</translation>
 <translation id="7547009467130558110">Giày sneaker</translation>
@@ -780,6 +781,7 @@
 <translation id="76959938259365003">Không dọn sạch được thùng rác.</translation>
 <translation id="770015031906360009">Tiếng Hy Lạp</translation>
 <translation id="7705251383879779343">Đã sao chép <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">Để sử dụng mạng này, bạn cần nhập Khoá mở khoá cá nhân (PUK) gồm 8 chữ số mà nhà mạng cung cấp cho bạn.</translation>
 <translation id="7711920809702896782">Thông tin về tệp hình ảnh</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7730494089396812859">Hiển thị chi tiết sao lưu Đám mây</translation>
@@ -865,7 +867,6 @@
 <translation id="8342318071240498787">Tệp hoặc thư mục có cùng tên đã tồn tại.</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8372852072747894550">Tiếng Hy Lạp</translation>
-<translation id="8384716930968677505">Các hình ảnh gần đây của bạn sẽ xuất hiện ở đây</translation>
 <translation id="8386903983509584791">Đã quét xong</translation>
 <translation id="8387733224523483503">Đã giải nén <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Kích thước</translation>
@@ -875,6 +876,7 @@
 <translation id="8437209419043462667">Hoa Kỳ</translation>
 <translation id="8452135315243592079">Thiếu thẻ SIM</translation>
 <translation id="8456681095658380701">Tên không hợp lệ</translation>
+<translation id="8457767749626250697">SIM đã bị khoá</translation>
 <translation id="8459404855768962328">Khi bạn sao chép mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Nhấp chuột phải vào một tệp rồi chọn "Ghim vào kệ" để có thể truy cập nhanh vào tệp trong kệ khi cần.</translation>
 <translation id="8461914792118322307">Proxy</translation>

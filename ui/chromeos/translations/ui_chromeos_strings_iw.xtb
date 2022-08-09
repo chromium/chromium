@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">אישור האימות נדחה על ידי הרשת</translation>
 <translation id="255937426064304553">ארה"ב - בינלאומית</translation>
 <translation id="2563185590376525700">צפרדע</translation>
-<translation id="2570012981255377263">הקבצים האחרונים יופיעו כאן</translation>
 <translation id="2578394532502990878">טמילית פונטית</translation>
 <translation id="2579959351793446050">אודיה</translation>
 <translation id="2602810353103180630">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">ריקון האשפה</translation>
 <translation id="5163869187418756376">השיתוף נכשל. כדאי לבדוק את החיבור ולנסות שוב מאוחר יותר.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
+<translation id="5172749059808361023">פרטי ההגבלה</translation>
 <translation id="5177526793333269655">תצוגת תמונה ממוזערת</translation>
 <translation id="5194713942430106590">יש ללחוץ כדי למיין את העמודה בסדר עולה.</translation>
 <translation id="5211614973734216083">פארואזית</translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
 <translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">האזנה</translation>
-<translation id="5665074015635552640">הסרטונים האחרונים יופיעו כאן</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
 <translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     נמצאו <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">פרפר הפוך</translation>
 <translation id="6943836128787782965">‏פעולת get של HTTP נכשלה</translation>
-<translation id="6945604978460872381">המסמכים האחרונים יופיעו כאן</translation>
 <translation id="6949408524333579394">תעתיק סרבית</translation>
 <translation id="6954309393500027528">האפשרות להדביק את הקובץ הזה חסומה על ידי האדמין</translation>
 <translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">שיתוף עם אחרים</translation>
 <translation id="7297443947353982503">‏שם משתמש/סיסמה שגויים, או שאימות EAP נכשל</translation>
 <translation id="7309413087278791451">גרמנית (בלגיה)</translation>
-<translation id="7313374447885864533">קובצי האודיו האחרונים יופיעו כאן</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7343393116438664539">‏וייטנאמית Telex</translation>
 <translation id="7357762654218998920">‏סוג הקובץ הזה אינו נתמך. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-ChromeOS.</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">קובץ או ספרייה עם אותו שם כבר קיימים.</translation>
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8372852072747894550">יוונית</translation>
-<translation id="8384716930968677505">התמונות האחרונות יופיעו כאן</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
 <translation id="8387733224523483503">הקובץ <ph name="FILE_NAME" /> חולץ.</translation>
 <translation id="8395901698320285466">מידות</translation>

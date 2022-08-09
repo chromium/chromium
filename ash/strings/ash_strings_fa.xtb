@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
 <translation id="1467432559032391204">چپ</translation>
+<translation id="146902737843070955">سرپرستتان این تغییر را درخواست کرده است</translation>
 <translation id="147310119694673958">باتری تلفن <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="1479909375538722835">منوی دسترس‌پذیری شناور</translation>
 <translation id="1480845547124508962">‏<ph name="CURRENT_TIME" />، برای باز کردن نمای «تقویم»، کلید enter را فشار دهید</translation>
@@ -837,6 +838,7 @@
 <translation id="5779721926447984944">فایل‌های پین‌شده</translation>
 <translation id="5788127256798019331">‏فایل‌های Play</translation>
 <translation id="5790085346892983794">موفق شدید</translation>
+<translation id="5804651031882187592">خاموش کردن تنظیم «قفل کردن سیم‌کارت»</translation>
 <translation id="5805809050170488595">برای فعال‌سازی <ph name="NETWORK_NAME" /> کلیک کنید</translation>
 <translation id="5825969630400862129">تنظیمات دستگاه‌های متصل</translation>
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>

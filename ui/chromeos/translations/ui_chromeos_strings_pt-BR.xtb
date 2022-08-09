@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="255937426064304553">Internacional: Estados Unidos</translation>
 <translation id="2563185590376525700">Rã</translation>
-<translation id="2570012981255377263">Seus arquivos recentes vão aparecer aqui</translation>
 <translation id="2578394532502990878">Tâmil (fonético)</translation>
 <translation id="2579959351793446050">Oriá</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
+<translation id="3495810061346586977">Esse arquivo é confidencial e está sujeito a restrições pela política do administrador. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3522708245912499433">Português</translation>
 <translation id="3524311639100184459">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se você mover esse item, ele será compartilhado com todos que podem ver a pasta compartilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ouvir</translation>
-<translation id="5665074015635552640">Seus vídeos recentes vão aparecer aqui</translation>
 <translation id="5669691691057771421">Digite o novo PIN</translation>
 <translation id="5678784840044122290">O aplicativo Linux estará disponível no seu terminal e também poderá mostrar um ícone no acesso rápido.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Não é possível desconectar de um arquivo ou disco virtual<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     Total de arquivos encontrados: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Ponta-cabeça</translation>
 <translation id="6943836128787782965">HTTP falhou</translation>
-<translation id="6945604978460872381">Seus documentos recentes vão aparecer aqui</translation>
 <translation id="6949408524333579394">Sérvio (transliteração)</translation>
 <translation id="6954309393500027528">O administrador bloqueou a opção de colar esse arquivo</translation>
 <translation id="6960565108681981554">Desativada. Entre em contato com a operadora.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">Compartilhar com outras pessoas</translation>
 <translation id="7297443947353982503">Nome de usuário/senha incorretos ou falha de autenticação EAP</translation>
 <translation id="7309413087278791451">Alemão (Bélgica)</translation>
-<translation id="7313374447885864533">Seus arquivos de áudio recentes vão aparecer aqui</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7343393116438664539">Vietnamita (telex)</translation>
 <translation id="7357762654218998920">Esse tipo de arquivo não é compatível. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no ChromeOS.</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">Já existe um arquivo ou diretório com o mesmo nome.</translation>
 <translation id="8372369524088641025">Chave WEP incorreta</translation>
 <translation id="8372852072747894550">Grego</translation>
-<translation id="8384716930968677505">Suas imagens recentes vão aparecer aqui</translation>
 <translation id="8386903983509584791">Verificação concluída</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extraído.</translation>
 <translation id="8395901698320285466">Dimensões</translation>

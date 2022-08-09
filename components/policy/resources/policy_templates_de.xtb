@@ -4151,6 +4151,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5464816904705580310">Konfiguriert Einstellungen für verwaltete Nutzer</translation>
 <translation id="5466596281866046569">App-Informationen ausgeben</translation>
 <translation id="546726650689747237">Verzögerung für die Bildschirmabdunkelung im Netzbetrieb</translation>
+<translation id="546830339470589966">Automatische Vervollständigung der Domain für neue Kerberos-Tickets</translation>
 <translation id="5469143988693423708">Nutzer darf Crostini ausführen</translation>
 <translation id="5469825884154817306">Bilder auf diesen Websites blockieren</translation>
 <translation id="5470500958458209831">URL, über die das Ansible-Playbook heruntergeladen werden kann.</translation>
@@ -4980,6 +4981,10 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
+<translation id="6396956366662970339">Gibt an, ob der Ladevorgang durch ein adaptives Lademodell angehalten werden kann, um die Akkulaufzeit zu verlängern.
+
+      Wenn das Gerät im Netzbetrieb ist, prüft das adaptive Lademodell, ob der Ladevorgang angehalten werden sollte, um die Akkulaufzeit zu verlängern. Wenn der Ladevorgang durch das adaptive Lademodell angehalten wird, wird der Akkustand auf einem bestimmten Level gehalten, z. B. bei 80 %. Wenn der Nutzer das Gerät später benötigt, wird der Akku vollständig aufgeladen.
+      Wenn diese Richtlinie auf „True“ gesetzt ist, wird das adaptive Lademodell aktiviert und kann den Ladevorgang anhalten, um die Akkulaufzeit zu verlängern. Ist diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert, hat das adaptive Lademodell keinen Einfluss auf den Ladevorgang.</translation>
 <translation id="6397588391180665797">Mit dieser Richtlinie wird festgelegt, ob die Netzwerkkonfiguration von Nutzern auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
@@ -6308,6 +6313,10 @@ werden abgelehnt.</translation>
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="7771298620150437359">Inhalt und Reihenfolge der bevorzugten Sprachen konfigurieren</translation>
+<translation id="7773790010815041731">Chrome-Apps wurden für <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> eingestellt.
+      Wenn diese Richtlinie aktiviert wird, erlaubt <ph name="PRODUCT_NAME" /> es, dass Chrome-Apps bis zu dem Datum im Juni 2022, an dem die Unterstützung für Chrome-Apps auf allen Plattformen beendet wird, auf diesen Plattformen ausgeführt werden.
+      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Chrome-Apps unter Umständen nicht ausgeführt werden, je nach dem Status des Einstellungs-Roll-outs.
+      In beiden Fällen sind Chrome-Apps zulässig, deren Installation durch die Richtlinie erzwungen wird.</translation>
 <translation id="7774768074957326919">System-Proxyeinstellungen verwenden</translation>
 <translation id="777734450201217641">Mit dieser Richtlinie aktivierst du auf dem Anmeldebildschirm die Tastenkombinationen für Bedienungshilfen.
 
@@ -6771,7 +6780,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Spracheingabe anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="8293414596801971604">Regulärer Ausdruck für die Suche nach dem angegebenen angezeigten Namen des Druckers.</translation>
+<translation id="8293414596801971604">Regulärer Ausdruck für die Suche nach dem angegebenen Angezeigenamen des Druckers.</translation>
 <translation id="8293509904023267821">Wenn diese Richtlinie konfiguriert ist, werden Daten in der Zwischenablage, die an den Host gesendet und von diesem empfangen werden, je nach der durch diese Richtlinie festgelegten Begrenzung abgeschnitten.
 
           Bei einem Wert von 0 ist die Synchronisierung der Zwischenablage deaktiviert.
@@ -7433,6 +7442,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Genaue Informationen zu gültigen Eingabemustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="9010080992450148617">Teilnehmern des erweiterten Sicherheitsprogramms das Senden von Downloads für einen Tiefenscan an Google erlauben</translation>
+<translation id="9012101302849557459">Unterstützung für Chrome-Apps unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> verlängern.</translation>
 <translation id="9013875414788074110">Bei der Anmeldung kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
 
       Wenn für diese Richtlinie der Wert -1 festgelegt ist, kann sich der Nutzer ohne Zeitlimit offline authentifizieren. Wird ein anderer Wert festgelegt, gibt dieser den Zeitraum ab der letzten Online-Authentifizierung an, nach dem der Nutzer sich noch einmal online authentifizieren muss.

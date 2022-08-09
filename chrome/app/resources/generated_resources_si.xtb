@@ -1128,6 +1128,7 @@
 <translation id="2048653237708779538">ක්‍රියාව ලබා ගත නොහැක</translation>
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2052572566310583903">ඔබගේ අනෙකුත් උපාංග මත ස්ථාපිත</translation>
+<translation id="2053105195397337973">වෙළඳ දැන්වීම් අයාචිත සහ වංචා නැවැත්වීමට අඩවි සබල කරන අතරේ ලුහුබැඳීම සීමා කිරීමට අපි ක්‍රම ගවේෂණය කරමින් සිටිමු.</translation>
 <translation id="2053312383184521053">නිහඬ තත්වයේ දත්ත</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> හි වෙන් කර ඇති <ph name="SITE_NAME" /> සඳහා අඩවි දත්ත සහ අවසර හිස් කරන්නද?</translation>
 <translation id="2055585478631012616">ඔබ විවෘත පටිති ඇතුළුව මෙම වෙබ් අඩවිවලින් වරනු ලැබේ</translation>
@@ -1268,7 +1269,6 @@
 <translation id="2173302385160625112">ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කරන්න</translation>
 <translation id="2173801458090845390">මෙම උපාංගයට අධිග්‍රහණ ID එක් කරන්න</translation>
 <translation id="2175384018164129879">සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම &amp;කළමනාකරණය කරන්න</translation>
-<translation id="2175607476662778685">ක්ෂණික දියත් කිරීමේ බාර් එක</translation>
 <translation id="217576141146192373">මුද්‍රකය එක් කළ නොහැක. ඔබේ මුද්‍රකයේ වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2175927920773552910">QR කේතය</translation>
 <translation id="2177950615300672361">Incognito ටැබය: <ph name="TAB_NAME" /></translation>
@@ -4966,6 +4966,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5747552184818312860">කල් ඉකුත් වේ</translation>
 <translation id="5747785204778348146">සංවර්ධක - අස්ථිර</translation>
 <translation id="5747809636523347288">අලවා <ph name="URL" /> වෙත යන්න</translation>
+<translation id="5751345516399502412">ටෙදරින් සූදානම පරීක්ෂා කරන්න</translation>
 <translation id="5755022574660047665">Google ඡායාරූප වෙතින් මතක</translation>
 <translation id="5756163054456765343">උපකාර මධ්‍යස්ථානය</translation>
 <translation id="5757375109985023827">පෙරදසුන් කිරීමට ටැබයක් තෝරන්න</translation>
@@ -7221,6 +7222,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7939062555109487992">උසස් විකල්ප</translation>
 <translation id="7939328347457537652">උපාංග සහතික කළමනාකරණය කරන්න</translation>
 <translation id="7939412583708276221">කෙසේ වුවත් තබා ගන්න</translation>
+<translation id="7941179291434537290">ටෙදරින් සූදානම:</translation>
 <translation id="7942349550061667556">රතු</translation>
 <translation id="7943368935008348579">PDF බාගන්න</translation>
 <translation id="7943837619101191061">පිහිටීම එක් කරන්න...</translation>
@@ -7552,7 +7554,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8248887045858762645">Chrome ඉඟිය</translation>
 <translation id="8249048954461686687">OEM ෆෝල්ඩරය</translation>
 <translation id="8249615410597138718">ඔබේ උපාංග වෙත යවන්න</translation>
-<translation id="8249672078237421304">ඔබට කියවිය හැකි භාෂාවකින් නොවන පිටු පරිවර්තනය කිරීමට පිරිනමන්න</translation>
 <translation id="8250210000648910632">ගබඩා ඉඩ නැත</translation>
 <translation id="8251441930213048644">දැන් නැවුම් කරන්න</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" />ට යුගල කරමින්</translation>
@@ -7748,6 +7749,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8439506636278576865">මෙම භාෂාවෙන් පිටු පරිවර්තනය කිරීමට පිරිනමයි</translation>
 <translation id="8440630305826533614">Linux යෙදුම්</translation>
 <translation id="844063558976952706">සෑම විටම මෙම අඩවියෙහි</translation>
+<translation id="8441313165929432954">ටෙදරින් සබල/අබල කරන්න</translation>
 <translation id="8443795068008423036">කරුණාකර ඔබගේ උපාංගය යාවත්කාලීන බව සහතික කර ගෙන නැවත උත්සාහ කරන්න</translation>
 <translation id="8446884382197647889">තවත් දැනගන්න</translation>
 <translation id="8447409163267621480">Ctrl හෝ Alt ඇතුළත් කරන්න</translation>
@@ -7964,6 +7966,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8666759526542103597">බ්‍රවුසරය පදනම් කර ගත් වෙළඳ දැන්වීම් පුද්ගලිකකරණය ගැන</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> දැන් පුළුල් තිර වන අතර ඔබේ මවුස සැරිත්ත අක්‍රීය කර ඇත.</translation>
 <translation id="8667760277771450375">වෙළඳ දැන්වීම් අයාචිත සහ වංචා නැවැත්වීමට අඩවි සබල කරන අතතුර හරස්-අඩවි ලුහුබැඳීම සීමා කිරීමට අපි ක්‍රම ගවේෂණය කරමින් සිටිමු.</translation>
+<translation id="8668378421690365723">ඔබේ උපාංගය තවදුරටත් නිසි ලෙස ක්‍රියා නොකරනු ඇති අතර, ආරක්ෂක සහ කාර්ය සාධන ගැටලු අත්විඳිය හැක.</translation>
 <translation id="8669284339312441707">උණුසුම්</translation>
 <translation id="8670537393737592796">ඉක්මනින් ආපසු මෙහි පැමිණීමට, ස්ථාපනය කරන්න බොත්තම එබීමෙන් <ph name="APP_NAME" /> ස්ථාපනය කරන්න</translation>
 <translation id="867085395664725367">තාවකාලික සේවාදායක දෝෂයක් ඇති විය.</translation>
@@ -8448,6 +8451,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />හොඳම අත්දැකීම සඳහා, ඔබගේ අභ්‍යන්තර තැටියට <ph name="DEVICE_OS" /> ස්ථාපනය කරන්න. ඔබට එය පසුව ඔබගේ පිරීමේ තිරය වෙතින්ද ස්ථාපනය කළ හැකිය.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ඔබ ස්ථාපනය කිරීමට සූදානම් නැතිනම්, ඔබට එය උත්සාහ කර බැලීමට USB වෙතින් ධාවනය කළ හැකිය. මෙය ඔබගේ දැනට තිබෙන OS සහ දත්ත තබා ගනු ඇත, නමුත් ඔබ ගබඩා කිරීමේ සහ කාර්යසාධන සීමා දැකිය හැකිය.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">රැඳවූ ටැබයක් ලෙස විවෘත කරන්න</translation>
+<translation id="9123287046453017203">ඔබේ උපාංගය යාවත්කාලීන නොවේ</translation>
 <translation id="9124003689441359348">සුරැකි මුරපද මෙහි දිස් වනු ඇත</translation>
 <translation id="9126149354162942022">කර්සරයේ වර්ණය</translation>
 <translation id="9128317794749765148">සැකසීම සම්පූර්ණ කළ නොහැකි විය</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Sijil pengesahan ditolak oleh rangkaian</translation>
 <translation id="255937426064304553">Antarabangsa AS</translation>
 <translation id="2563185590376525700">Katak</translation>
-<translation id="2570012981255377263">Fail terbaharu anda akan dipaparkan di sini</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
@@ -289,6 +288,7 @@
 <translation id="3522708245912499433">Bahasa Portugis</translation>
 <translation id="3524311639100184459">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3548125359243647069">PIN yang salah telah dimasukkan terlalu banyak kali.</translation>
 <translation id="3549797760399244642">Pergi ke drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka fail dengan <ph name="APP_NAME" />, salin fail itu ke folder fail Windows dahulu.</translation>
 <translation id="3556731189587832921">Inggeris (AS) dengan papan kekunci PC Antarabangsa</translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">Tamil dengan papan kekunci Tamil99</translation>
 <translation id="5633226425545095130">Tindakan mengalihkan item ini akan mengongsikan item ini dengan semua orang yang dapat melihat folder kongsi '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Dengar</translation>
-<translation id="5665074015635552640">Video terbaharu anda akan dipaparkan di sini</translation>
 <translation id="5669691691057771421">Masukkan PIN baharu</translation>
 <translation id="5678784840044122290">Aplikasi Linux akan tersedia di dalam Terminal anda dan mungkin menunjukkan ikon dalam Pelancar anda juga.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan sambungan daripada arkib atau cakera maya<ph name="END_BOLD" />
@@ -615,6 +614,7 @@
 <translation id="6267547857941397424">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Sambung</translation>
 <translation id="6269630227984243955">Bahasa Melayu</translation>
 <translation id="6287852322318138013">Pilih apl untuk membuka fail ini</translation>
+<translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak sah</translation>
 <translation id="6312403991423642364">Ralat rangkaian tidak diketahui</translation>
 <translation id="6317608858038767920">Pelayan nama tersuai <ph name="INPUT_INDEX" /></translation>
@@ -687,7 +687,6 @@
     <ph name="FILE_COUNT" /> ditemui</translation>
 <translation id="6935521024859866267">Terbalik</translation>
 <translation id="6943836128787782965">HTTP gagal</translation>
-<translation id="6945604978460872381">Dokumen terbaharu anda akan dipaparkan di sini</translation>
 <translation id="6949408524333579394">Alih Huruf Serbia</translation>
 <translation id="6954309393500027528">Penampalan fail ini disekat oleh pentadbir anda</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi pembawa anda.</translation>
@@ -724,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Simpan fail sebagai</translation>
 <translation id="7229570126336867161">Perlukan EVDO</translation>
+<translation id="7230898482850090046">Pentadbir anda telah meminta anda untuk mematikan tetapan "Kunci SIM"</translation>
 <translation id="7238097264433196391">Nama pemacu</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Butiran</translation>
 <translation id="7246947237293279874">Proksi FTP</translation>
@@ -735,7 +735,6 @@
 <translation id="7295662345261934369">Kongsi dengan orang lain</translation>
 <translation id="7297443947353982503">Nama pengguna/kata laluan tidak betul atau EAP-auth gagal</translation>
 <translation id="7309413087278791451">Jerman (Belgium)</translation>
-<translation id="7313374447885864533">Fail audio terbaharu anda akan dipaparkan di sini</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7343393116438664539">Teleks Vietnam</translation>
 <translation id="7357762654218998920">Jenis fail ini tidak disokong. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada Chrome OS.</translation>
@@ -756,6 +755,7 @@
 <translation id="7505167922889582512">Tunjukkan fail tersembunyi</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="751507702149411736">Bahasa Belarus</translation>
+<translation id="7521790570754130607">PIN diperlukan untuk menggunakan data mudah alih</translation>
 <translation id="7532029025027028521">Alih Huruf Parsi</translation>
 <translation id="7544830582642184299">Beri Linux kebenaran apl untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="7547009467130558110">Kasut sniker</translation>
@@ -780,6 +780,7 @@
 <translation id="76959938259365003">Gagal mengosongkan sampah.</translation>
 <translation id="770015031906360009">Bahasa Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> disalin.</translation>
+<translation id="7708271999969613024">Untuk menggunakan rangkaian ini, anda perlu memasukkan Kunci Nyahsekat Peribadi (PUK) 8 digit yang disediakan oleh pembawa.</translation>
 <translation id="7711920809702896782">Maklumat imej</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7730494089396812859">Tunjukkan butiran sandaran Awan</translation>
@@ -865,7 +866,6 @@
 <translation id="8342318071240498787">Fail atau direktori dengan nama yang sama telah wujud.</translation>
 <translation id="8372369524088641025">Kekunci WEP teruk</translation>
 <translation id="8372852072747894550">Greek</translation>
-<translation id="8384716930968677505">Imej terbaharu anda akan dipaparkan di sini</translation>
 <translation id="8386903983509584791">Pengimbasan selesai</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> diekstrak.</translation>
 <translation id="8395901698320285466">Dimensi</translation>
@@ -875,6 +875,7 @@
 <translation id="8437209419043462667">AS</translation>
 <translation id="8452135315243592079">Kad SIM tiada</translation>
 <translation id="8456681095658380701">Nama tidak sah</translation>
+<translation id="8457767749626250697">SIM anda dikunci</translation>
 <translation id="8459404855768962328">Tindakan menyalin item ini akan mengongsikan item ini dengan semua orang yang dapat melihat folder kongsi '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">Klik kanan fail dan pilih "Semat pada Rak" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
 <translation id="8461914792118322307">Proksi</translation>

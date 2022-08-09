@@ -327,6 +327,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2894949423239620203">El cable puede reducir el rendimiento</translation>
 <translation id="2903844815300039659">Conectado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
+<translation id="2925246975070834767">Usa el zoom automático para estar en el centro de la pantalla. Actívalo en la Configuración rápida.</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="2942350706960889382">Lupa con vista acoplada</translation>
 <translation id="2942516765047364088">Posición de la barra</translation>
@@ -469,6 +470,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
+<translation id="3724279623330129812">El zoom automático centró la cámara</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
@@ -634,6 +636,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, calificación por estrellas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de un día}other{Cambia el dispositivo a la versión anterior en el transcurso de # días}}</translation>
+<translation id="4633636853437260449">Presiona Ctrl+W para borrar</translation>
 <translation id="4642092649622328492">Realizar una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">La región es demasiado pequeña para entrar en la cámara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendación de app</translation>

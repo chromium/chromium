@@ -1139,6 +1139,7 @@
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2052572566310583903">다른 기기에서 설치됨</translation>
+<translation id="2053105195397337973">Google은 추적을 제한하고 사이트에서 광고 스팸과 사기를 방지하도록 돕는 방안을 모색하고 있습니다.</translation>
 <translation id="2053312383184521053">유휴 상태 데이터</translation>
 <translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />에 파티셔닝된 <ph name="SITE_NAME" /> 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="2055585478631012616">열려 있는 탭을 포함하여 이러한 사이트에서 로그아웃됩니다.</translation>
@@ -1279,7 +1280,6 @@
 <translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
-<translation id="2175607476662778685">빠른 실행 표시줄</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
@@ -4975,6 +4975,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5747552184818312860">만료</translation>
 <translation id="5747785204778348146">개발자 - 불안정</translation>
 <translation id="5747809636523347288"><ph name="URL" /> 붙여넣기 및 이동(&amp;S)</translation>
+<translation id="5751345516399502412">테더링 준비 여부 확인</translation>
 <translation id="5755022574660047665">Google 포토 추억</translation>
 <translation id="5756163054456765343">고객센터(&amp;H)</translation>
 <translation id="5757375109985023827">미리 볼 탭 선택</translation>
@@ -7233,6 +7234,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7939062555109487992">고급 옵션</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
 <translation id="7939412583708276221">계속 다운로드</translation>
+<translation id="7941179291434537290">테더링 준비:</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7943368935008348579">PDF 다운로드</translation>
 <translation id="7943837619101191061">위치 추가...</translation>
@@ -7565,7 +7567,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8248887045858762645">Chrome 도움말</translation>
 <translation id="8249048954461686687">OEM 폴더</translation>
 <translation id="8249615410597138718">기기로 전송</translation>
-<translation id="8249672078237421304">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8250210000648910632">저장공간 부족</translation>
 <translation id="8251441930213048644">지금 새로고침</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> 기기와 페어링 중</translation>
@@ -7761,6 +7762,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
 <translation id="844063558976952706">항상 이 사이트에서</translation>
+<translation id="8441313165929432954">테더링 사용/사용 중지</translation>
 <translation id="8443795068008423036">기기가 최신 상태인지 확인하고 다시 시도해 보세요</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>

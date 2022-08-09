@@ -1127,6 +1127,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2048653237708779538">Acción no disponible</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2052572566310583903">Instaladas en tus otros dispositivos</translation>
+<translation id="2053105195397337973">Estamos explorando formas de restringir el seguimiento, así como que los sitios puedan detener el spam publicitario y el fraude.</translation>
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
 <translation id="2054240652864153171">¿Borrar datos del sitio <ph name="SITE_NAME" /> con particiones en <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Se cerrarán tus sesiones en esos sitios (también en las pestañas abiertas)</translation>
@@ -1267,7 +1268,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2173801458090845390">Añadir solicitud de ID para este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Gestionar buscadores y búsquedas en el sitio</translation>
-<translation id="2175607476662778685">Barra de inicio rápido</translation>
 <translation id="217576141146192373">No se ha podido añadir la impresora. Revisa la configuración de tu impresora y vuelve a intentarlo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177950615300672361">Pestaña de Incógnito: <ph name="TAB_NAME" /></translation>
@@ -4960,6 +4960,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5747552184818312860">Caduca</translation>
 <translation id="5747785204778348146">Desarrollador: versión inestable</translation>
 <translation id="5747809636523347288">Pe&amp;gar e ir a <ph name="URL" /></translation>
+<translation id="5751345516399502412">Comprobar la preparación de la conexión compartida</translation>
 <translation id="5755022574660047665">recuerdos de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de ayuda</translation>
 <translation id="5757375109985023827">Selecciona una pestaña para previsualizarla</translation>
@@ -7217,6 +7218,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="7939328347457537652">Gestionar los certificados del dispositivo</translation>
 <translation id="7939412583708276221">Mantener de todos modos</translation>
+<translation id="7941179291434537290">Preparación de la conexión compartida:</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943368935008348579">Descargar archivos PDF</translation>
 <translation id="7943837619101191061">Añadir ubicación...</translation>
@@ -7549,7 +7551,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8248887045858762645">Consejo de Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
 <translation id="8249615410597138718">Enviar a tus dispositivos</translation>
-<translation id="8249672078237421304">Preguntar si quieres traducir páginas web que no están escritas en un idioma que entiendas</translation>
 <translation id="8250210000648910632">No queda espacio de almacenamiento</translation>
 <translation id="8251441930213048644">Renovar ahora</translation>
 <translation id="8251509999076836464">Emparejando con <ph name="DEVICE_NAME" /></translation>
@@ -7745,6 +7746,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8439506636278576865">Ofrecer la traducción de páginas en este idioma</translation>
 <translation id="8440630305826533614">Aplicaciones de Linux</translation>
 <translation id="844063558976952706">Siempre en este sitio</translation>
+<translation id="8441313165929432954">Habilitar/Inhabilitar conexión compartida</translation>
 <translation id="8443795068008423036">Asegúrate de que tu dispositivo esté actualizado e inténtalo de nuevo</translation>
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8447409163267621480">Incluye Ctrl o Alt</translation>

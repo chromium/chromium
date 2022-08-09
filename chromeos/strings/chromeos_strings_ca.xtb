@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Reprodueix / Posa en pausa</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
+<translation id="1207734034680156868">Els suggeriments estan basats en la teva descripció</translation>
 <translation id="123124571410524056">Possible portal</translation>
 <translation id="1236400083787698183">Abans de reiniciar el dispositiu, fes-hi un Powerwash. Si el dispositiu té tapa, espera fins que el Powerwash es completi per tancar-la. Pot tardar fins a un minut a completar-se.</translation>
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
@@ -697,7 +698,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6961170852793647506">Per començar, col·loca el document a l'escàner</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
-<translation id="6995564396478647735">Assegura't que la protecció contra l'escriptura estigui activada</translation>
 <translation id="7005833343836210400">El dispositiu no té connexió</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
@@ -808,7 +808,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8045012663542226664">Silenci del micròfon</translation>
-<translation id="8063022551652308521">La protecció contra l'escriptura encara està desactivada. Per continuar, activa-la.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>

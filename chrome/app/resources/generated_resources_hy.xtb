@@ -1269,7 +1269,6 @@
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2173801458090845390">Ավելացնել սարքին հայտի ID-ն</translation>
 <translation id="2175384018164129879">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
-<translation id="2175607476662778685">Արագ գործարկման գոտի</translation>
 <translation id="217576141146192373">Չհաջողվեց ավելացնել տպիչը: Ստուգեք դրա կարգավորումները և նորից փորձեք:</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2177950615300672361">Ինկոգնիտո ներդիր` <ph name="TAB_NAME" /></translation>
@@ -3791,6 +3790,7 @@
 <translation id="4579581181964204535">Չհաջողվեց հեռարձակել <ph name="HOST_NAME" /> տիրույթը:</translation>
 <translation id="4579876313423027742">Դիտարկիչի ծանուցումները կարգավորելու համար անցեք <ph name="LINK_BEGIN" />Chrome դիտարկիչի կարգավորումներ<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Գաղտնաբառերը պահվում են այս սարքի <ph name="GOOGLE_PASSWORD_MANAGER" />ում։</translation>
+<translation id="4580626299762849806">Չհաջողվեց ներմուծել գաղտնաբառերը։ Ստուգեք <ph name="FILENAME" /> ֆայլը և համոզվեք, որ այն ճիշտ կերպով է ֆորմատավորվել։</translation>
 <translation id="4581774856936278355">Չհաջողվեց վերականգնել Լինուքսը սխալի պատճառով</translation>
 <translation id="4582297591746054421">Կայքերը սովորաբար դիտում են սեղմատախտակը՝ պատճենված տեքստի ձևաչափը պահպանելու և նման այլ գործառույթների համար</translation>
 <translation id="4582563038311694664">Վերակայել բոլոր կարգավորումները</translation>
@@ -5096,6 +5096,7 @@
 <translation id="5877064549588274448">Վարկածը փոխվել է: Փոփոխությունները կիրառելու համար վերագործարկեք սարքը:</translation>
 <translation id="5877584842898320529">Նշված տպիչը հասանելի չէ կամ ճիշտ չէ տեղադրված: <ph name="BR" /> Ստուգեք ձեր տպիչը կամ փորձեք ընտրել մեկ այլ տպիչ:</translation>
 <translation id="5878945009165002849">Արգելափակել նույնականացման ծառայությունների մուտքի հարցումները</translation>
+<translation id="5882449899683447569">Սխալի պատճառով չհաջողվեց ներմուծել գաղտնաբառերը</translation>
 <translation id="5882919346125742463">Պահված ցանցեր</translation>
 <translation id="5883356647197510494">Ավտոմատ արգելափակված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Այս ներդիրը միացված է USB սարքին:</translation>
@@ -7548,7 +7549,6 @@
 <translation id="8248887045858762645">Chrome-ին առնչվող խորհուրդներ</translation>
 <translation id="8249048954461686687">OEM պանակ</translation>
 <translation id="8249615410597138718">Ուղարկել սարքերին</translation>
-<translation id="8249672078237421304">Առաջարկել թարգմանել էջերը, որոնք ձեր իմացած լեզուներով չեն</translation>
 <translation id="8250210000648910632">Տարածքը բավարար չէ</translation>
 <translation id="8251441930213048644">Թարմացնել հիմա</translation>
 <translation id="8251509999076836464">Զուգակցում «<ph name="DEVICE_NAME" />» սարքի հետ</translation>

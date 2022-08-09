@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Sertifikat autentikasi ditolak oleh jaringan</translation>
 <translation id="255937426064304553">Internasional AS</translation>
 <translation id="2563185590376525700">Katak</translation>
-<translation id="2570012981255377263">File terbaru Anda akan muncul di sini</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
@@ -468,7 +467,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> file akan dihapus</translation>
 <translation id="508423945471810158">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
-<translation id="509429900233858213">Terjadi kesalahan.</translation>
+<translation id="509429900233858213">Terjadi error.</translation>
 <translation id="5098629044894065541">Ibrani</translation>
 <translation id="5102922915594634436">Kelola folder yang disinkronkan</translation>
 <translation id="5109254780565519649">Terjadi error. Beberapa item mungkin belum dipulihkan.</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Dengar</translation>
-<translation id="5665074015635552640">Video terbaru Anda akan muncul di sini</translation>
 <translation id="5669691691057771421">Masukkan PIN baru</translation>
 <translation id="5678784840044122290">Aplikasi Linux akan tersedia dalam Terminal Anda dan juga mungkin menampilkan ikon di Peluncur.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan hubungan dari arsip atau disk virtual<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     <ph name="FILE_COUNT" /> ditemukan</translation>
 <translation id="6935521024859866267">Terbalik</translation>
 <translation id="6943836128787782965">HTTP gagal</translation>
-<translation id="6945604978460872381">Dokumen terbaru Anda akan muncul di sini</translation>
 <translation id="6949408524333579394">Transliterasi Serbia</translation>
 <translation id="6954309393500027528">Penempelan file ini diblokir oleh administrator Anda</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi operator.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Bagikan dengan yang lain</translation>
 <translation id="7297443947353982503">Nama pengguna/sandi salah atau autentikasi EAP gagal</translation>
 <translation id="7309413087278791451">Jerman (Belgia)</translation>
-<translation id="7313374447885864533">File audio terbaru Anda akan muncul di sini</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7343393116438664539">Telex Vietnam</translation>
 <translation id="7357762654218998920">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Sudah ada file atau direktori dengan nama yang sama.</translation>
 <translation id="8372369524088641025">Kunci WEP yang buruk</translation>
 <translation id="8372852072747894550">Yunani</translation>
-<translation id="8384716930968677505">Gambar terbaru Anda akan muncul di sini</translation>
 <translation id="8386903983509584791">Pemindaian selesai</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> diekstrak.</translation>
 <translation id="8395901698320285466">Dimensi</translation>

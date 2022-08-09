@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Аныктыкты текшерүү тастыктамасын тармак четке какты</translation>
 <translation id="255937426064304553">АКШ эл аралык</translation>
 <translation id="2563185590376525700">Бака</translation>
-<translation id="2570012981255377263">Акыркы файлдарыңыз ушул жерде көрүнөт</translation>
 <translation id="2578394532502990878">Тамилче (фонетикалык)</translation>
 <translation id="2579959351793446050">Одияча</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">Азыр эмес</translation>
 <translation id="3486821258960016770">Монголчо</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ката.</translation>
+<translation id="3495810061346586977">Бул файл купуя жана ага администратордун чектөөлөрү коюлган. <ph name="BEGIN_LINK_HELP" />Кеңири маалымат<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="3522708245912499433">Португалча</translation>
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
 <translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="5649768706273821470">Угуу</translation>
-<translation id="5665074015635552640">Акыркы видеолоруңуз ушул жерде көрүнөт</translation>
 <translation id="5669691691057771421">Жаңы PIN киргизиңиз</translation>
 <translation id="5678784840044122290">Linux колдонмосу Терминалыңызда жеткиликтүү болуп, Жүргүзгүчтө анын сүрөтчөсү көрүнүшү мүмкүн.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архивден же виртуалдуу дисктен ажыратуу мүмкүн эмес<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> табылды</translation>
 <translation id="6935521024859866267">Астын-үстү</translation>
 <translation id="6943836128787782965">HTTP кыйрап калды</translation>
-<translation id="6945604978460872381">Акыркы документтериңиз ушул жерде көрүнөт</translation>
 <translation id="6949408524333579394">Сербче (транслитерация)</translation>
 <translation id="6954309393500027528">Бул файлды чаптоо аракети администраторуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Башкалар менен бөлүшүү</translation>
 <translation id="7297443947353982503">Колдонуучунун ысымы/сырсөзү туура эмес же EAP тастыкталбай калды.</translation>
 <translation id="7309413087278791451">Немисче (Бельгия)</translation>
-<translation id="7313374447885864533">Акыркы аудио файлдарыңыз ушул жерде көрүнөт</translation>
 <translation id="7339898014177206373">Жаңы терезе</translation>
 <translation id="7343393116438664539">Вьетнамча (Telex)</translation>
 <translation id="7357762654218998920">Бул файл түрү колдоого алынбайт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Мындай аталыштагы файл же каталог мурунтан эле бар.</translation>
 <translation id="8372369524088641025">WEP ачкычы начар</translation>
 <translation id="8372852072747894550">Грекче</translation>
-<translation id="8384716930968677505">Акыркы сүрөттөрүңүз ушул жерде көрүнөт</translation>
 <translation id="8386903983509584791">Текшерүү аяктады</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> алынды.</translation>
 <translation id="8395901698320285466">Чен-өлчөмү</translation>

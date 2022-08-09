@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certifikata e vërtetimit u refuzua nga rrjeti</translation>
 <translation id="255937426064304553">Amerikane ndërkombëtare</translation>
 <translation id="2563185590376525700">Bretkosa</translation>
-<translation id="2570012981255377263">Skedarët e tu më të fundit do të shfaqen këtu</translation>
 <translation id="2578394532502990878">Tamilisht fonetike</translation>
 <translation id="2579959351793446050">Odiaisht</translation>
 <translation id="2602810353103180630">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Boshatis "Koshin"</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
+<translation id="5172749059808361023">Detajet për kufizimet</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
 <translation id="5211614973734216083">Faroisht</translation>
@@ -540,7 +540,6 @@
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
-<translation id="5665074015635552640">Videot e tua më të fundit do të shfaqen këtu</translation>
 <translation id="5669691691057771421">Fut kodin e ri PIN</translation>
 <translation id="5678784840044122290">Aplikacioni për Linux do të ofrohet në "Terminalin" tënd dhe mund dhe të shfaqë një ikonë te "Nisësi" yt.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nuk mund të shkëputet nga një arkiv ose disk virtual<ph name="END_BOLD" />
@@ -685,7 +684,6 @@
     <ph name="FILE_COUNT" /> të gjetura</translation>
 <translation id="6935521024859866267">Përmbys</translation>
 <translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
-<translation id="6945604978460872381">Dokumentet e tua më të fundit do të shfaqen këtu</translation>
 <translation id="6949408524333579394">Serbisht me transliterim</translation>
 <translation id="6954309393500027528">Ngjitja e këtij skedari është bllokuar nga administratori yt</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
@@ -733,7 +731,6 @@
 <translation id="7295662345261934369">Ndaj me të tjerët</translation>
 <translation id="7297443947353982503">Emri i përdoruesit/fjalëkalimi është i pasaktë ose vërtetimi i EAP-së dështoi</translation>
 <translation id="7309413087278791451">Gjermanisht (Belgjikë)</translation>
-<translation id="7313374447885864533">Skedarët e tu më të fundit audio do të shfaqen këtu</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7343393116438664539">Vietnamisht Telex</translation>
 <translation id="7357762654218998920">Ky lloj skedari nuk mbështetet. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
@@ -863,7 +860,6 @@
 <translation id="8342318071240498787">Ekziston tashmë një skedar ose një direktori me të njëjtin emër.</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8372852072747894550">Greqisht</translation>
-<translation id="8384716930968677505">Imazhet e tua më të fundit do të shfaqen këtu</translation>
 <translation id="8386903983509584791">Skanimi përfundoi</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> u nxor.</translation>
 <translation id="8395901698320285466">Përmasat</translation>

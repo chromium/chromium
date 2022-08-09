@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Ověřovací certifikát byl sítí odmítnut</translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
 <translation id="2563185590376525700">Žába</translation>
-<translation id="2570012981255377263">Tady se zobrazí vaše nedávné soubory</translation>
 <translation id="2578394532502990878">tamilština (fonetická)</translation>
 <translation id="2579959351793446050">urijština</translation>
 <translation id="2602810353103180630">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, blokováno administrátorem, podrobnosti</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Vysypat koš</translation>
 <translation id="5163869187418756376">Sdílení se nezdařilo. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="516592729076796170">Americká klávesnice Dvorak</translation>
+<translation id="5172749059808361023">Podrobnosti o omezení</translation>
 <translation id="5177526793333269655">Zobrazení miniatur</translation>
 <translation id="5194713942430106590">Kliknutím sloupec seřadíte vzestupně.</translation>
 <translation id="5211614973734216083">faerština</translation>
@@ -540,7 +540,6 @@
 <translation id="5625294776298156701">tamilština s klávesnicí Tamil99</translation>
 <translation id="5633226425545095130">Když tuto položku přesunete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
-<translation id="5665074015635552640">Tady se zobrazí vaše nedávná videa</translation>
 <translation id="5669691691057771421">Zadejte nový PIN</translation>
 <translation id="5678784840044122290">Aplikace pro Linux bude k dispozici v Terminálu a může se pro ni také zobrazovat ikona ve Spouštěči.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Odpojení od archivu nebo virtuálního disku nelze provést<ph name="END_BOLD" />
@@ -685,7 +684,6 @@
     Nalezeno: <ph name="FILE_COUNT" />.</translation>
 <translation id="6935521024859866267">Vzhůru nohama</translation>
 <translation id="6943836128787782965">Příkaz GET protokolu HTTP se nezdařil.</translation>
-<translation id="6945604978460872381">Tady se zobrazí vaše nedávné dokumenty</translation>
 <translation id="6949408524333579394">srbština (přepis)</translation>
 <translation id="6954309393500027528">Vložení tohoto souboru je blokováno administrátorem</translation>
 <translation id="6960565108681981554">Není aktivováno. Kontaktujte svého operátora.</translation>
@@ -733,7 +731,6 @@
 <translation id="7295662345261934369">Sdílet s dalšími uživateli</translation>
 <translation id="7297443947353982503">Neplatné uživatelské jméno/heslo nebo neúspěšná autorizace EAP</translation>
 <translation id="7309413087278791451">němčina (Belgie)</translation>
-<translation id="7313374447885864533">Tady se zobrazí nedávné zvukové soubory</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7343393116438664539">vietnamština (telex)</translation>
 <translation id="7357762654218998920">Tento typ souboru není podporován. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
@@ -863,7 +860,6 @@
 <translation id="8342318071240498787">Soubor nebo složka s daným názvem již existuje.</translation>
 <translation id="8372369524088641025">Chybný klíč WEP</translation>
 <translation id="8372852072747894550">řečtina</translation>
-<translation id="8384716930968677505">Tady se zobrazí vaše nedávné obrázky</translation>
 <translation id="8386903983509584791">Vyhledávání je dokončeno</translation>
 <translation id="8387733224523483503">Soubor <ph name="FILE_NAME" /> byl rozbalen.</translation>
 <translation id="8395901698320285466">Rozměry</translation>

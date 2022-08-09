@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">인증서가 네트워크에 의해 거부됨</translation>
 <translation id="255937426064304553">영어(미국 국제)</translation>
 <translation id="2563185590376525700">개구리</translation>
-<translation id="2570012981255377263">최근 파일이 여기에 표시됩니다.</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
 <translation id="2602810353103180630">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
 <translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="5649768706273821470">듣기</translation>
-<translation id="5665074015635552640">최근 동영상이 여기에 표시됩니다.</translation>
 <translation id="5669691691057771421">새 PIN 입력</translation>
 <translation id="5678784840044122290">단말기 내에서 Linux 애플리케이션을 사용할 수 있게 되며 런처에 아이콘이 표시될 수도 있습니다.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />아카이브 또는 가상 디스크의 연결을 해제할 수 없습니다.<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     파일 <ph name="FILE_COUNT" />개 있음</translation>
 <translation id="6935521024859866267">180도 회전</translation>
 <translation id="6943836128787782965">HTTP 실패</translation>
-<translation id="6945604978460872381">최근 문서가 여기에 표시됩니다.</translation>
 <translation id="6949408524333579394">세르비아어(음역)</translation>
 <translation id="6954309393500027528">관리자가 이 파일의 붙여넣기를 차단했습니다.</translation>
 <translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">다른 사용자와 공유</translation>
 <translation id="7297443947353982503">사용자 이름 또는 비밀번호가 잘못되었거나 EAP 인증에 실패했습니다.</translation>
 <translation id="7309413087278791451">독일어(벨기에)</translation>
-<translation id="7313374447885864533">최근 오디오 파일이 여기에 표시됩니다.</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7343393116438664539">베트남어(텔렉스)</translation>
 <translation id="7357762654218998920">지원되지 않는 파일 형식입니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">같은 이름을 가진 파일 또는 디렉터리가 이미 존재합니다.</translation>
 <translation id="8372369524088641025">잘못된 WEP 키</translation>
 <translation id="8372852072747894550">그리스어</translation>
-<translation id="8384716930968677505">최근 이미지가 여기에 표시됩니다.</translation>
 <translation id="8386903983509584791">검색 완료</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> 파일이 추출되었습니다.</translation>
 <translation id="8395901698320285466">크기</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Palaka</translation>
-<translation id="2570012981255377263">Lalabas dito ang iyong mga kamakailang file</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Kapag inilipat ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
-<translation id="5665074015635552640">Lalabas dito ang iyong mga kamakailang video</translation>
 <translation id="5669691691057771421">Ilagay ang bagong PIN</translation>
 <translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     <ph name="FILE_COUNT" /> ang nakita</translation>
 <translation id="6935521024859866267">Paru-paro</translation>
 <translation id="6943836128787782965">Nabigo ang pagkuha ng HTTP</translation>
-<translation id="6945604978460872381">Lalabas dito ang iyong mga kamakailang dokumento</translation>
 <translation id="6949408524333579394">Serbian Transliteration</translation>
 <translation id="6954309393500027528">Na-block ng iyong administrator ang pag-paste sa file na ito</translation>
 <translation id="6960565108681981554">Hindi na-activate. Makipag-ugnayan sa iyong carrier.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Ibahagi sa iba</translation>
 <translation id="7297443947353982503">Mali ang username/password o nabigo ang EAP-auth</translation>
 <translation id="7309413087278791451">German (Belgium)</translation>
-<translation id="7313374447885864533">Lalabas dito ang iyong mga kamakailang audio file</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
 <translation id="7357762654218998920">Hindi sinusuportahan ang ganitong uri ng file. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Umiiral na ang isang file o direktoryong may parehong pangalan.</translation>
 <translation id="8372369524088641025">Mahinang WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
-<translation id="8384716930968677505">Lalabas dito ang iyong mga kamakailang larawan</translation>
 <translation id="8386903983509584791">Nakumpleto ang pag-scan</translation>
 <translation id="8387733224523483503">Na-extract ang <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Mga Sakop</translation>

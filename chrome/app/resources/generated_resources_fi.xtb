@@ -1138,6 +1138,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2048653237708779538">Toiminto ei ole käytettävissä</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2052572566310583903">Asennettu muille laitteillesi</translation>
+<translation id="2053105195397337973">Kokeilemme uusia tapoja rajoittaa seurantaa tarjoten samalla sivustoille mahdollisuuksia estää mainosspämmäystä ja petoksia.</translation>
 <translation id="2053312383184521053">Tiedot käyttämätön-tilassa</translation>
 <translation id="2054240652864153171">Tyhjennetäänkö sivustodata (<ph name="SITE_NAME" />), joka on rajoitettu tälle sivustolle: <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Sinut kirjataan ulos näiltä sivustoilta, myös avoimilta välilehdiltä.</translation>
@@ -1278,7 +1279,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
 <translation id="2173801458090845390">Lisää pyynnön tunnus tähän laitteeseen</translation>
 <translation id="2175384018164129879">&amp;Hallitse hakukoneita ja sivustojen hakua</translation>
-<translation id="2175607476662778685">Pikakäynnistysvalikko</translation>
 <translation id="217576141146192373">Tulostimen lisääminen ei onnistu. Tarkista tulostimen määritykset ja yritä uudelleen.</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2177950615300672361">Incognito-välilehti: <ph name="TAB_NAME" /></translation>
@@ -4972,6 +4972,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5747552184818312860">Vanhenee</translation>
 <translation id="5747785204778348146">Kehittäjä – epävakaa</translation>
 <translation id="5747809636523347288">Liitä ja avaa <ph name="URL" /></translation>
+<translation id="5751345516399502412">Tarkista valmius yhteyden jakamiseen</translation>
 <translation id="5755022574660047665">muistoja Google Kuvista</translation>
 <translation id="5756163054456765343">Ohj&amp;ekeskus</translation>
 <translation id="5757375109985023827">Valitse esikatseltava välilehti</translation>
@@ -7228,6 +7229,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7939062555109487992">Lisäasetukset</translation>
 <translation id="7939328347457537652">Hallinnoi laitteen varmenteita</translation>
 <translation id="7939412583708276221">Säilytä</translation>
+<translation id="7941179291434537290">Valmius yhteyden jakamiseen:</translation>
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7943368935008348579">Lataa PDF-tiedostot</translation>
 <translation id="7943837619101191061">Lisää sijainti…</translation>
@@ -7560,7 +7562,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8248887045858762645">Chrome-vinkki</translation>
 <translation id="8249048954461686687">Alkuperäisten laitevalmistajien kansio</translation>
 <translation id="8249615410597138718">Lähetä laitteillesi</translation>
-<translation id="8249672078237421304">Tarjoa käännöstä muunkielisille sivuille</translation>
 <translation id="8250210000648910632">Tallennustila ei riitä</translation>
 <translation id="8251441930213048644">Päivitä nyt</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> muodostaa laiteparia</translation>
@@ -7756,6 +7757,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8439506636278576865">Tarjoudu kääntämään sivuja tälle kielelle</translation>
 <translation id="8440630305826533614">Linux-sovellukset</translation>
 <translation id="844063558976952706">Aina tässä sivustossa</translation>
+<translation id="8441313165929432954">Laita yhteyden jakaminen päälle tai pois päältä</translation>
 <translation id="8443795068008423036">Varmista, että laite on ajan tasalla, ja yritä uudelleen</translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
 <translation id="8447409163267621480">Lisää alkuun joko Ctrl tai Alt</translation>
@@ -7972,6 +7974,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8666759526542103597">Tietoa selainpohjaisesta mainosten personoinnista</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> on nyt koko ruudun kokoinen ja on poistanut hiiren osoittimen käytöstä.</translation>
 <translation id="8667760277771450375">Kokeilemme uusia tapoja rajoittaa sivustojen välistä seurantaa, samalla tarjoten sivustoille mahdollisuuksia estää mainosten spämmäystä ja petoksia.</translation>
+<translation id="8668378421690365723">Laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia.</translation>
 <translation id="8669284339312441707">Lämmin</translation>
 <translation id="8670537393737592796">Asenna <ph name="APP_NAME" /> klikkaamalla asennuspainiketta, niin pääset takaisin tähän nopeasti</translation>
 <translation id="867085395664725367">Väliaikainen palvelinvirhe</translation>
@@ -8455,6 +8458,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Asenna <ph name="DEVICE_OS" /> sisäiselle levylle, jotta saat parhaan käyttökokemuksen. Voit myös asentaa sen myöhemmin kirjautumisnäytöltä.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jos et ole valmis asentamaan, voit kokeilla sitä USB:n kautta. Tämä säilyttää nykyisen käyttöjärjestelmäsi ja datasi, mutta tallennustila ja suorituskyky voivat olla rajallisia.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Avaa kiinnitetyllä välilehdellä</translation>
+<translation id="9123287046453017203">Laite ei ole ajan tasalla</translation>
 <translation id="9124003689441359348">Tässä näytetään tallennetut salasanasi.</translation>
 <translation id="9126149354162942022">Kohdistimen väri</translation>
 <translation id="9128317794749765148">Määritystä ei voitu suorittaa loppuun</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="255937426064304553">యుఎస్ అంతర్జాతీయం</translation>
 <translation id="2563185590376525700">కప్ప</translation>
-<translation id="2570012981255377263">మీ తాజా ఫైళ్లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="2578394532502990878">తమిళం ఫొనెటిక్</translation>
 <translation id="2579959351793446050">ఒడియా</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు, వివరాలు</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
+<translation id="3495810061346586977">ఈ ఫైల్ గోప్యమైనది, అడ్మినిస్ట్రేటర్ పాలసీ పరిమితులకు లోబడి ఉంటుంది. <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
 <translation id="3524311639100184459">హెచ్చరిక: ఈ ఫైల్స్ తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను ఖాళీ చేయడం కోసం ఆటోమేటిక్‌గా ఇవి తొలగించబడవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">తమిళ్99 కీబోర్డ్‌తో తమిళం</translation>
 <translation id="5633226425545095130">ఈ ఐటెమ్‌ను తరలిస్తే అది షేర్ చేయబడిన ఫోల్డర్ '<ph name="DESTINATION_NAME" />'ను చూడగలిగే ప్రతి ఒక్కరితో షేర్ చేయబడుతుంది.</translation>
 <translation id="5649768706273821470">వినండి</translation>
-<translation id="5665074015635552640">మీ తాజా వీడియోలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5669691691057771421">కొత్త PINని నమోదు చేయండి</translation>
 <translation id="5678784840044122290">Linux అప్లికేషన్ మీ టెర్మినల్‌లో అందుబాటులో ఉంటుంది మరియు మీ లాంచర్‌లో ఒక చిహ్నం కూడా చూపవచ్చు.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ఆర్కైవ్ లేదా వర్చువల్ డిస్క్ నుండి డిస్‌కనెక్ట్ చేయడం సాధ్యం కాదు<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     <ph name="FILE_COUNT" />కనుగొనబడ్డాయి</translation>
 <translation id="6935521024859866267">తలక్రిందులుగా</translation>
 <translation id="6943836128787782965">HTTP పొందడంలో విఫలమైంది</translation>
-<translation id="6945604978460872381">మీ తాజా డాక్యుమెంట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="6949408524333579394">సెర్బియన్ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="6954309393500027528">ఈ ఫైల్‌ను పేస్ట్ చేయడాన్ని మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు</translation>
 <translation id="6960565108681981554">యాక్టివేట్ చేయబడలేదు. మీ క్యారియర్‌ను సంప్రదించండి.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">ఇతరులతో షేర్ చేయండి</translation>
 <translation id="7297443947353982503">వినియోగదారు పేరు/పాస్‌వర్డ్ తప్పు లేదా EAP-ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7309413087278791451">జర్మన్ (బెల్జియం)</translation>
-<translation id="7313374447885864533">మీ తాజా ఆడియో ఫైళ్లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="7343393116438664539">వియత్నామీస్ టెలెక్స్</translation>
 <translation id="7357762654218998920">ఈ ఫైల్ రకం సపోర్ట్ చేయదు. ChromeOSలో ఫైల్స్‌ను తెరవడం గురించి <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" />.</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">ఫైల్ లేదా డైరెక్టరీ అదే పేరుతో ఇప్పటికే ఉనికిలో ఉంది.</translation>
 <translation id="8372369524088641025">తప్పుడు WEP కీ</translation>
 <translation id="8372852072747894550">గ్రీక్</translation>
-<translation id="8384716930968677505">మీ తాజా ఇమేజ్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="8386903983509584791">స్కాన్ పూర్తయింది</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> సంగ్రహించబడింది.</translation>
 <translation id="8395901698320285466">కొలతలు</translation>

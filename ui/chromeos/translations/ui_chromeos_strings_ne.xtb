@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">प्रमाणीकरण प्रमाणपत्र नेटवर्क अस्विकार</translation>
 <translation id="255937426064304553">यु.एस. अन्तर्राष्ट्रिय</translation>
 <translation id="2563185590376525700">भ्यागुतो</translation>
-<translation id="2570012981255377263">तपाईंका हालसालैका फाइलहरू यहाँ देखिने छन्</translation>
 <translation id="2578394532502990878">तमिल फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">तमिल Tamil99 किबोर्ड</translation>
 <translation id="5633226425545095130">तपाईंले यो वस्तु सार्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
-<translation id="5665074015635552640">तपाईंका हालसालैका भिडियोहरू यहाँ देखिने छन्</translation>
 <translation id="5669691691057771421">नयाँ PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="5678784840044122290">Linux एप तपाईंको टर्मिनलअन्तर्गत उपलब्ध हुने छ तपाईंको लन्चरमा कुनै आइकन देखाउन पनि सक्छ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />अभिलेख वा भर्चुअल डिस्कबाट विच्छेदन गर्न सकिँदैन<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     <ph name="FILE_COUNT" /> फेला पर्‍यो</translation>
 <translation id="6935521024859866267">उल्टो</translation>
 <translation id="6943836128787782965">HTTP प्राप्त असफल भयो</translation>
-<translation id="6945604978460872381">तपाईंका हालसालैका डकुमेन्टहरू यहाँ देखिने छन्</translation>
 <translation id="6949408524333579394">सर्बियाली लिपि रूपान्तरण</translation>
 <translation id="6954309393500027528">तपाईंका एड्मिनले यो फाइल पेस्ट गर्ने सुविधा ब्लक गरेका छन्</translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">अरूसँग सेयर गर्नुहोस्</translation>
 <translation id="7297443947353982503">एक-पटके टेक्स्ट म्यासेज/पासवर्ड गलत वा EAP-प्रमाणीकरणअसफल</translation>
 <translation id="7309413087278791451">जर्मन (बेल्जियम)</translation>
-<translation id="7313374447885864533">तपाईंका हालसालैका अडियो फाइलहरू यहाँ देखिने छन्</translation>
 <translation id="7339898014177206373">नयाँ विन्डो</translation>
 <translation id="7343393116438664539">भियतनामी टेलेक्स</translation>
 <translation id="7357762654218998920">यो प्रकारको फाइल प्रयोग गर्न मिल्दैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">यही नामको फाइल वा एक निर्देशिका पहिले नै अस्तित्वमा छ ।</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
-<translation id="8384716930968677505">तपाईंका हालसालैका फोटोहरू यहाँ देखिने छन्</translation>
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> एक्स्ट्रयाक्ट गरियो।</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>

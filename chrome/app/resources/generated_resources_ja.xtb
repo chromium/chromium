@@ -8,12 +8,14 @@
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
+<translation id="1007057452468855774">Google Play ストアを有効にする</translation>
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> 内の場所</translation>
 <translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
 <translation id="1010498023906173788">このタブはシリアルポートに接続しています。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
+<translation id="1011003645819296594">保存済みのデバイス</translation>
 <translation id="1011355516189274711">テキスト読み上げの音量</translation>
 <translation id="1012794136286421601">ドキュメント、スプレッドシート、スライド、図形描画ファイルは同期されています。Google ドライブ アプリを起動すると、これらのファイルにオンラインまたはオフラインでアクセスします。</translation>
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
@@ -491,6 +493,7 @@
 <translation id="1470350905258700113">このデバイスを使用する</translation>
 <translation id="1470946456740188591">カーソル ブラウジングをオンまたはオフにするには、Ctrl+検索+7 ショートカット キーを使用します</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
+<translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1474785664565228650">マイクの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="1474893630593443211">表示される広告の詳細な管理</translation>
 <translation id="1475502736924165259">他のどのカテゴリにも適合しない証明書がファイルに格納されています</translation>
@@ -1110,6 +1113,7 @@
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
 <translation id="2045117674524495717">キーボード ショートカット ヘルパー</translation>
+<translation id="2045211794962848221">今後このメッセージは表示されなくなります</translation>
 <translation id="2045969484888636535">Cookie のブロックを続行する</translation>
 <translation id="204622017488417136">以前インストールしたバージョンの Chrome にデバイスを戻します。すべてのユーザー アカウントとローカルデータは削除されます。この操作は元に戻せません。</translation>
 <translation id="2046702855113914483">ラーメン</translation>
@@ -1260,7 +1264,6 @@
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
-<translation id="2175607476662778685">クイック起動バー</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2177950615300672361">シークレット タブ: <ph name="TAB_NAME" /></translation>
@@ -3787,6 +3790,7 @@
 <translation id="4594577641390224176">システム情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
+<translation id="4598345735110653698">パスキーを管理</translation>
 <translation id="4598556348158889687">ストレージ管理</translation>
 <translation id="4598776695426288251">複数のデバイスから Wi-Fi に接続できます</translation>
 <translation id="4601426376352205922">未読にする</translation>
@@ -4011,6 +4015,7 @@
 <translation id="4823894915586516138">PIN またはパスワードで、この <ph name="DEVICE_TYPE" /> のデータ（スマートフォンからアクセスする情報を含む）を保護します</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
+<translation id="4825532258163983651">パスキーを削除できません</translation>
 <translation id="4827675678516992122">接続エラー</translation>
 <translation id="4827784381479890589">Chrome ブラウザの拡張スペルチェック（テキストを Google に送信してスペル候補を取得します）</translation>
 <translation id="4827904420700932487">この画像の QR コードを作成</translation>
@@ -4273,6 +4278,7 @@
 <translation id="5087249366037322692">サードパーティにより追加</translation>
 <translation id="5087580092889165836">カードを追加</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
+<translation id="5089763948477033443">サイドパネルのサイズ変更ハンドル</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ファイルアプリからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
@@ -4437,6 +4443,7 @@
 <translation id="5258992782919386492">このデバイスにインストール</translation>
 <translation id="5260334392110301220">スマート引用符</translation>
 <translation id="5260508466980570042">メールまたはパスワードを確認できませんでした。もう一度お試しください。</translation>
+<translation id="5260958083445173099">ウェブサイトのコンテンツが指定した言語で表示されるようになります（可能な場合）</translation>
 <translation id="5261683757250193089">ウェブストアで開く</translation>
 <translation id="5262178194499261222">パスワードを削除</translation>
 <translation id="5262784498883614021">ネットワークに自動接続する</translation>
@@ -4477,6 +4484,7 @@
 <translation id="5294097441441645251">先頭は英小文字かアンダースコアにしてください</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。</translation>
+<translation id="5297005732522718715">テザリング設定を更新</translation>
 <translation id="5297082477358294722">パスワードが保存されました。保存パスワードの表示と管理は <ph name="SAVED_PASSWORDS_STORE" /> で行えます。</translation>
 <translation id="5297946558563358707">誰かに画面を見られたときには、画面の右下にプライバシー アイ アイコンが表示されます</translation>
 <translation id="5298219193514155779">テーマの作成者:</translation>
@@ -4646,6 +4654,7 @@
 <translation id="5466374726908360271">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロックしました</translation>
 <translation id="5468173180030470402">ファイル共有を探しています</translation>
+<translation id="5468330507528805311">テザリング ステータス:</translation>
 <translation id="5468881191994555667">ファイルを選択</translation>
 <translation id="5469852975082458401">テキスト カーソルを使ってページ間を移動できます。オフにするには F7 キーを押します。</translation>
 <translation id="5470735824776589490">デバイスを Powerwash でリセットするにはまず再起動が必要です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -4922,6 +4931,7 @@
 <translation id="5734362860645681824">通信</translation>
 <translation id="5734697361979786483">ファイル共有を追加</translation>
 <translation id="5736796278325406685">有効なユーザー名を入力してください</translation>
+<translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
 <translation id="5739017626473506901">ログインして、<ph name="USER_NAME" /> さんの学校アカウントの追加を許可してください</translation>
 <translation id="5739235828260127894">確認を待っています。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">極大</translation>
@@ -5083,6 +5093,7 @@
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> でページを検索</translation>
 <translation id="5896436821193322561">許可しない</translation>
 <translation id="5900186025777217044">Smart Lock が変更されました</translation>
+<translation id="5900243355162006650">テザリング設定:</translation>
 <translation id="5900302528761731119">Google プロフィール写真</translation>
 <translation id="590036993063074298">ミラーリング品質の詳細</translation>
 <translation id="5901069264981746702">指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5383,6 +5394,7 @@
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
+<translation id="6197223946499512637">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6200047250927636406">ファイルを破棄</translation>
 <translation id="6200151268994853226">拡張機能を管理</translation>
@@ -5680,6 +5692,7 @@
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="6483485061007832714">ダウンロードしたファイルを開く</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> を開いています...</translation>
+<translation id="6486301003991593638">パスキーを管理するには、新しいバージョンの Windows を使用してください</translation>
 <translation id="6488384360522318064">言語を選択</translation>
 <translation id="648927581764831596">使用できるものはありません</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
@@ -6264,6 +6277,7 @@
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
+<translation id="7030695672997239647">タブを右クリックして [タブをグループに追加]、[新しいグループ] の順に選択します</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
 <translation id="7033616203784997570">62 文字以下で入力してください</translation>
 <translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
@@ -7363,6 +7377,7 @@
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
 <translation id="81020759409809034">ローカルの場所</translation>
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
+<translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
 <translation id="8105368624971345109">オフにする</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" /> に Google Play ストアをインストールしています。この処理には数分かかる可能性があります。</translation>
@@ -7511,7 +7526,6 @@
 <translation id="8248887045858762645">Chrome のヒント</translation>
 <translation id="8249048954461686687">OEM フォルダ</translation>
 <translation id="8249615410597138718">お使いのデバイスに送信</translation>
-<translation id="8249672078237421304">母国語以外のページで翻訳ツールを表示する</translation>
 <translation id="8250210000648910632">保存容量が不足しています</translation>
 <translation id="8251441930213048644">今すぐ更新</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> とペア設定</translation>
@@ -7810,6 +7824,7 @@
 <translation id="8557022314818157177">指紋の登録が完了するまで、セキュリティ キーをタッチし続けてください</translation>
 <translation id="8557180006508471423">Mac の位置情報サービスで「Google Chrome」をオンにしてください</translation>
 <translation id="8557856025359704738">次回のダウンロードは <ph name="NEXT_DATE_DOWNLOAD" /> に行われます。</translation>
+<translation id="8559858985063901027">パスキー</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="8561206103590473338">ゾウ</translation>
 <translation id="8561565784790166472">続行する場合は十分ご注意ください</translation>
@@ -7922,6 +7937,7 @@
 <translation id="8666759526542103597">ブラウザベースの広告のカスタマイズについて</translation>
 <translation id="8667328578593601900">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示で、マウスカーソルは無効です。</translation>
 <translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
+<translation id="8668378421690365723">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="8669284339312441707">暖色</translation>
 <translation id="8670537393737592796">このページにすぐにアクセスできるようにするには、インストール ボタンをクリックして <ph name="APP_NAME" /> をインストールしてください</translation>
 <translation id="867085395664725367">一時的なサーバーエラーが発生しました。</translation>
@@ -7936,6 +7952,7 @@
 <translation id="8677212948402625567">すべてを折りたたむ...</translation>
 <translation id="867767487203716855">次の更新</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
+<translation id="8678378565142776698">再起動して自動的に更新</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
 <translation id="8678582529642151449">タブを縮小しない</translation>
 <translation id="8678933587484842200">このアプリケーションの起動方法を選択してください。</translation>
@@ -8182,6 +8199,7 @@
 <translation id="8910987510378294980">デバイスリストを非表示にする</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>
+<translation id="8915307125957890427">タブを右クリックして [タブをグループに追加]、[新しいグループ] の順に選択します</translation>
 <translation id="8915370057835397490">候補を読み込んでいます</translation>
 <translation id="8916476537757519021">シークレット サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>
@@ -8256,6 +8274,7 @@
 <translation id="8986362086234534611">削除</translation>
 <translation id="8986494364107987395">使用統計データと障害レポートを Google に自動送信します</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8991520179165052608">サイトにマイクの使用が許可されています</translation>
 <translation id="899384117894244799">制限付きユーザーの削除</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
@@ -8402,6 +8421,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、<ph name="DEVICE_OS" /> を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">固定されたタブとして開く</translation>
+<translation id="9123287046453017203">お使いのデバイスは最新の状態ではありません</translation>
 <translation id="9124003689441359348">保存したパスワードがここに表示されます</translation>
 <translation id="9126149354162942022">カーソルの色</translation>
 <translation id="9128317794749765148">セットアップを完了できませんでした</translation>

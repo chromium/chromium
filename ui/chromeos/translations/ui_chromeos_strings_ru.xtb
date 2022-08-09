@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Сертификат аутентификации отклонен сетью</translation>
 <translation id="255937426064304553">США (международная)</translation>
 <translation id="2563185590376525700">Лягушка</translation>
-<translation id="2570012981255377263">Здесь будут появляться ваши недавние файлы.</translation>
 <translation id="2578394532502990878">Тамильский, фонетический</translation>
 <translation id="2579959351793446050">Ория</translation>
 <translation id="2602810353103180630">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Очистить корзину</translation>
 <translation id="5163869187418756376">Не удалось предоставить доступ. Проверьте подключение к сети и повторите попытку.</translation>
 <translation id="516592729076796170">Клавиатура Дворака для программистов (США)</translation>
+<translation id="5172749059808361023">Сведения об ограничениях</translation>
 <translation id="5177526793333269655">Уменьшенные изображения</translation>
 <translation id="5194713942430106590">Нажмите, чтобы отсортировать значения в столбце по возрастанию.</translation>
 <translation id="5211614973734216083">Фарерский</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Тамильский, раскладка Tamil99</translation>
 <translation id="5633226425545095130">Если вы переместите этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Прослушать</translation>
-<translation id="5665074015635552640">Здесь будут появляться ваши недавние видео.</translation>
 <translation id="5669691691057771421">Введите новый PIN-код</translation>
 <translation id="5678784840044122290">Приложение Linux будет доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не удалось отключиться от архива или электронного диска<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     Обнаружены файлы (<ph name="FILE_COUNT" />).</translation>
 <translation id="6935521024859866267">Вверх ногами</translation>
 <translation id="6943836128787782965">Произошла ошибка запроса HTTP GET</translation>
-<translation id="6945604978460872381">Здесь будут появляться ваши недавние документы.</translation>
 <translation id="6949408524333579394">Сербский, транслитерация</translation>
 <translation id="6954309393500027528">Администратор заблокировал вставку этого файла.</translation>
 <translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Предоставить доступ</translation>
 <translation id="7297443947353982503">Либо вы ввели неверное имя пользователя или пароль, либо не удалось выполнить аутентификацию по протоколу EAP</translation>
 <translation id="7309413087278791451">Немецкий (Бельгия)</translation>
-<translation id="7313374447885864533">Здесь будут появляться ваши недавние аудиофайлы.</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7343393116438664539">Вьетнамский, раскладка Telex</translation>
 <translation id="7357762654218998920">Этот тип файла не поддерживается. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Такой файл или каталог уже существуют.</translation>
 <translation id="8372369524088641025">Недопустимый ключ WEP</translation>
 <translation id="8372852072747894550">Греческий</translation>
-<translation id="8384716930968677505">Здесь будут появляться ваши недавние изображения.</translation>
 <translation id="8386903983509584791">Поиск завершен</translation>
 <translation id="8387733224523483503">Файл "<ph name="FILE_NAME" />" извлечен.</translation>
 <translation id="8395901698320285466">Размеры</translation>

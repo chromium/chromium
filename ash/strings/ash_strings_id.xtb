@@ -222,7 +222,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2224075387478458881">Perekaman layar tidak diizinkan saat konten yang dilindungi terlihat</translation>
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="225680501294068881">Memindai perangkat...</translation>
-<translation id="2257486738914982088">Terjadi masalah saat mendownload <ph name="FILENAME" /></translation>
+<translation id="2257486738914982088">Terjadi error saat mendownload <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
 <translation id="2269016722240250274">Aplikasi sedang menggunakan mikrofon Anda</translation>
@@ -261,7 +261,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2450205753526923158">Mode screenshot</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Konfirmasi Resolusi</translation>
-<translation id="2475982808118771221">Terjadi kesalahan</translation>
+<translation id="2475982808118771221">Terjadi error</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2501920221385095727">Tombol sticky</translation>
@@ -333,7 +333,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2942516765047364088">Posisi rak</translation>
 <translation id="2946119680249604491">Tambahkan koneksi</translation>
 <translation id="2960314608273155470">Mode Tangkapan Layar, opsi defaultnya adalah <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk menavigasi dengan keyboard.</translation>
-<translation id="2961963223658824723">Terjadi kesalahan. Coba lagi dalam beberapa detik.</translation>
+<translation id="2961963223658824723">Terjadi error. Coba lagi dalam beberapa detik.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>

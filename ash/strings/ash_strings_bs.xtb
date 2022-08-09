@@ -100,6 +100,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1455242230282523554">Prikaži postavke jezika</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
 <translation id="1467432559032391204">Lijevo</translation>
+<translation id="146902737843070955">Vaš administrator je zatražio ovu promjenu</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, pritisnite tipku Enter da otvorite prikaz Kalendara</translation>
@@ -837,6 +838,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5779721926447984944">Zakačeni fajlovi</translation>
 <translation id="5788127256798019331">Play fajlovi</translation>
 <translation id="5790085346892983794">Uspjeh</translation>
+<translation id="5804651031882187592">Isključite postavku "Zaključaj SIM"</translation>
 <translation id="5805809050170488595">Kliknite da aktivirate mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>

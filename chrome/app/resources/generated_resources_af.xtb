@@ -1279,7 +1279,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2173302385160625112">Gaan jou internetverbinding na</translation>
 <translation id="2173801458090845390">Voeg rekwisisie-ID by hierdie toestel</translation>
 <translation id="2175384018164129879">&amp;Bestuur soekenjins en werfsoektog</translation>
-<translation id="2175607476662778685">Kitslanseerbalk</translation>
 <translation id="217576141146192373">Kan nie drukker byvoeg nie. Gaan asseblief jou drukker se opstelling na en probeer weer.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Incognito-oortjie: <ph name="TAB_NAME" /></translation>
@@ -3806,6 +3805,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4579581181964204535">Kan nie <ph name="HOST_NAME" /> uitsaai nie.</translation>
 <translation id="4579876313423027742">Gaan na <ph name="LINK_BEGIN" />Chrome-blaaierinstellings<ph name="LINK_END" /> vir blaaierkennisgewings</translation>
 <translation id="4580596421317071374">Wagwoorde word gestoor in <ph name="GOOGLE_PASSWORD_MANAGER" /> op hierdie toestel</translation>
+<translation id="4580626299762849806">Kan nie wagwoorde invoer nie. Gaan <ph name="FILENAME" /> na en maak seker dat dit reg geformateer is.</translation>
 <translation id="4581774856936278355">Kon nie Linux terugstel nie</translation>
 <translation id="4582297591746054421">Werwe lees gewoonlik jou knipbord vir kenmerke soos behoud van die formatering van teks wat jy gekopieer het</translation>
 <translation id="4582563038311694664">Stel alle instellings terug</translation>
@@ -4571,6 +4571,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5350293332385664455">Skakel Google Assistent af</translation>
 <translation id="535123479159372765">Teks is van ander toestel af gekopieer</translation>
 <translation id="5352033265844765294">Tydstempel</translation>
+<translation id="5352257124367865087">Bestuur werftoestemmings</translation>
 <translation id="5353252989841766347">Voer wagwoorde van Chrome af uit</translation>
 <translation id="5355099869024327351">Stel die Assistent in staat om vir jou kennisgewings te wys</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
@@ -5072,6 +5073,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Stel nuwe inhoud voor om te verken</translation>
 <translation id="5846200638699387931">Verhoudingsinsboufout: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Bestuur werftoestemmings</translation>
 <translation id="5846807460505171493">Installeer opdaterings en programme. As jy voortgaan, stem jy in dat hierdie toestel ook outomaties opdaterings en programme vanaf Google, jou diensverskaffer en jou toestel se vervaardiger kan aflaai en installeer, moontlik met gebruik van sellulêre data. Sommige van hierdie programme sal dalk inprogramaankope aanbied.</translation>
 <translation id="5849212445710944278">Reeds bygevoeg</translation>
 <translation id="5851868085455377790">Uitreiker</translation>
@@ -5112,6 +5114,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5877064549588274448">Kanaal het verander. Herbegin jou toestel om veranderinge toe te pas.</translation>
 <translation id="5877584842898320529">Die geselekteerde drukker is nie beskikbaar nie of is nie reg geïnstalleer nie. <ph name="BR" /> Gaan jou drukker na of probeer 'n ander drukker kies.</translation>
 <translation id="5878945009165002849">Blokkeer aanmeldporboodskappe van identiteitsdienste af</translation>
+<translation id="5882449899683447569">Iets was fout en jou wagwoorde is nie ingevoer nie</translation>
 <translation id="5882919346125742463">Bekende netwerke</translation>
 <translation id="5883356647197510494">Het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> outomaties geblokkeer</translation>
 <translation id="5884474295213649357">Hierdie oortjie is aan 'n USB-toestel gekoppel.</translation>
@@ -5636,6 +5639,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6398715114293939307">Verwyder Google Play Winkel</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="6399774419735315745">Spioen</translation>
+<translation id="6400360390396538896">Altyd aan <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chrome aanmeld</translation>
 <translation id="6401597285454423070">Jou rekenaar bevat ’n Vertroude Platform-module- (TPM)-sekuriteitstoestel, wat gebruik word om talle kritieke sekuriteitskenmerke in Chrome-bedryfstelsel te implementeer. Besoek die Chromebook-hulpsentrum om meer te wete te kom: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook-speletjies</translation>
@@ -7565,7 +7569,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8248887045858762645">Chrome-wenk</translation>
 <translation id="8249048954461686687">OEM-vouer</translation>
 <translation id="8249615410597138718">Stuur na jou toestelle toe</translation>
-<translation id="8249672078237421304">Bied aan om bladsye wat nie in die taal is wat jy lees nie, te vertaal</translation>
 <translation id="8250210000648910632">Bergingspasie is op</translation>
 <translation id="8251441930213048644">Herlaai nou</translation>
 <translation id="8251509999076836464">Bind tans saam met <ph name="DEVICE_NAME" /></translation>

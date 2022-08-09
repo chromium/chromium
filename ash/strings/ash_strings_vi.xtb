@@ -100,6 +100,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
 <translation id="1467432559032391204">Trái</translation>
+<translation id="146902737843070955">Quản trị viên của bạn đã yêu cầu sự thay đổi này</translation>
 <translation id="147310119694673958">Pin điện thoại <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Trình đơn hỗ trợ tiếp cận nổi</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Nhấn phím Enter để mở chế độ xem Lịch</translation>
@@ -837,6 +838,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5779721926447984944">Tệp đã ghim</translation>
 <translation id="5788127256798019331">Tệp Play</translation>
 <translation id="5790085346892983794">Thành công</translation>
+<translation id="5804651031882187592">Tắt chế độ cài đặt "Khoá SIM"</translation>
 <translation id="5805809050170488595">Nhấp để kích hoạt <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>

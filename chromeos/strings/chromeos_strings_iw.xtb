@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">הפעלה/השהיה</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
+<translation id="1207734034680156868">ההצעות מבוססות על התיאור שלך</translation>
 <translation id="123124571410524056">פורטל חשוד</translation>
 <translation id="1236400083787698183">‏לפני הפעלה מחדש, צריך לבצע Powerwash במכשיר. אם למכשיר יש מכסה, צריך לחכות לסיום ה-Powerwash לפני שסוגרים את המכסה. פעולת ה-Powerwash עשויה להימשך כדקה.</translation>
 <translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
@@ -697,7 +698,6 @@
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
-<translation id="6995564396478647735">צריך לוודא שהתכונה 'הגנה מכתיבה' פועלת</translation>
 <translation id="7005833343836210400">המכשיר במצב אופליין</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
@@ -808,7 +808,6 @@
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
-<translation id="8063022551652308521">התכונה 'הגנה מכתיבה' עדיין מושבתת. צריך להפעיל אותה כדי להמשיך.</translation>
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>

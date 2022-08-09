@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">નેટવર્ક દ્વારા પ્રમાણીકરણ પ્રમાણપત્ર નકારવામાં આવ્યું</translation>
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
 <translation id="2563185590376525700">દેડકો</translation>
-<translation id="2570012981255377263">તમારી હાલની ફાઇલો અહીં દેખાશે</translation>
 <translation id="2578394532502990878">તમિળ ફોનેટિક</translation>
 <translation id="2579959351793446050">ઉડિયા</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">ટ્રેશ ખાલી કરો</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
+<translation id="5172749059808361023">પ્રતિબંધ સંબંધિત વિગતો</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="5211614973734216083">ફૅરોઇઝ</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
-<translation id="5665074015635552640">તમારા હાલના વીડિયો અહીં દેખાશે</translation>
 <translation id="5669691691057771421">નવો PIN દાખલ કરો</translation>
 <translation id="5678784840044122290">Linux ઍપ્લિકેશન તમારા ટર્મિનલમાં ઉપલબ્ધ થશે અને તમારા લૉન્ચરમાં આઇકન પણ બતાવી શકે છે.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />આર્કાઇવ અથવા વર્ચ્યુઅલ ડિસ્ક પરથી ડિસ્કનેક્ટ કરી શકતાં નથી<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> મળી</translation>
 <translation id="6935521024859866267">ઊલટું</translation>
 <translation id="6943836128787782965">HTTP નિષ્ફળ ગયું</translation>
-<translation id="6945604978460872381">તમારા હાલના દસ્તાવેજો અહીં દેખાશે</translation>
 <translation id="6949408524333579394">સર્બિયન લિપ્યંતર</translation>
 <translation id="6954309393500027528">તમારા વ્યવસ્થાપક દ્વારા આ ફાઇલને પેસ્ટ કરવાથી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="6960565108681981554">સક્રિય કરેલું નથી. તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">બીજા સાથે શેર કરો</translation>
 <translation id="7297443947353982503">વપરાશકર્તાનામ/પાસવર્ડ ખોટો છે અથવા EAP-auth નિષ્ફળ થયું</translation>
 <translation id="7309413087278791451">જર્મન (બેલ્જિયમ)</translation>
-<translation id="7313374447885864533">તમારી હાલની ઑડિયો ફાઇલો અહીં દેખાશે</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="7343393116438664539">વિયેતનામીઝ ટેલેક્સ</translation>
 <translation id="7357762654218998920">આ પ્રકારની ફાઇલને સપોર્ટ આપવામાં આવતો નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
@@ -862,7 +859,6 @@
 <translation id="8342318071240498787">સમાન નામની ફાઇલ અથવા ડિરેક્ટરી પહેલાથી જ અસ્તિત્વમાં છે.</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8372852072747894550">ગ્રીક</translation>
-<translation id="8384716930968677505">તમારી હાલની છબીઓ અહીં દેખાશે</translation>
 <translation id="8386903983509584791">સ્કૅન પૂર્ણ થયું</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> મેળવી છે.</translation>
 <translation id="8395901698320285466">પરિમાણો</translation>

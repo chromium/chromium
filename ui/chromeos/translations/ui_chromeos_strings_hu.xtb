@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">A hálózat elutasította a hitelesítési tanúsítványt</translation>
 <translation id="255937426064304553">USA nemzetközi</translation>
 <translation id="2563185590376525700">Béka</translation>
-<translation id="2570012981255377263">Itt jelennek majd meg a legutóbbi fájlok</translation>
 <translation id="2578394532502990878">tamil, fonetikus</translation>
 <translation id="2579959351793446050">odia</translation>
 <translation id="2602810353103180630">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">tamil, Tamil99-billentyűzettel</translation>
 <translation id="5633226425545095130">Az áthelyezése esetén az elemet mindenkivel megosztja, aki látja a következő megosztott mappát: <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Meghallgatás</translation>
-<translation id="5665074015635552640">Itt jelennek majd meg a legutóbbi videók</translation>
 <translation id="5669691691057771421">Új PIN-kód megadása</translation>
 <translation id="5678784840044122290">A Linux-alkalmazás rendelkezésre áll majd a terminálból, valamint az ikonja is megjelenhet az Indítóban.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nem sikerült az archívum vagy virtuális lemez leválasztása<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     A következőket találtuk: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Fejjel lefelé</translation>
 <translation id="6943836128787782965">A HTTP-lekérés nem sikerült</translation>
-<translation id="6945604978460872381">Itt jelennek majd meg a legutóbbi dokumentumok</translation>
 <translation id="6949408524333579394">szerb, betű szerinti átírás</translation>
 <translation id="6954309393500027528">A rendszergazda letiltotta a fájl beillesztését</translation>
 <translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Megosztás másokkal</translation>
 <translation id="7297443947353982503">Helytelen a felhasználónév vagy a jelszó, vagy nem sikerült az EAP-hitelesítés</translation>
 <translation id="7309413087278791451">német (Belgium)</translation>
-<translation id="7313374447885864533">Itt jelennek majd meg a legutóbbi hangfájlok</translation>
 <translation id="7339898014177206373">Új ablak</translation>
 <translation id="7343393116438664539">vietnámi telex</translation>
 <translation id="7357762654218998920">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Már létezik ugyanezzel a névvel egy fájl vagy egy könyvtár.</translation>
 <translation id="8372369524088641025">Hibás WEP kulcs</translation>
 <translation id="8372852072747894550">görög</translation>
-<translation id="8384716930968677505">Itt jelennek majd meg a legutóbbi képek</translation>
 <translation id="8386903983509584791">Keresés befejezve</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> kinyerve.</translation>
 <translation id="8395901698320285466">Méret</translation>

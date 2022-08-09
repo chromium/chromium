@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Stawingsertifikaat deur netwerk verwerp</translation>
 <translation id="255937426064304553">VSA internasionaal</translation>
 <translation id="2563185590376525700">Padda</translation>
-<translation id="2570012981255377263">Jou onlangse lêers sal hier verskyn</translation>
 <translation id="2578394532502990878">Tamil-foneties</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Seinsterkte <ph name="SIGNAL_STRENGTH" />%, Geblokkeer deur jou administrateur, Besonderhede</translation>
@@ -285,10 +284,12 @@
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> foute.</translation>
+<translation id="3495810061346586977">Hierdie lêer is vertroulik en onderworpe aan beperkings op grond van adminbeleid. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="3522708245912499433">Portugees</translation>
 <translation id="3524311639100184459">Wees versigtig: Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak.  <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Vouer</translation>
+<translation id="3548125359243647069">’n Verkeerde PIN is te veel kere ingevoer.</translation>
 <translation id="3549797760399244642">Gaan na drive.google.com …</translation>
 <translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
@@ -541,7 +542,6 @@
 <translation id="5625294776298156701">Tamil met Tamil99-sleutelbord</translation>
 <translation id="5633226425545095130">As hierdie item geskuif word, sal dit gedeel word met almal wat die vouer "<ph name="DESTINATION_NAME" />" kan sien.</translation>
 <translation id="5649768706273821470">Luister</translation>
-<translation id="5665074015635552640">Jou onlangse video's sal hier verskyn</translation>
 <translation id="5669691691057771421">Voer nuwe PIN in</translation>
 <translation id="5678784840044122290">Die Linux-program sal binne jou terminaal beskikbaar wees en kan dalk ook 'n ikoon in jou Lanseerder wys.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan nie van 'n argief- of virtuele skyf ontkoppel nie<ph name="END_BOLD" />
@@ -614,6 +614,7 @@
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
+<translation id="6295542640242147836">Sluit SIM</translation>
 <translation id="6296410173147755564">Ongeldige PUK</translation>
 <translation id="6312403991423642364">Onbekende netwerkfout</translation>
 <translation id="6317608858038767920">Gepasmaakte naambediener <ph name="INPUT_INDEX" /></translation>
@@ -686,7 +687,6 @@
     <ph name="FILE_COUNT" /> gevind</translation>
 <translation id="6935521024859866267">Onderstebo</translation>
 <translation id="6943836128787782965">HTTP het misluk</translation>
-<translation id="6945604978460872381">Jou onlangse dokumente sal hier verskyn</translation>
 <translation id="6949408524333579394">Serwiese transliterasie</translation>
 <translation id="6954309393500027528">Jou administrateur blokkeer die plak van hierdie lêer</translation>
 <translation id="6960565108681981554">Nie geaktiveer nie. Kontak jou diensverskaffer.</translation>
@@ -723,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Stoor lêer as</translation>
 <translation id="7229570126336867161">Benodig EVDO</translation>
+<translation id="7230898482850090046">Jou administateur het jou versoek om die "Sluit SIM"-instelling af te skakel</translation>
 <translation id="7238097264433196391">Skyfnaam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, besonderhede</translation>
 <translation id="7246947237293279874">FTP-instaanbediener</translation>
@@ -734,7 +735,6 @@
 <translation id="7295662345261934369">Deel met ander mense</translation>
 <translation id="7297443947353982503">Gebruikernaam/wagwoord verkeerd of EAP-stawing het misluk</translation>
 <translation id="7309413087278791451">Duits (België)</translation>
-<translation id="7313374447885864533">Jou onlangse oudiolêers sal hier verskyn</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7343393116438664539">Viëtnamees-Telex</translation>
 <translation id="7357762654218998920">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>
@@ -755,6 +755,7 @@
 <translation id="7505167922889582512">Wys versteekte lêers</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="751507702149411736">Wit Russies</translation>
+<translation id="7521790570754130607">’n PIN word vereis om mobiele data te gebruik</translation>
 <translation id="7532029025027028521">Persiese transliterasie</translation>
 <translation id="7544830582642184299">Gee Linux-programme toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="7547009467130558110">Tekkie</translation>
@@ -779,6 +780,7 @@
 <translation id="76959938259365003">Kon nie asblik leegmaak nie.</translation>
 <translation id="770015031906360009">Grieks</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> is gekopieer.</translation>
+<translation id="7708271999969613024">Jy moet die Persoonlike Deblokkeringsleutel (PUK) van 8 syfers wat deur die diensverskaffer verskaf is, invoer om hierdie netwerk te gebruik.</translation>
 <translation id="7711920809702896782">Prentinligting</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7730494089396812859">Wys wolkrugsteunbesonderhede</translation>
@@ -864,7 +866,6 @@
 <translation id="8342318071240498787">'n Lêer of gids met dieselfde naam bestaan reeds.</translation>
 <translation id="8372369524088641025">Swak WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
-<translation id="8384716930968677505">Jou onlangse prente sal hier verskyn</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> is onttrek.</translation>
 <translation id="8395901698320285466">Afmetings</translation>
@@ -874,6 +875,7 @@
 <translation id="8437209419043462667">VSA</translation>
 <translation id="8452135315243592079">Verlore SIM-kaart</translation>
 <translation id="8456681095658380701">Ongeldige naam</translation>
+<translation id="8457767749626250697">Jou SIM is gesluit</translation>
 <translation id="8459404855768962328">As hierdie item gekopieer word, sal dit gedeel word met almal wat die vouer "<ph name="DESTINATION_NAME" />" kan sien.</translation>
 <translation id="8461467696380332069">Regsklik 'n lêer en kies "Speld aan rak vas" vir kitstoegang tot jou lêers in die rak.</translation>
 <translation id="8461914792118322307">Instaanbediener</translation>

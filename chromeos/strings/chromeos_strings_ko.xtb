@@ -697,7 +697,6 @@
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
-<translation id="6995564396478647735">쓰기 방지가 사용 설정되어 있는지 확인</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="7040230719604914234">운영자</translation>
@@ -808,7 +807,6 @@
 <translation id="80398733265834479">색상 자동조절 사용</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8045012663542226664">마이크 음소거</translation>
-<translation id="8063022551652308521">쓰기 방지가 여전히 사용 중지되어 있습니다. 계속하려면 쓰기 방지를 사용 설정하세요.</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>

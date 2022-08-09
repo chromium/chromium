@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2563185590376525700">مینڈک</translation>
-<translation id="2570012981255377263">آپ کی حالیہ فائلیں یہاں ظاہر ہوں گی</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
@@ -289,6 +288,7 @@
 <translation id="3522708245912499433">پُرتگالی</translation>
 <translation id="3524311639100184459">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">فولڈر</translation>
+<translation id="3548125359243647069">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔</translation>
 <translation id="3549797760399244642">‏drive.google.com پر جائیں…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں کاپی کریں۔</translation>
 <translation id="3556731189587832921">‏بین الاقوامی PC کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
@@ -485,6 +485,7 @@
 <translation id="5159560892333415631">کوڑے دان خالی کریں</translation>
 <translation id="5163869187418756376">اشتراک ناکام ہو گیا۔ اپنا کنکشن چیک کریں او بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="516592729076796170">‏US پروگرامر ڈووراک</translation>
+<translation id="5172749059808361023">پابندی کی تفصیلات</translation>
 <translation id="5177526793333269655">تھمب نیل کا منظر</translation>
 <translation id="5194713942430106590">صعودی ترتیب میں کالم کو ترتیب دینے کے لیے کلک کریں۔</translation>
 <translation id="5211614973734216083">فروئز</translation>
@@ -540,7 +541,6 @@
 <translation id="5625294776298156701">‏Tamil99 کی بورڈ کے ساتھ تمل</translation>
 <translation id="5633226425545095130">اس آئٹم کو منتقل کرنے سے یہ ہر اس شخص کے ساتھ اشتراک ہو جائے گا جو اشتراک کردہ فولڈر '<ph name="DESTINATION_NAME" />' کو دیکھ سکتا ہے۔</translation>
 <translation id="5649768706273821470">سنیں</translation>
-<translation id="5665074015635552640">آپ کی حالیہ ویڈیوز یہاں ظاہر ہوں گی</translation>
 <translation id="5669691691057771421">‏نیا PIN درج کریں</translation>
 <translation id="5678784840044122290">‏Linux ایپلیکیشن آپ کے 'ٹرمنل' کے اندر دستیاب ہوگی اور آپ کے لانچر میں بھی ایک آئیکن ظاہر ہو سکتا ہے۔</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />کسی آرکائیو یا ورچوئل ڈسک سے غیر منسلک نہیں ہو سکتا<ph name="END_BOLD" />
@@ -613,6 +613,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
+<translation id="6295542640242147836">‏SIM مقفل کریں</translation>
 <translation id="6296410173147755564">‏غلط PUK</translation>
 <translation id="6312403991423642364">نیٹ ورک کی نامعلوم خرابی</translation>
 <translation id="6317608858038767920">حسب ضرورت نام سرور <ph name="INPUT_INDEX" /></translation>
@@ -685,7 +686,6 @@
     <ph name="FILE_COUNT" /> ملیں</translation>
 <translation id="6935521024859866267">اوپری کی جانب سے نیچے</translation>
 <translation id="6943836128787782965">‏HTTP ناکام ہوگیا</translation>
-<translation id="6945604978460872381">آپ کی حالیہ دستاویزات یہاں ظاہر ہوں گی</translation>
 <translation id="6949408524333579394">سربیائی نقل حرفی</translation>
 <translation id="6954309393500027528">آپ کے منتظم کی جانب سے اس فائل کو پیسٹ کرنا مسدود کر دیا گیا ہے</translation>
 <translation id="6960565108681981554">فعال نہیں ہے۔ اپنے کیریئر سے رابطہ کریں۔</translation>
@@ -722,6 +722,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">فائل محفوظ کریں بطور</translation>
 <translation id="7229570126336867161">‏EVDO درکار ہے</translation>
+<translation id="7230898482850090046">‏آپ کے منتظم نے آپ سے "SIM کو مقفل کریں" کی ترتیب کو بند کرنے کی درخواست کی ہے</translation>
 <translation id="7238097264433196391">ڈرائیو کا نام</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، تفصیلات</translation>
 <translation id="7246947237293279874">‏FTP پراکسی</translation>
@@ -733,7 +734,6 @@
 <translation id="7295662345261934369">دوسروں کے ساتھ اشتراک کریں</translation>
 <translation id="7297443947353982503">‏صارف نام/پاس ورڈ غلط ہے یا EAP توثیق ناکام ہو گئی</translation>
 <translation id="7309413087278791451">جرمن (بیلجیئم)</translation>
-<translation id="7313374447885864533">آپ کی حالیہ آڈیو فائلز یہاں ظاہر ہوں گی</translation>
 <translation id="7339898014177206373">نئی ونڈو</translation>
 <translation id="7343393116438664539">‏ویتنامی Telex</translation>
 <translation id="7357762654218998920">‏فائل کی یہ قسم غیر تعاون یافتہ ہے۔ ChromeOS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>
@@ -754,6 +754,7 @@
 <translation id="7505167922889582512">پوشیدہ فائلیں دکھائیں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="751507702149411736">بيلاروسی</translation>
+<translation id="7521790570754130607">‏موبائل ڈیٹا استعمال کرنے کیلئے PIN درکار ہے</translation>
 <translation id="7532029025027028521">فارسی نقل حرفی</translation>
 <translation id="7544830582642184299">‏Linux ایپس کو اپنے Google Drive میں فائلز تک رسائی کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="7547009467130558110">اسنیکر</translation>
@@ -778,6 +779,7 @@
 <translation id="76959938259365003">کوڑے دان کو خالی کرنے میں ناکام۔</translation>
 <translation id="770015031906360009">يونانی</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> کاپی ہو گیا۔</translation>
+<translation id="7708271999969613024">‏اس نیٹ ورک کو استعمال کرنے کے لیے، آپ کو کیریئر کے ذریعے فراہم کردہ 8 ہندسوں کی غیر مسدود کرنے کی ذاتی کلید (PUK) کو داخل کرنے کی ضرورت ہے۔</translation>
 <translation id="7711920809702896782">تصویر کی معلومات</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7730494089396812859">کلاؤڈ کی بیک اپ تفصیلات دکھائیں</translation>
@@ -863,7 +865,6 @@
 <translation id="8342318071240498787">اسی نام کی ایک فائل یا ڈائریکٹری پہلے سے موجود ہے۔</translation>
 <translation id="8372369524088641025">‏غلط WEP کلید</translation>
 <translation id="8372852072747894550">يونانی</translation>
-<translation id="8384716930968677505">آپ کی حالیہ تصاویر یہاں ظاہر ہوں گی</translation>
 <translation id="8386903983509584791">اسکین مکمل ہو گیا</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> کو ایکسٹریکٹ کیا گیا۔</translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
@@ -873,6 +874,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">‏غائب SIM کارڈ</translation>
 <translation id="8456681095658380701">غلط نام</translation>
+<translation id="8457767749626250697">‏آپ کی SIM مقفل ہے</translation>
 <translation id="8459404855768962328">اس آئٹم کو کاپی کرنے سے یہ ہر اس شخص کے ساتھ اشتراک ہو جائے گا جو اشتراک کردہ فولڈر '<ph name="DESTINATION_NAME" />' کو دیکھ سکتا ہے۔</translation>
 <translation id="8461467696380332069">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل پر دائیں طرف کلک کریں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8461914792118322307">پراکسی</translation>

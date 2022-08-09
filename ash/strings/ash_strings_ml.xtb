@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">കേബിൾ, പ്രകടനത്തെ ബാധിച്ചേക്കാം</translation>
 <translation id="2903844815300039659"><ph name="NAME" />-ലേക്ക് കണക്റ്റ് ചെയ്‌‌തു, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">സ്ക്രീൻ ക്യാപ്‌ചറുകൾ</translation>
+<translation id="2925246975070834767">നിങ്ങളെ സ്‌ക്രീനിന്റെ മധ്യത്തിലാക്കാൻ സ്വയമേവയുള്ള സൂം ചെയ്യൽ പരീക്ഷിക്കുക. ദ്രുത ക്രമീകരണത്തിൽ ഇത് ഓണാക്കുക.</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="2942350706960889382">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
 <translation id="2942516765047364088">ഷെൽഫ് സ്ഥാനം</translation>
@@ -634,6 +635,7 @@
 <translation id="4628757576491864469">ഉപകരണങ്ങൾ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> നക്ഷത്ര റേറ്റിംഗ്</translation>
 <translation id="4633185660152240791">{0,plural, =1{ഒരു ദിവസത്തിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}other{# ദിവസത്തിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}}</translation>
+<translation id="4633636853437260449">ഇല്ലാതാക്കാൻ Ctrl+W അമർത്തുക</translation>
 <translation id="4642092649622328492">ഭാഗിക സ്‌ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4644727592819780893">മേഖല ക്യാമറയ്ക്ക് യോജിക്കുന്നതിലും വളരെ ചെറുതാണ്</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ആപ്പ് നിർദ്ദേശം</translation>

@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">เล่น/หยุดชั่วคราว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
+<translation id="1207734034680156868">คำแนะนำจะอิงตามคำอธิบายของคุณ</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
 <translation id="1236400083787698183">ทำ Powerwash อุปกรณ์ก่อนรีสตาร์ท หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
@@ -697,7 +698,6 @@
 <translation id="6961170852793647506">วางเอกสารบนเครื่องสแกนเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
-<translation id="6995564396478647735">ตรวจสอบว่า Write Protect เปิดอยู่</translation>
 <translation id="7005833343836210400">อุปกรณ์ออฟไลน์อยู่</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
@@ -808,7 +808,6 @@
 <translation id="80398733265834479">เปิดใช้โหมดปรับสีอัตโนมัติ</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8045012663542226664">ปุ่มปิดเสียงไมโครโฟน</translation>
-<translation id="8063022551652308521">Write Protect ยังปิดอยู่ โปรดเปิด Write Protect เพื่อดำเนินการต่อ</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>

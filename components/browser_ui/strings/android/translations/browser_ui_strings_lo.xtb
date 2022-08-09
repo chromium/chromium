@@ -239,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ບລັອກບໍ່ໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີຂອງທ່ານ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
+<translation id="6467852467360539617">ລຶບລ້າງຂໍ້ມູນ ແລະ ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}other{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}}</translation>
@@ -278,6 +279,7 @@
 <translation id="7250468141469952378">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="7260727271532453612">ອະນຸຍາດ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ແລ້ວ</translation>
 <translation id="7302486331832100261">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອອະນຸຍາດ, ກະລຸນາແຕະລາຍລະອຽດ.</translation>
+<translation id="7383715096023715447">ການຕັ້ງຄ່າສຳລັບ <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">ຖາມ​ກ່ອນ</translation>
 <translation id="7423538860840206698">ບລັອກບໍ່ໃຫ້ອ່ານຄລິບບອດແລ້ວ</translation>
 <translation id="7425915948813553151">ຮູບແບບສີສັນມືດສຳລັບເວັບໄຊ</translation>

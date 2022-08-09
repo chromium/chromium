@@ -1269,7 +1269,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2173801458090845390">Pridať do tohto zariadenia ID rekvizície</translation>
 <translation id="2175384018164129879">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
-<translation id="2175607476662778685">Panel Rýchle spustenie</translation>
 <translation id="217576141146192373">Tlačiareň sa nepodarilo pridať. Skontrolujte jej konfiguráciu a skúste to znova.</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2177950615300672361">Karta inkognito: <ph name="TAB_NAME" /></translation>
@@ -1871,6 +1870,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2727633948226935816">Viac nepripomínať</translation>
 <translation id="2727712005121231835">Skutočná veľkosť</translation>
 <translation id="2729314457178420145">Vymazať tiež dáta prehliadania (<ph name="URL" />), po čom vás môže systém odhlásiť z domény Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome hľadá nové spôsoby, ako zredukovať sledovanie a ešte viac vás chrániť pri prehliadaní. <ph name="ESTIMATE_INTERESTS_LINK" /> a umožňuje vám ich spravovať. Potom ho môžu weby, ktoré navštívite, žiadať o vaše záujmy, aby vám mohli zobrazovať reklamy.</translation>
 <translation id="2730029791981212295">Zálohovanie aplikácií a súborov systému Linux</translation>
 <translation id="2730901670247399077">Návrhy emodži</translation>
 <translation id="273093730430620027">Táto stránka má prístup k vašej kamere.</translation>
@@ -4558,6 +4558,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5350293332385664455">Vypnúť Asistenta Google</translation>
 <translation id="535123479159372765">Text bol skopírovaný z iného zariadenia</translation>
 <translation id="5352033265844765294">Časová pečiatka</translation>
+<translation id="5352257124367865087">Spravovať povolenia webu</translation>
 <translation id="5353252989841766347">Export hesiel z Chromu</translation>
 <translation id="5355099869024327351">Umožnite Asistentovi zobrazovať vám upozornenia</translation>
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
@@ -5058,6 +5059,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Navrhovať nový obsah na prieskum</translation>
 <translation id="5846200638699387931">Chyba syntaxe vzťahu: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Spravovať povolenia webu</translation>
 <translation id="5846807460505171493">Inštalácia aktualizácií a aplikácií. Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora a výrobcu zariadenia a v prípade potreby pri tom môže používať mobilné dáta. Niektoré z týchto aplikácií môžu ponúkať nákupy v aplikácii.</translation>
 <translation id="5849212445710944278">Už pridané</translation>
 <translation id="5851868085455377790">Vydavateľ</translation>
@@ -5623,6 +5625,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6398715114293939307">Odstrániť Obchod Google Play</translation>
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="6399774419735315745">Špión</translation>
+<translation id="6400360390396538896">Vždy na <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do Chromu</translation>
 <translation id="6401597285454423070">Váš počítač obsahuje bezpečnostné zariadenie Trusted Platform Module (TPM), pomocou ktorého sa v systéme Chrome OS implementuje mnoho kľúčových bezpečnostných funkcií. Viac sa dozviete v centre pomoci pre Chromebooky na https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="6404187344102273690">Hranie hier v Chromebookoch</translation>
@@ -7556,7 +7559,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8248887045858762645">Tip pre Chrome</translation>
 <translation id="8249048954461686687">Priečinok OEM</translation>
 <translation id="8249615410597138718">Odoslať do zariadení</translation>
-<translation id="8249672078237421304">Ponúkať preklad stránok, ktorým by ste nemuseli rozumieť</translation>
 <translation id="8250210000648910632">Nie je k dispozícii žiadny ukladací priestor</translation>
 <translation id="8251441930213048644">Ihneď obnoviť</translation>
 <translation id="8251509999076836464">Páruje sa so zariadením <ph name="DEVICE_NAME" /></translation>

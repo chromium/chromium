@@ -1124,6 +1124,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2048653237708779538">Aktion nicht verfügbar</translation>
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2052572566310583903">Auf deinen anderen Geräten installiert</translation>
+<translation id="2053105195397337973">Wir probieren neue Optionen aus, um Tracking einzuschränken. Gleichzeitig wird Websites die Möglichkeit gegeben, Werbespam und Betrug zu bekämpfen.</translation>
 <translation id="2053312383184521053">Daten für inaktiven Zustand</translation>
 <translation id="2054240652864153171">Websitedaten für <ph name="SITE_NAME" />, die auf <ph name="PARTITION_SITE_NAME" /> partioniert sind, löschen?</translation>
 <translation id="2055585478631012616">Du wirst von diesen Websites abgemeldet, auch in offenen Tabs</translation>
@@ -1264,7 +1265,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
 <translation id="2175384018164129879">Suchmaschinen und die Websitesuche verwalten</translation>
-<translation id="2175607476662778685">Schnellstartleiste</translation>
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfe bitte die Konfiguration des Druckers und versuche es noch einmal.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2177950615300672361">Inkognitotab: <ph name="TAB_NAME" /></translation>
@@ -4955,6 +4955,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5747552184818312860">Ablaufdatum</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
 <translation id="5747809636523347288">Einfügen und <ph name="URL" /> aufrufen</translation>
+<translation id="5751345516399502412">Tethering-Bereitschaft prüfen</translation>
 <translation id="5755022574660047665">Erinnerungen von Google Fotos</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
 <translation id="5757375109985023827">Tab für die Vorschau auswählen</translation>
@@ -7210,6 +7211,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7939062555109487992">Erweiterte Optionen</translation>
 <translation id="7939328347457537652">Gerätezertifikate verwalten</translation>
 <translation id="7939412583708276221">Trotzdem beibehalten</translation>
+<translation id="7941179291434537290">Tethering-Bereitschaft:</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943368935008348579">PDFs herunterladen</translation>
 <translation id="7943837619101191061">Speicherort hinzufügen...</translation>
@@ -7542,7 +7544,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8248887045858762645">Chrome-Tipp</translation>
 <translation id="8249048954461686687">OEM-Ordner</translation>
 <translation id="8249615410597138718">An meine Geräte senden</translation>
-<translation id="8249672078237421304">Übersetzung von fremdsprachigen Seiten anbieten</translation>
 <translation id="8250210000648910632">Nicht genug Speicherplatz</translation>
 <translation id="8251441930213048644">Jetzt aktualisieren</translation>
 <translation id="8251509999076836464">Wird mit „<ph name="DEVICE_NAME" />“ gekoppelt</translation>
@@ -7738,6 +7739,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8439506636278576865">Übersetzung für Seiten in dieser Sprache anbieten</translation>
 <translation id="8440630305826533614">Linux-Apps</translation>
 <translation id="844063558976952706">Immer auf dieser Website</translation>
+<translation id="8441313165929432954">Tethering aktivieren/deaktivieren</translation>
 <translation id="8443795068008423036">Achte darauf, dass dein Gerät auf dem neuesten Stand ist, und versuche es noch einmal</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8447409163267621480">Entweder Strg oder Alt integrieren</translation>

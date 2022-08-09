@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Võrk lükkas autentimissertifikaadi tagasi</translation>
 <translation id="255937426064304553">USA rahvusvaheline</translation>
 <translation id="2563185590376525700">Konn</translation>
-<translation id="2570012981255377263">Teie hiljutised failid kuvatakse siin</translation>
 <translation id="2578394532502990878">tamili, foneetiline</translation>
 <translation id="2579959351793446050">odia</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Tühjenda prügikast</translation>
 <translation id="5163869187418756376">Jagamine ebaõnnestus. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="516592729076796170">USA programmeerija Dvorak</translation>
+<translation id="5172749059808361023">Piirangu üksikasjad</translation>
 <translation id="5177526793333269655">Pisipildi kuva</translation>
 <translation id="5194713942430106590">Klõpsake, et veerg kasvavas järjestuses sortida.</translation>
 <translation id="5211614973734216083">fääri</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">tamili, Tamil99-klaviatuuriga</translation>
 <translation id="5633226425545095130">Selle üksuse teisaldamisel jagatakse seda kõigiga, kes jagatud kausta „<ph name="DESTINATION_NAME" />“ näevad.</translation>
 <translation id="5649768706273821470">Esita</translation>
-<translation id="5665074015635552640">Teie hiljutised videod kuvatakse siin</translation>
 <translation id="5669691691057771421">Sisestage uus PIN-kood</translation>
 <translation id="5678784840044122290">Linuxi rakendus on saadaval teie terminalis ja käivitajas võidakse kuvada ka ikoon.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ühendust arhiivi või virtuaalse kettaga ei saa katkestada<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     Leiti <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Tagurpidi</translation>
 <translation id="6943836128787782965">HTTP hankimine nurjus</translation>
-<translation id="6945604978460872381">Teie hiljutised dokumendid kuvatakse siin</translation>
 <translation id="6949408524333579394">serbia, transliteratsioon</translation>
 <translation id="6954309393500027528">Administraator blokeeris selle faili kleepimise</translation>
 <translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Teistega jagamine</translation>
 <translation id="7297443947353982503">Kasutajanimi/parool on vale või EAP-autentimine ebaõnnestus</translation>
 <translation id="7309413087278791451">saksa (Belgia)</translation>
-<translation id="7313374447885864533">Teie hiljutised helifailid kuvatakse siin</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7343393116438664539">vietnami, Telex</translation>
 <translation id="7357762654218998920">Seda tüüpi faili ei toetata. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Sama nimega fail või kataloog on juba olemas.</translation>
 <translation id="8372369524088641025">Halb WEP-võti</translation>
 <translation id="8372852072747894550">kreeka</translation>
-<translation id="8384716930968677505">Teie hiljutised pildid kuvatakse siin</translation>
 <translation id="8386903983509584791">Skannimine jõudis lõpule</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ekstraktiti.</translation>
 <translation id="8395901698320285466">Dimensioonid</translation>

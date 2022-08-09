@@ -1125,6 +1125,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2048653237708779538">Czynność niedostępna</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2052572566310583903">Zainstalowano na innych urządzeniach</translation>
+<translation id="2053105195397337973">Pracujemy nad tym, jak ograniczyć śledzenie w witrynach, a jednocześnie umożliwić im zapobieganie oszustwom i spamowi reklamowemu.</translation>
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
 <translation id="2054240652864153171">Wyczyścić dane witryny <ph name="SITE_NAME" /> rozdzielone na stronie <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
@@ -1265,7 +1266,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2173801458090845390">Dodaj identyfikator przeznaczenia do tego urządzenia</translation>
 <translation id="2175384018164129879">&amp;Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
-<translation id="2175607476662778685">Pasek szybkiego uruchamiania</translation>
 <translation id="217576141146192373">Nie można dodać drukarki. Sprawdź jej konfigurację i spróbuj ponownie.</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2177950615300672361">Karta incognito: <ph name="TAB_NAME" /></translation>
@@ -3777,6 +3777,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4579581181964204535">Nie udało się przesłać <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Aby wyświetlić powiadomienia przeglądarki, otwórz <ph name="LINK_BEGIN" />Ustawienia przeglądarki Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" /> na tym urządzeniu.</translation>
+<translation id="4580626299762849806">Nie udało się zaimportować haseł. Sprawdź, czy plik <ph name="FILENAME" /> jest poprawnie sformatowany.</translation>
 <translation id="4581774856936278355">Błąd podczas przywracania Linuksa</translation>
 <translation id="4582297591746054421">Strony zwykle odczytują zawartość schowka na przykład w celu zachowania formatowania kopiowanego tekstu</translation>
 <translation id="4582563038311694664">Zresetuj wszystkie ustawienia</translation>
@@ -4946,6 +4947,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5747552184818312860">Wygasa</translation>
 <translation id="5747785204778348146">Deweloperska – niestabilna</translation>
 <translation id="5747809636523347288">&amp;Wklej i otwórz <ph name="URL" /></translation>
+<translation id="5751345516399502412">Sprawdź gotowość do obsługi tetheringu</translation>
 <translation id="5755022574660047665">wspomnień ze Zdjęć Google</translation>
 <translation id="5756163054456765343">C&amp;entrum pomocy</translation>
 <translation id="5757375109985023827">Wybierz kartę, aby zobaczyć jej podgląd</translation>
@@ -5081,6 +5083,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5877064549588274448">Kanał został zmieniony. Aby zastosować zmiany, uruchom ponownie urządzenie.</translation>
 <translation id="5877584842898320529">Wybrana drukarka jest niedostępna lub nieprawidłowo zainstalowana. <ph name="BR" /> Sprawdź ją lub wybierz inną.</translation>
 <translation id="5878945009165002849">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości</translation>
+<translation id="5882449899683447569">Coś poszło nie tak i Twoje hasła nie zostały zaimportowane</translation>
 <translation id="5882919346125742463">Znane sieci</translation>
 <translation id="5883356647197510494">Automatycznie zablokowano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Ta karta jest połączona z urządzeniem USB.</translation>
@@ -7205,6 +7208,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7939062555109487992">Opcje zaawansowane</translation>
 <translation id="7939328347457537652">Zarządzaj certyfikatami urządzenia</translation>
 <translation id="7939412583708276221">Zachowaj mimo to</translation>
+<translation id="7941179291434537290">Gotowość do obsługi tetheringu:</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943368935008348579">Pobieranie plików PDF</translation>
 <translation id="7943837619101191061">Dodaj lokalizację...</translation>
@@ -7537,7 +7541,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8248887045858762645">Wskazówka dotycząca Chrome</translation>
 <translation id="8249048954461686687">Folder OEM</translation>
 <translation id="8249615410597138718">Wyślij na swoje urządzenia</translation>
-<translation id="8249672078237421304">Proponuj tłumaczenie stron w obcych językach</translation>
 <translation id="8250210000648910632">Brak dostępnego miejsca</translation>
 <translation id="8251441930213048644">Odśwież teraz</translation>
 <translation id="8251509999076836464">Paruję z urządzeniem <ph name="DEVICE_NAME" /></translation>
@@ -7733,6 +7736,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8439506636278576865">Proponuj tłumaczenie stron w tym języku</translation>
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
 <translation id="844063558976952706">Zawsze w tej witrynie</translation>
+<translation id="8441313165929432954">Włącz/wyłącz tethering</translation>
 <translation id="8443795068008423036">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8447409163267621480">Uwzględnij Ctrl lub Alt</translation>

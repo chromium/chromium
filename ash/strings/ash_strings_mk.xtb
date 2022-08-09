@@ -100,6 +100,7 @@
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="1467432559032391204">Лево</translation>
+<translation id="146902737843070955">Администраторот ја побара променава</translation>
 <translation id="147310119694673958">Батерија на телефонот <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Лебдечко мени за пристапност</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, притиснете го копчето Enter за да го отворите приказот на календарот</translation>
@@ -838,6 +839,7 @@
 <translation id="5779721926447984944">Закачени датотеки</translation>
 <translation id="5788127256798019331">Датотеки на Play</translation>
 <translation id="5790085346892983794">Успешно</translation>
+<translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>

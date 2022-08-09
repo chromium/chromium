@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">নেটওয়ার্কের দ্বারা প্রমাণীকরণ সার্টিফিকেট প্রত্যাখ্যান করা হয়েছে</translation>
 <translation id="255937426064304553">মার্কিন আন্তর্জাতিক</translation>
 <translation id="2563185590376525700">ব্যাঙ</translation>
-<translation id="2570012981255377263">আপনার সাম্প্রতিক ফাইল এখানে দেখা যাবে</translation>
 <translation id="2578394532502990878">তামিল ফোনেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
@@ -543,7 +542,6 @@
 <translation id="5625294776298156701">তামিল ভাষায় তামিল৯৯ (Tamil99) কীবোর্ড</translation>
 <translation id="5633226425545095130">এই আইটেম অন্য কোথাও সরিয়ে দিলে, এটি শেয়ার করা ফোল্ডার '<ph name="DESTINATION_NAME" />' দেখতে পাওয়া প্রতিটি ব্যক্তির সাথে শেয়ার হয়ে যাবে।</translation>
 <translation id="5649768706273821470">শুনুন</translation>
-<translation id="5665074015635552640">আপনার সাম্প্রতিক ভিডিও এখানে দেখা যাবে</translation>
 <translation id="5669691691057771421">নতুন পিন লিখুন</translation>
 <translation id="5678784840044122290">Linux অ্যাপ্লিকেশনটি আপনার  টার্মিনালের মধ্যে পাওয়া যাবে এবং আপনার লঞ্চারে একটি আইকনও দেখাতে পারে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />একটি আর্কাইভ বা ভার্চুয়াল ডিস্ক থেকে ডিসকানেক্ট করা যাবে না<ph name="END_BOLD" />
@@ -689,7 +687,6 @@
     <ph name="FILE_COUNT" />টি পাওয়া যায়</translation>
 <translation id="6935521024859866267">ওলট পালট</translation>
 <translation id="6943836128787782965">HTTP ব্যর্থ হয়েছে</translation>
-<translation id="6945604978460872381">আপনার সাম্প্রতিক ডকুমেন্ট এখানে দেখা যাবে</translation>
 <translation id="6949408524333579394">সার্বিয়ান লিপ্যন্তর</translation>
 <translation id="6954309393500027528">আপনার অ্যাডমিনিস্ট্রেটর এই ফাইলটি পেস্ট করার সুবিধা ব্লক করে দিয়েছেন</translation>
 <translation id="6960565108681981554">চালু করা নেই। আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -738,7 +735,6 @@
 <translation id="7295662345261934369">অন্যদের সাথে শেয়ার করুন</translation>
 <translation id="7297443947353982503">ইউজারনেম/পাসওয়ার্ড ভুল অথবা EAP-প্রমাণীকরণ করা যায়নি</translation>
 <translation id="7309413087278791451">জার্মান (বেলজিয়াম)</translation>
-<translation id="7313374447885864533">আপনার সাম্প্রতিক অডিও ফাইল এখানে দেখা যাবে</translation>
 <translation id="7339898014177206373">নতুন উইন্ডো</translation>
 <translation id="7343393116438664539">ভিয়েতনামি টেলেক্স</translation>
 <translation id="7357762654218998920">এই ধরনের ফাইল ব্যবহার করা যায় না। ChromeOS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
@@ -870,7 +866,6 @@
 <translation id="8342318071240498787">একই নাম সহ ফাইল অথবা একটি নির্দেশিকা ইতিমধ্যেই বিদ্যমান আছে৷</translation>
 <translation id="8372369524088641025">খারাপ WEP কী</translation>
 <translation id="8372852072747894550">গ্রিক</translation>
-<translation id="8384716930968677505">আপনার সাম্প্রতিক ছবি এখানে দেখা যাবে</translation>
 <translation id="8386903983509584791">স্ক্যান করা সম্পন্ন হয়েছে</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> এক্সট্র্যাক্ট করা হয়েছে।</translation>
 <translation id="8395901698320285466">আয়তন</translation>

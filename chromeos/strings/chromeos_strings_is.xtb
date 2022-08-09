@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Spila / gera hlé</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
+<translation id="1207734034680156868">Tillögurnar byggjast á lýsingunni þinni</translation>
 <translation id="123124571410524056">Grunur um gátt</translation>
 <translation id="1236400083787698183">Djúphreinsaðu tækið áður en þú endurræsir það. Ef lok er á tækinu skaltu bíða þar til djúphreinsun lýkur áður en þú lokar því. Djúphreinsun getur tekið allt að mínútu.</translation>
 <translation id="1238612778414822719">HTTPS-biðtími</translation>
@@ -697,7 +698,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6961170852793647506">Settu skjalið á skannann til að hefjast handa</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
-<translation id="6995564396478647735">Gakktu úr skugga um að kveikt sé á skrifvörn</translation>
 <translation id="7005833343836210400">Tækið er án nettengingar</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="7040230719604914234">Símafyrirtæki</translation>
@@ -808,7 +808,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="80398733265834479">Kveikja á sjálfvirkri litastillingu</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8045012663542226664">Slökkva á hljóðnema</translation>
-<translation id="8063022551652308521">Enn er slökkt á skrifvörn. Kveiktu á skrifvörn til að halda áfram.</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>

@@ -200,6 +200,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2046634576464120978">Produciuse un erro ao rexistrar o teléfono</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Realiza buscas en Internet</translation>
+<translation id="2053105195397337973">Estamos explorando formas de limitar o seguimento no sitios e, ao mesmo tempo, de permitirlles deter a fraude e o spam publicitario.</translation>
 <translation id="2056878612599315956">O sitio está en pausa</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga}other{Produciuse un erro en # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
@@ -234,6 +235,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2239812875700136898">Fai clic no botón Opcións de Discover e controla as túas historias</translation>
 <translation id="2248941474044011069">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
+<translation id="2276231040576210443">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Queres abrir a aplicación para <ph name="APPNAME" />?</translation>
@@ -307,6 +309,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
+<translation id="2709516037105925701">Autocompletar</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probas</translation>
 <translation id="2718352093833049315">Só con wifi</translation>
@@ -395,12 +398,12 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">vinculouse a</translation>
 <translation id="3123734510202723619">Avisos</translation>
+<translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
 <translation id="316694332262407393">Chrome xa se está executando aquí.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">Durante as probas, podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
@@ -543,6 +546,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3981902534690264083">Os anunciantes poden comprender como funcionan os anuncios</translation>
 <translation id="3985215325736559418">Queres descargar <ph name="FILE_NAME" /> de novo?</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
+<translation id="3999683152997576765">Podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
 <translation id="4000212216660919741">Inicio sen conexión</translation>
 <translation id="4016425174436051808">Non se puido seguir o feed. Produciuse un erro.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -1298,6 +1302,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="804335162455518893">Non se atopou a tarxeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana do modo de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestanas do modo de incógnito}}</translation>
+<translation id="8048728378294435881">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo</translation>
 <translation id="8051695050440594747">Almacenamento dispoñible: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
 <translation id="8058746566562539958">Abrir na pestana de Chrome</translation>
@@ -1431,7 +1436,6 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="8664215986015753476">Utiliza Chrome ao teu xeito</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8666759526542103597">Acerca da personalización de anuncios baseada no navegador</translation>
-<translation id="8667760277771450375">Estamos probando formas de limitar o seguimento en varios sitios e, ao mesmo tempo, de permitirlles deter a fraude e o spam publicitario.</translation>
 <translation id="8676789164135894283">Verificacións inicio de sesión</translation>
 <translation id="867767487203716855">Seguinte actualización</translation>
 <translation id="8683039184091909753">imaxe</translation>

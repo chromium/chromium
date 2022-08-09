@@ -200,6 +200,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2046634576464120978">Registration failed</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the Internet</translation>
+<translation id="2053105195397337973">We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="2056878612599315956">Site paused</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
 <translation id="2067805253194386918">text</translation>
@@ -234,6 +235,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2239812875700136898">Control your stories from the 'Options for Discover' button</translation>
 <translation id="2248941474044011069">Your passwords are encrypted on your device before they’re saved to Google Password Manager</translation>
 <translation id="2259659629660284697">Export passwords…</translation>
+<translation id="2276231040576210443">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Open app for <ph name="APPNAME" />?</translation>
@@ -307,6 +309,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2707726405694321444">Refresh page</translation>
+<translation id="2709516037105925701">Auto-fill</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">Trials</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -395,12 +398,12 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
+<translation id="3130863904455712965">History and more</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">During the trials, you can see and remove topics of interest sites used to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
@@ -543,6 +546,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3981902534690264083">Advertisers can understand how ads perform</translation>
 <translation id="3985215325736559418">Do you want to download <ph name="FILE_NAME" /> again?</translation>
 <translation id="3987993985790029246">Copy link</translation>
+<translation id="3999683152997576765">You can see and remove topics of interest that sites use to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
@@ -1299,6 +1303,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="804335162455518893">SD card not found</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab}other{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}}</translation>
+<translation id="8048728378294435881">Back up your stuff and use it on any device</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8058746566562539958">Open in new Chrome tab</translation>
@@ -1432,7 +1437,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
-<translation id="8667760277771450375">We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>
 <translation id="867767487203716855">Next update</translation>
 <translation id="8683039184091909753">image</translation>

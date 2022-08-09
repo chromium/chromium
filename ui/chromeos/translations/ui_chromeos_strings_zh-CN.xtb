@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
 <translation id="255937426064304553">美国英语（国际）</translation>
 <translation id="2563185590376525700">青蛙</translation>
-<translation id="2570012981255377263">您最近用过的文件会显示在此处</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">清空回收站</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
+<translation id="5172749059808361023">限制详情</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
 <translation id="5211614973734216083">法罗语</translation>
@@ -536,7 +536,6 @@
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
 <translation id="5649768706273821470">收听</translation>
-<translation id="5665074015635552640">您最近用过的视频会显示在此处</translation>
 <translation id="5669691691057771421">请输入新的 PIN 码</translation>
 <translation id="5678784840044122290">此 Linux 应用将可以在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />无法断开与档案或虚拟磁盘的连接<ph name="END_BOLD" />
@@ -681,7 +680,6 @@
     找到了 <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">倒栽葱蝴蝶</translation>
 <translation id="6943836128787782965">HTTP 获取请求失败</translation>
-<translation id="6945604978460872381">您最近用过的文档会显示在此处</translation>
 <translation id="6949408524333579394">塞尔维亚语音译</translation>
 <translation id="6954309393500027528">您的管理员已禁止粘贴此文件</translation>
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
@@ -729,7 +727,6 @@
 <translation id="7295662345261934369">与他人共享</translation>
 <translation id="7297443947353982503">用户名/密码错误或 EAP 身份验证失败</translation>
 <translation id="7309413087278791451">德语（比利时）</translation>
-<translation id="7313374447885864533">您最近用过的音频文件会显示在此处</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7343393116438664539">越南语电传机键盘</translation>
 <translation id="7357762654218998920">此文件类型不受支持。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
@@ -859,7 +856,6 @@
 <translation id="8342318071240498787">已存在具有相同名称的文件或目录。</translation>
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8372852072747894550">希腊语</translation>
-<translation id="8384716930968677505">您最近用过的图片会显示在此处</translation>
 <translation id="8386903983509584791">已完成扫描</translation>
 <translation id="8387733224523483503">已提取 <ph name="FILE_NAME" />。</translation>
 <translation id="8395901698320285466">尺寸</translation>

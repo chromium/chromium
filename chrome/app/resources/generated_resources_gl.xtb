@@ -1126,6 +1126,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2048653237708779538">Acción non dispoñible</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2052572566310583903">Instalada nos teus outros dispositivos</translation>
+<translation id="2053105195397337973">Estamos explorando formas de limitar o seguimento no sitios e, ao mesmo tempo, de permitirlles deter a fraude e o spam publicitario.</translation>
 <translation id="2053312383184521053">Datos do estado inactivo</translation>
 <translation id="2054240652864153171">Queres borrar os datos do sitio <ph name="SITE_NAME" /> particionados en <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Ademais, pecharase sesión nestes sitios aínda que os teñas abertos en pestanas</translation>
@@ -1266,7 +1267,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2173801458090845390">Engade o ID de solicitude para este dispositivo</translation>
 <translation id="2175384018164129879">Xestionar &amp;motores de busca e busca de sitios</translation>
-<translation id="2175607476662778685">Barra de inicio rápido</translation>
 <translation id="217576141146192373">Non se puido engadir a impresora. Comproba a súa configuración e téntao de novo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177950615300672361">Pestana de incógnito: <ph name="TAB_NAME" /></translation>
@@ -4956,6 +4956,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5747552184818312860">Data de caducidade</translation>
 <translation id="5747785204778348146">Programador: inestable</translation>
 <translation id="5747809636523347288">Pegar e ir a <ph name="URL" /></translation>
+<translation id="5751345516399502412">Comprobar preparación para conexión compartida</translation>
 <translation id="5755022574660047665">lembranzas de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de axuda</translation>
 <translation id="5757375109985023827">Selecciona unha pestana para acceder á vista previa</translation>
@@ -7211,6 +7212,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7939062555109487992">Opcións avanzadas</translation>
 <translation id="7939328347457537652">Xestionar certificados do dispositivo</translation>
 <translation id="7939412583708276221">Manter igualmente</translation>
+<translation id="7941179291434537290">Preparación para conexión compartida:</translation>
 <translation id="7942349550061667556">Vermello</translation>
 <translation id="7943368935008348579">Descargar PDF</translation>
 <translation id="7943837619101191061">Engadir localización...</translation>
@@ -7542,7 +7544,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8248887045858762645">Consello de Chrome</translation>
 <translation id="8249048954461686687">Cartafol de OEM</translation>
 <translation id="8249615410597138718">Enviar contido aos teus dispositivos</translation>
-<translation id="8249672078237421304">Preguntar se queres traducir páxinas que non estean escritas nun idioma que entendas</translation>
 <translation id="8250210000648910632">Non queda suficiente espazo de almacenamento</translation>
 <translation id="8251441930213048644">Actualizar agora</translation>
 <translation id="8251509999076836464">Vinculándose a <ph name="DEVICE_NAME" /></translation>
@@ -7738,6 +7739,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8439506636278576865">Ofrecer a tradución de páxinas neste idioma</translation>
 <translation id="8440630305826533614">Aplicacións de Linux</translation>
 <translation id="844063558976952706">Sempre neste sitio</translation>
+<translation id="8441313165929432954">Activar/Desactivar conexión compartida</translation>
 <translation id="8443795068008423036">Asegúrate de que o dispositivo estea actualizado e téntao de novo</translation>
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8447409163267621480">Utiliza a tecla Ctrl ou Alt</translation>
@@ -7954,6 +7956,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8666759526542103597">Acerca da personalización de anuncios baseada no navegador</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> está agora en pantalla completa e desactivou o cursor do rato.</translation>
 <translation id="8667760277771450375">Estamos probando formas de limitar o seguimento en varios sitios e, ao mesmo tempo, de permitirlles deter a fraude e o spam publicitario.</translation>
+<translation id="8668378421690365723">É posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e rendemento.</translation>
 <translation id="8669284339312441707">Cores máis cálidas</translation>
 <translation id="8670537393737592796">Para volver aquí rapidamente, instala a aplicación <ph name="APP_NAME" /> facendo clic no botón de instalar</translation>
 <translation id="867085395664725367">Produciuse un erro temporal no servidor.</translation>
@@ -8437,6 +8440,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para gozar da mellor experiencia, instala <ph name="DEVICE_OS" /> no teu disco interno. Tamén podes instalalo máis tarde desde a pantalla de inicio de sesión.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se aínda non queres instalalo, podes executalo desde unha memoria USB para probalo. Deste xeito, conservarás o teu sistema operativo e os teus datos, pero é posible que te atopes con limitacións de almacenamento e de rendemento.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como pestana fixada</translation>
+<translation id="9123287046453017203">O dispositivo non está actualizado</translation>
 <translation id="9124003689441359348">Os contrasinais gardados aparecerán aquí</translation>
 <translation id="9126149354162942022">Cor do cursor</translation>
 <translation id="9128317794749765148">Non se puido completar a configuración</translation>

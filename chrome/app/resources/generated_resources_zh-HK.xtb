@@ -1139,6 +1139,7 @@
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2052572566310583903">您在其他裝置上安裝的應用程式</translation>
+<translation id="2053105195397337973">我們正在研究如何限制追蹤行為，同時讓網站能夠防範廣告垃圾內容和詐欺行為。</translation>
 <translation id="2053312383184521053">閒置狀態數據</translation>
 <translation id="2054240652864153171">要清除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
 <translation id="2055585478631012616">您將會從這些網站 (包括已開啟的分頁) 登出</translation>
@@ -1279,7 +1280,6 @@
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2173801458090845390">新增此裝置的申請 ID</translation>
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
-<translation id="2175607476662778685">快速啟動列</translation>
 <translation id="217576141146192373">無法新增打印機。請檢查打印機設定，然後再試一次。</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
@@ -4572,6 +4572,7 @@
 <translation id="5350293332385664455">關閉「Google 助理」</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
 <translation id="5352033265844765294">時間戳記</translation>
+<translation id="5352257124367865087">管理網站權限</translation>
 <translation id="5353252989841766347">從 Chrome 中匯出密碼</translation>
 <translation id="5355099869024327351">允許「Google 助理」顯示通知</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
@@ -4975,6 +4976,7 @@
 <translation id="5747552184818312860">到期日</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
 <translation id="5747809636523347288">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
+<translation id="5751345516399502412">檢查網路共用完備性</translation>
 <translation id="5755022574660047665">來自「Google 相片」的回憶</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757375109985023827">選取要預覽的分頁</translation>
@@ -5070,6 +5072,7 @@
 <translation id="5843706793424741864">華氏</translation>
 <translation id="5844574845205796324">建議可探索的新內容</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">管理網站權限</translation>
 <translation id="5846807460505171493">安裝更新和應用程式。繼續操作即代表您同意此裝置亦可自動下載及安裝由 Google、您的流動網絡供應商及裝置製造商提供的更新和應用程式 (可能會耗用流動數據)。其中部分應用程式可能會提供應用程式內購買項目。</translation>
 <translation id="5849212445710944278">已加入</translation>
 <translation id="5851868085455377790">發行者</translation>
@@ -5634,6 +5637,7 @@
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6399774419735315745">間諜</translation>
+<translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6401597285454423070">您的電腦具有可信任平台模組 (TPM) 安全性裝置，Chrome OS 需要透過該裝置來執行許多重要的安全防護功能。如要進一步瞭解，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook 遊戲</translation>
@@ -7232,6 +7236,7 @@
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
 <translation id="7939412583708276221">保留</translation>
+<translation id="7941179291434537290">網路共用完備性：</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置…</translation>
@@ -7564,7 +7569,6 @@
 <translation id="8248887045858762645">Chrome 提示</translation>
 <translation id="8249048954461686687">OEM 資料夾</translation>
 <translation id="8249615410597138718">傳送至您的裝置</translation>
-<translation id="8249672078237421304">詢問是否把網頁翻譯為您慣用的語言</translation>
 <translation id="8250210000648910632">儲存空間已用盡</translation>
 <translation id="8251441930213048644">立即重新整理</translation>
 <translation id="8251509999076836464">配對緊 <ph name="DEVICE_NAME" /></translation>
@@ -7760,6 +7764,7 @@
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
 <translation id="8440630305826533614">Linux 應用程式</translation>
 <translation id="844063558976952706">永遠在這個網站上使用</translation>
+<translation id="8441313165929432954">啟用/停用網路共用</translation>
 <translation id="8443795068008423036">請確保裝置為最新版本，然後再試一次</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>

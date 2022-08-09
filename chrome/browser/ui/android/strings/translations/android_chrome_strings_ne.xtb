@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">दर्ता गर्न सकिएन</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">इन्टरनेटमा खोज्ने तरिका</translation>
+<translation id="2053105195397337973">हामी साइटहरूलाई विज्ञापनमार्फत गरिने स्प्याम र ठगी रोकथाम गर्न दिने तर साइटमा गरिने गतिविधि भने ट्र्याक गर्न नदिने विभिन्न उपायहरूको परीक्षण गरिरहेका छौँ।</translation>
 <translation id="2056878612599315956">साइट पज गरियो</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
 <translation id="2067805253194386918">पाठ</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">Discover का विकल्पहरू नामक बटन प्रयोग गरी आफ्नो समाचार फिडमा देखिने सामग्री नियन्त्रण गर्नुहोस्</translation>
 <translation id="2248941474044011069">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
 <translation id="2259659629660284697">पासवर्डहरू निर्यात गर्नुहोस्…</translation>
+<translation id="2276231040576210443">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" />मा गई आफूले सिंक गर्न चाहेको डेटा छनौट गर्न सक्नुहुन्छ। Google ले तपाईंले गरेका गतिविधिको इतिहासका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="2278052315791335171">तपाईंले यो पासवर्ड मेटाउनुभयो भने पनि <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> एप खोल्ने हो?</translation>
@@ -307,6 +309,7 @@
 <translation id="2702516483241149200">नयाँ: स्क्रोल गरी यो पाठसम्म लैजाने लिंक सेयर गर्नुहोस्</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2707726405694321444">पृष्ठ ताजा गर्नुहोस्</translation>
+<translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2711073837061989559">ट्रायलहरू</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
@@ -395,12 +398,12 @@
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">लिंक गरिएको कार्ड:</translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
+<translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
 <translation id="316694332262407393">यसमा अहिले Chrome चलिरहेको छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
-<translation id="3169523567916669830">तपाईं यी ट्रायलहरूका क्रममा वेबसाइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने रुचिका विषयहरू हेर्न र तिनलाई हटाउन सक्नुहुन्छ। Chrome ले तपाईंको हालसालैको ब्राउजिङ इतिहासका आधारमा तपाईंलाई रुचि लाग्न सक्ने विषयहरू पत्ता लगाउँछ।</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
@@ -543,6 +546,7 @@
 <translation id="3981902534690264083">विज्ञापनदाताहरू विज्ञापनहरूको पर्फर्मेन्स कस्तो छ भन्ने कुरा बुझ्न सक्छन्</translation>
 <translation id="3985215325736559418">तपाईं फेरि <ph name="FILE_NAME" /> डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="3999683152997576765">तपाईं वेबसाइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने रुचिका विषयहरू हेर्न तथा हटाउन सक्नुहुन्छ। Chrome ले तपाईंको हालसालैको ब्राउजिङ इतिहासका आधारमा तपाईंलाई रुचि लाग्न सक्ने विषयहरू पत्ता लगाउँछ।</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
@@ -1297,6 +1301,7 @@
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
 <translation id="804335162455518893">SD कार्ड फेला परेन</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> इन्कोग्निटो ट्याब}other{<ph name="TAB_COUNT_NORMAL" /> वटा इन्कोग्निटो ट्याब}}</translation>
+<translation id="8048728378294435881">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -1430,7 +1435,6 @@
 <translation id="8664215986015753476">आफूले चाहे जसरी Chrome प्रयोग गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8666759526542103597">ब्राउजरमा आधारित विज्ञापनको पर्सनलाइजेसनका बारेमा जानकारी</translation>
-<translation id="8667760277771450375">हामी साइटहरूलाई विज्ञापनमार्फत गरिने स्प्याम र ठगी रोकथाम गर्न दिने तर साइटमा गरिने गतिविधि भने ट्र्याक गर्न नदिने विभिन्न उपायहरूको परीक्षण गरिरहेका छौँ।</translation>
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
 <translation id="867767487203716855">अर्को अपडेट</translation>
 <translation id="8683039184091909753">फोटो</translation>

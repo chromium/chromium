@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">رجسٹریشن ناکام ہو گئی</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">انٹرنیٹ پر تلاش کریں</translation>
+<translation id="2053105195397337973">ہم اشتہاراتی اسپام اور دھوکہ دہی کو روکنے کے لیے سائٹس کو فعال کرتے وقت ٹریکنگ کو محدود کرنے کے طریقے دریافت کر رہے ہیں۔</translation>
 <translation id="2056878612599315956">سائٹ رک گئی</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہوگیا}other{# ڈاؤن لوڈز ناکام ہو گئے}}</translation>
 <translation id="2067805253194386918">متن</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">‏اختیارات برائے Discover بٹن سے اپنی کہانیاں کنٹرول کریں</translation>
 <translation id="2248941474044011069">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو جاتے ہیں</translation>
 <translation id="2259659629660284697">پاسورڈز برآمد کریں…</translation>
+<translation id="2276231040576210443">‏آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK1" />ترتیبات<ph name="END_LINK1" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> کے لیے ایپ کھولیں؟</translation>
@@ -307,6 +309,7 @@
 <translation id="2702516483241149200">نیا: اس ٹیکسٹ کو اسکرول کرنے والے لنک کا اشتراک کریں</translation>
 <translation id="2704606927547763573">کاپی کیا</translation>
 <translation id="2707726405694321444">صفحہ ریفریش کریں</translation>
+<translation id="2709516037105925701">آٹو فل</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2711073837061989559">ٹرائلز</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
@@ -395,12 +398,12 @@
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">اس کے ساتھ لنک کیا گيا</translation>
 <translation id="3123734510202723619">اعلانات</translation>
+<translation id="3130863904455712965">سرگزشت اور مزید</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3166827708714933426">ٹیب اور ونڈو شارٹ کٹس</translation>
 <translation id="316694332262407393">‏Chrome یہاں پہلے سے ہی چل رہا ہے۔</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
-<translation id="3169523567916669830">‏ٹرائلز کے دوران، آپ دلچسپی کے ان موضوعات کو دیکھ اور ہٹا سکتے ہیں جنہیں سائٹیں آپ کو اشتہارات دکھانے کے لیے استعمال کرتی ہیں۔ Chrome آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر آپ کی دلچسپیوں کا تخمینہ لگاتا ہے۔</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
@@ -543,6 +546,7 @@
 <translation id="3981902534690264083">مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں</translation>
 <translation id="3985215325736559418">کیا آپ <ph name="FILE_NAME" /> کو دوبارہ ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
+<translation id="3999683152997576765">‏آپ دلچسپی کے ان موضوعات کو دیکھ اور ہٹا سکتے ہیں جنہیں سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کرتی ہیں۔ Chrome آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر آپ کی دلچسپیوں کا تخمینہ لگاتا ہے۔</translation>
 <translation id="4000212216660919741">آف لائن ہوم</translation>
 <translation id="4016425174436051808">پیروی نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
@@ -1298,6 +1302,7 @@
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
 <translation id="804335162455518893">‏SD کارڈ نہیں ملا</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب}other{<ph name="TAB_COUNT_NORMAL" /> پوشیدگی ٹیبز}}</translation>
+<translation id="8048728378294435881">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
 <translation id="8058655154417507695">میعاد کے اختتام کا سال</translation>
 <translation id="8058746566562539958">‏نئے Chrome ٹیب میں کھولیں</translation>
@@ -1431,7 +1436,6 @@
 <translation id="8664215986015753476">‏Chrome کو اپنے حساب سے استعمال کریں</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
 <translation id="8666759526542103597">براؤزر کی بنیاد اشتہار کی ذاتی نوعیت سازی کے بارے میں</translation>
-<translation id="8667760277771450375">ہم اشتہاری اسپام اور دھوکہ دہی کو روکنے کے لیے سائٹس کو فعال کرتے وقت کراس سائٹ ٹریکنگ کو محدود کرنے کے طریقے دریافت کر رہے ہیں۔</translation>
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>
 <translation id="867767487203716855">اگلا اپ ڈیٹ</translation>
 <translation id="8683039184091909753">تصویر</translation>

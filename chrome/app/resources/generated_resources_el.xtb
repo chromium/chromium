@@ -1139,6 +1139,7 @@
 <translation id="2048653237708779538">Η ενέργεια δεν είναι διαθέσιμη</translation>
 <translation id="2050339315714019657">Κάθετα</translation>
 <translation id="2052572566310583903">Εγκατεστημένη σε άλλες συσκευές σας</translation>
+<translation id="2053105195397337973">Εξετάζουμε τρόπους περιορισμού της παρακολούθησης, επιτρέποντας ταυτόχρονα στους ιστοτόπους να εμποδίζουν τις ανεπιθύμητες διαφημίσεις και την απάτη.</translation>
 <translation id="2053312383184521053">Δεδομένα κατάστασης αδράνειας</translation>
 <translation id="2054240652864153171">Διαγραφή δεδομένων ιστοτόπου για τον ιστότοπο <ph name="SITE_NAME" /> που έχουν χωριστεί σε διαμερίσματα σε <ph name="PARTITION_SITE_NAME" />;</translation>
 <translation id="2055585478631012616">Θα αποσυνδεθείτε από αυτούς τους ιστοτόπους, συμπεριλαμβανομένων όσων εμφανίζονται σε ανοικτές καρτέλες</translation>
@@ -1279,7 +1280,6 @@
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2173801458090845390">Προσθήκη αναγνωριστικού επίταξης σε αυτήν τη συσκευή</translation>
 <translation id="2175384018164129879">&amp;Διαχείριση μηχανών αναζήτησης και του Site Search</translation>
-<translation id="2175607476662778685">Γραμμή γρήγορης εκκίνησης</translation>
 <translation id="217576141146192373">Δεν είναι δυνατή η προσθήκη εκτυπωτή. Ελέγξτε τη διαμόρφωση του εκτυπωτή σας και δοκιμάστε ξανά.</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
 <translation id="2177950615300672361">Καρτέλα ανώνυμης περιήγησης: <ph name="TAB_NAME" /></translation>
@@ -4977,6 +4977,7 @@
 <translation id="5747552184818312860">Λήγει</translation>
 <translation id="5747785204778348146">Προγραμματιστής - ασταθές</translation>
 <translation id="5747809636523347288">Επικόλληση και μετάβαση στη διεύθυνση <ph name="URL" /></translation>
+<translation id="5751345516399502412">Έλεγχος ετοιμότητας σύνδεσης</translation>
 <translation id="5755022574660047665">αναμνήσεις από τις Φωτογραφίες Google</translation>
 <translation id="5756163054456765343">Κέντρο βοήθειας</translation>
 <translation id="5757375109985023827">Επιλέξτε καρτέλα για προεπισκόπηση.</translation>
@@ -7234,6 +7235,7 @@
 <translation id="7939062555109487992">Επιλογές για προχωρημένους</translation>
 <translation id="7939328347457537652">Διαχείριση πιστοποιητικών συσκευής</translation>
 <translation id="7939412583708276221">Να συνεχιστεί</translation>
+<translation id="7941179291434537290">Ετοιμότητα σύνδεσης:</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943368935008348579">Λήψη PDF</translation>
 <translation id="7943837619101191061">Προσθήκη τοποθεσίας…</translation>
@@ -7566,7 +7568,6 @@
 <translation id="8248887045858762645">Συμβουλή για το Chrome</translation>
 <translation id="8249048954461686687">Φάκελος OEM</translation>
 <translation id="8249615410597138718">Αποστολή στις συσκευές σας</translation>
-<translation id="8249672078237421304">Να προτείνεται να μεταφράζονται οι σελίδες που δεν εμφανίζονται στη γλώσσα ανάγνωσής σας</translation>
 <translation id="8250210000648910632">Ο αποθηκευτικός χώρος εξαντλήθηκε</translation>
 <translation id="8251441930213048644">Ανανέωση τώρα</translation>
 <translation id="8251509999076836464">Σύζευξη με τη συσκευή <ph name="DEVICE_NAME" /></translation>
@@ -7762,6 +7763,7 @@
 <translation id="8439506636278576865">Ερώτηση για τη μετάφραση σελίδων σε αυτήν τη γλώσσα</translation>
 <translation id="8440630305826533614">Εφαρμογές Linux</translation>
 <translation id="844063558976952706">Πάντα σε αυτόν τον ιστότοπο</translation>
+<translation id="8441313165929432954">Ενεργοποίηση/Απενεργοποίηση σύνδεσης</translation>
 <translation id="8443795068008423036">Βεβαιωθείτε ότι η συσκευή σας είναι ενημερωμένη και δοκιμάστε ξανά.</translation>
 <translation id="8446884382197647889">Μάθετε περισσότερα</translation>
 <translation id="8447409163267621480">Συμπερίληψη είτε του Ctrl είτε του Alt</translation>

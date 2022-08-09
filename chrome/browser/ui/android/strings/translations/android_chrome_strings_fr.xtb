@@ -200,6 +200,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2046634576464120978">Échec de l'enregistrement</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Search the internet</translation>
+<translation id="2053105195397337973">Nous étudions différents moyens de limiter le suivi tout en permettant aux sites de lutter contre le spam publicitaire et la fraude.</translation>
 <translation id="2056878612599315956">Site en pause</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Échec de 1 téléchargement}one{Échec de # téléchargement}other{Échec de # téléchargements}}</translation>
 <translation id="2067805253194386918">texte</translation>
@@ -234,6 +235,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2239812875700136898">Contrôlez vos articles à l'aide du bouton Options pour Discover</translation>
 <translation id="2248941474044011069">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
+<translation id="2276231040576210443">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2279146068164892489">Ouvrir l'appli pour <ph name="APPNAME" /> ?</translation>
@@ -307,6 +309,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
+<translation id="2709516037105925701">Saisie automatique</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -395,12 +398,12 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">associée à</translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3130863904455712965">Historique et plus</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome est déjà en cours d'exécution ici.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">Pendant ces tests, vous pouvez afficher et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chrome se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
 <translation id="3187472288455401631">Mesure des performances des annonces</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
@@ -543,6 +546,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3981902534690264083">Les annonceurs peuvent comprendre les performances des annonces</translation>
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> de nouveau ?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
+<translation id="3999683152997576765">Vous pouvez consulter et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chrome se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
 <translation id="4016425174436051808">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
@@ -1298,6 +1302,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8037801708772278989">Vérification effectuée à l'instant</translation>
 <translation id="804335162455518893">Carte SD introuvable</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée}one{<ph name="TAB_COUNT_NORMAL" /> onglet de navigation privée}other{<ph name="TAB_COUNT_NORMAL" /> onglets de navigation privée}}</translation>
+<translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mo disponibles</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8058746566562539958">Ouvrir dans nouvel onglet Chrome</translation>
@@ -1431,7 +1436,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8664215986015753476">Utilisez Chrome comme vous le souhaitez</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8666759526542103597">À propos de la personnalisation des annonces basée sur un navigateur</translation>
-<translation id="8667760277771450375">Nous étudions différents moyens de limiter le suivi intersites tout en permettant aux sites de lutter contre le spam publicitaire et la fraude.</translation>
 <translation id="8676789164135894283">Validations de connexion</translation>
 <translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>

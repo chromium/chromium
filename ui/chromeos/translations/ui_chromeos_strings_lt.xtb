@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Autentifikavimo sertifikatą atmetė tinklas</translation>
 <translation id="255937426064304553">JAV tarptautinė</translation>
 <translation id="2563185590376525700">Varlė</translation>
-<translation id="2570012981255377263">Naujausi failai bus rodomi čia</translation>
 <translation id="2578394532502990878">Tamilų k. fonetinė</translation>
 <translation id="2579959351793446050">Orijų k.</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, užblokavo administratorius, išsami informacija</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Išvalyti šiukšliadėžę</translation>
 <translation id="5163869187418756376">Nepavyko bendrinti. Patikrinkite ryšį ir vėliau bandykite dar kartą.</translation>
 <translation id="516592729076796170">Programuotojų JAV Dvorako</translation>
+<translation id="5172749059808361023">Išsami apribojimų informacija</translation>
 <translation id="5177526793333269655">Miniatiūros rodinys</translation>
 <translation id="5194713942430106590">Spustelėkite, kad galėtumėte rūšiuoti stulpelį didėjimo tvarka.</translation>
 <translation id="5211614973734216083">Fareriečių k.</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Tamilų k. su „Tamil99“ klaviatūra</translation>
 <translation id="5633226425545095130">Perkėlus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Klausyti</translation>
-<translation id="5665074015635552640">Naujausi vaizdo įrašai bus rodomi čia</translation>
 <translation id="5669691691057771421">Įveskite naują PIN kodą</translation>
 <translation id="5678784840044122290">„Linux“ programa pasiekiama jūsų terminale ir piktograma taip pat gali būti rodoma Paleidimo priemonėje.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Negalima atsijungti nuo archyvo ar virtualiojo disko<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     Rasta: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Aukštyn kojomis</translation>
 <translation id="6943836128787782965">Įvyko HTTP klaida</translation>
-<translation id="6945604978460872381">Naujausi dokumentai bus rodomi čia</translation>
 <translation id="6949408524333579394">Serbų k. transliteracija</translation>
 <translation id="6954309393500027528">Šio failo įklijavimo veiksmą užblokavo jūsų administratorius</translation>
 <translation id="6960565108681981554">Nesuaktyvinta. Susisiekite su operatoriumi.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Bendrinti su kitais žmonėmis</translation>
 <translation id="7297443947353982503">Naudotojo vardas / slaptažodis netinkamas arba EAP autentifikavimas nepavyko</translation>
 <translation id="7309413087278791451">Vokiečių k. (Belgija)</translation>
-<translation id="7313374447885864533">Naujausi garso failai bus rodomi čia</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7343393116438664539">Vietnamiečių k. teleteksas</translation>
 <translation id="7357762654218998920">Šio tipo failas nepalaikomas. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Failas ar katalogas tokiu pačiu pavadinimu jau yra.</translation>
 <translation id="8372369524088641025">Netinkamas WEP raktas</translation>
 <translation id="8372852072747894550">Graikų k.</translation>
-<translation id="8384716930968677505">Naujausi vaizdai bus rodomi čia</translation>
 <translation id="8386903983509584791">Nuskaitymas baigtas</translation>
 <translation id="8387733224523483503">Failas „<ph name="FILE_NAME" />“ išskirtas.</translation>
 <translation id="8395901698320285466">Aspektai</translation>

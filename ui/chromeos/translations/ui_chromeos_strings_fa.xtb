@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">گواهینامه راستی‌آزمایی توسط شبکه رد شد</translation>
 <translation id="255937426064304553">بین‌المللی آمریکایی</translation>
 <translation id="2563185590376525700">قورباغه</translation>
-<translation id="2570012981255377263">فایل‌های اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
 <translation id="2579959351793446050">اوریه</translation>
 <translation id="2602810353103180630">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
@@ -289,6 +288,7 @@
 <translation id="3522708245912499433">پرتغالی</translation>
 <translation id="3524311639100184459">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">پوشه</translation>
+<translation id="3548125359243647069">پین نادرست دفعات زیادی وارد شده است.</translation>
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
 <translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
 <translation id="3556731189587832921">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">‏تامیل با صفحه کلید Tamil99</translation>
 <translation id="5633226425545095130">اگر این مورد را منتقل کنید با همه افرادی که می‌توانند پوشه هم‌رسانی‌شده «<ph name="DESTINATION_NAME" />» را ببینند هم‌رسانی خواهد شد.</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
-<translation id="5665074015635552640">ویدیوهای اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="5669691691057771421">پین جدید را وارد کنید</translation>
 <translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
@@ -615,6 +614,7 @@
 <translation id="6267547857941397424">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
 <translation id="6269630227984243955">مالایی</translation>
 <translation id="6287852322318138013">یک برنامه را برای باز کردن این فایل انتخاب کنید</translation>
+<translation id="6295542640242147836">قفل کردن سیم‌کارت</translation>
 <translation id="6296410173147755564">‏PUK نامعتبر است</translation>
 <translation id="6312403991423642364">خطای شبکه ناشناس</translation>
 <translation id="6317608858038767920">اسم سرور سفارشی <ph name="INPUT_INDEX" /></translation>
@@ -687,7 +687,6 @@
     <ph name="FILE_COUNT" /> مورد پیدا شد</translation>
 <translation id="6935521024859866267">وارونه</translation>
 <translation id="6943836128787782965">‏HTTP با خطا مواجه شد</translation>
-<translation id="6945604978460872381">اسناد اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="6949408524333579394">صربی (نویسه‌گردانی)</translation>
 <translation id="6954309393500027528">سرپرستتان جای‌گذاری این فایل را مسدود کرده است</translation>
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
@@ -724,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> گیگابایت</translation>
 <translation id="7191454237977785534">ذخیره فایل به‌عنوان</translation>
 <translation id="7229570126336867161">‏EVDO مورد نیاز است</translation>
+<translation id="7230898482850090046">سرپرستتان درخواست کرده است تنظیم «قفل کردن سیم‌کارت» را خاموش کنید</translation>
 <translation id="7238097264433196391">نام درایو</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، جزئیات</translation>
 <translation id="7246947237293279874">‏پروکسی FTP</translation>
@@ -735,7 +735,6 @@
 <translation id="7295662345261934369">هم‌رسانی با دیگران</translation>
 <translation id="7297443947353982503">‏نام کاربری/گذرواژه نادرست است یا اصالت‌سنجی EAP ناموفق بود</translation>
 <translation id="7309413087278791451">آلمانی (بلژیک)</translation>
-<translation id="7313374447885864533">فایل‌های صوتی اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7343393116438664539">ویتنامی (تلکس)</translation>
 <translation id="7357762654218998920">‏این نوع فایل پشتیبانی نمی‌شود. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
@@ -756,6 +755,7 @@
 <translation id="7505167922889582512">نمایش فایل‌های پنهان</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="751507702149411736">بلاروسی</translation>
+<translation id="7521790570754130607">برای استفاده از داده تلفن همراه، به پین نیاز دارید</translation>
 <translation id="7532029025027028521">نویسه‌گردانی فارسی</translation>
 <translation id="7544830582642184299">‏به برنامه‌های Linux اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشند. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="7547009467130558110">کفش کتانی</translation>
@@ -780,6 +780,7 @@
 <translation id="76959938259365003">پوشه حذف‌شده‌ها پاک نشد.</translation>
 <translation id="770015031906360009">یونانی</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> کپی شد.</translation>
+<translation id="7708271999969613024">‏برای استفاده از این شبکه، باید «کلید لغو انسداد شخصی» (PUK‏) ۸ رقمی را که شرکت مخابراتی ارائه کرده است وارد کنید.</translation>
 <translation id="7711920809702896782">اطلاعات تصویر</translation>
 <translation id="7724603315864178912">برش</translation>
 <translation id="7730494089396812859">‏نمایش جزئیات پشتیبان‌گیری Cloud</translation>
@@ -865,7 +866,6 @@
 <translation id="8342318071240498787">یک فایل یا یک پوشه با همین نام از قبل وجود دارد.</translation>
 <translation id="8372369524088641025">‏کلید WEP نادرست</translation>
 <translation id="8372852072747894550">یونانی</translation>
-<translation id="8384716930968677505">تصاویر اخیرتان اینجا نشان داده می‌شود</translation>
 <translation id="8386903983509584791">اسکن کامل شد</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> استخراج شد.</translation>
 <translation id="8395901698320285466">ابعاد</translation>
@@ -875,6 +875,7 @@
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8452135315243592079">سیم‌کارت وجود ندارد</translation>
 <translation id="8456681095658380701">نام نامعتبر</translation>
+<translation id="8457767749626250697">سیم‌کارت قفل است</translation>
 <translation id="8459404855768962328">اگر این مورد را کپی کنید با همه افرادی که می‌توانند پوشه هم‌رسانی‌شده «<ph name="DESTINATION_NAME" />» را ببینند هم‌رسانی خواهد شد.</translation>
 <translation id="8461467696380332069">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8461914792118322307">پراکسی</translation>

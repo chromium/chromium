@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Autentiseringscertifikatet godkändes inte av nätverket</translation>
 <translation id="255937426064304553">USA (internationell)</translation>
 <translation id="2563185590376525700">Groda</translation>
-<translation id="2570012981255377263">De senaste filerna visas här</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
 <translation id="2579959351793446050">odia</translation>
 <translation id="2602810353103180630">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Töm papperskorgen</translation>
 <translation id="5163869187418756376">Delningen misslyckades. Kontrollera anslutningen och försök igen senare.</translation>
 <translation id="516592729076796170">Dvorak för programmerare i USA</translation>
+<translation id="5172749059808361023">Begränsningsdetaljer</translation>
 <translation id="5177526793333269655">Miniatyrvy</translation>
 <translation id="5194713942430106590">Klicka här om kolumnen ska sorteras i stigande ordning.</translation>
 <translation id="5211614973734216083">färöiska</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
 <translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Lyssna</translation>
-<translation id="5665074015635552640">Dina senaste videor visas här</translation>
 <translation id="5669691691057771421">Ange en ny pinkod</translation>
 <translation id="5678784840044122290">Linux-programmet blir tillgängligt via terminalen och det kan också finnas en ikon för det i startprogrammet.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Det gick inte att koppla från ett arkiv eller en virtuell hårddisk<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> hittades</translation>
 <translation id="6935521024859866267">Uppochned</translation>
 <translation id="6943836128787782965">HTTP GET misslyckades</translation>
-<translation id="6945604978460872381">De senaste dokumenten visas här</translation>
 <translation id="6949408524333579394">serbiska, translitterering</translation>
 <translation id="6954309393500027528">Möjligheten att klistra in den här filen här blockeras av administratören</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Dela med andra</translation>
 <translation id="7297443947353982503">Användarnamnet eller lösenordet är felaktigt, eller så misslyckades EAP-auktoriseringen</translation>
 <translation id="7309413087278791451">tyska (Belgien)</translation>
-<translation id="7313374447885864533">De senaste ljudfilerna visas här</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7343393116438664539">vietnamesiska (telex)</translation>
 <translation id="7357762654218998920">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Det finns redan en fil eller en katalog med samma namn.</translation>
 <translation id="8372369524088641025">Felaktig WEP-nyckel</translation>
 <translation id="8372852072747894550">grekiska</translation>
-<translation id="8384716930968677505">De senaste bilderna visas här</translation>
 <translation id="8386903983509584791">Sökningen har slutförts</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> har extraherats.</translation>
 <translation id="8395901698320285466">Dimensioner</translation>

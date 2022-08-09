@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificatul de autentificare a fost respins de rețea</translation>
 <translation id="255937426064304553">S.U.A. internațională</translation>
 <translation id="2563185590376525700">Broască</translation>
-<translation id="2570012981255377263">Fișierele recente vor apărea aici</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
@@ -543,7 +542,6 @@
 <translation id="5625294776298156701">Tastatură tamilă Tamil99</translation>
 <translation id="5633226425545095130">În cazul în care muți elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Ascultă</translation>
-<translation id="5665074015635552640">Videoclipurile recente vor apărea aici</translation>
 <translation id="5669691691057771421">Introdu noul cod PIN</translation>
 <translation id="5678784840044122290">Aplicația Linux va fi disponibilă pe terminal și este posibil ca Lansatorul să afișeze și o pictogramă.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nu se poate deconecta de la o arhivă sau un disc virtual<ph name="END_BOLD" />
@@ -688,7 +686,6 @@
     S-au găsit <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Răsturnat</translation>
 <translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
-<translation id="6945604978460872381">Documentele tale recente vor apărea aici</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
 <translation id="6954309393500027528">Inserarea acestui fișier a fost blocată de administrator</translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
@@ -736,7 +733,6 @@
 <translation id="7295662345261934369">Permite accesul altor utilizatori</translation>
 <translation id="7297443947353982503">Numele de utilizator sau parola sunt incorecte sau autentificarea EAP nu a reușit</translation>
 <translation id="7309413087278791451">Germană (Belgia)</translation>
-<translation id="7313374447885864533">Fișierele audio recente vor apărea aici</translation>
 <translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7343393116438664539">Telex pentru vietnameză</translation>
 <translation id="7357762654218998920">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
@@ -866,7 +862,6 @@
 <translation id="8342318071240498787">Un fișier sau un director cu același nume există deja.</translation>
 <translation id="8372369524088641025">Cheie WEP greșită</translation>
 <translation id="8372852072747894550">Greacă</translation>
-<translation id="8384716930968677505">Imaginile recente vor apărea aici</translation>
 <translation id="8386903983509584791">Scanarea s-a finalizat</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> a fost extras.</translation>
 <translation id="8395901698320285466">Dimensiuni</translation>

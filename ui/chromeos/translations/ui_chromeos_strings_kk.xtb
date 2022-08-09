@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Желі аутентификация сертификатын қабылдамады</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
 <translation id="2563185590376525700">Бақа</translation>
-<translation id="2570012981255377263">Жақында пайдаланған файлдарыңыз осы жерде көрсетіледі.</translation>
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
 <translation id="2579959351793446050">Одия</translation>
 <translation id="2602810353103180630">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Тамиль (Tamil99 пернетақтасымен)</translation>
 <translation id="5633226425545095130">Егер бұл элементті тасымалдасаңыз, ол "<ph name="DESTINATION_NAME" />" ортақ қалтасын көре алатын кез келген адаммен бөлісіледі.</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
-<translation id="5665074015635552640">Жақында пайдаланған бейнелеріңіз осы жерде көрсетіледі.</translation>
 <translation id="5669691691057771421">Жаңа PIN кодын енгізіңіз</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалдық дискіден ажырату мүмкін емес<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     <ph name="FILE_COUNT" /> файл табылды</translation>
 <translation id="6935521024859866267">Төменгі жағын жоғары қаратып</translation>
 <translation id="6943836128787782965">HTTP сәтсіз аяқталды</translation>
-<translation id="6945604978460872381">Жақында пайдаланған құжаттарыңыз осы жерде көрсетіледі.</translation>
 <translation id="6949408524333579394">Серб (транслитерация)</translation>
 <translation id="6954309393500027528">Бұл файлды қоюға әкімшіңіз тыйым салған.</translation>
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Басқалармен бөлісу</translation>
 <translation id="7297443947353982503">Пайдаланушы аты/құпия сөз дұрыс емес немесе EAP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7309413087278791451">Неміс (Бельгия)</translation>
-<translation id="7313374447885864533">Жақында пайдаланған аудиофайлдарыңыз осы жерде көрсетіледі.</translation>
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="7343393116438664539">Вьетнам (телекс)</translation>
 <translation id="7357762654218998920">Мұндай файл түріне қолдау көрсетілмейді. ChromeOS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ ақпарат алыңыз<ph name="END_LINK_HELP" />.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Бұндай атауы бар файл немесе каталог бұрыннан бар.</translation>
 <translation id="8372369524088641025">WEP кілті дұрыс емес</translation>
 <translation id="8372852072747894550">Грек</translation>
-<translation id="8384716930968677505">Жақында пайдаланған кескіндеріңіз осы жерде көрсетіледі.</translation>
 <translation id="8386903983509584791">Іздеу аяқталды</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> файлы шығарылды.</translation>
 <translation id="8395901698320285466">Өлшемдер</translation>

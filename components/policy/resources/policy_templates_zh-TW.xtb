@@ -107,6 +107,11 @@
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="111910763555783249">通知設定</translation>
+<translation id="1120291391245112391">回報裝置的地理位置。
+
+      如果將這項政策設為啟用，已註冊的裝置會定期回報所在位置。
+
+      如果將這項政策設為停用或未設定，已註冊的裝置不會回報所在位置。</translation>
 <translation id="1122089575901325963">你可以透過這項政策設定 <ph name="WILCO_NAME" /> 診斷與遙測控制器 (DTC)，前提是裝置提供相關支援。設定檔大小不得超過 1 MB (1,000,000 個位元組)，且必須採用 JSON 格式。<ph name="WILCO_NAME" /> DTC 會負責處理相關設定。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個設定檔，而且只要網址或雜湊一有變動，就會重新下載檔案。
 
       如果你設定這項政策，使用者將無法變更設定。</translation>
@@ -156,6 +161,7 @@
 <translation id="1163080558183062209">停用拒絕清單上的印表機類型</translation>
 <translation id="117059611145966538">外部列印伺服器</translation>
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
+<translation id="1171106901454883937">啟用裝置版本資訊回報功能</translation>
 <translation id="1171785618439752042">你可以透過這項政策，指定從 <ph name="MS_AD_NAME" /> 伺服器提出 Kerberos 票證要求時可使用哪些加密類型。
 
       如果將這項政策的值設為：
@@ -466,6 +472,11 @@
       外部擴充功能及其安裝方式請參閱 https://developer.chrome.com/apps/external_extensions。
       </translation>
 <translation id="1486021504508098388">回報背光資訊</translation>
+<translation id="1486469502848499602">變更手動建立新票證的 <ph name="KRB5_CONFIG" /> 建議設定。
+
+      如果你設定了這項政策，系統就以建議設定的形式來套用政策值，並顯示在驗證對話方塊的「進階設定」部分中。
+
+      如果未設定這項政策，系統會改用建議的 <ph name="PRODUCT_OS_NAME" /> 設定。請注意，這項設定也會顯示在驗證對話方塊的「進階設定」部分中。</translation>
 <translation id="1487916040416013623">你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
 
           如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會嘗試偵測伺服器是否位於內部網路，且只會回應內部網路伺服器傳來的 IWA 要求。如果偵測結果顯示伺服器位於網際網路，<ph name="PRODUCT_NAME" /> 就會忽略該伺服器傳來的 IWA 要求。
@@ -548,6 +559,7 @@
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="1587585749332985896">禁止使用無頭模式</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
+<translation id="1592334921377856028">停用裝置硬體狀態回報功能</translation>
 <translation id="1597684038583138808">啟用快速解答的定義功能</translation>
 <translation id="1599424828227887013">在 Android 裝置上為指定來源啟用網站隔離</translation>
 <translation id="159946228300522107">如果將這項政策設為 True，Chrome 首次執行時會將第一個顯示的視窗最大化。
@@ -699,6 +711,7 @@
 
       如果將這項政策設為 False，使用者無法新增、移除或修改書籤，但仍可以使用現有書籤。</translation>
 <translation id="1715151459541210849">啟用語音輸入無障礙功能</translation>
+<translation id="1719033799014769396">停用裝置啟動模式回報功能</translation>
 <translation id="1721158690981421598">你可以透過這項政策，指定遠端存取主機必須使用的主機網域名稱；使用者無法變更該名稱，且必須使用以任一指定網域名稱註冊的帳戶，才能共用主機。
 
       如果將這項政策設為空白清單或不設定，則可使用任何帳戶共用主機。
@@ -964,6 +977,7 @@
 
       只有當 ARC 處於未執行狀態 (例如 Chrome OS 啟動期間) 時，這項政策的變更才會生效。</translation>
 <translation id="1985598967415986700">使用者代理程式縮減功能可透過 Field-Trials 和 Origin-Trials 功能控管。</translation>
+<translation id="1987789058026551147">啟用裝置資訊站工作階段回報功能</translation>
 <translation id="1988345404999458987">為可用的列印伺服器提供設定。
 
       這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部列印伺服器設定。
@@ -2459,6 +2473,7 @@
 <translation id="3539103206548425861">你可以透過這項政策，讓 <ph name="PRODUCT_NAME" /> 中的影片和音訊內容自動播放 (無須經過使用者同意)。如果將 <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> 政策設為 True，則這項政策不會有任何作用。如果將 <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> 設為 False，這項政策中設定的任何網址模式仍可自動播放內容。如果這項政策在 <ph name="PRODUCT_NAME" /> 執行時有所變動，變更只會套用到新開啟的分頁。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="3540846231645422635">停用裝置網路介面回報功能</translation>
 <translation id="3540935459049973317">個別應用程式的時間限制</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3548642468619496972">封鎖惡意、罕見或垃圾檔案的下載作業，以及惡意檔案類型。</translation>
@@ -2604,6 +2619,7 @@
 <translation id="3736879847913515635">允許在使用者管理工具中新增使用者</translation>
 <translation id="3749259744154402564">不支援</translation>
 <translation id="3750220015372671395">禁止在這些網站上使用金鑰產生功能</translation>
+<translation id="3753959315989102457">停用裝置位置回報功能</translation>
 <translation id="3755237588083934849">你可以透過這項政策，決定裝置狀態上傳內容的傳送頻率 (以毫秒為單位)，下限值是 60 秒。
 
       如果未設定，系統會套用 3 小時的預設間隔。</translation>
@@ -2681,6 +2697,7 @@
 <translation id="3798922329287609568">你可以透過這項政策禁止使用雙面列印模式。
 
       如果將這項政策留空或不設定，則等同於不設限制。</translation>
+<translation id="3799417300383048419">在使用者工作階段結束後保留磁碟上的設定檔資料</translation>
 <translation id="3803171355925844705">不允許任何網站載入複合型內容</translation>
 <translation id="3808945828600697669">指定停用的外掛程式清單</translation>
 <translation id="3810642039169532482">在登入畫面上啟用語音輸入無障礙功能。
@@ -2789,6 +2806,7 @@
 <translation id="3897218615484393758">限制透過 SAML 驗證的使用者可以在螢幕鎖定畫面離線登入的時間</translation>
 <translation id="3898345958122666461">停用 NTLMv2</translation>
 <translation id="3898795800259311780">允許或拒絕螢幕擷取</translation>
+<translation id="3903313632842363082">停用裝置使用者回報功能</translation>
 <translation id="3907683835264956726">在螢幕鎖定畫面上啟用線上使用者登入功能。如果將這項政策設為 True，<ph name="POLICY" /> 等政策會觸發螢幕鎖定畫面上的線上重新驗證功能。
       當使用者停留在螢幕鎖定畫面上，或下次在符合條件後鎖定螢幕時，系統會立即強制執行重新驗證。
       如果將這項政策設為 False 或不予設定，使用者一律可以使用本機憑證解鎖螢幕。</translation>
@@ -2820,6 +2838,7 @@
       如果設為空白或不設定，系統會停用這項功能。
 
       注意：這項政策必須與 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 搭配使用。</translation>
+<translation id="3924506460382372403">停用裝置圖像狀態回報功能</translation>
 <translation id="3925377537407648234">設定螢幕解析度和縮放比例</translation>
 <translation id="3927137827189017535">在登入畫面上啟用相黏鍵無障礙功能。
 
@@ -2919,6 +2938,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4051723201852944592">啟用視窗遮蔽功能</translation>
+<translation id="4053157306171963473">停用裝置活動時間回報功能</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061107397839125009">你可以透過這項政策設定網址模式清單，用於指定無法顯示通知的網站。
 
@@ -3099,6 +3119,7 @@
 <translation id="4261964161337162399">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 10 分鐘的預設頻率。</translation>
+<translation id="4263788921751326798">停用裝置當機報告資訊回報功能</translation>
 <translation id="4266547484666068234">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blocklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
 
       這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
@@ -3440,7 +3461,9 @@
 <translation id="4674871290487541952">針對擴充功能更新與安裝作業進行完整性檢查時，允許使用不安全的演算法</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
 <translation id="4685721728282448265">已啟用傳輸層安全標準 (TLS) 的 CECPQ2 後量子金鑰協議</translation>
+<translation id="4693190628432874457">啟用裝置位置回報功能</translation>
 <translation id="4693779768620889402">可支援擴充功能的目的地</translation>
+<translation id="4694138212536142867">啟用裝置硬體狀態回報功能</translation>
 <translation id="4697581738794063407">控管網址參數篩選器功能</translation>
 <translation id="4699172675775169585">快取的圖片和檔案</translation>
 <translation id="4699592681017489215">這項政策會設定可用於停用 DNS 攔截檢查功能的本機切換按鈕。這些檢查機制會嘗試偵測瀏覽器是否透過 Proxy，將使用者重新導向未知的主機名稱。
@@ -3465,6 +3488,7 @@
 <translation id="475479145997699293">如果將這項政策設為 <ph name="ASK_FILE_HANDLING" />，網頁應用程式就能要求透過 File Handling API 存取特定類型的檔案。如果將這項政策設為 <ph name="BLOCK_FILE_HANDLING" />，系統會禁止網頁應用程式存取特定類型的檔案。
 
       如果不設定這項政策，就表示網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
+<translation id="4756953551789081500">停用裝置 OS 更新狀態回報功能</translation>
 <translation id="4757053978738874325">啟用單聲道音訊無障礙功能。
 
           這項功能可管理立體聲音訊的輸出，其中包括左聲道和右聲道的不同設定，讓使用者的左耳和右耳聽見不同的聲音。
@@ -3502,6 +3526,7 @@
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
 <translation id="4820432864264617413">禁止使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">禁止這些網站取得視窗放置權限</translation>
+<translation id="4825777333376170738">停用裝置資訊站工作階段回報功能</translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="4827727182370777723">預設的本機字型權限設定</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
@@ -3652,6 +3677,11 @@
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，則使用者可自行決定是否要傳送報告。
 
       如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
+<translation id="4954352279763128540">這項政策會將預填網域加到 Kerberos 驗證對話方塊。
+
+          如果設定了這項政策，「Kerberos 使用者名稱」欄位右方會顯示預填的網域。使用者輸入使用者名稱後，系統就會將名稱連結到該預填網域。如果使用者的輸入內容含有「@」，系統就不會顯示預填網域，輸入內容也不會受到影響。
+
+          如果未設定這項政策，系統就不會顯示其他資訊，而且會按照一般程序建立票證。</translation>
 <translation id="4955566229684195326">如果啟用這項設定，使用者就能在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，也可以使用訪客模式。
 
       這項設定類似 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 和 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />；如果將這項政策設為 False 或未設定，使用者就無法建立或使用次要設定檔，也無法使用訪客模式。
@@ -3711,6 +3741,7 @@
 <translation id="5025239932007658691">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會不定時向 Google 伺服器傳送查詢，以擷取準確的時間戳記。
 
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
+<translation id="5034504101537897433">啟用裝置當機報告資訊回報功能</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
 <translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
@@ -3915,6 +3946,7 @@
       如果將這項政策設為 False 或不設定，系統會停用整合桌面，且使用者無法啟用這項功能。</translation>
 <translation id="5255162913209987122">建議使用</translation>
 <translation id="5257395339965216304">代管的應用程式資料</translation>
+<translation id="5262320080678421295">停止信任由 Symantec 公司舊版 PKI 核發的憑證</translation>
 <translation id="5266173014392157048">這項政策已遭淘汰，請改用「<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，指派 <ph name="PRODUCT_NAME" /> 可能會委派的目標伺服器。每個伺服器名稱須以半形逗號分隔，亦可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
@@ -5034,6 +5066,7 @@
           如要在閒置狀態下鎖定螢幕，建議你啟用暫停時的螢幕鎖定功能，並且將 <ph name="PRODUCT_OS_NAME" />設為在閒置延遲時間過後暫停。建議你只有在螢幕鎖定的設定時間大幅短於暫停時間，或是完全不需閒置暫停功能時，才使用這項政策。
 
           指定政策值時需以毫秒為單位。設定值必須小於閒置延遲時間。</translation>
+<translation id="6497085755801788141">使用內建憑證驗證器</translation>
 <translation id="6506239283767807745">這項政策已遭淘汰，請改用 <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />。
 
       你可以透過這項政策指定應用程式，允許使用者在 <ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上以筆記應用程式的形式開啟。
@@ -5125,6 +5158,7 @@
       如果啟用這項設定，<ph name="PRODUCT_NAME" /> 一律不會使用清單中指定的外掛程式，並且會在「about:plugins」中將這些外掛程式標示為已停用，使用者將無法予以啟用。請注意，EnabledPlugins 和 DisabledPluginsExceptions 可覆寫這項政策。
 
       如果不設定這項政策，使用者可以使用系統上安裝的任何外掛程式 (不含與硬式編碼不相容、過舊或危險的外掛程式)。</translation>
+<translation id="6574903167639386816">在使用者工作階段結束後清除磁碟上的設定檔資料</translation>
 <translation id="6575944031719151455">你可以透過這項政策指定裝置本機帳戶清單，系統會在登入畫面上顯示這些帳戶。可透過 ID 來分辨不同的裝置本機帳戶。
 
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
@@ -5305,6 +5339,7 @@
       如果啟用這項政策，網站就可以不受限制地使用 SharedArrayBuffer。
       如果設為停用或未設定，則網站在進行跨來源隔離時才能使用 SharedArrayBuffers。</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
+<translation id="6736283207617136584">啟用裝置 OS 更新狀態回報功能</translation>
 <translation id="6740611636377710500">允許這位使用者執行 PluginVm。
 
       如果將這項政策設為 False 或不設定，系統不會為使用者啟用 <ph name="PLUGIN_VM_NAME" />。
@@ -5317,6 +5352,7 @@
 <translation id="6763023079133439068">允許缺少 subjectAlternativeName 擴充功能的憑證 (但必須由本機信任錨點核發)</translation>
 <translation id="6766216162565713893">允許網站要求使用者授權存取附近的藍牙裝置</translation>
 <translation id="6770454900105963262">回報運作中資訊站工作階段相關資訊</translation>
+<translation id="6782331708811245959">啟用裝置啟動模式回報功能</translation>
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
       如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。未受管理的裝置可以執行虛擬機器。</translation>
@@ -5456,6 +5492,7 @@
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。
 
       但請注意，如果不設定這項政策或將其設為 True，但將 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 設為 False，<ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。</translation>
+<translation id="6920640961852058581">變更 Kerberos 票證的預設設定</translation>
 <translation id="6921544339867564740">允許裝置在 Chrome OS 上執行虛擬機器</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="6923731550900440989">在登入畫面上啟用插入點醒目顯示功能</translation>
@@ -5716,6 +5753,7 @@
       在 <ph name="ANDROID_VERSION" /> 以上版本中，如果已啟用 DNS-over-TLS，<ph name="PRODUCT_NAME" /> 將不會傳送不安全的 DNS 要求。
 
       如果不設定這項政策，當解析器與使用者設定的系統解析器相關聯，瀏覽器可能會將 DNS-over-HTTPS 要求傳送給該解析器。</translation>
+<translation id="7152640356717355643">啟用裝置網路介面回報功能</translation>
 <translation id="7157329428182136164">允許支援 3D 圖形 API</translation>
 <translation id="7158358621906236999">預設感應器設定</translation>
 <translation id="7161568070244869726">強制啟用 AppCache</translation>
@@ -5890,6 +5928,11 @@
 <translation id="7375785904116479354">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入預設搜尋引擎。如果將這項政策設為停用或不設定，瀏覽首次執行時不會匯入預設搜尋引擎。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選預設搜尋引擎的核取方塊。</translation>
+<translation id="7383581189726479261">這項政策已在 M96 淘汰，請改用 <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> 和 <ph name="REPORT_DEVICE_NETWORK_STATUS" />。
+
+      如果將這項政策設為啟用或不設定，已註冊的裝置會回報網路介面清單，當中包含網路介面類型和硬體位址資料。
+
+      如果將這項政策設為停用，已註冊的裝置不會回報網路介面清單。</translation>
 <translation id="7389872682701720082">如果啟用這項設定，系統會一律執行未過期的外掛程式。
 
       如果停用這項設定或不設定，系統將徵求使用者許可來執行需要授權的外掛程式。這些外掛程式可能會危害系統的安全性。</translation>
@@ -6454,6 +6497,7 @@
 <translation id="7999023147219236247">這項政策可控管如何授予應用程式要求的權限。PERMISSION_POLICY_UNSPECIFIED：未指定政策。如未針對任何層級的權限指定政策，系統會預設採取「PROMPT」值對應的行為。PROMPT：提示使用者授予權限。GRANT：自動授予權限。DENY：自動拒絕授予權限。</translation>
 <translation id="7999818120028621358">啟用資料外洩防護事件的回報功能</translation>
 <translation id="8001701200415781021">限制哪些 Google 帳戶可以設定為 <ph name="PRODUCT_NAME" /> 中的瀏覽器主要帳戶</translation>
+<translation id="800595420827930383">使用舊版平台憑證驗證器</translation>
 <translation id="8006219716745491366">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 政策來指定替代網址清單，這份清單中的替代網址會從搜尋引擎中擷取搜尋字詞。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> 政策，系統不會使用任何替代網址擷取搜尋字詞。</translation>
@@ -6462,6 +6506,7 @@
           如果設為 True、保留空白或不設定，這項政策就不會生效。</translation>
 <translation id="8008421342605619236">設定內建訊息傳遞政策。如要允許遭封鎖的內建訊息傳遞主機，必須將其加入許可清單。</translation>
 <translation id="8011935490612940798">控管 <ph name="PRODUCT_NAME" /> 功能。</translation>
+<translation id="8013646845541206453">使用任何憑證驗證器</translation>
 <translation id="8013739405949922317">這項設定已遭到淘汰。請改用 <ph name="LACROS_AVAILABILITY_POLICY_NAME" />。
 
       如果將這項政策設為 Disabled 或不設定，使用者將無法使用 <ph name="LACROS_NAME" />。
@@ -6570,6 +6615,11 @@
 設好這項政策後，使用者即無法在登入畫面顯示時覆寫設定值。
 
 如果未設定這項政策，系統預設會停用隱私保護畫面，但使用者仍可在登入畫面顯示時變更設定。</translation>
+<translation id="814753199998535240">這項政策已在 M96 淘汰，請改用 <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" /> 和 <ph name="REPORT_DEVICE_AUDIO_STATUS" />。
+
+      如果將這項政策設為啟用或不設定，已註冊的裝置會回報 CPU/RAM 使用量等硬體統計資料。
+
+      如果將這項政策設為停用，已註冊的裝置不會回報硬體統計資料。</translation>
 <translation id="8147730407149297036">停用密碼外洩偵測功能</translation>
 <translation id="815061180603915310">如果設定啟用這項政策，設定檔將會強制切換為暫時模式。如果指定以這項政策做為作業系統政策 (例如 Windows 系統的群組原則物件)，這項政策將套用到系統上的所有設定檔；如果將這項政策設為雲端政策，則這項政策只會套用到使用受管理帳戶登入的設定檔。
 
@@ -6921,6 +6971,7 @@
       "1412.24.34"：僅更新至這個指定版本
 
       警告：我們不建議設定版本限制，因為這可能導致使用者無法接收軟體更新，且無法修正重大的安全性問題。限制僅能更新至指定前置碼版本，可能讓使用者面臨風險。</translation>
+<translation id="8508489378025029342">啟用裝置活動時間回報功能</translation>
 <translation id="8519264904050090490">管理化環境下使用者手動建立的例外網址</translation>
 <translation id="8519516251436131647">啟用無障礙功能快速鍵。
 
@@ -6996,6 +7047,7 @@
       如果將這項政策設為 True，使用者必須以自己的設定檔登入 <ph name="PRODUCT_NAME" />，才能使用瀏覽器。此外，BrowserGuestModeEnabled 的預設值將設為 False。請注意，啟用這項政策後，未經簽署的現有設定檔會遭到鎖定無法再使用。詳情請參閱說明中心文章。
 
       如果將這項政策設為 False 或不予設定，使用者不必登入 <ph name="PRODUCT_NAME" /> 即可使用瀏覽器。</translation>
+<translation id="8575739761246140675">信任由 Symantec 公司舊版 PKI 核發的憑證</translation>
 <translation id="8575746110808109915">設定這項政策可啟用完整還原功能。
       如果將這項政策設為 True，在當機或重新啟動後，系統就會根據還原應用程式設定，決定是否還原應用程式和應用程式視窗。
       如果將這項政策設為 False，則只有瀏覽器視窗會自動啟動。</translation>
@@ -7090,6 +7142,7 @@
 
       如果這項政策在 <ph name="PRODUCT_NAME" /> 執行時有所變動，變更只會套用到新開啟的分頁。</translation>
 <translation id="8685748277907759932">禁止使用「輕觸搜尋」功能</translation>
+<translation id="8686700500128191717">啟用裝置使用者回報功能</translation>
 <translation id="8687958770985542440">重新啟用 Web Components v0 API，直到 M84 版為止。</translation>
 <translation id="8693243869659262736">使用內建的 DNS 用戶端</translation>
 <translation id="8698286761337647563">當 SAML 使用者的密碼即將到期，系統要提前幾天通知</translation>
@@ -7157,6 +7210,8 @@
       根據預設，系統會允許使用所有原生訊息傳遞主機，但如果政策拒絕了所有原生訊息傳遞主機，管理員可以使用允許清單修改該政策。</translation>
 <translation id="877557628527387598">密碼登入資料</translation>
 <translation id="8777369558049831576">在外部通訊協定對話方塊中顯示「一律開啟」核取方塊。</translation>
+<translation id="8778320022586618010">啟用裝置圖像狀態回報功能</translation>
+<translation id="8780039702448388726">停用裝置版本資訊回報功能</translation>
 <translation id="8786409859071107656">如果將這項政策設為啟用，系統會啟用 USB 電力共享電源管理政策。
 
       某些裝置會在特定的 USB 連接埠上標示閃電符號或電池圖示，代表可透過系統電池為裝置充電。當系統處於休眠狀態和關機模式時，這項政策會影響這個連接埠的充電行為。這項政策並不會影響其他 USB 連接埠，以及系統處於啟用狀態下的充電行為 (USB 連接埠一律會供應電力)。

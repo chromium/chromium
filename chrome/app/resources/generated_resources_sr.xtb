@@ -1126,6 +1126,7 @@
 <translation id="2048653237708779538">Радња није доступна</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2052572566310583903">Инсталирано на другим уређајима</translation>
+<translation id="2053105195397337973">Истражујемо начине да ограничимо праћење и истовремено омогућимо сајтовима да зауставе непожељне огласе и преваре.</translation>
 <translation id="2053312383184521053">Подаци о стању мировања</translation>
 <translation id="2054240652864153171">Желите да обришете податке о сајтовима за <ph name="SITE_NAME" /> издељене на <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Одјавићете се са ових сајтова, укључујући и оне на отвореним картицама</translation>
@@ -1266,7 +1267,6 @@
 <translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2173801458090845390">Додајте ИД захтева на овај уређај</translation>
 <translation id="2175384018164129879">&amp;Управљајте претраживачима и претрагом сајта</translation>
-<translation id="2175607476662778685">Трака „Брзо покретање“</translation>
 <translation id="217576141146192373">Додавање штампача није успело. Проверите конфигурацију штампача и пробајте поново.</translation>
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2177950615300672361">Картица Без архивирања: <ph name="TAB_NAME" /></translation>
@@ -1868,6 +1868,7 @@
 <translation id="2727633948226935816">Не подсећај ме више</translation>
 <translation id="2727712005121231835">Стварна величина</translation>
 <translation id="2729314457178420145">Обриши и податке прегледања (<ph name="URL" />). Ово може да вас одјави са Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome проналази нове начине да смањи праћење и додатно вас заштити док прегледате. Chrome такође <ph name="ESTIMATE_INTERESTS_LINK" /> и омогућава вам да управљате њима. Сајтови које посећујете затим могу да траже од Chrome-а ваша интересовања да би вам приказивали огласе.</translation>
 <translation id="2730029791981212295">Праве се резервне копије Linux апликација и датотека</translation>
 <translation id="2730901670247399077">Предлози за емоџи</translation>
 <translation id="273093730430620027">Ова страница приступа камери.</translation>
@@ -3789,6 +3790,7 @@
 <translation id="4579581181964204535">Није успело пребацивање за <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Ако желите обавештења прегледача, идите у <ph name="LINK_BEGIN" />Подешавања Chrome прегледача<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Лозинке се чувају на овом уређају у:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4580626299762849806">Увоз лозинки није успео. Проверите фајл <ph name="FILENAME" /> и уверите се да је правилно форматиран.</translation>
 <translation id="4581774856936278355">Грешка при враћању Linux-а</translation>
 <translation id="4582297591746054421">Сајтови обично читају привремену меморију за потребе функција попут задржавања форматирања текста који сте копирали</translation>
 <translation id="4582563038311694664">Ресетуј сва подешавања</translation>
@@ -4959,6 +4961,7 @@
 <translation id="5747552184818312860">Истиче</translation>
 <translation id="5747785204778348146">Програмер – нестабилно</translation>
 <translation id="5747809636523347288">Налепи и иди на <ph name="URL" /></translation>
+<translation id="5751345516399502412">Провера спремности за привезивање</translation>
 <translation id="5755022574660047665">успомене из Google слика</translation>
 <translation id="5756163054456765343">Ц&amp;ентар за помоћ</translation>
 <translation id="5757375109985023827">Изаберите картицу ради прегледа.</translation>
@@ -5094,6 +5097,7 @@
 <translation id="5877064549588274448">Канал је промењен. Покрените поново уређај да бисте применили промене.</translation>
 <translation id="5877584842898320529">Изабрани штампач није доступан или није правилно инсталиран. <ph name="BR" /> Проверите штампач или изаберите неки други.</translation>
 <translation id="5878945009165002849">Блокирајте упите за пријављивање које приказују услуге за идентитет</translation>
+<translation id="5882449899683447569">Дошло је до грешке и лозинке нису увезене</translation>
 <translation id="5882919346125742463">Познате мреже</translation>
 <translation id="5883356647197510494">Аутоматски је блокирано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Ова картица је повезана са USB уређајем.</translation>
@@ -7219,6 +7223,7 @@
 <translation id="7939062555109487992">Напредне опције</translation>
 <translation id="7939328347457537652">Управљајте сертификатима уређаја</translation>
 <translation id="7939412583708276221">Ипак задржи</translation>
+<translation id="7941179291434537290">Спремност за привезивање:</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943368935008348579">Преузимајте PDF-ове</translation>
 <translation id="7943837619101191061">Додај локацију...</translation>
@@ -7551,7 +7556,6 @@
 <translation id="8248887045858762645">Савет за Chrome</translation>
 <translation id="8249048954461686687">Фолдер Произвођач оригиналне опреме</translation>
 <translation id="8249615410597138718">Пошаљите на своје уређаје</translation>
-<translation id="8249672078237421304">Нуди превод страница које нису на језику који читам</translation>
 <translation id="8250210000648910632">Нема меморијског простора</translation>
 <translation id="8251441930213048644">Освежи</translation>
 <translation id="8251509999076836464">Упаривање са уређајем <ph name="DEVICE_NAME" /></translation>
@@ -7747,6 +7751,7 @@
 <translation id="8439506636278576865">Понуди превод страница на овом језику</translation>
 <translation id="8440630305826533614">Linux апликације</translation>
 <translation id="844063558976952706">Увек на овом сајту</translation>
+<translation id="8441313165929432954">Омогућавање или онемогућавање привезивања</translation>
 <translation id="8443795068008423036">Проверите да ли је уређај ажуран и пробајте поново</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>
 <translation id="8447409163267621480">Користите или Ctrl или Alt</translation>

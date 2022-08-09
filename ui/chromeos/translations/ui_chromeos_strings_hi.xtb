@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">नेटवर्क द्वारा प्रमाणीकरण प्रमाणपत्र अस्वीकार किया गया</translation>
 <translation id="255937426064304553">यूएस अंतर्राष्ट्रीय</translation>
 <translation id="2563185590376525700">मेढक</translation>
-<translation id="2570012981255377263">आपकी हाल ही की फ़ाइलें यहां दिखेंगी</translation>
 <translation id="2578394532502990878">तमिल फ़ोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">Tamil99 कीबोर्ड के साथ तमिल</translation>
 <translation id="5633226425545095130">इस आइटम को कहीं और ट्रांसफ़र करने से, यह उन सभी लोगों के साथ शेयर हो जाएगा जो इस शेयर किए जाने वाले फ़ोल्डर '<ph name="DESTINATION_NAME" />' को देख सकते हैं.</translation>
 <translation id="5649768706273821470">सुनें</translation>
-<translation id="5665074015635552640">आपके हाल ही के वीडियो यहां दिखेंगे</translation>
 <translation id="5669691691057771421">नया पिन डालें</translation>
 <translation id="5678784840044122290">Linux ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध होगा और आपके 'लॉन्चर' में एक आइकॉन भी दिखाई दे सकता है.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />किसी संग्रह या वर्चुअल डिस्क से डिसकनेक्ट नहीं किया जा सकता<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     <ph name="FILE_COUNT" /> मिल गया</translation>
 <translation id="6935521024859866267">ऊपरी भाग नीचे</translation>
 <translation id="6943836128787782965">HTTP विफल हुआ</translation>
-<translation id="6945604978460872381">आपके हाल ही के दस्तावेज़ यहां दिखेंगे</translation>
 <translation id="6949408524333579394">सर्बियन ट्रांसलिट्रेशन</translation>
 <translation id="6954309393500027528">आपके एडमिन ने इस फ़ाइल को चिपकाने की सुविधा को ब्लॉक कर दिया है</translation>
 <translation id="6960565108681981554">यह चालू नहीं है. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">दूसरों से शेयर करें</translation>
 <translation id="7297443947353982503">उपयोगकर्ता नाम/पासवर्ड गलत या EAP-प्रमाणीकरण विफल रहा</translation>
 <translation id="7309413087278791451">जर्मन (बेल्जियम)</translation>
-<translation id="7313374447885864533">आपकी हाल ही की ऑडियो फ़ाइलें यहां दिखेंगी</translation>
 <translation id="7339898014177206373">नई विंडो</translation>
 <translation id="7343393116438664539">वियतनामीज़ टेलेक्स</translation>
 <translation id="7357762654218998920">यह फ़ाइल टाइप, ChromeOS के साथ काम नहीं करता. ChromeOS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">समान नाम वाली फ़ाइल या निर्देशिका पहले से ही मौजूद है.</translation>
 <translation id="8372369524088641025">ख़राब WEP कुंजी</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
-<translation id="8384716930968677505">आपकी हाल ही की इमेज यहां दिखेंगी</translation>
 <translation id="8386903983509584791">स्कैन पूरा हुआ</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> मिली</translation>
 <translation id="8395901698320285466">आयाम</translation>

@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Putar/Jeda</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
+<translation id="1207734034680156868">Saran didasarkan pada deskripsi Anda</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1236400083787698183">Sebelum memulai ulang, powerwash perangkat. Jika perangkat Anda memiliki penutup, tunggu sampai powerwash selesai sebelum menutupnya. Powerwash mungkin perlu waktu hingga satu menit untuk menyelesaikan prosesnya.</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
@@ -98,7 +99,7 @@
 <translation id="1676557873873341166">Merekam video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
-<translation id="1715359911173058521">Terjadi masalah saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
+<translation id="1715359911173058521">Terjadi error saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
 <translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nama server</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
@@ -220,7 +221,7 @@
 <translation id="2727250716596204208">Tidak dapat menemukan image firmware. Masukkan penyimpanan eksternal, seperti drive USB atau kartu SD, yang berisi image Utilitas Pemulihan Chromebook yang telah didownload.</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
-<translation id="2756652381241102009">Jalankan Diagnosis</translation>
+<translation id="2756652381241102009">Jalankan Diagnostik</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2805756323405976993">Apl</translation>
@@ -697,7 +698,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6961170852793647506">Untuk memulai, letakkan dokumen Anda pada pemindai</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
-<translation id="6995564396478647735">Pastikan Proteksi Tulis aktif</translation>
 <translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -808,7 +808,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="80398733265834479">Aktifkan mode warna otomatis</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8045012663542226664">Bisukan mikrofon</translation>
-<translation id="8063022551652308521">Proteksi Tulis masih dinonaktifkan. Untuk melanjutkan, aktifkan Proteksi Tulis.</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="8082366717211101304">Tidak dapat me-resolve DNS dari aplikasi Android</translation>
 <translation id="808894953321890993">Ubah sandi</translation>

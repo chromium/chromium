@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
 <translation id="255937426064304553">Міжнародна (США)</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2570012981255377263">Тут відображатимуться нещодавні файли</translation>
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
 <translation id="2579959351793446050">Орія</translation>
 <translation id="2602810353103180630">Мережа №<ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: <ph name="NETWORK_NAME" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Слухати</translation>
-<translation id="5665074015635552640">Тут відображатимуться нещодавні відео</translation>
 <translation id="5669691691057771421">Введіть новий PIN-код</translation>
 <translation id="5678784840044122290">Додаток Linux буде доступний в терміналі, а його значок може відображатися на панелі запуску.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не вдається від’єднатися від архіву чи віртуального диска<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     Знайдено: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Догори дригом</translation>
 <translation id="6943836128787782965">Помилка HTTP</translation>
-<translation id="6945604978460872381">Тут відображатимуться нещодавні документи</translation>
 <translation id="6949408524333579394">Сербська, транслітерація</translation>
 <translation id="6954309393500027528">Адміністратор заблокував можливість вставити цей файл</translation>
 <translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Надати доступ іншим користувачам</translation>
 <translation id="7297443947353982503">Неправильне ім’я користувача чи пароль або помилка автентифікації за протоколом EAP</translation>
 <translation id="7309413087278791451">Німецька (Бельгія)</translation>
-<translation id="7313374447885864533">Тут відображатимуться нещодавні аудіофайли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7343393116438664539">В'єтнамська, телекс</translation>
 <translation id="7357762654218998920">Цей тип файлу не підтримується. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Файл або каталог з таким же ім’ям уже існує.</translation>
 <translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8372852072747894550">Грецька</translation>
-<translation id="8384716930968677505">Тут відображатимуться нещодавні зображення</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
 <translation id="8387733224523483503">Видобуто файл "<ph name="FILE_NAME" />".</translation>
 <translation id="8395901698320285466">Розміри</translation>

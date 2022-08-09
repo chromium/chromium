@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">A rede rexeitou o certificado de autenticación</translation>
 <translation id="255937426064304553">Internacional dos EUA</translation>
 <translation id="2563185590376525700">Ra</translation>
-<translation id="2570012981255377263">Os teus ficheiros recentes mostraranse aquí</translation>
 <translation id="2578394532502990878">Támil (fonético)</translation>
 <translation id="2579959351793446050">Odiá</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, bloqueada polo administrador, detalles</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Baleirar papeleira</translation>
 <translation id="5163869187418756376">Non se puido compartir. Comproba a túa conexión e téntao de novo máis tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador para EUA</translation>
+<translation id="5172749059808361023">Detalles das restricións</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
 <translation id="5194713942430106590">Fai clic para organizar a columna en orde ascendente.</translation>
 <translation id="5211614973734216083">Feroés</translation>
@@ -540,7 +540,6 @@
 <translation id="5625294776298156701">Támil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Ao mover este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Escoitar</translation>
-<translation id="5665074015635552640">Os teus vídeos recentes mostraranse aquí</translation>
 <translation id="5669691691057771421">Introducir novo PIN</translation>
 <translation id="5678784840044122290">A aplicación Linux estará dispoñible dentro do terminal e tamén pode mostrar unha icona no menú de aplicacións.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Non se puido desconectar dun arquivo ou disco virtual<ph name="END_BOLD" />
@@ -685,7 +684,6 @@
     Atopáronse <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Do revés</translation>
 <translation id="6943836128787782965">Erro ao obter HTTP</translation>
-<translation id="6945604978460872381">Os teus documentos recentes mostraranse aquí</translation>
 <translation id="6949408524333579394">Serbio (transliteración)</translation>
 <translation id="6954309393500027528">O teu administrador bloqueou a función de pegar este ficheiro</translation>
 <translation id="6960565108681981554">Non activada. Contacta co teu operador.</translation>
@@ -733,7 +731,6 @@
 <translation id="7295662345261934369">Compartir con outros usuarios</translation>
 <translation id="7297443947353982503">Nome de usuario ou contrasinal incorrectos ou erro de autenticación EAP</translation>
 <translation id="7309413087278791451">Alemán (Bélxica)</translation>
-<translation id="7313374447885864533">Os teus ficheiros de audio recentes mostraranse aquí</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7343393116438664539">Vietnamita (télex)</translation>
 <translation id="7357762654218998920">Este tipo de ficheiro non é compatible. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
@@ -863,7 +860,6 @@
 <translation id="8342318071240498787">Xa existe un ficheiro ou un directorio co mesmo nome.</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
-<translation id="8384716930968677505">As túas imaxes recentes mostraranse aquí</translation>
 <translation id="8386903983509584791">Finalizou a busca</translation>
 <translation id="8387733224523483503">Extraeuse <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensións</translation>

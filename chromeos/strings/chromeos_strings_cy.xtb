@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Chwarae/Seibio</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1204296502688602597">Cuddni DNS</translation>
+<translation id="1207734034680156868">Mae awgrymiadau yn seiliedig ar eich disgrifiad</translation>
 <translation id="123124571410524056">Mae porth yn debygol</translation>
 <translation id="1236400083787698183">Cyn ailgychwyn, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="1238612778414822719">Cuddni HTTPS</translation>
@@ -697,7 +698,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6961170852793647506">I gychwyn arni, rhowch eich dogfen ar y sganiwr</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6977381486153291903">Adolygiad cadarnwedd</translation>
-<translation id="6995564396478647735">Gwnewch yn siŵr bod Diogelu Ysgrifennu ymlaen</translation>
 <translation id="7005833343836210400">Mae'r ddyfais all-lein</translation>
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
 <translation id="7040230719604914234">Gweithredydd</translation>
@@ -808,7 +808,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>
 <translation id="8041089156583427627">Anfon adborth</translation>
 <translation id="8045012663542226664">Distewi'r meicroffon</translation>
-<translation id="8063022551652308521">Mae Diogelu Ysgrifennu wedi'i ddiffodd o hyd. I barhau, trowch Diogelu Ysgrifennu ymlaen.</translation>
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>

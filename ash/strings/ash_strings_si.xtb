@@ -327,6 +327,7 @@
 <translation id="2894949423239620203">කේබලය කාර්ය සාධනයට බලපෑ හැකිය</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> වෙත සම්බන්ධිතයි, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">තිර ග්‍රහණ</translation>
+<translation id="2925246975070834767">ඔබ තිරයෙහි මැද සිටින පරිදි ස්වයං විශාලනය උත්සාහ කරන්න. ඉක්මන් සැකසීම් තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="2941112035454246133">අඩු</translation>
 <translation id="2942350706960889382">ඈඳන ලද විශාලකය</translation>
 <translation id="2942516765047364088">රාක්ක ස්ථානය</translation>
@@ -469,6 +470,7 @@
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="371370241367527062">ඉදිරිපස මයික්‍රෆෝනය</translation>
 <translation id="3713734891607377840">සම්පූර්ණ විට විවෘත කරන්න</translation>
+<translation id="3724279623330129812">ස්වයං විශාලනය කැමරාව මධ්‍යගත කෙරිණි</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" /> <ph name="UNAVAILABLE_APPS_TWO" /> සහ තව <ph name="UNAVAILABLE_APPS_COUNT" />ක් මෙම උපාංගයෙහි නැත.</translation>
 <translation id="3735740477244556633">අනුපිළිවෙළ</translation>
 <translation id="3742055079367172538">තිර ඡායාව ගැනිණි</translation>
@@ -633,6 +635,7 @@
 <translation id="4628757576491864469">උපාංග</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, තරු ඇගයීම <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{දිනක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}one{දින #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}other{දින #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}}</translation>
+<translation id="4633636853437260449">මකා දැමීමට Ctrl+W ඔබන්න</translation>
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
 <translation id="4644727592819780893">කැමරාවට ගැළපීමට කලාපය කුඩා වැඩිය</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, යෙදුම් නිර්දේශය</translation>

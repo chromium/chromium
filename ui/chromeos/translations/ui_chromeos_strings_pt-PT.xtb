@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="255937426064304553">EUA internacional</translation>
 <translation id="2563185590376525700">Sapo</translation>
-<translation id="2570012981255377263">Os seus ficheiros recentes são apresentados aqui</translation>
 <translation id="2578394532502990878">Fonética de tâmil</translation>
 <translation id="2579959351793446050">Oriá</translation>
 <translation id="2602810353103180630">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
@@ -290,6 +289,7 @@
 <translation id="3522708245912499433">Português</translation>
 <translation id="3524311639100184459">Cuidado: estes ficheiros são temporários e podem ser automaticamente eliminados para libertar espaço em disco.  <ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Pasta</translation>
+<translation id="3548125359243647069">Foi introduzido um PIN incorreto demasiadas vezes.</translation>
 <translation id="3549797760399244642">Aceder a drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir ficheiros com a app <ph name="APP_NAME" />, copie-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado de PC internacional</translation>
@@ -543,7 +543,6 @@
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se mover este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ouvir</translation>
-<translation id="5665074015635552640">Os seus vídeos recentes são apresentados aqui</translation>
 <translation id="5669691691057771421">Introduzir o novo PIN</translation>
 <translation id="5678784840044122290">A aplicação para Linux estará disponível no terminal. Também pode existir um ícone no Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Não é possível desassociar de um arquivo ou disco virtual<ph name="END_BOLD" />
@@ -616,6 +615,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, ligar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6287852322318138013">Selecionar uma aplicação para abrir este ficheiro</translation>
+<translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">PUK inválido</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
@@ -688,7 +688,6 @@
     <ph name="FILE_COUNT" /> encontrada(s)</translation>
 <translation id="6935521024859866267">Ao Contrário</translation>
 <translation id="6943836128787782965">A obtenção de HTTP falhou</translation>
-<translation id="6945604978460872381">Os seus documentos recentes são apresentados aqui</translation>
 <translation id="6949408524333579394">Transliteração sérvia</translation>
 <translation id="6954309393500027528">O seu administrador bloqueou a ação de colar este ficheiro</translation>
 <translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
@@ -725,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Guardar ficheiro como</translation>
 <translation id="7229570126336867161">Requer EVDO</translation>
+<translation id="7230898482850090046">O seu administrador pediu-lhe para desativar a definição "Bloquear SIM"</translation>
 <translation id="7238097264433196391">Nome da unidade</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalhes</translation>
 <translation id="7246947237293279874">Proxy de FTP</translation>
@@ -736,7 +736,6 @@
 <translation id="7295662345261934369">Partilhar com outros</translation>
 <translation id="7297443947353982503">Nome de utilizador ou palavra-passe incorreto ou falha na autenticação EAP</translation>
 <translation id="7309413087278791451">Alemão (Bélgica)</translation>
-<translation id="7313374447885864533">Os seus ficheiros de áudio recentes são apresentados aqui</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7343393116438664539">Telex vietnamita</translation>
 <translation id="7357762654218998920">Este tipo de ficheiro não é suportado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
@@ -757,6 +756,7 @@
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="751507702149411736">Bielorrusso</translation>
+<translation id="7521790570754130607">É necessário um PIN para usar os dados móveis</translation>
 <translation id="7532029025027028521">Transliteração de persa</translation>
 <translation id="7544830582642184299">Conceda autorização às apps Linux para aceder a ficheiros no seu Google Drive. As alterações serão sincronizadas com os seus outros dispositivos.</translation>
 <translation id="7547009467130558110">Sapatilha</translation>
@@ -781,6 +781,7 @@
 <translation id="76959938259365003">Falha ao esvaziar o lixo.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
+<translation id="7708271999969613024">Para usar esta rede, tem de introduzir a chave de desbloqueio pessoal (PUK) de 8 dígitos disponibilizada pelo operador.</translation>
 <translation id="7711920809702896782">Informações da imagem</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730494089396812859">Mostrar detalhes da cópia de segurança na nuvem</translation>
@@ -866,7 +867,6 @@
 <translation id="8342318071240498787">Já existe um ficheiro ou diretório com o mesmo nome.</translation>
 <translation id="8372369524088641025">Chave WEP incorrecta</translation>
 <translation id="8372852072747894550">Grego</translation>
-<translation id="8384716930968677505">As suas imagens recentes são apresentadas aqui</translation>
 <translation id="8386903983509584791">Análise concluída</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extraído.</translation>
 <translation id="8395901698320285466">Dimensões</translation>
@@ -876,6 +876,7 @@
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8452135315243592079">Cartão SIM em falta</translation>
 <translation id="8456681095658380701">Nome inválido</translation>
+<translation id="8457767749626250697">O SIM está bloqueado</translation>
 <translation id="8459404855768962328">Se copiar este item, partilha-o com todas as pessoas que conseguem ver a pasta partilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Clique com o botão direito do rato num ficheiro e selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8461914792118322307">Proxy</translation>

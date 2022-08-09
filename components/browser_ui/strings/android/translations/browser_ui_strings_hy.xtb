@@ -239,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Արգելել կայքերին օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
+<translation id="6467852467360539617">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
@@ -278,6 +279,7 @@
 <translation id="7250468141469952378">Ընտրված է <ph name="ITEM_COUNT" /> տարր</translation>
 <translation id="7260727271532453612">Թույլատրված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="7302486331832100261">Դուք սովորաբար արգելափակում եք ծանուցումները։ Թույլատրելու համար սեղմեք «Մանրամասներ»։</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> տիրույթի կարգավորումներ</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
 <translation id="7423538860840206698">Սեղմատախտակի հասանելիությունն արգելափակված է</translation>
 <translation id="7425915948813553151">Կայքերի մուգ թեմա</translation>

@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Leisti / pristabdyti</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1204296502688602597">DNS delsa</translation>
+<translation id="1207734034680156868">Pasiūlymai pagrįsti jūsų aprašu</translation>
 <translation id="123124571410524056">Įtariamas portalas</translation>
 <translation id="1236400083787698183">Prieš paleisdami iš naujo naudokite įrenginio funkciją „Powerwash“. Jei jūsų įrenginys su dangteliu, palaukite, kol bus baigtas „Powerwash“ procesas, prieš uždarydami dangtelį. „Powerwash“ procesas gali užtrukti iki minutės.</translation>
 <translation id="1238612778414822719">HTTPS delsa</translation>
@@ -697,7 +698,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6961170852793647506">Jei norite pradėti, padėkite dokumentą ant skaitytuvo</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
-<translation id="6995564396478647735">Įsitikinkite, kad įjungta įrašymo apsauga</translation>
 <translation id="7005833343836210400">Įrenginys neprijungtas prie interneto</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7040230719604914234">Operatorius</translation>
@@ -808,7 +808,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="80398733265834479">Įgalinti automatinių spalvų režimą</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8045012663542226664">Mikrofono nutildymas</translation>
-<translation id="8063022551652308521">Įrašymo apsauga vis dar išjungta. Jei norite tęsti, įjunkite įrašymo apsaugą.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>

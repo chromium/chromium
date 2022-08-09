@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Auðkenningarvottorði hafnað af neti</translation>
 <translation id="255937426064304553">Bandarískt (alþjóðlegt)</translation>
 <translation id="2563185590376525700">Fúsi</translation>
-<translation id="2570012981255377263">Nýjustu skrárnar þínar birtast hér</translation>
 <translation id="2578394532502990878">Tamíl hljóðritun</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af kerfisstjóra, nánar</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Tamíl með Tamil99-lyklaborði</translation>
 <translation id="5633226425545095130">Tilfærslu á þessu atriði er deilt með öllum sem hafa aðgang að samnýttu möppunni „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Hlusta</translation>
-<translation id="5665074015635552640">Nýjustu myndskeiðin þín birtast hér</translation>
 <translation id="5669691691057771421">Sláðu inn nýtt PIN-númer</translation>
 <translation id="5678784840044122290">Linux-forritið verður tiltækt í gegnum skipanalínu og einnig gæti tákn birst í ræsiforritinu.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ekki hægt að aftengjast geymslu eða sýndardiski<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     Fann <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Öfugur</translation>
 <translation id="6943836128787782965">HTTP GET-skipun mistókst</translation>
-<translation id="6945604978460872381">Nýjustu skjölin þín birtast hér</translation>
 <translation id="6949408524333579394">Serbneska umritun</translation>
 <translation id="6954309393500027528">Stjórnandinn hefur lokað á að hægt sé að líma þessa skrá</translation>
 <translation id="6960565108681981554">Ekki virkt. Hafðu samband við símafyrirtækið.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Deila með öðrum</translation>
 <translation id="7297443947353982503">Rangt notandanafn/aðgangsorð eða EAP-sannvottun mistókst</translation>
 <translation id="7309413087278791451">Þýska (Belgía)</translation>
-<translation id="7313374447885864533">Nýjustu hljóðskrárnar þínar birtast hér</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7343393116438664539">Víetnamska Telex</translation>
 <translation id="7357762654218998920">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í ChromeOS.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Skrá eða mappa með sama heiti er þegar til.</translation>
 <translation id="8372369524088641025">Rangur WEP-lykill</translation>
 <translation id="8372852072747894550">Gríska</translation>
-<translation id="8384716930968677505">Nýjustu myndirnar þínar birtast hér</translation>
 <translation id="8386903983509584791">Skönnun lokið</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> dregin út</translation>
 <translation id="8395901698320285466">Stærð</translation>

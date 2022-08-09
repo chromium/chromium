@@ -1280,7 +1280,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2173801458090845390">Adicionar código de requisição para este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
-<translation id="2175607476662778685">Barra de inicialização rápida</translation>
 <translation id="217576141146192373">Não foi possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177950615300672361">Guia anônima: <ph name="TAB_NAME" /></translation>
@@ -1885,6 +1884,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2727633948226935816">Não me lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
 <translation id="2729314457178420145">Remover também os dados de navegação (<ph name="URL" />). Sua conta poderá ser desconectada de google.com.br. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">O Chrome está encontrando novas formas de reduzir o rastreamento e proteger você ainda mais durante a navegação. Ele também faz uma <ph name="ESTIMATE_INTERESTS_LINK" /> e permite o gerenciamento deles. Com isso, os sites que você visita podem solicitar seus interesses ao Chrome para mostrar anúncios.</translation>
 <translation id="2730029791981212295">Fazendo backup dos arquivos e apps do Linux</translation>
 <translation id="2730901670247399077">Sugestões de emojis</translation>
 <translation id="273093730430620027">Esta página está acessando sua câmera.</translation>
@@ -3808,6 +3808,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4579581181964204535">Não foi possível transmitir <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Para definir as notificações do navegador, acesse <ph name="LINK_BEGIN" />Configurações do navegador Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">As senhas são salvas no <ph name="GOOGLE_PASSWORD_MANAGER" /> neste dispositivo.</translation>
+<translation id="4580626299762849806">Não é possível importar as senhas. Confira se o arquivo <ph name="FILENAME" /> está formatado corretamente.</translation>
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
 <translation id="4582297591746054421">Os sites geralmente leem a área de transferência para recursos como manter a formatação do texto copiado</translation>
 <translation id="4582563038311694664">Redefinir todas as configurações</translation>
@@ -5114,6 +5115,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
 <translation id="5877584842898320529">A impressora selecionada não está disponível ou não foi instalada corretamente. <ph name="BR" /> Verifique a impressora ou selecione outra.</translation>
 <translation id="5878945009165002849">Bloquear solicitações de login de serviços de identificação</translation>
+<translation id="5882449899683447569">Algo deu errado e suas senhas não foram importadas</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta guia está conectada a um dispositivo USB.</translation>
@@ -7570,7 +7572,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8248887045858762645">Dica do Chrome</translation>
 <translation id="8249048954461686687">Pasta do OEM</translation>
 <translation id="8249615410597138718">Enviar para seus dispositivos</translation>
-<translation id="8249672078237421304">Sugerir a tradução de páginas que não estão em um idioma que você conheça</translation>
 <translation id="8250210000648910632">Sem espaço de armazenamento</translation>
 <translation id="8251441930213048644">Atualizar agora</translation>
 <translation id="8251509999076836464">Pareando com <ph name="DEVICE_NAME" /></translation>

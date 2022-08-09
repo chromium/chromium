@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Verkko on hylännyt todennusvarmenteen</translation>
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2563185590376525700">Sammakko</translation>
-<translation id="2570012981255377263">Viimeksi käytetyt tiedostot näkyvät täällä</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
 <translation id="2579959351793446050">orija</translation>
 <translation id="2602810353103180630">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
@@ -542,7 +541,6 @@
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
 <translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
-<translation id="5665074015635552640">Viimeksi käytetyt videot näkyvät täällä</translation>
 <translation id="5669691691057771421">Anna uusi PIN-koodi</translation>
 <translation id="5678784840044122290">Linux-sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arkiston tai virtuaalilevyn yhteyden katkaisu epäonnistui<ph name="END_BOLD" />
@@ -687,7 +685,6 @@
     <ph name="FILE_COUNT" /> löytyi</translation>
 <translation id="6935521024859866267">Ylösalaisin</translation>
 <translation id="6943836128787782965">HTTP get -toiminto epäonnistui</translation>
-<translation id="6945604978460872381">Viimeksi käytetyt dokumentit näkyvät täällä</translation>
 <translation id="6949408524333579394">translitteroitu serbia</translation>
 <translation id="6954309393500027528">Järjestelmänvalvoja on estänyt tämän tiedoston liittämisen</translation>
 <translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Jaa muille</translation>
 <translation id="7297443947353982503">Käyttäjätunnus/salasana on virheellinen tai EAP-todennus epäonnistui</translation>
 <translation id="7309413087278791451">saksa (Belgia)</translation>
-<translation id="7313374447885864533">Viimeksi käytetyt audiotiedostot näkyvät täällä</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7343393116438664539">vietnam (telex)</translation>
 <translation id="7357762654218998920">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
@@ -865,7 +861,6 @@
 <translation id="8342318071240498787">Samanniminen tiedosto tai hakemisto on jo olemassa.</translation>
 <translation id="8372369524088641025">Väärä WEP-avain</translation>
 <translation id="8372852072747894550">kreikkalainen</translation>
-<translation id="8384716930968677505">Viimeksi käytetyt kuvat näkyvät täällä</translation>
 <translation id="8386903983509584791">Etsintä valmis</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> noudettu</translation>
 <translation id="8395901698320285466">Mittasuhteet</translation>

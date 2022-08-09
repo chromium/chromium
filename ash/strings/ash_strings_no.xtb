@@ -100,6 +100,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1455242230282523554">Vis språkinnstillinger</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
 <translation id="1467432559032391204">Venstre</translation>
+<translation id="146902737843070955">Administratoren din har forespurt denne endringen</translation>
 <translation id="147310119694673958">Batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Flytende tilgjengelighetsmeny</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" /> – trykk på Enter for å åpne Kalender-visningen</translation>
@@ -837,6 +838,7 @@ Koble enheten til strøm.</translation>
 <translation id="5779721926447984944">Festede filer</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5790085346892983794">Fullført</translation>
+<translation id="5804651031882187592">Slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>

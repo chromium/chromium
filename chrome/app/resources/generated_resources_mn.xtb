@@ -1135,6 +1135,7 @@
 <translation id="2048653237708779538">Үйлдэл боломжгүй байна</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2052572566310583903">Таны бусад төхөөрөмж дээр суулгасан</translation>
+<translation id="2053105195397337973">Бид сайтуудад зарын спам болон залиланг зогсоох боломжийг олгохын зэрэгцээ хяналтыг хязгаарлах аргуудыг судалж байна.</translation>
 <translation id="2053312383184521053">Идэвхгүй хэлбэрийн өгөгдөл</translation>
 <translation id="2054240652864153171"><ph name="SITE_NAME" /> дээр хуваагдсан <ph name="PARTITION_SITE_NAME" /> сайтын өгөгдлийг арилгах уу?</translation>
 <translation id="2055585478631012616">Та эдгээр сайтаас гарах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
@@ -1275,7 +1276,6 @@
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2173801458090845390">Энэ төхөөрөмжид шаардлагын ID-г нэмэх</translation>
 <translation id="2175384018164129879">&amp;Хайлтын систем болон сайтын хайлтыг удирдах</translation>
-<translation id="2175607476662778685">Цонхыг хурдан эхлүүлэх</translation>
 <translation id="217576141146192373">Хэвлэгчийг нэмэх боломжгүй байна. Хэвлэгчийнхээ тохируулгыг шалгаад дахин оролдоно уу.</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2177950615300672361">Нууцлалтай цонх: <ph name="TAB_NAME" /></translation>
@@ -4973,6 +4973,7 @@
 <translation id="5747552184818312860">Дуусах хугацаа</translation>
 <translation id="5747785204778348146">Хөгжүүлэгч - тогтворгүй</translation>
 <translation id="5747809636523347288"><ph name="URL" /> г буулгаад, очих</translation>
+<translation id="5751345516399502412">Модем болгох явцын бэлэн байдлыг шалгах</translation>
 <translation id="5755022574660047665">Google Зургийн дурсамжууд</translation>
 <translation id="5756163054456765343">Тусламжийн төв</translation>
 <translation id="5757375109985023827">Урьдчилан үзэх табыг сонгоно уу</translation>
@@ -7230,6 +7231,7 @@
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
 <translation id="7939328347457537652">Төхөөрөмжийн гэрчилгээг удирдах</translation>
 <translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
+<translation id="7941179291434537290">Модем болгох явцын бэлэн байдал:</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943368935008348579">PDF татах</translation>
 <translation id="7943837619101191061">Байрлалыг нэм...</translation>
@@ -7560,7 +7562,6 @@
 <translation id="8248887045858762645">Chrome-н зөвлөгөө</translation>
 <translation id="8249048954461686687">OEM хавтас</translation>
 <translation id="8249615410597138718">Төхөөрөмжүүддээ илгээх</translation>
-<translation id="8249672078237421304">Таны орны хэлээр байхгүй хуудсыг орчуулах санал хүргүүлнэ үү</translation>
 <translation id="8250210000648910632">Хадгалах сангийн зай дүүрсэн</translation>
 <translation id="8251441930213048644">Яг одоо дахин ачаалах</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" />-тай хослуулж байна</translation>
@@ -7756,6 +7757,7 @@
 <translation id="8439506636278576865">Хуудаснуудыг энэ хэл рүү орчуулахыг санал болгох</translation>
 <translation id="8440630305826533614">Linux аппууд</translation>
 <translation id="844063558976952706">Үргэлж энэ сайт дээр</translation>
+<translation id="8441313165929432954">Модем болгох явцыг идэвхжүүлэх/идэвхгүй болгох</translation>
 <translation id="8443795068008423036">Таны төхөөрөмж хамгийн шинэ эсэхийг шалгаад, дахин оролдоно уу</translation>
 <translation id="8446884382197647889">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8447409163267621480">Ctrl эсвэл Alt-н аль нэгийг агуулдаг</translation>

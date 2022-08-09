@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Reproducir/Pór en pausa</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
+<translation id="1207734034680156868">As suxestións baséanse na túa descrición</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1236400083787698183">Antes de reiniciar o dispositivo, utiliza a función Powerwash. Se o dispositivo ten tapa, agarda a que conclúa esta función para pechala. Powerwash pode tardar ata un minuto en rematar.</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -697,7 +698,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
-<translation id="6995564396478647735">Asegúrate de que a protección contra a escritura estea activada</translation>
 <translation id="7005833343836210400">O dispositivo non ten conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
@@ -808,7 +808,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="80398733265834479">Activar modo de cores automáticas</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8045012663542226664">Desactivar micrófono</translation>
-<translation id="8063022551652308521">A protección contra a escritura aínda está desactivada. Actívaa para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>

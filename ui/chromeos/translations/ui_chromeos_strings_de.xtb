@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Ablehnung des Authentifizierungszertifikats durch das Netzwerk</translation>
 <translation id="255937426064304553">USA – international</translation>
 <translation id="2563185590376525700">Frosch</translation>
-<translation id="2570012981255377263">Hier werden deine zuletzt verwendeten Dateien angezeigt</translation>
 <translation id="2578394532502990878">Tamil (phonetisch)</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Papierkorb leeren</translation>
 <translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfe deine Verbindung und versuche es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>
+<translation id="5172749059808361023">Einschränkungsdetails</translation>
 <translation id="5177526793333269655">Miniaturbildansicht</translation>
 <translation id="5194713942430106590">Klicken, um die Spalte in aufsteigender Reihenfolge zu sortieren.</translation>
 <translation id="5211614973734216083">Färöisch</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="5649768706273821470">Anhören</translation>
-<translation id="5665074015635552640">Hier werden deine zuletzt verwendeten Videos angezeigt</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
 <translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> gefunden</translation>
 <translation id="6935521024859866267">Auf dem Kopf</translation>
 <translation id="6943836128787782965">HTTP-Abruf fehlgeschlagen</translation>
-<translation id="6945604978460872381">Hier werden deine zuletzt verwendeten Dokumente angezeigt</translation>
 <translation id="6949408524333579394">Serbisch (Transliteration)</translation>
 <translation id="6954309393500027528">Das Einfügen dieser Datei wurde vom Administrator blockiert</translation>
 <translation id="6960565108681981554">Nicht aktiviert. Wende dich bitte an deinen Mobilfunkanbieter.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Mit anderen teilen</translation>
 <translation id="7297443947353982503">Nutzername/Passwort falsch oder Fehler bei EAP-Authentifizierung</translation>
 <translation id="7309413087278791451">Deutsch (Belgien)</translation>
-<translation id="7313374447885864533">Hier werden deine zuletzt verwendeten Audiodateien angezeigt</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7343393116438664539">Vietnamesisch (Telex)</translation>
 <translation id="7357762654218998920">Dieser Dateityp wird nicht unterstützt. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Es ist bereits eine Datei oder ein Verzeichnis mit dem gleichen Namen vorhanden.</translation>
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8372852072747894550">Griechisch</translation>
-<translation id="8384716930968677505">Hier werden deine zuletzt verwendeten Bilder angezeigt</translation>
 <translation id="8386903983509584791">Suche abgeschlossen</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extrahiert.</translation>
 <translation id="8395901698320285466">Abmessungen</translation>

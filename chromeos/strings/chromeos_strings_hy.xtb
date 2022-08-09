@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Նվագարկում/դադար</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
+<translation id="1207734034680156868">Առաջարկները հիմնված են նկարագրության վրա</translation>
 <translation id="123124571410524056">Հնարավոր է, որ ցանցային պորտալ կա</translation>
 <translation id="1236400083787698183">Նախքան վերագործարկումը օգտվեք Powerwash գործառույթից։ Եթե ձեր սարքը կափարիչ ունի, մի փակեք այն, մինչև Powerwash-ի աշխատանքն ավարտվի։ Այդ գործընթացը կարող է մեկ րոպե տևել։</translation>
 <translation id="1238612778414822719">HTTPS-ի հապաղում</translation>
@@ -697,7 +698,6 @@
 <translation id="6961170852793647506">Սկսելու համար փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
-<translation id="6995564396478647735">Համոզվեք, որ Write Protect-ը միացված է</translation>
 <translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
@@ -808,7 +808,6 @@
 <translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8045012663542226664">Խոսափողն անջատված է</translation>
-<translation id="8063022551652308521">Write Protect-ը դեռ անջատված է։ Շարունակելու համար միացրեք այն։</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Authentication certificate rejected by network</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Frog</translation>
-<translation id="2570012981255377263">Your recent files will appear here</translation>
 <translation id="2578394532502990878">Tamil phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, blocked by your administrator. Details</translation>
@@ -544,7 +543,6 @@
 <translation id="5625294776298156701">Tamil with Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Listen</translation>
-<translation id="5665074015635552640">Your recent videos will appear here</translation>
 <translation id="5669691691057771421">Enter new PIN</translation>
 <translation id="5678784840044122290">The Linux application will be available within your Terminal and may also show an icon in your Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Can't disconnect from an archive or virtual disk<ph name="END_BOLD" />
@@ -690,7 +688,6 @@
     <ph name="FILE_COUNT" /> found</translation>
 <translation id="6935521024859866267">Upside Down</translation>
 <translation id="6943836128787782965">HTTP get failed</translation>
-<translation id="6945604978460872381">Your recent documents will appear here</translation>
 <translation id="6949408524333579394">Serbian transliteration</translation>
 <translation id="6954309393500027528">Pasting this file is blocked by your administrator</translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
@@ -739,7 +736,6 @@
 <translation id="7295662345261934369">Share with others</translation>
 <translation id="7297443947353982503">Username/password incorrect or EAP-auth failed</translation>
 <translation id="7309413087278791451">German (Belgium)</translation>
-<translation id="7313374447885864533">Your recent audio files will appear here</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
 <translation id="7357762654218998920">This file type is not supported. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
@@ -871,7 +867,6 @@
 <translation id="8342318071240498787">A file or a directory with the same name already exists.</translation>
 <translation id="8372369524088641025">Bad WEP key</translation>
 <translation id="8372852072747894550">Greek</translation>
-<translation id="8384716930968677505">Your recent images will appear here</translation>
 <translation id="8386903983509584791">Scan completed</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extracted.</translation>
 <translation id="8395901698320285466">Dimensions</translation>

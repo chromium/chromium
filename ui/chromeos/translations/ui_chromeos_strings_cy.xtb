@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Gwrthodwyd y dystysgrif ddilysu gan y rhwydwaith</translation>
 <translation id="255937426064304553">Rhyngwladol UDA</translation>
 <translation id="2563185590376525700">Broga</translation>
-<translation id="2570012981255377263">Bydd eich ffeiliau diweddar yn ymddangos yma</translation>
 <translation id="2578394532502990878">Tamileg Seinegol</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rhwystrwyd gan eich Gweinyddwr, Manylion</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Tamileg gyda bysellfwrdd Tamil99</translation>
 <translation id="5633226425545095130">Bydd symud yr eitem hon yn ei rhannu â phawb sy'n gallu gweld y ffolder gyffredin '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Gwrando</translation>
-<translation id="5665074015635552640">Bydd eich fideos diweddar yn ymddangos yma</translation>
 <translation id="5669691691057771421">Rhowch y PIN newydd</translation>
 <translation id="5678784840044122290">Bydd yr ap Linux ar gael yn eich Terfynell a gall hefyd ddangos eicon yn eich Lansiwr.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Methu â datgysylltu o archif neu ddisg rithwir<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     Canfuwyd <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Wyneb i Waered</translation>
 <translation id="6943836128787782965">Wedi methu â chael HTTP</translation>
-<translation id="6945604978460872381">Bydd eich dogfennau diweddar yn ymddangos yma</translation>
 <translation id="6949408524333579394">Trawslythrennu Serbeg</translation>
 <translation id="6954309393500027528">Mae eich gweinyddwr wedi rhwystro'r gallu i gludo'r ffeil hon</translation>
 <translation id="6960565108681981554">Heb ei weithredu. Cysylltwch â'ch cludydd.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Rhannu ag eraill</translation>
 <translation id="7297443947353982503">Roedd yr enw defnyddiwr/cyfrinair yn anghywir neu methodd yr EAP-auth</translation>
 <translation id="7309413087278791451">Almaeneg (Gwlad Belg)</translation>
-<translation id="7313374447885864533">Bydd eich ffeiliau sain diweddar yn ymddangos yma</translation>
 <translation id="7339898014177206373">Ffenestr newydd</translation>
 <translation id="7343393116438664539">Telex Fietnameg</translation>
 <translation id="7357762654218998920">Ni chefnogir y math hwn o ffeil. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar ChromeOS.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Mae ffeil neu gyfeiriadur gyda'r un enw eisoes yn bodoli.</translation>
 <translation id="8372369524088641025">Allwedd WEP ddrwg</translation>
 <translation id="8372852072747894550">Groeg</translation>
-<translation id="8384716930968677505">Bydd eich lluniau diweddar yn ymddangos yma</translation>
 <translation id="8386903983509584791">Wedi gorffen sganio</translation>
 <translation id="8387733224523483503">Echdynnwyd <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensiynau</translation>

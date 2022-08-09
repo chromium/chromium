@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificato di autenticazione rifiutato dalla rete</translation>
 <translation id="255937426064304553">Internazionale USA</translation>
 <translation id="2563185590376525700">Rana</translation>
-<translation id="2570012981255377263">I tuoi file recenti verranno mostrati qui</translation>
 <translation id="2578394532502990878">Tamil fonetica</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ascolta</translation>
-<translation id="5665074015635552640">I tuoi video recenti verranno mostrati qui</translation>
 <translation id="5669691691057771421">Inserisci il nuovo PIN</translation>
 <translation id="5678784840044122290">L'applicazione Linux sarà disponibile nel terminale e potrebbe anche essere visualizzata un'icona nell'Avvio app.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossibile disconnettere un archivio o un disco virtuale<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     Elementi trovati: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Capovolta</translation>
 <translation id="6943836128787782965">Recupero HTTP non riuscito</translation>
-<translation id="6945604978460872381">I tuoi documenti recenti verranno mostrati qui</translation>
 <translation id="6949408524333579394">Traslitterazione serbo</translation>
 <translation id="6954309393500027528">Non puoi incollare questo file perché questa azione è stata bloccata dall'amministratore</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Condividi con altri</translation>
 <translation id="7297443947353982503">Nome utente/password errati o autenticazione EAP non riuscita</translation>
 <translation id="7309413087278791451">Tedesco (Belgio)</translation>
-<translation id="7313374447885864533">I tuoi file audio recenti verranno mostrati qui</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7343393116438664539">Vietnamita Telex</translation>
 <translation id="7357762654218998920">Questo tipo di file non è supportato. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Esiste già un file o una directory con lo stesso nome.</translation>
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8372852072747894550">Greco</translation>
-<translation id="8384716930968677505">Le tue immagini recenti verranno mostrate qui</translation>
 <translation id="8386903983509584791">Scansione completata</translation>
 <translation id="8387733224523483503">Elemento "<ph name="FILE_NAME" />" estratto.</translation>
 <translation id="8395901698320285466">Dimensioni</translation>

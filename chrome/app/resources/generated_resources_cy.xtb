@@ -1142,6 +1142,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2048653237708779538">Nid yw'r weithred ar gael</translation>
 <translation id="2050339315714019657">Portread</translation>
 <translation id="2052572566310583903">Wedi'u gosod ar eich dyfeisiau eraill</translation>
+<translation id="2053105195397337973">Rydym yn archwilio ffyrdd o gyfyngu ar olrhain tra'n galluogi gwefannau i atal sothach hysbysebion a thwyll.</translation>
 <translation id="2053312383184521053">Data Cyflwr Segur</translation>
 <translation id="2054240652864153171">Clirio data gwefan ar gyfer <ph name="SITE_NAME" /> sydd wedi'u dosrannu ar <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Byddwch yn cael eich allgofnodi o bob un o'r gwefannau hyn, gan gynnwys mewn tabiau sydd ar agor</translation>
@@ -1282,7 +1283,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2173302385160625112">Gwiriwch eich cysylltiad rhyngrwyd</translation>
 <translation id="2173801458090845390">Ychwanegu rhif adnabod yr ymholiad at y ddyfais hon</translation>
 <translation id="2175384018164129879">&amp;Rheoli Peiriannau Chwilio a Chwilio Gwefan</translation>
-<translation id="2175607476662778685">Bar lansio cyflym</translation>
 <translation id="217576141146192373">Methu ag ychwanegu argraffydd. Gwiriwch ffurfweddiad eich argraffydd a rhowch gynnig arall arni.</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2177950615300672361">Tab Anhysbys: <ph name="TAB_NAME" /></translation>
@@ -4979,6 +4979,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5747552184818312860">Yn darfod</translation>
 <translation id="5747785204778348146">Datblygwr - ansefydlog</translation>
 <translation id="5747809636523347288">Gl&amp;udo a mynd i <ph name="URL" /></translation>
+<translation id="5751345516399502412">Gwirio Parodrwydd Rhannu Cysylltiad</translation>
 <translation id="5755022574660047665">atgofion o Google Photos</translation>
 <translation id="5756163054456765343">C&amp;anolfan gymorth</translation>
 <translation id="5757375109985023827">Dewiswch dab i gael rhagolwg ohono</translation>
@@ -7244,6 +7245,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7939062555109487992">Dewisiadau uwch</translation>
 <translation id="7939328347457537652">Rheoli tystysgrifau dyfais</translation>
 <translation id="7939412583708276221">Cadw beth bynnag</translation>
+<translation id="7941179291434537290">Parodrwydd Rhannu Cysylltiad:</translation>
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943368935008348579">Lawrlwytho ffeiliau PDF</translation>
 <translation id="7943837619101191061">Ychwanegu Lleoliad...</translation>
@@ -7575,7 +7577,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8248887045858762645">Awgrym Chrome</translation>
 <translation id="8249048954461686687">OEM folder</translation>
 <translation id="8249615410597138718">Anfon at Eich Dyfeisiau</translation>
-<translation id="8249672078237421304">Cynnig cyfieithu tudalennau nad ydynt mewn ieithoedd rydych yn eu deall</translation>
 <translation id="8250210000648910632">Dim lle i storio</translation>
 <translation id="8251441930213048644">Adnewyddu nawr</translation>
 <translation id="8251509999076836464">Wrthi'n paru i <ph name="DEVICE_NAME" /></translation>
@@ -7771,6 +7772,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8439506636278576865">Cynnig cyfieithu tudalennau yn yr iaith hon</translation>
 <translation id="8440630305826533614">Apiau Linux</translation>
 <translation id="844063558976952706">Bob amser ar y wefan hon</translation>
+<translation id="8441313165929432954">Galluogi/Analluogi Rhannu Cysylltiad</translation>
 <translation id="8443795068008423036">Gwnewch yn siŵr bod eich dyfais yn gyfredol a rhowch gynnig arall arni</translation>
 <translation id="8446884382197647889">Dysgu rhagor</translation>
 <translation id="8447409163267621480">Cynnwys naill ai Ctrl neu Alt</translation>

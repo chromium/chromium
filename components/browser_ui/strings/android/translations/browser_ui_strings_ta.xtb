@@ -239,6 +239,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">விர்ச்சுவல் ரியாலிட்டி சாதனத்தையும் தரவையும் தளங்கள் பயன்படுத்துவதைத் தடு</translation>
 <translation id="6447842834002726250">குக்கீகள்</translation>
+<translation id="6467852467360539617">தரவை அழித்து அனுமதிகளை மீட்டமை</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="6545864417968258051">புளூடூத் ஸ்கேனிங்</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}}</translation>
@@ -278,6 +279,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் வழங்கப்பட்டன</translation>
 <translation id="7302486331832100261">பொதுவாக அறிவிப்புகளைத் தடுத்துள்ளீர்கள். அவற்றை அனுமதிக்க 'விவரங்கள்' என்பதைத் தட்டவும்.</translation>
+<translation id="7383715096023715447"><ph name="DOMAIN" /> தளத்திற்கான அமைப்புகள்</translation>
 <translation id="7423098979219808738">முதலில் கேள்</translation>
 <translation id="7423538860840206698">கிளிப்போர்டைப் படிப்பது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7425915948813553151">தளங்களுக்கான டார்க் தீம்</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Autentiseringssertifikatet ble avvist av nettverket</translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
 <translation id="2563185590376525700">Frosk</translation>
-<translation id="2570012981255377263">De nylige filene dine vises her</translation>
 <translation id="2578394532502990878">Tamil, fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
@@ -285,10 +284,12 @@
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> feil.</translation>
+<translation id="3495810061346586977">Denne filen er konfidensiell og underlagt begrensninger via administratorregler. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
 <translation id="3524311639100184459">Advarsel: Disse filene er midlertidige og kan bli slettet automatisk for å frigjøre diskplass.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mappe</translation>
+<translation id="3548125359243647069">Feil PIN-kode ble tastet inn for mange ganger.</translation>
 <translation id="3549797760399244642">Gå til drive.google.com</translation>
 <translation id="3553048479571901246">For å åpne filer med <ph name="APP_NAME" />, kopiér dem til mappen for Windows-filer først.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internasjonalt datamaskintastatur</translation>
@@ -542,7 +543,6 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
 <translation id="5649768706273821470">Lytt</translation>
-<translation id="5665074015635552640">De nylige videoene dine vises her</translation>
 <translation id="5669691691057771421">Skriv inn en ny PIN-kode</translation>
 <translation id="5678784840044122290">Linux-appen blir tilgjengelig i terminalen din og kan også vise et ikon i appoversikten.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan ikke koble fra et arkiv eller en virtuell disk<ph name="END_BOLD" />
@@ -615,6 +615,7 @@
 <translation id="6267547857941397424">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – koble til</translation>
 <translation id="6269630227984243955">Malayisk</translation>
 <translation id="6287852322318138013">Velg en app for å åpne denne filen</translation>
+<translation id="6295542640242147836">Lås SIM-kortet</translation>
 <translation id="6296410173147755564">Ugyldig PUK-kode.</translation>
 <translation id="6312403991423642364">Ukjent nettverksfeil</translation>
 <translation id="6317608858038767920">Egendefinert navneserver <ph name="INPUT_INDEX" /></translation>
@@ -687,7 +688,6 @@
     <ph name="FILE_COUNT" /> ble funnet</translation>
 <translation id="6935521024859866267">Opp-ned</translation>
 <translation id="6943836128787782965">Henting av HTTP mislyktes</translation>
-<translation id="6945604978460872381">De nylige dokumentene dine vises her</translation>
 <translation id="6949408524333579394">Serbisk, translitterasjon</translation>
 <translation id="6954309393500027528">Administratoren din har blokkert innliming av denne filen</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
@@ -724,6 +724,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Lagre filen som</translation>
 <translation id="7229570126336867161">Krever EVDO</translation>
+<translation id="7230898482850090046">Administratoren har bedt deg slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="7238097264433196391">Navn på disken</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" /> – detaljer</translation>
 <translation id="7246947237293279874">FTP-proxy-tjener</translation>
@@ -735,7 +736,6 @@
 <translation id="7295662345261934369">Del med andre</translation>
 <translation id="7297443947353982503">Brukernavn/passord er galt, eller så mislyktes EAP-autorisasjonen</translation>
 <translation id="7309413087278791451">Tysk (Belgia)</translation>
-<translation id="7313374447885864533">De nylige lydfilene dine vises her</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
 <translation id="7357762654218998920">Denne filtypen støttes ikke. <ph name="BEGIN_LINK_HELP" />Finn ut mer<ph name="END_LINK_HELP" /> om å åpne filer i ChromeOS.</translation>
@@ -756,6 +756,7 @@
 <translation id="7505167922889582512">Vis skjulte filer</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="751507702149411736">Hviterussisk</translation>
+<translation id="7521790570754130607">Du trenger en PIN-kode for å bruke mobildata</translation>
 <translation id="7532029025027028521">Persisk, translitterasjon</translation>
 <translation id="7544830582642184299">Gi Linux-apper tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="7547009467130558110">Snøresko</translation>
@@ -780,6 +781,7 @@
 <translation id="76959938259365003">Kunne ikke tømme papirkurven.</translation>
 <translation id="770015031906360009">Gresk</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> er kopiert.</translation>
+<translation id="7708271999969613024">For å bruke dette nettverket må du skrive inn den åttesifrede PUK-koden fra operatøren.</translation>
 <translation id="7711920809702896782">Bildeinformasjon</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7730494089396812859">Vis detaljer for skybasert sikkerhetskopiering</translation>
@@ -865,7 +867,6 @@
 <translation id="8342318071240498787">Det finnes allerede en fil eller en katalog med det samme navnet.</translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
-<translation id="8384716930968677505">De nylige bildene dine vises her</translation>
 <translation id="8386903983509584791">Skanningen er fullført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ut.</translation>
 <translation id="8395901698320285466">Dimensjoner</translation>
@@ -875,6 +876,7 @@
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
 <translation id="8456681095658380701">Ugyldig navn</translation>
+<translation id="8457767749626250697">SIM-kortet ditt er låst</translation>
 <translation id="8459404855768962328">Hvis du kopierer dette elementet, deles det med alle som kan se den delte mappen «<ph name="DESTINATION_NAME" />».</translation>
 <translation id="8461467696380332069">Høyreklikk på en fil, og velg «Fest til hyllen» for rask tilgang til filene dine på hyllen.</translation>
 <translation id="8461914792118322307">Proxy-tjener</translation>

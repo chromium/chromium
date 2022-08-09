@@ -1268,7 +1268,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2173801458090845390">Ajouter un identifiant de réquisition à cet appareil</translation>
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et la recherche de sites</translation>
-<translation id="2175607476662778685">Barre de lancement rapide</translation>
 <translation id="217576141146192373">Impossible d'ajouter l'imprimante. Veuillez vérifier la configuration de votre imprimante, puis réessayer.</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2177950615300672361">Onglet de navigation privée : <ph name="TAB_NAME" /></translation>
@@ -3792,6 +3791,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4579581181964204535">Impossible de diffuser <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Pour les notifications du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres du navigateur Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> sur cet appareil.</translation>
+<translation id="4580626299762849806">Impossible d'importer les mots de passe. Vérifiez <ph name="FILENAME" /> et assurez-vous que son format est correct.</translation>
 <translation id="4581774856936278355">Une erreur s'est produite lors de la restauration du conteneur Linux</translation>
 <translation id="4582297591746054421">Les sites lisent généralement le contenu de votre presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
@@ -5097,6 +5097,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5877064549588274448">La version a été changée. Redémarrez votre appareil pour appliquer les modifications.</translation>
 <translation id="5877584842898320529">L'imprimante sélectionnée n'est pas accessible ou n'est pas installée correctement. <ph name="BR" /> Veuillez vérifier votre imprimante ou essayez d'en sélectionner une autre.</translation>
 <translation id="5878945009165002849">Bloquer les invites de connexion provenant de services de vérification de l'identité</translation>
+<translation id="5882449899683447569">Un problème est survenu et vos mots de passe n'ont pas été importés</translation>
 <translation id="5882919346125742463">Réseaux connus</translation>
 <translation id="5883356647197510494">Autorisations bloquées automatiquement : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Cet onglet est connecté à un appareil USB.</translation>
@@ -7552,7 +7553,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8248887045858762645">Conseil relatif à Chrome</translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
 <translation id="8249615410597138718">Envoyer à vos appareils</translation>
-<translation id="8249672078237421304">Me proposer de traduire les pages qui sont écrites dans une langue que je ne sais pas lire</translation>
 <translation id="8250210000648910632">Espace de stockage insuffisant</translation>
 <translation id="8251441930213048644">Actualiser maintenant</translation>
 <translation id="8251509999076836464">Association avec l'appareil suivant :<ph name="DEVICE_NAME" /></translation>

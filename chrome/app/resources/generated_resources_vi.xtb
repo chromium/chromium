@@ -1279,7 +1279,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
 <translation id="2173801458090845390">Thêm ID yêu cầu vào thiết bị này</translation>
 <translation id="2175384018164129879">&amp;Quản lý Công cụ tìm kiếm và công cụ Tìm kiếm trang web</translation>
-<translation id="2175607476662778685">Thanh khởi động nhanh</translation>
 <translation id="217576141146192373">Không thể thêm máy in. Vui lòng kiểm tra cấu hình của máy in rồi thử lại.</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2177950615300672361">Thẻ ẩn danh: <ph name="TAB_NAME" /></translation>
@@ -1884,6 +1883,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2727633948226935816">Đừng nhắc tôi lần nữa</translation>
 <translation id="2727712005121231835">Kích thước Thực</translation>
 <translation id="2729314457178420145">Xóa cả dữ liệu duyệt web (<ph name="URL" />), việc này có thể khiến bạn bị đăng xuất khỏi Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome đang tìm cách mới để giảm bớt hoạt động theo dõi và giúp bạn an toàn hơn nữa khi duyệt web. Chrome cũng <ph name="ESTIMATE_INTERESTS_LINK" /> và cho phép bạn quản lý các mối quan tâm đó. Sau đó, các trang web bạn truy cập có thể yêu cầu Chrome cho biết các mối quan tâm của bạn để hiển thị quảng cáo cho bạn.</translation>
 <translation id="2730029791981212295">Đang sao lưu ứng dụng và tệp Linux</translation>
 <translation id="2730901670247399077">Biểu tượng cảm xúc đề xuất</translation>
 <translation id="273093730430620027">Trang này đang truy cập máy ảnh của bạn.</translation>
@@ -3806,6 +3806,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4579581181964204535">Không thể truyền <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Để xem thông báo của trình duyệt, hãy chuyển tới mục <ph name="LINK_BEGIN" />Các chế độ cài đặt của trình duyệt Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Mật khẩu được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> trên thiết bị này.</translation>
+<translation id="4580626299762849806">Không nhập được mật khẩu. Hãy kiểm tra <ph name="FILENAME" /> để đảm bảo tệp này có định dạng chính xác.</translation>
 <translation id="4581774856936278355">Lỗi khi khôi phục Linux</translation>
 <translation id="4582297591746054421">Các trang web thường đọc bảng nhớ tạm để áp dụng những tính năng như giữ nguyên định dạng của văn bản đã sao chép</translation>
 <translation id="4582563038311694664">Đặt lại tất cả cài đặt</translation>
@@ -4571,6 +4572,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5350293332385664455">Tắt Trợ lý Google</translation>
 <translation id="535123479159372765">Văn bản được sao chép từ thiết bị khác</translation>
 <translation id="5352033265844765294">Dấu Thời gian</translation>
+<translation id="5352257124367865087">Quản lý quyền của trang web</translation>
 <translation id="5353252989841766347">Xuất mật khẩu từ Chrome</translation>
 <translation id="5355099869024327351">Cho phép Trợ lý hiển thị thông báo cho bạn</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
@@ -5071,6 +5073,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5843706793424741864">Độ F</translation>
 <translation id="5844574845205796324">Đề xuất nội dung mới để khám phá</translation>
 <translation id="5846200638699387931">Lỗi cú pháp về mối quan hệ: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Quản lý quyền của trang web</translation>
 <translation id="5846807460505171493">Cài đặt các bản cập nhật và ứng dụng. Bằng việc tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật cũng như ứng dụng từ Google, nhà mạng và nhà sản xuất thiết bị, có thể bằng cách sử dụng dữ liệu di động. Một vài ứng dụng có thể cung cấp tùy chọn mua hàng trong ứng dụng.</translation>
 <translation id="5849212445710944278">Đã thêm</translation>
 <translation id="5851868085455377790">Nhà cung cấp</translation>
@@ -5111,6 +5114,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5877064549588274448">Kênh đã thay đổi. Hãy khởi động lại thiết bị để áp dụng thay đổi.</translation>
 <translation id="5877584842898320529">Máy in đã chọn không sử dụng được hoặc không được cài đặt chính xác. <ph name="BR" /> Hãy kiểm tra máy in hoặc thử chọn một máy in khác.</translation>
 <translation id="5878945009165002849">Chặn lời nhắc đăng nhập qua dịch vụ nhận dạng</translation>
+<translation id="5882449899683447569">Đã xảy ra lỗi nên hệ thống chưa nhập được mật khẩu của bạn</translation>
 <translation id="5882919346125742463">Mạng đã biết</translation>
 <translation id="5883356647197510494">Đã tự động chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Thẻ này được kết nối với một thiết bị USB.</translation>
@@ -5635,6 +5639,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6398715114293939307">Xóa Cửa hàng Google Play</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="6399774419735315745">Điệp viên</translation>
+<translation id="6400360390396538896">Luôn cho phép trên <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Để gửi thẻ này cho một thiết bị khác, hãy đăng nhập vào Chrome trên thiết bị đó</translation>
 <translation id="6401597285454423070">Máy tính của bạn chứa thiết bị bảo mật Mô-đun nền tảng đáng tin cậy (TPM) dùng để triển khai nhiều tính năng bảo mật quan trọng trong ChromeOS. Truy cập Trung tâm trợ giúp Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Trải nghiệm chơi trên Chromebook</translation>
@@ -7565,7 +7570,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8248887045858762645">Mẹo khi dùng Chrome</translation>
 <translation id="8249048954461686687">Thư mục OEM</translation>
 <translation id="8249615410597138718">Gửi đến các thiết bị của bạn</translation>
-<translation id="8249672078237421304">Đề xuất dịch các trang không phải bằng ngôn ngữ bạn đã đọc</translation>
 <translation id="8250210000648910632">Hết không gian lưu trữ</translation>
 <translation id="8251441930213048644">Làm mới ngay</translation>
 <translation id="8251509999076836464">Đang ghép nối với <ph name="DEVICE_NAME" /></translation>

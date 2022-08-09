@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2570012981255377263">Неодамнешните датотеки ќе се појават тука</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
 <translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
@@ -285,10 +284,12 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
+<translation id="3495810061346586977">Датотекава е доверлива и подлежи на ограничувања според правилата на администраторот. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: датотекиве се привремени и може да се бришат автоматски за да се ослободи простор на дискот.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3548125359243647069">Внесовте погрешен PIN премногу пати.</translation>
 <translation id="3549797760399244642">Одете на drive.google.com...</translation>
 <translation id="3553048479571901246">За да отворате датотеки со <ph name="APP_NAME" />, прво копирајте ги во папката со датотеки на Windows.</translation>
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
@@ -541,7 +542,6 @@
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
 <translation id="5633226425545095130">Ако ја преместите ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Слушај</translation>
-<translation id="5665074015635552640">Неодамнешните видеа ќе се појават тука</translation>
 <translation id="5669691691057771421">Внесете го новиот PIN</translation>
 <translation id="5678784840044122290">Апликацијата за Linux ќе биде достапна во вашиот терминал, а може да се прикаже икона и во „Стартерот“.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се исклучи од архива или виртуелен диск<ph name="END_BOLD" />
@@ -614,6 +614,7 @@
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
+<translation id="6295542640242147836">Заклучи SIM</translation>
 <translation id="6296410173147755564">Погрешен PUK</translation>
 <translation id="6312403991423642364">Непозната мрежна грешка</translation>
 <translation id="6317608858038767920">Приспособен DNS-сервер <ph name="INPUT_INDEX" /></translation>
@@ -686,7 +687,6 @@
     Најдени се <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6943836128787782965">HTTP не успеа</translation>
-<translation id="6945604978460872381">Неодамнешните документи ќе се појават тука</translation>
 <translation id="6949408524333579394">транслитерација на српски</translation>
 <translation id="6954309393500027528">Администраторот блокирал лепење на датотекава</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
@@ -723,6 +723,7 @@
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Сними ја датотеката како</translation>
 <translation id="7229570126336867161">Треба EVDO</translation>
+<translation id="7230898482850090046">Вашиот администратор побара да ја исклучите поставката „Заклучи SIM"</translation>
 <translation id="7238097264433196391">Име на USB-диск</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, детали</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
@@ -734,7 +735,6 @@
 <translation id="7295662345261934369">Сподели со другите</translation>
 <translation id="7297443947353982503">Корисничкото име/лозинката не се точни или автентикацијата со EAP не успеа</translation>
 <translation id="7309413087278791451">германски (Белгија)</translation>
-<translation id="7313374447885864533">Неодамнешните аудиодатотеки ќе се појават тука</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7343393116438664539">виетнамски телекс</translation>
 <translation id="7357762654218998920">Типов датотека не е поддржан. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
@@ -755,6 +755,7 @@
 <translation id="7505167922889582512">Прикажи скриени датотеки</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="751507702149411736">белоруска</translation>
+<translation id="7521790570754130607">Потребен е PIN за да користите мобилен интернет</translation>
 <translation id="7532029025027028521">транслитерација на персиски</translation>
 <translation id="7544830582642184299">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="7547009467130558110">Патика</translation>
@@ -779,6 +780,7 @@
 <translation id="76959938259365003">Не успеа да се испразни корпата за отпадоци.</translation>
 <translation id="770015031906360009">Грчки</translation>
 <translation id="7705251383879779343">Копирано: <ph name="FILE_NAME" />.</translation>
+<translation id="7708271999969613024">За да ја користите мрежава, треба да го внесете 8-цифренот личен клуч за одблокирање (PUK) обезбеден од операторот.</translation>
 <translation id="7711920809702896782">Информации за сликата</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7730494089396812859">Прикажи детали на резервна копија на облак</translation>
@@ -864,7 +866,6 @@
 <translation id="8342318071240498787">Веќе постои датотека или директориум со истото име.</translation>
 <translation id="8372369524088641025">Погрешен клуч WEP</translation>
 <translation id="8372852072747894550">грчки</translation>
-<translation id="8384716930968677505">Неодамнешните слики ќе се појават тука</translation>
 <translation id="8386903983509584791">Скенирањето заврши</translation>
 <translation id="8387733224523483503">Отпакувана е <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Димензии</translation>
@@ -874,6 +875,7 @@
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Недостасува SIM-картичка</translation>
 <translation id="8456681095658380701">Неважечко име</translation>
+<translation id="8457767749626250697">Вашата SIM-картичка е заклучена</translation>
 <translation id="8459404855768962328">Ако ја копирате ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="8461467696380332069">Кликнете со десно копче и изберете „Прикачи на полицата“ за брз пристап до вашите датотеки во полицата.</translation>
 <translation id="8461914792118322307">Прокси</translation>

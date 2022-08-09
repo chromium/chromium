@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">നെറ്റ്‌വർക്ക്, പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് നിരസിച്ചു</translation>
 <translation id="255937426064304553">യുഎസ് ഇന്റർനാഷണൽ</translation>
 <translation id="2563185590376525700">തവള</translation>
-<translation id="2570012981255377263">നിങ്ങളുടെ അടുത്തിടെയുള്ള ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="2578394532502990878">തമിഴ് ഉച്ചാരണ ശബ്‌ദം</translation>
 <translation id="2579959351793446050">ഒഡിയ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />-ൽ <ph name="NETWORK_COUNT" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു, വിശദാംശങ്ങൾ</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3486821258960016770">മംഗോളിയൻ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> പിശകുകൾ.</translation>
+<translation id="3495810061346586977">ഈ ഫയൽ രഹസ്യാത്മകമാണ്, കൂടാതെ അഡ്‌മിൻ നയത്തിന്റെ നിയന്ത്രണങ്ങൾക്ക് വിധേയവുമാണ്. <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="3522708245912499433">പോര്‍ച്ചുഗീസ്</translation>
 <translation id="3524311639100184459">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -542,7 +542,6 @@
 <translation id="5625294776298156701">Tamil99 കീബോർഡ് ഉള്ള തമിഴ്</translation>
 <translation id="5633226425545095130">ഈ ഇനം നീക്കുന്നതിലൂടെ, '<ph name="DESTINATION_NAME" />' എന്ന പങ്കിട്ട ഫോൾഡർ കാണാനാകുന്ന എല്ലാവരുമായും അത് പങ്കിടും.</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
-<translation id="5665074015635552640">നിങ്ങളുടെ അടുത്തിടെയുള്ള വീഡിയോകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="5669691691057771421">പുതിയ പിൻ നൽകുക</translation>
 <translation id="5678784840044122290">നിങ്ങളുടെ ടെർമിനലിനുള്ളിൽ Linux ആപ്പ് ലഭ്യമാകും, നിങ്ങളുടെ ലോഞ്ചറിൽ അതിന്റെ ഐക്കൺ കാണിച്ചേക്കാം.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ഒരു ആർക്കൈവിൽ നിന്നോ വെർച്വൽ ഡിസ്‌ക്കിൽ നിന്നോ വിച്ഛേദിക്കാനാവുന്നില്ല<ph name="END_BOLD" />
@@ -687,7 +686,6 @@
     <ph name="FILE_COUNT" /> കണ്ടെത്തി</translation>
 <translation id="6935521024859866267">അപ്‌സൈഡ് ഡൗൺ</translation>
 <translation id="6943836128787782965">HTTP പരാജയപ്പെട്ടു</translation>
-<translation id="6945604978460872381">നിങ്ങളുടെ അടുത്തിടെയുള്ള ഡോക്യുമെന്റുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="6949408524333579394">സെർബിയൻ ലിപ്യന്തരണം</translation>
 <translation id="6954309393500027528">ഈ ഫയൽ ഒട്ടിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6960565108681981554">സജീവമാക്കിയിട്ടില്ല. നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
@@ -735,7 +733,6 @@
 <translation id="7295662345261934369">മറ്റുള്ളവരുമായി പങ്കിടുക</translation>
 <translation id="7297443947353982503">ഉപയോക്തൃനാമം/പാസ്‌വേഡ് ശരിയല്ല അല്ലെങ്കിൽ EAP പരിശോധിച്ചുറപ്പിക്കൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7309413087278791451">ജർമ്മൻ (ബെൽജിയം)</translation>
-<translation id="7313374447885864533">നിങ്ങളുടെ അടുത്തിടെയുള്ള ഓഡിയോ ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="7343393116438664539">വിയറ്റ്നാമീസ് ടെലക്‌സ്</translation>
 <translation id="7357762654218998920">ഈ ഫയൽ തരം പിന്തുണയ്ക്കുന്നില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
@@ -865,7 +862,6 @@
 <translation id="8342318071240498787">സമാന പേരിലുള്ള ഫയൽ അല്ലെങ്കിൽ ഡയറക്‌റ്ററി ഇതിനകം നിലവിലുണ്ട്.</translation>
 <translation id="8372369524088641025">മോശം WEP കീ</translation>
 <translation id="8372852072747894550">ഗ്രീക്ക്</translation>
-<translation id="8384716930968677505">നിങ്ങളുടെ അടുത്തിടെയുള്ള ചിത്രങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="8386903983509584791">സ്‌കാൻ ചെയ്യുന്നത് പൂർത്തിയായി</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> എക്സ്‌ട്രാക്റ്റ് ചെയ്തു.</translation>
 <translation id="8395901698320285466">തലങ്ങൾ</translation>

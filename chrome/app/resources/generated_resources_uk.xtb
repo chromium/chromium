@@ -1282,7 +1282,6 @@
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
 <translation id="2173801458090845390">Додати ідентифікатор заявки на цей пристрій</translation>
 <translation id="2175384018164129879">&amp;Керувати пошуковими системами та пошуком на сайтах</translation>
-<translation id="2175607476662778685">Панель швидкого запуску</translation>
 <translation id="217576141146192373">Не вдається додати принтер. Перевірте його налаштування й повторіть спробу.</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2177950615300672361">Анонімна вкладка: <ph name="TAB_NAME" /></translation>
@@ -7571,7 +7570,6 @@
 <translation id="8248887045858762645">Порада щодо Chrome</translation>
 <translation id="8249048954461686687">Папка OEM</translation>
 <translation id="8249615410597138718">Надіслати на пристрої</translation>
-<translation id="8249672078237421304">Пропонувати переклад сторінок, якщо їх мова відрізняється від мови у веб-переглядачі</translation>
 <translation id="8250210000648910632">Не вистачає обсягу пам’яті</translation>
 <translation id="8251441930213048644">Оновити</translation>
 <translation id="8251509999076836464">Підключення до пристрою "<ph name="DEVICE_NAME" />"</translation>

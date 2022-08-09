@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Afspil/sæt på pause</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1204296502688602597">DNS-forsinkelse</translation>
+<translation id="1207734034680156868">Forslagene er baseret på din beskrivelse</translation>
 <translation id="123124571410524056">Der er muligvis en portal</translation>
 <translation id="1236400083787698183">Udfør en powerwash på din enhed, inden du genstarter. Hvis din enhed har et låg, skal du først lukke låget, når din powerwash er gennemført. Det kan tage op til et minut at gennemføre en powerwash.</translation>
 <translation id="1238612778414822719">HTTPS-forsinkelse</translation>
@@ -696,7 +697,6 @@
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
-<translation id="6995564396478647735">Sørg for, at Skrivebeskyttet er slået til</translation>
 <translation id="7005833343836210400">Enheden er offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
@@ -807,7 +807,6 @@
 <translation id="80398733265834479">Aktivér tilstanden med automatisk farve</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8045012663542226664">Slå mikrofonens lyd fra</translation>
-<translation id="8063022551652308521">Skrivebeskyttet er stadig slået fra. Du skal slå Skrivebeskyttet til for at fortsætte.</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>

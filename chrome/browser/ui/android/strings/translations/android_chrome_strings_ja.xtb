@@ -307,6 +307,7 @@
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2707726405694321444">ページを更新</translation>
+<translation id="2709516037105925701">自動入力</translation>
 <translation id="271033894570825754">新しいファイル</translation>
 <translation id="2711073837061989559">試用版</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
@@ -400,7 +401,6 @@
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="316694332262407393">Chrome はここですでに実行中です。</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">テスト期間中、サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
@@ -1048,6 +1048,7 @@
 <translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
+<translation id="6676927815633975364">このサイトと Chrome にログインします</translation>
 <translation id="6684809838922667136">Chrome の品質を向上</translation>
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
@@ -1430,7 +1431,6 @@
 <translation id="8664215986015753476">Chrome を独自にカスタマイズ</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
 <translation id="8666759526542103597">ブラウザベースの広告のカスタマイズについて</translation>
-<translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
 <translation id="8676789164135894283">ログイン認証</translation>
 <translation id="867767487203716855">次の更新</translation>
 <translation id="8683039184091909753">画像</translation>

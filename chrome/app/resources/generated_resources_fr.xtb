@@ -1128,6 +1128,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2048653237708779538">Action non disponible</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2052572566310583903">Installée sur vos autres appareils</translation>
+<translation id="2053105195397337973">Nous étudions différents moyens de limiter le suivi tout en permettant aux sites de lutter contre le spam publicitaire et la fraude.</translation>
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
 <translation id="2054240652864153171">Effacer les données du site <ph name="SITE_NAME" /> partitionnées sur <ph name="PARTITION_SITE_NAME" /> ?</translation>
 <translation id="2055585478631012616">Vous allez être déconnecté de ce site, y compris dans les onglets ouverts</translation>
@@ -1268,7 +1269,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2173801458090845390">Ajoutez un ID de réquisition sur cet appareil</translation>
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et Site Search</translation>
-<translation id="2175607476662778685">Barre de lancement rapide</translation>
 <translation id="217576141146192373">Impossible d'ajouter une imprimante. Vérifiez la configuration de votre imprimante et réessayez.</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2177950615300672361">Onglet de navigation privée : <ph name="TAB_NAME" /></translation>
@@ -4962,6 +4962,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5747552184818312860">Date d'expiration</translation>
 <translation id="5747785204778348146">Développeur (instable)</translation>
 <translation id="5747809636523347288">Coller et accéder à <ph name="URL" /></translation>
+<translation id="5751345516399502412">Vérifier l'aptitude au partage de connexion</translation>
 <translation id="5755022574660047665">souvenirs Google Photos</translation>
 <translation id="5756163054456765343">C&amp;entre d'aide</translation>
 <translation id="5757375109985023827">Sélectionnez un onglet à prévisualiser</translation>
@@ -7221,6 +7222,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="7939328347457537652">Gérer les certificats d'appareil</translation>
 <translation id="7939412583708276221">Conserver quand même</translation>
+<translation id="7941179291434537290">Aptitude au partage de connexion :</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un emplacement…</translation>
@@ -7553,7 +7555,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8248887045858762645">Astuce Chrome</translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
 <translation id="8249615410597138718">Envoyer à vos appareils</translation>
-<translation id="8249672078237421304">Me proposer de traduire les pages qui sont écrites dans une langue que je ne connais pas</translation>
 <translation id="8250210000648910632">Espace de stockage insuffisant</translation>
 <translation id="8251441930213048644">Actualiser</translation>
 <translation id="8251509999076836464">Association à <ph name="DEVICE_NAME" />…</translation>
@@ -7749,6 +7750,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8439506636278576865">Proposer de traduire les pages dans cette langue</translation>
 <translation id="8440630305826533614">Applications Linux</translation>
 <translation id="844063558976952706">Toujours pour ce site</translation>
+<translation id="8441313165929432954">Activer/Désactiver le partage de connexion</translation>
 <translation id="8443795068008423036">Veuillez vous assurer que votre appareil est à jour et réessayer</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8447409163267621480">Vous devez inclure la touche Ctrl ou la touche Alt</translation>

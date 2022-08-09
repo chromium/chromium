@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificat d'authentification rejeté par le réseau.</translation>
 <translation id="255937426064304553">États-Unis international</translation>
 <translation id="2563185590376525700">Grenouille</translation>
-<translation id="2570012981255377263">Vos fichiers récents s'afficheront ici</translation>
 <translation id="2578394532502990878">Tamoul (phonétique)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Force du signal : <ph name="SIGNAL_STRENGTH" /> %, Bloqué par votre administrateur, Détails</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Vider la corbeille</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier la connexion, puis réessayer.</translation>
 <translation id="516592729076796170">Dvorak américain pour programmeurs</translation>
+<translation id="5172749059808361023">Détails des restrictions</translation>
 <translation id="5177526793333269655">Afficher les vignettes</translation>
 <translation id="5194713942430106590">Cliquez pour trier la colonne par ordre croissant.</translation>
 <translation id="5211614973734216083">Féroïen</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Écouter</translation>
-<translation id="5665074015635552640">Vos vidéos récentes s'afficheront ici</translation>
 <translation id="5669691691057771421">Nouveau code PIN</translation>
 <translation id="5678784840044122290">L'application Linux sera disponible dans votre terminal et une icône peut également apparaître dans votre lanceur d'applications.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossible de démonter l'archive ou le disque virtuel<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     <ph name="FILE_COUNT" /> trouvées</translation>
 <translation id="6935521024859866267">À l'envers</translation>
 <translation id="6943836128787782965">Échec de l'obtention HTTP.</translation>
-<translation id="6945604978460872381">Vos documents récents s'afficheront ici</translation>
 <translation id="6949408524333579394">Serbe (translittération)</translation>
 <translation id="6954309393500027528">Votre administrateur a bloqué le collage de ce fichier</translation>
 <translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Partager</translation>
 <translation id="7297443947353982503">Nom d'utilisateur/mot de passe incorrect ou échec de l'authentification EAP.</translation>
 <translation id="7309413087278791451">Allemand (Belgique)</translation>
-<translation id="7313374447885864533">Vos fichiers audio récents s'afficheront ici</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7343393116438664539">Vietnamien (Télex)</translation>
 <translation id="7357762654218998920">Ce type de fichier n'est pas compatible. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
-<translation id="8384716930968677505">Vos images récentes s'afficheront ici</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extrait.</translation>
 <translation id="8395901698320285466">Dimensions</translation>

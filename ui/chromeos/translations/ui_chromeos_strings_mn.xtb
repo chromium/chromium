@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Таниулах гэрчилгээг сүлжээнээс цуцалсан байна</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2563185590376525700">Frog</translation>
-<translation id="2570012981255377263">Таны саяхны файлууд энд харагдана</translation>
 <translation id="2578394532502990878">Тамил авиа зүй</translation>
 <translation id="2579959351793446050">Одиа</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Танай администратор блоклосон, Дэлгэрэнгүй</translation>
@@ -540,7 +539,6 @@
 <translation id="5625294776298156701">Tamil99 гартай тамил</translation>
 <translation id="5633226425545095130">Энэ зүйлийг зөөснөөр үүнийг '<ph name="DESTINATION_NAME" />' хуваалцсан фолдерыг харах боломжтой бүх хүнтэй хуваалцана.</translation>
 <translation id="5649768706273821470">Сонсох</translation>
-<translation id="5665074015635552640">Таны саяхны видеонууд энд харагдана</translation>
 <translation id="5669691691057771421">Шинэ ПИН оруулна уу</translation>
 <translation id="5678784840044122290">Linux апп таны Терминалд боломжтой болохоос гадна таны Эхлүүлэгчид дүрс тэмдэг харуулж болзошгүй.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архив эсвэл виртуал дискнээс салгах боломжгүй байна<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     <ph name="FILE_COUNT" /> олдсон</translation>
 <translation id="6935521024859866267">180 хэм эргэсэн</translation>
 <translation id="6943836128787782965">HTTP амжилтгүй болсон</translation>
-<translation id="6945604978460872381">Таны саяхны документууд энд харагдана</translation>
 <translation id="6949408524333579394">Серби галиг</translation>
 <translation id="6954309393500027528">Энэ файлыг буулгахыг танай администратор блоклосон</translation>
 <translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
@@ -735,7 +732,6 @@
 <translation id="7295662345261934369">Бусадтай хуваалцах</translation>
 <translation id="7297443947353982503">Хэрэглэгчийн нэр/нууц үг буруу эсвэл EAP-Auth амжилтгүй болсон байна</translation>
 <translation id="7309413087278791451">Герман (Бельги)</translation>
-<translation id="7313374447885864533">Таны саяхны аудио файлууд энд харагдана</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7343393116438664539">Вьетнам телекс</translation>
 <translation id="7357762654218998920">Энэ файлын төрлийг дэмждэггүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
@@ -867,7 +863,6 @@
 <translation id="8342318071240498787">Ийм нэртэй файл болон файлын хадгалалтын сан байна.</translation>
 <translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8372852072747894550">Грек</translation>
-<translation id="8384716930968677505">Таны саяхны зургууд энд харагдана</translation>
 <translation id="8386903983509584791">Шалгаж дууслаа</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />-г задалсан.</translation>
 <translation id="8395901698320285466">Хэмжээ</translation>

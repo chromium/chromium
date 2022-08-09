@@ -4123,6 +4123,7 @@
 <translation id="5464816904705580310">为受管理用户配置设置。</translation>
 <translation id="5466596281866046569">报告应用信息</translation>
 <translation id="546726650689747237">使用交流电源供电时的屏幕变暗延迟时间</translation>
+<translation id="546830339470589966">为新的 Kerberos 票据自动补全域名</translation>
 <translation id="5469143988693423708">允许用户运行 Crostini</translation>
 <translation id="5469825884154817306">在这些网站上阻止图片</translation>
 <translation id="5470500958458209831">可供下载 Ansible Playbook 的网址。</translation>
@@ -4951,6 +4952,10 @@
       如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="6384542789059421431">允许在浏览器侧边栏中显示默认搜索引擎的搜索结果页面。</translation>
 <translation id="6394350458541421998">此政策从 <ph name="PRODUCT_OS_NAME" />版本 29 起开始弃用。请改用 PresentationScreenDimDelayScale 政策。</translation>
+<translation id="6396956366662970339">指定是否允许启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命。
+
+      当设备已连接到交流电源时，“自适应充电”模式会评估是否应暂缓充电进程以延长电池寿命。如果“自适应充电”模式暂缓充电进程，电池电量将会保持在某个水平（例如 80%），并会在用户需要时充到 100%。
+      如果此政策设为 True，系统会启用“自适应充电”模式，并暂缓充电进程以延长电池寿命。如果此政策设为 False 或未设置，“自适应充电”模式不会影响充电进程。</translation>
 <translation id="6397588391180665797">报告已注册的设备上的用户网络配置。
 
       如果此政策设为 false，系统将不会报告这些信息。
@@ -6282,6 +6287,10 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="7771298620150437359">配置首选语言的内容和顺序</translation>
+<translation id="7773790010815041731">在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，Chrome 应用已被弃用。
+      如果此政策已启用，<ph name="PRODUCT_NAME" /> 会允许 Chrome 应用在这些平台上继续运行，直到从所有平台上移除对 Chrome 应用的支持的截止日期（2022 年 6 月）来临为止。
+      如果此政策已停用或未设置，Chrome 应用可能会无法运行，具体取决于弃用安排的状态。
+      无论在哪种情况下，系统都允许由政策强制安装的 Chrome 应用继续运行。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
 
@@ -7380,6 +7389,7 @@
 
       如需详细了解有效的输入格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="9010080992450148617">允许已加入高级保护计划的用户将下载内容发送给 Google 进行深度扫描</translation>
+<translation id="9012101302849557459">延长对 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上的 Chrome 应用的支持时间。</translation>
 <translation id="9013875414788074110">在用户登录期间，<ph name="PRODUCT_OS_NAME" />可根据服务器（在线）或使用缓存密码（离线）对用户进行身份验证。
 
       如果将此政策的值设为 -1，用户可以无限期地离线进行身份验证。将此政策设为任何其他值时，即指定了用户自最后一次使用在线身份验证起多长时间后必须再次使用在线身份验证。

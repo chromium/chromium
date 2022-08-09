@@ -390,7 +390,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1383597849754832576">Avtomatik subtitr fayllarni yuklanmadi. Keyinroq urining.</translation>
 <translation id="1383861834909034572">Yuklab olingandan keyin ochish</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
-<translation id="1384849755549338773">Boshqa tillardagi saytlarda Google Tarjimon taklif qilinsin</translation>
+<translation id="1384849755549338773">Boshqa tillardagi saytlarda Google Tarjima taklif qilinsin</translation>
 <translation id="138784436342154190">Standart boshlang‘ich sahifa tiklansinmi?</translation>
 <translation id="1388253969141979417">Mikrofondan foydalanishga ruxsat berilgan</translation>
 <translation id="1388728792929436380">Yangilanishlar tugasa, <ph name="DEVICE_TYPE" /> qurilmasi qayta ishga tushiriladi.</translation>
@@ -1266,7 +1266,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2173801458090845390">Qurilmaga identifikator so‘rovini qo‘shish</translation>
 <translation id="2175384018164129879">Qidiruv vositalari va sayt qidiruvini boshqarish</translation>
-<translation id="2175607476662778685">Tezkor ishga tushirish paneli</translation>
 <translation id="217576141146192373">Printer kiritilmadi. Printer sozlamalarini tekshiring va qayta urining.</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="2177950615300672361">Inkognito tab: <ph name="TAB_NAME" /></translation>
@@ -5131,7 +5130,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5909379458939060601">Bu profil va brauzerning ishlashi haqida axborot oʻchirib tashlansinmi?</translation>
 <translation id="5910363049092958439">&amp;Rasmni saqlab olish...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> oflayn</translation>
-<translation id="5911030830365207728">Google Tarjimon</translation>
+<translation id="5911030830365207728">Google Tarjima</translation>
 <translation id="5911533659001334206">Tezkor tugmalar</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bit):
 <ph name="MODULUS_HEX_DUMP" />
@@ -7556,7 +7555,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8248887045858762645">Chrome maslahati</translation>
 <translation id="8249048954461686687">OEM jildi</translation>
 <translation id="8249615410597138718">Qurilmalaringizga yuborish</translation>
-<translation id="8249672078237421304">Agar sahifa tili brauzer tilidan farq qilsa, uni tarjima qilish taklif qilinsin</translation>
 <translation id="8250210000648910632">Xotirada joy yoʻq</translation>
 <translation id="8251441930213048644">Hozir yangilash</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> qurilmasiga ulanmoqda</translation>

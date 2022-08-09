@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Predvajanje/začasna zaustavitev</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
+<translation id="1207734034680156868">Predlogi temeljijo na vašem opisu</translation>
 <translation id="123124571410524056">Sum na portal</translation>
 <translation id="1236400083787698183">Pred vnovičnim zagonom uporabite funkcijo Powerwash za napravo. Če ima naprava pokrov, počakajte do konca delovanja funkcije Powerwash, preden ga zaprete. Delovanje funkcije Powerwash lahko traja do eno minuto.</translation>
 <translation id="1238612778414822719">Zakasnitev HTTPS</translation>
@@ -697,7 +698,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
-<translation id="6995564396478647735">Prepričajte se, da je zaščita pred pisanjem vklopljena</translation>
 <translation id="7005833343836210400">Naprava nima vzpostavljene povezave</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
@@ -808,7 +808,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8045012663542226664">Izklop zvok mikrofona</translation>
-<translation id="8063022551652308521">Zaščita pred pisanjem je še vedno izklopljena. Če želite nadaljevati, jo vklopite.</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>

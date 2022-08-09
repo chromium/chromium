@@ -27,7 +27,7 @@
 <translation id="1199355487114804640">Pokretanje/pauziranje</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1204296502688602597">Latentnost DNS-a</translation>
-<translation id="1207734034680156868">Prijedlozi se temelje na vašem opisu</translation>
+<translation id="1207734034680156868">Prijedlozi se zasnivaju na vašem opisu</translation>
 <translation id="123124571410524056">Sumnja na portal</translation>
 <translation id="1236400083787698183">Prije ponovnog pokretanja, pokrenite Powerwash na uređaju. Ako uređaj ima poklopac, nemojte ga zatvarati dok se Powerwash ne završi. Powerwash može potrajati do jedne minute.</translation>
 <translation id="1238612778414822719">HTTPs latentnost</translation>
@@ -698,7 +698,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
-<translation id="6995564396478647735">Provjerite je li uključena Zaštita od pisanja</translation>
 <translation id="7005833343836210400">Uređaj je offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7040230719604914234">Operater</translation>
@@ -809,7 +808,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
-<translation id="8063022551652308521">Zaštita od pisanja je i dalje isključena. Da nastavite, uključite Zaštitu od pisanja.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>

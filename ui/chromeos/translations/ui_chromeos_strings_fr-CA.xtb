@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Certificat d'authentification rejeté par le réseau</translation>
 <translation id="255937426064304553">États-Unis international</translation>
 <translation id="2563185590376525700">Grenouille</translation>
-<translation id="2570012981255377263">Vos fichiers récents s'afficheront ici</translation>
 <translation id="2578394532502990878">Tamoul (phonétique)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
@@ -285,6 +284,7 @@
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erreurs.</translation>
+<translation id="3495810061346586977">Ce fichier est confidentiel et soumis à des restrictions aux termes de la politique de l'administrateur. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3522708245912499433">Portugais</translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -543,7 +543,6 @@
 <translation id="5625294776298156701">Tamoul avec clavier Tamil99</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec quiconque peut accéder au dossier partagé « <ph name="DESTINATION_NAME" /> ».</translation>
 <translation id="5649768706273821470">Écouter</translation>
-<translation id="5665074015635552640">Vos vidéos récentes s'afficheront ici</translation>
 <translation id="5669691691057771421">Entrez le nouveau NIP</translation>
 <translation id="5678784840044122290">L'application Linux sera disponible dans votre terminal et une icône peut également s'afficher dans votre lanceur d'applications.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Déconnexion à partir d'une archive ou d'un disque virtuel impossible<ph name="END_BOLD" />
@@ -688,7 +687,6 @@
     <ph name="FILE_COUNT" /> trouvées</translation>
 <translation id="6935521024859866267">À l'envers</translation>
 <translation id="6943836128787782965">Échec de l'obtention HTTP.</translation>
-<translation id="6945604978460872381">Vos documents récents s'afficheront ici</translation>
 <translation id="6949408524333579394">Serbe (translittération)</translation>
 <translation id="6954309393500027528">Le collage de ce fichier est bloqué par votre administrateur</translation>
 <translation id="6960565108681981554">Pas activée. Communiquez avec votre fournisseur de services.</translation>
@@ -736,7 +734,6 @@
 <translation id="7295662345261934369">Partager avec d'autres personnes</translation>
 <translation id="7297443947353982503">Nom d'utilisateur ou mot de passe incorrect, ou échec de l'authentification EAP</translation>
 <translation id="7309413087278791451">Allemand (Belgique)</translation>
-<translation id="7313374447885864533">Vos fichiers audio récents s'afficheront ici</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7343393116438664539">Vietnamien (télex)</translation>
 <translation id="7357762654218998920">Ce type de fichier n'est pas pris en charge. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
@@ -866,7 +863,6 @@
 <translation id="8342318071240498787">Un fichier ou un répertoire du même nom existe déjà.</translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
-<translation id="8384716930968677505">Vos images récentes s'afficheront ici</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extrait.</translation>
 <translation id="8395901698320285466">Dimensions</translation>

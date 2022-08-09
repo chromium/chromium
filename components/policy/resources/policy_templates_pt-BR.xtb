@@ -2398,6 +2398,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> não for definida, esta política não terá efeito.</translation>
 <translation id="3397883909301547525">Não mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Forçar a desativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
+<translation id="3408078762098350617">Controla a experiência do usuário com recursos desativados na <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+      Se a política for bloqueada, os recursos desativados não poderão ser usados, mas vão ficar visíveis para os usuários.
+
+      Se ela for ocultada, os recursos desativados não poderão ser usados e vão ficar invisíveis para os usuários.
+
+      Se a política for deixada sem definição ou tiver um valor inválido, o modo de desativação de recursos do sistema vai ser "bloqueado".</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
       Se ela for desativada, o processo de áudio será executado com prioridade normal.
@@ -5528,6 +5535,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política não for definida, não haverá restrições impostas por ela com relação ao conjunto de apps que o usuário poderá ativar na tela de bloqueio.</translation>
 <translation id="6882028194958060206">Estender a configuração de conteúdo em Flash a todos os conteúdos (suspenso)</translation>
 <translation id="6889123056995503704">O usuário decide o comportamento de downgrade de canal</translation>
+<translation id="6893442532580358855">A definição da política impede que páginas da Web com URLs proibidos sejam carregadas. Ela fornece uma lista de padrões de URL que especificam URLs proibidos. Deixar a política sem definição significa que nenhum URL vai ser proibido no navegador. Formate o padrão de URL da maneira descrita em https://www.chromium.org/administrators/url-blocklist-filter-format. Até mil exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      A partir da versão 73 do <ph name="PRODUCT_NAME" />, é possível bloquear URLs "javascript://*". No entanto, isso só afeta JavaScript inserido na barra de endereço (ou, por exemplo, bookmarklets). URLs com JavaScript na página que tenham dados carregados dinamicamente não vão estar sujeitos a esta política. Por exemplo, se você bloquear example.com/abc, ainda vai ser possível carregar example.com/abc na página example.com usando XMLHTTPRequest.
+
+      A partir da versão 92 do <ph name="PRODUCT_NAME" />, esta política também vai estar disponível no modo headless.
+
+      Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser burlado em casos especiais. Em vez de bloquear determinados URLs internos, veja se há políticas mais específicas disponíveis. Casos comuns: em vez de bloquear chrome://settings/certificates, use a <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Em vez de bloquear chrome-untrusted://crosh, use a <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
 <translation id="6897730193187922386">Suprimir mensagens de suspensão de uso do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Detectar automaticamente configurações de proxy</translation>

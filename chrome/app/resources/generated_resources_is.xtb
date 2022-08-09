@@ -1280,7 +1280,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2173302385160625112">Athugaðu nettenginguna</translation>
 <translation id="2173801458090845390">Bæta úthlutunarauðkenni við þetta tæki</translation>
 <translation id="2175384018164129879">&amp;Umsjón með leitarvélum og leit á vefsvæðum</translation>
-<translation id="2175607476662778685">Flýtiræsistika</translation>
 <translation id="217576141146192373">Ekki er hægt að bæta við prentara. Athugaðu stillingu prentarans og reyndu aftur.</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2177950615300672361">Huliðsflipi: <ph name="TAB_NAME" /></translation>
@@ -7567,7 +7566,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8248887045858762645">Chrome ábending</translation>
 <translation id="8249048954461686687">Framleiðandamappa</translation>
 <translation id="8249615410597138718">Senda í tækin þín</translation>
-<translation id="8249672078237421304">Bjóðast til að þýða síður á tungumálum sem þú getur ekki lesið</translation>
 <translation id="8250210000648910632">Geymslurýmið er fullt</translation>
 <translation id="8251441930213048644">Endurnýja núna</translation>
 <translation id="8251509999076836464">Parar við <ph name="DEVICE_NAME" /></translation>
@@ -7979,6 +7977,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8666759526542103597">Um sérsniðnar auglýsingar út frá vafravirkni</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> er núna á öllum skjánum og hefur gert músarbendilinn óvirkan.</translation>
 <translation id="8667760277771450375">Við leitum leiða til að takmarka rakningu milli vefsvæða en gera vefsvæðum á sama tíma kleift að stöðva rusl og svik í auglýsingum.</translation>
+<translation id="8668378421690365723">Tækið þitt virkar hugsanlega ekki rétt lengur og vandamál varðandi öryggi og afköst gætu komið upp.</translation>
 <translation id="8669284339312441707">Hlýrra</translation>
 <translation id="8670537393737592796">Til að komast hratt hingað aftur skaltu setja upp <ph name="APP_NAME" /> með því að smella á hnappinn til að setja upp</translation>
 <translation id="867085395664725367">Tímabundin netþjónsvilla kom upp.</translation>
@@ -8463,6 +8462,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Settu upp <ph name="DEVICE_OS" /> á innra drifinu til að upplifunin verði sem best. Þú getur einnig sett forritið upp síðar á innskráningarskjánum.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Prófaðu að keyra forritið af USB ef þú vilt ekki setja það upp á drifinu. Þannig er hægt að halda núverandi stýrikerfi og gögnum en hugsanlega finnurðu fyrir takmörkunum á geymslurými og afkastagetu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Opna sem fastan flipa</translation>
+<translation id="9123287046453017203">Tækið þitt er ekki uppfært</translation>
 <translation id="9124003689441359348">Vistuð aðgangsorð birtast hér</translation>
 <translation id="9126149354162942022">Litur bendils</translation>
 <translation id="9128317794749765148">Ekki tókst að ljúka við uppsetningu</translation>

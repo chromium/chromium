@@ -698,7 +698,6 @@
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6977381486153291903">固件版本</translation>
-<translation id="6995564396478647735">请确保已开启写保护</translation>
 <translation id="7005833343836210400">设备处于离线状态</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
@@ -809,7 +808,6 @@
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8045012663542226664">麦克风静音</translation>
-<translation id="8063022551652308521">写保护依然处于关闭状态。若要继续，请开启写保护。</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>

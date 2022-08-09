@@ -200,6 +200,7 @@
 <translation id="2046634576464120978">등록 실패</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">인터넷 검색하기</translation>
+<translation id="2053105195397337973">Google은 추적을 제한하고 사이트에서 광고 스팸과 사기를 방지하도록 돕는 방안을 모색하고 있습니다.</translation>
 <translation id="2056878612599315956">사이트 일시중지됨</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="2067805253194386918">텍스트</translation>
@@ -234,6 +235,7 @@
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
 <translation id="2248941474044011069">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
+<translation id="2276231040576210443">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="2279146068164892489"><ph name="APPNAME" /> 앱을 여시겠습니까?</translation>
@@ -307,6 +309,7 @@
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
+<translation id="2709516037105925701">자동 완성</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">무료 체험</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
@@ -395,12 +398,12 @@
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">다음 카드와 연결됨</translation>
 <translation id="3123734510202723619">공지사항</translation>
+<translation id="3130863904455712965">방문 기록 및 기타 정보</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">시험 기간 중에는 사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
@@ -543,6 +546,7 @@
 <translation id="3981902534690264083">광고주가 특정 광고의 성과를 파악할 수 있습니다.</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> 파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="3987993985790029246">링크 복사</translation>
+<translation id="3999683152997576765">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="4000212216660919741">오프라인 홈</translation>
 <translation id="4016425174436051808">팔로우할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
@@ -1298,6 +1302,7 @@
 <translation id="8037801708772278989">조금 전에 확인됨</translation>
 <translation id="804335162455518893">SD 카드가 없음</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개}other{시크릿 탭 <ph name="TAB_COUNT_NORMAL" />개}}</translation>
+<translation id="8048728378294435881">콘텐츠를 백업하고 어느 기기에서나 사용하세요.</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" />MB 사용 가능</translation>
 <translation id="8058655154417507695">유효기간 연도</translation>
 <translation id="8058746566562539958">새 Chrome 탭에서 열기</translation>
@@ -1431,7 +1436,6 @@
 <translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8666759526542103597">브라우저 기반 광고 개인 최적화 알아보기</translation>
-<translation id="8667760277771450375">Chrome은 크로스 사이트 추적을 제한하면서도 사이트에서 광고 스팸과 사기를 근절할 수 있도록 도움을 줄 수 있는 방안을 모색하고 있습니다.</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8683039184091909753">이미지</translation>

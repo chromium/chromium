@@ -1130,6 +1130,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2048653237708779538">Toiming pole saadaval</translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2052572566310583903">Installitud teie muudesse seadmetesse</translation>
+<translation id="2053105195397337973">Katsetame uusi viise, kuidas piirata jälgimist, võimaldades saitidel samas blokeerida rämpsreklaamid ja pettused.</translation>
 <translation id="2053312383184521053">Jõudeoleku andmed</translation>
 <translation id="2054240652864153171">Kas kustutada saidi <ph name="SITE_NAME" /> andmed, mis on sektsioonis <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Teid logitakse nendelt saitidelt (sh avatud vahelehtedel) välja</translation>
@@ -1270,7 +1271,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2173302385160625112">Kontrollige Interneti-ühendust</translation>
 <translation id="2173801458090845390">Lisa seadmesse nõude ID</translation>
 <translation id="2175384018164129879">&amp;Otsingumootorite ja saidiotsingu haldamine</translation>
-<translation id="2175607476662778685">Kiirkäivitusriba</translation>
 <translation id="217576141146192373">Printerit ei saa lisada. Kontrollige oma printeri seadistust ja proovige uuesti.</translation>
 <translation id="2175927920773552910">QR-kood</translation>
 <translation id="2177950615300672361">Inkognito vaheleht: <ph name="TAB_NAME" /></translation>
@@ -4966,6 +4966,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5747552184818312860">Aegub</translation>
 <translation id="5747785204778348146">Arendaja – ebastabiilne</translation>
 <translation id="5747809636523347288">Kleebi ja ava <ph name="URL" /></translation>
+<translation id="5751345516399502412">Kontrolli jagamise valmidust</translation>
 <translation id="5755022574660047665">mälestused teenusest Google Photos</translation>
 <translation id="5756163054456765343">A&amp;bikeskus</translation>
 <translation id="5757375109985023827">Valige eelvaateks vaheleht</translation>
@@ -5478,7 +5479,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Süsteem: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Värskendus on valmis</translation>
-<translation id="6248988683584659830">Otsinguseaded</translation>
+<translation id="6248988683584659830">Otsige seadetest</translation>
 <translation id="6249200942125593849">a11y haldamine</translation>
 <translation id="6250186368828697007">Üksikasjad on ekraanikuva jagamisel peidetud</translation>
 <translation id="6251870443722440887">GDI nimed</translation>
@@ -7223,6 +7224,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7939062555109487992">Täpsemad valikud</translation>
 <translation id="7939328347457537652">Seadmete sertifikaatide haldamine</translation>
 <translation id="7939412583708276221">Säilita ikkagi</translation>
+<translation id="7941179291434537290">Jagamise valmidus:</translation>
 <translation id="7942349550061667556">Punane</translation>
 <translation id="7943368935008348579">Laadi PDF-id alla</translation>
 <translation id="7943837619101191061">Lisa asukoht ...</translation>
@@ -7555,7 +7557,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8248887045858762645">Chrome'i nõuanne</translation>
 <translation id="8249048954461686687">OEM-i kaust</translation>
 <translation id="8249615410597138718">Saatmine teie seadmetesse</translation>
-<translation id="8249672078237421304">Paku lehtede tõlkimist, mis ei ole teie loetavas keeles</translation>
 <translation id="8250210000648910632">Salvestusruum on otsas</translation>
 <translation id="8251441930213048644">Värskenda kohe</translation>
 <translation id="8251509999076836464">Sidumine seadmega <ph name="DEVICE_NAME" /></translation>
@@ -7751,6 +7752,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8439506636278576865">Paku selles keeles olevate lehtede tõlkimist</translation>
 <translation id="8440630305826533614">Linuxi rakendused</translation>
 <translation id="844063558976952706">Sellel saidil alati</translation>
+<translation id="8441313165929432954">Jagamise lubamine/keelamine</translation>
 <translation id="8443795068008423036">Veenduge, et teie seade oleks ajakohane, ja proovige uuesti</translation>
 <translation id="8446884382197647889">Lisateave</translation>
 <translation id="8447409163267621480">Kaasake Ctrl või Alt</translation>

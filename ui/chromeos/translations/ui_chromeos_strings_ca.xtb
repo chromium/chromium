@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">La xarxa ha rebutjat el certificat d'autenticació</translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2563185590376525700">Granota</translation>
-<translation id="2570012981255377263">Els teus fitxers recents es mostraran aquí</translation>
 <translation id="2578394532502990878">Tàmil fonètic</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
@@ -485,6 +484,7 @@
 <translation id="5159560892333415631">Buida la paperera</translation>
 <translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
+<translation id="5172749059808361023">Detalls de la restricció</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
 <translation id="5211614973734216083">Feroès</translation>
@@ -541,7 +541,6 @@
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
 <translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escolta</translation>
-<translation id="5665074015635552640">Els teus vídeos recents es mostraran aquí</translation>
 <translation id="5669691691057771421">Introdueix el PIN nou</translation>
 <translation id="5678784840044122290">L'aplicació per a Linux estarà disponible al terminal i és possible que també inclogui una icona al menú d'aplicacions.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No es pot desconnectar d'un arxiu o d'un disc virtual<ph name="END_BOLD" />
@@ -686,7 +685,6 @@
     S'han trobat <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Cap per avall</translation>
 <translation id="6943836128787782965">La sol·licitud HTTP ha fallat</translation>
-<translation id="6945604978460872381">Els teus documents recents es mostraran aquí</translation>
 <translation id="6949408524333579394">Serbi (transliteració)</translation>
 <translation id="6954309393500027528">El teu administrador ha bloquejat la possibilitat d'enganxar aquest fitxer</translation>
 <translation id="6960565108681981554">No està activada. Contacta amb l'operador.</translation>
@@ -734,7 +732,6 @@
 <translation id="7295662345261934369">Comparteix amb altres persones</translation>
 <translation id="7297443947353982503">El nom d'usuari o la contrasenya és incorrecte o no s'ha pogut realitzar l'autorització d'EAP.</translation>
 <translation id="7309413087278791451">Alemany (Bèlgica)</translation>
-<translation id="7313374447885864533">Els teus fitxers d'àudio recents es mostraran aquí</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7343393116438664539">Vietnamita (tèlex)</translation>
 <translation id="7357762654218998920">Aquest tipus de fitxer no és compatible. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
@@ -864,7 +861,6 @@
 <translation id="8342318071240498787">Ja existeix un fitxer o un directori amb aquest nom.</translation>
 <translation id="8372369524088641025">Clau WEP no vàlida</translation>
 <translation id="8372852072747894550">Grec</translation>
-<translation id="8384716930968677505">Les teves imatges recents es mostraran aquí</translation>
 <translation id="8386903983509584791">S'ha completat la cerca</translation>
 <translation id="8387733224523483503">S'ha extret <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensions</translation>

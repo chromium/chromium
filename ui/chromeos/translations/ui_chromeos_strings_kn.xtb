@@ -179,7 +179,6 @@
 <translation id="2544853746127077729">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="255937426064304553">US ಇಂಟರ್‌ನ್ಯಾಷನಲ್</translation>
 <translation id="2563185590376525700">ಕಪ್ಪೆ</translation>
-<translation id="2570012981255377263">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಫೈಲ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="2578394532502990878">ತಮಿಳು ಫೋನೆಟಿಕ್</translation>
 <translation id="2579959351793446050">ಒಡಿಯಾ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
@@ -540,7 +539,6 @@
 <translation id="5625294776298156701">ತಮಿಳು99 ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ತಮಿಳು</translation>
 <translation id="5633226425545095130">ಈ ಐಟಂ ಅನ್ನು ಸರಿಸುವುದರಿಂದ ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್ '<ph name="DESTINATION_NAME" />' ಅನ್ನು ನೋಡುವ ಪ್ರತಿಯೊಬ್ಬರ ಜೊತೆಗೂ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
-<translation id="5665074015635552640">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ವೀಡಿಯೊಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="5669691691057771421">ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="5678784840044122290">ನಿಮ್ಮ ಟರ್ಮಿನಲ್‌ ಒಳಗೇ Linux ಅಪ್ಲಿಕೇಶನ್ ಲಭ್ಯವಿರುತ್ತದೆ ಮತ್ತು ಅದು ನಿಮ್ಮ ಲಾಂಚರ್‌ನಲ್ಲಿ ಐಕಾನ್ ಒಂದನ್ನು ಸಹ ತೋರಿಸಬಹುದು.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ಆರ್ಕೈವ್ ಅಥವಾ ವರ್ಚುವಲ್ ಡಿಸ್ಕ್‌ನಿಂದ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ<ph name="END_BOLD" /> <ph name="LINE_BREAKS" />ಆರ್ಕೈವ್ ಅಥವಾ ವರ್ಚುವಲ್ ಡಿಸ್ಕ್‌ನಲ್ಲಿ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳನ್ನು ಮುಚ್ಚಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -681,7 +679,6 @@
 <translation id="6934241953272494177">ನಿಮ್ಮ ಮಾಧ್ಯಮ ಸಾಧನವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ... <ph name="LINE_BREAK1" /> <ph name="FILE_COUNT" /> ಕಂಡುಬಂದಿವೆ</translation>
 <translation id="6935521024859866267">ಮೇಲಿನಿಂದ ಕೆಳಮುಖವಾಗಿ</translation>
 <translation id="6943836128787782965">HTTP ವಿಫಲವಾಗಿದೆ</translation>
-<translation id="6945604978460872381">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ</translation>
 <translation id="6949408524333579394">ಸರ್ಬಿಯನ್ ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="6954309393500027528">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಫೈಲ್ ಅಂಟಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="6960565108681981554">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ. ನಿಮಗೆ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -729,7 +726,6 @@
 <translation id="7295662345261934369">ಇತರರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7297443947353982503">ಬಳಕೆದಾರರಹೆಸರು/ಪಾಸ್‌ವರ್ಡ್ ಸರಿಯಾಗಿಲ್ಲ ಅಥವಾ EAP-auth ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7309413087278791451">ಜರ್ಮನ್ (ಬೆಲ್ಜಿಯಂ)</translation>
-<translation id="7313374447885864533">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಆಡಿಯೊ ಫೈಲ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7343393116438664539">ವಿಯೆಟ್ನಾಮೀಸ್ ಟೆಲೆಕ್ಸ್</translation>
 <translation id="7357762654218998920">ಈ ಫೈಲ್ ಪ್ರಕಾರ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ChromeOS ನಲ್ಲಿ ಫೈಲ್‌ನಲ್ಲಿ ತೆರೆಯುವ ಕುರಿತು <ph name="BEGIN_LINK_HELP" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_HELP" />.</translation>
@@ -853,7 +849,6 @@
 <translation id="8342318071240498787">ಒಂದೇ ಹೆಸರಿನೊಂದಿಗೆ ಫೈಲ್ ಅಥವಾ ಡೈರೆಕ್ಟರಿ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
 <translation id="8372369524088641025">ಕೆಟ್ಟ WEP ಕೀ</translation>
 <translation id="8372852072747894550">ಗ್ರೀಕ್</translation>
-<translation id="8384716930968677505">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಚಿತ್ರಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ</translation>
 <translation id="8386903983509584791">ಸ್ಕ್ಯಾನ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ಅನ್ನು ಬೇರ್ಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="8395901698320285466">ಅಳತೆಗಳು</translation>

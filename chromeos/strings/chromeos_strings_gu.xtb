@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">ચલાવો/થોભાવો</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
+<translation id="1207734034680156868">સૂચનો તમારા વર્ણન પર આધારિત છે</translation>
 <translation id="123124571410524056">શંકાસ્પદ પોર્ટલ</translation>
 <translation id="1236400083787698183">ફરી શરૂ કરતા પહેલાં, તમારા ડિવાઇસને પાવરવોશ કરો. જો તમારું ડિવાઇસ ઢાંકણ ધરાવતું હોય, તો ઢાંકણ બંધ કરતા પહેલાં પાવરવોશ પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ. પાવરવોશ પૂર્ણ થવામાં એક મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="1238612778414822719">HTTPSની વિલંબતા</translation>
@@ -696,7 +697,6 @@
 <translation id="6961170852793647506">શરૂ કરવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
-<translation id="6995564396478647735">ખાતરી કરો કે રાઇટ પ્રોટેક્ટ ચાલુ છે</translation>
 <translation id="7005833343836210400">ડિવાઇસ ઑફલાઇન છે</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
@@ -807,7 +807,6 @@
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
-<translation id="8063022551652308521">રાઇટ પ્રોટેક્ટ હજી પણ બંધ છે. આગળ વધવા માટે, રાઇટ પ્રોટેક્ટ ચાલુ કરો.</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>

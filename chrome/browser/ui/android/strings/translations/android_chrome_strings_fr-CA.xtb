@@ -307,6 +307,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
+<translation id="2709516037105925701">Remplissage automatique</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -400,7 +401,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome fonctionne déjà ici.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
-<translation id="3169523567916669830">Pendant les essais, vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
@@ -1431,7 +1431,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8664215986015753476">Utiliser Chrome à votre manière</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
 <translation id="8666759526542103597">À propos de la personnalisation des annonces en fonction du navigateur</translation>
-<translation id="8667760277771450375">Nous explorons des moyens de limiter les suivis intersites tout en permettant aux sites d'empêcher les annonces indésirables et la fraude.</translation>
 <translation id="8676789164135894283">Vérifications de connexion</translation>
 <translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Сертыфікат аўтэнтыфікацыі адхілены сеткай</translation>
 <translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2570012981255377263">Вашы нядаўнія файлы будуць з'яўляцца тут</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
 <translation id="2602810353103180630">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -541,7 +540,6 @@
 <translation id="5625294776298156701">Тамільская (раскладка Tamil99)</translation>
 <translation id="5633226425545095130">Пры перамяшчэнні гэтага элемента ён будзе абагулены з усімі карыстальнікамі, якія могуць бачыць абагуленую папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Праслухаць</translation>
-<translation id="5665074015635552640">Вашы нядаўнія відэа будуць з'яўляцца тут</translation>
 <translation id="5669691691057771421">Увядзіце новы PIN-код</translation>
 <translation id="5678784840044122290">Linux-праграма будзе даступна ў тэрмінале, а таксама на панэлі запуску можа паказвацца яе значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не ўдаецца адключыцца ад архіва або віртуальнага дыска<ph name="END_BOLD" />
@@ -686,7 +684,6 @@
     Знойдзена: <ph name="FILE_COUNT" />.</translation>
 <translation id="6935521024859866267">Дагары нагамі</translation>
 <translation id="6943836128787782965">Памылка метаду HTTP GET</translation>
-<translation id="6945604978460872381">Вашы нядаўнія дакументы будуць з'яўляцца тут</translation>
 <translation id="6949408524333579394">Сербская (транслітарацыя)</translation>
 <translation id="6954309393500027528">Магчымасць устаўляць гэты файл заблакіравана адміністратарам</translation>
 <translation id="6960565108681981554">Сетка не актывавана. Звярніцеся да аператара.</translation>
@@ -734,7 +731,6 @@
 <translation id="7295662345261934369">Абагуліць з іншымі</translation>
 <translation id="7297443947353982503">Няправільнае імя карыстальніка або пароль ці збой аўтэнтыфікацыі EAP</translation>
 <translation id="7309413087278791451">Нямецкая (Бельгія)</translation>
-<translation id="7313374447885864533">Вашы нядаўнія аўдыяфайлы будуць з'яўляцца тут</translation>
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="7343393116438664539">В'етнамская (раскладка Telex)</translation>
 <translation id="7357762654218998920">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
@@ -864,7 +860,6 @@
 <translation id="8342318071240498787">Файл або каталог з такой назвай ужо існуе.</translation>
 <translation id="8372369524088641025">Няправільны ключ WEP</translation>
 <translation id="8372852072747894550">Грэчаская</translation>
-<translation id="8384716930968677505">Вашы нядаўнія відарысы будуць з'яўляцца тут</translation>
 <translation id="8386903983509584791">Пошук завершаны</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />: выманне завершана.</translation>
 <translation id="8395901698320285466">Памеры</translation>

@@ -183,7 +183,6 @@
 <translation id="2544853746127077729">Haqiqiylikni tekshirish sertifikati tarmoq tomonidan rad etildi</translation>
 <translation id="255937426064304553">AQSH (xalqaro)</translation>
 <translation id="2563185590376525700">Qurbaqa</translation>
-<translation id="2570012981255377263">Oxirgi fayllar shu yerda chiqadi</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
@@ -543,7 +542,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5625294776298156701">Tamil (Tamil99 klaviaturasi)</translation>
 <translation id="5633226425545095130">Bu fayl koʻchirilsa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="5649768706273821470">Tinglash</translation>
-<translation id="5665074015635552640">Oxirgi videolar shu yerda chiqadi</translation>
 <translation id="5669691691057771421">Yangi PIN kodni kiriting</translation>
 <translation id="5678784840044122290">Linux ilovasi terminal ichida ham ishlaydi, shuningdek, Launcherda ham ikonkasi chiqadi.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arxiv yoki virtual disk uzilmadi<ph name="END_BOLD" />
@@ -689,7 +687,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     <ph name="FILE_COUNT" /> topildi</translation>
 <translation id="6935521024859866267">Oyog‘i osmonda</translation>
 <translation id="6943836128787782965">HTTP GET so‘rovida xatolik yuz berdi</translation>
-<translation id="6945604978460872381">Oxirgi hujjatlar shu yerda chiqadi</translation>
 <translation id="6949408524333579394">Serb (transliteratsiya)</translation>
 <translation id="6954309393500027528">Bu faylning joylanishi administrator tomonidan bloklandi</translation>
 <translation id="6960565108681981554">Faollashtirilmagan. Aloqa operatoringizga murojaat qiling.</translation>
@@ -738,7 +735,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7295662345261934369">Boshqalar bilan ulashish</translation>
 <translation id="7297443947353982503">Foydalanuvchi nomi/parol noto‘g‘ri yoki EAP protokoli bo‘yicha haqiqiylikni tekshirish amalga oshmadi</translation>
 <translation id="7309413087278791451">Nemis (Belgiya)</translation>
-<translation id="7313374447885864533">Oxirgi audio fayllar shu yerda chiqadi</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="7343393116438664539">Vyetnam (Telex)</translation>
 <translation id="7357762654218998920">Bunday fayl turi ochilmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
@@ -870,7 +866,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8342318071240498787">Shu nomli fayl yoki katalog avvaldan mavjud.</translation>
 <translation id="8372369524088641025">WEP kaliti yaroqsiz</translation>
 <translation id="8372852072747894550">Grek</translation>
-<translation id="8384716930968677505">Oxirgi rasmlar shu yerda chiqadi</translation>
 <translation id="8386903983509584791">Tarmoq tekshirildi</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> arxivdan chiqarildi.</translation>
 <translation id="8395901698320285466">O‘lchamlar</translation>

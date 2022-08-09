@@ -27,6 +27,7 @@
 <translation id="1199355487114804640">Oynat/Duraklat</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
+<translation id="1207734034680156868">Öneriler açıklamanıza dayalı olarak sunulur</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
 <translation id="1236400083787698183">Cihazınızı yeniden başlatmadan önce powerwash işlemi yapın. Cihazınızın kapağı varsa kapağı kapatmadan önce powerwash işleminin tamamlanmasını bekleyin. Powerwash işleminin tamamlanması bir dakika kadar sürebilir.</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
@@ -697,7 +698,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
-<translation id="6995564396478647735">Yazma korumasının etkin olduğundan emin olun</translation>
 <translation id="7005833343836210400">Cihaz çevrimdışı</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
@@ -808,7 +808,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="80398733265834479">Otomatik renk modunu etkinleştir</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8045012663542226664">Mikrofonun sesini kapatma</translation>
-<translation id="8063022551652308521">Yazma koruması hâlâ devre dışı. Devam etmek için yazma korumasını etkinleştirin.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>

@@ -307,6 +307,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2707726405694321444">Oldal frissítése</translation>
+<translation id="2709516037105925701">Automatikus kitöltés</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2711073837061989559">Próbaidőszakok</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
@@ -400,7 +401,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
 <translation id="316694332262407393">A Chrome már most is fut.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3169523567916669830">A próbaidőszak során megtekintheti és eltávolíthatja azokat a témaköröket, amelyeket a webhelyek hirdetések megjelenítésére használnak. A Chrome az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján határozza meg.</translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208584281581115441">Ellenőrzés most</translation>
@@ -1431,7 +1431,6 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="8664215986015753476">Saját igényei szerint használhatja a Chrome-ot</translation>
 <translation id="8664979001105139458">Már van ilyen nevű fájl</translation>
 <translation id="8666759526542103597">A hirdetések böngészőalapú személyre szabásáról</translation>
-<translation id="8667760277771450375">Olyan módszerek kidolgozásán fáradozunk, melyekkel korlátozható a webhelyeken átnyúló nyomon követés úgy, hogy közben a webhelyek is gátat vethetnek a hirdetési spameknek és a csalásnak.</translation>
 <translation id="8676789164135894283">Bejelentkezési hitelesítések</translation>
 <translation id="867767487203716855">Következő frissítés</translation>
 <translation id="8683039184091909753">kép</translation>

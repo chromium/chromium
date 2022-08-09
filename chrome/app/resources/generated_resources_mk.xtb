@@ -1140,6 +1140,7 @@
 <translation id="2048653237708779538">Дејството не е достапно</translation>
 <translation id="2050339315714019657">Портрет</translation>
 <translation id="2052572566310583903">Инсталирана на вашите други уреди</translation>
+<translation id="2053105195397337973">Истражуваме начини како да го намалиме следењето, а притоа да им овозможуваме на сајтовите да ги сопрат спамот и измамите со реклами.</translation>
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
 <translation id="2054240652864153171">Да се избришат податоците од сајтот <ph name="SITE_NAME" /> поделени во партиции на <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Ќе ве одјавиме од овие сајтови, вклучително и од отворените картички</translation>
@@ -1280,7 +1281,6 @@
 <translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
 <translation id="2173801458090845390">Додајте ID на барање на уредов</translation>
 <translation id="2175384018164129879">&amp;Управувајте со пребарувачи и пребарување сајтови</translation>
-<translation id="2175607476662778685">Лента за брзо активирање</translation>
 <translation id="217576141146192373">Не може да се додаде печатач. Проверете ја конфигурацијата на печатачот и обидете се повторно.</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2177950615300672361">Инкогнито картичка: <ph name="TAB_NAME" /></translation>
@@ -3807,6 +3807,7 @@
 <translation id="4579581181964204535">Не може да се емитува <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">За известувањата од прелистувачот, одете во <ph name="LINK_BEGIN" />Поставки за прелистувачот Chrome<ph name="LINK_END" /></translation>
 <translation id="4580596421317071374">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> на уредов.</translation>
+<translation id="4580626299762849806">Не може да се увезат лозинките. Проверете го <ph name="FILENAME" /> и погрижете се дека е форматирано правилно.</translation>
 <translation id="4581774856936278355">Грешка при враќањето на Linux</translation>
 <translation id="4582297591746054421">Сајтовите обично ја читаат вашата привремена меморија за функциите како што е задржувањето на форматот на текстот што сте го копирале</translation>
 <translation id="4582563038311694664">Ресетирај ги сите поставки</translation>
@@ -4572,6 +4573,7 @@
 <translation id="5350293332385664455">Исклучување на „Помошникот на Google“</translation>
 <translation id="535123479159372765">Текст копиран од друг уред</translation>
 <translation id="5352033265844765294">Временско означување</translation>
+<translation id="5352257124367865087">Управувајте со дозволите за сајтот</translation>
 <translation id="5353252989841766347">Извоз на лозинки од Chrome</translation>
 <translation id="5355099869024327351">Овозможува „Помошникот“ да ви прикажува известувања</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
@@ -4977,6 +4979,7 @@
 <translation id="5747552184818312860">Истекува на</translation>
 <translation id="5747785204778348146">Програмер - нестабилен</translation>
 <translation id="5747809636523347288">&amp;Залепи и оди на <ph name="URL" /></translation>
+<translation id="5751345516399502412">Проверете ја подготвеноста за интернет преку мобилен</translation>
 <translation id="5755022574660047665">спомени од „Фотографии на Google“</translation>
 <translation id="5756163054456765343">Центар за п&amp;омош</translation>
 <translation id="5757375109985023827">Изберете картичка за да ја прегледате</translation>
@@ -5072,6 +5075,7 @@
 <translation id="5843706793424741864">Фаренхајтови</translation>
 <translation id="5844574845205796324">Предложете нови содржини за истражување</translation>
 <translation id="5846200638699387931">Синтаксичка грешка во односот: <ph name="ERROR_LINE" /></translation>
+<translation id="5846504156837627898">Управувајте со дозволите за сајтот</translation>
 <translation id="5846807460505171493">Инсталирање ажурирања и апликации. Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и производителот на уредот, веројатно преку мобилен интернет. Некои од овие апликации може да нудат купувања во апликации.</translation>
 <translation id="5849212445710944278">Додаден претходно</translation>
 <translation id="5851868085455377790">Издавач</translation>
@@ -5112,6 +5116,7 @@
 <translation id="5877064549588274448">Каналот е сменет. Рестартирајте го вашиот уред за да ги примените измените.</translation>
 <translation id="5877584842898320529">Избраниот печатач не е достапен или не е правилно инсталиран. <ph name="BR" /> Проверете го или обидете се да изберете друг печатач.</translation>
 <translation id="5878945009165002849">Блокирајте prompt за најавување од услуги за идентификација</translation>
+<translation id="5882449899683447569">Нешто тргна наопаку и лозинките не се увезоа</translation>
 <translation id="5882919346125742463">Познати мрежи</translation>
 <translation id="5883356647197510494">Автоматски блокирани: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Картичкава е поврзана со USB-уред.</translation>
@@ -5636,6 +5641,7 @@
 <translation id="6398715114293939307">Отстранете ја Google Play Store</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="6399774419735315745">Шпионка</translation>
+<translation id="6400360390396538896">Секогаш на <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">За да ја испратите картичкава на друг уред, најавете се на Chrome таму</translation>
 <translation id="6401597285454423070">Вашиот компјутер содржи безбедносен уред Trusted Platform Module (TPM) што се користи за имплементирање на многу важни безбедносни функции во Chrome OS. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Играње на Chromebook</translation>
@@ -7236,6 +7242,7 @@
 <translation id="7939062555109487992">Напредни опции</translation>
 <translation id="7939328347457537652">Управувајте со сертификатите на уредот</translation>
 <translation id="7939412583708276221">Сепак задржи</translation>
+<translation id="7941179291434537290">Подготвеност за интернет преку мобилен:</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943368935008348579">Преземи во PDF-формат</translation>
 <translation id="7943837619101191061">Додај локација…</translation>
@@ -7567,7 +7574,6 @@
 <translation id="8248887045858762645">Совет за Chrome</translation>
 <translation id="8249048954461686687">Папка на OEM</translation>
 <translation id="8249615410597138718">Испратете до вашите уреди</translation>
-<translation id="8249672078237421304">Понуди да преведеш страници што не се на јазик што го знам</translation>
 <translation id="8250210000648910632">Нема простор за складирање</translation>
 <translation id="8251441930213048644">Освежи сега</translation>
 <translation id="8251509999076836464">Се спарува со <ph name="DEVICE_NAME" /></translation>
@@ -7766,6 +7772,7 @@
 <translation id="8439506636278576865">Нуди да ги преведува страниците на овој јазик</translation>
 <translation id="8440630305826533614">Апликации за Linux</translation>
 <translation id="844063558976952706">Секогаш на сајтов</translation>
+<translation id="8441313165929432954">Овозможете/оневозможете интернет преку мобилен</translation>
 <translation id="8443795068008423036">Проверете дали уредот е ажуриран и обидете се повторно</translation>
 <translation id="8446884382197647889">Дознај повеќе</translation>
 <translation id="8447409163267621480">Опфатете или Ctrl или Alt</translation>
