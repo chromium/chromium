@@ -34,6 +34,25 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+constexpr char kToastShownCountHistogramName[] =
+    "Ash.NotifierFramework.Toast.ShownCount";
+
+constexpr char kToastTimeInQueueHistogramName[] =
+    "Ash.NotifierFramework.Toast.TimeInQueue";
+
+constexpr char kToastDismissedWithin2s[] =
+    "Ash.NotifierFramework.Toast.Dismissed.Within2s";
+
+constexpr char kToastDismissedWithin7s[] =
+    "Ash.NotifierFramework.Toast.Dismissed.Within7s";
+
+constexpr char kToastDismissedAfter7s[] =
+    "Ash.NotifierFramework.Toast.Dismissed.After7s";
+
+}  // namespace
+
 namespace ash {
 
 class ToastManagerImplTest : public AshTestBase {
@@ -660,54 +679,103 @@ TEST_F(ToastManagerImplTest, DismissButton) {
             GetCurrentDismissText());
 }
 
-TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
+TEST_F(ToastManagerImplTest, ShownCountMetric) {
   base::HistogramTester histogram_tester;
 
-  constexpr char kToastShownCountHistogramName[] =
-      "Ash.NotifierFramework.Toast.ShownCount";
-  constexpr char kToastTimeInQueueHistogramName[] =
-      "Ash.NotifierFramework.Toast.TimeInQueue";
   const ToastCatalogName catalog_name_1 = static_cast<ToastCatalogName>(1);
   const ToastCatalogName catalog_name_2 = static_cast<ToastCatalogName>(2);
-  const base::TimeDelta duration = base::Seconds(3);
+  const base::TimeDelta duration = base::Seconds(2);
+  constexpr char text[] = "sample text";
 
   // Show Toast with catalog_name_1.
-  std::string id1 = ShowToast("TEXT1", duration,
+  std::string id1 = ShowToast(text, duration,
                               /*visible_on_lock_screen=*/false, catalog_name_1);
   histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
                                      catalog_name_1, 1);
 
-  // Expect "TimeInQueue" metric to record zero since there were no toasts in
-  // the queue.
-  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
-                                         base::Seconds(0), 1);
-
   // Replace existing toast a couple of times.
-  ReplaceToast(id1, "TEXT1_UPDATED", duration,
+  ReplaceToast(id1, text, duration,
                /*visible_on_lock_screen=*/false, catalog_name_1);
-  ReplaceToast(id1, "TEXT1_UPDATED", duration,
+  ReplaceToast(id1, text, duration,
                /*visible_on_lock_screen=*/false, catalog_name_1);
   histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
                                      catalog_name_1, 3);
 
-  // Expect "TimeInQueue" metric to record zero since the same toast was shown,
-  // so it wasn't queued.
-  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
-                                         base::Seconds(0), 3);
-
   // Try to show toast with catalog_name_2 right after last toast was shown.
-  ShowToast("TEXT2", duration, /*visible_on_lock_screen=*/false,
-            catalog_name_2);
+  ShowToast(text, duration, /*visible_on_lock_screen=*/false, catalog_name_2);
 
   // Fast forward the toast's duration so the queued toast is shown.
   task_environment()->FastForwardBy(duration);
   histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
                                      catalog_name_2, 1);
+}
 
-  // Expect "TimeInQueue" metric to record the toast's duration since the second
-  // toast was queued right after the first one was shown.
+TEST_F(ToastManagerImplTest, TimeInQueueMetric) {
+  base::HistogramTester histogram_tester;
+
+  const ToastCatalogName catalog_name_1 = static_cast<ToastCatalogName>(1);
+  const ToastCatalogName catalog_name_2 = static_cast<ToastCatalogName>(2);
+  const base::TimeDelta duration = base::Seconds(2);
+  constexpr char text[] = "sample text";
+
+  // Show Toast with catalog_name_1.
+  std::string id1 = ShowToast(text, duration, /*visible_on_lock_screen=*/false,
+                              catalog_name_1);
+
+  // 'TimeInQueue' is zero since there were no toasts in the queue.
+  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
+                                         base::Seconds(0), 1);
+
+  // Replace existing toast a couple of times.
+  ReplaceToast(id1, text, duration,
+               /*visible_on_lock_screen=*/false, catalog_name_1);
+  ReplaceToast(id1, text, duration,
+               /*visible_on_lock_screen=*/false, catalog_name_1);
+
+  // 'TimeInQueue' is zero since the same toast was replaced.
+  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
+                                         base::Seconds(0), 3);
+
+  // Try to show toast with catalog_name_2 right after last toast was shown.
+  ShowToast(text, duration, /*visible_on_lock_screen=*/false, catalog_name_2);
+
+  // Fast forward the toast's duration so the queued toast is shown.
+  task_environment()->FastForwardBy(duration);
+
+  // 'TimeInQueue' records the toast's duration since the second toast was
+  // queued right after the first one was shown.
   histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
                                          duration, 1);
+}
+
+TEST_F(ToastManagerImplTest, UserJourneyTimeMetric) {
+  base::HistogramTester histogram_tester;
+
+  const ToastCatalogName catalog_name = ToastCatalogName::kToastManagerUnittest;
+  const base::TimeDelta duration = base::Seconds(6);
+  constexpr char text[] = "sample text";
+
+  // Show Toast and wait for it to dismiss by time-out.
+  ShowToast(text, duration);
+  task_environment()->FastForwardBy(duration);
+  histogram_tester.ExpectBucketCount(kToastDismissedWithin7s, catalog_name, 1);
+
+  // Show toast and replace it right after.
+  std::string id = ShowToast(text, duration);
+  ReplaceToast(id, text, duration);
+  task_environment()->FastForwardBy(duration);
+
+  // Replaced toast was dismissed within 2s.
+  histogram_tester.ExpectBucketCount(kToastDismissedWithin2s, catalog_name, 1);
+  histogram_tester.ExpectBucketCount(kToastDismissedWithin7s, catalog_name, 2);
+
+  // Show a toast with infinite duration.
+  ShowToastWithDismiss(text, ToastData::kInfiniteDuration);
+  task_environment()->FastForwardBy(duration + base::Seconds(2));
+  ClickDismissButton();
+
+  // Toast with dismiss button was dismissed after 7s.
+  histogram_tester.ExpectBucketCount(kToastDismissedAfter7s, catalog_name, 1);
 }
 
 // Table-driven test that checks that a toast's expired callback is run when a

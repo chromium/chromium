@@ -56,6 +56,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   base::RepeatingClosure dismiss_callback;
   base::RepeatingClosure expired_callback;
   base::TimeTicks time_created;
+  base::TimeTicks time_shown;
 };
 
 }  // namespace ash

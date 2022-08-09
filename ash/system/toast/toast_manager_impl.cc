@@ -11,10 +11,29 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
 namespace ash {
+
+namespace {
+
+constexpr char NotifierFrameworkToastHistogram[] =
+    "Ash.NotifierFramework.Toast";
+
+// Used in histogram names.
+std::string GetToastDismissedTimeRange(const base::TimeDelta& time) {
+  if (time <= base::Seconds(2))
+    return "Within2s";
+  // Toast default duration is 6s, but with animation it's usually
+  // around ~6.2s, so recording 7s as the default case.
+  if (time <= base::Seconds(7))
+    return "Within7s";
+  return "After7s";
+}
+
+}  // namespace
 
 ToastManagerImpl::ToastManagerImpl()
     : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {}
@@ -82,6 +101,14 @@ bool ToastManagerImpl::IsRunning(const std::string& id) const {
 }
 
 void ToastManagerImpl::OnClosed() {
+  const base::TimeDelta user_journey_time =
+      base::TimeTicks::Now() - current_toast_data_->time_shown;
+  const std::string time_range = GetToastDismissedTimeRange(user_journey_time);
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.Dismissed.%s", NotifierFrameworkToastHistogram,
+                         time_range.c_str()),
+      current_toast_data_->catalog_name);
+
   overlay_.reset();
   current_toast_data_.reset();
 
@@ -124,6 +151,7 @@ void ToastManagerImpl::ShowLatest() {
         current_toast_data_->duration);
   }
 
+  current_toast_data_->time_shown = base::TimeTicks::Now();
   base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
   base::UmaHistogramMediumTimes(

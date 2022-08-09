@@ -3197,6 +3197,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.NotifierFramework.Toast.Dismissed.{TimeRange}"
+    enum="ToastCatalogName" expires_after="2023-02-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the time a specific toast spends on screen before being dismissed by
+    the user or system. Records the toast catalog name in one of the time
+    buckets available when toast is dismissed either manually or by time out.
+  </summary>
+  <token key="TimeRange">
+    <variant name="After7s"/>
+    <variant name="Within2s"/>
+    <variant name="Within7s"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.NotifierFramework.Toast.ShownCount"
     enum="ToastCatalogName" expires_after="2023-01-15">
   <owner>kradtke@chromium.org</owner>
