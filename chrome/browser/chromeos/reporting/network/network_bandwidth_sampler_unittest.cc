@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_bandwidth_sampler.h"
+#include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"

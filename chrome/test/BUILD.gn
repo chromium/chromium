@@ -7979,12 +7979,13 @@ test("unit_tests") {
 
     if (is_chromeos) {
       sources += [
+        "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",
-        "//chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
 
         # TODO(b/207754758): Move the following file into the appropriate target
-        "//chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
+        "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
+        "../browser/chromeos/reporting/network/network_bandwidth_sampler_unittest.cc",
       ]
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api",
@@ -7992,6 +7993,7 @@ test("unit_tests") {
         "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/dbus/missive:missive",
+        "//components/reporting/proto:metric_data_proto",
       ]
     }
 
