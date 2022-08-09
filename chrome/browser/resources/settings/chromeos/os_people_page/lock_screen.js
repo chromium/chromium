@@ -28,11 +28,12 @@ import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {AuthFactor, FactorObserverInterface, FactorObserverReceiver, ManagementType, RecoveryFactorEditor_ConfigureResult} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -49,6 +50,7 @@ import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} fro
  * @constructor
  * @extends {PolymerElement}
  * @implements {DeepLinkingBehaviorInterface}
+ * @implements {FactorObserverInterface}
  * @implements {I18nBehaviorInterface}
  * @implements {LockStateBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
@@ -186,6 +188,23 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
+       * State of the recovery toggle. Is |null| iff recovery is not a
+       * available.
+       * @type {?chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      recovery_: {
+        type: Object,
+        value: null,
+      },
+
+      /** @private*/
+      recoveryChangeInProcess_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * True if quick unlock settings should be displayed on this machine.
        * @private
        */
@@ -231,7 +250,10 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   }
 
   static get observers() {
-    return ['selectedUnlockTypeChanged_(selectedUnlockType)'];
+    return [
+      'selectedUnlockTypeChanged_(selectedUnlockType)',
+      'updateRecoveryState_(authToken)',
+    ];
   }
 
   constructor() {
@@ -242,6 +264,19 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
     /** @private {string} */
     this.numFingerprintDescription_ = '';
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    // Register observer for auth factor updates.
+    // TODO(crbug/1321440): Are we leaking |this| here because we never remove
+    // the observer? We could close the pipe with |$.close()|, but not clear
+    // whether that removes all references to |receiver| and then eventually to
+    // |this|.
+    const receiver = new FactorObserverReceiver(this);
+    const remote = receiver.$.bindNewPipeAndPassRemote();
+    this.authFactorConfig.observeFactorChanges(remote);
   }
 
   /** @override */
@@ -483,6 +518,113 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       return this.i18n('lockScreenOptionsLoginLock');
     }
     return this.i18n('lockScreenOptionsLock');
+  }
+
+  /**
+   * Called by chrome when the state of an auth factor changes.
+   * @param {!AuthFactor} factor
+   * @private
+   * */
+  onFactorChanged(factor) {
+    switch (factor) {
+      case AuthFactor.kRecovery:
+        this.updateRecoveryState_(this.authToken);
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+
+  /**
+   * Fetches state of an auth factor from the backend. Returns a |PrefObject|
+   * suitable for use with a boolean toggle, or |null| if the auth factor is
+   * not available.
+   * @private
+   * @param {!AuthFactor} authFactor
+   * @return {!Promise<?chrome.settingsPrivate.PrefObject>}
+   */
+  async fetchFactorState_(authFactor) {
+    const token = this.authToken.token;
+
+    const {supported} =
+        await this.authFactorConfig.isSupported(token, authFactor);
+    if (!supported) {
+      return null;
+    }
+
+    // Fetch properties of the factor concurrently.
+    const [{configured}, {management}, {editable}] = await Promise.all([
+      this.authFactorConfig.isConfigured(token, authFactor),
+      this.authFactorConfig.getManagementType(token, authFactor),
+      this.authFactorConfig.isEditable(token, authFactor),
+    ]);
+
+    const state = {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: configured,
+      key: '',
+    };
+
+    if (management !== ManagementType.kNone) {
+      if (management === ManagementType.kDevice) {
+        state.managed = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+      } else {
+        assert(management === ManagementType.kUser, 'Invalid management type');
+        state.managed = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+      }
+
+      if (editable) {
+        state.enforcement = chrome.settingsPrivate.Enforcement.RECOMMENDED;
+      } else {
+        state.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+      }
+    }
+
+    return state;
+  }
+
+  /**
+   * Fetches the state of the recovery factor and updates the corresponding
+   * property.
+   * @private
+   * @param {!chrome.quickUnlockPrivate.TokenInfo|undefined} authToken
+   */
+  async updateRecoveryState_(authToken) {
+    if (!authToken) {
+      return;
+    }
+    assert(authToken.token === this.authToken.token);
+    this.recovery_ = await this.fetchFactorState_(AuthFactor.kRecovery);
+  }
+
+  /**
+   * Called when the user flips the recovery toggle.
+   * @private
+   */
+  async onRecoveryChange_(event) {
+    const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+    try {
+      const shouldEnable = target.checked;
+      // Reset checkbox to its previous state and disable it. If we succeed to
+      // enable/disable recovery, this is updated automatically because the
+      // pref value changes.
+      target.resetToPrefValue();
+      this.recoveryChangeInProcess_ = true;
+
+      if (!this.authToken) {
+        console.error('Recovery changed with expired token.');
+        return;
+      }
+
+      const {result} = await this.recoveryFactorEditor.configure(
+          this.authToken.token, shouldEnable);
+      if (result !== RecoveryFactorEditor_ConfigureResult.kSuccess) {
+        console.error('RecoveryFactorEditor::Configure failed:', result);
+        return;
+      }
+    } finally {
+      this.recoveryChangeInProcess_ = false;
+    }
   }
 }
 

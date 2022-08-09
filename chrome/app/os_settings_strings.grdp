@@ -3553,6 +3553,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOGIN_LOCK" desc="Text above a password input field that tells the user they need to submit their password to configure security and sign-in settings.">
     Enter your password to configure security and sign-in
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_LABEL" desc="Label of toggle to enable or disable cryptohome recovery.">
+    Local data recovery
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL" desc="Sub-label of toggle to enable or disable cryptohome recovery.">
+    Local data can be restored if you forget your password
+  </message>
 
   <!-- Kerberos section (OS settings) -->
   <message name="IDS_OS_SETTINGS_KERBEROS" desc="Name of a section in the OS settings page." meaning="Manage Kerberos authetication tickets.">

@@ -134,6 +134,17 @@
       </settings-radio-group>
     </div>
   </template>
+  <template is="dom-if" if="[[recovery_]]">
+    <settings-toggle-button
+        id="recoveryToggle"
+        label="$i18n{recoveryToggleLabel}"
+        sub-label="$i18n{recoveryToggleSubLabel}"
+        pref="{{recovery_}}"
+        disabled="[[recoveryChangeInProcess_]]"
+        no-set-pref
+        on-settings-boolean-control-change="onRecoveryChange_">
+    </settings-toggle-button>
+  </template>
   <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
     <div id="fingerprintDiv" class="settings-box two-line">
       <div class="start">

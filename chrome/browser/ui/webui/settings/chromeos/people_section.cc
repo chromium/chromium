@@ -315,6 +315,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_ERROR_PIN_INCORRECT},
       {"passwordPromptEnterPasswordLoginLock",
        IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOGIN_LOCK},
+      {"recoveryToggleLabel", IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_LABEL},
+      {"recoveryToggleSubLabel", IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
