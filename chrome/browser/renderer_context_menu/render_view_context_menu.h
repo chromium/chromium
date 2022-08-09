@@ -221,7 +221,8 @@ class RenderViewContextMenu
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendRotationItems();
-  void AppendEditableItems();
+  void AppendSpellingAndSearchSuggestionItems();
+  void AppendOtherEditableItems();
   void AppendLanguageSettings();
   void AppendSpellingSuggestionItems();
   // Returns true if the items were appended. This might not happen in all

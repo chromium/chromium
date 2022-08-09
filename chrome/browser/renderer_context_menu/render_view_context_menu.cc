@@ -941,12 +941,6 @@ void RenderViewContextMenu::InitMenu() {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_AUTOFILL)) {
-    autofill_context_menu_manager_.AppendItems();
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  }
-
   bool media_image = content_type_->SupportsGroup(
       ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE);
   if (media_image)
@@ -986,8 +980,18 @@ void RenderViewContextMenu::InitMenu() {
 
   bool editable =
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_EDITABLE);
+
   if (editable)
-    AppendEditableItems();
+    AppendSpellingAndSearchSuggestionItems();
+
+  if (content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_AUTOFILL)) {
+    autofill_context_menu_manager_.AppendItems();
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
+  if (editable)
+    AppendOtherEditableItems();
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY)) {
     DCHECK(!editable);
@@ -1952,7 +1956,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
   }
 }
 
-void RenderViewContextMenu::AppendEditableItems() {
+void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
   const bool use_spelling = !chrome::IsRunningInForcedAppMode();
   if (use_spelling)
     AppendSpellingSuggestionItems();
@@ -1968,7 +1972,9 @@ void RenderViewContextMenu::AppendEditableItems() {
                                     IDS_CONTENT_CONTEXT_EMOJI);
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
+}
 
+void RenderViewContextMenu::AppendOtherEditableItems() {
 // 'Undo' and 'Redo' for text input with no suggestions and no text selected.
 // We make an exception for OS X as context clicking will select the closest
 // word. In this case both items are always shown.
