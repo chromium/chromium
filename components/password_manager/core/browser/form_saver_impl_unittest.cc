@@ -101,7 +101,7 @@ void FormSaverImplSaveTest::SaveCredential(
   switch (GetParam()) {
     case SaveOperation::kSave:
       expected.date_password_modified = base::Time::Now();
-      EXPECT_CALL(*mock_store_, AddLogin(expected));
+      EXPECT_CALL(*mock_store_, AddLogin(expected, _));
       return form_saver_.Save(std::move(pending), matches, old_password);
     case SaveOperation::kUpdate:
       if (old_password != pending.password_value)
@@ -291,7 +291,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   PasswordForm saved;
   switch (GetParam()) {
     case SaveOperation::kSave:
-      EXPECT_CALL(*mock_store_, AddLogin(_)).WillOnce(SaveArg<0>(&saved));
+      EXPECT_CALL(*mock_store_, AddLogin).WillOnce(SaveArg<0>(&saved));
       return form_saver_.Save(std::move(pending), {}, u"");
     case SaveOperation::kUpdate:
       EXPECT_CALL(*mock_store_, UpdateLogin(_)).WillOnce(SaveArg<0>(&saved));
@@ -338,7 +338,7 @@ TEST_F(FormSaverImplTest, Blocklist) {
       password_manager_util::MakeNormalizedBlocklistedForm(
           PasswordFormDigest(observed));
 
-  EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blocklisted)));
+  EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blocklisted), _));
   PasswordForm result = form_saver_.Blocklist(PasswordFormDigest(observed));
   EXPECT_THAT(result, FormWithSomeDate(blocklisted));
 }

@@ -23,10 +23,11 @@
 
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
+using ::testing::_;
 
 ArchivableCredential* TestCredential() {
   NSString* username = @"username_value";
@@ -83,7 +84,7 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
 
   // Start migration.
   PasswordForm expected = PasswordFormFromCredential(credential);
-  EXPECT_CALL(*mock_store_, AddLogin(expected));
+  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
   __block BOOL blockWaitCompleted = false;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);

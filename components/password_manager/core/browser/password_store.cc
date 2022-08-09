@@ -107,7 +107,8 @@ bool PasswordStore::Init(
   return true;
 }
 
-void PasswordStore::AddLogin(const PasswordForm& form) {
+void PasswordStore::AddLogin(const PasswordForm& form,
+                             base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!form.blocked_by_user ||
          (form.username_value.empty() && form.password_value.empty()));
@@ -116,8 +117,9 @@ void PasswordStore::AddLogin(const PasswordForm& form) {
   backend_->AddLoginAsync(
       form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
                 .Then(base::BindOnce(
-                    &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                    LoginsChangedTrigger::Addition)));
+                          &PasswordStore::NotifyLoginsChangedOnMainSequence,
+                          this, LoginsChangedTrigger::Addition)
+                .Then(std::move(completion))));
 }
 
 void PasswordStore::UpdateLogin(const PasswordForm& form) {

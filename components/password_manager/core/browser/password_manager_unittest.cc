@@ -681,7 +681,7 @@ TEST_P(PasswordManagerTest, FormSubmitWithOnlyNewPasswordField) {
 
   // Simulate saving the form, as if the info bar was accepted.
   PasswordForm saved_form;
-  EXPECT_CALL(*store_, AddLogin(_)).WillOnce(SaveArg<0>(&saved_form));
+  EXPECT_CALL(*store_, AddLogin).WillOnce(SaveArg<0>(&saved_form));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 
@@ -706,7 +706,7 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
   // Simulate the user generating the password and submitting the form.
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
   OnPasswordFormSubmitted(form_data);
@@ -749,8 +749,10 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
 
   // The user is generating the password. The password has to be presaved.
   PasswordForm presaved_form;
-  EXPECT_CALL(*store_, AddLogin(FormUsernamePasswordAre(
-                           form_data.fields[0].value, generated_password)))
+  EXPECT_CALL(*store_,
+              AddLogin(FormUsernamePasswordAre(form_data.fields[0].value,
+                                               generated_password),
+                       _))
       .WillOnce(SaveArg<0>(&presaved_form));
   manager()->PresaveGeneratedPassword(&driver_, form_data, generated_password,
                                       generation_element);
@@ -796,7 +798,7 @@ TEST_P(PasswordManagerTest, SavingGeneratedPasswordOnIOS) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
   // The user is generating the password.
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   generated_password += u"1";
   manager()->PresaveGeneratedPassword(&driver_, form_data, generated_password,
                                       generation_element);
@@ -838,7 +840,7 @@ TEST_P(PasswordManagerTest, PasswordNoLongerGeneratedOnIOS) {
 
   // The user is generating the password.
   PasswordForm presaved_form;
-  EXPECT_CALL(*store_, AddLogin(_)).WillOnce(SaveArg<0>(&presaved_form));
+  EXPECT_CALL(*store_, AddLogin).WillOnce(SaveArg<0>(&presaved_form));
   manager()->PresaveGeneratedPassword(&driver_, form_data, generated_password,
                                       generation_element);
 
@@ -919,7 +921,7 @@ TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {
   EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
 
   // Simulate saving the form.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1123,7 +1125,7 @@ TEST_P(PasswordManagerTest, FormSubmit) {
   EXPECT_EQ(form.username_value, votes_uploader.suggested_username());
 
   // Simulate saving the form, as if the info bar was accepted.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1212,7 +1214,7 @@ TEST_P(PasswordManagerTest, FormSubmitWithFormOnPreviousPage) {
 
   // Simulate saving the form, as if the info bar was accepted and make sure
   // that the saved form matches the second form, not the first.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(second_form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(second_form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1243,7 +1245,7 @@ TEST_P(PasswordManagerTest, FormSubmitInvisibleLogin) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
   // Simulate saving the form.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1366,7 +1368,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
 
   // User should not be prompted and password should not be saved.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
@@ -1735,7 +1737,7 @@ TEST_P(PasswordManagerTest, FormSubmitWithOnlyPasswordField) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
   // Simulate saving the form, as if the info bar was accepted.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1825,7 +1827,7 @@ TEST_P(PasswordManagerTest, SameDocumentNavigation) {
   ASSERT_TRUE(form_manager_to_save);
 
   // Simulate saving the form, as if the info bar was accepted.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   form_manager_to_save->Save();
 }
 
@@ -1951,7 +1953,7 @@ TEST_P(PasswordManagerTest, SaveFormFetchedAfterSubmit) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
   // Simulate saving the form, as if the info bar was accepted.
-  EXPECT_CALL(*store_, AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(form), _));
   ASSERT_TRUE(form_manager_to_save);
   form_manager_to_save->Save();
 }
@@ -1967,13 +1969,13 @@ TEST_P(PasswordManagerTest, PasswordGeneration_FailedSubmission) {
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
 
   // Do not save generated password when the password form reappears.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
 
   // Simulate submission failing, with the same form being visible after
@@ -1996,7 +1998,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
 
@@ -2007,7 +2009,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
 
   // Do not save generated password when the password form reappears.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
 
   // Simulate submission failing, with the same form being visible after
@@ -2031,7 +2033,7 @@ TEST_P(PasswordManagerTest,
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
 
@@ -2066,7 +2068,7 @@ TEST_P(PasswordManagerTest,
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
 
@@ -2100,7 +2102,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationUsernameChanged) {
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
                                         form_data.fields[1].value);
 
@@ -2140,7 +2142,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
   PasswordForm sanitized_form(form);
   SanitizeFormData(&sanitized_form.form_data);
 
-  EXPECT_CALL(*store_, AddLogin(FormMatches(sanitized_form)));
+  EXPECT_CALL(*store_, AddLogin(FormMatches(sanitized_form), _));
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
                                         form.password_value);
 
@@ -2176,7 +2178,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
 
   // The user accepts a generated password.
   FormData form_data(MakeSignUpFormData());
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   manager()->OnPresaveGeneratedPassword(&driver_, form_data,
@@ -2213,7 +2215,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
     PasswordForm presaved_form(form);
     if (found_matched_logins_in_store)
       presaved_form.username_value.clear();
-    EXPECT_CALL(*store_, AddLogin(FormMatches(presaved_form)));
+    EXPECT_CALL(*store_, AddLogin(FormMatches(presaved_form), _));
     manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
                                           form.password_value);
     ::testing::Mock::VerifyAndClearExpectations(store_.get());
@@ -2260,7 +2262,7 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
       &driver_, form.form_data.unique_renderer_id,
       form.form_data.fields[1].unique_renderer_id,
       autofill::password_generation::PasswordGenerationType::kAutomatic);
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
                                         form.password_value);
 
@@ -2327,7 +2329,7 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
       .WillOnce([&saved_notified_form](const auto& submitted_manager) {
         saved_notified_form = submitted_manager->GetPendingCredentials();
       });
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey(_, _)).Times(0);
 
   observed_forms.clear();
@@ -2374,7 +2376,7 @@ TEST_P(PasswordManagerTest, UpdatePasswordOfAffiliatedCredential) {
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);
 
   PasswordForm saved_form;
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey(_, _)).Times(0);
   EXPECT_CALL(*store_, UpdateLogin(_)).WillOnce(SaveArg<0>(&saved_form));
   ASSERT_TRUE(form_manager_to_save);
@@ -2569,7 +2571,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_GeneratedPassword) {
   // A user accepts a password generated by Chrome. It triggers password
   // presaving and showing manual fallback.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
-  EXPECT_CALL(*store_, AddLogin(_));
+  EXPECT_CALL(*store_, AddLogin);
   EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, true, false))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
@@ -3561,7 +3563,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   // Simulate accepting the prompt and expect saving the new credential.
   EXPECT_CALL(*store_,
               AddLogin(AllOf(Field(&PasswordForm::username_value, username),
-                             Field(&PasswordForm::password_value, password))));
+                             Field(&PasswordForm::password_value, password)),
+                       _));
   form_manager->Save();
 }
 
@@ -4202,7 +4205,7 @@ TEST_P(PasswordManagerTest, SaveSubmittedManager) {
   OnPasswordFormSubmitted(updated_data);
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
 
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
   EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey).Times(0);
   PasswordForm expected_form(form);
   // The expected form with a new password.

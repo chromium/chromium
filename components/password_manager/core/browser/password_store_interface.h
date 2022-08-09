@@ -63,7 +63,9 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual bool IsAbleToSavePasswords() const = 0;
 
   // Adds the given PasswordForm to the secure password store asynchronously.
-  virtual void AddLogin(const PasswordForm& form) = 0;
+  // `completion` will be run after the form is added.
+  virtual void AddLogin(const PasswordForm& form,
+                        base::OnceClosure completion = base::DoNothing()) = 0;
 
   // Updates the matching PasswordForm in the secure password store (async).
   // If any of the primary key fields (signon_realm, url, username_element,

@@ -240,8 +240,9 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
       password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL(kFakeUrl));
   // Presave generated password. Form with empty username is presaved.
   EXPECT_CALL(*store(), GetLogins(form_digest, _));
-  EXPECT_CALL(*store(),
-              AddLogin(FormMatches(MakeSimplePasswordFormWithoutUsername())));
+  EXPECT_CALL(
+      *store(),
+      AddLogin(FormMatches(MakeSimplePasswordFormWithoutUsername()), _));
   manager_->PresaveGeneratedPassword(
       {GURL(kFakeUrl), kFakeUsername}, kFakeNewPassword,
       MakeFormDataWithPasswordField(), base::OnceClosure());
@@ -413,7 +414,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordNewLogin) {
   EXPECT_FALSE(manager_->SubmittedPasswordIsSame());
 
   // Expect the password to get saved.
-  EXPECT_CALL(*store(), AddLogin(FormMatches(form)));
+  EXPECT_CALL(*store(), AddLogin(FormMatches(form), _));
   EXPECT_TRUE(manager_->SaveSubmittedPassword());
 }
 

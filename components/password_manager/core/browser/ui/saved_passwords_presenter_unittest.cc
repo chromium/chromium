@@ -10,7 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -867,6 +869,77 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, AddCredentialsToBothStores) {
   profile_store().AddLogin(profile_store_form);
   RunUntilIdle();
 
+  presenter().RemoveObserver(&observer);
+}
+
+// Empty list should not crash.
+TEST_F(SavedPasswordsPresenterTest, AddCredentialsListEmpty) {
+  base::MockCallback<base::OnceClosure> completion_callback;
+  presenter().AddCredentials({},
+                             password_manager::PasswordForm::Type::kImported,
+                             completion_callback.Get());
+  EXPECT_CALL(completion_callback, Run());
+  RunUntilIdle();
+}
+
+// Tests whether adding 1 password notifies observers with credentials in one
+// store.
+TEST_F(SavedPasswordsPresenterTest, AddCredentialsListOnePassword) {
+  PasswordForm profile_store_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
+  profile_store_form.type =
+      password_manager::PasswordForm::Type::kManuallyAdded;
+  profile_store_form.date_created = base::Time::Now();
+  profile_store_form.date_password_modified = base::Time::Now();
+
+  StrictMockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnSavedPasswordsChanged(
+                            UnorderedElementsAre(profile_store_form)));
+
+  base::MockCallback<base::OnceClosure> completion_callback;
+  presenter().AddCredentials(
+      {CredentialUIEntry(profile_store_form)},
+      password_manager::PasswordForm::Type::kManuallyAdded,
+      completion_callback.Get());
+  EXPECT_CALL(completion_callback, Run());
+  RunUntilIdle();
+  presenter().RemoveObserver(&observer);
+}
+
+// Tests whether adding 2 passwords notifies observers with credentials in one
+// store.
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
+       AddCredentialsListPasswordAccountStore) {
+  PasswordForm account_store_form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
+  account_store_form_1.type =
+      password_manager::PasswordForm::Type::kManuallyAdded;
+  account_store_form_1.date_created = base::Time::Now();
+  account_store_form_1.date_password_modified = base::Time::Now();
+
+  PasswordForm account_store_form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
+  account_store_form_2.type =
+      password_manager::PasswordForm::Type::kManuallyAdded;
+  account_store_form_2.date_created = base::Time::Now();
+  account_store_form_2.date_password_modified = base::Time::Now();
+
+  StrictMockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+
+  base::MockCallback<base::OnceClosure> completion_callback;
+
+  EXPECT_CALL(observer, OnSavedPasswordsChanged(UnorderedElementsAre(
+                            account_store_form_1, account_store_form_2)));
+  presenter().AddCredentials(
+      {CredentialUIEntry(account_store_form_1),
+       CredentialUIEntry(account_store_form_2)},
+      password_manager::PasswordForm::Type::kManuallyAdded,
+      completion_callback.Get());
+  EXPECT_CALL(completion_callback, Run());
+  RunUntilIdle();
   presenter().RemoveObserver(&observer);
 }
 

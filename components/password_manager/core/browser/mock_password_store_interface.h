@@ -16,7 +16,10 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
   MockPasswordStoreInterface();
 
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (const, override));
-  MOCK_METHOD(void, AddLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void,
+              AddLogin,
+              (const PasswordForm&, base::OnceClosure),
+              (override));
   MOCK_METHOD(void, UpdateLogin, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               UpdateLoginWithPrimaryKey,

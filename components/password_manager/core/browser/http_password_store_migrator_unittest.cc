@@ -191,8 +191,8 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   expected_federated_form.url = GURL("https://localhost");
   expected_federated_form.action = GURL("https://localhost");
 
-  EXPECT_CALL(store(), AddLogin(expected_form));
-  EXPECT_CALL(store(), AddLogin(expected_federated_form));
+  EXPECT_CALL(store(), AddLogin(expected_form, _));
+  EXPECT_CALL(store(), AddLogin(expected_federated_form, _));
   EXPECT_CALL(store(), RemoveLogin(form)).Times(is_hsts);
   EXPECT_CALL(store(), RemoveLogin(federated_form)).Times(is_hsts);
   EXPECT_CALL(consumer(),

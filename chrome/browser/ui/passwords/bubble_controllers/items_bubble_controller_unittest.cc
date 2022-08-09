@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
@@ -172,7 +173,7 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
   form.username_value = u"User";
   form.password_value = u"123456";
 
-  EXPECT_CALL(*GetStore(), AddLogin(form));
+  EXPECT_CALL(*GetStore(), AddLogin(form, _));
 
   controller()->OnPasswordAction(
       form, PasswordBubbleControllerBase::PasswordAction::kAddPassword);

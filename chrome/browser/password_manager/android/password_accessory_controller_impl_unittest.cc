@@ -867,7 +867,7 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
   expected_form.signon_realm = kExampleSignonRealm;
   expected_form.url = GURL(kExampleSite);
   expected_form.date_created = base::Time::Now();
-  EXPECT_CALL(*mock_password_store_, AddLogin(Eq(expected_form)));
+  EXPECT_CALL(*mock_password_store_, AddLogin(Eq(expected_form), _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
 }

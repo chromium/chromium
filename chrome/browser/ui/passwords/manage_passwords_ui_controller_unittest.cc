@@ -1481,11 +1481,13 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[0].username_value,
                                           credentials[0].password_value,
-                                          credentials[0].url)));
+                                          credentials[0].url),
+                       _));
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[1].username_value,
                                           credentials[1].password_value,
-                                          credentials[1].url)));
+                                          credentials[1].url),
+                       _));
 
   // Save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());

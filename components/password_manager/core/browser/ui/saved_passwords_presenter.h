@@ -96,6 +96,17 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                      password_manager::PasswordForm::Type type =
                          password_manager::PasswordForm::Type::kManuallyAdded);
 
+  // Adds |credentials| to the specified store.
+  // Credentials that have invalid data or already exist are ignored.
+  //
+  // NOTE: Informing observers of credentials belonging to mixed types of stores
+  // is not supported.
+  //
+  // For a single credential the behaviour is identical to AddCredential method.
+  void AddCredentials(const std::vector<CredentialUIEntry>& credentials,
+                      password_manager::PasswordForm::Type type,
+                      base::OnceClosure completion);
+
   // Modifies all the saved credentials matching |original_credential| to
   // |updated_credential|. Only username, password, notes and password issues
   // are modifiable.
@@ -122,6 +133,15 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RemoveObserver(Observer* observer);
 
  private:
+  // Adds the |credential| to the specified store.
+  // The credential won't be added if  |credential|'s data is not valid (invalid
+  // url/empty password), or an entry with such signon_realm and username
+  // already exists in any (profile or account) store.
+  // `completion` will be run in every case.
+  void AddCredentialAsync(const CredentialUIEntry& credential,
+                          password_manager::PasswordForm::Type type,
+                          base::OnceClosure completion);
+
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
   // PasswordStoreInterface::Observer
   void OnLoginsChanged(PasswordStoreInterface* store,
@@ -141,10 +161,23 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void NotifyEdited(const PasswordForm& password);
   void NotifySavedPasswordsChanged();
 
-  // Returns the `profile_store_` or `account_store_` if `form` is stored in the
-  // profile store or the account store accordingly. This function should be
-  // used only for credential stored in a single store.
+  void RemoveObservers();
+  void AddObservers();
+
+  // Returns false if a |credential| has invalid data or already exist.
+  // Otherwise returns true.
+  bool CanBeAdded(const CredentialUIEntry& credential);
+
+  void CollectCredentialResults(const std::vector<bool>& results);
+
+  // Returns the `profile_store_` or `account_store_` if `form` is stored in
+  // the profile store or the account store accordingly. This function should
+  // be used only for credential stored in a single store.
   PasswordStoreInterface& GetStoreFor(const PasswordForm& form);
+
+  // Try to unblocklist in both stores.If credentials don't
+  // exist, the unblocklist operation is a no-op.
+  void UnblocklistBothStores(const CredentialUIEntry& credential);
 
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;
