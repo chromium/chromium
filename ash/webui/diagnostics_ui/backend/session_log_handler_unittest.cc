@@ -25,7 +25,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -422,29 +421,6 @@ TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
   EXPECT_NO_FATAL_FAILURE(session_log_handler_.reset());
   EXPECT_NO_FATAL_FAILURE(task_runner_.reset());
   EXPECT_NO_FATAL_FAILURE(run_loop.RunUntilIdle());
-}
-
-// Validates CreateSessionLog task does not trigger a Use-After-Free error
-// when SessionLogHandler is destroyed before task is run. See crbug/1328708.
-TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      ash::features::kEnableLogControllerForDiagnosticsApp);
-  base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
-  base::ListValue args;
-  args.Append(kHandlerFunctionName);
-  base::RunLoop run_loop;
-
-  session_log_handler_->SetLogCreatedClosureForTest(
-      base::BindLambdaForTesting([]() { NOTREACHED(); }));
-  EXPECT_EQ(0u, task_runner_->NumPendingTasks());
-  web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  EXPECT_EQ(1u, task_runner_->NumPendingTasks());
-  EXPECT_NO_FATAL_FAILURE(session_log_handler_.reset());
-  task_runner_->RunUntilIdle();
-  EXPECT_EQ(0u, task_runner_->NumPendingTasks());
-  EXPECT_NO_FATAL_FAILURE(task_runner_->RunUntilIdle());
 }
 
 }  // namespace diagnostics
