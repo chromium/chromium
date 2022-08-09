@@ -43,8 +43,13 @@ bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
     return true;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  if (type.codec == media::VideoCodec::kVP9 && type.level <= 40)
+  // Only SD profiles are supported for VP9. HDR profiles (2 and 3) are not
+  // supported.
+  if (type.codec == media::VideoCodec::kVP9 &&
+      (type.profile == media::VP9PROFILE_PROFILE0 ||
+       type.profile == media::VP9PROFILE_PROFILE1)) {
     return true;
+  }
 
   return false;
 }
