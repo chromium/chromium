@@ -102,7 +102,7 @@ class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
       base::OnceCallback<void(bool)> callback);
   StoragePartitionImpl* GetStorage();
 
-  raw_ptr<Shell> shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
