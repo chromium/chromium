@@ -5,7 +5,6 @@
 #include "content/common/process_visibility_tracker.h"
 
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 
 namespace content {
@@ -17,7 +16,9 @@ ProcessVisibilityTracker* ProcessVisibilityTracker::GetInstance() {
 }
 
 ProcessVisibilityTracker::ProcessVisibilityTracker()
-    : power_mode_visibility_voter_(
+    : observers_(base::MakeRefCounted<
+                 base::ObserverListThreadSafe<ProcessVisibilityObserver>>()),
+      power_mode_visibility_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Visibility")) {}
 
@@ -27,33 +28,44 @@ ProcessVisibilityTracker::~ProcessVisibilityTracker() {
 
 void ProcessVisibilityTracker::AddObserver(
     ProcessVisibilityObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-
-  observers_.AddObserver(observer);
-  if (is_visible_.has_value())
-    observer->OnVisibilityChanged(*is_visible_);
+  absl::optional<bool> is_visible;
+  {
+    // Synchronize access to |observers_| and |is_visible_| to ensure
+    // consistency in notifications to observers (in case of concurrent
+    // modification of the visibility state).
+    base::AutoLock lock(lock_);
+    observers_->AddObserver(observer);
+    is_visible = is_visible_;
+  }
+  // Notify outside the lock to allow the observer to call back into
+  // ProcessVisibilityTracker.
+  if (is_visible.has_value())
+    observer->OnVisibilityChanged(*is_visible);
 }
 
 void ProcessVisibilityTracker::RemoveObserver(
     ProcessVisibilityObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-
-  observers_.RemoveObserver(observer);
+  base::AutoLock lock(lock_);
+  observers_->RemoveObserver(observer);
 }
 
 void ProcessVisibilityTracker::OnProcessVisibilityChanged(bool visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-  if (is_visible_.has_value() && *is_visible_ == visible)
-    return;
 
-  is_visible_ = visible;
+  {
+    base::AutoLock lock(lock_);
+    if (is_visible_.has_value() && *is_visible_ == visible)
+      return;
+
+    is_visible_ = visible;
+
+    observers_->Notify(
+        FROM_HERE, &ProcessVisibilityObserver::OnVisibilityChanged, visible);
+  }
 
   power_mode_visibility_voter_->VoteFor(
-      *is_visible_ ? power_scheduler::PowerMode::kIdle
-                   : power_scheduler::PowerMode::kBackground);
-
-  for (ProcessVisibilityObserver& observer : observers_)
-    observer.OnVisibilityChanged(*is_visible_);
+      visible ? power_scheduler::PowerMode::kIdle
+              : power_scheduler::PowerMode::kBackground);
 }
 
 }  // namespace content

@@ -22,6 +22,7 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/cpu_time_metrics.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -124,6 +125,9 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 
   tracing::InitTracingPostThreadPoolStartAndFeatureList(
       /* enable_consumer */ false);
+
+  // Ensure the visibility tracker is created on the main thread.
+  ProcessVisibilityTracker::GetInstance();
 
 #if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();

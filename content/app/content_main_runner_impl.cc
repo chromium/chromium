@@ -67,6 +67,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/partition_alloc_support.h"
+#include "content/common/process_visibility_tracker.h"
 #include "content/common/url_schemes.h"
 #include "content/gpu/in_process_gpu_thread.h"
 #include "content/public/app/content_main_delegate.h"
@@ -1154,11 +1155,14 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     base::PowerMonitor::Initialize(
         std::make_unique<base::PowerMonitorDeviceSource>());
 
+    // Ensure the visibility tracker is created on the main thread.
+    ProcessVisibilityTracker::GetInstance();
+
 #if BUILDFLAG(IS_ANDROID)
     SetupCpuTimeMetrics();
 
     // Requires base::PowerMonitor to be initialized first.
-    AndroidBatteryMetrics::GetInstance();
+    AndroidBatteryMetrics::CreateInstance();
 #endif
 
     if (start_minimal_browser)

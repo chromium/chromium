@@ -27,6 +27,8 @@ void WorkForOneCpuSec(base::WaitableEvent* event) {
 }
 
 TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
+  // Ensure the visibility tracker is created on the test runner thread.
+  ProcessVisibilityTracker::GetInstance();
   base::test::TaskEnvironment task_environment;
 
   base::HistogramTester histograms;
@@ -109,6 +111,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 }
 
 TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
+  // Ensure the visibility tracker is created on the test runner thread.
+  ProcessVisibilityTracker::GetInstance();
   base::test::TaskEnvironment task_environment;
 
   base::HistogramTester histograms;

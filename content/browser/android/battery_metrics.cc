@@ -10,16 +10,21 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/application_state_proto_android.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,6 +32,13 @@
 
 const base::Feature kForegroundRadioStateCountWakeups{
     "ForegroundRadioStateCountWakeups", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Keeps reporting of the battery metrics on the UI thread, where it may cause
+// jank. This is used for a holdback experiment to estimate the jank reduction
+// won by moving reporting to the thread pool.
+// TODO(eseckler): Remove once holdback experiment is complete.
+const base::Feature kAndroidBatteryMetricsReportOnUIThread{
+    "AndroidBatteryMetricsReportOnUIThread", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace content {
 namespace {
@@ -131,17 +143,12 @@ base::HistogramBase* GetAvgBatteryDrainHistogram(const char* suffix) {
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-void ReportAveragedDrain(int capacity_consumed,
-                         bool is_exclusive_measurement,
-                         int num_sampling_periods) {
-  // Averaged drain over 30 second intervals in uAh. We assume a max current of
-  // 10A which translates to a little under 100mAh capacity drain over 30
-  // seconds.
-  auto capacity_consumed_avg = capacity_consumed / num_sampling_periods;
-
-  GetAvgBatteryDrainHistogram("")->AddCount(capacity_consumed_avg,
-                                            num_sampling_periods);
-
+// Dark mode histograms are reported on the UI thread, because they depend on
+// the current darkening state of the web contents -- which we can only inspect
+// on the UI thread.
+void ReportDarkModeDrains(int capacity_consumed_avg,
+                          bool is_exclusive_measurement,
+                          int num_sampling_periods) {
   size_t no_darkening_count = 0, user_agent_darkening_count = 0,
          web_page_or_user_agent_darkening_count = 0,
          web_page_darkening_count = 0;
@@ -196,12 +203,35 @@ void ReportAveragedDrain(int capacity_consumed,
   DCHECK(exclusive_dark_mode_histogram);
 
   dark_mode_histogram->AddCount(capacity_consumed_avg, num_sampling_periods);
+  if (is_exclusive_measurement) {
+    exclusive_dark_mode_histogram->AddCount(capacity_consumed_avg,
+                                            num_sampling_periods);
+  }
+}
 
+void ReportAveragedDrain(int capacity_consumed,
+                         bool is_exclusive_measurement,
+                         int num_sampling_periods) {
+  // Averaged drain over 30 second intervals in uAh. We assume a max current of
+  // 10A which translates to a little under 100mAh capacity drain over 30
+  // seconds.
+  auto capacity_consumed_avg = capacity_consumed / num_sampling_periods;
+
+  GetAvgBatteryDrainHistogram("")->AddCount(capacity_consumed_avg,
+                                            num_sampling_periods);
   if (is_exclusive_measurement) {
     GetAvgBatteryDrainHistogram(".Exclusive")
         ->AddCount(capacity_consumed_avg, num_sampling_periods);
-    exclusive_dark_mode_histogram->AddCount(capacity_consumed_avg,
-                                            num_sampling_periods);
+  }
+
+  // TODO(eseckler): Remove conditional once
+  // kAndroidBatteryMetricsReportOnUIThread is gone.
+  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ReportDarkModeDrains, capacity_consumed_avg,
+                           is_exclusive_measurement, num_sampling_periods));
   }
 }
 
@@ -212,23 +242,41 @@ constexpr base::TimeDelta AndroidBatteryMetrics::kMetricsInterval;
 constexpr base::TimeDelta AndroidBatteryMetrics::kRadioStateInterval;
 
 // static
-AndroidBatteryMetrics* AndroidBatteryMetrics::GetInstance() {
+void AndroidBatteryMetrics::CreateInstance() {
   static base::NoDestructor<AndroidBatteryMetrics> instance;
-  return instance.get();
 }
 
 AndroidBatteryMetrics::AndroidBatteryMetrics()
-    : app_visible_(false),
-      on_battery_power_(base::PowerMonitor::IsOnBatteryPower()) {
-  base::PowerMonitor::AddPowerStateObserver(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
-  content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
-  UpdateMetricsEnabled();
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  // TODO(eseckler): Remove conditional once
+  // kAndroidBatteryMetricsReportOnUIThread is gone.
+  if (base::FeatureList::IsEnabled(kAndroidBatteryMetricsReportOnUIThread)) {
+    // Initializing on the current (UI) thread registers all observers on the UI
+    // thread, such that all notifications will be received on the UI thread,
+    // too.
+    InitializeOnSequence();
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AndroidBatteryMetrics::InitializeOnSequence,
+                                  base::Unretained(this)));
+  }
 }
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
-  base::PowerMonitor::RemovePowerThermalObserver(this);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  // Never called, this is a no-destruct singleton.
+  NOTREACHED();
+}
+
+void AndroidBatteryMetrics::InitializeOnSequence() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  on_battery_power_ =
+      base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+  base::PowerMonitor::AddPowerThermalObserver(this);
+  content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+  UpdateMetricsEnabled();
 }
 
 void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/common/process_visibility_tracker.h"
 
@@ -22,18 +23,20 @@ class AndroidBatteryMetrics
       public base::PowerThermalObserver,
       public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
-  static AndroidBatteryMetrics* GetInstance();
+  static void CreateInstance();
 
   AndroidBatteryMetrics(const AndroidBatteryMetrics&) = delete;
   AndroidBatteryMetrics& operator=(const AndroidBatteryMetrics&) = delete;
-
-  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
-  void OnVisibilityChanged(bool visible) override;
 
  private:
   friend class base::NoDestructor<AndroidBatteryMetrics>;
   AndroidBatteryMetrics();
   ~AndroidBatteryMetrics() override;
+
+  void InitializeOnSequence();
+
+  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
+  void OnVisibilityChanged(bool visible) override;
 
   // base::PowerStateObserver implementation:
   void OnPowerStateChange(bool on_battery_power) override;
@@ -59,8 +62,10 @@ class AndroidBatteryMetrics
   // Radio state is polled with this interval to count radio wakeups.
   static constexpr base::TimeDelta kRadioStateInterval = base::Seconds(1);
 
-  bool app_visible_;
-  bool on_battery_power_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  bool app_visible_ = false;
+  bool on_battery_power_ = false;
   int last_remaining_capacity_uah_ = 0;
   int64_t last_tx_bytes_ = -1;
   int64_t last_rx_bytes_ = -1;

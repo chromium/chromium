@@ -450,8 +450,6 @@ ProcessCpuTimeMetrics::ProcessCpuTimeMetrics(
     reporting_interval_ = kReportAfterEveryNTasksOtherProcess;
   }
 
-  ProcessVisibilityTracker::GetInstance()->AddObserver(this);
-
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ProcessCpuTimeMetrics::InitializeOnThreadPool,
                                 base::Unretained(this)));
@@ -471,6 +469,7 @@ ProcessCpuTimeMetrics::~ProcessCpuTimeMetrics() {
 }
 
 void ProcessCpuTimeMetrics::InitializeOnThreadPool() {
+  ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   arbiter_->AddObserver(this);
   PerformFullCollectionOnThreadPool();
 }
@@ -498,14 +497,6 @@ void ProcessCpuTimeMetrics::DidProcessTask(
 
 // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
 void ProcessCpuTimeMetrics::OnVisibilityChanged(bool visible) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessCpuTimeMetrics::OnVisibilityChangedOnThreadPool,
-                     base::Unretained(this), visible));
-}
-
-void ProcessCpuTimeMetrics::OnVisibilityChangedOnThreadPool(bool visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
   // Collect high-level metrics that include a visibility breakdown and
   // attribute them to the old value of |is_visible_| before updating it.
