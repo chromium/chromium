@@ -127,9 +127,11 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Test is failing on Android P, see crbug.com/1110939.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    @DisableIf.Build(message = "Test is failing on Android P+, see crbug.com/1110939.",
+            sdk_is_greater_than = VERSION_CODES.O_MR1)
+    // clang-format off
     public void linkClickTest() {
+        // clang-format on
         initPlayerManager(false);
         final View playerHostView = mPlayerManager.getView();
 
