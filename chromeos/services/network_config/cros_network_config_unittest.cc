@@ -869,6 +869,46 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   // TODO(919691): Test ProxyMode once UIProxyConfigService logic is improved.
 }
 
+TEST_F(CrosNetworkConfigTest, PortalState) {
+  mojom::NetworkStatePropertiesPtr network = GetNetworkState("eth_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::ConnectionStateType::kOnline, network->connection_state);
+  EXPECT_EQ(mojom::PortalState::kOnline, network->portal_state);
+
+  helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "portal-suspected",
+          "Strength": 90, "AutoConnect": true})");
+  network = GetNetworkState("wifi1_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
+  EXPECT_EQ(mojom::PortalState::kPortalSuspected, network->portal_state);
+
+  helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "redirect-found",
+          "Strength": 90, "AutoConnect": true})");
+  network = GetNetworkState("wifi1_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
+  EXPECT_EQ(mojom::PortalState::kPortal, network->portal_state);
+
+  helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "no-connectivity",
+          "Strength": 90, "AutoConnect": true})");
+  network = GetNetworkState("wifi1_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
+  EXPECT_EQ(mojom::PortalState::kNoInternet, network->portal_state);
+
+  helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "redirect-found",
+          "Strength": 90, "AutoConnect": true,
+          "PortalDetectionFailedStatusCode": 407})");
+  network = GetNetworkState("wifi1_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
+  EXPECT_EQ(mojom::PortalState::kProxyAuthRequired, network->portal_state);
+}
+
 TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {
   mojom::NetworkFilterPtr filter = mojom::NetworkFilter::New();
   // All active networks

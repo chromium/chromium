@@ -23,6 +23,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -173,6 +176,15 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
   RestartDetection();
   EXPECT_EQ(kProbeUrl, get_probe_url());
   CompleteURLFetch(net::OK, 200, nullptr);
+
+  // Ensure that NetworkStateHandler is updated.
+  const chromeos::NetworkState* default_network =
+      chromeos::NetworkHandler::Get()
+          ->network_state_handler()
+          ->DefaultNetwork();
+  ASSERT_TRUE(default_network);
+  EXPECT_EQ(default_network->GetPortalState(),
+            chromeos::NetworkState::PortalState::kPortal);
 
   // Check that the default network is detected as behind a portal and that
   // notification is displayed.
