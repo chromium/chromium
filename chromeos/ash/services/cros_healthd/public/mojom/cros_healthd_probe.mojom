@@ -240,31 +240,47 @@ union NonRemovableBlockDeviceResult {
 // data adapter and filled with a default value for the unknown device type.
 
 // The manufacturer of the block device.
+//
+// NextMinVersion: 2, NextIndex: 4
+[Stable, Extensible]
 union BlockDeviceVendor {
-  uint32 nvme_subsystem_vendor;
-  uint16 emmc_oemid;
-  uint16 other;
+  uint32 nvme_subsystem_vendor@0;
+  uint16 emmc_oemid@1;
+  uint16 other@2;
+  [MinVersion=1, Default] uint64 unknown@3;
 };
 
 // The manufacturer-specific product identifier.
+//
+// NextMinVersion: 2, NextIndex: 4
+[Stable, Extensible]
 union BlockDeviceProduct {
-  uint32 nvme_subsystem_device;
-  uint64 emmc_pnm;
-  uint16 other;
+  uint32 nvme_subsystem_device@0;
+  uint64 emmc_pnm@1;
+  uint16 other@2;
+  [MinVersion=1, Default] uint64 unknown@3;
 };
 
 // The revision of the device's hardware.
+//
+// NextMinVersion: 2, NextIndex: 4
+[Stable, Extensible]
 union BlockDeviceRevision {
-  uint8 nvme_pcie_rev;
-  uint8 emmc_prv;
-  uint16 other;
+  uint8 nvme_pcie_rev@0;
+  uint8 emmc_prv@1;
+  uint16 other@2;
+  [MinVersion=1, Default] uint64 unknown@3;
 };
 
 // The revision of the device's firmware.
+//
+// NextMinVersion: 2, NextIndex: 4
+[Stable, Extensible]
 union BlockDeviceFirmware {
-  uint64 nvme_firmware_rev;
-  uint64 emmc_fwrev;
-  uint16 other;
+  uint64 nvme_firmware_rev@0;
+  uint64 emmc_fwrev@1;
+  uint16 other@2;
+  [MinVersion=1, Default] uint64 unknown@3;
 };
 
 // Purpose of the storage device.

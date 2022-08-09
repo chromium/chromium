@@ -901,6 +901,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                   kOther:
                 disk_info_out->set_other_vendor(vendor_id->get_other());
                 break;
+              case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::
+                  kUnknown:
+                LOG(ERROR) << "cros_healthd: Unknown storage vendor tag";
+                break;
             }
 
             // product_id
@@ -918,6 +922,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               case chromeos::cros_healthd::mojom::BlockDeviceProduct::Tag::
                   kOther:
                 disk_info_out->set_other_product(product_id->get_other());
+                break;
+              case chromeos::cros_healthd::mojom::BlockDeviceProduct::Tag::
+                  kUnknown:
+                LOG(ERROR) << "cros_healthd: Unknown storage product tag";
                 break;
             }
 
@@ -937,6 +945,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                   kOther:
                 disk_info_out->set_other_hardware_rev(revision->get_other());
                 break;
+              case chromeos::cros_healthd::mojom::BlockDeviceRevision::Tag::
+                  kUnknown:
+                LOG(ERROR) << "cros_healthd: Unknown storage revision tag";
+                break;
             }
 
             // firmware version
@@ -955,6 +967,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
                   kOther:
                 disk_info_out->set_other_firmware_rev(fw_version->get_other());
+                break;
+              case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
+                  kUnknown:
+                LOG(ERROR) << "cros_healthd: Unknown storage firmware tag";
                 break;
             }
 
