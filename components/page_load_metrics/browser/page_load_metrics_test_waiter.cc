@@ -434,6 +434,10 @@ void PageLoadMetricsTestWaiter::OnActivate(
   // load.
   if (attach_on_tracker_creation_)
     return;
+  // Prevent double registration if a test added expectation before
+  // prerendering navigation.
+  if (did_add_observer_)
+    return;
   AddObserver(tracker);
 }
 
