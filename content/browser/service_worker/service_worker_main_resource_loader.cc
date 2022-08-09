@@ -304,6 +304,10 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   response_head_->load_timing.send_end =
       fetch_event_timing_->dispatch_event_time;
 
+  // Records the metrics only if the code has been executed successfully in
+  // the service workers because we aim to see the fallback ratio and timing.
+  RecordFetchEventHandlerMetrics(fetch_result);
+
   if (fetch_result ==
       ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
     TransitionToStatus(Status::kCompleted);
@@ -556,6 +560,22 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
         "FetchHandlerEndToFallbackNetwork",
         completion_time_ - fetch_event_timing_->respond_with_settled_time);
   }
+}
+
+void ServiceWorkerMainResourceLoader::RecordFetchEventHandlerMetrics(
+    ServiceWorkerFetchDispatcher::FetchEventResult fetch_result) {
+  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MainFrame.MainResource.FetchResult",
+                            fetch_result);
+
+  // Time spent by fetch handlers per |fetch_result|.
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "ServiceWorker.LoadTiming.MainFrame.MainResource."
+          "FetchHandlerStartToFetchHandlerEndByFetchResult",
+          ServiceWorkerFetchDispatcher::FetchEventResultToSuffix(fetch_result),
+      }),
+      fetch_event_timing_->respond_with_settled_time -
+          fetch_event_timing_->dispatch_event_time);
 }
 
 void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {

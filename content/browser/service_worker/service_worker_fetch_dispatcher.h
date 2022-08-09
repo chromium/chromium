@@ -34,11 +34,14 @@ class ServiceWorkerVersion;
 class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
  public:
   // Indicates how the service worker handled a fetch event.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class FetchEventResult {
     // Browser should fallback to native fetch.
-    kShouldFallback,
+    kShouldFallback = 0,
     // Service worker provided a ServiceWorkerResponse.
-    kGotResponse
+    kGotResponse = 1,
+    kMaxValue = kGotResponse,
   };
 
   using FetchCallback =
@@ -63,6 +66,8 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
       delete;
 
   ~ServiceWorkerFetchDispatcher();
+
+  static const char* FetchEventResultToSuffix(FetchEventResult result);
 
   // If appropriate, starts the navigation preload request and creates
   // |preload_handle_|. Returns true if it started navigation preload.

@@ -160,6 +160,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // handled the request (i.e. non network fallback case).
   void RecordTimingMetrics(bool handled);
 
+  // Records metrics related to the fetch event handler execution.
+  void RecordFetchEventHandlerMetrics(
+      ServiceWorkerFetchDispatcher::FetchEventResult fetch_result);
+
   void TransitionToStatus(Status new_status);
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

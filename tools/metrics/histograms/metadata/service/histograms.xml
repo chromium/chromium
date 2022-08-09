@@ -45,6 +45,11 @@ chromium-metrics-reviews@google.com.
   <variant name="UNKNOWN"/>
 </variants>
 
+<variants name="ServiceWorkerFetchEventResult">
+  <variant name="GOT_RESPONSE"/>
+  <variant name="SHOULD_FALLBACK"/>
+</variants>
+
 <histogram name="ServiceWorker.AbortPaymentEvent.Time" units="ms"
     expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
@@ -475,6 +480,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerStartToFetchHandlerEndByFetchResult_{ServiceWorkerFetchEventResult}"
+    units="ms" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken from (a) a fetch event is dispatched, to (b) respondWith() is
+    settled for the fetch event, or fetch event dispatch is finished without
+    respondWith() being called.
+
+    Recorded for each navigation request (including redirects) where there is a
+    fetch event handler and the fetch event was successfully dispatched to the
+    service worker.
+
+    The records are breakdown by FetchEventResult.
+  </summary>
+</histogram>
+
+<histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2"
     units="ms" expires_after="2023-06-30">
   <owner>yyanagisawa@chromium.org</owner>
@@ -613,6 +636,17 @@ chromium-metrics-reviews@google.com.
 
     Recorded for each subresource request where there is a fetch event handler
     and the fetch event was successfully dispatched to the service worker.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.MainFrame.MainResource.FetchResult"
+    enum="ServiceWorkerFetchEventResult" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the fetch result after the fetch handler has been dispatched. This
+    is recorded after dispatching the fetch event handler to a service worker,
+    and it executed the handler without error (i.e. abort or timeout).
   </summary>
 </histogram>
 

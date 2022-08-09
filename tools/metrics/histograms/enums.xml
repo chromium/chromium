@@ -86859,6 +86859,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Timeout"/>
 </enum>
 
+<enum name="ServiceWorkerFetchEventResult">
+  <int value="0" label="Should Fallback"/>
+  <int value="1" label="Got Response"/>
+</enum>
+
 <enum name="ServiceWorkerInstalledScriptsManager.FinishedReason">
   <int value="0" label="NOT_FINISHED"/>
   <int value="1" label="SUCCESS"/>

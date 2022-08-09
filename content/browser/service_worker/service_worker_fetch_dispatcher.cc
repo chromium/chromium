@@ -711,6 +711,22 @@ void ServiceWorkerFetchDispatcher::RunCallback(
            std::move(timing), version_);
 }
 
+// static
+const char* ServiceWorkerFetchDispatcher::FetchEventResultToSuffix(
+    FetchEventResult result) {
+  // Don't change these returned strings. They are written (in hashed form) into
+  // logs.
+  switch (result) {
+    case ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback:
+      return "_SHOULD_FALLBACK";
+    case ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse:
+      return "_GOT_RESPONSE";
+  }
+  NOTREACHED() << "Got unexpected fetch event result:"
+               << static_cast<int>(result);
+  return "error";
+}
+
 bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
     const network::ResourceRequest& original_request,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
