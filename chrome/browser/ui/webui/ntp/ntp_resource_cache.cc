@@ -325,7 +325,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT);
 
   const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(profile_);
+      ThemeService::GetThemeProviderForProfile(incognito_profile);
 
   replacements["hasCustomBackground"] =
       tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
@@ -421,8 +421,8 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
   DCHECK(native_theme);
 
-  const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(profile_);
+  const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
