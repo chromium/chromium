@@ -810,8 +810,10 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
   '''
 
   WARMUP_RUNS_SCRIPT = '''
+      let performance_mark = window.performance.mark;
       window.__telemetry_first_load_finished = false;
       window.performance.mark = function (label) {
+        performance_mark.call(window.performance, label);
         if (label == 'Doc.open complete') {
           window.__telemetry_first_load_finished = true;
         }
