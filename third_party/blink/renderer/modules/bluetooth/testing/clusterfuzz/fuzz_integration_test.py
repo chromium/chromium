@@ -33,11 +33,12 @@ class WebBluetoothFuzzerTest(unittest.TestCase):
 
         written_files = glob.glob(os.path.join(self._output_dir, '*.html'))
 
-        self.assertEquals(100, len(written_files), 'Should have written 100 '
-                          'test files.')
+        self.assertEqual(100, len(written_files), 'Should have written 100 '
+                         'test files.')
 
         for test_case in written_files:
-            self.assertFalse('TRANSFORM' in open(test_case).read())
+            with open(test_case, encoding='utf-8') as f:
+                self.assertFalse('TRANSFORM' in f.read())
 
 
 if __name__ == '__main__':
