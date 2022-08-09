@@ -6494,10 +6494,14 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     return true;
   } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    base::FilePath screen_ai_component_path =
-        screen_ai::GetLatestLibraryFilePath();
-    if (screen_ai_component_path.empty())
+    // ScreenAI service needs read access to ScreenAI component path, so that it
+    // would be able to find the latest downloaded version, and load its binary
+    // and all enclosed model files.
+    base::FilePath screen_ai_component_path = screen_ai::GetComponentPath();
+    if (screen_ai_component_path.empty()) {
+      VLOG(1) << "Screen AI library not found.";
       return false;
+    }
 
     CHECK(client->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
                                screen_ai_component_path.value()));

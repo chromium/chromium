@@ -18,12 +18,17 @@ namespace screen_ai {
 namespace {
 
 base::FilePath GetLibraryFilePath() {
-  base::FilePath library_path = GetPreloadedLibraryFilePath();
-  if (library_path.empty() && base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                  sandbox::policy::switches::kNoSandbox)) {
-    library_path = GetLatestLibraryFilePath();
-    SetPreloadedLibraryFilePath(library_path);
-  }
+  base::FilePath library_path = GetStoredLibraryBinaryPath();
+
+  if (!library_path.empty())
+    return library_path;
+
+  // Binary file path is set while setting the sandbox on Linux, or the first
+  // time this function is called. So in all other cases we need to look for
+  // the library binary in its component folder.
+  library_path = GetLatestLibraryFilePath();
+  StoreLibraryBinaryPath(library_path);
+
   return library_path;
 }
 

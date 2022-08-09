@@ -21,7 +21,9 @@ const base::FilePath::CharType kScreenAILibraryFileName[] =
 enum {
   PATH_START = 13000,
 
-  DIR_SCREEN_AI_LIBRARY,  // Path from which ScreenAI library is preloaded.
+  // Note that this value is not kept between sessions or shared between
+  // processes.
+  PATH_SCREEN_AI_LIBRARY_BINARY,
 
   PATH_END
 };
@@ -32,15 +34,23 @@ base::FilePath GetRelativeInstallDir() {
   return base::FilePath(kScreenAISubDirName);
 }
 
-base::FilePath GetLatestLibraryFilePath() {
+base::FilePath GetComponentPath() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
   if (components_dir.empty())
     return base::FilePath();
 
+  return components_dir.Append(kScreenAISubDirName);
+}
+
+base::FilePath GetLatestLibraryFilePath() {
+  base::FilePath screen_ai_dir = GetComponentPath();
+  if (screen_ai_dir.empty())
+    return base::FilePath();
+
   // Get latest version.
-  base::FileEnumerator enumerator(components_dir.Append(kScreenAISubDirName),
+  base::FileEnumerator enumerator(screen_ai_dir,
                                   /*recursive=*/false,
                                   base::FileEnumerator::DIRECTORIES);
   base::FilePath latest_version_dir;
@@ -58,13 +68,13 @@ base::FilePath GetLatestLibraryFilePath() {
   return library_path;
 }
 
-void SetPreloadedLibraryFilePath(const base::FilePath& path) {
-  base::PathService::Override(DIR_SCREEN_AI_LIBRARY, path);
+void StoreLibraryBinaryPath(const base::FilePath& path) {
+  base::PathService::Override(PATH_SCREEN_AI_LIBRARY_BINARY, path);
 }
 
-base::FilePath GetPreloadedLibraryFilePath() {
+base::FilePath GetStoredLibraryBinaryPath() {
   base::FilePath path;
-  base::PathService::Get(DIR_SCREEN_AI_LIBRARY, &path);
+  base::PathService::Get(PATH_SCREEN_AI_LIBRARY_BINARY, &path);
   return path;
 }
 
