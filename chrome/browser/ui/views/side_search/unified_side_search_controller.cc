@@ -33,8 +33,22 @@ class SideSearchWebView : public views::WebView {
         SideSearchSideContentsHelper::FromWebContents(web_contents());
     if (!side_contents_helper)
       return;
-    auto* helper = SideSearchTabContentsHelper::FromWebContents(
-        side_contents_helper->GetTabWebContents());
+
+    auto* tab_web_contents = side_contents_helper->GetTabWebContents();
+
+    // (crbug.com/1348296) Do not clear side panel contents if the current tab's
+    // contextual entry is still active. This prevents the uaf bug also does not
+    // cause the side search to reload when switching back to a tab that has
+    // side search previously open.
+    auto* registry = SidePanelRegistry::Get(tab_web_contents);
+    if (registry && registry->active_entry().has_value() &&
+        registry->active_entry().value()->id() ==
+            SidePanelEntry::Id::kSideSearch) {
+      return;
+    }
+
+    auto* helper =
+        SideSearchTabContentsHelper::FromWebContents(tab_web_contents);
     if (helper)
       helper->ClearSidePanelContents();
   }
