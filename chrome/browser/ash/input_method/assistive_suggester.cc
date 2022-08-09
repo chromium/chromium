@@ -97,6 +97,12 @@ void RecordAssistiveUserPrefForMultiWord(bool value) {
   base::UmaHistogramBoolean("InputMethod.Assistive.UserPref.MultiWord", value);
 }
 
+void RecordAssistiveUserPrefForDiacriticsOnLongpress(bool value) {
+  base::UmaHistogramBoolean(
+      "InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress",
+      value);
+}
+
 void RecordAssistiveNotAllowed(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.NotAllowed", type);
 }
@@ -643,6 +649,12 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
   if (features::IsAssistiveMultiWordEnabled()) {
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kDiacriticsOnPhysicalKeyboardLongpress) &&
+      IsUsEnglishEngine(active_engine_id_)) {
+    RecordAssistiveUserPrefForDiacriticsOnLongpress(
+        IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(), engine_id));
   }
 }
 

@@ -321,6 +321,34 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
+TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefEnabledOnActivate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDiacriticsOnPhysicalKeyboardLongpress);
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress",
+      true, 1);
+}
+
+TEST_F(AssistiveSuggesterTest, RecordPKDiacriticsPrefDisabledOnActivate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDiacriticsOnPhysicalKeyboardLongpress);
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress",
+      false, 1);
+}
+
 TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

@@ -371,6 +371,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress"
+    enum="BooleanEnabled" expires_after="2023-08-07">
+  <owner>jhtin@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The user's preference for diacritics. Recorded when the user is logged in
+    and the AssistiveSuggester is initialised. &quot;Enabled&quot; is logged as
+    the default value if the user didn't explicitly set it.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.AutoCorrectLevel" enum="IMECorrectionLevel"
     expires_after="2022-10-03">
   <owner>shend@chromium.org</owner>
