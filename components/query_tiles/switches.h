@@ -33,6 +33,9 @@ extern const base::Feature kQueryTilesSegmentation;
 // Whether to disable the override rules introduced for countries.
 extern const base::Feature kQueryTilesDisableCountryOverride;
 
+// Feature flag to determine whether query tiles should be shown on start surface.
+extern const base::Feature kQueryTilesOnStart;
+
 // Returns whether query tiles are enabled for the country.
 bool IsQueryTilesEnabledForCountry(const std::string& country_code);
 }  // namespace features

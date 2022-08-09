@@ -24,6 +24,9 @@ const base::Feature kQueryTilesSegmentation{"QueryTilesSegmentation",
 const base::Feature kQueryTilesDisableCountryOverride{
     "QueryTilesDisableCountryOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kQueryTilesOnStart{
+    "QueryTilesOnStart", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsQueryTilesEnabledForCountry(const std::string& country_code) {
   std::string enabled_countries[] = {"IN", "NG", "JP"};
   for (const auto& country : enabled_countries) {
