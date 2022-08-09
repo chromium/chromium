@@ -13,6 +13,9 @@
 #include "courgette/third_party/bsdiff/bsdiff.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/1349158): Remove this file once Puffin patches are fully
+// implemented.
+
 namespace update_client {
 
 class ReadOnlyTestInstaller;

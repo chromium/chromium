@@ -10,6 +10,7 @@
 
 namespace base {
 class FilePath;
+class File;
 }  // namespace base
 
 namespace update_client {
@@ -29,6 +30,11 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
   virtual void PatchCourgette(const base::FilePath& input_file,
                               const base::FilePath& patch_file,
                               const base::FilePath& destination,
+                              PatchCompleteCallback callback) const = 0;
+
+  virtual void PatchPuffPatch(base::File input_file_path,
+                              base::File patch_file_path,
+                              base::File output_file_path,
                               PatchCompleteCallback callback) const = 0;
 
  protected:

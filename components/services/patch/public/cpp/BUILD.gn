@@ -12,4 +12,6 @@ source_set("cpp") {
     "//components/services/patch/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
+
+  deps = [ "//components/update_client:buildflags" ]
 }

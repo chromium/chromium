@@ -11,7 +11,7 @@
 
 namespace puffin {
 
-// The base stream interface used by puffin for all operations. This interface
+// The base stream interface used by Puffin for all operations. This interface
 // is designed to be as simple as possible.
 class StreamInterface {
  public:

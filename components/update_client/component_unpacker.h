@@ -16,6 +16,9 @@
 #include "base/memory/ref_counted.h"
 #include "components/update_client/update_client_errors.h"
 
+// TODO(crbug.com/1349158): Remove this class once Puffin patches are fully
+// implemented.
+
 namespace crx_file {
 enum class VerifierFormat;
 }

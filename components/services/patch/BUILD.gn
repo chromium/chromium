@@ -1,6 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//components/update_client/buildflags.gni")
 
 source_set("lib") {
   sources = [
@@ -11,9 +12,15 @@ source_set("lib") {
   deps = [
     "//base",
     "//components/services/filesystem/public/mojom",
+    "//components/update_client:buildflags",
     "//courgette:courgette_lib",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (enable_puffin_patches) {
+    include_dirs = [ "//third_party/puffin/src/include" ]
+    deps += [ "//third_party/puffin:libpuffpatch" ]
+  }
 
   public_deps = [ "//components/services/patch/public/mojom" ]
 }

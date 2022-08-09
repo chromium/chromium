@@ -10,6 +10,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace base {
+class File;
+}  // namespace base
+
 namespace patch {
 
 class FilePatcherImpl : public mojom::FilePatcher {
@@ -36,6 +40,10 @@ class FilePatcherImpl : public mojom::FilePatcher {
                           base::File patch_file,
                           base::File output_file,
                           PatchFileCourgetteCallback callback) override;
+  void PatchFilePuffPatch(base::File input_file_path,
+                          base::File patch_file_path,
+                          base::File output_file_path,
+                          PatchFilePuffPatchCallback callback) override;
 
   mojo::Receiver<mojom::FilePatcher> receiver_{this};
 };

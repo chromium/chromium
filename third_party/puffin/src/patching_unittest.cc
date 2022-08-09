@@ -149,26 +149,26 @@ TEST(PatchingTest, Patching1ToNoDeflateTest) {
 }
 
 TEST(PatchingTest, ApplyPuffPatchTest) {
-  ASSERT_EQ(ApplyPuffPatch(out_test_file("puffin_app_v1.crx3"),
-                           out_test_file("puffin_app_v1_to_v2.puff"),
-                           out_test_file("puffin_app_v1_to_v2.crx3")),
-            Status::P_OK);
-  std::string expected, actual;
-  ASSERT_TRUE(
-      base::ReadFileToString(out_test_file("puffin_app_v2.crx3"), &expected));
-  ASSERT_TRUE(base::ReadFileToString(out_test_file("puffin_app_v1_to_v2.crx3"),
-                                     &actual));
-  ASSERT_EQ(expected.compare(actual), 0);
+  base::FilePath app_v1_crx = out_test_file("puffin_app_v1.crx3");
+  base::FilePath app_v2_crx = out_test_file("puffin_app_v2.crx3");
+  base::FilePath patch_v1_to_v2_puff =
+      out_test_file("puffin_app_v1_to_v2.puff");
+  base::FilePath patch_v2_to_v1_puff =
+      out_test_file("puffin_app_v2_to_v1.puff");
+  base::FilePath app_v1_to_v2_crx = out_test_file("puffin_app_v1_to_v2.crx3");
+  base::FilePath app_v2_to_v1_crx = out_test_file("puffin_app_v2_to_v1.crx3");
 
-  ASSERT_EQ(ApplyPuffPatch(out_test_file("puffin_app_v2.crx3"),
-                           out_test_file("puffin_app_v2_to_v1.puff"),
-                           out_test_file("puffin_app_v2_to_v1.crx3")),
+  // Test patching v1 to v2:
+  ASSERT_TRUE(base::DeleteFile(app_v1_to_v2_crx));
+  ASSERT_EQ(ApplyPuffPatch(app_v1_crx, patch_v1_to_v2_puff, app_v1_to_v2_crx),
             Status::P_OK);
-  ASSERT_TRUE(
-      base::ReadFileToString(out_test_file("puffin_app_v1.crx3"), &expected));
-  ASSERT_TRUE(base::ReadFileToString(out_test_file("puffin_app_v2_to_v1.crx3"),
-                                     &actual));
-  ASSERT_EQ(expected.compare(actual), 0);
+  EXPECT_TRUE(base::ContentsEqual(app_v2_crx, app_v1_to_v2_crx));
+
+  // Test patching v2 to v1:
+  ASSERT_TRUE(base::DeleteFile(app_v2_to_v1_crx));
+  ASSERT_EQ(ApplyPuffPatch(app_v2_crx, patch_v2_to_v1_puff, app_v2_to_v1_crx),
+            Status::P_OK);
+  EXPECT_TRUE(base::ContentsEqual(app_v1_crx, app_v2_to_v1_crx));
 }
 
 // TODO(ahassani): add tests for:

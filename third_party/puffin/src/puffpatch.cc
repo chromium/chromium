@@ -166,7 +166,7 @@ Status PuffPatch(UniqueStreamPtr src,
                  const uint8_t* patch,
                  size_t patch_length,
                  size_t max_cache_size) {
-  size_t patch_offset;  // raw patch offset in puffin |patch|.
+  size_t patch_offset;  // raw patch offset in Puffin |patch|.
   size_t raw_patch_size = 0;
   vector<BitExtent> src_deflates, dst_deflates;
   vector<ByteExtent> src_puffs, dst_puffs;
@@ -221,6 +221,37 @@ Status ApplyPuffPatch(const base::FilePath& input_path,
   }
   puffin::UniqueStreamPtr patch_stream =
       puffin::FileStream::Open(patch_path.AsUTF8Unsafe(), true, false);
+  if (!patch_stream) {
+    return Status::P_READ_OPEN_ERROR;
+  }
+  uint64_t patch_size = 0;
+  if (!patch_stream->GetSize(&patch_size)) {
+    return Status::P_STREAM_ERROR;
+  }
+  puffin::Buffer puffdiff_delta(patch_size);
+  if (!patch_stream->Read(puffdiff_delta.data(), puffdiff_delta.size())) {
+    return Status::P_READ_ERROR;
+  }
+  return puffin::PuffPatch(std::move(input_stream), std::move(output_stream),
+                           std::move(puffdiff_delta.data()),
+                           puffdiff_delta.size(), kDefaultPuffCacheSize);
+}
+
+Status ApplyPuffPatch(base::File input_file,
+                      base::File patch_file,
+                      base::File output_file) {
+  puffin::UniqueStreamPtr input_stream =
+      puffin::FileStream::CreateStreamFromFile(std::move(input_file));
+  if (!input_stream) {
+    return Status::P_READ_OPEN_ERROR;
+  }
+  puffin::UniqueStreamPtr output_stream =
+      puffin::FileStream::CreateStreamFromFile(std::move(output_file));
+  if (!output_stream) {
+    return Status::P_WRITE_OPEN_ERROR;
+  }
+  puffin::UniqueStreamPtr patch_stream =
+      puffin::FileStream::CreateStreamFromFile(std::move(patch_file));
   if (!patch_stream) {
     return Status::P_READ_OPEN_ERROR;
   }

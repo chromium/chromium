@@ -182,14 +182,14 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
         auto bits_to_cache = cur_ht->DistanceMaxBits();
         if (!br->CacheBits(bits_to_cache)) {
           // This is a corner case that is present in the older versions of the
-          // puffin. So we need to catch it and correctly discard this kind of
+          // Puffin. So we need to catch it and correctly discard this kind of
           // deflate when we encounter it. See crbug.com/915559 for more info.
           bits_to_cache = br->BitsRemaining();
           TEST_AND_RETURN_FALSE(br->CacheBits(bits_to_cache));
           if (exclude_bad_distance_caches_) {
             include_deflate = false;
           }
-          LOG(WARNING) << "A rare condition that older puffin clients fail to"
+          LOG(WARNING) << "A rare condition that older Puffin clients fail to"
                        << " recognize happened. Nothing to worry about."
                        << " See crbug.com/915559";
         }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The puffin patch test app is a do-nothing application "installer" that is
+// The Puffin patch test app is a do-nothing application "installer" that is
 // embedded in an update CRX. This is version 2, version 1 is located at
 // ../puffin_app_v1. If you apply the
 // puffpatch puffin_app_v1_to_v2.puff to puffin_app_v1.crx3, it produces

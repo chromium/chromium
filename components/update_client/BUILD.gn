@@ -2,8 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/update_client/buildflags.gni")
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_PUFFIN_PATCHES=$enable_puffin_patches" ]
+}
 
 source_set("network_impl") {
   sources = [
@@ -39,6 +46,7 @@ source_set("in_process_patcher") {
     "patch/in_process_patcher.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//base",
     "//courgette:bsdiff",
@@ -63,6 +71,7 @@ source_set("patch_impl") {
     "patch/patch_impl.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//build:chromeos_buildflags",
     "//components/services/patch/public/cpp",
@@ -163,6 +172,16 @@ static_library("update_client") {
     sources += [
       "background_downloader_win.cc",
       "background_downloader_win.h",
+    ]
+  }
+
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    include_dirs = [ "//third_party/puffin/src/include" ]
+    sources += [
+      "puffin_patcher.cc",
+      "puffin_patcher.h",
     ]
   }
 }
@@ -276,6 +295,14 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/re2",
   ]
+
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    sources += [ "puffin_patcher_unittest.cc" ]
+    deps += [ "//third_party/puffin:libpuffpatch" ]
+    data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  }
 }
 
 fuzzer_test("update_client_protocol_serializer_fuzzer") {

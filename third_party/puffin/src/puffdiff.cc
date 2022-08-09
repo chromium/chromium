@@ -44,7 +44,7 @@ void CopyVectorToRpf(
   }
 }
 
-// Structure of a puffin patch
+// Structure of a Puffin patch
 // +-------+------------------+-------------+--------------+
 // |P|U|F|1| PatchHeader Size | PatchHeader | raw patch |
 // +-------+------------------+-------------+--------------+

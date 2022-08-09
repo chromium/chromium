@@ -34,3 +34,11 @@ Local Modifications:
 - Added puffin::ApplyPuffPatch API which allows chromium libraries to call
     puffin::PuffPatch without having worry about UniqueStreamPtr's and Buffer's.
 - Added ApplyPuffPatchTest to patching_unittest to test the new method.
+- Updated puffin/BUILD.gn to grab the new puffin_patch_test_files target under
+components
+- Updated puffin::ApplyPuffPatch test to use the new patch files under
+components.
+- Updated puffin::ApplyPuffPatch test to make sure the output files are deleted
+so the tests will pass in back-to-back runs.
+- Updated puffin::ApplyPuffPatch test to use base::ContentsEqual rather than
+manually reading each file and comparing the results.

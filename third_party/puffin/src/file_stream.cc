@@ -38,6 +38,10 @@ UniqueStreamPtr FileStream::Open(const string& path, bool read, bool write) {
   return UniqueStreamPtr(new FileStream(file_path, flags));
 }
 
+UniqueStreamPtr FileStream::CreateStreamFromFile(base::File file) {
+  return UniqueStreamPtr(new FileStream(std::move(file)));
+}
+
 bool FileStream::GetSize(uint64_t* size) {
   TEST_AND_RETURN_FALSE(file_.IsValid());
   int64_t result = file_.GetLength();

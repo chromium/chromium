@@ -34,6 +34,9 @@
 #include "base/values.h"
 #include "components/update_client/component_unpacker.h"
 
+// TODO(crbug.com/1349158): Remove this class once Puffin patches are fully
+// implemented.
+
 namespace base {
 class FilePath;
 }

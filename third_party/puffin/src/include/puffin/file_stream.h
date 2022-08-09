@@ -22,9 +22,12 @@ class FileStream : public StreamInterface {
     file_.Initialize(path, flags);
     Seek(0);
   }
+
+  FileStream(base::File file) : file_(std::move(file)) {}
   ~FileStream() override = default;
 
   static UniqueStreamPtr Open(const std::string& path, bool read, bool write);
+  static UniqueStreamPtr CreateStreamFromFile(base::File file);
 
   bool GetSize(uint64_t* size) override;
   bool GetOffset(uint64_t* offset) override;

@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 #
 
-"""A tool for running puffin tests in a corpus of deflate compressed files."""
+"""A tool for running Puffin tests in a corpus of deflate compressed files."""
 
 import argparse
 import filecmp

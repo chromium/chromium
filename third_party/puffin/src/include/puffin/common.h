@@ -26,15 +26,15 @@
 namespace puffin {
 
 enum class CompressorType : uint8_t {
-  kNoCompression = 0,  // Unsupported by chromium/src's puffin implementation.
-  kBZ2 = 1,            // Unsupported by chromium/src's puffin implementation.
+  kNoCompression = 0,  // Unsupported by chromium/src's Puffin implementation.
+  kBZ2 = 1,            // Unsupported by chromium/src's Puffin implementation.
   kBrotli = 2,
 };
 
 using Buffer = std::vector<uint8_t>;
 
 // This class is similar to the protobuf generated for |ProtoByteExtent|. We
-// defined an extra class so the users of puffin do not have to include
+// defined an extra class so the users of Puffin do not have to include
 // puffin.pb.h and deal with its use.
 struct ByteExtent {
   constexpr ByteExtent(uint64_t offset, uint64_t length)

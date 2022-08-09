@@ -4,7 +4,11 @@
 
 #include "components/update_client/patch/patch_impl.h"
 
+#include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "components/services/patch/public/cpp/patch.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/component_patcher_operation.h"
 
 namespace update_client {
@@ -30,6 +34,21 @@ class PatcherImpl : public Patcher {
                       PatchCompleteCallback callback) const override {
     patch::Patch(callback_.Run(), update_client::kCourgette, old_file,
                  patch_file, destination, std::move(callback));
+  }
+
+  void PatchPuffPatch(base::File old_file,
+                      base::File patch_file,
+                      base::File destination_file,
+                      PatchCompleteCallback callback) const override {
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+    // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+    // we should remove this #if.
+    patch::PuffPatch(callback_.Run(), std::move(old_file),
+                     std::move(patch_file), std::move(destination_file),
+                     std::move(callback));
+#else
+    NOTREACHED();
+#endif
   }
 
  protected:
