@@ -105,7 +105,8 @@ def main(argv):
     ])
     append_to_env('CXXFLAGS', [
         '-nostdinc++',
-        ' -isystem../../../buildtools/third_party/libc++/trunk/include',
+        '-isystem../../../buildtools/third_party/libc++',
+        '-isystem../../../buildtools/third_party/libc++/trunk/include',
         '-isystem../../../buildtools/third_party/libc++abi/trunk/include'
     ])
 
