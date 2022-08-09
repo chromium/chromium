@@ -2814,10 +2814,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
             box_model_object.OffsetForInFlowPosition();
         break;
       case EPosition::kAbsolute: {
-#if DCHECK_IS_ON()
         DCHECK_EQ(full_context_.container_for_absolute_position,
                   box_model_object.Container());
-#endif
         SwitchToOOFContext(context_.absolute_position);
 
         // Absolutely positioned content in an inline should be positioned
