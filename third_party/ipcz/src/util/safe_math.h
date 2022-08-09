@@ -38,6 +38,15 @@ constexpr T CheckMul(T a, T b) {
   return result;
 }
 
+template <typename T>
+T SaturatedAdd(T a, T b) {
+  T result;
+  if (!__builtin_add_overflow(a, b, &result)) {
+    return result;
+  }
+  return std::numeric_limits<T>::max();
+}
+
 }  // namespace ipcz
 
 #endif  // IPCZ_SRC_UTIL_SAFE_MATH_

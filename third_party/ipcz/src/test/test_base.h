@@ -41,6 +41,10 @@ class TestBase {
   IpczResult Put(IpczHandle portal,
                  std::string_view message,
                  absl::Span<IpczHandle> handles = {});
+  IpczResult PutWithLimits(IpczHandle portal,
+                           const IpczPutLimits& limits,
+                           std::string_view message,
+                           absl::Span<IpczHandle> handles = {});
 
   // Shorthand for ipcz Get() to retrieve the next available parcel from
   // `portal`.If no parcel is available, or any other condition prevents Get()

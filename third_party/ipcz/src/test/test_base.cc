@@ -75,6 +75,20 @@ IpczResult TestBase::Put(IpczHandle portal,
                     handles.size(), IPCZ_NO_FLAGS, nullptr);
 }
 
+IpczResult TestBase::PutWithLimits(IpczHandle portal,
+                                   const IpczPutLimits& limits,
+                                   std::string_view message,
+                                   absl::Span<IpczHandle> handles) {
+  IpczPutLimits sized_limits = limits;
+  sized_limits.size = sizeof(sized_limits);
+  const IpczPutOptions options = {
+      .size = sizeof(options),
+      .limits = &sized_limits,
+  };
+  return ipcz().Put(portal, message.data(), message.size(), handles.data(),
+                    handles.size(), IPCZ_NO_FLAGS, &options);
+}
+
 IpczResult TestBase::Get(IpczHandle portal,
                          std::string* message,
                          absl::Span<IpczHandle> handles) {
@@ -108,9 +122,14 @@ IpczResult TestBase::Trap(IpczHandle portal,
                           IpczPortalStatus* status) {
   auto handler = std::make_unique<TrapEventHandler>(std::move(fn));
   auto context = reinterpret_cast<uintptr_t>(handler.get());
+
+  // For convenience, set the `size` field correctly so callers don't have to.
+  IpczTrapConditions sized_conditions = conditions;
+  sized_conditions.size = sizeof(sized_conditions);
+
   const IpczResult result =
-      ipcz().Trap(portal, &conditions, &HandleEvent, context, IPCZ_NO_FLAGS,
-                  nullptr, flags, status);
+      ipcz().Trap(portal, &sized_conditions, &HandleEvent, context,
+                  IPCZ_NO_FLAGS, nullptr, flags, status);
   if (result == IPCZ_RESULT_OK) {
     std::ignore = handler.release();
   }

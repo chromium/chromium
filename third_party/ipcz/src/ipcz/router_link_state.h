@@ -18,10 +18,11 @@ namespace ipcz {
 
 // Structure shared between both Routers connected by RouterLink. This is used
 // to synchronously query and reflect the state of each Router to the other,
-// and ultimately to facilitate orderly state changes across the route.
-//
-// This may live in shared memory, where it should be managed as a
+// and ultimately to facilitate orderly state changes across the route. This
+// may live in shared memory, where it should be managed as a
 // RefCountedFragment.
+//
+// Note that RouterLinkStates are effectively only used by central links.
 struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   RouterLinkState();
 
@@ -29,7 +30,7 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   static RouterLinkState& Initialize(void* where);
 
   // Link status which both sides atomically update to coordinate orderly proxy
-  // bypass and route closure propagation. Used only for central links.
+  // bypass, route closure propagation, and other operations.
   using Status = uint32_t;
 
   // Status constants follow.
@@ -61,6 +62,13 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   static constexpr Status kLockedBySideA = 1 << 4;
   static constexpr Status kLockedBySideB = 1 << 5;
 
+  // Set if the link on either side A or B wishes to be notified when parcels
+  // or parcel data are consumed by the other side. In practice these are only
+  // set when a router has a trap installed to monitor such conditions, which
+  // applications may leverage to e.g. implement a back-pressure mechanism.
+  static constexpr Status kSideAMonitoringSideB = 1 << 6;
+  static constexpr Status kSideBMonitoringSideA = 1 << 7;
+
   std::atomic<Status> status{kUnstable};
 
   // In a situation with three routers A-B-C and a central link between A and
@@ -70,8 +78,16 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   // validate that C is an appropriate source of such a bypass request.
   NodeName allowed_bypass_request_source;
 
-  // Reserved slots.
-  uint32_t reserved[10];
+  // These fields approximate the number of parcels and data bytes received and
+  // queued for retrieval on each side of this link. Values here are saturated
+  // if the actual values would exceed the max uint32_t value.
+  std::atomic<uint32_t> num_parcels_on_a{0};
+  std::atomic<uint32_t> num_bytes_on_a{0};
+  std::atomic<uint32_t> num_parcels_on_b{0};
+  std::atomic<uint32_t> num_bytes_on_b{0};
+
+  // More reserved slots, padding out this structure to 64 bytes.
+  uint32_t reserved1[6] = {0};
 
   bool is_locked_by(LinkSide side) const {
     Status s = status.load(std::memory_order_relaxed);
@@ -107,6 +123,25 @@ struct IPCZ_ALIGN(8) RouterLinkState : public RefCountedFragment {
   // attempt was made to TryLock() from that side, while the other side was
   // still unstable.
   bool ResetWaitingBit(LinkSide side);
+
+  // Returns a snapshot of the inbound parcel queue state on the given side of
+  // this link.
+  struct QueueState {
+    uint32_t num_parcels;
+    uint32_t num_bytes;
+  };
+  QueueState GetQueueState(LinkSide side) const;
+
+  // Updates the queue state for the given side of this link. Values which
+  // exceed 2**32-1 are clamped to that value. Returns true if and only if the
+  // opposite side of the link wants to be notified about this update.
+  bool UpdateQueueState(LinkSide side, size_t num_parcels, size_t num_bytes);
+
+  // Sets an appropriate bit to indicate whether the router on the given side of
+  // this link should notify the opposite side after consuming inbound parcels
+  // or parcel data. Returns the previous value of the relevant bit, which may
+  // be the same as the old value.
+  bool SetSideIsMonitoringPeer(LinkSide side, bool is_monitoring);
 };
 
 // The size of this structure is fixed at 64 bytes to ensure that it fits the

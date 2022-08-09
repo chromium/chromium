@@ -608,6 +608,13 @@ bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
       sublink->router_link->GetType());
 }
 
+bool NodeLink::OnNotifyDataConsumed(msg::NotifyDataConsumed& notify) {
+  if (Ref<Router> router = GetRouter(notify.params().sublink)) {
+    router->NotifyPeerConsumedData();
+  }
+  return true;
+}
+
 bool NodeLink::OnBypassPeer(msg::BypassPeer& bypass) {
   absl::optional<Sublink> sublink = GetSublink(bypass.params().sublink);
   if (!sublink) {

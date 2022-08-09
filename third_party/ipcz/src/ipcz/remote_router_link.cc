@@ -239,6 +239,52 @@ void RemoteRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
   node_link()->Transmit(route_closed);
 }
 
+size_t RemoteRouterLink::GetParcelCapacityInBytes(const IpczPutLimits& limits) {
+  if (limits.max_queued_bytes == 0 || limits.max_queued_parcels == 0) {
+    return 0;
+  }
+
+  RouterLinkState* state = GetLinkState();
+  if (!state) {
+    // This is only a best-effort estimate. With no link state yet, err on the
+    // side of more data flow.
+    return limits.max_queued_bytes;
+  }
+
+  const RouterLinkState::QueueState peer_queue =
+      state->GetQueueState(side_.opposite());
+  if (peer_queue.num_parcels >= limits.max_queued_parcels ||
+      peer_queue.num_bytes >= limits.max_queued_bytes) {
+    return 0;
+  }
+
+  return limits.max_queued_bytes - peer_queue.num_bytes;
+}
+
+RouterLinkState::QueueState RemoteRouterLink::GetPeerQueueState() {
+  if (auto* state = GetLinkState()) {
+    return state->GetQueueState(side_.opposite());
+  }
+  return {.num_parcels = 0, .num_bytes = 0};
+}
+
+bool RemoteRouterLink::UpdateInboundQueueState(size_t num_parcels,
+                                               size_t num_bytes) {
+  RouterLinkState* state = GetLinkState();
+  return state && state->UpdateQueueState(side_, num_parcels, num_bytes);
+}
+
+void RemoteRouterLink::NotifyDataConsumed() {
+  msg::NotifyDataConsumed notify;
+  notify.params().sublink = sublink_;
+  node_link()->Transmit(notify);
+}
+
+bool RemoteRouterLink::EnablePeerMonitoring(bool enable) {
+  RouterLinkState* state = GetLinkState();
+  return state && state->SetSideIsMonitoringPeer(side_, enable);
+}
+
 void RemoteRouterLink::AcceptRouteDisconnected() {
   msg::RouteDisconnected route_disconnected;
   route_disconnected.params().sublink = sublink_;

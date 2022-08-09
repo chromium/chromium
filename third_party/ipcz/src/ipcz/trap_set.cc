@@ -52,6 +52,11 @@ IpczTrapConditionFlags GetSatisfiedConditions(
   return event_flags;
 }
 
+bool NeedRemoteState(IpczTrapConditionFlags flags) {
+  return (flags & (IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS |
+                   IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES)) != 0;
+}
+
 }  // namespace
 
 TrapSet::TrapSet() = default;
@@ -86,6 +91,9 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
   }
 
   traps_.emplace_back(conditions, handler, context);
+  if (NeedRemoteState(conditions.flags)) {
+    ++num_traps_monitoring_remote_state_;
+  }
   return IPCZ_RESULT_OK;
 }
 
@@ -104,6 +112,9 @@ void TrapSet::UpdatePortalStatus(const IpczPortalStatus& status,
 
     dispatcher.DeferEvent(trap.handler, trap.context, flags, status);
     it = traps_.erase(it);
+    if (NeedRemoteState(flags)) {
+      --num_traps_monitoring_remote_state_;
+    }
   }
 }
 
@@ -113,6 +124,7 @@ void TrapSet::RemoveAll(TrapEventDispatcher& dispatcher) {
                           last_known_status_);
   }
   traps_.clear();
+  num_traps_monitoring_remote_state_ = 0;
 }
 
 TrapSet::Trap::Trap(IpczTrapConditions conditions,

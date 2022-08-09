@@ -96,6 +96,16 @@ class Router : public RefCounted {
   // within this call.
   void SetOutwardLink(Ref<RouterLink> link);
 
+  // Returns a best-effort estimation of the maximum parcel size (in bytes) that
+  // can be sent outward from this router without the receiving portal exceeding
+  // any of the specified `limits`.
+  size_t GetOutboundCapacityInBytes(const IpczPutLimits& limits);
+
+  // Returns the maximum inbound parcel size (in bytes) that can be accepted by
+  // this router's inbound parcel queue without that queue exceeding any of the
+  // specified `limits`.
+  size_t GetInboundCapacityInBytes(const IpczPutLimits& limits);
+
   // Accepts an inbound parcel from the outward edge of this router, either to
   // queue it for retrieval or forward it further inward.
   bool AcceptInboundParcel(Parcel& parcel);
@@ -110,6 +120,10 @@ class Router : public RefCounted {
   // closing.
   bool AcceptRouteClosureFrom(LinkType link_type,
                               SequenceNumber sequence_length);
+
+  // Informs this router that its outward peer consumed some inbound parcels or
+  // parcel data.
+  void NotifyPeerConsumedData();
 
   // Accepts notification from a link bound to this Router that some node along
   // the route (in the direction of that link) has been disconnected, e.g. due

@@ -8,6 +8,7 @@
 #include "ipcz/fragment_ref.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_name.h"
+#include "ipcz/router_link_state.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/sublink_id.h"
 #include "util/ref_counted.h"
@@ -18,7 +19,6 @@ class NodeLink;
 class Parcel;
 class RemoteRouterLink;
 class Router;
-struct RouterLinkState;
 
 // A RouterLink represents one endpoint of a link between two Routers. All
 // subclasses must be thread-safe.
@@ -61,6 +61,31 @@ class RouterLink : public RefCounted {
   // in this case we don't know the final sequence length and can't guarantee
   // delivery of any further parcels.
   virtual void AcceptRouteDisconnected() = 0;
+
+  // Returns a best-effort estimation of how much new parcel data can be
+  // transmitted across the link before one or more limits described by `limits`
+  // would be exceeded on the receiving portal.
+  virtual size_t GetParcelCapacityInBytes(const IpczPutLimits& limits) = 0;
+
+  // Returns a best-effort snapshot of the last known state of the inbound
+  // parcel queue on the other side of this link. This is only meaningful for
+  // central links.
+  virtual RouterLinkState::QueueState GetPeerQueueState() = 0;
+
+  // Updates the QueueState for this side of the link, returning true if and
+  // only if the other side wants to be notified about the update.
+  virtual bool UpdateInboundQueueState(size_t num_parcels,
+                                       size_t num_bytes) = 0;
+
+  // Notifies the other side that this side has consumed some parcels or parcel
+  // data from its inbound queue. Should only be called on central links when
+  // the other side has expressed interest in such notifications.
+  virtual void NotifyDataConsumed() = 0;
+
+  // Controls whether the caller's side of the link is interested in being
+  // notified about data consumption on the opposite side of the link. Returns
+  // the previous value of this bit.
+  virtual bool EnablePeerMonitoring(bool enable) = 0;
 
   // Signals that this side of the link is in a stable state suitable for one
   // side or the other to lock the link, either for bypass or closure

@@ -56,6 +56,11 @@ class RemoteRouterLink : public RouterLink {
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void AcceptRouteDisconnected() override;
+  size_t GetParcelCapacityInBytes(const IpczPutLimits& limits) override;
+  RouterLinkState::QueueState GetPeerQueueState() override;
+  bool UpdateInboundQueueState(size_t num_parcels, size_t num_bytes) override;
+  void NotifyDataConsumed() override;
+  bool EnablePeerMonitoring(bool enable) override;
   void MarkSideStable() override;
   bool TryLockForBypass(const NodeName& bypass_request_source) override;
   bool TryLockForClosure() override;

@@ -80,6 +80,10 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
     return IPCZ_RESULT_NOT_FOUND;
   }
 
+  if (limits && router_->GetOutboundCapacityInBytes(*limits) < data.size()) {
+    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+  }
+
   Parcel parcel;
   parcel.SetInlinedData(std::vector<uint8_t>(data.begin(), data.end()));
   parcel.SetObjects(std::move(objects));

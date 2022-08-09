@@ -20,6 +20,7 @@
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/log.h"
 #include "util/multi_mutex_lock.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -183,6 +184,49 @@ void Router::SetOutwardLink(Ref<RouterLink> link) {
   Flush(kForceProxyBypassAttempt);
 }
 
+size_t Router::GetOutboundCapacityInBytes(const IpczPutLimits& limits) {
+  if (limits.max_queued_bytes == 0 || limits.max_queued_parcels == 0) {
+    return 0;
+  }
+
+  size_t num_queued_bytes = 0;
+  Ref<RouterLink> link;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (outbound_parcels_.GetNumAvailableElements() >=
+        limits.max_queued_parcels) {
+      return 0;
+    }
+    if (outbound_parcels_.GetTotalAvailableElementSize() >
+        limits.max_queued_bytes) {
+      return 0;
+    }
+
+    num_queued_bytes = outbound_parcels_.GetTotalAvailableElementSize();
+    link = outward_edge_.primary_link();
+  }
+
+  size_t link_capacity =
+      link ? link->GetParcelCapacityInBytes(limits) : limits.max_queued_bytes;
+  if (link_capacity <= num_queued_bytes) {
+    return 0;
+  }
+
+  return link_capacity - num_queued_bytes;
+}
+
+size_t Router::GetInboundCapacityInBytes(const IpczPutLimits& limits) {
+  absl::MutexLock lock(&mutex_);
+  const size_t num_queued_parcels = inbound_parcels_.GetNumAvailableElements();
+  const size_t num_queued_bytes =
+      inbound_parcels_.GetTotalAvailableElementSize();
+  if (num_queued_bytes >= limits.max_queued_bytes ||
+      num_queued_parcels >= limits.max_queued_parcels) {
+    return 0;
+  }
+  return limits.max_queued_bytes - num_queued_bytes;
+}
+
 bool Router::AcceptInboundParcel(Parcel& parcel) {
   TrapEventDispatcher dispatcher;
   {
@@ -200,6 +244,12 @@ bool Router::AcceptInboundParcel(Parcel& parcel) {
       status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
       traps_.UpdatePortalStatus(status_, TrapSet::UpdateReason::kNewLocalParcel,
                                 dispatcher);
+
+      const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+      if (outward_link && outward_link->GetType().is_central()) {
+        outward_link->UpdateInboundQueueState(status_.num_local_parcels,
+                                              status_.num_local_bytes);
+      }
     }
   }
 
@@ -312,54 +362,91 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
   return true;
 }
 
+void Router::NotifyPeerConsumedData() {
+  TrapEventDispatcher dispatcher;
+  {
+    absl::MutexLock lock(&mutex_);
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    if (!outward_link || !outward_link->GetType().is_central() ||
+        inward_edge_) {
+      return;
+    }
+
+    const RouterLinkState::QueueState peer_state =
+        outward_link->GetPeerQueueState();
+    status_.num_remote_parcels = peer_state.num_parcels;
+    status_.num_remote_bytes = peer_state.num_bytes;
+    traps_.UpdatePortalStatus(status_, TrapSet::UpdateReason::kRemoteActivity,
+                              dispatcher);
+
+    if (!traps_.need_remote_state()) {
+      outward_link->EnablePeerMonitoring(false);
+    }
+  }
+}
+
 IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
                                         void* data,
                                         size_t* num_bytes,
                                         IpczHandle* handles,
                                         size_t* num_handles) {
   TrapEventDispatcher dispatcher;
-  absl::MutexLock lock(&mutex_);
-  if (inbound_parcels_.IsSequenceFullyConsumed()) {
-    return IPCZ_RESULT_NOT_FOUND;
-  }
-  if (!inbound_parcels_.HasNextElement()) {
-    return IPCZ_RESULT_UNAVAILABLE;
+  Ref<RouterLink> link_to_notify;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (inbound_parcels_.IsSequenceFullyConsumed()) {
+      return IPCZ_RESULT_NOT_FOUND;
+    }
+    if (!inbound_parcels_.HasNextElement()) {
+      return IPCZ_RESULT_UNAVAILABLE;
+    }
+
+    Parcel& p = inbound_parcels_.NextElement();
+    const bool allow_partial = (flags & IPCZ_GET_PARTIAL) != 0;
+    const size_t data_capacity = num_bytes ? *num_bytes : 0;
+    const size_t handles_capacity = num_handles ? *num_handles : 0;
+    const size_t data_size =
+        allow_partial ? std::min(p.data_size(), data_capacity) : p.data_size();
+    const size_t handles_size =
+        allow_partial ? std::min(p.num_objects(), handles_capacity)
+                      : p.num_objects();
+    if (num_bytes) {
+      *num_bytes = data_size;
+    }
+    if (num_handles) {
+      *num_handles = handles_size;
+    }
+
+    const bool consuming_whole_parcel =
+        data_capacity >= data_size && handles_capacity >= handles_size;
+    if (!consuming_whole_parcel && !allow_partial) {
+      return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+    }
+
+    memcpy(data, p.data_view().data(), data_size);
+    const bool ok = inbound_parcels_.Consume(
+        data_size, absl::MakeSpan(handles, handles_size));
+    ABSL_ASSERT(ok);
+
+    status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+    status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+    if (inbound_parcels_.IsSequenceFullyConsumed()) {
+      status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
+    }
+    traps_.UpdatePortalStatus(
+        status_, TrapSet::UpdateReason::kLocalParcelConsumed, dispatcher);
+
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    if (outward_link && outward_link->GetType().is_central() &&
+        outward_link->UpdateInboundQueueState(status_.num_local_parcels,
+                                              status_.num_local_bytes)) {
+      link_to_notify = outward_link;
+    }
   }
 
-  Parcel& p = inbound_parcels_.NextElement();
-  const bool allow_partial = (flags & IPCZ_GET_PARTIAL) != 0;
-  const size_t data_capacity = num_bytes ? *num_bytes : 0;
-  const size_t handles_capacity = num_handles ? *num_handles : 0;
-  const size_t data_size =
-      allow_partial ? std::min(p.data_size(), data_capacity) : p.data_size();
-  const size_t handles_size = allow_partial
-                                  ? std::min(p.num_objects(), handles_capacity)
-                                  : p.num_objects();
-  if (num_bytes) {
-    *num_bytes = data_size;
+  if (link_to_notify) {
+    link_to_notify->NotifyDataConsumed();
   }
-  if (num_handles) {
-    *num_handles = handles_size;
-  }
-
-  const bool consuming_whole_parcel =
-      data_capacity >= data_size && handles_capacity >= handles_size;
-  if (!consuming_whole_parcel && !allow_partial) {
-    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
-  }
-
-  memcpy(data, p.data_view().data(), data_size);
-  const bool ok = inbound_parcels_.Consume(
-      data_size, absl::MakeSpan(handles, handles_size));
-  ABSL_ASSERT(ok);
-
-  status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
-  status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
-  if (inbound_parcels_.IsSequenceFullyConsumed()) {
-    status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
-  }
-  traps_.UpdatePortalStatus(
-      status_, TrapSet::UpdateReason::kLocalParcelConsumed, dispatcher);
   return IPCZ_RESULT_OK;
 }
 
@@ -368,9 +455,46 @@ IpczResult Router::Trap(const IpczTrapConditions& conditions,
                         uint64_t context,
                         IpczTrapConditionFlags* satisfied_condition_flags,
                         IpczPortalStatus* status) {
-  absl::MutexLock lock(&mutex_);
-  return traps_.Add(conditions, handler, context, status_,
-                    satisfied_condition_flags, status);
+  const bool need_remote_state =
+      (conditions.flags & (IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS |
+                           IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES)) != 0;
+  {
+    absl::MutexLock lock(&mutex_);
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    if (need_remote_state) {
+      status_.num_remote_parcels = outbound_parcels_.GetNumAvailableElements();
+      status_.num_remote_bytes =
+          outbound_parcels_.GetTotalAvailableElementSize();
+
+      if (outward_link && outward_link->GetType().is_central()) {
+        const RouterLinkState::QueueState peer_state =
+            outward_link->GetPeerQueueState();
+        status_.num_remote_parcels =
+            SaturatedAdd(status_.num_remote_parcels,
+                         static_cast<size_t>(peer_state.num_parcels));
+        status_.num_remote_bytes =
+            SaturatedAdd(status_.num_remote_bytes,
+                         static_cast<size_t>(peer_state.num_bytes));
+      }
+    }
+
+    const bool already_monitoring_remote_state = traps_.need_remote_state();
+    IpczResult result = traps_.Add(conditions, handler, context, status_,
+                                   satisfied_condition_flags, status);
+    if (result != IPCZ_RESULT_OK || !need_remote_state) {
+      return result;
+    }
+
+    if (!already_monitoring_remote_state) {
+      outward_link->EnablePeerMonitoring(true);
+    }
+  }
+
+  // Safeguard against races between remote state changes and the new trap being
+  // installed above. Only reached if the new trap monitors remote state.
+  ABSL_ASSERT(need_remote_state);
+  NotifyPeerConsumedData();
+  return IPCZ_RESULT_OK;
 }
 
 // static

@@ -114,6 +114,27 @@ void LocalRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
   }
 }
 
+size_t LocalRouterLink::GetParcelCapacityInBytes(const IpczPutLimits& limits) {
+  return state_->GetRouter(side_.opposite())->GetInboundCapacityInBytes(limits);
+}
+
+RouterLinkState::QueueState LocalRouterLink::GetPeerQueueState() {
+  return state_->link_state().GetQueueState(side_.opposite());
+}
+
+bool LocalRouterLink::UpdateInboundQueueState(size_t num_parcels,
+                                              size_t num_bytes) {
+  return state_->link_state().UpdateQueueState(side_, num_parcels, num_bytes);
+}
+
+void LocalRouterLink::NotifyDataConsumed() {
+  state_->GetRouter(side_.opposite())->NotifyPeerConsumedData();
+}
+
+bool LocalRouterLink::EnablePeerMonitoring(bool enable) {
+  return state_->link_state().SetSideIsMonitoringPeer(side_, enable);
+}
+
 void LocalRouterLink::AcceptRouteDisconnected() {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
     receiver->AcceptRouteDisconnectedFrom(state_->type());

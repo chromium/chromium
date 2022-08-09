@@ -317,6 +317,13 @@ IPCZ_MSG_BEGIN(RouteDisconnected, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SublinkId, sublink)
 IPCZ_MSG_END()
 
+// Notifies a Router that the other side of its route has consumed some parcels
+// or parcel data from its inbound queue.
+IPCZ_MSG_BEGIN(NotifyDataConsumed, IPCZ_MSG_ID(24), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+IPCZ_MSG_END()
+
 // Informs a router that its outward peer can be bypassed. Given routers X and Y
 // on the central link, and a router Z as Y's inward peer:
 //

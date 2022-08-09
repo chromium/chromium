@@ -10,13 +10,33 @@
 
 namespace ipcz {
 
+namespace {
+
+template <typename T, typename U>
+void StoreSaturated(std::atomic<T>& dest, U value) {
+  if (value < std::numeric_limits<T>::max()) {
+    dest.store(value, std::memory_order_relaxed);
+  } else {
+    dest.store(std::numeric_limits<T>::max(), std::memory_order_relaxed);
+  }
+}
+
+template <typename T>
+T& SelectBySide(LinkSide side, T& for_a, T& for_b) {
+  if (side.is_side_a()) {
+    return for_a;
+  }
+  return for_b;
+}
+
+}  // namespace
+
 RouterLinkState::RouterLinkState() = default;
 
 // static
 RouterLinkState& RouterLinkState::Initialize(void* where) {
   auto& state = *static_cast<RouterLinkState*>(where);
   new (&state) RouterLinkState();
-  memset(state.reserved, 0, sizeof(state.reserved));
   std::atomic_thread_fence(std::memory_order_release);
   return state;
 }
@@ -102,6 +122,40 @@ bool RouterLinkState::ResetWaitingBit(LinkSide side) {
   }
 
   return true;
+}
+
+RouterLinkState::QueueState RouterLinkState::GetQueueState(
+    LinkSide side) const {
+  return {
+      .num_parcels = SelectBySide(side, num_parcels_on_a, num_parcels_on_b)
+                         .load(std::memory_order_relaxed),
+      .num_bytes = SelectBySide(side, num_bytes_on_a, num_bytes_on_b)
+                       .load(std::memory_order_relaxed),
+  };
+}
+
+bool RouterLinkState::UpdateQueueState(LinkSide side,
+                                       size_t num_parcels,
+                                       size_t num_bytes) {
+  StoreSaturated(SelectBySide(side, num_parcels_on_a, num_parcels_on_b),
+                 num_parcels);
+  StoreSaturated(SelectBySide(side, num_bytes_on_a, num_bytes_on_b), num_bytes);
+  const uint32_t other_side_monitoring_this_side =
+      SelectBySide(side, kSideBMonitoringSideA, kSideAMonitoringSideB);
+  return (status.load(std::memory_order_relaxed) &
+          other_side_monitoring_this_side) != 0;
+}
+
+bool RouterLinkState::SetSideIsMonitoringPeer(LinkSide side,
+                                              bool is_monitoring) {
+  const uint32_t monitoring_bit =
+      SelectBySide(side, kSideAMonitoringSideB, kSideBMonitoringSideA);
+  uint32_t expected = kStable;
+  while (!status.compare_exchange_weak(expected, expected | monitoring_bit,
+                                       std::memory_order_relaxed,
+                                       std::memory_order_relaxed)) {
+  }
+  return (expected & monitoring_bit) != 0;
 }
 
 }  // namespace ipcz

@@ -381,6 +381,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/route_edge_test.cc",
     "ipcz/router_link_test.cc",
     "ipcz/sequenced_queue_test.cc",
+    "queueing_test.cc",
     "reference_drivers/sync_reference_driver_test.cc",
     "remote_portal_test.cc",
     "trap_test.cc",

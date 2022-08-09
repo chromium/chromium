@@ -33,6 +33,11 @@ class TrapSet {
     // A previously queued inbound parcel has been fully or partially retrieved
     // by the application.
     kLocalParcelConsumed,
+
+    // A remote peer has changed state in a way that may be interesting to a
+    // trap in the set; for example, parcels may have been consumed from the
+    // remote queue.
+    kRemoteActivity,
   };
 
   TrapSet();
@@ -43,6 +48,12 @@ class TrapSet {
   ~TrapSet();
 
   bool empty() const { return traps_.empty(); }
+
+  // Indicates whether any installed traps in this set require monitoring of
+  // remote queue state.
+  bool need_remote_state() const {
+    return num_traps_monitoring_remote_state_ > 0;
+  }
 
   // Attempts to install a new trap in the set. This effectively implements
   // the ipcz Trap() API. If `conditions` are already met, returns
@@ -81,6 +92,7 @@ class TrapSet {
 
   using TrapList = absl::InlinedVector<Trap, 4>;
   TrapList traps_;
+  size_t num_traps_monitoring_remote_state_ = 0;
   IpczPortalStatus last_known_status_ = {.size = sizeof(last_known_status_)};
 };
 
