@@ -24,7 +24,8 @@
  */
 
 [
-    LegacyNoInterfaceObject
+    LegacyNoInterfaceObject,
+    RuntimeEnabled=PrefixedStorageInfo
 ] interface DeprecatedStorageInfo {
     const unsigned short TEMPORARY = 0;
     const unsigned short PERSISTENT = 1;
