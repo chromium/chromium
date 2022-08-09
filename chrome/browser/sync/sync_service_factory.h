@@ -28,7 +28,7 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   static syncer::SyncService* GetForProfile(Profile* profile);
   // Returns the SyncServiceImpl for the given profile. DO NOT USE unless
   // absolutely necessary! Prefer GetForProfile instead.
-  static syncer::SyncServiceImpl* GetAsSyncServiceImplForProfile(
+  static syncer::SyncServiceImpl* GetAsSyncServiceImplForProfileForTesting(
       Profile* profile);
 
   SyncServiceFactory(const SyncServiceFactory&) = delete;

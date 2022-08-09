@@ -105,7 +105,7 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 // and properly initialized.
 TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
+      SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::ModelTypeSet default_types = DefaultDatatypes();

@@ -80,18 +80,10 @@ syncer::SyncService* SyncServiceFactory::GetForBrowserStateIfExists(
 
 // static
 syncer::SyncServiceImpl*
-SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
+SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
     ChromeBrowserState* browser_state) {
   return static_cast<syncer::SyncServiceImpl*>(
       GetForBrowserState(browser_state));
-}
-
-// static
-syncer::SyncServiceImpl*
-SyncServiceFactory::GetAsSyncServiceImplForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
-  return static_cast<syncer::SyncServiceImpl*>(
-      GetForBrowserStateIfExists(browser_state));
 }
 
 SyncServiceFactory::SyncServiceFactory()

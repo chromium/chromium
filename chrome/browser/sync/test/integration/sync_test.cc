@@ -564,7 +564,8 @@ std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
 }
 
 SyncServiceImpl* SyncTest::GetSyncService(int index) const {
-  return SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
+  return SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+      GetProfile(index));
 }
 
 syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
@@ -704,7 +705,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   // SyncServiceImplHarness - some tests expect the SyncServiceImpl to
   // already exist.
   SyncServiceImpl* sync_service_impl =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile(index));
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          GetProfile(index));
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
     sync_service_impl->OverrideNetworkForTest(

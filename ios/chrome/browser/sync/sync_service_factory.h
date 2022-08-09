@@ -27,10 +27,7 @@ class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
   static syncer::SyncService* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
-  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserState(
-      ChromeBrowserState* browser_state);
-
-  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateIfExists(
+  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateForTesting(
       ChromeBrowserState* browser_state);
 
   static SyncServiceFactory* GetInstance();

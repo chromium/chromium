@@ -625,7 +625,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   signin::WaitForRefreshTokensLoaded(identity_manager);
 
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(browser->profile());
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser->profile());
   syncer::TrustedVaultClient* trusted_vault_client =
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 

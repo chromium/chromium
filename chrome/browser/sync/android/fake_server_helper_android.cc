@@ -90,7 +90,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
 
 syncer::SyncServiceImpl* GetSyncServiceImpl() {
   DCHECK(g_browser_process && g_browser_process->profile_manager());
-  return SyncServiceFactory::GetAsSyncServiceImplForProfile(
+  return SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
       ProfileManager::GetLastUsedProfile());
 }
 

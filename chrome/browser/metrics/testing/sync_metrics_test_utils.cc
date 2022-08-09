@@ -20,7 +20,7 @@ std::unique_ptr<SyncServiceImplHarness> InitializeProfileForSync(
     base::WeakPtr<fake_server::FakeServer> fake_server) {
   DCHECK(profile);
 
-  SyncServiceFactory::GetAsSyncServiceImplForProfile(profile)
+  SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile)
       ->OverrideNetworkForTest(
           fake_server::CreateFakeServerHttpPostProviderFactory(
               fake_server->AsWeakPtr()));

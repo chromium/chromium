@@ -185,7 +185,7 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 // and properly initialized.
 TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile());
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::ModelTypeSet default_types = DefaultDatatypes();
   EXPECT_EQ(default_types.Size(), types.Size());

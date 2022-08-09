@@ -3344,7 +3344,8 @@ TEST_P(ArcAppModelBuilderTest, DontRemoveRuntimeAppOnPackageChange) {
 }
 
 TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceEnabled) {
-  EXPECT_TRUE(SyncServiceFactory::GetAsSyncServiceImplForProfile(profile_.get())
+  EXPECT_TRUE(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+                  profile_.get())
                   ->GetRegisteredDataTypesForTest()
                   .Has(syncer::ARC_PACKAGE));
 }
@@ -3353,10 +3354,10 @@ TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceDisabled) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kArcDisableAppSync);
-  EXPECT_FALSE(
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile_.get())
-          ->GetRegisteredDataTypesForTest()
-          .Has(syncer::ARC_PACKAGE));
+  EXPECT_FALSE(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+                   profile_.get())
+                   ->GetRegisteredDataTypesForTest()
+                   .Has(syncer::ARC_PACKAGE));
 }
 
 TEST_P(ArcDefaultAppTest, DefaultApps) {

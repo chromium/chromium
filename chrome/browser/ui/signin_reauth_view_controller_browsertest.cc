@@ -449,7 +449,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   // The invocation of the API, even with dummy values, should propagate until
   // TrustedVaultClient and its observers.
   TrustedVaultKeysChangedStateChecker keys_added_checker(
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(browser()->profile()));
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser()->profile()));
   EXPECT_TRUE(content::ExecuteScript(
       target_contents,
       "chrome.setSyncEncryptionKeys(() => {}, \"\", [new ArrayBuffer()], 0);"));

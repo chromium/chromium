@@ -78,7 +78,8 @@ class LocalSyncTest : public InProcessBrowserTest {
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   SyncServiceImpl* service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(browser()->profile());
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser()->profile());
 
   // Wait until the first sync cycle is completed.
   ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());

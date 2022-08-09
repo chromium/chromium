@@ -65,7 +65,8 @@ void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
   syncer::SyncServiceImpl* service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(browser_state);
+      SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
+          browser_state);
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
@@ -109,7 +110,8 @@ void StartSync() {
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   sync_setup_service->SetSyncEnabled(true);
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(browser_state);
+      SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
+          browser_state);
   sync_service->TriggerPoliciesLoadedForTest();
 }
 

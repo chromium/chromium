@@ -178,7 +178,8 @@ SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
                                                const std::string& password,
                                                SigninType signin_type)
     : profile_(profile),
-      service_(SyncServiceFactory::GetAsSyncServiceImplForProfile(profile)),
+      service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          profile)),
       username_(username),
       password_(password),
       signin_type_(signin_type),

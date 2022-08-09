@@ -63,7 +63,7 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     Profile* profile,
     const AccountInfo& account_info) {
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile);
   syncer::TrustedVaultClient* trusted_vault_client =
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 

@@ -845,7 +845,8 @@ class ProfileMenuClickTest : public SyncTest,
   }
 
   syncer::SyncServiceImpl* sync_service() {
-    return SyncServiceFactory::GetAsSyncServiceImplForProfile(GetProfile());
+    return SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+        GetProfile());
   }
 
   signin::IdentityManager* identity_manager() {

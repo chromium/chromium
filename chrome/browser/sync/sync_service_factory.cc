@@ -193,8 +193,8 @@ syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
 }
 
 // static
-syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
-    Profile* profile) {
+syncer::SyncServiceImpl*
+SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(Profile* profile) {
   return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
 }
 
