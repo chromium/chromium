@@ -4,16 +4,21 @@
 
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
+#include "ash/webui/diagnostics_ui/backend/session_log_async_helper.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -26,22 +31,7 @@ namespace ash {
 namespace diagnostics {
 namespace {
 
-const char kRoutineLogSubsectionHeader[] = "--- Test Routines --- \n";
-const char kSystemLogSectionHeader[] = "=== System === \n";
-const char kNetworkingLogSectionHeader[] = "=== Networking === \n";
-const char kNoRoutinesRun[] =
-    "No routines of this type were run in the session.\n";
 const char kDefaultSessionLogFileName[] = "session_log.txt";
-
-std::string GetRoutineResultsString(const std::string& results) {
-  const std::string section_header =
-      std::string(kRoutineLogSubsectionHeader) + "\n";
-  if (results.empty()) {
-    return section_header + kNoRoutinesRun;
-  }
-
-  return section_header + results;
-}
 
 }  // namespace
 
@@ -66,13 +56,19 @@ SessionLogHandler::SessionLogHandler(
       routine_log_(std::move(routine_log)),
       networking_log_(std::move(networking_log)),
       holding_space_client_(holding_space_client),
-      task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      async_helper_(std::unique_ptr<ash::diagnostics::SessionLogAsyncHelper,
+                                    base::OnTaskRunnerDeleter>(
+          new SessionLogAsyncHelper(),
+          base::OnTaskRunnerDeleter(task_runner_))) {
   DCHECK(holding_space_client_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
+  DETACH_FROM_SEQUENCE(session_log_handler_sequence_checker_);
 }
 
 SessionLogHandler::~SessionLogHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   if (select_file_dialog_) {
     /* Lifecycle for SelectFileDialog is responsibility of calling code. */
     select_file_dialog_->ListenerDestroyed();
@@ -92,6 +88,7 @@ void SessionLogHandler::RegisterMessages() {
 void SessionLogHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   // TODO(b/226574520): Remove SessionLogHandler::CreateSessionLog and
   // condition as part of flag clean up.
   if (ash::features::IsLogControllerForDiagnosticsAppEnabled()) {
@@ -99,14 +96,21 @@ void SessionLogHandler::FileSelected(const base::FilePath& path,
         FROM_HERE,
         base::BindOnce(
             &DiagnosticsLogController::GenerateSessionLogOnBlockingPool,
+            // base::Unretained safe here because ~DiagnosticsLogController is
+            // called during shutdown of ash::Shell and will out-live
+            // SessionLogHandler.
             base::Unretained(DiagnosticsLogController::Get()), path),
         base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_,
                        path));
   } else {
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&SessionLogHandler::CreateSessionLog,
-                       base::Unretained(this), path),
+        base::BindOnce(&SessionLogAsyncHelper::CreateSessionLogOnBlockingPool,
+                       // base::Unretained safe because lifetime is managed by
+                       // base::OnTaskRunnerDeleter.
+                       base::Unretained(async_helper_.get()), path,
+                       telemetry_log_.get(), routine_log_.get(),
+                       networking_log_.get()),
         base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_,
                        path));
   }
@@ -115,6 +119,7 @@ void SessionLogHandler::FileSelected(const base::FilePath& path,
 
 void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
                                             bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   if (success) {
     holding_space_client_->AddDiagnosticsLog(file_path);
   }
@@ -159,44 +164,9 @@ void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
   log_created_closure_ = std::move(closure);
 }
 
-bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
-  // Fetch Routine logs
-  const std::string system_routines = routine_log_->GetContentsForCategory(
-      RoutineLog::RoutineCategory::kSystem);
-  const std::string network_routines = routine_log_->GetContentsForCategory(
-      RoutineLog::RoutineCategory::kNetwork);
-
-  // Fetch system data from TelemetryLog.
-  const std::string system_log_contents = telemetry_log_->GetContents();
-
-  std::vector<std::string> pieces;
-  pieces.push_back(kSystemLogSectionHeader);
-  if (!system_log_contents.empty()) {
-    pieces.push_back(system_log_contents);
-  }
-
-  // Add the routine section for the system category.
-  pieces.push_back(GetRoutineResultsString(system_routines));
-
-  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    // Add networking category.
-    pieces.push_back(kNetworkingLogSectionHeader);
-
-    // Add the network info section.
-    pieces.push_back(networking_log_->GetNetworkInfo());
-
-    // Add the routine section for the network category.
-    pieces.push_back(GetRoutineResultsString(network_routines));
-
-    // Add the network events section.
-    pieces.push_back(networking_log_->GetNetworkEvents());
-  }
-
-  return base::WriteFile(file_path, base::JoinString(pieces, "\n"));
-}
-
 void SessionLogHandler::HandleSaveSessionLogRequest(
     const base::Value::List& args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   CHECK_EQ(1U, args.size());
   DCHECK(save_session_log_callback_id_.empty());
   save_session_log_callback_id_ = args[0].GetString();
@@ -222,6 +192,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
 }
 
 void SessionLogHandler::HandleInitialize(const base::Value::List& args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   DCHECK(args.empty());
   AllowJavascript();
 }
