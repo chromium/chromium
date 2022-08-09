@@ -14,8 +14,7 @@
 // Shows the ToS page.
 - (void)showTOSPage;
 
-// Closesios/chrome/browser/ui/first_run/welcome/tos_coordinator.mm the ToS
-// page.
+// Closes the ToS page.
 - (void)closeTOSPage;
 
 @end
