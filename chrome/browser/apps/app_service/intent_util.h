@@ -31,11 +31,6 @@ class IntentFilter;
 }
 #endif
 
-namespace apps {
-struct ShareTarget;
-}
-
-class GURL;
 class Profile;
 
 namespace base {
@@ -62,25 +57,6 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
     const std::string& package_name,
     arc::ArcIntentHelperBridge* intent_helper_bridge);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Create intent filters for `app_id`. The `app_scope` is needed because
-// currently the correct app scope is not provided through WebApp API for
-// shortcuts.
-apps::IntentFilters CreateIntentFiltersForWebApp(
-    const web_app::AppId& app_id,
-    const GURL& app_scope,
-    const apps::ShareTarget* app_share_target,
-    const apps::FileHandlers* enabled_file_handlers);
-
-// Create intent filters for |web_app|.
-// The |scope| is needed because currently the correct app scope is not
-// provided through WebApp API for shortcuts.
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
-    const web_app::AppId& app_id,
-    const GURL& app_scope,
-    const apps::ShareTarget* app_share_target,
-    const apps::FileHandlers* enabled_file_handlers);
 
 // Create intent filters for a Chrome app (extension-based) e.g. for
 // file_handlers.

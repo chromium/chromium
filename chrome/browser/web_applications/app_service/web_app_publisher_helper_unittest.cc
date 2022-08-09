@@ -213,6 +213,106 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
 }
 
+TEST_F(WebAppPublisherHelperTest,
+       CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
+  auto web_app = web_app::test::CreateWebApp();
+  DCHECK(web_app->start_url().is_valid());
+  GURL scope = web_app->start_url().GetWithoutFilename();
+  web_app->SetScope(scope);
+
+  apps::IntentFilters filters =
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(
+          web_app->app_id(), scope,
+          /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
+
+  ASSERT_EQ(filters.size(), 1u);
+  apps::IntentFilterPtr& filter = filters[0];
+  EXPECT_FALSE(filter->activity_name.has_value());
+  EXPECT_FALSE(filter->activity_label.has_value());
+  ASSERT_EQ(filter->conditions.size(), 4U);
+
+  {
+    const apps::Condition& condition = *filter->conditions[0];
+    EXPECT_EQ(condition.condition_type, apps::ConditionType::kAction);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              apps::PatternMatchType::kLiteral);
+    EXPECT_EQ(condition.condition_values[0]->value,
+              apps_util::kIntentActionView);
+  }
+
+  {
+    const apps::Condition& condition = *filter->conditions[1];
+    EXPECT_EQ(condition.condition_type, apps::ConditionType::kScheme);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              apps::PatternMatchType::kLiteral);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.scheme());
+  }
+
+  {
+    const apps::Condition& condition = *filter->conditions[2];
+    EXPECT_EQ(condition.condition_type, apps::ConditionType::kHost);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              apps::PatternMatchType::kLiteral);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.host());
+  }
+
+  {
+    const apps::Condition& condition = *filter->conditions[3];
+    EXPECT_EQ(condition.condition_type, apps::ConditionType::kPath);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              apps::PatternMatchType::kPrefix);
+    EXPECT_EQ(condition.condition_values[0]->value, scope.path());
+  }
+}
+
+TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
+  auto web_app = web_app::test::CreateWebApp();
+  DCHECK(web_app->start_url().is_valid());
+  GURL scope = web_app->start_url().GetWithoutFilename();
+  web_app->SetScope(scope);
+
+  apps::FileHandler::AcceptEntry accept_entry;
+  accept_entry.mime_type = "text/plain";
+  accept_entry.file_extensions.insert(".txt");
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://example.com/path/handler.html");
+  file_handler.accept.push_back(std::move(accept_entry));
+  apps::FileHandlers file_handlers;
+  file_handlers.push_back(std::move(file_handler));
+  web_app->SetFileHandlers(file_handlers);
+
+  apps::IntentFilters filters =
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(
+          web_app->app_id(), scope,
+          /*app_share_target*/ nullptr, &file_handlers);
+
+  ASSERT_EQ(filters.size(), 2u);
+  // 1st filter is URL filter.
+
+  // File filter - View action
+  const apps::IntentFilterPtr& file_filter = filters[1];
+  ASSERT_EQ(file_filter->conditions.size(), 2u);
+  const apps::Condition& view_cond = *file_filter->conditions[0];
+  EXPECT_EQ(view_cond.condition_type, apps::ConditionType::kAction);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
+  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
+
+  // File filter - mime & file extension match
+  const apps::Condition& file_cond = *file_filter->conditions[1];
+  EXPECT_EQ(file_cond.condition_type, apps::ConditionType::kFile);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
+  EXPECT_EQ(file_cond.condition_values[0]->match_type,
+            apps::PatternMatchType::kMimeType);
+  EXPECT_EQ(file_cond.condition_values[0]->value, "text/plain");
+  EXPECT_EQ(file_cond.condition_values[1]->match_type,
+            apps::PatternMatchType::kFileExtension);
+  EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
+}
+
 class WebAppPublisherHelperTest_WebLockScreenApi
     : public WebAppPublisherHelperTest {
   base::test::ScopedFeatureList features{features::kWebLockScreenApi};

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/ui/browser.h"
@@ -18,12 +19,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-using apps::mojom::Condition;
-using apps::mojom::ConditionType;
-using apps::mojom::IntentFilterPtr;
-using apps::mojom::PatternMatchType;
+using apps::Condition;
+using apps::ConditionType;
+using apps::IntentFilterPtr;
+using apps::PatternMatchType;
 
-namespace apps_util {
+namespace web_app {
 
 namespace {
 
@@ -51,14 +52,13 @@ void CheckShareTextFilter(const IntentFilterPtr& intent_filter) {
             PatternMatchType::kMimeType);
   EXPECT_EQ(condition.condition_values[0]->value, "text/plain");
 
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateShareIntentFromText("text", "title"), intent_filter));
+  EXPECT_TRUE(
+      apps_util::MakeShareIntent("text", "title")->MatchFilter(intent_filter));
 
   std::vector<GURL> filesystem_urls(1U);
   std::vector<std::string> mime_types(1U, "audio/mp3");
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(
-      apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-      intent_filter));
+  EXPECT_FALSE(apps_util::MakeShareIntent(filesystem_urls, mime_types)
+                   ->MatchFilter(intent_filter));
 }
 
 void CheckShareFileFilter(const IntentFilterPtr& intent_filter,
@@ -100,44 +100,41 @@ void CheckShareFileFilter(const IntentFilterPtr& intent_filter,
     {
       std::vector<GURL> filesystem_urls(1U);
       std::vector<std::string> mime_types(1U, accepted_type);
-      EXPECT_TRUE(apps_util::IntentMatchesFilter(
-          apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-          intent_filter));
+      EXPECT_TRUE(apps_util::MakeShareIntent(filesystem_urls, mime_types)
+                      ->MatchFilter(intent_filter));
     }
 
     {
       std::vector<GURL> filesystem_urls(3U);
       std::vector<std::string> mime_types(3U, accepted_type);
-      EXPECT_TRUE(apps_util::IntentMatchesFilter(
-          apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-          intent_filter));
+      EXPECT_TRUE(apps_util::MakeShareIntent(filesystem_urls, mime_types)
+                      ->MatchFilter(intent_filter));
     }
   }
 
   for (const std::string& rejected_type : rejected_types) {
     std::vector<GURL> filesystem_urls(1U);
     std::vector<std::string> mime_types(1U, rejected_type);
-    EXPECT_FALSE(apps_util::IntentMatchesFilter(
-        apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
-        intent_filter));
+    EXPECT_FALSE(apps_util::MakeShareIntent(filesystem_urls, mime_types)
+                     ->MatchFilter(intent_filter));
   }
 }
 
 }  // namespace
 
-using WebAppsUtilsBrowserTest = InProcessBrowserTest;
+using WebAppPublisherHelperBrowserTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
+IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, CreateIntentFilters) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
 
-  std::vector<IntentFilterPtr> filters;
+  apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
-    filters = CreateWebAppIntentFilters(
+    filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
@@ -145,9 +142,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
 
   ASSERT_EQ(filters.size(), 3U);
 
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateIntentFromUrl(app_url.GetWithoutFilename()),
-      filters[0]));
+  EXPECT_TRUE(std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                             app_url.GetWithoutFilename())
+                  ->MatchFilter(filters[0]));
 
   CheckShareTextFilter(filters[1]);
 
@@ -160,17 +157,17 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
                        rejected_types);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, PartialWild) {
+IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest, PartialWild) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/partial-wild.html"));
 
-  std::vector<IntentFilterPtr> filters;
+  apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
-    filters = CreateWebAppIntentFilters(
+    filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
@@ -178,9 +175,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, PartialWild) {
 
   ASSERT_EQ(filters.size(), 2U);
 
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateIntentFromUrl(app_url.GetWithoutFilename()),
-      filters[0]));
+  EXPECT_TRUE(std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                             app_url.GetWithoutFilename())
+                  ->MatchFilter(filters[0]));
 
   const std::vector<std::string> filter_types({"image/*"});
   const std::vector<std::string> accepted_types({"image/png", "image/svg+xml"});
@@ -190,17 +187,18 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, PartialWild) {
                        rejected_types);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, ShareTargetWithoutFiles) {
+IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest,
+                       ShareTargetWithoutFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/poster.html"));
 
-  std::vector<IntentFilterPtr> filters;
+  apps::IntentFilters filters;
   {
     auto& provider = *web_app::WebAppProvider::GetForTest(browser()->profile());
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
-    filters = CreateWebAppIntentFilters(
+    filters = WebAppPublisherHelper::CreateIntentFiltersForWebApp(
         app_id, provider.registrar().GetAppScope(app_id),
         provider.registrar().GetAppShareTarget(app_id),
         provider.os_integration_manager().GetEnabledFileHandlers(app_id));
@@ -208,11 +206,11 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, ShareTargetWithoutFiles) {
 
   ASSERT_EQ(filters.size(), 2U);
 
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps_util::CreateIntentFromUrl(app_url.GetWithoutFilename()),
-      filters[0]));
+  EXPECT_TRUE(std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                             app_url.GetWithoutFilename())
+                  ->MatchFilter(filters[0]));
 
   CheckShareTextFilter(filters[1]);
 }
 
-}  // namespace apps_util
+}  // namespace web_app

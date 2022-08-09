@@ -290,6 +290,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   bool IsShuttingDown() const;
 
+  // Create intent filters for `app_id`. The `app_scope` is needed because
+  // currently the correct app scope is not provided through WebApp API for
+  // shortcuts.
+  static apps::IntentFilters CreateIntentFiltersForWebApp(
+      const web_app::AppId& app_id,
+      const GURL& app_scope,
+      const apps::ShareTarget* app_share_target,
+      const apps::FileHandlers* enabled_file_handlers);
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   class BadgeManagerDelegate : public badging::BadgeManagerDelegate {

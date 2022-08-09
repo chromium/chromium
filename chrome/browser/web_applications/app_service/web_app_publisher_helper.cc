@@ -72,8 +72,10 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -102,6 +104,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -138,6 +141,9 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::GEOLOCATION,
     ContentSettingsType::NOTIFICATIONS,
 };
+
+// Mime Type for plain text.
+const char kTextPlain[] = "text/plain";
 
 bool GetContentSettingsType(apps::PermissionType permission_type,
                             ContentSettingsType& content_setting_type) {
@@ -253,6 +259,86 @@ bool IsLockScreenCapable(const WebApp& web_app) {
   if (!base::FeatureList::IsEnabled(features::kWebLockScreenApi))
     return false;
   return web_app.lock_screen_start_url().is_valid();
+}
+
+apps::mojom::IntentFilterPtr CreateMimeTypeShareFilter(
+    const std::vector<std::string>& mime_types) {
+  DCHECK(!mime_types.empty());
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  action_condition_values.push_back(apps_util::MakeConditionValue(
+      apps_util::kIntentActionSend, apps::mojom::PatternMatchType::kLiteral));
+  auto action_condition = apps_util::MakeCondition(
+      apps::mojom::ConditionType::kAction, std::move(action_condition_values));
+  intent_filter->conditions.push_back(std::move(action_condition));
+
+  std::vector<apps::mojom::ConditionValuePtr> condition_values;
+  for (auto& mime_type : mime_types) {
+    condition_values.push_back(apps_util::MakeConditionValue(
+        mime_type, apps::mojom::PatternMatchType::kMimeType));
+  }
+  auto mime_condition = apps_util::MakeCondition(
+      apps::mojom::ConditionType::kMimeType, std::move(condition_values));
+  intent_filter->conditions.push_back(std::move(mime_condition));
+
+  return intent_filter;
+}
+
+apps::IntentFilters CreateShareIntentFiltersFromShareTarget(
+    const apps::ShareTarget& share_target) {
+  apps::IntentFilters filters;
+
+  if (!share_target.params.text.empty()) {
+    // The share target accepts navigator.share() calls with text.
+    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
+        CreateMimeTypeShareFilter({kTextPlain})));
+  }
+
+  std::vector<std::string> content_types;
+  for (const auto& files_entry : share_target.params.files) {
+    for (const auto& file_type : files_entry.accept) {
+      // Skip any file_type that is not a MIME type.
+      if (file_type.empty() || file_type[0] == '.' ||
+          std::count(file_type.begin(), file_type.end(), '/') != 1) {
+        continue;
+      }
+
+      content_types.push_back(file_type);
+    }
+  }
+
+  if (!content_types.empty()) {
+    const std::vector<std::string> intent_actions(
+        {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
+    filters.push_back(
+        apps_util::CreateFileFilter(intent_actions, content_types, {}));
+  }
+
+  return filters;
+}
+
+apps::IntentFilters CreateIntentFiltersFromFileHandlers(
+    const apps::FileHandlers& file_handlers) {
+  apps::IntentFilters filters;
+  for (const apps::FileHandler& handler : file_handlers) {
+    std::vector<std::string> mime_types;
+    std::vector<std::string> file_extensions;
+    std::string action_url = handler.action.spec();
+    // TODO(petermarshall): Use GetFileExtensionsFromFileHandlers /
+    // GetMimeTypesFromFileHandlers?
+    for (const apps::FileHandler::AcceptEntry& accept_entry : handler.accept) {
+      mime_types.push_back(accept_entry.mime_type);
+      for (const std::string& extension : accept_entry.file_extensions) {
+        file_extensions.push_back(extension);
+      }
+    }
+    filters.push_back(
+        apps_util::CreateFileFilter({apps_util::kIntentActionView}, mime_types,
+                                    file_extensions, action_url));
+  }
+
+  return filters;
 }
 
 }  // namespace
@@ -523,6 +609,41 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
   return permissions;
 }
 
+// static
+apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
+    const web_app::AppId& app_id,
+    const GURL& app_scope,
+    const apps::ShareTarget* app_share_target,
+    const apps::FileHandlers* enabled_file_handlers) {
+  apps::IntentFilters filters;
+
+  if (!app_scope.is_empty()) {
+    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
+        apps_util::CreateIntentFilterForUrlScope(app_scope)));
+  }
+
+  if (app_share_target) {
+    base::Extend(filters,
+                 CreateShareIntentFiltersFromShareTarget(*app_share_target));
+  }
+
+  if (enabled_file_handlers) {
+    base::Extend(filters,
+                 CreateIntentFiltersFromFileHandlers(*enabled_file_handlers));
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsProjectorEnabled() &&
+      app_id == ash::kChromeUITrustedProjectorSwaAppId) {
+    filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
+        apps_util::CreateIntentFilterForUrlScope(
+            GURL(ash::kChromeUIUntrustedProjectorPwaUrl))));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return filters;
+}
+
 apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   DCHECK(!IsShuttingDown());
 
@@ -586,7 +707,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   // Add the intent filters for PWAs.
   base::Extend(
       app->intent_filters,
-      apps_util::CreateIntentFiltersForWebApp(
+      CreateIntentFiltersForWebApp(
           web_app->app_id(), registrar().GetAppScope(web_app->app_id()),
           registrar().GetAppShareTarget(web_app->app_id()),
           provider_->os_integration_manager().GetEnabledFileHandlers(
