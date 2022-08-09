@@ -19,7 +19,7 @@ constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 // TODO(crbug.com/1174811): A different value may need to be used for WebAudio
 // threads (see media::FuchsiaAudioOutputDevice). A higher capacity may need to
 // be allocated in that case.
-constexpr float kAudioSchedulingCapacity = 0.1;
+constexpr float kAudioSchedulingCapacity = 0.3;
 
 // Scheduling interval to use for display threads.
 // TODO(crbug.com/1224707): Add scheduling period to Thread::Options and remove
