@@ -439,13 +439,15 @@ void StyleSheetContents::ParseAuthorStyleSheet(
                         CSSDeferPropertyParsing::kYes);
 }
 
-ParseSheetResult StyleSheetContents::ParseString(const String& sheet_text,
-                                                 bool allow_import_rules) {
+ParseSheetResult StyleSheetContents::ParseString(
+    const String& sheet_text,
+    bool allow_import_rules,
+    std::unique_ptr<CSSTokenizerBase> tokenizer) {
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
   return CSSParser::ParseSheet(context, this, sheet_text,
-                               CSSDeferPropertyParsing::kNo,
-                               allow_import_rules);
+                               CSSDeferPropertyParsing::kNo, allow_import_rules,
+                               std::move(tokenizer));
 }
 
 bool StyleSheetContents::IsLoading() const {

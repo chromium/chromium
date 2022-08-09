@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -5967,6 +5969,39 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
   test::RunPendingTasks();
 
   EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
+}
+
+class TestCSSTokenizer : public CSSTokenizerBase {
+ public:
+  explicit TestCSSTokenizer(bool* tokenizer_used)
+      : tokenizer_used_(tokenizer_used) {}
+
+  wtf_size_t Offset() const override { return 0; }
+  wtf_size_t PreviousOffset() const override { return 0; }
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const override {
+    return StringView();
+  }
+  CSSParserToken TokenizeSingle() override {
+    *tokenizer_used_ = true;
+    return CSSParserToken(kEOFToken);
+  }
+  CSSParserToken TokenizeSingleWithComments() override {
+    return TokenizeSingle();
+  }
+  wtf_size_t TokenCount() override { return 0; }
+
+  bool* tokenizer_used_;
+};
+
+TEST_F(StyleEngineTest, UsesCachedTokenizer) {
+  // Make sure the parser exists.
+  GetDocument().write("<body></body>");
+  bool tokenizer_used = false;
+  auto tokenizer = std::make_unique<TestCSSTokenizer>(&tokenizer_used);
+  GetDocument().GetScriptableDocumentParser()->AddCSSTokenizer(
+      ".foo{}", std::move(tokenizer));
+  GetDocument().body()->setInnerHTML("<style>.foo{}</style>");
+  EXPECT_TRUE(tokenizer_used);
 }
 
 }  // namespace blink

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 namespace blink {
 
@@ -48,7 +49,8 @@ class CORE_EXPORT CSSParser {
       const String&,
       CSSDeferPropertyParsing defer_property_parsing =
           CSSDeferPropertyParsing::kNo,
-      bool allow_import_rules = true);
+      bool allow_import_rules = true,
+      std::unique_ptr<CSSTokenizerBase> tokenizer = nullptr);
   static CSSSelectorVector ParseSelector(const CSSParserContext*,
                                          StyleSheetContents*,
                                          const String&);

@@ -87,7 +87,7 @@ class CORE_EXPORT CSSParserTokenStream {
   // only needed for declarations which are easier to think about?
   static constexpr size_t InitialBufferSize() { return 128; }
 
-  explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
+  explicit CSSParserTokenStream(CSSTokenizerBase& tokenizer)
       : tokenizer_(tokenizer), next_(kEOFToken) {
     buffer_.ReserveInitialCapacity(InitialBufferSize());
   }
@@ -223,7 +223,7 @@ class CORE_EXPORT CSSParserTokenStream {
   void UncheckedSkipToEndOfBlock();
 
   Vector<CSSParserToken, 32> buffer_;
-  CSSTokenizer& tokenizer_;
+  CSSTokenizerBase& tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;
   bool has_look_ahead_ = false;

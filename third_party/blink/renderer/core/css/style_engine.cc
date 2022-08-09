@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
+#include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -819,7 +820,10 @@ CSSStyleSheet* StyleEngine::ParseSheet(
   style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
                                             GetDocument().Encoding());
   style_sheet->Contents()->SetRenderBlocking(render_blocking_behavior);
-  style_sheet->Contents()->ParseString(text);
+  std::unique_ptr<CSSTokenizerBase> tokenizer;
+  if (auto* parser = GetDocument().GetScriptableDocumentParser())
+    tokenizer = parser->TakeCSSTokenizer(text);
+  style_sheet->Contents()->ParseString(text, true, std::move(tokenizer));
   return style_sheet;
 }
 
