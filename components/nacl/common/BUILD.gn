@@ -76,8 +76,8 @@ if (enable_nacl) {
     deps = [
       "//base",
       "//build:chromeos_buildflags",
-      "//content/public/common",
       "//url",
+      "//url/ipc:url_ipc",
     ]
 
     if (is_linux || is_chromeos) {
@@ -87,6 +87,8 @@ if (enable_nacl) {
       ]
 
       defines = [ "__STDC_LIMIT_MACROS=1" ]
+
+      deps += [ "//content/common:sandbox_support_linux" ]
     }
   }
 

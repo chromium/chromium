@@ -18,6 +18,7 @@ if (is_linux || is_chromeos) {
       "//base",
       "//base:i18n",
       "//build:chromeos_buildflags",
+      "//content/common:sandbox_support_linux",
       "//content/public/common:common_sources",
       "//ipc",
       "//sandbox",

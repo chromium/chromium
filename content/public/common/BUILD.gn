@@ -12,6 +12,7 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/webrtc/webrtc.gni")
+import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -46,6 +47,24 @@ source_set("content_descriptor_keys") {
   ]
 }
 
+# This target allows other targets to depend on sandbox_support_linux.h which is
+# a header-only dependency, without bringing in all of content.
+if (is_linux || is_chromeos) {
+  source_set("sandbox_support_linux") {
+    public = [
+      "//content/common/content_export.h",
+      "zygote/sandbox_support_linux.h",
+      "zygote/send_zygote_child_ping_linux.h",
+      "zygote/zygote_fork_delegate_linux.h",
+    ]
+
+    deps = [
+      "//base:base",
+      "//content/public/common/zygote:buildflags",
+    ]
+  }
+}
+
 # Forces static linking for targets using the static_switches constants, even
 # in the component build. This config makes it impossible to use the static
 # switches target and use the rest of content at the same time, because the
@@ -73,6 +92,30 @@ source_set("static_switches") {
   ]
 }
 
+# This target allowing depending on content_switches without depending on the
+# rest of common_sources and its dependencies. Note that unlike the targets
+# above, this is for use inside of content/ only and does not link statically.
+source_set("switches") {
+  visibility = [ "//content/*" ]
+  public = [ "content_switches.h" ]
+  sources = [
+    "//content/common/content_export.h",
+    "content_switches.cc",
+  ]
+
+  # Deps required by the above header.
+  deps = [
+    "//build:chromeos_buildflags",
+    "//media:media_buildflags",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  if (enable_ipc_fuzzer) {
+    configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
+  }
+}
+
 # This target allows you to use the content MainFunctionParams struct and
 # statically link to it, without depending on the rest of content. This is only
 # for use without content, or you will get multiply defined symbols.
@@ -89,6 +132,22 @@ source_set("static_main_function_params") {
     ":static_switches_defines",
     "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
+}
+
+# Target for depending on main_function_params.h. This can be included without
+# depending on all the rest of content, but unlike static_main_function_params,
+# this can be combined with the rest of content.
+component("main_function_params") {
+  public = [ "main_function_params.h" ]
+  sources = [
+    "//content/common/content_export.h",
+    "main_function_params.cc",
+    "startup_data.h",
+  ]
+
+  deps = [ "//base" ]
+
+  configs += [ "//content:content_implementation" ]
 }
 
 source_set("common_sources") {
@@ -116,15 +175,11 @@ source_set("common_sources") {
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",
-    "content_switches.cc",
-    "content_switches.h",
     "drop_data.cc",
     "drop_data.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
-    "main_function_params.cc",
-    "main_function_params.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
     "network_service_util.cc",
@@ -191,7 +246,9 @@ source_set("common_sources") {
 
   public_deps = [
     ":interfaces",
+    ":main_function_params",
     ":renderer_type",
+    ":switches",
     ":trust_tokens_mojo_bindings",
 
     # TODO(crbug.com/977637): Remove when

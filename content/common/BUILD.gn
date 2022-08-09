@@ -34,6 +34,34 @@ buildflag_header("buildflags") {
   ]
 }
 
+if (is_linux || is_chromeos) {
+  source_set("sandbox_support_linux") {
+    public = [
+      "zygote/zygote_commands_linux.h",
+      "zygote/zygote_communication_linux.h",
+    ]
+
+    sources = [
+      "zygote/sandbox_support_linux.cc",
+      "zygote/send_zygote_child_ping_linux.cc",
+      "zygote/zygote_communication_linux.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//content/public/common:content_descriptors",
+      "//content/public/common:result_codes",
+      "//content/public/common:sandbox_support_linux",
+      "//content/public/common:switches",
+      "//sandbox/policy",
+      "//third_party/icu",
+    ]
+
+    configs += [ "//content:content_implementation" ]
+  }
+}
+
 source_set("common") {
   # Targets external to content should always link to the public API.
   # In addition, targets outside of the content component (shell and tests)
@@ -150,6 +178,7 @@ source_set("common") {
     ":mojo_bindings",
     "//cc",
     "//cc/ipc",
+    "//content/public/common:switches",
     "//gpu/command_buffer/common",
     "//ipc",
     "//sandbox/policy",
@@ -326,14 +355,8 @@ source_set("common") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "zygote/sandbox_support_linux.cc",
-      "zygote/send_zygote_child_ping_linux.cc",
-      "zygote/zygote_commands_linux.h",
-      "zygote/zygote_communication_linux.cc",
-      "zygote/zygote_communication_linux.h",
-    ]
     deps += [
+      ":sandbox_support_linux",
       ":set_process_title_linux",
       "//third_party/fontconfig",
     ]

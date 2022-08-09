@@ -1779,6 +1779,7 @@ test("content_browsertests") {
       "../browser/zygote_host/zygote_browsertest.cc",
     ]
     deps += [
+      "//content/common:sandbox_support_linux",
       "//printing/buildflags",
       "//ui/gfx:test_support",
     ]

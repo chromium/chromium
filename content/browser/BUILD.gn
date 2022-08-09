@@ -2455,6 +2455,7 @@ source_set("browser") {
     deps += [
       "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
+      "//content/common:sandbox_support_linux",
       "//media/mojo/mojom/stable:stable_video_decoder",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
     ]
