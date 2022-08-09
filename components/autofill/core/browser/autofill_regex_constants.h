@@ -581,17 +581,12 @@ inline constexpr char16_t kUPIVirtualPaymentAddressRe[] =
     u"yesbankltd"
     u")$";
 
-// Used to match the HTML name and label for International Bank Account Number
-// (IBAN).
-inline constexpr char16_t kIBANRe[] =
-    u"(\\biban(\\b|_)|international bank account number)";
-
-// Used to match field value that might be an International Bank Account Number.
+// Used to match field data that might be an International Bank Account Number.
 // TODO(crbug.com/977377): The regex doesn't match IBANs for Saint Lucia (LC),
 // Kazakhstan (KZ) and Romania (RO). Consider replace the regex with something
 // like "(?:IT|SM)\d{2}[A-Z]\d{22}|CY\d{2}[A-Z]\d{23}...". For reference:
 //    - https://www.swift.com/resource/iban-registry-pdf
-inline constexpr char16_t kInternationalBankAccountNumberValueRe[] =
+inline constexpr char16_t kInternationalBankAccountNumberRe[] =
     u"^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$";
 
 // Matches all 3 and 4 digit numbers.

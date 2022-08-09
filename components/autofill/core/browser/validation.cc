@@ -350,7 +350,7 @@ bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
 bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
-  return MatchesRegex<kInternationalBankAccountNumberValueRe>(no_spaces);
+  return MatchesRegex<kInternationalBankAccountNumberRe>(no_spaces);
 }
 
 bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {

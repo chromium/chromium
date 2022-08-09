@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/form_parsing/birthdate_field.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
-#include "components/autofill/core/browser/form_parsing/iban_field.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
@@ -184,12 +183,6 @@ void FormField::ParseSingleFieldForms(
     ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
                         field_candidates, page_language, pattern_source,
                         log_manager);
-  }
-
-  // IBAN pass.
-  if (base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {
-    ParseFormFieldsPass(IBANField::Parse, processed_fields, field_candidates,
-                        page_language, pattern_source, log_manager);
   }
 }
 
@@ -501,7 +494,7 @@ bool FormField::MatchesFormControlType(base::StringPiece type,
 
 // static
 bool FormField::IsSingleFieldParseableType(ServerFieldType field_type) {
-  return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE;
+  return field_type == MERCHANT_PROMO_CODE;
 }
 
 }  // namespace autofill

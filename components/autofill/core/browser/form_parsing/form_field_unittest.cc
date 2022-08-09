@@ -196,38 +196,13 @@ TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
 }
 
 // Test that `ParseSingleFieldForms` parses single field promo codes.
-TEST_P(FormFieldTest, ParseFormFieldsForSingleFieldPromoCode) {
+TEST_P(FormFieldTest, ParseSingleFieldFormsPromoCode) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       features::kAutofillParseMerchantPromoCodeFields);
 
   // Parse single field promo code.
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
-  TestClassificationExpectations();
-
-  // Don't parse other fields.
-  // UNKNOWN_TYPE is used as the expected type, which prevents it from being
-  // part of the expectations in `TestClassificationExpectations()`.
-  AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
-  TestClassificationExpectations();
-}
-
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
-// TODO(crbug.com/1350411): Disabling on linux-chromeos for now as it appears to
-// be having trouble enabling this particular feature correctly.
-#define MAYBE_ParseSingleFieldFormsIban DISABLED_ParseSingleFieldFormsIban
-#else
-#define MAYBE_ParseSingleFieldFormsIban ParseSingleFieldFormsIban
-#endif
-// Test that `ParseSingleFieldForms` parses single field IBAN.
-TEST_P(FormFieldTest, MAYBE_ParseSingleFieldFormsIban) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(features::kAutofillParseIBANFields);
-
-  // Parse single field IBAN.
-  AddTextFormFieldData("", "IBAN", IBAN_VALUE);
   EXPECT_EQ(1, ParseSingleFieldForms());
   TestClassificationExpectations();
 
