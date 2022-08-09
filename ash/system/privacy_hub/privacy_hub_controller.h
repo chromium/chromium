@@ -9,6 +9,8 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class ASH_EXPORT PrivacyHubController {
@@ -23,6 +25,8 @@ class ASH_EXPORT PrivacyHubController {
   CameraPrivacySwitchController* CameraControllerForTest() {
     return &camera_controller_;
   }
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   CameraPrivacySwitchController camera_controller_;

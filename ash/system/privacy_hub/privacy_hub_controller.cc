@@ -4,10 +4,19 @@
 
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+
 namespace ash {
 
 PrivacyHubController::PrivacyHubController() = default;
 
 PrivacyHubController::~PrivacyHubController() = default;
+
+// static
+void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
+  registry->RegisterBooleanPref(prefs::kUserMicrophoneAllowed, true);
+}
 
 }  // namespace ash

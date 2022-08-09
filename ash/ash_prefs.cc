@@ -44,6 +44,7 @@
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/power_prefs.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/unified/top_shortcuts_view.h"
@@ -103,6 +104,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
   PersistentDesksBarController::RegisterProfilePrefs(registry);
+  PrivacyHubController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
