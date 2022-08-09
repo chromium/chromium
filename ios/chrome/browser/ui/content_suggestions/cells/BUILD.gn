@@ -56,6 +56,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/resources:module_shadow",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common:timing",

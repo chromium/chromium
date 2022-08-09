@@ -13,6 +13,15 @@ imageset("menu_shadow") {
   ]
 }
 
+imageset("module_shadow") {
+  sources = [
+    "module_shadow.imageset/Contents.json",
+    "module_shadow.imageset/module_shadow.png",
+    "module_shadow.imageset/module_shadow@2x.png",
+    "module_shadow.imageset/module_shadow@3x.png",
+  ]
+}
+
 imageset("legacy_password_key") {
   sources = [
     "legacy_password_key.imageset/Contents.json",
