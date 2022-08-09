@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -168,7 +169,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_BRAND_TRANSPARENCY)
                 && intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isIncognito()) {
-            mBrandingController = new BrandingController();
+            String packageName = mIntentDataProvider.get().getClientPackageName();
+            if (TextUtils.isEmpty(packageName)) {
+                packageName = CustomTabIntentDataProvider.getReferrerPackageName(activity);
+            }
+            mBrandingController = new BrandingController(activity, packageName);
         }
         mTabController = tabController;
     }

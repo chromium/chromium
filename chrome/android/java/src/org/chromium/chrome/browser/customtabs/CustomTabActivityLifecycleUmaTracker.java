@@ -247,9 +247,9 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
      * Get the referrer for the given activity. If the activity is launched through launcher
      * activity, the referrer is set through {@link IntentHandler#EXTRA_ACTIVITY_REFERRER}; if not,
      * check {@link Activity#getReferrer()}; if both return empty, fallback to
-     * {@link IntentHandler#getReferrerPolicyFromIntent(Intent)}.
+     * {@link IntentHandler#getReferrerUrlIncludingExtraHeaders(Intent)}.
+     * TODO(https://crbug.com/1350252): Move this to IntentHandler.
      */
-    @VisibleForTesting
     static String getReferrerUriString(Activity activity) {
         if (activity == null || activity.getIntent() == null) {
             return "";

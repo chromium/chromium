@@ -4,28 +4,74 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import android.content.Context;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controls the strategy to start branding, and the duration to show branding.
  */
 public class BrandingController {
-    // The maximum time allowed from CCT Toolbar initialized until it should show the URL and title.
+    private static final String PARAM_BRANDING_CADENCE_NAME = "branding_cadence";
+    private static final String PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS = "max_blank_toolbar_timeout";
+    private static final int DEFAULT_BRANDING_CADENCE_MS = (int) TimeUnit.HOURS.toMillis(1);
+    private static final int DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS = 500;
+
+    /**
+     * The maximum time allowed from CCT Toolbar initialized until it should show the URL and title.
+     */
     @VisibleForTesting
     static final int TOTAL_BRANDING_DELAY_MS = 1800;
+    /**
+     * The maximum time allowed to leave CCT Toolbar blank until showing branding or URL and title.
+     */
+    public static final IntCachedFieldTrialParameter MAX_BLANK_TOOLBAR_TIMEOUT_MS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS, DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS);
+    /**
+     * The minimum time required between two branding events to shown. If time elapse since last
+     * branding is less than this cadence, the branding check decision will be {@link
+     * BrandingDecision.NONE}.
+     */
+    public static final IntCachedFieldTrialParameter BRANDING_CADENCE_MS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_BRANDING_CADENCE_NAME, DEFAULT_BRANDING_CADENCE_MS);
 
     private final CallbackController mCallbackController = new CallbackController();
+    private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
+            new OneshotSupplierImpl<>();
+    private final BrandingChecker mBrandingChecker;
 
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private long mToolbarInitializedTime;
     private boolean mIsBrandingShowing;
+
+    /**
+     * Branding controller responsible for showing branding.
+     * @param context Context used to fetch package information for embedded app.
+     * @param packageName The package name for the embedded app.
+     */
+    public BrandingController(Context context, String packageName) {
+        mBrandingDecision.onAvailable((decision) -> maybeMakeBrandingDecision());
+
+        // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
+        mBrandingChecker = new BrandingChecker(context, packageName,
+                SharedPreferencesBrandingTimeStorage.getInstance(), mBrandingDecision::set,
+                BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOOLBAR);
+        mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
+    }
 
     /**
      * Register the {@link ToolbarBrandingDelegate} from CCT Toolbar.
@@ -35,22 +81,37 @@ public class BrandingController {
         mToolbarInitializedTime = SystemClock.elapsedRealtime();
         mToolbarBrandingDelegate = delegate;
 
-        // Set location bar to empty as controller is waiting for picking the strategy to use.
+        // Start the task to timeout the branding check. If mBrandingChecker already finished,
+        // canceling the task does nothing.
+        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
+                () -> mBrandingChecker.cancel(true), MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
+
+        // Set location bar to empty as controller is waiting for mBrandingDecision.
         // This should not cause any UI jank even if a decision is made immediately, as
         // state set in CustomTabToolbar#showEmptyLocationBar should be unset in any newer state.
-        // TODO(https://crrev.com/c/3770803): Provide more context in java doc when this state
-        // becomes more useful.
         mToolbarBrandingDelegate.showEmptyLocationBar();
 
         maybeMakeBrandingDecision();
     }
 
-    // Make a collective decision with different signal collected from controller.
+    /**
+     * Make decision after BrandingChecker and mToolbarBrandingDelegate is ready.
+     */
     private void maybeMakeBrandingDecision() {
-        long delay = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
-        long duration = TOTAL_BRANDING_DELAY_MS - delay;
+        if (mToolbarBrandingDelegate == null || mBrandingDecision.get() == null) return;
 
-        showToolbarBranding(duration);
+        long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
+        long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
+
+        @BrandingDecision
+        int brandingDecision = mBrandingDecision.get();
+        if (BrandingDecision.NONE == brandingDecision) {
+            mToolbarBrandingDelegate.showRegularToolbar();
+            return;
+        }
+
+        // TODO(wenyufu): Support toast branding.
+        showToolbarBranding(remainingBrandingTime);
     }
 
     private void showToolbarBranding(long durationMs) {
@@ -73,5 +134,11 @@ public class BrandingController {
     @VisibleForTesting
     public boolean getIsBrandingShowing() {
         return mIsBrandingShowing;
+    }
+
+    @BrandingDecision
+    @VisibleForTesting
+    Integer getBrandingDecisionForTest() {
+        return mBrandingDecision.get();
     }
 }

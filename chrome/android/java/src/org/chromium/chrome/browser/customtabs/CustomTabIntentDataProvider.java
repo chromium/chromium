@@ -53,6 +53,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A model class that parses the incoming intent for Custom Tabs specific customization data.
@@ -281,6 +282,22 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
         // When scrolling up the web content, we don't want to hide the URL bar.
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
+    }
+
+    /**
+     * Get the package name from {@link #getReferrerUriString(Activity)}. If the referrer format
+     * is invalid, return an empty string.
+     * TODO(https://crbug.com/1350252): Move this to IntentHandler.
+     * */
+    static String getReferrerPackageName(Activity activity) {
+        String referrer =
+                CustomTabActivityLifecycleUmaTracker.getReferrerUriString(activity).toLowerCase(
+                        Locale.US);
+        if (TextUtils.isEmpty(referrer)) return "";
+
+        Uri uri = Uri.parse(referrer);
+        return TextUtils.equals(UrlConstants.APP_INTENT_SCHEME, uri.getScheme()) ? uri.getHost()
+                                                                                 : "";
     }
 
     /**

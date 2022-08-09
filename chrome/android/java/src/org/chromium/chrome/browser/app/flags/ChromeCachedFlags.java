@@ -10,6 +10,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -128,6 +129,8 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter> fieldTrialsToCache =
                 new ArrayList<CachedFieldTrialParameter>() {
                     {
+                        add(BrandingController.BRANDING_CADENCE_MS);
+                        add(BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS);
                         add(ChimeFeatures.ALWAYS_REGISTER);
                         add(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING);
                         add(ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT);

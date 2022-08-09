@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
@@ -32,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.IntentUtils;
@@ -288,6 +291,21 @@ public class CustomTabIntentDataProviderTest {
                 provider.isAllowedThirdParty("com.pixar.syndrome"));
     }
 
+    @Test
+    public void testGetReferrerPackageName() {
+        assertEquals("extra.activity.referrer",
+                CustomTabIntentDataProvider.getReferrerPackageName(
+                        buildMockActivity("android-app://extra.activity.referrer")));
+        assertEquals("co.abc.xyz",
+                CustomTabIntentDataProvider.getReferrerPackageName(
+                        buildMockActivity("android-app://co.abc.xyz")));
+
+        assertReferrerInvalid("");
+        assertReferrerInvalid("invalid");
+        assertReferrerInvalid("android-app://");
+        assertReferrerInvalid(Uri.parse("https://www.one.com").toString());
+    }
+
     private Bundle createActionButtonInToolbarBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
@@ -313,5 +331,18 @@ public class CustomTabIntentDataProviderTest {
 
     protected Uri getLaunchingUrl() {
         return Uri.parse("https://www.example.com/");
+    }
+
+    private void assertReferrerInvalid(String referrerStr) {
+        assertTrue("Referrer should be invalid for the input: " + referrerStr,
+                TextUtils.isEmpty(CustomTabIntentDataProvider.getReferrerPackageName(
+                        buildMockActivity(referrerStr))));
+    }
+
+    private Activity buildMockActivity(String referrer) {
+        Activity mockActivity = Mockito.mock(Activity.class);
+        Mockito.doReturn(new Intent()).when(mockActivity).getIntent();
+        Mockito.doReturn(Uri.parse(referrer)).when(mockActivity).getReferrer();
+        return mockActivity;
     }
 }

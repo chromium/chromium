@@ -102,6 +102,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityUrlLoadingTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeControllerTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingCheckerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
