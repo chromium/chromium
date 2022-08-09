@@ -7,8 +7,10 @@ const blankURL = () => new URL('resources/empty.txt', location);
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
       t.add_cleanup(() => internals.resetAttributionReporting());
-      t.add_cleanup(() => resetEventLevelReports());
-      t.add_cleanup(() => resetAggregatableReports());
+      t.add_cleanup(() => resetAttributionReports(eventLevelReportsUrl));
+      t.add_cleanup(() => resetAttributionReports(aggregatableReportsUrl));
+      t.add_cleanup(() => resetAttributionReports(eventLevelDebugReportsUrl));
+      t.add_cleanup(() => resetAttributionReports(aggregatableDebugReportsUrl));
       return f(t);
     }, name);
 
@@ -32,11 +34,6 @@ const resetAttributionReports = url => {
   };
   return fetch(url, options);
 };
-
-const resetEventLevelReports = () =>
-    resetAttributionReports(eventLevelReportsUrl);
-const resetAggregatableReports = () =>
-    resetAttributionReports(aggregatableReportsUrl);
 
 const pipeHeaderPattern = /[,)]/g;
 
