@@ -497,7 +497,7 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
     // Don't clip bounds. Some screen magnifiers (e.g. ZoomText) prefer to
     // get unclipped bounds so that they can make smooth scrolling calculations.
     gfx::Rect absolute_child_rect = child->RelativeToAbsoluteBounds(
-        child->GetInlineTextRect(local_start, local_end, child_length),
+        child->GetTextContentRangeBoundsUTF16(local_start, local_end),
         ui::AXCoordinateSystem::kRootFrame, clipping_behavior,
         offscreen_result);
     if (bounds.width() == 0 && bounds.height() == 0) {
@@ -602,8 +602,7 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
   // migrated to that class.
   if (GetRole() == ax::mojom::Role::kInlineTextBox) {
     return RelativeToAbsoluteBounds(
-        GetInlineTextRect(start_offset, end_offset,
-                          GetTextContentUTF16().length()),
+        GetTextContentRangeBoundsUTF16(start_offset, end_offset),
         coordinate_system, clipping_behavior, offscreen_result);
   }
 
@@ -645,62 +644,10 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
   return bounds;
 }
 
-gfx::RectF BrowserAccessibility::GetInlineTextRect(const int start_offset,
-                                                   const int end_offset,
-                                                   const int max_length) const {
-  // TODO(nektar): Move this method to `AXNode` in the immediate future.
-  DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
-  int local_start_offset = start_offset, local_end_offset = end_offset;
-  const std::vector<int32_t>& character_offsets =
-      GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
-  const int character_offsets_length = character_offsets.size();
-  if (character_offsets_length < max_length) {
-    // Blink might not return pixel offsets for all characters. Clamp the
-    // character range to be within the number of provided pixels.
-    local_start_offset = std::min(local_start_offset, character_offsets_length);
-    local_end_offset = std::min(local_end_offset, character_offsets_length);
-  }
-
-  const int start_pixel_offset =
-      local_start_offset > 0 ? character_offsets[local_start_offset - 1] : 0;
-  const int end_pixel_offset =
-      local_end_offset > 0 ? character_offsets[local_end_offset - 1] : 0;
-  const int max_pixel_offset =
-      character_offsets_length > 0
-          ? character_offsets[character_offsets_length - 1]
-          : 0;
-  const gfx::RectF location = GetLocation();
-  const int location_width = location.width();
-  const int location_height = location.height();
-
-  gfx::RectF bounds;
-  switch (static_cast<ax::mojom::WritingDirection>(
-      GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
-    case ax::mojom::WritingDirection::kNone:
-    case ax::mojom::WritingDirection::kLtr:
-      bounds =
-          gfx::RectF(start_pixel_offset, 0,
-                     end_pixel_offset - start_pixel_offset, location_height);
-      break;
-    case ax::mojom::WritingDirection::kRtl: {
-      const int left = max_pixel_offset - end_pixel_offset;
-      const int right = max_pixel_offset - start_pixel_offset;
-      bounds = gfx::RectF(left, 0, right - left, location_height);
-      break;
-    }
-    case ax::mojom::WritingDirection::kTtb:
-      bounds = gfx::RectF(0, start_pixel_offset, location_width,
-                          end_pixel_offset - start_pixel_offset);
-      break;
-    case ax::mojom::WritingDirection::kBtt: {
-      const int top = max_pixel_offset - end_pixel_offset;
-      const int bottom = max_pixel_offset - start_pixel_offset;
-      bounds = gfx::RectF(0, top, location_width, bottom - top);
-      break;
-    }
-  }
-
-  return bounds;
+gfx::RectF BrowserAccessibility::GetTextContentRangeBoundsUTF16(
+    int start_offset,
+    int end_offset) const {
+  return node()->GetTextContentRangeBoundsUTF16(start_offset, end_offset);
 }
 
 BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(

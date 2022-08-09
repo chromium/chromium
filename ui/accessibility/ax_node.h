@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
 
@@ -514,6 +515,18 @@ class AX_EXPORT AXNode final {
   // grapheme clusters.
   int GetTextContentLengthUTF8() const;
   int GetTextContentLengthUTF16() const;
+
+  // Returns the smallest bounding box that can enclose the given range of
+  // characters in the node's text contents. The bounding box is relative to
+  // this node's coordinate system as specified in
+  // `AXNodeData::relative_bounds`.
+  //
+  // Note that `start_offset` and `end_offset` are either in UTF8 or UTF16 code
+  // units, not in grapheme clusters.
+  gfx::RectF GetTextContentRangeBoundsUTF8(int start_offset,
+                                           int end_offset) const;
+  gfx::RectF GetTextContentRangeBoundsUTF16(int start_offset,
+                                            int end_offset) const;
 
   // Returns a string representing the language code.
   //

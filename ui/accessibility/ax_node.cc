@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -991,6 +992,110 @@ int AXNode::GetTextContentLengthUTF8() const {
 int AXNode::GetTextContentLengthUTF16() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return GetComputedNodeData().GetOrComputeTextContentLengthUTF16();
+}
+
+gfx::RectF AXNode::GetTextContentRangeBoundsUTF8(int start_offset,
+                                                 int end_offset) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK_LE(start_offset, end_offset)
+      << "Invalid `start_offset` and `end_offset`.\n"
+      << start_offset << ' ' << end_offset << "\nin\n"
+      << *this;
+  // Since we DCHECK that `start_offset` <= `end_offset`, there is no need to
+  // check whether `start_offset` is also in range.
+  if (end_offset > GetTextContentLengthUTF8())
+    return gfx::RectF();
+
+  // TODO(nektar): Update this to use
+  // "base/strings/utf_offset_string_conversions.h" which provides caching of
+  // offsets.
+  std::u16string out_trancated_string_utf16;
+  if (!base::UTF8ToUTF16(GetTextContentUTF8().data(),
+                         base::checked_cast<size_t>(start_offset),
+                         &out_trancated_string_utf16)) {
+    return gfx::RectF();
+  }
+  start_offset = base::checked_cast<int>(out_trancated_string_utf16.length());
+  if (!base::UTF8ToUTF16(GetTextContentUTF8().data(),
+                         base::checked_cast<size_t>(end_offset),
+                         &out_trancated_string_utf16)) {
+    return gfx::RectF();
+  }
+  end_offset = base::checked_cast<int>(out_trancated_string_utf16.length());
+  return GetTextContentRangeBoundsUTF16(start_offset, end_offset);
+}
+
+gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
+                                                  int end_offset) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  DCHECK_LE(start_offset, end_offset)
+      << "Invalid `start_offset` and `end_offset`.\n"
+      << start_offset << ' ' << end_offset << "\nin\n"
+      << *this;
+  // Since we DCHECK that `start_offset` <= `end_offset`, there is no need to
+  // check whether `start_offset` is also in range.
+  if (end_offset > GetTextContentLengthUTF16())
+    return gfx::RectF();
+
+  const std::vector<int32_t>& character_offsets =
+      GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
+  int character_offsets_length =
+      base::checked_cast<int>(character_offsets.size());
+  // Charactger offsets are always based on the UTF-16 representation of the
+  // text.
+  if (character_offsets_length < GetTextContentLengthUTF16()) {
+    // Blink might not return pixel offsets for all characters. Clamp the
+    // character range to be within the number of provided pixels. Note that the
+    // first character always starts at pixel 0, so an offset for that character
+    // is not provided.
+    //
+    // TODO(accessibility): We need to fix this bug in Blink.
+    start_offset = std::min(start_offset, character_offsets_length);
+    end_offset = std::min(end_offset, character_offsets_length);
+  }
+
+  // TODO(nektar): Remove all this code and fix up the character offsets vector
+  // itself.
+  int start_pixel_offset =
+      start_offset > 0
+          ? character_offsets[base::checked_cast<size_t>(start_offset - 1)]
+          : 0;
+  int end_pixel_offset =
+      end_offset > 0
+          ? character_offsets[base::checked_cast<size_t>(end_offset - 1)]
+          : 0;
+  int max_pixel_offset = character_offsets_length > 0
+                             ? character_offsets[character_offsets_length - 1]
+                             : 0;
+  const gfx::RectF& node_bounds = data().relative_bounds.bounds;
+
+  gfx::RectF out_bounds;
+  switch (static_cast<ax::mojom::WritingDirection>(
+      GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
+    case ax::mojom::WritingDirection::kNone:
+    case ax::mojom::WritingDirection::kLtr:
+      out_bounds = gfx::RectF(start_pixel_offset, 0,
+                              end_pixel_offset - start_pixel_offset,
+                              node_bounds.height());
+      break;
+    case ax::mojom::WritingDirection::kRtl: {
+      int left = max_pixel_offset - end_pixel_offset;
+      int right = max_pixel_offset - start_pixel_offset;
+      out_bounds = gfx::RectF(left, 0, right - left, node_bounds.height());
+      break;
+    }
+    case ax::mojom::WritingDirection::kTtb:
+      out_bounds = gfx::RectF(0, start_pixel_offset, node_bounds.width(),
+                              end_pixel_offset - start_pixel_offset);
+      break;
+    case ax::mojom::WritingDirection::kBtt: {
+      int top = max_pixel_offset - end_pixel_offset;
+      int bottom = max_pixel_offset - start_pixel_offset;
+      out_bounds = gfx::RectF(0, top, node_bounds.width(), bottom - top);
+      break;
+    }
+  }
+  return out_bounds;
 }
 
 std::string AXNode::GetLanguage() const {

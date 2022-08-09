@@ -11,6 +11,7 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_position.h"
@@ -18,6 +19,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/test_ax_tree_manager.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
 
@@ -629,6 +631,112 @@ TEST(AXNodeTest, GetLowestPlatformAncestor) {
   const AXNode* inline_box_2_node = static_text_2_node->children()[0];
   ASSERT_EQ(inline_box_2.id, inline_box_2_node->id());
   EXPECT_EQ(text_field_node, inline_box_2_node->GetLowestPlatformAncestor());
+}
+
+TEST(AXNodeTest, GetTextContentRangeBounds) {
+  constexpr char16_t kEnglishText[] = u"Hey";
+  const std::vector<int32_t> kEnglishCharacterOffsets = {12, 19, 27};
+  // A Hindi word (which means "Hindi") consisting of two letters.
+  constexpr char16_t kHindiText[] = u"\x0939\x093F\x0928\x094D\x0926\x0940";
+  const std::vector<int32_t> kHindiCharacterOffsets = {40, 40, 59, 59, 59, 59};
+  // A Thai word (which means "feel") consisting of 3 letters.
+  constexpr char16_t kThaiText[] = u"\x0E23\x0E39\x0E49\x0E2A\x0E36\x0E01";
+  const std::vector<int32_t> kThaiCharacterOffsets = {66, 66, 66, 76, 76, 85};
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData text_data1;
+  text_data1.id = 2;
+  text_data1.role = ax::mojom::Role::kStaticText;
+  text_data1.SetName(kEnglishText);
+  text_data1.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+  text_data1.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                                 kEnglishCharacterOffsets);
+
+  AXNodeData text_data2;
+  text_data2.id = 3;
+  text_data2.role = ax::mojom::Role::kStaticText;
+  text_data2.SetName(kHindiText);
+  text_data2.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+  text_data2.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                                 kHindiCharacterOffsets);
+
+  AXNodeData text_data3;
+  text_data3.id = 4;
+  text_data3.role = ax::mojom::Role::kStaticText;
+  text_data3.SetName(kThaiText);
+  text_data3.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kTtb));
+  text_data3.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                                 kThaiCharacterOffsets);
+
+  root_data.child_ids = {text_data1.id, text_data2.id, text_data3.id};
+
+  AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, text_data1, text_data2, text_data3};
+  update.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  update.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(update)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root_data.id, root_node->id());
+
+  const AXNode* text1_node = root_node->GetUnignoredChildAtIndex(0);
+  ASSERT_EQ(text_data1.id, text1_node->id());
+  const AXNode* text2_node = root_node->GetUnignoredChildAtIndex(1);
+  ASSERT_EQ(text_data2.id, text2_node->id());
+  const AXNode* text3_node = root_node->GetUnignoredChildAtIndex(2);
+  ASSERT_EQ(text_data3.id, text3_node->id());
+
+  // Bounds should be the same between UTF-8 and UTF-16 for `kEnglishText`.
+  EXPECT_EQ(gfx::RectF(0, 0, 27, 0),
+            text1_node->GetTextContentRangeBoundsUTF8(0, 3));
+  EXPECT_EQ(gfx::RectF(12, 0, 7, 0),
+            text1_node->GetTextContentRangeBoundsUTF8(1, 2));
+  EXPECT_EQ(gfx::RectF(), text1_node->GetTextContentRangeBoundsUTF8(2, 4));
+  EXPECT_EQ(gfx::RectF(0, 0, 27, 0),
+            text1_node->GetTextContentRangeBoundsUTF16(0, 3));
+  EXPECT_EQ(gfx::RectF(12, 0, 7, 0),
+            text1_node->GetTextContentRangeBoundsUTF16(1, 2));
+  EXPECT_EQ(gfx::RectF(), text1_node->GetTextContentRangeBoundsUTF16(2, 4));
+
+  // Offsets are manually converted between UTF-8 and UTF-16.
+  //
+  // `kHindiText` is 6 code units in UTF-16 and 18 in UTF-8.
+  EXPECT_EQ(gfx::RectF(0, 0, 59, 0),
+            text2_node->GetTextContentRangeBoundsUTF8(0, 18));
+  EXPECT_EQ(gfx::RectF(0, 0, 19, 0),
+            text2_node->GetTextContentRangeBoundsUTF8(6, 12));
+  EXPECT_EQ(gfx::RectF(0, 0, 59, 0),
+            text2_node->GetTextContentRangeBoundsUTF16(0, 6));
+  EXPECT_EQ(gfx::RectF(0, 0, 19, 0),
+            text2_node->GetTextContentRangeBoundsUTF16(2, 4));
+
+  // Offsets are manually converted between UTF-8 and UTF-16.
+  //
+  // `kThaiText` is 6 code units in UTF-16 and 18 in UTF-8.
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 85),
+            text3_node->GetTextContentRangeBoundsUTF8(0, 18));
+  EXPECT_EQ(gfx::RectF(0, 66, 0, 10),
+            text3_node->GetTextContentRangeBoundsUTF8(6, 12));
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 85),
+            text3_node->GetTextContentRangeBoundsUTF16(0, 6));
+  EXPECT_EQ(gfx::RectF(0, 66, 0, 10),
+            text3_node->GetTextContentRangeBoundsUTF16(2, 4));
 }
 
 TEST(AXNodeTest, IsGridCellReadOnlyOrDisabled) {

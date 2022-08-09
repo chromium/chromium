@@ -649,11 +649,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result = nullptr) const;
 
-  // Return the bounds of inline text in this node's coordinate system (which
-  // is relative to its container node specified in AXRelativeBounds).
-  gfx::RectF GetInlineTextRect(const int start_offset,
-                               const int end_offset,
-                               const int max_length) const;
+  // See `AXNode::GetTextContentRangeBoundsUTF16`.
+  gfx::RectF GetTextContentRangeBoundsUTF16(int start_offset,
+                                            int end_offset) const;
 
   // Recursive helper function for GetInnerTextRangeBounds.
   gfx::Rect GetInnerTextRangeBoundsRectInSubtree(
