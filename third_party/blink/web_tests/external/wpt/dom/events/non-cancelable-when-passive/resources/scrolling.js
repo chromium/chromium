@@ -4,7 +4,7 @@ function runTest({target, eventName, passive, expectCancelable}) {
   target.addEventListener(eventName, function (event) {
     cancelable = event.cancelable;
     arrived = true;
-  }, {passive});
+  }, {passive:passive, once:true});
 
   promise_test(async (t) => {
     t.add_cleanup(() => {
