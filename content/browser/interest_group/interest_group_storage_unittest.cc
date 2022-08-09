@@ -1080,7 +1080,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 }
 
-// Upgrades a v6 database dump to an expected v7 database.
+// Upgrades a v6 database dump to an expected v9 database.
 // The v6 database dump was extracted from the InterestGroups database in
 // a browser profile by using `sqlite3 dump <path-to-database>` and then
 // cleaning up and formatting the output.
@@ -1145,6 +1145,18 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   testing::Field("ad_components",
                                  &blink::InterestGroup::ad_components,
                                  absl::nullopt))),
+          testing::Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(testing::Field("join_count",
+                                         &auction_worklet::mojom::
+                                             BiddingBrowserSignals::join_count,
+                                         5)),
+                  Pointee(testing::Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      4)))),
           testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
                          StorageInterestGroup::KAnonymityData{
                              GURL("https://owner.example.com/group1"), 0,
@@ -1213,6 +1225,18 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   testing::Field("ad_components",
                                  &blink::InterestGroup::ad_components,
                                  absl::nullopt))),
+          testing::Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(testing::Field("join_count",
+                                         &auction_worklet::mojom::
+                                             BiddingBrowserSignals::join_count,
+                                         5)),
+                  Pointee(testing::Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      3)))),
           testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
                          StorageInterestGroup::KAnonymityData{
                              GURL("https://owner.example.com/group2"), 0,
@@ -1281,6 +1305,18 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   testing::Field("ad_components",
                                  &blink::InterestGroup::ad_components,
                                  absl::nullopt))),
+          testing::Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(testing::Field("join_count",
+                                         &auction_worklet::mojom::
+                                             BiddingBrowserSignals::join_count,
+                                         4)),
+                  Pointee(testing::Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      4)))),
           testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
                          StorageInterestGroup::KAnonymityData{
                              GURL("https://owner.example.com/group3"), 0,

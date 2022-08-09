@@ -156,15 +156,26 @@ INSERT INTO join_history VALUES ('https://owner.example.com', 'group2', 13291340
 INSERT INTO join_history VALUES ('https://owner.example.com', 'group1', 13291340515478159);
 INSERT INTO join_history VALUES ('https://owner.example.com', 'group3', 13291340515486493);
 INSERT INTO join_history VALUES ('https://owner.example.com', 'group2', 13291340603053960);
-INSERT INTO join_history VALUES ('https://owner.example.com', 'group3', 13291340603064576);
 INSERT INTO join_history VALUES ('https://owner.example.com', 'group1', 13291340603072942);
-INSERT INTO join_history VALUES ('https://owner.example.com', 'group1', 13291340603081533);
-INSERT INTO join_history VALUES ('https://owner.example.com', 'group2', 13291340603089914);
-INSERT INTO join_history VALUES ('https://owner.example.com', 'group3', 13291340603098283);
+INSERT INTO join_history VALUES ('https://owner.example.com', 'group1', 13291350603081533);
+INSERT INTO join_history VALUES ('https://owner.example.com', 'group2', 13291350603089914);
+INSERT INTO join_history VALUES ('https://owner.example.com', 'group3', 13291350603098283);
 
 CREATE TABLE bid_history(
   owner TEXT NOT NULL, name TEXT NOT NULL, bid_time INTEGER NOT NULL,
   FOREIGN KEY(owner, name) REFERENCES interest_groups);
+
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group3', 13291340515442940);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group1', 13291340515453832);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group2', 13291340515470175);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group1', 13291340515478159);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group3', 13291340515486493);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group2', 13291350603053960);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group3', 13291350603064576);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group1', 13291350603072942);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group1', 13291350603081533);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group2', 13291350603089914);
+INSERT INTO bid_history VALUES ('https://owner.example.com', 'group3', 13291350603098283);
 
 CREATE TABLE win_history(
   owner TEXT NOT NULL, name TEXT NOT NULL, win_time INTEGER NOT NULL, ad TEXT NOT NULL,

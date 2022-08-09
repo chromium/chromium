@@ -59,6 +59,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 6 - 2021/12 - crrev.com/c/3330516
 // Version 7 - 2022/03 - crrev.com/c/3517534
 // Version 8 - 2022/06 - crrev.com/c/3696265
+// Version 9 - 2022/07 - crrev.com/c/3780305
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -68,11 +69,12 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 6 adds WebAssembly helper url.
 // Version 7 changes an index, adds interest group priority.
 // Version 8 adds the execution_mode field to interest groups.
-const int kCurrentVersionNumber = 8;
+// Version 9 changes bid_history and join_history to daily counts.
+const int kCurrentVersionNumber = 9;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
-const int kCompatibleVersionNumber = 7;
+const int kCompatibleVersionNumber = 9;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -272,8 +274,6 @@ bool CreateV8Schema(sql::Database& db) {
   if (!db.Execute(kInterestGroupKAnonLastRefIndexSql))
     return false;
 
-  // We can't use the interest group and join time as primary keys since
-  // different pages may try to join the same interest group at the same time.
   DCHECK(!db.DoesTableExist("join_history"));
   static const char kJoinHistoryTableSql[] =
       // clang-format off
@@ -281,22 +281,13 @@ bool CreateV8Schema(sql::Database& db) {
         "owner TEXT NOT NULL,"
         "name TEXT NOT NULL,"
         "join_time INTEGER NOT NULL,"
+        "count INTEGER NOT NULL,"
+      "PRIMARY KEY(owner, name, join_time) "
       "FOREIGN KEY(owner,name) REFERENCES interest_groups)";
   // clang-format on
   if (!db.Execute(kJoinHistoryTableSql))
     return false;
 
-  DCHECK(!db.DoesIndexExist("join_history_index"));
-  static const char kJoinHistoryIndexSql[] =
-      // clang-format off
-      "CREATE INDEX join_history_index "
-      "ON join_history(owner,name,join_time)";
-  // clang-format on
-  if (!db.Execute(kJoinHistoryIndexSql))
-    return false;
-
-  // We can't use the interest group and bid time as primary keys since
-  // auctions on separate pages may occur at the same time.
   DCHECK(!db.DoesTableExist("bid_history"));
   static const char kBidHistoryTableSql[] =
       // clang-format off
@@ -304,18 +295,11 @@ bool CreateV8Schema(sql::Database& db) {
         "owner TEXT NOT NULL,"
         "name TEXT NOT NULL,"
         "bid_time INTEGER NOT NULL,"
+        "count INTEGER NOT NULL,"
+      "PRIMARY KEY(owner, name, bid_time) "
       "FOREIGN KEY(owner,name) REFERENCES interest_groups)";
   // clang-format on
   if (!db.Execute(kBidHistoryTableSql))
-    return false;
-
-  DCHECK(!db.DoesIndexExist("bid_history_index"));
-  static const char kBidHistoryIndexSql[] =
-      // clang-format off
-      "CREATE INDEX bid_history_index "
-      "ON bid_history(owner,name,bid_time)";
-  // clang-format on
-  if (!db.Execute(kBidHistoryIndexSql))
     return false;
 
   // We can't use the interest group and win time as primary keys since
@@ -342,6 +326,89 @@ bool CreateV8Schema(sql::Database& db) {
   if (!db.Execute(kWinHistoryIndexSQL))
     return false;
 
+  return true;
+}
+
+bool UpgradeV8SchemaToV9(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kJoinHistoryTableSql[] =
+      // clang-format off
+      "CREATE TABLE join_history2("
+        "owner TEXT NOT NULL,"
+        "name TEXT NOT NULL,"
+        "join_time INTEGER NOT NULL,"
+        "count INTEGER NOT NULL,"
+      "PRIMARY KEY(owner, name, join_time) "
+      "FOREIGN KEY(owner,name) REFERENCES interest_groups)";
+  // clang-format on
+  if (!db.Execute(kJoinHistoryTableSql))
+    return false;
+
+  // Consolidate old join records into a single record that
+  // counts the number joins in a day (86400000000 microseconds)
+  static const char kCopyJoinHistoryTableSql[] =
+      // clang-format off
+      "INSERT INTO join_history2 "
+      "SELECT owner,"
+             "name,"
+             "(join_time-(join_time%86400000000)) as join_time2,"
+             "COUNT() as count "
+      "FROM join_history "
+      "GROUP BY owner,name,join_time2";
+  // clang-format on
+  if (!db.Execute(kCopyJoinHistoryTableSql))
+    return false;
+
+  static const char kDropJoinHistoryTableSql[] = "DROP TABLE join_history";
+  if (!db.Execute(kDropJoinHistoryTableSql))
+    return false;
+
+  static const char kRenameJoinHistoryTableSql[] =
+      // clang-format off
+      "ALTER TABLE join_history2 "
+      "RENAME TO join_history";
+  // clang-format on
+  if (!db.Execute(kRenameJoinHistoryTableSql))
+    return false;
+
+  static const char kBidHistoryTableSql[] =
+      // clang-format off
+      "CREATE TABLE bid_history2("
+        "owner TEXT NOT NULL,"
+        "name TEXT NOT NULL,"
+        "bid_time INTEGER NOT NULL,"
+        "count INTEGER NOT NULL,"
+      "PRIMARY KEY(owner, name, bid_time) "
+      "FOREIGN KEY(owner,name) REFERENCES interest_groups)";
+  // clang-format on
+  if (!db.Execute(kBidHistoryTableSql))
+    return false;
+
+  // Consolidate old bid records into a single record that
+  // counts the number bids in a day (86400000000 microseconds)
+  static const char kCopyBidHistoryTableSql[] =
+      // clang-format off
+      "INSERT INTO bid_history2 "
+      "SELECT owner,"
+             "name,"
+             "(bid_time-(bid_time%86400000000)) as bid_time2,"
+             "COUNT() as count "
+      "FROM bid_history "
+      "GROUP BY owner,name,bid_time2";
+  // clang-format on
+  if (!db.Execute(kCopyBidHistoryTableSql))
+    return false;
+
+  static const char kDropBidHistoryTableSql[] = "DROP TABLE bid_history";
+  if (!db.Execute(kDropBidHistoryTableSql))
+    return false;
+
+  static const char kRenameBidHistoryTableSql[] =
+      // clang-format off
+      "ALTER TABLE bid_history2 "
+      "RENAME TO bid_history";
+  // clang-format on
+  if (!db.Execute(kRenameBidHistoryTableSql))
+    return false;
   return true;
 }
 
@@ -672,6 +739,57 @@ bool DoLoadInterestGroup(sql::Database& db,
   return true;
 }
 
+bool DoRecordInterestGroupJoin(sql::Database& db,
+                               const url::Origin& owner,
+                               const std::string& name,
+                               base::Time join_time) {
+  // This flow basically emulates SQLite's UPSERT feature which is disabled in
+  // Chrome. Although there are two statements executed, we don't need to
+  // enclose them in a transaction since only one will actually modify the
+  // database.
+
+  int64_t join_day = join_time.ToDeltaSinceWindowsEpoch()
+                         .FloorToMultiple(base::Days(1))
+                         .InMicroseconds();
+
+  // clang-format off
+  sql::Statement insert_join_hist(
+      db.GetCachedStatement(SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO join_history(owner,name,join_time,count) "
+      "VALUES(?,?,?,1)"));
+  // clang-format on
+  if (!insert_join_hist.is_valid())
+    return false;
+
+  insert_join_hist.Reset(true);
+  insert_join_hist.BindString(0, Serialize(owner));
+  insert_join_hist.BindString(1, name);
+  insert_join_hist.BindInt64(2, join_day);
+  if (!insert_join_hist.Run())
+    return false;
+
+  // If the insert changed the database return early.
+  if (db.GetLastChangeCount() > 0)
+    return true;
+
+  // clang-format off
+  sql::Statement update_join_hist(
+      db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE join_history "
+          "SET count=count+1 "
+          "WHERE owner=? AND name=? AND join_time=?"));
+  // clang-format on
+  if (!update_join_hist.is_valid())
+    return false;
+
+  update_join_hist.Reset(true);
+  update_join_hist.BindString(0, Serialize(owner));
+  update_join_hist.BindString(1, name);
+  update_join_hist.BindInt64(2, join_day);
+
+  return update_join_hist.Run();
+}
+
 bool DoJoinInterestGroup(sql::Database& db,
                          const blink::InterestGroup& data,
                          const GURL& joining_url,
@@ -749,22 +867,7 @@ bool DoJoinInterestGroup(sql::Database& db,
   if (!join_group.Run())
     return false;
 
-  // Record the join. It should be unique since a site should only join once
-  // per a page load. If it is not unique we should collapse the entries to
-  // minimize the damage done by a misbehaving site.
-  sql::Statement join_hist(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "INSERT INTO join_history(owner,name,join_time) "
-                            "VALUES(?,?,?)"));
-  if (!join_hist.is_valid())
-    return false;
-
-  join_hist.Reset(true);
-  join_hist.BindString(0, Serialize(data.owner));
-  join_hist.BindString(1, data.name);
-  join_hist.BindTime(2, last_updated);
-
-  if (!join_hist.Run())
+  if (!DoRecordInterestGroupJoin(db, data.owner, data.name, last_updated))
     return false;
 
   if (!DoCreateOrMarkInterestGroupAndAdsReferenced(db, data, last_updated))
@@ -908,30 +1011,65 @@ WHERE owner=? AND name=?)"));
   return update_group.Run();
 }
 
+bool DoRecordInterestGroupBid(sql::Database& db,
+                              const blink::InterestGroupKey& group_key,
+                              base::Time bid_time) {
+  // This flow basically emulates SQLite's UPSERT feature which is disabled in
+  // Chrome. Although there are two statements executed, we don't need to
+  // enclose them in a transaction since only one will actually modify the
+  // database.
+
+  int64_t bid_day = bid_time.ToDeltaSinceWindowsEpoch()
+                        .FloorToMultiple(base::Days(1))
+                        .InMicroseconds();
+
+  // clang-format off
+  sql::Statement insert_bid_hist(
+      db.GetCachedStatement(SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO bid_history(owner,name,bid_time,count) "
+      "VALUES(?,?,?,1)"));
+  // clang-format on
+  if (!insert_bid_hist.is_valid())
+    return false;
+
+  insert_bid_hist.Reset(true);
+  insert_bid_hist.BindString(0, Serialize(group_key.owner));
+  insert_bid_hist.BindString(1, group_key.name);
+  insert_bid_hist.BindInt64(2, bid_day);
+  if (!insert_bid_hist.Run())
+    return false;
+
+  // If the insert changed the database return early.
+  if (db.GetLastChangeCount() > 0)
+    return true;
+
+  // clang-format off
+  sql::Statement update_bid_hist(
+      db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE bid_history "
+          "SET count=count+1 "
+          "WHERE owner=? AND name=? AND bid_time=?"));
+  // clang-format on
+  if (!update_bid_hist.is_valid())
+    return false;
+
+  update_bid_hist.Reset(true);
+  update_bid_hist.BindString(0, Serialize(group_key.owner));
+  update_bid_hist.BindString(1, group_key.name);
+  update_bid_hist.BindInt64(2, bid_day);
+
+  return update_bid_hist.Run();
+}
+
 bool DoRecordInterestGroupBids(sql::Database& db,
                                const blink::InterestGroupSet& group_keys,
                                base::Time bid_time) {
-  // Record the bid. It should be unique since auctions should be serialized.
-  // If it is not unique we should just keep the first one.
-  // clang-format off
-  sql::Statement bid_hist(
-      db.GetCachedStatement(SQL_FROM_HERE,
-      "INSERT INTO bid_history(owner,name,bid_time) "
-      "VALUES(?,?,?)"));
-  // clang-format on
-  if (!bid_hist.is_valid())
-    return false;
-
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
 
   for (const auto& group_key : group_keys) {
-    bid_hist.Reset(true);
-    bid_hist.BindString(0, Serialize(group_key.owner));
-    bid_hist.BindString(1, group_key.name);
-    bid_hist.BindTime(2, bid_time);
-    if (!bid_hist.Run())
+    if (!DoRecordInterestGroupBid(db, group_key, bid_time))
       return false;
   }
   return transaction.Commit();
@@ -1153,7 +1291,7 @@ bool GetJoinCount(sql::Database& db,
   // clang-format off
   sql::Statement join_count(
       db.GetCachedStatement(SQL_FROM_HERE,
-    "SELECT COUNT(1) "
+    "SELECT SUM(count) "
     "FROM join_history "
     "WHERE owner = ? AND name = ? AND join_time >=?"));
   // clang-format on
@@ -1179,7 +1317,7 @@ bool GetBidCount(sql::Database& db,
   // clang-format off
   sql::Statement bid_count(
       db.GetCachedStatement(SQL_FROM_HERE,
-    "SELECT COUNT(1) "
+    "SELECT SUM(count) "
     "FROM bid_history "
     "WHERE owner = ? AND name = ? AND bid_time >= ?"));
   // clang-format on
@@ -1739,7 +1877,11 @@ bool InterestGroupStorage::InitializeSchema() {
       case 7:
         if (!UpgradeV7SchemaToV8(*db_, meta_table))
           return false;
-        meta_table.SetVersionNumber(8);
+        ABSL_FALLTHROUGH_INTENDED;
+      case 8:
+        if (!UpgradeV8SchemaToV9(*db_, meta_table))
+          return false;
+        meta_table.SetVersionNumber(9);
     }
     return transaction.Commit();
   }
