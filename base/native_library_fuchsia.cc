@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base_paths.h"
 
 namespace base {
 
@@ -45,13 +46,13 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   }
 
   FilePath computed_path;
-  base::PathService::Get(DIR_SOURCE_ROOT, &computed_path);
+  base::PathService::Get(DIR_ASSETS, &computed_path);
   computed_path = computed_path.AppendASCII("lib").Append(components[0]);
 
   // Use fdio_open_fd (a Fuchsia-specific API) here so we can pass the
   // appropriate FS rights flags to request executability.
-  // TODO(1018538): Teach base::File about FLAG_WIN_EXECUTE on Fuchsia, and then
-  // use it here instead of using fdio_open_fd() directly.
+  // TODO(crbug.com/1018538): Teach base::File about FLAG_WIN_EXECUTE on
+  // Fuchsia, and then use it here instead of using fdio_open_fd() directly.
   base::ScopedFD fd;
   zx_status_t status = fdio_open_fd(
       computed_path.value().c_str(),
