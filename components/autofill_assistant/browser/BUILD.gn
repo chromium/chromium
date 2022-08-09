@@ -503,6 +503,7 @@ source_set("unit_tests") {
     "actions/stop_action_unittest.cc",
     "actions/stopwatch_unittest.cc",
     "actions/tell_action_unittest.cc",
+    "actions/unsupported_action_unittest.cc",
     "actions/update_client_settings_action_unittest.cc",
     "actions/upload_dom_action_unittest.cc",
     "actions/use_address_action_unittest.cc",
