@@ -467,6 +467,9 @@ const struct QuicErrorMapping {
     // Received packet indicates version that does not match connection version.
     {quic::QUIC_PACKET_WRONG_VERSION, "quic.packet_wrong_version"},
 
+    // Error code related to backend health-check.
+    {quic::QUIC_SERVER_UNHEALTHY, "quic.quic_server_unhealthy"},
+
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 

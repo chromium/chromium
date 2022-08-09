@@ -23,7 +23,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_frame_data_producer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_encoder_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/simple_data_producer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
@@ -597,7 +596,7 @@ class QuicTestPacketMaker {
   std::string host_;
   spdy::SpdyFramer spdy_request_framer_;
   spdy::SpdyFramer spdy_response_framer_;
-  quic::test::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
+  quic::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
   quic::test::NoopQpackStreamSenderDelegate encoder_stream_sender_delegate_;
   quic::QpackEncoder qpack_encoder_;
   quic::test::MockRandom random_generator_;
