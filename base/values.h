@@ -460,6 +460,13 @@ class BASE_EXPORT GSL_OWNER Value {
     const List* FindList(StringPiece key) const;
     List* FindList(StringPiece key);
 
+    // If there's a value of the specified type at `key` in this dictionary,
+    // returns it. Otherwise, creates an empty container of the specified type,
+    // inserts it at `key`, and returns it. If there's a value of some other
+    // type at `key`, will overwrite that entry.
+    Dict* EnsureDict(StringPiece key);
+    List* EnsureList(StringPiece key);
+
     // Sets an entry with `key` and `value` in this dictionary, overwriting any
     // existing entry with the same `key`. Returns a pointer to the set `value`.
     Value* Set(StringPiece key, Value&& value);

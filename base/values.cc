@@ -530,6 +530,20 @@ Value::List* Value::Dict::FindList(StringPiece key) {
   return v ? v->GetIfList() : nullptr;
 }
 
+Value::Dict* Value::Dict::EnsureDict(StringPiece key) {
+  Value::Dict* dict = FindDict(key);
+  if (dict)
+    return dict;
+  return &Set(key, base::Value::Dict())->GetDict();
+}
+
+Value::List* Value::Dict::EnsureList(StringPiece key) {
+  Value::List* list = FindList(key);
+  if (list)
+    return list;
+  return &Set(key, base::Value::List())->GetList();
+}
+
 Value* Value::Dict::Set(StringPiece key, Value&& value) {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
 
