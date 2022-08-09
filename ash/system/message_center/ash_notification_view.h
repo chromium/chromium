@@ -14,6 +14,8 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace message_center {
 class Notification;
@@ -37,7 +39,8 @@ class NotificationGroupingController;
 // and list) except custom notification.
 class ASH_EXPORT AshNotificationView
     : public message_center::NotificationViewBase,
-      public message_center::MessageCenterObserver {
+      public message_center::MessageCenterObserver,
+      public views::WidgetObserver {
  public:
   static const char kViewClassName[];
 
@@ -81,6 +84,7 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) const override;
 
   // message_center::NotificationViewBase:
+  void AddedToWidget() override;
   void Layout() override;
   void UpdateViewForExpandedState(bool expanded) override;
   void UpdateWithNotification(
@@ -191,6 +195,14 @@ class ASH_EXPORT AshNotificationView
   // message_center::MessageCenterObserver:
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Abort all currently running layer animations. This includes any animatios
+  // on child notifications for parent notification views.
+  void AbortAllAnimations();
 
   // Create or update the customized snooze button in action buttons row
   // according to the given notification.
@@ -307,6 +319,8 @@ class ASH_EXPORT AshNotificationView
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       message_center_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<AshNotificationView> weak_factory_{this};
 };

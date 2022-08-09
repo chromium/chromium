@@ -19,7 +19,6 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
-#include "ash/style/style_util.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
@@ -27,7 +26,6 @@
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -49,7 +47,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_view_controller.h"
@@ -65,8 +62,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -250,6 +245,10 @@ using Orientation = views::BoxLayout::Orientation;
 
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
+
+void AshNotificationView::AddedToWidget() {
+  widget_observation_.Observe(GetWidget());
+}
 
 void AshNotificationView::Layout() {
   if (is_animating_)
@@ -1309,6 +1308,28 @@ void AshNotificationView::OnNotificationRemoved(
   RemoveGroupNotification(notification_id);
 }
 
+void AshNotificationView::OnWidgetClosing(views::Widget* widget) {
+  AbortAllAnimations();
+  widget_observation_.Reset();
+}
+
+void AshNotificationView::OnWidgetDestroying(views::Widget* widget) {
+  OnWidgetClosing(widget);
+}
+
+void AshNotificationView::AbortAllAnimations() {
+  std::vector<scoped_refptr<ui::LayerAnimator>> animators;
+  animators.push_back(layer()->GetAnimator());
+  for (auto* child_notification :
+       grouped_notifications_container_->children()) {
+    animators.push_back(child_notification->layer()->GetAnimator());
+  }
+
+  for (auto animator : animators) {
+    animator->AbortAllAnimations();
+  }
+}
+
 void AshNotificationView::CreateOrUpdateSnoozeButton(
     const message_center::Notification& notification) {
   if (!notification.should_show_snooze_button()) {
@@ -1524,7 +1545,7 @@ void AshNotificationView::AnimateResizeAfterRemoval(
       grouped_notifications_container_->height();
   size_t removed_index =
       grouped_notifications_container_->GetIndexOf(to_be_removed).value();
-  LOG(ERROR) << "Removed after animation";
+
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
 
   auto* notification_view_controller = message_center_utils::
