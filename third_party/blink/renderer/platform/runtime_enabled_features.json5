@@ -394,12 +394,6 @@
     {
       name: "CoepReflection",
       status: "test",
-
-      // If a feature is implied by one supporting an origin trial, it must also
-      // support origin trial.
-      implied_by: ["AnonymousIframe"],
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "CoepReflection",
     },
     {
       name: "CompositeBGColorAnimation",
