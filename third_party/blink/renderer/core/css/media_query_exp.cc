@@ -547,43 +547,11 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontSize))
     unit_flags |= UnitFlags::kRootFontRelative;
 
-  if (length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeDynamicViewportWidth) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeDynamicViewportHeight) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeDynamicViewportInlineSize) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeDynamicViewportBlockSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeDynamicViewportMin) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeDynamicViewportMax)) {
+  if (CSSPrimitiveValue::HasDynamicViewportUnits(length_type_flags))
     unit_flags |= UnitFlags::kDynamicViewport;
-  }
 
-  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportWidth) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportHeight) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportInlineSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportBlockSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportMin) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeViewportMax) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeSmallViewportWidth) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeSmallViewportHeight) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeSmallViewportInlineSize) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeSmallViewportBlockSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeSmallViewportMin) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeSmallViewportMax) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLargeViewportWidth) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLargeViewportHeight) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeLargeViewportInlineSize) ||
-      length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeLargeViewportBlockSize) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLargeViewportMin) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLargeViewportMax)) {
+  if (CSSPrimitiveValue::HasStaticViewportUnits(length_type_flags))
     unit_flags |= UnitFlags::kStaticViewport;
-  }
 
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerWidth) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeContainerHeight) ||

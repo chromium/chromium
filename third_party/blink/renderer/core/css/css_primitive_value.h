@@ -236,6 +236,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   using LengthTypeFlags = std::bitset<kLengthUnitTypeCount>;
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const;
 
+  // v*, sv*, lv*
+  static bool HasStaticViewportUnits(const LengthTypeFlags&);
+  // dv*
+  static bool HasDynamicViewportUnits(const LengthTypeFlags&);
+
   enum UnitCategory {
     kUNumber,
     kUPercent,
