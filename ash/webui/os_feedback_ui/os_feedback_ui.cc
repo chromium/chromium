@@ -67,6 +67,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"addFileLabel", IDS_FEEDBACK_TOOL_ADD_FILE_LABEL},
       {"replaceFileLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL},
       {"replaceFileArialLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_ARIA_LABEL},
+      {"attachFileLabelTooltip", IDS_FEEDBACK_TOOL_ATTACH_FILE_LABEL_TOOLTIP},
       {"attachFileCheckboxArialLabel",
        IDS_FEEDBACK_TOOL_ATTACH_FILE_CHECKBOX_ARIA_LABEL},
       {"userEmailLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL},

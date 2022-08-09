@@ -122,6 +122,10 @@ export function shareDataPageTestSuite() {
     assertTrue(page.i18nExists('attachFilesLabel'));
     assertEquals('Attach files', getElementContent('#attachFilesLabel'));
 
+    // Verify the add files Icon is in the page.
+    const addFilesIcon = getElement('#attachFilesIcon');
+    assertTrue(!!addFilesIcon);
+
     // Verify the user email label is in the page.
     assertTrue(page.i18nExists('userEmailLabel'));
     assertEquals('Email', getElementContent('#userEmailLabel'));

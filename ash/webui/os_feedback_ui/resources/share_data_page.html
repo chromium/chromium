@@ -9,6 +9,20 @@
     text-justify: inter-word;
   }
 
+  #attachFilesLabelContainer {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  #attachFilesIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    display: inline-block;
+    height: 20px;
+    margin-bottom: 8px;
+    margin-inline-start: 6px;
+    width: 20px;
+  }
+
   #attachFiles {
     display: flex;
     flex-direction: column;
@@ -138,7 +152,15 @@
   <div id="content">
     <!-- Attach files -->
     <div id="attachFiles">
-      <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
+      <div id="attachFilesLabelContainer">
+        <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
+        <iron-icon icon="os-feedback:info" id="attachFilesIcon"></iron-icon>
+        <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
+          <div id="attachFilesTooltipContent">
+            [[i18n('attachFileLabelTooltip')]]
+          </div>
+        </paper-tooltip>
+      </div>
       <div id="attachFilesContainer">
         <!-- Attach a screenshot -->
         <div id="screenshotContainer" class="card-frame">

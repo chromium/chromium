@@ -3445,6 +3445,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_ADD_FILE_LABEL" desc="Label for the field of adding a file">
         Add file
       </message>
+      <message name="IDS_FEEDBACK_TOOL_ATTACH_FILE_LABEL_TOOLTIP" desc="Label for the tooltip content on attach files icon.">
+        Files will be sent to Google for debugging
+      </message>
       <message name="IDS_FEEDBACK_TOOL_ATTACH_FILE_CHECKBOX_ARIA_LABEL" desc="Aria Label of the checkbox to select the picked file">
         Attach file
       </message>
