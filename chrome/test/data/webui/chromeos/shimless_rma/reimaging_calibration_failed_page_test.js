@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {fakeCalibrationComponentsWithFails, fakeCalibrationComponentsWithoutFails} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -175,7 +176,7 @@ export function reimagingCalibrationFailedPageTest() {
 
     let startCalibrationCalls = 0;
     service.startCalibration = (components) => {
-      assertEquals(5, components.length);
+      assertEquals(7, components.length);
       components.forEach(
           component => assertEquals(
               component.component === ComponentType.kCamera ?
@@ -301,5 +302,91 @@ export function reimagingCalibrationFailedPageTest() {
     assertTrue(disableNextButton);
 
     component.removeEventListener('disable-next-button', disableHandler);
+  });
+
+  test('CalibrationFailedPageKeyboardNavigationWorks', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
+
+    const componentLidAccelerometerButton =
+        component.shadowRoot.querySelector('#componentLidAccelerometer')
+            .shadowRoot.querySelector('#componentButton');
+    const componentScreenButton =
+        component.shadowRoot.querySelector('#componentScreen')
+            .shadowRoot.querySelector('#componentButton');
+    // There are two screens, so we can only get the first one by the id. We get
+    // the second one by the unique id.
+    const componentSecondScreenButton =
+        component.shadowRoot.querySelector('[unique-id="6"]')
+            .shadowRoot.querySelector('#componentButton');
+
+    await flushTasks();
+
+    // At the beginning we should be focused on the first clickable component,
+    // which is the camera.
+    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
+    // We are at the beginning of the list, so left arrow should do nothing.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    await flushTasks();
+    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
+
+    // Skip disabled buttons until an enable button is found.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+
+    // If the next component is not disabled, we don't skip it.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    await flushTasks();
+    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
+
+    // We have reached the end of the list, so we can't go any further.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    await flushTasks();
+    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
+
+    // Check that we can go backwards the same way.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    await flushTasks();
+    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
+
+    // Check that the down button navigates down the column. There is only one
+    // column, so it should be the same as the right button.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    await flushTasks();
+    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
+
+
+    // The up button should work in a similar way.
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    await flushTasks();
+    assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
+
+    // Click on the screen button. It should come into focus.
+    componentScreenButton.click();
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+
+    // Click on the battery button. It's disabled, so we shouldn't focus on it.
+    const componentBatteryButton =
+        component.shadowRoot.querySelector('#componentBattery')
+            .shadowRoot.querySelector('#componentButton');
+    componentBatteryButton.click();
+    await flushTasks();
+    assertDeepEquals(componentScreenButton, getDeepActiveElement());
+
+    // Make sure we can bring both screens into focus, even though they have the
+    // same id.
+    componentSecondScreenButton.click();
+    await flushTasks();
+    assertDeepEquals(componentSecondScreenButton, getDeepActiveElement());
   });
 }

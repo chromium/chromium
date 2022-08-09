@@ -10,9 +10,10 @@
   </div>
   <div slot="right-pane">
     <div class="scroll-container">
-      <div class="component-grid calibration">
+      <div id="componentList" class="component-grid calibration">
         <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
           <calibration-component-chip id="[[component.id]]"
+            unique-id="[[component.uniqueId]]"
             checked="{{component.checked}}"
             failed="[[component.failed]]"
             component-name="[[component.name]]"

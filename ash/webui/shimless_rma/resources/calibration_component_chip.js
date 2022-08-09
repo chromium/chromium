@@ -58,12 +58,27 @@ export class CalibrationComponentChipElement extends PolymerElement {
         value: false,
         observer: 'onIsFirstClickableComponentChanged_',
       },
+
+      /** @type {number} */
+      uniqueId: {
+        reflectToAttribute: true,
+        type: Number,
+        value: '',
+      },
     };
   }
 
   /** @protected */
   onComponentButtonClicked_() {
     this.checked = !this.checked;
+
+    // Notify the page that the component chip was clicked, so that the page can
+    // put the focus on it.
+    this.dispatchEvent(new CustomEvent('click-calibration-component-button', {
+      bubbles: true,
+      composed: true,
+      detail: this.uniqueId,
+    }));
   }
 
   click() {

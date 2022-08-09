@@ -12,7 +12,7 @@ import './shimless_rma_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
@@ -30,6 +30,7 @@ import {disableNextButton, enableNextButton, executeThenTransitionState} from '.
 /**
  * @typedef {{
  *   component: !ComponentType,
+ *   uniqueId: number,
  *   id: string,
  *   name: string,
  *   checked: boolean,
@@ -37,6 +38,8 @@ import {disableNextButton, enableNextButton, executeThenTransitionState} from '.
  * }}
  */
 let ComponentCheckbox;
+
+const NUM_COLUMNS = 1;
 
 /**
  * @constructor
@@ -70,6 +73,16 @@ export class ReimagingCalibrationFailedPage extends
         type: Array,
         value: () => [],
       },
+
+      /**
+       * The index into componentCheckboxes_ for keyboard navigation between
+       * components.
+       * @private
+       */
+      focusedComponentIndex_: {
+        type: Number,
+        value: -1,
+      },
     };
   }
 
@@ -84,6 +97,92 @@ export class ReimagingCalibrationFailedPage extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+
+    /**
+     * The componentClickedCallback_ callback is used to capture events when
+     * components are clicked, so that the page can put the focus on the
+     * component that was clicked.
+     * @private {?Function}
+     */
+    this.componentClicked_ = (event) => {
+      const componentIndex = this.componentCheckboxes_.findIndex(
+          component => component.uniqueId === event.detail);
+
+      if (componentIndex === -1 ||
+          this.componentCheckboxes_[componentIndex].disabled) {
+        return;
+      }
+
+      this.focusedComponentIndex_ = componentIndex;
+      this.focusOnCurrentComponent_();
+    };
+
+    /**
+     * Handles keyboard navigation over the list of components.
+     * TODO(240717594): Find a way to avoid duplication of this code in the
+     * repair components page.
+     * @private {?Function}
+     */
+    this.HandleKeyDownEvent = (event) => {
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowDown' &&
+          event.key !== 'ArrowLeft' && event.key !== 'ArrowUp') {
+        return;
+      }
+
+      // If there are no selectable components, do nothing.
+      if (this.focusedComponentIndex_ === -1) {
+        return;
+      }
+
+      // Don't use keyboard navigation if the user tabbed out of the
+      // component list.
+      if (!this.shadowRoot.activeElement ||
+          this.shadowRoot.activeElement.tagName !==
+              'CALIBRATION-COMPONENT-CHIP') {
+        return;
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        // The Down button should send you down the column, so we go forward
+        // by two components, which is the size of the row.
+        let step = 1;
+        if (event.key === 'ArrowDown') {
+          step = NUM_COLUMNS;
+        }
+
+        let newIndex = this.focusedComponentIndex_ + step;
+        // Keep skipping disabled components until we encounter one that is
+        // not disabled.
+        while (newIndex < this.componentCheckboxes_.length &&
+               this.componentCheckboxes_[newIndex].disabled) {
+          newIndex += step;
+        }
+        // Check that we haven't ended up outside of the array before
+        // applying the changes.
+        if (newIndex < this.componentCheckboxes_.length) {
+          this.focusedComponentIndex_ = newIndex;
+        }
+      }
+
+      // The left and up arrows work similarly to down and right, but go
+      // backwards.
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        let step = 1;
+        if (event.key === 'ArrowUp') {
+          step = NUM_COLUMNS;
+        }
+
+        let newIndex = this.focusedComponentIndex_ - step;
+        while (newIndex >= 0 && this.componentCheckboxes_[newIndex].disabled) {
+          newIndex -= step;
+        }
+        if (newIndex >= 0) {
+          this.focusedComponentIndex_ = newIndex;
+        }
+      }
+
+      this.focusOnCurrentComponent_();
+    };
 
     /**
      * The "Skip calibration" button on this page is styled and positioned like
@@ -130,9 +229,10 @@ export class ReimagingCalibrationFailedPage extends
         return;
       }
 
-      this.componentCheckboxes_ = result.components.map(item => {
+      this.componentCheckboxes_ = result.components.map((item, index) => {
         return {
           component: item.component,
+          uniqueId: index,
           id: ComponentTypeToId[item.component],
           name: this.i18n(ComponentTypeToId[item.component]),
           checked: false,
@@ -142,8 +242,44 @@ export class ReimagingCalibrationFailedPage extends
           disabled: item.status !== CalibrationStatus.kCalibrationFailed,
         };
       });
+
+      // Focus on the first clickable component at the beginning.
+      this.focusedComponentIndex_ =
+          this.componentCheckboxes_.findIndex(component => !component.disabled);
+      afterNextRender(this, () => {
+        this.focusOnCurrentComponent_();
+      });
     });
   }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('keydown', this.HandleKeyDownEvent);
+    window.addEventListener(
+        'click-calibration-component-button', this.componentClicked_);
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('keydown', this.HandleKeyDownEvent);
+    window.removeEventListener(
+        'click-calibration-component-button', this.componentClicked_);
+  }
+
+  /**
+   * Make the page focus on the component at focusedComponentIndex_.
+   * @private
+   */
+  focusOnCurrentComponent_() {
+    if (this.focusedComponentIndex_ != -1) {
+      const componentChip = this.shadowRoot.querySelector(`[unique-id="${
+          this.componentCheckboxes_[this.focusedComponentIndex_].uniqueId}"]`);
+      componentChip.shadowRoot.querySelector('#componentButton').focus();
+    }
+  }
+
 
   /**
    * @return {!Array<!CalibrationComponentStatus>}
