@@ -110,6 +110,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
             new ObservableSupplierImpl<>();
     private final PrefService mPrefService;
+    private @Nullable TabLayout mHistoryTabToggle;
+    private @Nullable TabLayout mJourneysTabToggle;
 
     private boolean mIsSearching;
 
@@ -350,21 +352,24 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         TabLayout tabLayout = viewGroup.findViewById(R.id.history_toggle_tab_layout);
         TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedIndex);
         tabLayout.selectTab(selectedTab);
+
+        if (selectedIndex == HISTORY_TAB_INDEX) {
+            mHistoryTabToggle = tabLayout;
+        } else {
+            assert selectedIndex == JOURNEYS_TAB_INDEX;
+            mJourneysTabToggle = tabLayout;
+        }
+
         tabLayout.addOnTabSelectedListener(new OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab != selectedTab) {
                     swapContentView();
-                    // One TabLayout exists for each of the two surfaces. In order for the correct
-                    // tab to be selected when returning to the current surface, we need to reset
-                    // it.
-                    tabLayout.selectTab(selectedTab);
                 }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
-
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
@@ -507,11 +512,24 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mHistoryClustersCoordinator.onToggled(false);
             mContentView = mSelectableListLayout;
             mContentManager.startLoadingItems();
+            // Each page of content has a distinct TabLayout with independent selection state, but
+            // should only ever display the selected tab corresponding to the owning page. i.e. Page
+            // X's TabLayout should always show Tab X as selected. This means the selection state
+            // becomes incorrect when toggling away. If this toggle field is not null, that means
+            // we're coming back to an existing TabLayout that needs to have its selected tab reset.
+            // Note that this cannot easily be done at selection time because there's a race
+            // somewhere. Resetting at the last second seems to be more consistent.
+            if (mHistoryTabToggle != null) {
+                mHistoryTabToggle.selectTab(mHistoryTabToggle.getTabAt(HISTORY_TAB_INDEX));
+            }
         } else {
             assert mHistoryClustersCoordinator
                     != null : "swapContentView() shouldn't be called if HistoryClusters is off";
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
             mHistoryClustersCoordinator.onToggled(true);
+            if (mJourneysTabToggle != null) {
+                mJourneysTabToggle.selectTab(mJourneysTabToggle.getTabAt(JOURNEYS_TAB_INDEX));
+            }
         }
 
         Transition transition = new AutoTransition();
