@@ -32,8 +32,11 @@ FirstPartySetParser::SetsMap ConvertProtoToMap(
   for (const firstpartysets::proto::SitePair& item : sets.items()) {
     auto member_or_owner = GetSchemefulSite(item.member_or_owner());
     auto owner = GetSchemefulSite(item.owner());
-    map.emplace(std::move(member_or_owner),
-                net::FirstPartySetEntry(std::move(owner)));
+    map.emplace(
+        std::move(member_or_owner),
+        net::FirstPartySetEntry(owner, member_or_owner == owner
+                                           ? net::SiteType::kPrimary
+                                           : net::SiteType::kAssociated));
   }
   return map;
 }

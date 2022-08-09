@@ -463,10 +463,12 @@ class SamePartyEnabledRestrictedCookieManagerTest
     first_party_sets_manager_.SetCompleteSets(
         {{net::SchemefulSite(GURL("https://example.com")),
           net::FirstPartySetEntry(
-              net::SchemefulSite(GURL("https://example.com")))},
+              net::SchemefulSite(GURL("https://example.com")),
+              net::SiteType::kPrimary)},
          {net::SchemefulSite(GURL("https://member1.com")),
           net::FirstPartySetEntry(
-              net::SchemefulSite(GURL("https://example.com")))}});
+              net::SchemefulSite(GURL("https://example.com")),
+              net::SiteType::kAssociated)}});
     first_party_sets_access_delegate_remote_->NotifyReady(
         mojom::FirstPartySetsReadyEvent::New());
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(
@@ -2054,8 +2056,10 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest,
   auto cookie_access_delegate =
       std::make_unique<net::TestCookieAccessDelegate>();
   cookie_access_delegate->SetFirstPartySets({
-      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite)},
-      {kMemberSite, net::FirstPartySetEntry(kOwnerSite)},
+      {kOwnerSite,
+       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary)},
+      {kMemberSite,
+       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kAssociated)},
   });
   cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
 

@@ -153,9 +153,10 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   });
 
   // Next, we must add the manually specified set to |sets_|.
-  sets_.emplace(owner, owner);
+  sets_.emplace(owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
   for (const net::SchemefulSite& member : members) {
-    sets_.emplace(member, net::FirstPartySetEntry(owner));
+    sets_.emplace(member,
+                  net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
   }
   // Now remove singleton sets, which are sets that just contain sites that
   // *are* owners, but no longer have any (other) members.

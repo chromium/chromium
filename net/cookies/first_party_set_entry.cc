@@ -12,8 +12,9 @@ namespace net {
 
 FirstPartySetEntry::FirstPartySetEntry() = default;
 
-FirstPartySetEntry::FirstPartySetEntry(SchemefulSite primary)
-    : primary_(primary) {}
+FirstPartySetEntry::FirstPartySetEntry(SchemefulSite primary,
+                                       SiteType site_type)
+    : primary_(primary), site_type_(site_type) {}
 
 FirstPartySetEntry::FirstPartySetEntry(const FirstPartySetEntry&) = default;
 FirstPartySetEntry& FirstPartySetEntry::operator=(const FirstPartySetEntry&) =
@@ -25,7 +26,8 @@ FirstPartySetEntry& FirstPartySetEntry::operator=(FirstPartySetEntry&&) =
 FirstPartySetEntry::~FirstPartySetEntry() = default;
 
 bool FirstPartySetEntry::operator==(const FirstPartySetEntry& other) const {
-  return primary_ == other.primary_;
+  return std::tie(primary_, site_type_) ==
+         std::tie(other.primary_, other.site_type_);
 }
 
 bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const {
@@ -33,7 +35,8 @@ bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const FirstPartySetEntry& entry) {
-  os << "{" << entry.primary() << "}";
+  os << "{" << entry.primary() << ", " << static_cast<int>(entry.site_type())
+     << "}";
   return os;
 }
 

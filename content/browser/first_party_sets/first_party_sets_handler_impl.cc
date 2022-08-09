@@ -67,9 +67,11 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, base::StringPiece sets) {
 FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
   FlattenedSets sets;
   for (const auto& [owner, members] : set_list) {
-    sets.emplace(owner, net::FirstPartySetEntry(owner));
+    sets.emplace(owner,
+                 net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
     for (const net::SchemefulSite& member : members)
-      sets.emplace(member, net::FirstPartySetEntry(owner));
+      sets.emplace(member,
+                   net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
   }
   return sets;
 }
@@ -80,9 +82,11 @@ void UpdateCustomizationMap(
     const std::vector<SingleSet>& set_list,
     FirstPartySetsHandlerImpl::PolicyCustomization& site_to_entry) {
   for (const auto& [owner, members] : set_list) {
-    site_to_entry.emplace(owner, net::FirstPartySetEntry(owner));
+    site_to_entry.emplace(
+        owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
     for (const net::SchemefulSite& member : members)
-      site_to_entry.emplace(member, net::FirstPartySetEntry(owner));
+      site_to_entry.emplace(
+          member, net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
   }
 }
 
@@ -290,7 +294,11 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     if (auto entry = addition_intersected_owners.find(set_entry.primary());
         entry != addition_intersected_owners.end() &&
         !flattened_replacements.contains(member)) {
-      site_to_entry.emplace(member, entry->second);
+      site_to_entry.emplace(
+          member, net::FirstPartySetEntry(entry->second.primary(),
+                                          member == entry->second.primary()
+                                              ? net::SiteType::kPrimary
+                                              : net::SiteType::kAssociated));
     }
     if (member == set_entry.primary())
       continue;

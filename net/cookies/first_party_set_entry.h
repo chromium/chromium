@@ -10,6 +10,15 @@
 
 namespace net {
 
+enum class SiteType {
+  // The First-Party Set declaration listed this site as the "primary" site for
+  // the set.
+  kPrimary,
+  // The First-Party Set declaration listed this site as an associated site in
+  // the set.
+  kAssociated,
+};
+
 // This class bundles together metadata associated with an entry in a
 // First-Party Set.
 class NET_EXPORT FirstPartySetEntry {
@@ -18,7 +27,7 @@ class NET_EXPORT FirstPartySetEntry {
 
   // `primary` is the primary site in the First-Party Set associated with this
   // entry.
-  explicit FirstPartySetEntry(SchemefulSite primary);
+  FirstPartySetEntry(SchemefulSite primary, SiteType site_type);
 
   FirstPartySetEntry(const FirstPartySetEntry&);
   FirstPartySetEntry& operator=(const FirstPartySetEntry&);
@@ -32,8 +41,11 @@ class NET_EXPORT FirstPartySetEntry {
 
   const SchemefulSite& primary() const { return primary_; }
 
+  SiteType site_type() const { return site_type_; }
+
  private:
   SchemefulSite primary_;
+  SiteType site_type_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

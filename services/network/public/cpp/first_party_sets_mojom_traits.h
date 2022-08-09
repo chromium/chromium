@@ -17,10 +17,22 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
+    EnumTraits<network::mojom::SiteType, net::SiteType> {
+  static network::mojom::SiteType ToMojom(net::SiteType site_type);
+
+  static bool FromMojom(network::mojom::SiteType site_type, net::SiteType* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     StructTraits<network::mojom::FirstPartySetEntryDataView,
                  net::FirstPartySetEntry> {
   static net::SchemefulSite primary(const net::FirstPartySetEntry& e) {
     return e.primary();
+  }
+
+  static net::SiteType site_type(const net::FirstPartySetEntry& e) {
+    return e.site_type();
   }
 
   static bool Read(network::mojom::FirstPartySetEntryDataView entry,

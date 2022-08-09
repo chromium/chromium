@@ -67,10 +67,12 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, RejectsMissingOwner) {
@@ -113,16 +115,20 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginOwner) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example2.test")))),
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example2.test")))),
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
@@ -173,16 +179,20 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginMember) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example2.test")))),
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example2.test")))),
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
@@ -200,10 +210,12 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
@@ -214,10 +226,12 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
@@ -232,16 +246,20 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test"))))));
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
@@ -258,16 +276,20 @@ TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test"))))));
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
@@ -292,10 +314,12 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST(FirstPartySetParser, Rejects_SameOwner) {
@@ -337,17 +361,20 @@ TEST(FirstPartySetParser, SerializeFirstPartySets) {
             FirstPartySetParser::SerializeFirstPartySets(
                 {{net::SchemefulSite(GURL("https://member1.test")),
                   net::FirstPartySetEntry(
-                      net::SchemefulSite(GURL("https://example1.test")))},
+                      net::SchemefulSite(GURL("https://example1.test")),
+                      net::SiteType::kAssociated)},
                  {net::SchemefulSite(GURL("https://example1.test")),
                   net::FirstPartySetEntry(
-                      net::SchemefulSite(GURL("https://example1.test")))}}));
+                      net::SchemefulSite(GURL("https://example1.test")),
+                      net::SiteType::kPrimary)}}));
 }
 
 TEST(FirstPartySetParser, SerializeFirstPartySetsWithOpaqueOrigin) {
   EXPECT_EQ(R"({"https://member1.test":"null"})",
             FirstPartySetParser::SerializeFirstPartySets(
                 {{net::SchemefulSite(GURL("https://member1.test")),
-                  net::FirstPartySetEntry(net::SchemefulSite(GURL("")))}}));
+                  net::FirstPartySetEntry(net::SchemefulSite(GURL("")),
+                                          net::SiteType::kPrimary)}}));
 }
 
 TEST(FirstPartySetParser, SerializeFirstPartySetsEmptySet) {
@@ -366,19 +393,24 @@ TEST(FirstPartySetParser, DeserializeFirstPartySets) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example1.test")))),
+                           net::SchemefulSite(GURL("https://example1.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example1.test")))),
+                           net::SchemefulSite(GURL("https://example1.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://example1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example1.test")))),
+                           net::SchemefulSite(GURL("https://example1.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example2.test")))),
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://example2.test"),
-                       net::FirstPartySetEntry(net::SchemefulSite(
-                           GURL("https://example2.test"))))));
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kPrimary))));
 }
 
 TEST(FirstPartySetParser, DeserializeFirstPartySetsEmptySet) {
@@ -393,14 +425,16 @@ TEST(FirstPartySetParser, DeserializeFirstPartySetsDuplicatedKey) {
       R"({"https://member1.test":"https://example1.test",
           "https://member1.test":"https://example2.test"})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  EXPECT_THAT(
-      FirstPartySetParser::DeserializeFirstPartySets(input),
-      UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                net::FirstPartySetEntry(net::SchemefulSite(
-                                    GURL("https://example2.test")))),
-                           Pair(SerializesTo("https://example2.test"),
-                                net::FirstPartySetEntry(net::SchemefulSite(
-                                    GURL("https://example2.test"))))));
+  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(input),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kAssociated)),
+                  Pair(SerializesTo("https://example2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kPrimary))));
 }
 
 // Singleton set is ignored.
@@ -410,14 +444,16 @@ TEST(FirstPartySetParser, DeserializeFirstPartySetsSingletonSet) {
           "https://member1.test":"https://example2.test",
           "https://example2.test":"https://example2.test"})";
   ASSERT_TRUE(base::JSONReader::Read(input));
-  EXPECT_THAT(
-      FirstPartySetParser::DeserializeFirstPartySets(input),
-      UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
-                                net::FirstPartySetEntry(net::SchemefulSite(
-                                    GURL("https://example2.test")))),
-                           Pair(SerializesTo("https://example2.test"),
-                                net::FirstPartySetEntry(net::SchemefulSite(
-                                    GURL("https://example2.test"))))));
+  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(input),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://member1.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kAssociated)),
+                  Pair(SerializesTo("https://example2.test"),
+                       net::FirstPartySetEntry(
+                           net::SchemefulSite(GURL("https://example2.test")),
+                           net::SiteType::kPrimary))));
 }
 
 class FirstPartySetParserInvalidContentTest

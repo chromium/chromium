@@ -113,8 +113,10 @@ TEST(CookiePartitionKeyCollectionTest, FirstPartySetify) {
 
   TestCookieAccessDelegate delegate;
   delegate.SetFirstPartySets({
-      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite)},
-      {kMemberSite, net::FirstPartySetEntry(kOwnerSite)},
+      {kOwnerSite,
+       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary)},
+      {kMemberSite,
+       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kAssociated)},
   });
 
   CookiePartitionKeyCollection empty_key_collection;

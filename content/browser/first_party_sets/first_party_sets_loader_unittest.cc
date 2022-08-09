@@ -97,10 +97,12 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -118,16 +120,20 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test"))))));
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
@@ -149,16 +155,20 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test"))))));
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
@@ -252,10 +262,12 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -269,10 +281,12 @@ TEST_F(FirstPartySetsLoaderTest,
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
@@ -285,13 +299,16 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -313,10 +330,12 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
@@ -331,13 +350,16 @@ https://member1.test)");
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -352,19 +374,24 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")))),
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test"))))));
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -380,19 +407,24 @@ TEST_F(FirstPartySetsLoaderTest,
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")))),
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test"))))));
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -407,19 +439,24 @@ TEST_F(FirstPartySetsLoaderTest,
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test"))))));
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -435,25 +472,32 @@ TEST_F(FirstPartySetsLoaderTest,
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://foo.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member3.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")))),
+                           net::SchemefulSite(GURL("https://foo.test")),
+                           net::SiteType::kAssociated)),
                   Pair(SerializesTo("https://bar.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")))),
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test"))))));
+                           net::SchemefulSite(GURL("https://bar.test")),
+                           net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -471,10 +515,12 @@ TEST_F(FirstPartySetsLoaderTest,
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")))),
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kPrimary)),
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test"))))));
+                           net::SchemefulSite(GURL("https://example.test")),
+                           net::SiteType::kAssociated))));
 }
 
 }  // namespace content

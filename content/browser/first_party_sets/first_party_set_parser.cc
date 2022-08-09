@@ -223,7 +223,9 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
       continue;
     }
     if (!owner_set.contains(maybe_owner)) {
-      map.emplace_back(*maybe_owner, net::FirstPartySetEntry(*maybe_owner));
+      map.emplace_back(
+          *maybe_owner,
+          net::FirstPartySetEntry(*maybe_owner, net::SiteType::kPrimary));
     }
     // Check disjointness. Note that we are relying on the JSON Parser to
     // eliminate the possibility of a site being used as a key more than once,
@@ -235,7 +237,8 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
     owner_set.insert(*maybe_owner);
     member_set.insert(*maybe_member);
     map.emplace_back(std::move(*maybe_member),
-                     net::FirstPartySetEntry(std::move(*maybe_owner)));
+                     net::FirstPartySetEntry(std::move(*maybe_owner),
+                                             net::SiteType::kAssociated));
   }
   return map;
 }
@@ -288,9 +291,12 @@ FirstPartySetParser::SetsMap FirstPartySetParser::ParseSetsFromStream(
       return {};
     }
     auto [owner, members] = output;
-    map.emplace_back(owner, net::FirstPartySetEntry(owner));
+    map.emplace_back(owner,
+                     net::FirstPartySetEntry(owner, net::SiteType::kPrimary));
     for (net::SchemefulSite& member : members) {
-      map.emplace_back(std::move(member), net::FirstPartySetEntry(owner));
+      map.emplace_back(
+          std::move(member),
+          net::FirstPartySetEntry(owner, net::SiteType::kAssociated));
     }
   }
   return map;

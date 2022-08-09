@@ -6,9 +6,16 @@ module network.mojom;
 
 import "services/network/public/mojom/schemeful_site.mojom";
 
+// This enum should match //net/cookies/first_party_set_entry.h.
+enum SiteType {
+  kPrimary,
+  kAssociated,
+};
+
 // This struct should match //net/cookies/first_party_set_entry.h.
 struct FirstPartySetEntry {
   SchemefulSite primary;
+  SiteType site_type;
 };
 
 // Computed for every cookie access attempt but is only relevant for SameParty

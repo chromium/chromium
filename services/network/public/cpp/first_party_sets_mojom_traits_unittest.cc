@@ -18,7 +18,7 @@ namespace {
 TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetEntry) {
   net::SchemefulSite primary(GURL("https://primary.test"));
 
-  net::FirstPartySetEntry original(primary);
+  net::FirstPartySetEntry original(primary, net::SiteType::kAssociated);
   net::FirstPartySetEntry round_tripped;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FirstPartySetEntry>(
@@ -64,8 +64,9 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   net::SchemefulSite frame_owner(GURL("https://frame.test"));
   net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
 
-  net::FirstPartySetEntry frame_entry(frame_owner);
-  net::FirstPartySetEntry top_frame_entry(top_frame_owner);
+  net::FirstPartySetEntry frame_entry(frame_owner, net::SiteType::kAssociated);
+  net::FirstPartySetEntry top_frame_entry(top_frame_owner,
+                                          net::SiteType::kAssociated);
 
   auto make_metadata = [&]() {
     // Use non-default values to ensure serialization/deserialization works
