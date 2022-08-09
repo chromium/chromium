@@ -6813,21 +6813,6 @@
             ]
         }
     ],
-    "PartialCustomTabs": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTResizableAllowResizeByUserGesture"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartialCustomTabs3rdPartyPolicy": [
         {
             "platforms": [
