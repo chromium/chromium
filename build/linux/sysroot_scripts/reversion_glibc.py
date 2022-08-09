@@ -60,12 +60,17 @@ for line in stdout.decode("utf-8").split('\n'):
   # The default version will have '@@' in the name.
   is_default = len(name) > 2
 
-  match = re.match(VERSION_PATTERN, version)
-  # Ignore symbols versioned with GLIBC_PRIVATE.
-  if not match:
-    continue
+  if version.startswith('XCRYPT_'):
+    # Prefer GLIBC_* versioned symbols over XCRYPT_* ones.  Set the version to
+    # something > MAX_ALLOWED_GLIBC_VERSION so this symbol will not be picked.
+    version = [float('inf')]
+  else:
+    match = re.match(VERSION_PATTERN, version)
+    # Ignore symbols versioned with GLIBC_PRIVATE.
+    if not match:
+      continue
+    version = [int(part) for part in match.group(1).split('.')]
 
-  version = [int(part) for part in match.group(1).split('.')]
   if version < MAX_ALLOWED_GLIBC_VERSION:
     old_supported_version = supported_version.get(base_name, ([-1], -1))
     supported_version[base_name] = max((version, index), old_supported_version)
