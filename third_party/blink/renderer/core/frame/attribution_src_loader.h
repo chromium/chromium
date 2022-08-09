@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -24,6 +25,7 @@ class LocalFrame;
 class Resource;
 class ResourceRequest;
 class ResourceResponse;
+class SecurityOrigin;
 
 struct Impression;
 
@@ -76,11 +78,13 @@ class CORE_EXPORT AttributionSrcLoader
                                  SrcType src_type,
                                  bool associated_with_navigation);
 
-  // Returns whether the attribution is allowed to be registered. Devtool issue
-  // might be reported if it's not allowed.
-  bool UrlCanRegisterAttribution(const KURL& url,
-                                 HTMLElement* element,
-                                 absl::optional<uint64_t> request_id);
+  // Returns the reporting origin corresponding to `url` if its protocol is in
+  // the HTTP family, its origin is potentially trustworthy, and attribution is
+  // allowed. Returns `nullptr` and reports a DevTools issue otherwise.
+  scoped_refptr<const SecurityOrigin> ReportingOriginForUrlIfValid(
+      const KURL& url,
+      HTMLElement* element,
+      absl::optional<uint64_t> request_id);
 
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,
