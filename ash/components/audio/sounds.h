@@ -24,9 +24,6 @@ enum class Sound {
   kSpokenFeedbackToggleCountdownHigh,
   kSpokenFeedbackToggleCountdownLow,
   kTouchType,
-  kDictationEnd,
-  kDictationStart,
-  kDictationCancel,
 };
 
 }  // namespace ash

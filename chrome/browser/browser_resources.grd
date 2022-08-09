@@ -257,9 +257,6 @@
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_high.wav" type="BINDATA" />
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_low.wav" type="BINDATA" />
         <include name="IDR_SOUND_TOUCH_TYPE_WAV" file="resources\chromeos\sounds\touch_type.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_END_WAV" file="resources\chromeos\sounds\earcons\audio_end.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_START_WAV" file="resources\chromeos\sounds\earcons\audio_initiate.wav" type="BINDATA" />
-        <include name="IDR_SOUND_DICTATION_CANCEL_WAV" file="resources\chromeos\sounds\earcons\null_selection.wav" type="BINDATA" />
       </if>
       <if expr="chromeos_ash">
         <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />

@@ -326,13 +326,6 @@ AccessibilityManager::AccessibilityManager() {
           IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV));
   manager->Initialize(static_cast<int>(Sound::kTouchType),
                       bundle.GetRawDataResource(IDR_SOUND_TOUCH_TYPE_WAV));
-  manager->Initialize(static_cast<int>(Sound::kDictationEnd),
-                      bundle.GetRawDataResource(IDR_SOUND_DICTATION_END_WAV));
-  manager->Initialize(static_cast<int>(Sound::kDictationStart),
-                      bundle.GetRawDataResource(IDR_SOUND_DICTATION_START_WAV));
-  manager->Initialize(
-      static_cast<int>(Sound::kDictationCancel),
-      bundle.GetRawDataResource(IDR_SOUND_DICTATION_CANCEL_WAV));
   manager->Initialize(static_cast<int>(Sound::kStartup),
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV));
 
