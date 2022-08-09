@@ -19,6 +19,7 @@
 #include "ipcz/link_type.h"
 #include "ipcz/message.h"
 #include "ipcz/node.h"
+#include "ipcz/node_connector.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
@@ -213,6 +214,33 @@ void NodeLink::RejectIntroduction(const NodeName& name) {
   Transmit(reject);
 }
 
+void NodeLink::ReferNonBroker(Ref<DriverTransport> transport,
+                              uint32_t num_initial_portals,
+                              ReferralCallback callback) {
+  ABSL_ASSERT(node_->type() == Node::Type::kNormal &&
+              remote_node_type_ == Node::Type::kBroker);
+
+  uint64_t referral_id;
+  {
+    absl::MutexLock lock(&mutex_);
+    for (;;) {
+      referral_id = next_referral_id_++;
+      auto [it, inserted] =
+          pending_referrals_.try_emplace(referral_id, std::move(callback));
+      if (inserted) {
+        break;
+      }
+    }
+  }
+
+  msg::ReferNonBroker refer;
+  refer.params().referral_id = referral_id;
+  refer.params().num_initial_portals = num_initial_portals;
+  refer.params().transport =
+      refer.AppendDriverObject(transport->TakeDriverObject());
+  Transmit(refer);
+}
+
 void NodeLink::AcceptBypassLink(
     const NodeName& current_peer_node,
     SublinkId current_peer_sublink,
@@ -325,6 +353,82 @@ void NodeLink::Transmit(Message& message) {
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
   return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
       1, std::memory_order_relaxed));
+}
+
+bool NodeLink::OnReferNonBroker(msg::ReferNonBroker& refer) {
+  if (remote_node_type_ != Node::Type::kNormal ||
+      node()->type() != Node::Type::kBroker) {
+    return false;
+  }
+
+  DriverObject transport = refer.TakeDriverObject(refer.params().transport);
+  if (!transport.is_valid()) {
+    return false;
+  }
+
+  return NodeConnector::HandleNonBrokerReferral(
+      node(), refer.params().referral_id, refer.params().num_initial_portals,
+      WrapRefCounted(this),
+      MakeRefCounted<DriverTransport>(std::move(transport)));
+}
+
+bool NodeLink::OnNonBrokerReferralAccepted(
+    msg::NonBrokerReferralAccepted& accepted) {
+  if (remote_node_type_ != Node::Type::kBroker) {
+    return false;
+  }
+
+  ReferralCallback callback;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = pending_referrals_.find(accepted.params().referral_id);
+    if (it == pending_referrals_.end()) {
+      return false;
+    }
+    callback = std::move(it->second);
+    pending_referrals_.erase(it);
+  }
+
+  const uint32_t protocol_version =
+      std::min(msg::kProtocolVersion, accepted.params().protocol_version);
+  auto transport = MakeRefCounted<DriverTransport>(
+      accepted.TakeDriverObject(accepted.params().transport));
+  DriverMemory buffer(accepted.TakeDriverObject(accepted.params().buffer));
+  if (!transport->driver_object().is_valid() || !buffer.is_valid()) {
+    // Not quite a validation failure if the broker simply failed to allocate
+    // resources for this link. Treat it like a connection failure.
+    callback(/*link=*/nullptr, /*num_initial_portals=*/0);
+    return true;
+  }
+
+  Ref<NodeLink> link_to_referree = NodeLink::CreateInactive(
+      node_, LinkSide::kA, local_node_name_, accepted.params().name,
+      Node::Type::kNormal, protocol_version, std::move(transport),
+      NodeLinkMemory::Create(node_, buffer.Map()));
+  callback(link_to_referree, accepted.params().num_initial_portals);
+  link_to_referree->Activate();
+  return true;
+}
+
+bool NodeLink::OnNonBrokerReferralRejected(
+    msg::NonBrokerReferralRejected& rejected) {
+  if (remote_node_type_ != Node::Type::kBroker) {
+    return false;
+  }
+
+  ReferralCallback callback;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = pending_referrals_.find(rejected.params().referral_id);
+    if (it == pending_referrals_.end()) {
+      return false;
+    }
+    callback = std::move(it->second);
+    pending_referrals_.erase(it);
+  }
+
+  callback(/*link=*/nullptr, /*num_initial_portals=*/0);
+  return true;
 }
 
 bool NodeLink::OnRequestIntroduction(msg::RequestIntroduction& request) {

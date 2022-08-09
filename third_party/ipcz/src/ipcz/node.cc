@@ -81,9 +81,17 @@ Ref<NodeLink> Node::GetBrokerLink() {
 }
 
 void Node::SetBrokerLink(Ref<NodeLink> link) {
-  absl::MutexLock lock(&mutex_);
-  ABSL_ASSERT(!broker_link_);
-  broker_link_ = std::move(link);
+  std::vector<BrokerLinkCallback> callbacks;
+  {
+    absl::MutexLock lock(&mutex_);
+    ABSL_ASSERT(!broker_link_);
+    broker_link_ = link;
+    broker_link_callbacks_.swap(callbacks);
+  }
+
+  for (auto& callback : callbacks) {
+    callback(link);
+  }
 }
 
 void Node::SetAssignedName(const NodeName& name) {
@@ -349,6 +357,21 @@ void Node::DropLink(const NodeName& name) {
   if (lost_broker) {
     CancelAllIntroductions();
   }
+}
+
+void Node::WaitForBrokerLinkAsync(BrokerLinkCallback callback) {
+  Ref<NodeLink> broker_link;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (!broker_link_) {
+      broker_link_callbacks_.push_back(std::move(callback));
+      return;
+    }
+
+    broker_link = broker_link_;
+  }
+
+  callback(std::move(broker_link));
 }
 
 void Node::ShutDown() {

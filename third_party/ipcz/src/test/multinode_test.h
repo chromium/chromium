@@ -157,29 +157,45 @@ class TestNode : public internal::TestBase {
   void Initialize(DriverMode driver_mode,
                   IpczCreateNodeFlags create_node_flags);
 
-  // May be called at most once by the TestNode body, to connect initial
-  // `portals` to the broker.
+  // May be called at most once by the TestNode body to connect initial
+  // `portals` to the node that spawned this one. Extra `flags` may be passed to
+  // the corresponding ConnectNode() call.
+  void ConnectToParent(absl::Span<IpczHandle> portals,
+                       IpczConnectNodeFlags flags = IPCZ_NO_FLAGS);
+
+  // May be called instead of ConnectToParent() when the portal that spawned
+  // this one is a broker.
   void ConnectToBroker(absl::Span<IpczHandle> portals);
 
   // Shorthand for the above, for the common case with only one initial portal.
+  IpczHandle ConnectToParent(IpczConnectNodeFlags flags = IPCZ_NO_FLAGS);
   IpczHandle ConnectToBroker();
 
   // Opens a new portal pair on this node.
   std::pair<IpczHandle, IpczHandle> OpenPortals();
 
+  // Creates a new test driver blob object and boxes it. Returns a handle to the
+  // box.
+  IpczHandle BoxBlob(std::string_view contents);
+
+  // Extracts the string contents of a boxed test driver blob.
+  std::string UnboxBlob(IpczHandle box);
+
   // Spawns a new test node of TestNodeType and populates `portals` with a set
   // of initial portals connected to the node, via a new transport.
   template <typename TestNodeType>
-  Ref<TestNodeController> SpawnTestNode(absl::Span<IpczHandle> portals) {
-    return SpawnTestNodeImpl(node_, TestNodeType::kDetails, portals);
+  Ref<TestNodeController> SpawnTestNode(
+      absl::Span<IpczHandle> portals,
+      IpczConnectNodeFlags flags = IPCZ_NO_FLAGS) {
+    return SpawnTestNodeImpl(node_, TestNodeType::kDetails, portals, flags);
   }
 
   // Shorthand for the above, for the common case with only one initial portal
   // and no need for the test body to retain a controller for the node.
   template <typename TestNodeType>
-  IpczHandle SpawnTestNode() {
+  IpczHandle SpawnTestNode(IpczConnectNodeFlags flags = IPCZ_NO_FLAGS) {
     IpczHandle portal;
-    SpawnTestNode<TestNodeType>({&portal, 1});
+    SpawnTestNode<TestNodeType>({&portal, 1}, flags);
     return portal;
   }
 
@@ -187,8 +203,10 @@ class TestNode : public internal::TestBase {
   // its broker connection. The caller is resposible for the other end of that
   // connection.
   template <typename TestNodeType>
-  Ref<TestNodeController> SpawnTestNode(IpczDriverHandle transport) {
-    return SpawnTestNodeImpl(node_, TestNodeType::kDetails, transport);
+  Ref<TestNodeController> SpawnTestNodeWithTransport(
+      IpczDriverHandle transport,
+      IpczConnectNodeFlags flags = IPCZ_NO_FLAGS) {
+    return SpawnTestNodeImpl(node_, TestNodeType::kDetails, transport, flags);
   }
 
   // Forcibly closes this Node, severing all links to other nodes and implicitly
@@ -238,7 +256,8 @@ class TestNode : public internal::TestBase {
   Ref<TestNodeController> SpawnTestNodeImpl(
       IpczHandle from_node,
       const internal::TestNodeDetails& details,
-      PortalsOrTransport portals_or_transport);
+      PortalsOrTransport portals_or_transport,
+      IpczConnectNodeFlags flags);
 
   DriverMode driver_mode_ = DriverMode::kSync;
   IpczHandle node_ = IPCZ_INVALID_HANDLE;

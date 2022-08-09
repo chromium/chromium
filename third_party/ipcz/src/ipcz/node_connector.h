@@ -49,6 +49,18 @@ class NodeConnector : public msg::NodeMessageListener {
                                 const std::vector<Ref<Portal>>& initial_portals,
                                 ConnectCallback callback = nullptr);
 
+  // Handles a request on `node` (which must be a broker) to accept a new
+  // non-broker node referral from `referrer`, referring a new non-broker node
+  // on the remote end of `transport_to_referred_node`. This performs a
+  // handshake with the referred node before introducing it and the referrer to
+  // each other.
+  static bool HandleNonBrokerReferral(
+      Ref<Node> node,
+      uint64_t referral_id,
+      uint32_t num_initial_portals,
+      Ref<NodeLink> referrer,
+      Ref<DriverTransport> transport_to_referred_node);
+
   virtual bool Connect() = 0;
 
  protected:
@@ -78,14 +90,14 @@ class NodeConnector : public msg::NodeMessageListener {
   const IpczConnectNodeFlags flags_;
   const std::vector<Ref<Portal>> waiting_portals_;
 
+  // NodeMessageListener overrides:
+  void OnTransportError() override;
+
  private:
-  bool ActivateTransportAndConnect();
+  bool ActivateTransport();
   void EstablishWaitingPortals(Ref<NodeLink> to_link,
                                LinkSide link_side,
                                size_t max_valid_portals);
-
-  // NodeMessageListener overrides:
-  void OnTransportError() override;
 
   const ConnectCallback callback_;
 };

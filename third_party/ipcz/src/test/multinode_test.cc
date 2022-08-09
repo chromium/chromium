@@ -10,12 +10,12 @@
 
 #include "ipcz/ipcz.h"
 #include "reference_drivers/async_reference_driver.h"
+#include "reference_drivers/blob.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ipcz/src/test_buildflags.h"
-#include "util/log.h"
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
 #include "reference_drivers/file_descriptor.h"
@@ -150,8 +150,8 @@ void TestNode::Initialize(DriverMode driver_mode,
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
 }
 
-void TestNode::ConnectToBroker(absl::Span<IpczHandle> portals) {
-  uint32_t flags = IPCZ_CONNECT_NODE_TO_BROKER;
+void TestNode::ConnectToParent(absl::Span<IpczHandle> portals,
+                               IpczConnectNodeFlags flags) {
   if (driver_mode_ == DriverMode::kAsyncDelegatedAlloc ||
       driver_mode_ == DriverMode::kAsyncObjectBrokeringAndDelegatedAlloc) {
     flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
@@ -164,14 +164,41 @@ void TestNode::ConnectToBroker(absl::Span<IpczHandle> portals) {
   ASSERT_EQ(IPCZ_RESULT_OK, result);
 }
 
-IpczHandle TestNode::ConnectToBroker() {
+void TestNode::ConnectToBroker(absl::Span<IpczHandle> portals) {
+  ConnectToParent(portals, IPCZ_CONNECT_NODE_TO_BROKER);
+}
+
+IpczHandle TestNode::ConnectToParent(IpczConnectNodeFlags flags) {
   IpczHandle portal;
-  ConnectToBroker({&portal, 1});
+  ConnectToParent({&portal, 1}, flags);
   return portal;
+}
+
+IpczHandle TestNode::ConnectToBroker() {
+  return ConnectToParent(IPCZ_CONNECT_NODE_TO_BROKER);
 }
 
 std::pair<IpczHandle, IpczHandle> TestNode::OpenPortals() {
   return TestBase::OpenPortals(node_);
+}
+
+IpczHandle TestNode::BoxBlob(std::string_view contents) {
+  auto blob = MakeRefCounted<reference_drivers::Blob>(contents);
+  IpczHandle box;
+  const IpczResult result = ipcz().Box(
+      node_, reference_drivers::Blob::ReleaseAsHandle(std::move(blob)),
+      IPCZ_NO_FLAGS, nullptr, &box);
+  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  return box;
+}
+
+// Extracts the string contents of a boxed test driver blob.
+std::string TestNode::UnboxBlob(IpczHandle box) {
+  IpczDriverHandle handle;
+  const IpczResult result = ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &handle);
+  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  auto blob = reference_drivers::Blob::TakeFromHandle(handle);
+  return blob->message();
 }
 
 void TestNode::CloseThisNode() {
@@ -184,15 +211,17 @@ void TestNode::CloseThisNode() {
 Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
     IpczHandle from_node,
     const internal::TestNodeDetails& details,
-    PortalsOrTransport portals_or_transport) {
+    PortalsOrTransport portals_or_transport,
+    IpczConnectNodeFlags flags) {
   struct Connect {
-    explicit Connect(TestNode& test) : test(test) {}
+    Connect(TestNode& test, IpczConnectNodeFlags flags)
+        : test(test), flags(flags) {}
 
     IpczDriverHandle operator()(absl::Span<IpczHandle> portals) {
       TransportPair transports = test.CreateTransports();
       const IpczResult result =
           test.ipcz().ConnectNode(test.node(), transports.ours, portals.size(),
-                                  IPCZ_NO_FLAGS, nullptr, portals.data());
+                                  flags, nullptr, portals.data());
       ABSL_ASSERT(result == IPCZ_RESULT_OK);
       return transports.theirs;
     }
@@ -202,9 +231,10 @@ Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
     }
 
     TestNode& test;
+    const IpczConnectNodeFlags flags;
   };
 
-  Connect connect(*this);
+  Connect connect(*this, flags);
   IpczDriverHandle their_transport = absl::visit(connect, portals_or_transport);
 
   Ref<TestNodeController> controller;

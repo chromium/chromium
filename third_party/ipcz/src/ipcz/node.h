@@ -157,6 +157,12 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // Drops this node's link to the named node, if one exists.
   void DropLink(const NodeName& name);
 
+  // Asynchronously waits for this Node to acquire a broker link and then
+  // invokes `callback` with it. If this node already has a broker link then the
+  // callback is invoked immediately, before this method returns.
+  using BrokerLinkCallback = std::function<void(Ref<NodeLink>)>;
+  void WaitForBrokerLinkAsync(BrokerLinkCallback callback);
+
  private:
   ~Node() override;
 
@@ -231,6 +237,11 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // will ignore the request and send nothing.
   using IntroductionKey = std::pair<NodeName, NodeName>;
   absl::flat_hash_set<IntroductionKey> in_progress_introductions_
+      ABSL_GUARDED_BY(mutex_);
+
+  // Set of callbacks waiting to be invoked as soon as this Node acquires a
+  // broker link.
+  std::vector<BrokerLinkCallback> broker_link_callbacks_
       ABSL_GUARDED_BY(mutex_);
 };
 

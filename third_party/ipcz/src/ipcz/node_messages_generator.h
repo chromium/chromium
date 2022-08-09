@@ -54,6 +54,135 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker,
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
 IPCZ_MSG_END()
 
+// Sent from a non-broker to its broker when calling ConnectNode() with
+// IPCZ_CONNECT_NODE_SHARE_BROKER. In this case the transport given to
+// ConnectNode() is passed along to the broker via this message, and the broker
+// assumes the other end of that transport belongs to a new non-broker node who
+// wishes to join the network.
+//
+// The broker performs an initial handshake with the referred node -- it waits
+// for a ConnectToReferredBroker message on the new transport and then sends a
+// ConnectToReferredNonBroker over the same transport, as well as a
+// NonBrokerReferralAccepted message back to the original referrer who sent this
+// request.
+//
+// If this request is invalid or the broker otherwise fails to establish a link
+// to the referred node, the broker instead responds to the referrer with a
+// NonBrokerReferralRejected message.
+IPCZ_MSG_BEGIN(ReferNonBroker, IPCZ_MSG_ID(2), IPCZ_MSG_VERSION(0))
+  // A unique (for the transmitting NodeLink) identifier for this referral, used
+  // to associate a corresponding NonBrokerReferralAccepted/Rejected response
+  // from the broker.
+  IPCZ_MSG_PARAM(uint64_t, referral_id)
+
+  // The number of initial portals the referrer will assume on its own transport
+  // to the referred node if the referral is successful and the broker responds
+  // with NonBrokerReferralAccepted. This value is passed along to the referred
+  // node via ConnectToReferredNonBroker.
+  IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // The transport given to ConnectNode() with IPCZ_CONNECT_NODE_SHARE_BROKER.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(transport)
+IPCZ_MSG_END()
+
+// Sent from a non-broker to its tentative broker when calling ConnectNode()
+// with IPCZ_CONNECT_NODE_INHERIT_BROKER. The other end of the transport given
+// to that ConnectNode() call must itself be given to ConnectNode() by some
+// other non-broker calling with IPCZ_CONNECT_NODE_SHARE_BROKER. That other node
+// will pass the transport to the broker using a ReferNonBroker message.
+//
+// Once ConnectToReferredBroker is received by the broker on the new transport,
+// the broker sends back a ConnectToReferredNonBroker to the sender of this
+// message, as well as a NonBrokerReferralAccepted message to the original
+// referrer.
+IPCZ_MSG_BEGIN(ConnectToReferredBroker, IPCZ_MSG_ID(3), IPCZ_MSG_VERSION(0))
+  // The highest protocol version known and desired by the sender.
+  IPCZ_MSG_PARAM(uint32_t, protocol_version)
+
+  // The number of initial portals assumed on the sender's end of the transport.
+  // This is passed along by the broker to the referrer via
+  // NonBrokerReferralAccepted.
+  IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+IPCZ_MSG_END()
+
+// Sent from a broker to a referred non-broker node over a transport that was
+// provided to the broker by some other non-broker via a ReferNonBroker message.
+//
+// This is sent to the referred node if and only if the referral has been
+// accepted by the broker, and only the broker has received a
+// ConnectToReferredBroker message over the same transport that sends this
+// message.
+IPCZ_MSG_BEGIN(ConnectToReferredNonBroker, IPCZ_MSG_ID(4), IPCZ_MSG_VERSION(0))
+  // The newly assigned name of the node receiving this message.
+  IPCZ_MSG_PARAM(NodeName, name)
+
+  // The name of the broker node which has accepted the referred recipient of
+  // this message.
+  IPCZ_MSG_PARAM(NodeName, broker_name)
+
+  // The name of the node which referred the recipient to the broker sending
+  // this message.
+  IPCZ_MSG_PARAM(NodeName, referrer_name)
+
+  // The highest protocol version known and desired by the sending broker.
+  IPCZ_MSG_PARAM(uint32_t, broker_protocol_version)
+
+  // The highest protocol version known and desired by the referrer.
+  IPCZ_MSG_PARAM(uint32_t, referrer_protocol_version)
+
+  // The number of initial portals assumed by the referred on its initial link
+  // to the receipient of this message.
+  IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // A driver memory object to serve as the primary NodeLinkMemory buffer for
+  // the NodeLink between the broker and the recipient of this message (i.e.
+  // the NodeLink established from the transport which carries this message.)
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(broker_link_buffer)
+
+  // A new transport and primary buffer the receipient can use to establish a
+  // new NodeLink to the referrer. The other end of the transport (and another
+  // handle to the same memory object) is given to the referrer via
+  // NonBrokerReferralAccepted.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(referrer_link_transport)
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(referrer_link_buffer)
+IPCZ_MSG_END()
+
+// Sent from a broker to a non-broker who previously referred another node via
+// ReferNonBroker. This message indicates that the referral was accepted, and it
+// provides objects and details necessary for the recipient (i.e. the referrer)
+// to establish a direct NodeLink to the referred node.
+IPCZ_MSG_BEGIN(NonBrokerReferralAccepted, IPCZ_MSG_ID(5), IPCZ_MSG_VERSION(0))
+  // A unique identifier for the referral in question, as provided by the
+  // original ReferNonBroker message sent by the receipient of this message.
+  IPCZ_MSG_PARAM(uint64_t, referral_id)
+
+  // The highest protocol version known and desired by the referred node.
+  IPCZ_MSG_PARAM(uint32_t, protocol_version)
+
+  // The number of initial portals assumed by the referred node on its end of
+  // the link conveyed by `transport` in this message.
+  IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // The name of the referred node, as assigned by the broker.
+  IPCZ_MSG_PARAM(NodeName, name)
+
+  // A driver transport and primary buffer memory object the receipient can use
+  // to establish a direct NodeLink to the referred node.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(transport)
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
+IPCZ_MSG_END()
+
+// Sent from a broker to a non-broker who previously referred another node via
+// ReferNonBroker. This message indicates that the referral was rejected. No
+// link to the referred node has been established by the broker, and none will
+// be provided to the referrer. This can occur for example if the referred node
+// disconnects from the broker before establishing a handshake.
+IPCZ_MSG_BEGIN(NonBrokerReferralRejected, IPCZ_MSG_ID(6), IPCZ_MSG_VERSION(0))
+  // A unique identifier for the referral in question, as provided by the
+  // original ReferNonBroker message sent by the receipient of this message.
+  IPCZ_MSG_PARAM(uint64_t, referral_id)
+IPCZ_MSG_END()
+
 // Sent by a non-broker node to a broker node, asking the broker to introduce
 // the non-broker to the node identified by `name`. If the broker is willing and
 // able to comply with this request, it will send an AcceptIntroduction message

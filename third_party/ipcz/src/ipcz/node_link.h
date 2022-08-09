@@ -145,6 +145,18 @@ class NodeLink : public msg::NodeMessageListener {
   // node identified by `name`.
   void RejectIntroduction(const NodeName& name);
 
+  // May be called on a link from a non-broker to a broker in order to refer a
+  // new node to the remote broker. `transport` is a transport whose peer
+  // endpoint belongs to the referred node, and `num_initial_portals` is the
+  // number of initial portals expected on the resulting link from this side.
+  // Upon success, `callback` is invoked with a new NodeLink to the referred
+  // node and the number of initial portals expected by that side. On failure,
+  // `callback` is invoked with a null link.
+  using ReferralCallback = std::function<void(Ref<NodeLink>, uint32_t)>;
+  void ReferNonBroker(Ref<DriverTransport> transport,
+                      uint32_t num_initial_portals,
+                      ReferralCallback callback);
+
   // Sends a request to the remote node to establish a new RouterLink over this
   // this NodeLink, to replace an existing RouterLink between the remote node
   // and `current_peer_node`. `current_peer_sublink` identifies the specific
@@ -215,6 +227,11 @@ class NodeLink : public msg::NodeMessageListener {
   SequenceNumber GenerateOutgoingSequenceNumber();
 
   // NodeMessageListener overrides:
+  bool OnReferNonBroker(msg::ReferNonBroker& refer) override;
+  bool OnNonBrokerReferralAccepted(
+      msg::NonBrokerReferralAccepted& accepted) override;
+  bool OnNonBrokerReferralRejected(
+      msg::NonBrokerReferralRejected& rejected) override;
   bool OnRequestIntroduction(msg::RequestIntroduction& request) override;
   bool OnAcceptIntroduction(msg::AcceptIntroduction& accept) override;
   bool OnRejectIntroduction(msg::RejectIntroduction& reject) override;
@@ -278,6 +295,11 @@ class NodeLink : public msg::NodeMessageListener {
   using PartialParcelKey = std::tuple<SublinkId, SequenceNumber>;
   using PartialParcelMap = absl::flat_hash_map<PartialParcelKey, Parcel>;
   PartialParcelMap partial_parcels_ ABSL_GUARDED_BY(mutex_);
+
+  // Tracks pending referrals sent to the broker.
+  uint64_t next_referral_id_ = 0;
+  absl::flat_hash_map<uint64_t, ReferralCallback> pending_referrals_
+      ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz
