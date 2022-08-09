@@ -23,6 +23,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -51,6 +53,20 @@ syncer::ModelTypeSet GetThrottledDataTypes(
       }));
   loop.Run();
   return throttled_types;
+}
+
+size_t GetTypeNonTombstoneEntitiesCount(
+    syncer::ModelTypeControllerDelegate* model_type_controller_delegate) {
+  base::RunLoop loop;
+  size_t result = 0;
+  model_type_controller_delegate->GetTypeEntitiesCountForDebugging(
+      base::BindLambdaForTesting(
+          [&result, &loop](const syncer::TypeEntitiesCount& count) {
+            result = count.non_tombstone_entities;
+            loop.Quit();
+          }));
+  loop.Run();
+  return result;
 }
 
 class TypeDisabledChecker : public SingleClientStatusChangeChecker {
@@ -360,7 +376,12 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
           base::Microseconds(kUserEventTimeUsec)));
   EXPECT_TRUE(UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                        {{expected_specifics}})
-                  .Wait());
+                  .Wait())
+      << "Non-tombstone entities: "
+      << GetTypeNonTombstoneEntitiesCount(
+             browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0))
+                 ->GetControllerDelegate()
+                 .get());
 }
 
 // Tests that throttling one datatype does not influence other datatypes.
