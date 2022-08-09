@@ -213,12 +213,16 @@ bool PlatformCrashpadInitialization(
     *database_path = base::FilePath();
   }
 
-  if (crash_reporter_client->GetShouldDumpLargerDumps()) {
-    const uint32_t kIndirectMemoryLimit = 4 * 1024 * 1024;
-    crashpad::CrashpadInfo::GetCrashpadInfo()
-        ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
-                                                  kIndirectMemoryLimit);
-  }
+  // In the not-large-dumps case record enough extra memory to be able to save
+  // dereferenced memory from all registers on the crashing thread. crashpad may
+  // save 512-bytes per register, and the largest register set (not including
+  // stack pointers) is ARM64 with 32 registers. Hence, 16 KiB.
+  const uint32_t kIndirectMemoryLimit =
+      crash_reporter_client->GetShouldDumpLargerDumps() ? 4 * 1024 * 1024
+                                                        : 16 * 1024;
+  crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
+                                                kIndirectMemoryLimit);
 
   return true;
 }
