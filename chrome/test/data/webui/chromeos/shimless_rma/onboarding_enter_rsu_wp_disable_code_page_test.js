@@ -81,7 +81,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
     await initializeEnterRsuWpDisableCodePage('', '');
 
-    const expectedCanvasSize = 60;
+    const expectedCanvasSize = 20;
 
 
     assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
