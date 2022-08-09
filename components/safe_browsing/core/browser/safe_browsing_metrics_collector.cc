@@ -157,17 +157,17 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
 void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
   DictionaryPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value* mutable_state_dict = update.Get();
-  bool is_pref_valid = mutable_state_dict->is_dict();
+  base::Value::Dict* mutable_state_dict = update->GetIfDict();
+  bool is_pref_valid = !!mutable_state_dict;
   base::UmaHistogramBoolean("SafeBrowsing.MetricsCollector.IsPrefValid",
                             is_pref_valid);
   if (!is_pref_valid) {
     return;
   }
 
-  for (auto state_map : mutable_state_dict->DictItems()) {
-    for (auto event_map : state_map.second.DictItems()) {
-      event_map.second.EraseListValueIf([&](const auto& timestamp) {
+  for (auto state_map : *mutable_state_dict) {
+    for (auto event_map : state_map.second.GetDict()) {
+      event_map.second.GetList().EraseIf([&](const auto& timestamp) {
         return base::Time::Now() - PrefValueToTime(timestamp) >
                base::Days(kEventMaxDurationDay);
       });
@@ -242,26 +242,15 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
     EventType event_type) {
   DictionaryPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value* mutable_state_dict = update.Get();
-
-  base::Value* event_dict =
-      mutable_state_dict->FindDictKey(UserStateToPrefKey(user_state));
-  if (!event_dict) {
-    event_dict =
-        mutable_state_dict->SetKey(UserStateToPrefKey(user_state),
-                                   base::Value(base::Value::Type::DICTIONARY));
-  }
-
-  base::Value* timestamps =
-      event_dict->FindListKey(EventTypeToPrefKey(event_type));
-  if (!timestamps) {
-    timestamps = event_dict->SetKey(EventTypeToPrefKey(event_type),
-                                    base::Value(base::Value::Type::LIST));
-  }
+  base::Value::Dict& mutable_state_dict = update->GetDict();
+  base::Value::Dict* event_dict =
+      mutable_state_dict.EnsureDict(UserStateToPrefKey(user_state));
+  base::Value::List* timestamps =
+      event_dict->EnsureList(EventTypeToPrefKey(event_type));
 
   // Remove the oldest timestamp if the length of the timestamps hits the limit.
-  while (timestamps->GetListDeprecated().size() >= kTimestampsMaxLength) {
-    timestamps->EraseListIter(timestamps->GetListDeprecated().begin());
+  while (timestamps->size() >= kTimestampsMaxLength) {
+    timestamps->erase(timestamps->begin());
   }
 
   timestamps->Append(TimeToPrefValue(base::Time::Now()));
