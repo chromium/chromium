@@ -634,6 +634,13 @@ void AXNodeData::SetName(const std::string& name) {
     iter->second = name;
   }
 
+  // It is possible for SetName to be called after
+  // SetNameExplicitlyEmpty.
+  if (!name.empty() &&
+      GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+    RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
+  }
+
   if (HasIntAttribute(ax::mojom::IntAttribute::kNameFrom))
     return;
   // Since this method is mostly used by tests which don't always set the
@@ -661,6 +668,7 @@ void AXNodeData::SetName(const std::u16string& name) {
 
 void AXNodeData::SetNameExplicitlyEmpty() {
   SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  SetName(std::string());
 }
 
 void AXNodeData::SetDescription(const std::string& description) {

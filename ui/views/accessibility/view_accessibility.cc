@@ -200,9 +200,13 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
   }
 
-  if (custom_data_.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-    data->SetName(
-        custom_data_.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  std::string name;
+  if (custom_data_.GetStringAttribute(ax::mojom::StringAttribute::kName,
+                                      &name)) {
+    if (!name.empty())
+      data->SetName(name);
+    else
+      data->SetNameExplicitlyEmpty();
   }
 
   if (custom_data_.HasStringAttribute(
@@ -361,8 +365,8 @@ void ViewAccessibility::OverrideName(const std::string& name,
             name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
       << "If the name is being removed to improve the user experience, "
          "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
-  custom_data_.SetName(name);
   custom_data_.SetNameFrom(name_from);
+  custom_data_.SetName(name);
 }
 
 void ViewAccessibility::OverrideName(const std::u16string& name,

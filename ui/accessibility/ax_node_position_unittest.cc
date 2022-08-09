@@ -4088,7 +4088,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   AXNodeData button_data;
   button_data.id = 3;
   button_data.role = ax::mojom::Role::kButton;
-  button_data.SetName("");
+  button_data.SetNameExplicitlyEmpty();
   button_data.SetNameFrom(ax::mojom::NameFrom::kContents);
 
   AXNodeData more_text_data;
@@ -11275,7 +11275,7 @@ TEST_F(AXPositionTest, CreateNextAnchorPosition) {
   AXNodeData empty_text_data;
   empty_text_data.id = 4;
   empty_text_data.role = ax::mojom::Role::kStaticText;
-  empty_text_data.SetName("");
+  empty_text_data.SetNameExplicitlyEmpty();
 
   AXNodeData more_text_data;
   more_text_data.id = 5;

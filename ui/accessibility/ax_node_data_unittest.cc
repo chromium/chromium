@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -361,6 +362,43 @@ TEST(AXNodeDataTest, SupportsExpandCollapse) {
     else
       EXPECT_FALSE(supports_expand_collapse);
   }
+}
+
+TEST(AXNodeDataTest, SetName) {
+  AXNodeData data;
+  // SetName should not be called on a role of kNone. That role is used for
+  // presentational objects which should not be included in the accessibility
+  // tree. This is enforced by a DCHECK.
+  data.role = ax::mojom::Role::kNone;
+  EXPECT_DCHECK_DEATH(data.SetName("role is presentational"));
+
+  // For roles other than text, setting the name should result in the NameFrom
+  // source being kAttribute.
+  data.role = ax::mojom::Role::kButton;
+  data.SetName("foo");
+  EXPECT_EQ("foo", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
+
+  // TODO(accessibility): The static text role should have a NameFrom source of
+  // kContents. But nothing clears the NameFrom if the role of an existing
+  // object changes because currently there is no AXNodeData::SetRole method.
+  data.role = ax::mojom::Role::kStaticText;
+  data.SetName("bar");
+  EXPECT_EQ("bar", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
+
+  data.RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
+  data.SetName("baz");
+  EXPECT_EQ("baz", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kContents);
+
+  data.SetNameExplicitlyEmpty();
+  EXPECT_EQ("", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
+  data.SetName("foo");
+  EXPECT_EQ("foo", data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kContents);
 }
 
 TEST(AXNodeDataTest, BitFieldsSanityCheck) {

@@ -3019,7 +3019,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   empty_text_data.role = ax::mojom::Role::kStaticText;
   empty_text_data.AddState(ax::mojom::State::kEditable);
   text_content = "";
-  empty_text_data.SetName(text_content);
+  empty_text_data.SetNameExplicitlyEmpty();
   ComputeWordBoundariesOffsets(text_content, word_start_offsets,
                                word_end_offsets);
   empty_text_data.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
@@ -6508,7 +6508,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {
 
   // Now modify the tree so that start_ is pointing to a node that has been
   // removed from the tree.
-  text_data.SetName("");
+  text_data.SetNameExplicitlyEmpty();
   AXTreeUpdate test_update2;
   test_update2.nodes = {text_data};
   ASSERT_TRUE(GetTree()->Unserialize(test_update2));
