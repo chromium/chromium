@@ -64,16 +64,16 @@ std::string ConvertCategoriesToStringColumn(
   return base::JoinString(serialized_categories, ",");
 }
 
-// Converts the serialized related searches string into a vector of strings.
-std::vector<std::string> GetRelatedSearchesFromStringColumn(
+// Converts a serialized db string into a vector of strings.
+std::vector<std::string> DeserializeFromStringColumn(
     const std::string& column_value) {
   using std::string_literals::operator""s;
   return base::SplitString(column_value, "\0"s, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-// Serializes related searches into a string that can be stored in the database.
-std::string ConvertRelatedSearchesToStringColumn(
+// Serializes a vector of strings into a string that can be stored in the db.
+std::string SerializeToStringColumn(
     const std::vector<std::string>& related_searches) {
   // Use the Null character as the separator to serialize the related searches.
   using std::string_literals::operator""s;
@@ -232,8 +232,8 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   statement.BindString(
       5, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.entities));
-  statement.BindString(6, ConvertRelatedSearchesToStringColumn(
-                              visit_content_annotations.related_searches));
+  statement.BindString(
+      6, SerializeToStringColumn(visit_content_annotations.related_searches));
   statement.BindString(7,
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(8, visit_content_annotations.search_terms);
@@ -293,8 +293,8 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   statement.BindString(
       4, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.entities));
-  statement.BindString(5, ConvertRelatedSearchesToStringColumn(
-                              visit_content_annotations.related_searches));
+  statement.BindString(
+      5, SerializeToStringColumn(visit_content_annotations.related_searches));
   statement.BindString(6,
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(7, visit_content_annotations.search_terms);
@@ -361,7 +361,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->model_annotations.entities =
       GetCategoriesFromStringColumn(statement.ColumnString(5));
   out_content_annotations->related_searches =
-      GetRelatedSearchesFromStringColumn(statement.ColumnString(6));
+      DeserializeFromStringColumn(statement.ColumnString(6));
   out_content_annotations->search_normalized_url =
       GURL(statement.ColumnString(7));
   out_content_annotations->search_terms = statement.ColumnString16(8);
@@ -389,15 +389,8 @@ void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
   }
 
   auto cluster_id = GetClusterIdContainingVisit(visit_id);
-  if (cluster_id > 0 && GetVisitIdsInCluster(cluster_id).size() == 1) {
-    statement.Assign(GetDB().GetCachedStatement(
-        SQL_FROM_HERE, "DELETE FROM clusters WHERE cluster_id=?"));
-    statement.BindInt64(0, cluster_id);
-    if (!statement.Run()) {
-      DVLOG(0) << "Failed to execute clusters delete statement:  "
-               << "visit_id = " << visit_id << ", cluster_id = " << cluster_id;
-    }
-  }
+  if (cluster_id > 0 && GetVisitIdsInCluster(cluster_id).size() == 1)
+    DeleteClusters({cluster_id});
 
   statement.Assign(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM clusters_and_visits WHERE visit_id=?"));
@@ -420,14 +413,16 @@ void VisitAnnotationsDatabase::AddClusters(
       "VALUES(?,?,?)"));
   sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT INTO "
-      "clusters_and_visits(cluster_id,visit_id,score,"
-      "engagement_score,url_for_deduping,normalized_url,url_for_display)"
+      "INSERT INTO clusters_and_visits"
+      "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
+      "normalized_url,url_for_display)"
       "VALUES(?,?,?,?,?,?,?)"));
 
   for (const auto& cluster : clusters) {
     if (cluster.visits.empty())
       continue;
+
+    // Insert the cluster into 'clusters'.
     clusters_statement.Reset(true);
     clusters_statement.BindBool(0,
                                 cluster.should_show_on_prominent_ui_surfaces);
@@ -439,6 +434,8 @@ void VisitAnnotationsDatabase::AddClusters(
     }
     const int64_t cluster_id = GetDB().GetLastInsertRowId();
     DCHECK(cluster_id);
+
+    // Insert each visit into 'clusters_and_visits'.
     base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
       clusters_and_visits_statement.Reset(true);
@@ -611,9 +608,9 @@ bool VisitAnnotationsDatabase::MigrateFlocAllowedToAnnotationsTable() {
 
   // Not all version 43 history has the content_annotations table. So at this
   // point the content_annotations table may already have been initialized with
-  // the latest version with a annotation_flags column.
+  // the latest version with an annotation_flags column.
   if (!GetDB().DoesColumnExist("content_annotations", "annotation_flags")) {
-    // Add a annotation_flags column to the content_annotations table.
+    // Add an annotation_flags column to the content_annotations table.
     if (!GetDB().Execute("ALTER TABLE content_annotations ADD COLUMN "
                          "annotation_flags INTEGER DEFAULT 0 NOT NULL")) {
       return false;
