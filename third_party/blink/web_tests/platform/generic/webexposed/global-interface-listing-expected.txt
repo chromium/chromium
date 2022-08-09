@@ -295,10 +295,11 @@ interface AudioData
     method close
     method constructor
     method copyTo
-interface AudioDecoder
+interface AudioDecoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -306,6 +307,7 @@ interface AudioDecoder
     method decode
     method flush
     method reset
+    setter ondequeue
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
     getter maxChannelCount
@@ -9329,10 +9331,11 @@ interface VideoColorSpace
     getter transfer
     method constructor
     method toJSON
-interface VideoDecoder
+interface VideoDecoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter decodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -9340,6 +9343,7 @@ interface VideoDecoder
     method decode
     method flush
     method reset
+    setter ondequeue
 interface VideoEncoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag

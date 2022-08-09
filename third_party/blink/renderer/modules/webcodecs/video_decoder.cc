@@ -599,4 +599,8 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   return decoder_buffer;
 }
 
+const AtomicString& VideoDecoder::InterfaceName() const {
+  return event_target_names::kVideoDecoder;
+}
+
 }  // namespace blink

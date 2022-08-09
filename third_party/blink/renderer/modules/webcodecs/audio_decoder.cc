@@ -269,4 +269,8 @@ AudioDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   return chunk.buffer();
 }
 
+const AtomicString& AudioDecoder::InterfaceName() const {
+  return event_target_names::kAudioDecoder;
+}
+
 }  // namespace blink

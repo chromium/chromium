@@ -7,16 +7,12 @@
 // A VideoDecoder processes a queue of configure, decode, and flush requests.
 // Requests are taken from the queue sequentially but may be processed
 // concurrently.
-//
-// TODO(sandersd): Specify a tune() implementation for changing decoder
-// parameters (separate from stream parameters). This is more important for
-// encoders.
 [
     Exposed=(Window,DedicatedWorker),
     SecureContext,
     RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
-] interface VideoDecoder {
+] interface VideoDecoder : EventTarget {
   // |init| includes an |output| callback for emitting VideoFrames and an
   // |error| callback for emitting decode errors.
   //
@@ -35,6 +31,11 @@
   // backpressure mechanism that considers the state of the underlying codec.
   // TODO(sandersd): Consider emitting an event when this number decreases.
   readonly attribute unsigned long decodeQueueSize;
+
+  // Fires to signal a decrease in decodeQueueSize. Will fire at most once for a
+  // given turn of the event loop.
+  [RuntimeEnabled=WebCodecsDequeueEvent]
+  attribute EventHandler ondequeue;
 
   // Which state the decoder is in, indicating which methods can be called.
   readonly attribute CodecState state;

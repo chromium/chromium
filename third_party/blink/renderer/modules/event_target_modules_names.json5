@@ -87,5 +87,7 @@
     "WindowControlsOverlay",
     "AudioEncoder",
     "VideoEncoder",
+    "AudioDecoder",
+    "VideoDecoder",
   ],
 }

@@ -418,7 +418,6 @@ void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(error_callback_);
   visitor->Trace(requests_);
   EventTargetWithInlineData::Trace(visitor);
-  ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);
 }

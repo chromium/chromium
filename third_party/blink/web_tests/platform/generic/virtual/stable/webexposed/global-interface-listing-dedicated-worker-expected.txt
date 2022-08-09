@@ -32,7 +32,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method copyTo
-[Worker] interface AudioDecoder
+[Worker] interface AudioDecoder : EventTarget
 [Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter decodeQueueSize
@@ -1683,7 +1683,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter transfer
 [Worker]     method constructor
 [Worker]     method toJSON
-[Worker] interface VideoDecoder
+[Worker] interface VideoDecoder : EventTarget
 [Worker]     static method isConfigSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter decodeQueueSize

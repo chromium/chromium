@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_trace_names.h"
@@ -40,7 +41,7 @@ namespace blink {
 
 template <typename Traits>
 class MODULES_EXPORT DecoderTemplate
-    : public ScriptWrappable,
+    : public EventTargetWithInlineData,
       public ActiveScriptWrappable<DecoderTemplate<Traits>>,
       public ReclaimableCodec {
  public:
@@ -59,12 +60,16 @@ class MODULES_EXPORT DecoderTemplate
   ~DecoderTemplate() override;
 
   uint32_t decodeQueueSize();
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue);
   void configure(const ConfigType*, ExceptionState&);
   void decode(const InputType*, ExceptionState&);
   ScriptPromise flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
   String state() const { return state_; }
+
+  // EventTarget override.
+  ExecutionContext* GetExecutionContext() const override;
 
   // ExecutionContextLifecycleObserver override.
   void ContextDestroyed() override;
@@ -189,6 +194,10 @@ class MODULES_EXPORT DecoderTemplate
 
   void TraceQueueSizes() const;
 
+  void ScheduleDequeueEvent();
+  void DispatchDequeueEvent(Event* event);
+  bool dequeue_event_pending_ = false;
+
   Member<ScriptState> script_state_;
   Member<OutputCallbackType> output_cb_;
   Member<V8WebCodecsErrorCallback> error_cb_;
@@ -235,6 +244,8 @@ class MODULES_EXPORT DecoderTemplate
 
   // Task runner for main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

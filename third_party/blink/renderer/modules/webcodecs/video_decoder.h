@@ -113,6 +113,9 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
 
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
+
  protected:
   bool IsValidConfig(const ConfigType& config,
                      String* js_error_message) override;

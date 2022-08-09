@@ -29,7 +29,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -131,6 +134,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::configure(const ConfigType* config,
                                         ExceptionState& exception_state) {
   DVLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "decode", exception_state))
     return;
 
@@ -167,6 +171,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::decode(const InputType* chunk,
                                      ExceptionState& exception_state) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "decode", exception_state))
     return;
 
@@ -199,6 +204,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 template <typename Traits>
 ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
     return ScriptPromise();
 
@@ -223,6 +229,7 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 template <typename Traits>
 void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
@@ -234,6 +241,7 @@ void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
 template <typename Traits>
 void DecoderTemplate<Traits>::close(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "close", exception_state))
     return;
 
@@ -243,6 +251,7 @@ void DecoderTemplate<Traits>::close(ExceptionState& exception_state) {
 template <typename Traits>
 void DecoderTemplate<Traits>::ProcessRequests() {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsClosed());
   while (!pending_request_ && !requests_.IsEmpty()) {
     Request* request = requests_.front();
@@ -289,6 +298,7 @@ void DecoderTemplate<Traits>::ProcessRequests() {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
@@ -322,6 +332,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
     Request* request,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
 
@@ -362,6 +373,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kDecode);
@@ -402,6 +414,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
     ;
   pending_decodes_.Set(pending_decode_id_, request);
   --num_pending_decodes_;
+  ScheduleDequeueEvent();
 
   if (media::ScopedDecodeTrace::IsEnabled()) {
     request->decode_trace = std::make_unique<media::ScopedDecodeTrace>(
@@ -417,6 +430,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
@@ -445,6 +459,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kReset);
@@ -467,6 +482,7 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 template <typename Traits>
 void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsClosed())
     return;
 
@@ -525,6 +541,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   pending_decodes_.clear();
   num_pending_decodes_ = 0;
+  ScheduleDequeueEvent();
 
   // Fire the error callback if necessary.
   if (exception)
@@ -533,6 +550,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
 template <typename Traits>
 void DecoderTemplate<Traits>::ResetAlgorithm() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == V8CodecState::Enum::kUnconfigured)
     return;
 
@@ -545,6 +563,7 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
   // Any previous pending decode will be filtered by ProcessRequests(). Reset
   // the count immediately to report the correct value in decodeQueueSize().
   num_pending_decodes_ = 0;
+  ScheduleDequeueEvent();
 
   // Since configure is always required after reset we can drop any cached
   // configuration.
@@ -560,6 +579,7 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsClosed())
     return;
 
@@ -603,6 +623,7 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsClosed())
     return;
 
@@ -654,6 +675,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
                                            media::DecoderStatus status) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsClosed())
     return;
 
@@ -676,6 +698,7 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
 template <typename Traits>
 void DecoderTemplate<Traits>::OnResetDone() {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsClosed())
     return;
 
@@ -690,6 +713,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
                                        scoped_refptr<MediaOutputType> output) {
   DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Suppress outputs belonging to an earlier reset_generation.
   if (reset_generation != reset_generation_)
@@ -724,14 +748,51 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
 template <typename Traits>
 void DecoderTemplate<Traits>::TraceQueueSizes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_COUNTER_ID2(kCategory, GetTraceNames()->requests_counter.c_str(),
                     trace_counter_id_, "decodes", num_pending_decodes_, "other",
                     requests_.size() - num_pending_decodes_);
 }
 
 template <typename Traits>
+void DecoderTemplate<Traits>::DispatchDequeueEvent(Event* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  probe::AsyncTask async_task(GetExecutionContext(),
+                              event->async_task_context());
+  dequeue_event_pending_ = false;
+  DispatchEvent(*event);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::ScheduleDequeueEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!RuntimeEnabledFeatures::WebCodecsDequeueEventEnabled())
+    return;
+
+  if (dequeue_event_pending_)
+    return;
+  dequeue_event_pending_ = true;
+
+  Event* event = Event::Create(event_type_names::kDequeue);
+  event->SetTarget(this);
+  event->async_task_context()->Schedule(GetExecutionContext(), event->type());
+
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, WTF::Bind(&DecoderTemplate<Traits>::DispatchDequeueEvent,
+                           WrapWeakPersistent(this), WrapPersistent(event)));
+}
+
+template <typename Traits>
+ExecutionContext* DecoderTemplate<Traits>::GetExecutionContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
+}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::ContextDestroyed() {
-  // Deallocate resources and supress late callbacks from media thread.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Deallocate resources and suppress late callbacks from media thread.
   Shutdown();
 }
 
@@ -743,7 +804,7 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(requests_);
   visitor->Trace(pending_request_);
   visitor->Trace(pending_decodes_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ReclaimableCodec::Trace(visitor);
 }
@@ -751,6 +812,7 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
   TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_applying_codec_pressure());
 
   if (state_.AsEnum() == V8CodecState::Enum::kUnconfigured) {
@@ -768,6 +830,7 @@ void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
 
 template <typename Traits>
 bool DecoderTemplate<Traits>::HasPendingActivity() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pending_request_ || !requests_.IsEmpty();
 }
 

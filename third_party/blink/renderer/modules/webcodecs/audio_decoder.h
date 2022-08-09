@@ -95,6 +95,9 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   AudioDecoder(ScriptState*, const AudioDecoderInit*, ExceptionState&);
   ~AudioDecoder() override = default;
 
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
+
  protected:
   bool IsValidConfig(const ConfigType& config,
                      String* js_error_message) override;
