@@ -44,7 +44,6 @@
 namespace blink {
 
 class MediaStreamSource;
-class WebAudioSourceProvider;
 class WebLocalFrame;
 
 // A MediaStreamComponent is a MediaStreamTrack.
@@ -73,8 +72,6 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual void SetContentHint(WebMediaStreamTrack::ContentHintType) = 0;
   virtual const MediaConstraints& Constraints() const = 0;
   virtual void SetConstraints(const MediaConstraints& constraints) = 0;
-  virtual AudioSourceProvider* GetAudioSourceProvider() = 0;
-  virtual void SetSourceProvider(WebAudioSourceProvider* provider) = 0;
 
   virtual MediaStreamTrackPlatform* GetPlatformTrack() const = 0;
 

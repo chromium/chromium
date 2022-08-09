@@ -117,27 +117,6 @@ void TransferredMediaStreamComponent::SetConstraints(
   // initialized.
 }
 
-AudioSourceProvider* TransferredMediaStreamComponent::GetAudioSourceProvider() {
-  if (component_) {
-    return component_->GetAudioSourceProvider();
-  }
-  // TODO(crbug.com/1288839): Remove
-  // MediaStreamComponent::GetAudioSourceProvider() and this implementation +
-  // fix call sites if feasible, otherwise return a proxy for
-  // the AudioSourceProvider here
-  return nullptr;
-}
-
-void TransferredMediaStreamComponent::SetSourceProvider(
-    WebAudioSourceProvider* provider) {
-  if (component_) {
-    component_->SetSourceProvider(provider);
-    return;
-  }
-  // TODO(https://crbug.com/1288839): Save and forward to component_ once it's
-  // initialized.
-}
-
 MediaStreamTrackPlatform* TransferredMediaStreamComponent::GetPlatformTrack()
     const {
   if (component_) {

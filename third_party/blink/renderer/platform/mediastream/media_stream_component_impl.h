@@ -37,7 +37,6 @@
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -51,7 +50,6 @@
 namespace blink {
 
 class MediaStreamSource;
-class WebAudioSourceProvider;
 class WebLocalFrame;
 
 class PLATFORM_EXPORT MediaStreamComponentImpl final
@@ -96,12 +94,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   void SetConstraints(const MediaConstraints& constraints) override {
     constraints_ = constraints;
   }
-  AudioSourceProvider* GetAudioSourceProvider() override {
-    return &source_provider_;
-  }
-  void SetSourceProvider(WebAudioSourceProvider* provider) override {
-    source_provider_.Wrap(provider);
-  }
 
   MediaStreamTrackPlatform* GetPlatformTrack() const override {
     return platform_track_.get();
@@ -124,32 +116,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   void Trace(Visitor*) const override;
 
  private:
-  // AudioSourceProviderImpl wraps a WebAudioSourceProvider::provideInput()
-  // calls into chromium to get a rendered audio stream.
-
-  class PLATFORM_EXPORT AudioSourceProviderImpl final
-      : public AudioSourceProvider {
-   public:
-    AudioSourceProviderImpl() : web_audio_source_provider_(nullptr) {}
-
-    ~AudioSourceProviderImpl() override = default;
-
-    // Wraps the given blink::WebAudioSourceProvider to
-    // blink::AudioSourceProvider.
-    void Wrap(WebAudioSourceProvider*);
-
-    // blink::AudioSourceProvider
-    void ProvideInput(AudioBus*, int frames_to_process) override;
-
-   private:
-    WebAudioSourceProvider* web_audio_source_provider_;
-    base::Lock provide_input_lock_;
-
-    // Used to wrap AudioBus to be passed into |web_audio_source_provider_|.
-    WebVector<float*> web_audio_data_;
-  };
-
-  AudioSourceProviderImpl source_provider_;
   Member<MediaStreamSource> source_;
 
   const String id_;

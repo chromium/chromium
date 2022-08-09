@@ -64,11 +64,6 @@ WebMediaStreamSource WebMediaStreamTrack::Source() const {
   return WebMediaStreamSource(private_->Source());
 }
 
-void WebMediaStreamTrack::SetSourceProvider(WebAudioSourceProvider* provider) {
-  DCHECK(!private_.IsNull());
-  private_->SetSourceProvider(provider);
-}
-
 void WebMediaStreamTrack::Assign(const WebMediaStreamTrack& other) {
   private_ = other.private_;
 }

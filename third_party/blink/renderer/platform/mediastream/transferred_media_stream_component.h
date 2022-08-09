@@ -18,7 +18,6 @@
 namespace blink {
 
 class MediaStreamSource;
-class WebAudioSourceProvider;
 class WebLocalFrame;
 
 class PLATFORM_EXPORT TransferredMediaStreamComponent final
@@ -48,8 +47,6 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   void SetContentHint(WebMediaStreamTrack::ContentHintType) override;
   const MediaConstraints& Constraints() const override;
   void SetConstraints(const MediaConstraints& constraints) override;
-  AudioSourceProvider* GetAudioSourceProvider() override;
-  void SetSourceProvider(WebAudioSourceProvider* provider) override;
 
   MediaStreamTrackPlatform* GetPlatformTrack() const override;
 
