@@ -415,7 +415,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   // Added 07/2019.
-  syncer::MigrateSyncSuppressedPref(prefs);
   prefs->ClearPref(kLastKnownGoogleURL);
   prefs->ClearPref(kLastPromptedGoogleURL);
 

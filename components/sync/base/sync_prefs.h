@@ -151,8 +151,6 @@ class SyncPrefs {
 void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void MigrateSyncSuppressedPref(PrefService* pref_service);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

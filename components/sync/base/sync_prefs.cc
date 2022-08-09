@@ -366,41 +366,6 @@ void ClearObsoleteSyncDecoupledFromAndroidMasterSync(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void MigrateSyncSuppressedPref(PrefService* pref_service) {
-  // If the new kSyncRequested already has a value, there's nothing to be
-  // done: Either the migration already happened, or we wrote to the new pref
-  // directly.
-  if (pref_service->GetUserPrefValue(prefs::kSyncRequested)) {
-    return;
-  }
-
-  // If the old kSyncSuppressed has an explicit value, migrate it over.
-  if (pref_service->GetUserPrefValue(kSyncSuppressStart)) {
-    pref_service->SetBoolean(prefs::kSyncRequested,
-                             !pref_service->GetBoolean(kSyncSuppressStart));
-    pref_service->ClearPref(kSyncSuppressStart);
-    DCHECK(pref_service->GetUserPrefValue(prefs::kSyncRequested));
-    return;
-  }
-
-  // Neither old nor new pref have an explicit value. There should be nothing to
-  // migrate, but it turns out some users are in a state that depends on the
-  // implicit default value of the old pref (which was that Sync is NOT
-  // suppressed, i.e. Sync is requested), see crbug.com/973770. To migrate these
-  // users to the new pref correctly, use kSyncFirstSetupComplete as a signal
-  // that Sync should be considered requested.
-  if (pref_service->GetBoolean(prefs::kSyncFirstSetupComplete)) {
-    // CHECK rather than DCHECK to make sure we never accidentally enable Sync
-    // for users which had it previously disabled.
-    CHECK(!pref_service->GetBoolean(kSyncSuppressStart));
-    pref_service->SetBoolean(prefs::kSyncRequested, true);
-    DCHECK(pref_service->GetUserPrefValue(prefs::kSyncRequested));
-    return;
-  }
-  // Otherwise, nothing to be done: Sync was likely never enabled in this
-  // profile.
-}
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
   // Before MICe, there was a toggle in Sync settings that corresponded to the

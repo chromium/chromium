@@ -1780,10 +1780,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
-  // Added 7/2019. Keep at least until 7/2021 as a missing migration would
-  // disable sync.
-  syncer::MigrateSyncSuppressedPref(profile_prefs);
-
   // Added 3/2020.
   // TODO(crbug.com/1062698): Remove this once the privacy settings redesign
   // is fully launched.
