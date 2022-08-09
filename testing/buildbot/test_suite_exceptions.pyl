@@ -3818,6 +3818,11 @@
         },
       }
     },
+    'remove_from': [
+      # GPU hang kills the bot. https://crbug.com/dawn/1511
+      'Dawn Mac x64 Release (AMD)',
+      'Dawn Mac x64 DEPS Release (AMD)',
+    ],
   },
   'webgpu_blink_web_tests_with_backend_validation': {
     'replacements': {
