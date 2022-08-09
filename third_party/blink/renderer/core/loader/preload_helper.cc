@@ -706,11 +706,12 @@ void PreloadHelper::LoadLinksFromHeader(
         // used by the next navigation only when they requested the same URL
         // with the same association mapping.
         change_rel_to_prefetch = true;
-        // Prefetch requests for alternate SXG should be made with no-cors,
-        // regardless of the crossorigin attribute of Link:rel=preload header
-        // that triggered the prefetch. See step 19.6.8 of
+        // Prefetch requests for alternate SXG should be made with a
+        // corsAttributeState of Anonymous, regardless of the crossorigin
+        // attribute of Link:rel=preload header that triggered the prefetch. See
+        // step 19.6.8 of
         // https://wicg.github.io/webpackage/loading.html#mp-link-type-prefetch.
-        params.cross_origin = kCrossOriginAttributeNotSet;
+        params.cross_origin = kCrossOriginAttributeAnonymous;
       }
     }
 
