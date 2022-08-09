@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.site_settings.ContentSettingsResources
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
@@ -328,15 +327,14 @@ public class StatusMediator implements PermissionDialogController.Observer,
         // This logic doesn't apply to tablets.
         if (mIsTablet) return;
 
-        boolean shouldShowLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                mLocationBarDataProvider.isIncognito());
+        boolean shouldShowLogo = !mLocationBarDataProvider.isIncognito();
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
         if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
             setStatusIconShown(true);
         } else if (mProfileSupplier.get() != null
-                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
+                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -356,7 +354,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
         // Only fade the animation on the new tab page.
         if (mProfileSupplier.get() != null
-                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
+                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
             float focusAnimationProgress = percent;
             if (!mUrlHasFocus) {
                 focusAnimationProgress = MathUtils.clamp(
@@ -519,14 +517,13 @@ public class StatusMediator implements PermissionDialogController.Observer,
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
         // Show the logo unfocused if we're on the NTP.
         if (shouldDisplaySearchEngineIcon()) {
-            getStatusIconResourceForSearchEngineIcon(
-                    mLocationBarDataProvider.isIncognito(), (statusIconRes) -> {
-                        // Check again in case the conditions have changed since this callback was
-                        // created.
-                        if (shouldDisplaySearchEngineIcon()) {
-                            mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
-                        }
-                    });
+            getStatusIconResourceForSearchEngineIcon((statusIconRes) -> {
+                // Check again in case the conditions have changed since this callback was
+                // created.
+                if (shouldDisplaySearchEngineIcon()) {
+                    mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
+                }
+            });
             return true;
         } else {
             mShouldCancelCustomFavicon = true;
@@ -539,28 +536,29 @@ public class StatusMediator implements PermissionDialogController.Observer,
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
-        boolean showIconOnNTP = mProfileSupplier.get() != null
-                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
-                && !mLocationBarDataProvider.isLoading() && !mIsTablet
-                && (mUrlHasFocus || mUrlFocusPercent > 0);
+        if (mLocationBarDataProvider.isIncognito()) {
+            return false;
+        }
 
-        return mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                       mLocationBarDataProvider.isIncognito())
-                && (showIconWhenFocused || showIconOnNTP);
+        if (mUrlHasFocus && mShowStatusIconWhenUrlFocused) {
+            return true;
+        }
+
+        return (mUrlHasFocus || mUrlFocusPercent > 0)
+                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()
+                && mProfileSupplier.get() != null;
     }
 
     /**
      * Set the security icon resource for the search engine icon and invoke the callback to inform
      * the caller which resource has been set.
      *
-     * @param isIncognito True if the user is incognito.
      * @param resourceCallback Called when the final value is set for the security icon resource.
      *                         Meant to give the caller a chance to set the tint for the given
      *                         resource.
      */
     private void getStatusIconResourceForSearchEngineIcon(
-            boolean isIncognito, Callback<StatusIconResource> resourceCallback) {
+            Callback<StatusIconResource> resourceCallback) {
         mShouldCancelCustomFavicon = false;
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
@@ -574,9 +572,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
-        if (mUrlHasFocus
-                && mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito())) {
+        if (mUrlHasFocus && !mLocationBarDataProvider.isIncognito()) {
             return 0;
         }
         return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
