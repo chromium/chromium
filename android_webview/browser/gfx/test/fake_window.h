@@ -95,7 +95,7 @@ class FakeWindow {
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_loop_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-  bool context_current_;
+  bool context_current_ = false;
 
   base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
 };

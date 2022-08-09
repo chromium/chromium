@@ -12,8 +12,8 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace gl {
-class GLSurface;
 class GLContext;
+class GLSurface;
 }  // namespace gl
 
 namespace gpu {

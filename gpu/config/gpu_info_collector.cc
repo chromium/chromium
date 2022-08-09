@@ -73,9 +73,9 @@ namespace {
 #define EGL_FEATURE_CONDITION_ANGLE 0x3468
 #endif /* EGL_ANGLE_feature_control */
 
-scoped_refptr<gl::GLSurface> InitializeGLSurface() {
+scoped_refptr<gl::GLSurface> InitializeGLSurface(gl::GLDisplay* display) {
   scoped_refptr<gl::GLSurface> surface(
-      gl::init::CreateOffscreenGLSurface(gfx::Size()));
+      gl::init::CreateOffscreenGLSurface(display, gfx::Size()));
   if (!surface.get()) {
     LOG(ERROR) << "gl::GLContext::CreateOffscreenGLSurface failed";
     return nullptr;
@@ -334,7 +334,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   return CollectBasicGraphicsInfo(gpu_info);
 }
 
-bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
+bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
   DCHECK_NE(gl::GetGLImplementation(), gl::kGLImplementationNone);
 
@@ -343,7 +343,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
     gpu_info->passthrough_cmd_decoder = false;
   }
 
-  scoped_refptr<gl::GLSurface> surface(InitializeGLSurface());
+  scoped_refptr<gl::GLSurface> surface(InitializeGLSurface(display));
   if (!surface.get()) {
     LOG(ERROR) << "Could not create surface for info collection.";
     return false;
@@ -386,11 +386,11 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
   base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
 #if BUILDFLAG(IS_ANDROID)
-  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
   gpu_info->can_support_threaded_texture_mailbox =
-      display->ext->b_EGL_KHR_fence_sync &&
-      display->ext->b_EGL_KHR_image_base &&
-      display->ext->b_EGL_KHR_gl_texture_2D_image &&
+      egl_display->ext->b_EGL_KHR_fence_sync &&
+      egl_display->ext->b_EGL_KHR_image_base &&
+      egl_display->ext->b_EGL_KHR_gl_texture_2D_image &&
       gfx::HasExtension(extension_set, "GL_OES_EGL_image");
 #else
   gl::GLWindowSystemBindingInfo window_system_binding_info;

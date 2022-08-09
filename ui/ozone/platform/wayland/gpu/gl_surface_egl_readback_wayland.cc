@@ -27,9 +27,12 @@ GLSurfaceEglReadbackWayland::PixelBuffer::PixelBuffer(
 GLSurfaceEglReadbackWayland::PixelBuffer::~PixelBuffer() = default;
 
 GLSurfaceEglReadbackWayland::GLSurfaceEglReadbackWayland(
+    gl::GLDisplayEGL* display,
     gfx::AcceleratedWidget widget,
     WaylandBufferManagerGpu* buffer_manager)
-    : widget_(widget), buffer_manager_(buffer_manager) {
+    : GLSurfaceEglReadback(display),
+      widget_(widget),
+      buffer_manager_(buffer_manager) {
   buffer_manager_->RegisterSurface(widget_, this);
 }
 

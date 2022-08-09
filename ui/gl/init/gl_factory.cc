@@ -248,8 +248,9 @@ void ShutdownGL(GLDisplay* display, bool due_to_fallback) {
   SetGLImplementation(kGLImplementationNone);
 }
 
-scoped_refptr<GLSurface> CreateOffscreenGLSurface(const gfx::Size& size) {
-  return CreateOffscreenGLSurfaceWithFormat(size, GLSurfaceFormat());
+scoped_refptr<GLSurface> CreateOffscreenGLSurface(gl::GLDisplay* display,
+                                                  const gfx::Size& size) {
+  return CreateOffscreenGLSurfaceWithFormat(display, size, GLSurfaceFormat());
 }
 
 void DisableANGLE() {

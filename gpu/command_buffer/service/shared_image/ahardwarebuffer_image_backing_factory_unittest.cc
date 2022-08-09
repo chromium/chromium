@@ -34,6 +34,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -46,8 +47,8 @@ class AHardwareBufferImageBackingFactoryTest : public testing::Test {
     // should not be run on android versions less that O.
     if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
       return;
-
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                  gfx::Size());
     ASSERT_TRUE(surface_);
     context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
                                          gl::GLContextAttribs());

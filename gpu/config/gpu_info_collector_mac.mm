@@ -9,6 +9,8 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_utils.h"
 
 #import <Metal/Metal.h>
 
@@ -72,7 +74,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   RecordReadWriteMetalTexturesSupportedHistogram();
 
-  return CollectGraphicsInfoGL(gpu_info);
+  return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {

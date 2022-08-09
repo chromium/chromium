@@ -17,6 +17,10 @@
 #include <d3dcommon.h>
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace gl {
+class GLDisplay;
+}
+
 namespace angle {
 struct SystemInfo;
 }
@@ -70,7 +74,8 @@ bool IdentifyActiveGPUWithLuid(GPUInfo* gpu_info);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Create a GL context and collect GL strings and versions.
-GPU_EXPORT bool CollectGraphicsInfoGL(GPUInfo* gpu_info);
+GPU_EXPORT bool CollectGraphicsInfoGL(GPUInfo* gpu_info,
+                                      gl::GLDisplay* display);
 
 // If more than one GPUs are identified, and GL strings are available,
 // identify the active GPU based on GL strings.

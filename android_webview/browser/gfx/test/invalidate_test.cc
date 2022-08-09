@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -279,8 +280,8 @@ class InvalidateTest
     // explicitly.
     render_thread_manager_ = std::make_unique<RenderThreadManager>(
         base::ThreadTaskRunnerHandle::Get());
-
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size(100, 100));
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                  gfx::Size(100, 100));
     DCHECK(surface_);
     DCHECK(surface_->GetHandle());
     context_ = gl::init::CreateGLContext(nullptr, surface_.get(),

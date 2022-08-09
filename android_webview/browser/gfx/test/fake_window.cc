@@ -14,6 +14,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -195,7 +196,8 @@ void FakeWindow::CreateRenderThreadIfNeeded() {
 
 void FakeWindow::InitializeOnRT(base::WaitableEvent* sync) {
   CheckCurrentlyOnRT();
-  surface_ = gl::init::CreateOffscreenGLSurface(surface_size_);
+  surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                surface_size_);
   DCHECK(surface_);
   DCHECK(surface_->GetHandle());
   context_ = gl::init::CreateGLContext(nullptr, surface_.get(),

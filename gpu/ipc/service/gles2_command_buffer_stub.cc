@@ -46,7 +46,9 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -169,6 +171,26 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
+  gl::GpuPreference gpu_preference = init_params.attribs.gpu_preference;
+  // If the user queries a low-power context, it's better to use whatever the
+  // default GPU used by Chrome is, which may be different than the low-power
+  // GPU determined by GLDisplayManager.
+  if (gpu_preference == gl::GpuPreference::kLowPower ||
+      gpu_preference == gl::GpuPreference::kNone) {
+    gpu_preference = gl::GpuPreference::kDefault;
+  }
+  gl::GLDisplay* display = gl::GetDisplay(gpu_preference);
+  DCHECK(display);
+
+  if (!display->IsInitialized()) {
+    gl::GLDisplay* initialized_display =
+        gl::init::InitializeGLOneOffPlatformImplementation(
+            /*fallback_to_software_gl=*/false, /*disable_gl_drawing=*/false,
+            /*init_extensions=*/true,
+            /*system_device_id=*/display->system_device_id());
+    DCHECK_EQ(initialized_display, display);
+  }
+
   if (offscreen) {
     // Do we want to create an offscreen rendering context suitable
     // for directly drawing to a separately supplied surface? In that
@@ -196,8 +218,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     if (!surface_format.IsCompatible(default_surface->GetFormat())) {
       DVLOG(1) << __FUNCTION__ << ": Hit the OwnOffscreenSurface path";
       use_virtualized_gl_context_ = false;
-      surface_ = gl::init::CreateOffscreenGLSurfaceWithFormat(gfx::Size(),
-                                                              surface_format);
+      surface_ = gl::init::CreateOffscreenGLSurfaceWithFormat(
+          display, gfx::Size(), surface_format);
       if (!surface_) {
         LOG(ERROR)
             << "ContextResult::kSurfaceFailure: Failed to create surface.";
@@ -221,7 +243,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         break;
     }
     surface_ = ImageTransportSurface::CreateNativeSurface(
-        weak_ptr_factory_.GetWeakPtr(), surface_handle_, surface_format);
+        display, weak_ptr_factory_.GetWeakPtr(), surface_handle_,
+        surface_format);
     if (!surface_ || !surface_->Initialize(surface_format)) {
       surface_ = nullptr;
       LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";

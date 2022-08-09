@@ -73,6 +73,11 @@ class GLDisplayManager {
     return GetDisplay(system_device_id);
   }
 
+  bool IsEmpty() {
+    base::AutoLock auto_lock(lock_);
+    return displays_.empty();
+  }
+
  private:
   friend class base::NoDestructor<GLDisplayManager<GLDisplayPlatform>>;
 #if defined(USE_EGL)

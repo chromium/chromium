@@ -133,23 +133,26 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   }
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
     return nullptr;
   }
 
   scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
     return gl::InitializeGLSurface(new GbmSurfaceless(
-        surface_factory_, drm_thread_proxy_->CreateDrmWindowProxy(window),
-        window));
+        surface_factory_, display->GetAs<gl::GLDisplayEGL>(),
+        drm_thread_proxy_->CreateDrmWindowProxy(window), window));
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override {
     DCHECK_EQ(size.width(), 0);
     DCHECK_EQ(size.height(), 0);
     return gl::InitializeGLSurface(
-        new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+        new gl::SurfacelessEGL(display->GetAs<gl::GLDisplayEGL>(), size));
   }
 
  protected:

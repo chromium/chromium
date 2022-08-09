@@ -35,6 +35,7 @@
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -135,8 +136,8 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
   void SetUp() override {
     if (!IsD3DSharedImageSupported())
       return;
-
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                  gfx::Size());
     ASSERT_TRUE(surface_);
     context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
                                          gl::GLContextAttribs());

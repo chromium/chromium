@@ -58,11 +58,12 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   return nullptr;
 }
 
-scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
+scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
+                                             gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateViewGLSurface");
 
   if (HasGLOzone())
-    return GetGLOzone()->CreateViewGLSurface(window);
+    return GetGLOzone()->CreateViewGLSurface(display, window);
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
@@ -76,13 +77,16 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
 }
 
 scoped_refptr<GLSurface> CreateSurfacelessViewGLSurface(
+    GLDisplay* display,
     gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateSurfacelessViewGLSurface");
-  return HasGLOzone() ? GetGLOzone()->CreateSurfacelessViewGLSurface(window)
-                      : nullptr;
+  return HasGLOzone()
+             ? GetGLOzone()->CreateSurfacelessViewGLSurface(display, window)
+             : nullptr;
 }
 
 scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
+    GLDisplay* display,
     const gfx::Size& size,
     GLSurfaceFormat format) {
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
@@ -93,7 +97,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
   }
 
   if (HasGLOzone())
-    return GetGLOzone()->CreateOffscreenGLSurface(size);
+    return GetGLOzone()->CreateOffscreenGLSurface(display, size);
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:

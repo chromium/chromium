@@ -45,6 +45,7 @@ CreateDirectCompositionSurfaceSettings(
 
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+    gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
@@ -57,7 +58,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       auto settings = CreateDirectCompositionSurfaceSettings(
           delegate->GetFeatureInfo()->workarounds());
       auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
-          gl::GLSurfaceEGL::GetGLDisplayEGL(), surface_handle,
+          display->GetAs<gl::GLDisplayEGL>(), surface_handle,
           std::move(vsync_callback), settings);
       if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
         return nullptr;
@@ -67,13 +68,13 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     } else {
       surface = gl::InitializeGLSurface(
           base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
-              gl::GLSurfaceEGL::GetGLDisplayEGL(), surface_handle,
+              display->GetAs<gl::GLDisplayEGL>(), surface_handle,
               std::make_unique<gl::VSyncProviderWin>(surface_handle)));
       if (!surface)
         return nullptr;
     }
   } else {
-    surface = gl::init::CreateViewGLSurface(surface_handle);
+    surface = gl::init::CreateViewGLSurface(display, surface_handle);
     if (!surface)
       return nullptr;
   }

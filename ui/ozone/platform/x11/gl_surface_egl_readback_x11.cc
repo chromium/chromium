@@ -18,8 +18,10 @@ constexpr x11::GraphicsContext kNoGC = x11::GraphicsContext{};
 
 }
 
-GLSurfaceEglReadbackX11::GLSurfaceEglReadbackX11(gfx::AcceleratedWidget window)
-    : window_(static_cast<x11::Window>(window)),
+GLSurfaceEglReadbackX11::GLSurfaceEglReadbackX11(gl::GLDisplayEGL* display,
+                                                 gfx::AcceleratedWidget window)
+    : GLSurfaceEglReadback(display),
+      window_(static_cast<x11::Window>(window)),
       connection_(x11::Connection::Get()) {}
 
 bool GLSurfaceEglReadbackX11::Initialize(gl::GLSurfaceFormat format) {

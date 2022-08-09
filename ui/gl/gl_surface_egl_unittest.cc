@@ -43,6 +43,11 @@ class GLSurfaceEGLTest : public testing::Test {
 
   void TearDown() override { GLSurfaceTestSupport::ShutdownGL(display_); }
 
+  GLDisplay* GetTestDisplay() {
+    EXPECT_NE(display_, nullptr);
+    return display_;
+  }
+
  private:
   raw_ptr<GLDisplay> display_ = nullptr;
 };
@@ -54,8 +59,8 @@ TEST_F(GLSurfaceEGLTest, MAYBE_SurfaceFormatTest) {
   surface_format.SetDepthBits(24);
   surface_format.SetStencilBits(8);
   surface_format.SetSamples(0);
-  scoped_refptr<GLSurface> surface =
-      init::CreateOffscreenGLSurfaceWithFormat(gfx::Size(1, 1), surface_format);
+  scoped_refptr<GLSurface> surface = init::CreateOffscreenGLSurfaceWithFormat(
+      GetTestDisplay(), gfx::Size(1, 1), surface_format);
   EGLConfig config = surface->GetConfig();
   EXPECT_TRUE(config);
 

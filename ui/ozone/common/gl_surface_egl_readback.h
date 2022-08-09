@@ -22,7 +22,7 @@ namespace ui {
 // there is no FBO implementation for Ozone.
 class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  public:
-  GLSurfaceEglReadback();
+  explicit GLSurfaceEglReadback(gl::GLDisplayEGL* display);
 
   GLSurfaceEglReadback(const GLSurfaceEglReadback&) = delete;
   GLSurfaceEglReadback& operator=(const GLSurfaceEglReadback&) = delete;

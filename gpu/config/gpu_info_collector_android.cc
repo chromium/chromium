@@ -9,6 +9,8 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/notreached.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
 
@@ -21,7 +23,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   }
 
   // At this point GL bindings have been initialized already.
-  return CollectGraphicsInfoGL(gpu_info);
+  return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {

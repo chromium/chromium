@@ -32,8 +32,10 @@ class GLOzoneEglCast : public GLOzoneEGL {
 
   // GLOzoneEGL implementation:
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget widget) override;
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override;
   gl::EGLDisplayPlatform GetNativeDisplay() override;
   bool LoadGLES2Bindings(

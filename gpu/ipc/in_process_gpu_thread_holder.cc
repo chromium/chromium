@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -78,7 +79,8 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
       gles2::PassthroughCommandDecoderSupported();
 
   share_group_ = new gl::GLShareGroup();
-  surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface_ =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
       ContextCreationAttribs(), use_passthrough_cmd_decoder);
   context_ =

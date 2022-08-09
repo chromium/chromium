@@ -29,6 +29,7 @@ class GLDisplayEGL;
 #if defined(USE_GLX)
 class GLDisplayX11;
 #endif  // USE_GLX
+class GLDisplay;
 
 GL_EXPORT void Crash();
 GL_EXPORT void Hang();
@@ -72,6 +73,14 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain, const char* name_prefix);
 // Add an entry <preference, system_device_id> to GLDisplayManagerEGL.
 GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
                                    uint64_t system_device_id);
+
+// Query the default GLDisplay. May return either a GLDisplayEGL or
+// GLDisplayX11.
+GL_EXPORT GLDisplay* GetDefaultDisplay();
+
+// Query the GLDisplay by |gpu_preference|. May return either a GLDisplayEGL or
+// GLDisplayX11.
+GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference);
 
 // Query the default GLDisplayEGL.
 GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();

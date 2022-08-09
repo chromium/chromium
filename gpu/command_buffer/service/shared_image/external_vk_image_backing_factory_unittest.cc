@@ -29,6 +29,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -65,7 +66,8 @@ class ExternalVkImageBackingFactoryTest : public testing::Test {
 
     // Set up a GL context. We don't actually need it, but we can't make
     // a SharedContextState without one.
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                     gfx::Size());
     DCHECK(gl_surface_);
     gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(),
                                             gl::GLContextAttribs());

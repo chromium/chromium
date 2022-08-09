@@ -559,7 +559,7 @@ bool ClientBase::Init(const InitParams& params) {
     gl::GLDisplayEGL* display = static_cast<gl::GLDisplayEGL*>(
         gl::init::InitializeGLOneOff(/*system_device_id=*/0));
     DCHECK(display);
-    gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    gl_surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   gl_surface_.get(), gl::GLContextAttribs());

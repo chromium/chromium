@@ -60,12 +60,15 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
       GLuint texture_id) override;
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget widget) override;
 
   scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override;
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override;
 
  protected:
@@ -95,6 +98,7 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGLWayland::ImportNativePixmap(
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget widget) {
   // Only EGLGLES2 is supported with surfaceless view gl.
   if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2) ||
@@ -112,22 +116,23 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
   if (!egl_window)
     return nullptr;
   return gl::InitializeGLSurface(new GLSurfaceWayland(
-      gl::GLSurfaceEGL::GetGLDisplayEGL(), std::move(egl_window), window));
+      display->GetAs<gl::GLDisplayEGL>(), std::move(egl_window), window));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
     return gl::InitializeGLSurface(
-        base::MakeRefCounted<GLSurfaceEglReadbackWayland>(window,
-                                                          buffer_manager_));
+        base::MakeRefCounted<GLSurfaceEglReadbackWayland>(
+            display->GetAs<gl::GLDisplayEGL>(), window, buffer_manager_));
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
   if (!buffer_manager_->GetGbmDevice())
     return nullptr;
-  return gl::InitializeGLSurface(
-      new GbmSurfacelessWayland(buffer_manager_, window));
+  return gl::InitializeGLSurface(new GbmSurfacelessWayland(
+      display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window));
 #else
   return nullptr;
 #endif
@@ -135,14 +140,15 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
+    gl::GLDisplay* display,
     const gfx::Size& size) {
-  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
+  if (display->GetAs<gl::GLDisplayEGL>()->IsEGLSurfacelessContextSupported() &&
       size.width() == 0 && size.height() == 0) {
     return gl::InitializeGLSurface(
-        new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+        new gl::SurfacelessEGL(display->GetAs<gl::GLDisplayEGL>(), size));
   } else {
     return gl::InitializeGLSurface(
-        new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+        new gl::PbufferGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(), size));
   }
 }
 

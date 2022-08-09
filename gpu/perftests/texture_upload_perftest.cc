@@ -23,6 +23,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_timing.h"
 #include "ui/gl/init/gl_factory.h"
@@ -179,7 +180,8 @@ class TextureUploadPerfTest : public testing::Test {
   // Overridden from testing::Test
   void SetUp() override {
     // Initialize an offscreen surface and a gl context.
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   surface_.get(), gl::GLContextAttribs());

@@ -36,6 +36,7 @@
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -86,7 +87,8 @@ class ImageTransferCacheEntryTest
  public:
   void SetUp() override {
     // Initialize a GL GrContext for Skia.
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size());
     ASSERT_TRUE(surface_);
     share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
     gl_context_ = base::MakeRefCounted<gl::GLContextEGL>(share_group_.get());
@@ -94,9 +96,9 @@ class ImageTransferCacheEntryTest
     ASSERT_TRUE(
         gl_context_->Initialize(surface_.get(), gl::GLContextAttribs()));
     ASSERT_TRUE(gl_context_->MakeCurrent(surface_.get()));
-    sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
+    sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
         *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
-    gr_context_ = GrDirectContext::MakeGL(std::move(interface));
+    gr_context_ = GrDirectContext::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
   }
 

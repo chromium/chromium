@@ -11,6 +11,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/demo/renderer_factory.h"
 
+namespace gl {
+class GLDisplay;
+};
+
 namespace ui {
 
 class Renderer;
@@ -32,6 +36,9 @@ class SkiaRendererFactory : public RendererFactory {
   bool Initialize() override;
   std::unique_ptr<Renderer> CreateRenderer(gfx::AcceleratedWidget widget,
                                            const gfx::Size& size) override;
+
+ private:
+  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace ui

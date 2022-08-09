@@ -246,7 +246,7 @@ uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   // supported.
   gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                           system_device_id_default);
-  if (system_device_id_high_perf) {
+  if (system_device_id_high_perf && features::SupportsEGLDualGpuRendering()) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
                             system_device_id_high_perf);
   }
@@ -664,7 +664,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       return false;
     }
     default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(gfx::Size());
+        gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
     if (!default_offscreen_surface_) {
       VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
       return false;
@@ -784,8 +784,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, false));
 
-  InitializeGLThreadSafe(command_line, gpu_preferences_, &gpu_info_,
-                         &gpu_feature_info_);
+  gl::GLDisplay* gl_display = InitializeGLThreadSafe(
+      command_line, gpu_preferences_, &gpu_info_, &gpu_feature_info_);
 
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
       base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
@@ -795,7 +795,9 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   } else {
     DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
   }
-  default_offscreen_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+
+  default_offscreen_surface_ =
+      gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
 }
@@ -899,7 +901,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
     }
     default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(gfx::Size());
+        gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
     if (!default_offscreen_surface_) {
       VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
     }

@@ -91,6 +91,7 @@ GL_INIT_EXPORT scoped_refptr<GLContext> CreateGLContext(
 
 // Creates a GL surface that renders directly to a view.
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateViewGLSurface(
+    GLDisplay* display,
     gfx::AcceleratedWidget window);
 
 #if defined(USE_OZONE)
@@ -99,15 +100,19 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateViewGLSurface(
 // be presented as an overlay. If surfaceless mode is not supported or
 // enabled it will return a null pointer.
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateSurfacelessViewGLSurface(
+    GLDisplay* display,
     gfx::AcceleratedWidget window);
 #endif  // defined(USE_OZONE)
 
 // Creates a GL surface used for offscreen rendering.
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurface(
+    GLDisplay* display,
     const gfx::Size& size);
 
 GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
-    const gfx::Size& size, GLSurfaceFormat format);
+    GLDisplay* display,
+    const gfx::Size& size,
+    GLSurfaceFormat format);
 
 // Set platform dependent disabled extensions and re-initialize extension
 // bindings.

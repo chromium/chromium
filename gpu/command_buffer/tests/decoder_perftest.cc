@@ -37,6 +37,7 @@
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -171,7 +172,8 @@ class RecordReplayContext : public GpuControl {
       gl::GLContextAttribs attribs;
       if (gpu_preferences_.use_passthrough_cmd_decoder)
         attribs.bind_generates_resource = bind_generates_resource;
-      surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+      surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                    gfx::Size());
       context_ = gl::init::CreateGLContext(share_group_.get(), surface_.get(),
                                            attribs);
     }

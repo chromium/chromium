@@ -87,18 +87,21 @@ void GLOzoneEglCast::TerminateDisplay() {
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget widget) {
   // Verify requested widget dimensions match our current display size.
   DCHECK_EQ(static_cast<int>(widget >> 16), display_size_.width());
   DCHECK_EQ(static_cast<int>(widget & 0xffff), display_size_.height());
 
-  return gl::InitializeGLSurface(new GLSurfaceCast(widget, this));
+  return gl::InitializeGLSurface(
+      new GLSurfaceCast(display->GetAs<gl::GLDisplayEGL>(), widget, this));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateOffscreenGLSurface(
+    gl::GLDisplay* display,
     const gfx::Size& size) {
   return gl::InitializeGLSurface(
-      new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+      new gl::PbufferGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(), size));
 }
 
 gl::EGLDisplayPlatform GLOzoneEglCast::GetNativeDisplay() {

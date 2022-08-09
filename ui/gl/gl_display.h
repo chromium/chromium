@@ -71,6 +71,12 @@ enum DisplayType {
   DISPLAY_TYPE_MAX = 19,
 };
 
+enum DisplayPlatform {
+  NONE = 0,
+  EGL = 1,
+  X11 = 2,
+};
+
 GL_EXPORT void GetEGLInitDisplaysForTesting(
     bool supports_angle_d3d,
     bool supports_angle_opengl,
@@ -93,11 +99,16 @@ class GL_EXPORT GLDisplay {
 
   virtual void* GetDisplay() = 0;
   virtual void Shutdown() = 0;
+  virtual bool IsInitialized() = 0;
+
+  template <typename GLDisplayPlatform>
+  GLDisplayPlatform* GetAs();
 
  protected:
-  explicit GLDisplay(uint64_t system_device_id);
+  GLDisplay(uint64_t system_device_id, DisplayPlatform type);
 
   uint64_t system_device_id_ = 0;
+  DisplayPlatform type_ = NONE;
 };
 
 #if defined(USE_EGL)
@@ -112,6 +123,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   EGLDisplay GetDisplay() override;
   void Shutdown() override;
+  bool IsInitialized() override;
 
   void SetDisplay(EGLDisplay display);
   EGLDisplayPlatform GetNativeDisplay() const;
@@ -169,6 +181,7 @@ class GL_EXPORT GLDisplayX11 : public GLDisplay {
 
   void* GetDisplay() override;
   void Shutdown() override;
+  bool IsInitialized() override;
 
  private:
   friend class GLDisplayManager<GLDisplayX11>;

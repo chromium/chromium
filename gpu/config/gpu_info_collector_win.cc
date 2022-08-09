@@ -37,7 +37,9 @@
 #include "gpu/config/gpu_util.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
 
@@ -721,7 +723,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   DCHECK(gpu_info);
 
-  if (!CollectGraphicsInfoGL(gpu_info))
+  if (!CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL()))
     return false;
 
   // ANGLE's renderer strings are of the form:

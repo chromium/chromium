@@ -33,6 +33,7 @@ class GbmSurfaceFactory;
 class GbmSurfaceless : public gl::SurfacelessEGL {
  public:
   GbmSurfaceless(GbmSurfaceFactory* surface_factory,
+                 gl::GLDisplayEGL* display,
                  std::unique_ptr<DrmWindowProxy> window,
                  gfx::AcceleratedWidget widget);
 

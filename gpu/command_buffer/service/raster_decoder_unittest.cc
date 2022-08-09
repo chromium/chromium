@@ -203,7 +203,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     scoped_refptr<gl::GLSurface> surface =
-        gl::init::CreateOffscreenGLSurface(gfx::Size());
+        gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     scoped_refptr<gl::GLContext> context = gl::init::CreateGLContext(
         share_group.get(), surface.get(), gl::GLContextAttribs());
     ASSERT_TRUE(context->MakeCurrent(surface.get()));

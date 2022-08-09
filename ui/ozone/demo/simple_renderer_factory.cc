@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/ozone/demo/gl_renderer.h"
@@ -35,12 +36,13 @@ const char kDisableGpu[] = "disable-gpu";
 const char kEnableVulkan[] = "enable-vulkan";
 #endif
 
-scoped_refptr<gl::GLSurface> CreateGLSurface(gfx::AcceleratedWidget widget) {
+scoped_refptr<gl::GLSurface> CreateGLSurface(gl::GLDisplay* display,
+                                             gfx::AcceleratedWidget widget) {
   scoped_refptr<gl::GLSurface> surface;
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSurfaceless))
-    surface = gl::init::CreateSurfacelessViewGLSurface(widget);
+    surface = gl::init::CreateSurfacelessViewGLSurface(display, widget);
   if (!surface)
-    surface = gl::init::CreateViewGLSurface(widget);
+    surface = gl::init::CreateViewGLSurface(display, widget);
   return surface;
 }
 
@@ -48,7 +50,12 @@ scoped_refptr<gl::GLSurface> CreateGLSurface(gfx::AcceleratedWidget widget) {
 
 SimpleRendererFactory::SimpleRendererFactory() {}
 
-SimpleRendererFactory::~SimpleRendererFactory() {}
+SimpleRendererFactory::~SimpleRendererFactory() {
+  if (display_) {
+    gl::init::ShutdownGL(display_, false);
+    display_ = nullptr;
+  }
+}
 
 bool SimpleRendererFactory::Initialize() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -65,9 +72,13 @@ bool SimpleRendererFactory::Initialize() {
     }
   }
 #endif
-  if (!command_line->HasSwitch(kDisableGpu) &&
-      gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
-    type_ = GL;
+  if (!command_line->HasSwitch(kDisableGpu)) {
+    display_ = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    if (display_) {
+      type_ = GL;
+    } else {
+      type_ = SOFTWARE;
+    }
   } else {
     type_ = SOFTWARE;
   }
@@ -84,7 +95,7 @@ std::unique_ptr<Renderer> SimpleRendererFactory::CreateRenderer(
       surface_factory_ozone->CreatePlatformWindowSurface(widget);
   switch (type_) {
     case GL: {
-      scoped_refptr<gl::GLSurface> surface = CreateGLSurface(widget);
+      scoped_refptr<gl::GLSurface> surface = CreateGLSurface(display_, widget);
       if (!surface)
         LOG(FATAL) << "Failed to create GL surface";
       if (surface->IsSurfaceless()) {

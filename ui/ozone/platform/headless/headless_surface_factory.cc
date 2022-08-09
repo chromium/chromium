@@ -107,8 +107,8 @@ class FileSurface : public SurfaceOzoneCanvas {
 
 class FileGLSurface : public GLSurfaceEglReadback {
  public:
-  explicit FileGLSurface(const base::FilePath& location)
-      : location_(location) {}
+  FileGLSurface(gl::GLDisplayEGL* display, const base::FilePath& location)
+      : GLSurfaceEglReadback(display), location_(location) {}
 
   FileGLSurface(const FileGLSurface&) = delete;
   FileGLSurface& operator=(const FileGLSurface&) = delete;
@@ -188,16 +188,19 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
 
   // GLOzone:
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
     return gl::InitializeGLSurface(base::MakeRefCounted<FileGLSurface>(
+        display->GetAs<gl::GLDisplayEGL>(),
         GetPathForWidget(base_path_, window)));
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override {
     return gl::InitializeGLSurface(
         base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+            display->GetAs<gl::GLDisplayEGL>(), size));
   }
 
  protected:

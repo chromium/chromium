@@ -107,7 +107,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   }
 }
 
-scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
+scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
+                                             gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateViewGLSurface");
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
@@ -127,7 +128,9 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
 }
 
 scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
-    const gfx::Size& size, GLSurfaceFormat format) {
+    GLDisplay* display,
+    const gfx::Size& size,
+    GLSurfaceFormat format) {
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
@@ -136,16 +139,17 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
           new NoOpGLSurface(size), format);
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE:
-      if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
+    case kGLImplementationEGLANGLE: {
+      GLDisplayEGL* display_egl = display->GetAs<gl::GLDisplayEGL>();
+      if (display_egl->IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
         return InitializeGLSurfaceWithFormat(
-            new SurfacelessEGL(GLSurfaceEGL::GetGLDisplayEGL(), size), format);
+            new SurfacelessEGL(display_egl, size), format);
       } else {
         return InitializeGLSurfaceWithFormat(
-            new PbufferGLSurfaceEGL(GLSurfaceEGL::GetGLDisplayEGL(), size),
-            format);
+            new PbufferGLSurfaceEGL(display_egl, size), format);
       }
+    }
 #endif  // defined(USE_EGL)
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:

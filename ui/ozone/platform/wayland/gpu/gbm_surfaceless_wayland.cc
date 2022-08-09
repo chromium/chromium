@@ -111,9 +111,10 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::EraseBuffers(
 }
 
 GbmSurfacelessWayland::GbmSurfacelessWayland(
+    gl::GLDisplayEGL* display,
     WaylandBufferManagerGpu* buffer_manager,
     gfx::AcceleratedWidget widget)
-    : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
+    : SurfacelessEGL(display, gfx::Size()),
       buffer_manager_(buffer_manager),
       widget_(widget),
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),

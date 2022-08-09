@@ -14,6 +14,10 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
+namespace gl {
+class GLDisplay;
+};
+
 namespace ui {
 
 class SimpleRendererFactory : public RendererFactory {
@@ -43,6 +47,7 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
+  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace ui

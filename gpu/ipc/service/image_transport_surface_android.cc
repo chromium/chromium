@@ -19,6 +19,7 @@ namespace gpu {
 
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+    gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
@@ -42,11 +43,11 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
       delegate->GetFeatureInfo()->feature_flags().android_surface_control &&
       can_be_used_with_surface_control) {
     surface = new gl::GLSurfaceEGLSurfaceControl(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), window,
+        display->GetAs<gl::GLDisplayEGL>(), window,
         base::ThreadTaskRunnerHandle::Get());
   } else {
-    surface = new gl::NativeViewGLSurfaceEGL(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), window, nullptr);
+    surface = new gl::NativeViewGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(),
+                                             window, nullptr);
   }
 
   bool initialize_success = surface->Initialize(format);

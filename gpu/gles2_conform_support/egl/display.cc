@@ -11,6 +11,8 @@
 #include "gpu/gles2_conform_support/egl/context.h"
 #include "gpu/gles2_conform_support/egl/surface.h"
 #include "gpu/gles2_conform_support/egl/thread_state.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gles2_conform_support {
@@ -20,8 +22,7 @@ Display::Display()
     : is_initialized_(false),
       next_create_window_surface_creates_pbuffer_(false),
       window_surface_pbuffer_width_(0),
-      window_surface_pbuffer_height_(0) {
-}
+      window_surface_pbuffer_height_(0) {}
 
 Display::~Display() {
   surfaces_.clear();
@@ -183,7 +184,8 @@ EGLSurface Display::DoCreatePbufferSurface(ThreadState* ts,
                                            EGLint height) {
   lock_.AssertAcquired();
   scoped_refptr<gl::GLSurface> gl_surface;
-  gl_surface = gl::init::CreateOffscreenGLSurface(gfx::Size(width, height));
+  gl_surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size(width, height));
   if (!gl_surface)
     return ts->ReturnError(EGL_BAD_ALLOC, nullptr);
   surfaces_.emplace_back(new Surface(gl_surface.get(), config));
@@ -223,7 +225,7 @@ EGLSurface Display::CreateWindowSurface(ThreadState* ts,
 #else
   gfx::AcceleratedWidget widget = static_cast<gfx::AcceleratedWidget>(win);
 #endif
-  gl_surface = gl::init::CreateViewGLSurface(widget);
+  gl_surface = gl::init::CreateViewGLSurface(gl::GetDefaultDisplay(), widget);
   if (!gl_surface)
     return ts->ReturnError(EGL_BAD_ALLOC, EGL_NO_SURFACE);
   surfaces_.emplace_back(new Surface(gl_surface.get(), config));

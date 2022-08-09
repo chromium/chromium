@@ -65,21 +65,23 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
     if (is_swiftshader_) {
       return gl::InitializeGLSurface(
-          base::MakeRefCounted<GLSurfaceEglReadbackX11>(window));
+          base::MakeRefCounted<GLSurfaceEglReadbackX11>(
+              display->GetAs<gl::GLDisplayEGL>(), window));
     } else {
       switch (gl::GetGLImplementation()) {
         case gl::kGLImplementationEGLGLES2:
           DCHECK(window != gfx::kNullAcceleratedWidget);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
-              gl::GLSurfaceEGL::GetGLDisplayEGL(),
+              display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));
         case gl::kGLImplementationEGLANGLE:
           DCHECK(window != gfx::kNullAcceleratedWidget);
           return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
-              gl::GLSurfaceEGL::GetGLDisplayEGL(),
+              display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));
         default:
           NOTREACHED();
@@ -89,15 +91,15 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override {
-    if (gl::GLSurfaceEGL::GetGLDisplayEGL()
-            ->IsEGLSurfacelessContextSupported() &&
-        size.width() == 0 && size.height() == 0) {
-      return InitializeGLSurface(
-          new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+    gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
+    if (egl_display->IsEGLSurfacelessContextSupported() && size.width() == 0 &&
+        size.height() == 0) {
+      return InitializeGLSurface(new gl::SurfacelessEGL(egl_display, size));
     } else {
-      return InitializeGLSurface(new gl::PbufferGLSurfaceEGL(
-          gl::GLSurfaceEGL::GetGLDisplayEGL(), size));
+      return InitializeGLSurface(
+          new gl::PbufferGLSurfaceEGL(egl_display, size));
     }
   }
 

@@ -29,6 +29,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -49,7 +50,8 @@ GLSurfaceContextPair GetRealContextForVulkan() {
   if (surface && context)
     return std::make_pair(std::move(surface), std::move(context));
 
-  surface = gl::init::CreateOffscreenGLSurface(gfx::Size(1, 1));
+  surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                               gfx::Size(1, 1));
   DCHECK(surface);
   // Allow context and surface to be null and just fallback to
   // not having any real EGL context in that case instead of crashing.

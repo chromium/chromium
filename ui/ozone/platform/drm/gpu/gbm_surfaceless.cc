@@ -38,16 +38,16 @@ void WaitForFence(EGLDisplay display, EGLSyncKHR fence) {
 }  // namespace
 
 GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
+                               gl::GLDisplayEGL* display,
                                std::unique_ptr<DrmWindowProxy> window,
                                gfx::AcceleratedWidget widget)
-    : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
+    : SurfacelessEGL(display, gfx::Size()),
       surface_factory_(surface_factory),
       window_(std::move(window)),
       widget_(widget),
       has_implicit_external_sync_(
-          GetGLDisplayEGL()->ext->b_EGL_ARM_implicit_external_sync),
-      has_image_flush_external_(
-          GetGLDisplayEGL()->ext->b_EGL_EXT_image_flush_external) {
+          display->ext->b_EGL_ARM_implicit_external_sync),
+      has_image_flush_external_(display->ext->b_EGL_EXT_image_flush_external) {
   surface_factory_->RegisterSurface(window_->widget(), this);
   supports_plane_gpu_fences_ = window_->SupportsGpuFences();
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());

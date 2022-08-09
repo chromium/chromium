@@ -33,7 +33,8 @@ class WaylandBufferManagerGpu;
 class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
                                     public WaylandSurfaceGpu {
  public:
-  GLSurfaceEglReadbackWayland(gfx::AcceleratedWidget widget,
+  GLSurfaceEglReadbackWayland(gl::GLDisplayEGL* display,
+                              gfx::AcceleratedWidget widget,
                               WaylandBufferManagerGpu* buffer_manager);
   GLSurfaceEglReadbackWayland(const GLSurfaceEglReadbackWayland&) = delete;
   GLSurfaceEglReadbackWayland& operator=(const GLSurfaceEglReadbackWayland&) =

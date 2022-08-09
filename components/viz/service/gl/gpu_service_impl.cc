@@ -509,7 +509,7 @@ void GpuServiceImpl::UpdateGPUInfo() {
 
 void GpuServiceImpl::UpdateGPUInfoGL() {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  gpu::CollectGraphicsInfoGL(&gpu_info_);
+  gpu::CollectGraphicsInfoGL(&gpu_info_, gl::GetDefaultDisplay());
   gpu_host_->DidUpdateGPUInfo(gpu_info_);
 }
 

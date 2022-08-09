@@ -2445,7 +2445,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(
-      context_creation_attribs_.offscreen_framebuffer_size);
+      display_, context_creation_attribs_.offscreen_framebuffer_size);
   context_ = gl::init::CreateGLContext(
       nullptr, surface_.get(),
       GenerateGLContextAttribs(context_creation_attribs_, group_.get()));

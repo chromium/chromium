@@ -43,10 +43,11 @@ base::TimeDelta GetVSyncInterval() {
 
 namespace ui {
 
-GLSurfaceCast::GLSurfaceCast(gfx::AcceleratedWidget widget,
+GLSurfaceCast::GLSurfaceCast(gl::GLDisplayEGL* display,
+                             gfx::AcceleratedWidget widget,
                              GLOzoneEglCast* parent)
     : NativeViewGLSurfaceEGL(
-          GLSurfaceEGL::GetGLDisplayEGL(),
+          display,
           parent->GetNativeWindow(),
           std::make_unique<gfx::FixedVSyncProvider>(base::TimeTicks(),
                                                     GetVSyncInterval())),

@@ -20,7 +20,9 @@ class GLOzoneEglCast;
 
 class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
  public:
-  GLSurfaceCast(gfx::AcceleratedWidget widget, GLOzoneEglCast* parent);
+  GLSurfaceCast(gl::GLDisplayEGL* display,
+                gfx::AcceleratedWidget widget,
+                GLOzoneEglCast* parent);
 
   GLSurfaceCast(const GLSurfaceCast&) = delete;
   GLSurfaceCast& operator=(const GLSurfaceCast&) = delete;

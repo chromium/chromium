@@ -75,7 +75,7 @@ class GLImageTest : public testing::Test {
   void SetUp() override {
     auto prefered_impl = delegate_.GetPreferedGLImplementation();
     display_ = GLImageTestSupport::InitializeGL(prefered_impl);
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     context_ =
         gl::init::CreateGLContext(nullptr, surface_.get(), GLContextAttribs());
     context_->MakeCurrent(surface_.get());

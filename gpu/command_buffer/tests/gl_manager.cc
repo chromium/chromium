@@ -47,6 +47,7 @@
 #include "ui/gl/gl_image_ref_counted_memory.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -358,7 +359,8 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   command_buffer_->set_handler(decoder_.get());
 
-  surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface_ =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   ASSERT_TRUE(surface_.get() != nullptr)
       << "could not create offscreen surface";
 
@@ -427,7 +429,7 @@ void GLManager::SetupBaseContext() {
         new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
     gfx::Size size(4, 4);
     base_surface_ = new scoped_refptr<gl::GLSurface>(
-        gl::init::CreateOffscreenGLSurface(size));
+        gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), size));
     base_context_ = new scoped_refptr<gl::GLContext>(gl::init::CreateGLContext(
         base_share_group_->get(), base_surface_->get(),
         gl::GLContextAttribs()));

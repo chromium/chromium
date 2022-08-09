@@ -91,6 +91,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
 
   // Creates a GL surface that renders directly to a view.
   virtual scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) = 0;
 
   // Creates a GL surface that renders directly into a window with surfaceless
@@ -99,10 +100,12 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   // unsupported.
   // TODO(spang): Consider deprecating this and using OverlaySurface for GL.
   virtual scoped_refptr<gl::GLSurface> CreateSurfacelessViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) = 0;
 
   // Creates a GL surface used for offscreen rendering.
   virtual scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) = 0;
 };
 

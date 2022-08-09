@@ -116,7 +116,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   }
 }
 
-scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
+scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
+                                             gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateViewGLSurface");
   CHECK_NE(kGLImplementationNone, GetGLImplementation());
   switch (GetGLImplementation()) {
@@ -124,7 +125,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
         return InitializeGLSurface(new NativeViewGLSurfaceEGL(
-            GLSurfaceEGL::GetGLDisplayEGL(), window, nullptr));
+            display->GetAs<gl::GLDisplayEGL>(), window, nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }
@@ -135,20 +136,22 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
 }
 
 scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
-    const gfx::Size& size, GLSurfaceFormat format) {
+    GLDisplay* display,
+    const gfx::Size& size,
+    GLSurfaceFormat format) {
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
   CHECK_NE(kGLImplementationNone, GetGLImplementation());
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE: {
-      if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
+      GLDisplayEGL* display_egl = display->GetAs<gl::GLDisplayEGL>();
+      if (display_egl->IsEGLSurfacelessContextSupported() &&
           (size.width() == 0 && size.height() == 0)) {
         return InitializeGLSurfaceWithFormat(
-            new SurfacelessEGL(GLSurfaceEGL::GetGLDisplayEGL(), size), format);
+            new SurfacelessEGL(display_egl, size), format);
       } else {
         return InitializeGLSurfaceWithFormat(
-            new PbufferGLSurfaceEGL(GLSurfaceEGL::GetGLDisplayEGL(), size),
-            format);
+            new PbufferGLSurfaceEGL(display_egl, size), format);
       }
     }
     case kGLImplementationMockGL:

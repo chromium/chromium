@@ -15,6 +15,7 @@ namespace gpu {
 
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+    gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
@@ -30,7 +31,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     case gl::kGLImplementationEGLANGLE:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMacEGL(
-              gl::GLSurfaceEGL::GetGLDisplayEGL(), delegate));
+              display->GetAs<gl::GLDisplayEGL>(), delegate));
 #endif
     case gl::kGLImplementationMockGL:
     case gl::kGLImplementationStubGL:

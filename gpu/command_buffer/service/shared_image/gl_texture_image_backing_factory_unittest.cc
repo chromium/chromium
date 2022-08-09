@@ -37,6 +37,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/progress_reporter.h"
 
@@ -50,7 +51,8 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
                          scoped_refptr<gl::GLContext>& context,
                          scoped_refptr<SharedContextState>& context_state,
                          scoped_refptr<gles2::FeatureInfo>& feature_info) {
-  surface = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   ASSERT_TRUE(surface);
   context =
       gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());

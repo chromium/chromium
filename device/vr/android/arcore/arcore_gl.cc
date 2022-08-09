@@ -45,6 +45,7 @@
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
@@ -444,10 +445,15 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   // TODO(crbug.com/1170580): support ANGLE with cardboard?
   gl::init::DisableANGLE();
 
-  if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
-      !gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
-    DLOG(ERROR) << "gl::init::InitializeGLOneOff failed";
-    return false;
+  gl::GLDisplay* display = nullptr;
+  if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
+    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    if (!display) {
+      DLOG(ERROR) << "gl::init::InitializeGLOneOff failed";
+      return false;
+    }
+  } else {
+    display = gl::GetDefaultDisplayEGL();
   }
 
   DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
@@ -456,10 +462,10 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   // surface for Offscreen usage.
   scoped_refptr<gl::GLSurface> surface;
   if (drawing_widget != gfx::kNullAcceleratedWidget) {
-    surface = gl::init::CreateViewGLSurface(drawing_widget);
+    surface = gl::init::CreateViewGLSurface(display, drawing_widget);
   } else {
     surface = gl::init::CreateOffscreenGLSurfaceWithFormat(
-        {0, 0}, gl::GLSurfaceFormat());
+        display, {0, 0}, gl::GLSurfaceFormat());
   }
   DVLOG(3) << "surface=" << surface.get();
   if (!surface.get()) {

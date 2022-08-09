@@ -23,6 +23,7 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/gl_image_egl.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
@@ -237,7 +238,8 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
-  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(
+      gl::GetDefaultDisplay(), widget_);
   EXPECT_TRUE(gl_surface);
   gl_surface->SetRelyOnImplicitSync();
   static_cast<ui::GbmSurfacelessWayland*>(gl_surface.get())
@@ -529,7 +531,8 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
-  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(
+      gl::GetDefaultDisplay(), widget_);
   EXPECT_TRUE(gl_surface);
   gl_surface->SetRelyOnImplicitSync();
   static_cast<ui::GbmSurfacelessWayland*>(gl_surface.get())
@@ -864,7 +867,8 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   EXPECT_TRUE(gl_ozone);
-  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(
+      gl::GetDefaultDisplay(), widget_);
   EXPECT_FALSE(gl_surface);
 
   // Now, set gbm.
@@ -872,20 +876,23 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
 
   // It's still impossible to create the device if supports_dmabuf is false.
   EXPECT_FALSE(buffer_manager_gpu_->GetGbmDevice());
-  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(gl::GetDefaultDisplay(),
+                                                        widget_);
   EXPECT_FALSE(gl_surface);
 
   // Now set supports_dmabuf.
   buffer_manager_gpu_->supports_dmabuf_ = true;
   EXPECT_TRUE(buffer_manager_gpu_->GetGbmDevice());
-  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(gl::GetDefaultDisplay(),
+                                                        widget_);
   EXPECT_TRUE(gl_surface);
 
   // Reset gbm now. WaylandConnectionProxy can reset it when zwp is not
   // available. And factory must behave the same way as previously.
   buffer_manager_gpu_->gbm_device_ = nullptr;
   EXPECT_FALSE(buffer_manager_gpu_->GetGbmDevice());
-  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(gl::GetDefaultDisplay(),
+                                                        widget_);
   EXPECT_FALSE(gl_surface);
 }
 
@@ -904,7 +911,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
-  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(
+      gl::GetDefaultDisplay(), widget_);
   EXPECT_TRUE(gl_surface);
   gl_surface->SetRelyOnImplicitSync();
   static_cast<ui::GbmSurfacelessWayland*>(gl_surface.get())

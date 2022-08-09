@@ -30,7 +30,8 @@ using BufferId = uint32_t;
 class GbmSurfacelessWayland : public gl::SurfacelessEGL,
                               public WaylandSurfaceGpu {
  public:
-  GbmSurfacelessWayland(WaylandBufferManagerGpu* buffer_manager,
+  GbmSurfacelessWayland(gl::GLDisplayEGL* display,
+                        WaylandBufferManagerGpu* buffer_manager,
                         gfx::AcceleratedWidget widget);
 
   GbmSurfacelessWayland(const GbmSurfacelessWayland&) = delete;

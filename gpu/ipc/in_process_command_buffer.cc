@@ -64,6 +64,8 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
@@ -286,7 +288,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   } else {
     // TODO(crbug.com/1247756): Is creating an offscreen GL surface needed
     // still?
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size());
     if (!surface_.get()) {
       DestroyOnGpuThread();
       LOG(ERROR) << "ContextResult::kFatalFailure: Failed to create surface.";

@@ -7,6 +7,8 @@
 #include "build/chromecast_buildflags.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
 
@@ -22,7 +24,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   gpu_info->machine_model_name = "Chromecast";
 #endif  // BUILDFLAG(IS_CASTOS)
 
-  return CollectGraphicsInfoGL(gpu_info);
+  return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplay());
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {

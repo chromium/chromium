@@ -19,8 +19,8 @@ constexpr size_t kBytesPerPixelBGRA = 4;
 
 }  // namespace
 
-GLSurfaceEglReadback::GLSurfaceEglReadback()
-    : PbufferGLSurfaceEGL(GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1)),
+GLSurfaceEglReadback::GLSurfaceEglReadback(gl::GLDisplayEGL* display)
+    : PbufferGLSurfaceEGL(display, gfx::Size(1, 1)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 bool GLSurfaceEglReadback::Resize(const gfx::Size& size,

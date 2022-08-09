@@ -120,16 +120,19 @@ scoped_refptr<gl::GLContext> GLOzoneGLX::CreateGLContext(
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneGLX::CreateViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   return gl::InitializeGLSurface(new gl::GLSurfaceGLXX11(window));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneGLX::CreateSurfacelessViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   return nullptr;
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneGLX::CreateOffscreenGLSurface(
+    gl::GLDisplay* display,
     const gfx::Size& size) {
   return gl::InitializeGLSurface(new gl::UnmappedNativeViewGLSurfaceGLX(size));
 }

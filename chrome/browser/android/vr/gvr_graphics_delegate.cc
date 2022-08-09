@@ -27,6 +27,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace vr {
@@ -167,22 +168,25 @@ void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
   // TODO(crbug.com/1170580): support ANGLE with cardboard?
   gl::init::DisableANGLE();
 
-  if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
-      !gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
-    LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
-    browser_->ForceExitVr();
-    return;
+  gl::GLDisplay* display = nullptr;
+  if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
+    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    if (!display) {
+      LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
+      browser_->ForceExitVr();
+      return;
+    }
+  } else {
+    display = gl::GetDefaultDisplayEGL();
   }
-
-  DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
 
   scoped_refptr<gl::GLSurface> surface;
   if (window) {
     DCHECK(!surfaceless_rendering_);
-    surface = gl::init::CreateViewGLSurface(window);
+    surface = gl::init::CreateViewGLSurface(display, window);
   } else {
     DCHECK(surfaceless_rendering_);
-    surface = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
   }
   if (!surface.get()) {
     LOG(ERROR) << "gl::init::CreateOffscreenGLSurface failed";

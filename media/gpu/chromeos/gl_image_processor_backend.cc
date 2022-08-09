@@ -19,6 +19,7 @@
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace media {
@@ -213,7 +214,8 @@ bool GLImageProcessorBackend::InitializeTask() {
   // Create a driver-level GL context just for us. This is questionable because
   // work in this context will be competing with the context(s) used for
   // rasterization and compositing. However, it's a simple starting point.
-  gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  gl_surface_ =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   if (!gl_surface_) {
     LOG(ERROR) << "Could not create the offscreen EGL surface";
     return false;

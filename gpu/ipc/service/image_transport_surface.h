@@ -28,6 +28,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   // This will be implemented separately by each platform. On failure, a null
   // scoped_refptr should be returned.
   static scoped_refptr<gl::GLSurface> CreateNativeSurface(
+      gl::GLDisplay* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> stub,
       SurfaceHandle surface_handle,
       gl::GLSurfaceFormat format);

@@ -5,11 +5,13 @@
 #include "ui/gl/gl_display.h"
 
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/export_template.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -585,7 +587,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
 #else
       AddInitDisplay(init_displays, ANGLE_OPENGL);
       AddInitDisplay(init_displays, ANGLE_OPENGLES);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
     } else {
       if (requested_renderer == kANGLEImplementationOpenGLName) {
         AddInitDisplay(init_displays, ANGLE_OPENGL);
@@ -660,10 +662,46 @@ void GetEGLInitDisplaysForTesting(bool supports_angle_d3d,
                      supports_angle_metal, command_line, init_displays);
 }
 
-GLDisplay::GLDisplay(uint64_t system_device_id)
-    : system_device_id_(system_device_id) {}
+GLDisplay::GLDisplay(uint64_t system_device_id, DisplayPlatform type)
+    : system_device_id_(system_device_id), type_(type) {}
 
 GLDisplay::~GLDisplay() = default;
+
+template <typename GLDisplayPlatform>
+GLDisplayPlatform* GLDisplay::GetAs() {
+  bool type_checked = false;
+  switch (type_) {
+    case NONE:
+      NOTREACHED();
+      break;
+
+    case EGL:
+#if defined(USE_EGL)
+      type_checked = std::is_same<GLDisplayPlatform, GLDisplayEGL>::value;
+#endif  // defined(USE_EGL)
+      break;
+
+    case X11:
+#if defined(USE_GLX)
+      type_checked = std::is_same<GLDisplayPlatform, GLDisplayX11>::value;
+#endif  // defined(USE_GLX)
+      break;
+  }
+  if (type_checked)
+    return static_cast<GLDisplayPlatform*>(this);
+
+  return nullptr;
+}
+
+#if defined(USE_EGL)
+template EXPORT_TEMPLATE_DEFINE(GL_EXPORT)
+    GLDisplayEGL* GLDisplay::GetAs<GLDisplayEGL>();
+#endif  // defined(USE_EGL)
+
+#if defined(USE_GLX)
+template EXPORT_TEMPLATE_DEFINE(GL_EXPORT)
+    GLDisplayX11* GLDisplay::GetAs<GLDisplayX11>();
+#endif  // defined(USE_GLX)
 
 #if defined(USE_EGL)
 GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
@@ -678,9 +716,8 @@ void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
 }
 
 GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
-    : GLDisplay(system_device_id) {
+    : GLDisplay(system_device_id, EGL), display_(EGL_NO_DISPLAY) {
   ext = std::make_unique<DisplayExtensionsEGL>();
-  display_ = EGL_NO_DISPLAY;
 }
 
 GLDisplayEGL::~GLDisplayEGL() = default;
@@ -707,6 +744,10 @@ void GLDisplayEGL::Shutdown() {
   egl_surfaceless_context_supported_ = false;
   egl_context_priority_supported_ = false;
   egl_android_native_fence_sync_supported_ = false;
+}
+
+bool GLDisplayEGL::IsInitialized() {
+  return display_ != EGL_NO_DISPLAY;
 }
 
 void GLDisplayEGL::SetDisplay(EGLDisplay display) {
@@ -935,7 +976,7 @@ void GLDisplayEGL::InitializeCommon() {
   if (!is_angle) {
     egl_surfaceless_context_supported_ = false;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (egl_surfaceless_context_supported_) {
     // EGL_KHR_surfaceless_context is supported but ensure
@@ -976,13 +1017,13 @@ void GLDisplayEGL::InitializeCommon() {
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {
     egl_android_native_fence_sync_supported_ = true;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // defined(USE_EGL)
 
 #if defined(USE_GLX)
 GLDisplayX11::GLDisplayX11(uint64_t system_device_id)
-    : GLDisplay(system_device_id) {}
+    : GLDisplay(system_device_id, X11) {}
 
 GLDisplayX11::~GLDisplayX11() = default;
 
@@ -991,6 +1032,10 @@ void* GLDisplayX11::GetDisplay() {
 }
 
 void GLDisplayX11::Shutdown() {}
+
+bool GLDisplayX11::IsInitialized() {
+  return true;
+}
 #endif  // defined(USE_GLX)
 
 }  // namespace gl

@@ -41,6 +41,7 @@
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 using testing::AtLeast;
@@ -53,7 +54,8 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
                          scoped_refptr<gl::GLContext>& context,
                          scoped_refptr<SharedContextState>& context_state,
                          scoped_refptr<gles2::FeatureInfo>& feature_info) {
-  surface = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                               gfx::Size());
   ASSERT_TRUE(surface);
   context =
       gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());

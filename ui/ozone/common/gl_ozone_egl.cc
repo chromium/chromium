@@ -86,6 +86,7 @@ scoped_refptr<gl::GLContext> GLOzoneEGL::CreateGLContext(
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGL::CreateSurfacelessViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget window) {
   // This will usually not be implemented by the platform specific version.
   return nullptr;
