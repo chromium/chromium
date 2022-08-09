@@ -1382,6 +1382,23 @@
       ],
     },
   },
+  # Xcode 14 beta 5.
+  'xcode_14_beta_5': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '14a5294e'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_14a5294e',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
   # Xcode 14 on iOS main.
   'xcode_14_main': {
     '$mixin_append': {
