@@ -572,6 +572,19 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                                     views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
                                 0, 0))
           .SetIgnoreDefaultMainAxisMargins(true);
+
+  // In a handful of (mostly South-Asian) languages, button text can exceed the
+  // available width in the bubble if buttons are aligned horizontally. In those
+  // cases - and only those cases - the bubble can switch to a vertical button
+  // alignment.
+  if (button_container->GetMinimumSize().width() >
+      kBubbleMaxWidthDip - kBubbleContentsInsets.width()) {
+    button_layout.SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+        .SetDefault(views::kMarginsKey, gfx::Insets::VH(default_spacing, 0))
+        .SetIgnoreDefaultMainAxisMargins(true);
+  }
+
   button_container->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(button_layout.GetDefaultFlexRule()));
