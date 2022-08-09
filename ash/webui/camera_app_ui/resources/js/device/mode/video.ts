@@ -47,6 +47,7 @@ import {GifRecordTime, RecordTime} from './record_time.js';
  * Maps from board name to its default encoding profile and bitrate multiplier.
  */
 const encoderPreference = new Map([
+  ['corsola', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['strongbad', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['trogdor', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['dedede', {profile: h264.Profile.HIGH, multiplier: 8}],
