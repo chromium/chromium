@@ -17,15 +17,9 @@ class FakeDlcserviceClient;
 
 namespace guest_os {
 
-class BasicDBusHelper {
- public:
-  BasicDBusHelper();
-  ~BasicDBusHelper();
-};
-
 class FakeCiceroneHelper {
  public:
-  explicit FakeCiceroneHelper(BasicDBusHelper* basic_helper);
+  FakeCiceroneHelper();
   ~FakeCiceroneHelper();
 
   // Returns a handle to the dbus fake for cicerone.
@@ -34,7 +28,7 @@ class FakeCiceroneHelper {
 
 class FakeSeneschalHelper {
  public:
-  explicit FakeSeneschalHelper(BasicDBusHelper* basic_helper);
+  FakeSeneschalHelper();
   ~FakeSeneschalHelper();
 
   // Returns a handle to the dbus fake for seneschal.
@@ -43,7 +37,7 @@ class FakeSeneschalHelper {
 
 class FakeDlcserviceHelper {
  public:
-  explicit FakeDlcserviceHelper(BasicDBusHelper* basic_helper);
+  FakeDlcserviceHelper();
   ~FakeDlcserviceHelper();
 
   chromeos::FakeDlcserviceClient* FakeDlcserviceClient();
@@ -60,7 +54,7 @@ class FakeConciergeHelper {
 
 class FakeChunneldHelper {
  public:
-  explicit FakeChunneldHelper(BasicDBusHelper* basic_helper);
+  FakeChunneldHelper();
   ~FakeChunneldHelper();
 };
 
@@ -68,8 +62,7 @@ class FakeChunneldHelper {
 // class, and the dbus services common to most VMs get initialised with fakes
 // during before your test and torn down correctly after.
 // You can access the fakes with e.g. this->FakeConciergeClient.
-class FakeVmServicesHelper : public BasicDBusHelper,
-                             public FakeCiceroneHelper,
+class FakeVmServicesHelper : public FakeCiceroneHelper,
                              public FakeSeneschalHelper,
                              public FakeDlcserviceHelper,
                              public FakeConciergeHelper,
