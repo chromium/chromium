@@ -81,6 +81,16 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
     return;
   }
 
+  bool is_disabled = GetVisualState() == Button::STATE_DISABLED;
+  SkColor background_color =
+      is_disabled ? GetForegroundColor(ButtonState::STATE_DISABLED)
+                  : GetColorProvider()->GetColor(
+                        kColorDownloadToolbarButtonRingBackground);
+  SkColor progress_color =
+      is_disabled
+          ? GetForegroundColor(ButtonState::STATE_DISABLED)
+          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
+
   int x = width() / 2 - kProgressRingRadius;
   int y = height() / 2 - kProgressRingRadius;
   int diameter = 2 * kProgressRingRadius;
@@ -92,20 +102,16 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
       scanning_animation_.Reset();
       scanning_animation_.Show();
     }
-    views::DrawSpinningRing(
-        canvas, gfx::RectFToSkRect(ring_bounds),
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground),
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
-        kProgressRingStrokeWidth, /*start_angle=*/
-        gfx::Tween::IntValueBetween(scanning_animation_.GetCurrentValue(), 0,
-                                    360));
+    views::DrawSpinningRing(canvas, gfx::RectFToSkRect(ring_bounds),
+                            background_color, progress_color,
+                            kProgressRingStrokeWidth, /*start_angle=*/
+                            gfx::Tween::IntValueBetween(
+                                scanning_animation_.GetCurrentValue(), 0, 360));
     return;
   }
 
   views::DrawProgressRing(
-      canvas, gfx::RectFToSkRect(ring_bounds),
-      GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground),
-      GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
+      canvas, gfx::RectFToSkRect(ring_bounds), background_color, progress_color,
       kProgressRingStrokeWidth, /*start_angle=*/-90,
       /*sweep_angle=*/360 * progress_info.progress_percentage / 100.0);
 }
@@ -175,12 +181,16 @@ void DownloadToolbarButtonView::UpdateIcon() {
     new_icon = &kDownloadToolbarButtonIcon;
   }
 
-  if (icon_color != gfx::kPlaceholderColor) {
-    for (auto state : kButtonStates) {
-      SetImageModel(state,
-                    ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
-    }
-  }
+  SetImageModel(ButtonState::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
+  SetImageModel(ButtonState::STATE_HOVERED,
+                ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
+  SetImageModel(ButtonState::STATE_PRESSED,
+                ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
+  SetImageModel(
+      Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(
+          *new_icon, GetForegroundColor(ButtonState::STATE_DISABLED)));
 }
 
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
