@@ -1960,6 +1960,13 @@ virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/* [ Pass ]
 wpt_internal/origin-agent-cluster-default/* [ Skip ]
 virtual/origin-agent-cluster-default/wpt_internal/origin-agent-cluster-default/* [ Pass ]
 
+# These tests needs Sanitizer API namespace support.
+crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Skip ]
+crbug.com/1225606 virtual/mathml-disabled/sanitizer-api-math-namespace-designator.html [ Skip ]
+# This is failing even with Sanitizer API namespace. We have an entry in TestExpectations.
+# crbug.com/1225606 virtual/sanitizer-api-namespaces/external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Pass ]
+crbug.com/1225606 virtual/sanitizer-api-namespaces/virtual/mathml-disabled/sanitizer-api-math-namespace-designator.html [ Pass ]
+
 # Skip manual tests, see crbug/1114920
 external/wpt/html/semantics/forms/the-input-element/disabled-click-picker-manual.html [ Skip ]
 

@@ -1,7 +1,0 @@
-# Sanitizer API: Namespace-based tests should all pass with
-#   --enable-features=SanitizerAPINamespacesForTesting
-#
-# results: [ Timeout Crash Pass Failure Slow Skip ]
-
-crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.html [ Pass ]
-crbug.com/1225606 virtual/mathml-disabled/sanitizer-api-math-namespace-designator.html [ Pass ]
