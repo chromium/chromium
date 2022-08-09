@@ -99,18 +99,22 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
       AshPixelDiffTestHelper::UiComponent::kShelfWidget));
 }
 
-class LoginShelfWithPolicyWallpaperPixelTest : public LoginShelfViewPixelTest {
+class LoginShelfWithPolicyWallpaperPixelTestWithRTL
+    : public LoginShelfViewPixelTest,
+      public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
-  LoginShelfWithPolicyWallpaperPixelTest() {
+  LoginShelfWithPolicyWallpaperPixelTestWithRTL() {
     pixel_test::InitParams init_params;
     init_params.wallpaper_init_type = pixel_test::WallpaperInitType::kPolicy;
+    if (GetParam())
+      init_params.under_rtl = true;
     SetPixelTestInitParam(init_params);
   }
-  LoginShelfWithPolicyWallpaperPixelTest(
-      const LoginShelfWithPolicyWallpaperPixelTest&) = delete;
-  LoginShelfWithPolicyWallpaperPixelTest& operator=(
-      const LoginShelfWithPolicyWallpaperPixelTest&) = delete;
-  ~LoginShelfWithPolicyWallpaperPixelTest() override = default;
+  LoginShelfWithPolicyWallpaperPixelTestWithRTL(
+      const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
+  LoginShelfWithPolicyWallpaperPixelTestWithRTL& operator=(
+      const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
+  ~LoginShelfWithPolicyWallpaperPixelTestWithRTL() override = default;
 
   // LoginShelfViewPixelTest:
   const char* GetScreenshotPrefix() const override {
@@ -118,12 +122,17 @@ class LoginShelfWithPolicyWallpaperPixelTest : public LoginShelfViewPixelTest {
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         LoginShelfWithPolicyWallpaperPixelTestWithRTL,
+                         testing::Bool());
+
 // Verifies that focusing on the login shelf widget with a policy wallpaper
 // works as expected (see https://crbug.com/1197052).
-TEST_F(LoginShelfWithPolicyWallpaperPixelTest, FocusOnShutdownButton) {
+TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
   FocusOnShutdownButton();
-  EXPECT_TRUE(
-      pixel_test_helper_.ComparePrimaryFullScreen("focus_on_shutdown_button"));
+  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+      GetParam() ? "focus_on_shutdown_button_rtl"
+                 : "focus_on_shutdown_button"));
 }
 
 }  // namespace ash

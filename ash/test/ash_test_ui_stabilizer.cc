@@ -8,6 +8,8 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/command_line.h"
+#include "base/i18n/base_i18n_switches.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -38,7 +40,12 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
 AshTestUiStabilizer::AshTestUiStabilizer(const pixel_test::InitParams& params)
     : params_(params),
       scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
-      time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {}
+      time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {
+  if (params.under_rtl) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ::switches::kForceUIDirection, ::switches::kForceDirectionRTL);
+  }
+}
 
 AshTestUiStabilizer::~AshTestUiStabilizer() = default;
 

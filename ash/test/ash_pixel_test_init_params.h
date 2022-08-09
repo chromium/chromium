@@ -19,6 +19,9 @@ enum class WallpaperInitType {
 // The params that control the pixel test setup.
 struct InitParams {
   WallpaperInitType wallpaper_init_type = WallpaperInitType::kRegular;
+
+  // If true, the system UI layout follows the right-to-left fashion.
+  bool under_rtl = false;
 };
 
 }  // namespace ash::pixel_test

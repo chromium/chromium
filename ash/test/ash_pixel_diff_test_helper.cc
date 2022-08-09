@@ -29,9 +29,8 @@ AshPixelDiffTestHelper::~AshPixelDiffTestHelper() = default;
 bool AshPixelDiffTestHelper::ComparePrimaryFullScreen(
     const std::string& screenshot_name) {
   aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
-  return pixel_diff_.CompareNativeWindowScreenshot(
-      screenshot_name, primary_root_window,
-      gfx::Rect(primary_root_window->bounds().size()));
+  return ComparePrimaryScreenshotWithBoundsInScreen(
+      screenshot_name, primary_root_window->bounds());
 }
 
 bool AshPixelDiffTestHelper::CompareUiComponentScreenshot(
