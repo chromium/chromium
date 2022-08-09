@@ -23,7 +23,7 @@ async_test(function(test) {
   // and one after calling observe().
   causeIntervention();
   observer1.observe();
-  window.webkitStorageInfo;
+  webkitCancelAnimationFrame(() => {});
   observer1.disconnect();
 }, "Buffered reports observed");
 

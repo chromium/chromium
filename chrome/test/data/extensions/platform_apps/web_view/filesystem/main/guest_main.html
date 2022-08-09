@@ -53,7 +53,7 @@
       };
 
       var requestFileSystemAccess = function() {
-        window.webkitStorageInfo.requestQuota(PERSISTENT, 1024 * 1024,
+        navigator.webkitPersistentStorage.requestQuota(1024 * 1024,
           function(grantedBytes) {
             window.console.log('request Quota granted.');
             window.requestFileSystem(window.PERSISTENT, 1024*1024,

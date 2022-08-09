@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 function test() {
-  if (window.webkitStorageInfo) {
+  if (navigator.storage) {
     window.jsTestIsAsync = true;
-    navigator.webkitTemporaryStorage.queryUsageAndQuota(
-      initUsageCallback,
-      unexpectedErrorCallback);
+    navigator.storage.estimate()
+        .then(initUsageCallback)
+        .catch(unexpectedErrorCallback);
   } else
-    debug("This test requires window.webkitStorageInfo.");
+    debug('This test requires navigator.storage.');
 }
 
-function initUsageCallback(usage, quota) {
-  origReturnedUsage = returnedUsage = usage;
-  origReturnedQuota = returnedQuota = quota;
+function initUsageCallback(result) {
+  origReturnedUsage = returnedUsage = result.usage;
+  origReturnedQuota = returnedQuota = result.quota;
   debug("original quota is " + displaySize(origReturnedQuota));
   debug("original usage is " + displaySize(origReturnedUsage));
 
