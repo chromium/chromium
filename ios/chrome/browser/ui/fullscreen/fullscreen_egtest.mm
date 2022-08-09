@@ -92,19 +92,6 @@ void WaitforPDFExtensionView() {
 
 @implementation FullscreenTestCase
 
-// TODO(crbug.com/1345810): Remove when iOS16/kSmoothScrollingDefault is fixed.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if (@available(iOS 16, *)) {
-    NSString* bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
-    if ([bundleIdentifier hasPrefix:@"org.chromium.ost.chrome"]) {
-      config.features_disabled.push_back(
-          fullscreen::features::kSmoothScrollingDefault);
-    }
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 

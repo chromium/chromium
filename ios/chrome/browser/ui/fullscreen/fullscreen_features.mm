@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 
+#import <Foundation/Foundation.h>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 
@@ -18,6 +19,12 @@ const base::Feature kSmoothScrollingDefault{"FullscreenSmoothScrollingDefault",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool ShouldUseSmoothScrolling() {
+  if (@available(iOS 16, *)) {
+    static bool disable_smooth_scrolling = [[[NSBundle mainBundle]
+        bundleIdentifier] hasPrefix:@"org.chromium.ost.chrome"];
+    return !disable_smooth_scrolling &&
+           base::FeatureList::IsEnabled(kSmoothScrollingDefault);
+  }
   return base::FeatureList::IsEnabled(kSmoothScrollingDefault);
 }
 
