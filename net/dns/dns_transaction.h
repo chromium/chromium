@@ -125,7 +125,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
 
   // The given EDNS0 option will be included in all DNS queries performed by
   // transactions from this factory.
-  virtual void AddEDNSOption(const OptRecordRdata::Opt& opt) = 0;
+  virtual void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) = 0;
 
   // Returns the default SecureDnsMode in the config.
   virtual SecureDnsMode GetSecureDnsModeForTest() = 0;

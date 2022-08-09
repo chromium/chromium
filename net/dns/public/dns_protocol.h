@@ -191,6 +191,7 @@ static const uint8_t kRcodeREFUSED = 5;
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-11
 static const uint16_t kEdnsPadding = 12;
+static constexpr uint16_t kEdnsExtendedDnsError = 15;
 
 // DNS header flags.
 //

@@ -1720,11 +1720,12 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
         session_->GetWeakPtr(), resolve_context->GetWeakPtr());
   }
 
-  void AddEDNSOption(const OptRecordRdata::Opt& opt) override {
+  void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) override {
+    DCHECK(opt);
     if (opt_rdata_ == nullptr)
       opt_rdata_ = std::make_unique<OptRecordRdata>();
 
-    opt_rdata_->AddOpt(opt);
+    opt_rdata_->AddOpt(std::move(opt));
   }
 
   SecureDnsMode GetSecureDnsModeForTest() override {

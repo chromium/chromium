@@ -982,9 +982,10 @@ TEST_F(DnsTransactionTest, Lookup) {
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
   OptRecordRdata expected_opt_rdata;
 
-  const OptRecordRdata::Opt ednsOpt(123, "\xbe\xef");
-  transaction_factory_->AddEDNSOption(ednsOpt);
-  expected_opt_rdata.AddOpt(ednsOpt);
+  transaction_factory_->AddEDNSOption(
+      std::make_unique<OptRecordRdata::Opt>(123, "\xbe\xef"));
+  expected_opt_rdata.AddOpt(
+      std::make_unique<OptRecordRdata::Opt>(123, "\xbe\xef"));
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
                            kT0ResponseDatagram, std::size(kT0ResponseDatagram),
@@ -999,15 +1000,18 @@ TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
 TEST_F(DnsTransactionTest, LookupWithMultipleEDNSOptions) {
   OptRecordRdata expected_opt_rdata;
 
-  for (const auto& ednsOpt : {
-           // Two options with the same code, to check that both are included.
-           OptRecordRdata::Opt(1, "\xde\xad"),
-           OptRecordRdata::Opt(1, "\xbe\xef"),
-           // Try a different code and different length of data.
-           OptRecordRdata::Opt(2, "\xff"),
-       }) {
-    transaction_factory_->AddEDNSOption(ednsOpt);
-    expected_opt_rdata.AddOpt(ednsOpt);
+  std::vector<std::pair<uint16_t, std::string>> params = {
+      // Two options with the same code, to check that both are included.
+      std::pair<uint16_t, std::string>(1, "\xde\xad"),
+      std::pair<uint16_t, std::string>(1, "\xbe\xef"),
+      // Try a different code and different length of data.
+      std::pair<uint16_t, std::string>(2, "\xff")};
+
+  for (auto& param : params) {
+    transaction_factory_->AddEDNSOption(
+        std::make_unique<OptRecordRdata::Opt>(param.first, param.second));
+    expected_opt_rdata.AddOpt(
+        std::make_unique<OptRecordRdata::Opt>(param.first, param.second));
   }
 
   AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,

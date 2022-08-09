@@ -1319,8 +1319,11 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
   std::string dotted_name("www.example.com");
   std::string dns_name;
   ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
+
   OptRecordRdata opt_rdata;
-  opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
+  opt_rdata.AddOpt(
+      std::make_unique<OptRecordRdata::Opt>(255, "\xde\xad\xbe\xef"));
+
   absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA, &opt_rdata);
   net::DnsResourceRecord answer;

@@ -358,7 +358,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
       ResolveContext* resolve_context) override;
 
-  void AddEDNSOption(const OptRecordRdata::Opt& opt) override;
+  void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) override;
 
   SecureDnsMode GetSecureDnsModeForTest() override;
 

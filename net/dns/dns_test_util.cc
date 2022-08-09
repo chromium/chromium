@@ -638,7 +638,8 @@ std::unique_ptr<DnsProbeRunner> MockDnsTransactionFactory::CreateDohProbeRunner(
   return std::make_unique<MockDohProbeRunner>(weak_ptr_factory_.GetWeakPtr());
 }
 
-void MockDnsTransactionFactory::AddEDNSOption(const OptRecordRdata::Opt& opt) {}
+void MockDnsTransactionFactory::AddEDNSOption(
+    std::unique_ptr<OptRecordRdata::Opt> opt) {}
 
 SecureDnsMode MockDnsTransactionFactory::GetSecureDnsModeForTest() {
   return SecureDnsMode::kAutomatic;

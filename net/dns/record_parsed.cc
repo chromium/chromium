@@ -64,7 +64,7 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
       rdata = NsecRecordRdata::Create(record.rdata, *parser);
       break;
     case OptRecordRdata::kType:
-      rdata = OptRecordRdata::Create(record.rdata, *parser);
+      rdata = OptRecordRdata::Create(record.rdata);
       break;
     case IntegrityRecordRdata::kType:
       rdata = IntegrityRecordRdata::Create(record.rdata);

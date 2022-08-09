@@ -13,14 +13,13 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 
 namespace net {
-
-class DnsRecordParser;
 
 // OPT record format (https://tools.ietf.org/html/rfc6891):
 class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
@@ -29,16 +28,91 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
    public:
     static constexpr size_t kHeaderSize = 4;  // sizeof(code) + sizeof(size)
 
-    Opt(uint16_t code, base::StringPiece data);
+    Opt() = default;
+    Opt(uint16_t code, std::string data);
+
+    Opt(const Opt& other) = delete;
+    Opt& operator=(const Opt& other) = delete;
+    Opt(Opt&& other) = delete;
+    Opt& operator=(Opt&& other) = delete;
+    virtual ~Opt() = default;
 
     bool operator==(const Opt& other) const;
+    bool operator!=(const Opt& other) const;
 
     uint16_t code() const { return code_; }
     base::StringPiece data() const { return data_; }
 
    private:
+    bool IsEqual(const Opt& other) const;
     uint16_t code_;
     std::string data_;
+  };
+
+  class NET_EXPORT_PRIVATE EdeOpt : public Opt {
+   public:
+    static const uint16_t kOptCode = dns_protocol::kEdnsExtendedDnsError;
+
+    // The following errors are defined by in the IANA registry.
+    // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#extended-dns-error-codes
+    enum EdeInfoCode {
+      kOtherError,
+      kUnsupportedDnskeyAlgorithm,
+      kUnsupportedDsDigestType,
+      kStaleAnswer,
+      kForgedAnswer,
+      kDnssecIndeterminate,
+      kDnssecBogus,
+      kSignatureExpired,
+      kSignatureNotYetValid,
+      kDnskeyMissing,
+      kRrsigsMissing,
+      kNoZoneKeyBitSet,
+      kNsecMissing,
+      kCachedError,
+      kNotReady,
+      kBlocked,
+      kCensored,
+      kFiltered,
+      kProhibited,
+      kStaleNxdomainAnswer,
+      kNotAuthoritative,
+      kNotSupported,
+      kNoReachableAuthority,
+      kNetworkError,
+      kInvalidData,
+      kSignatureExpiredBeforeValid,
+      kTooEarly,
+      kUnsupportedNsec3IterationsValue,
+      // Note: kUnrecognizedErrorCode is not defined by RFC 8914.
+      // Used when error code does not match existing RFC error code.
+      kUnrecognizedErrorCode
+    };
+
+    EdeOpt(uint16_t info_code, std::string extra_text);
+
+    EdeOpt(const EdeOpt& other) = delete;
+    EdeOpt& operator=(const EdeOpt& other) = delete;
+    EdeOpt(EdeOpt&& other) = delete;
+    EdeOpt& operator=(EdeOpt&& other) = delete;
+    ~EdeOpt() override;
+
+    // Attempts to parse an EDE option from `data`. Returns nullptr on failure.
+    static std::unique_ptr<EdeOpt> Create(std::string data);
+
+    uint16_t info_code() const { return info_code_; }
+    base::StringPiece extra_text() const { return extra_text_; }
+
+    EdeInfoCode GetEnumFromInfoCode() const;
+
+    // Convert a uint16_t to an EdeInfoCode enum.
+    static EdeInfoCode GetEnumFromInfoCode(uint16_t info_code);
+
+   private:
+    EdeOpt();
+
+    uint16_t info_code_;
+    std::string extra_text_;
   };
 
   static const uint16_t kType = dns_protocol::kTypeOPT;
@@ -48,31 +122,46 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
   OptRecordRdata(const OptRecordRdata&) = delete;
   OptRecordRdata& operator=(const OptRecordRdata&) = delete;
 
-  OptRecordRdata(OptRecordRdata&& other);
+  OptRecordRdata(OptRecordRdata&& other) = delete;
+  OptRecordRdata& operator=(OptRecordRdata&& other) = delete;
 
   ~OptRecordRdata() override;
 
-  OptRecordRdata& operator=(OptRecordRdata&& other);
+  bool operator==(const RecordRdata& other) const;
+  bool operator!=(const RecordRdata& other) const;
 
-  static std::unique_ptr<OptRecordRdata> Create(const base::StringPiece& data,
-                                                const DnsRecordParser& parser);
+  static std::unique_ptr<OptRecordRdata> Create(base::StringPiece data);
+
+  // Checks whether two OptRecordRdata objects are equal. This comparison takes
+  // into account the order of insertion. Two OptRecordRdata objects with
+  // identical Opt records inserted in a different order will not be equal.
   bool IsEqual(const RecordRdata* other) const override;
+
   uint16_t Type() const override;
-
   const std::vector<char>& buf() const { return buf_; }
-  const std::multimap<uint16_t, Opt>& opts() { return opts_; }
+  const std::multimap<uint16_t, const std::unique_ptr<const Opt>>& opts()
+      const {
+    return opts_;
+  }
 
-  void AddOpt(const Opt& opt);
+  // Add specified Opt to rdata. Updates raw buffer as well.
+  void AddOpt(const std::unique_ptr<Opt> opt);
 
-  // Add all Opts from |other| to |this|.
-  void AddOpts(const OptRecordRdata& other);
-
-  // Checks if an Opt with the specified opt_code is in opts_.
+  // Checks if an Opt with the specified opt_code is contained.
   bool ContainsOptCode(uint16_t opt_code) const;
+
+  size_t OptCount() const { return opts_.size(); }
+
+  // Returns all options sorted by option code, using insertion order to break
+  // ties.
+  std::vector<const Opt*> GetOpts() const;
+
+  // Returns all EDE options in insertion order.
+  std::vector<const EdeOpt*> GetEdeOpts() const;
 
  private:
   // Opt objects are stored in a multimap; key is the opt code.
-  std::multimap<uint16_t, Opt> opts_;
+  std::multimap<uint16_t, const std::unique_ptr<const Opt>> opts_;
   std::vector<char> buf_;
 };
 
