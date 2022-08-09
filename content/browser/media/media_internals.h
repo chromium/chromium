@@ -156,7 +156,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   void UpdateAudioLog(AudioLogUpdateType type,
                       const std::string& cache_key,
                       const std::string& function,
-                      const base::Value& value);
+                      const base::Value::Dict& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,
                                                    int component_id,
@@ -170,7 +170,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   std::map<int, std::list<media::MediaLogRecord>> saved_events_by_process_;
 
   // Must only be accessed on the IO thread.
-  base::Value video_capture_capabilities_cached_data_{base::Value::Type::LIST};
+  base::Value::List video_capture_capabilities_cached_data_;
 
   NotificationRegistrar registrar_;
 
@@ -181,7 +181,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;
   bool can_update_;
-  base::DictionaryValue audio_streams_cached_data_;
+  base::Value::Dict audio_streams_cached_data_;
   int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
 };
 
