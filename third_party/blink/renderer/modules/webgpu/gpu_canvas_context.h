@@ -119,6 +119,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void ResizeSwapbuffers(gfx::Size size);
   void InitializeAlphaModePipeline(WGPUTextureFormat format);
 
+  void FinalizeFrame(bool) override;
+
   scoped_refptr<StaticBitmapImage> SnapshotInternal(
       const WGPUTexture& texture,
       const gfx::Size& size) const;
@@ -140,6 +142,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
   V8GPUCanvasAlphaMode::Enum alpha_mode_;
   std::unique_ptr<TextureAlphaClearer> alpha_clearer_;
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
+
+  bool new_texture_required_ = true;
   bool stopped_ = false;
 
   // TODO(crbug.com/1326473): Remove after deprecation period.

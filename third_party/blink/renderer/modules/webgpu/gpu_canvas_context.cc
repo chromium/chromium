@@ -553,7 +553,6 @@ void GPUCanvasContext::ResizeSwapbuffers(gfx::Size size) {
   // The spec indicates that when the canvas is resized the current texture is
   // discarded and a new one allocated in it's place immediately.
   if (swap_buffers_) {
-    swap_buffers_->DiscardCurrentSwapBuffer();
     ReplaceCurrentTexture();
   }
 
@@ -617,7 +616,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   // animation frame it gets presented. If getCurrentTexture is called multiple
   // time, the same texture should be returned. |texture_| is set to null when
   // presented so that we know we should create a new one.
-  if (texture_) {
+  if (texture_ && !new_texture_required_) {
     return texture_;
   }
 
@@ -628,12 +627,13 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
   DCHECK(device_);
   DCHECK(swap_buffers_);
 
-  // As we are getting a new texture, if this is an offscreencanvas or if it is
-  // going to be presented to video, we have to notify the placeholder or
-  // listeners.
-  if (IsOffscreenCanvas() ||
-      static_cast<HTMLCanvasElement*>(Host())->HasCanvasCapture())
-    DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+  // Simply requesting a new canvas texture with WebGPU is enough to mark it as
+  // "dirty", so always call DidDraw() when a new texture is created.
+  DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+
+  if (texture_) {
+    swap_buffers_->DiscardCurrentSwapBuffer();
+  }
 
   texture_ = nullptr;
 
@@ -648,7 +648,18 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
     return texture_;
   }
   texture_ = MakeGarbageCollected<GPUTexture>(device_, dawn_client_texture);
+  new_texture_required_ = false;
+
   return texture_;
+}
+
+void GPUCanvasContext::FinalizeFrame(bool /*printing*/) {
+  // In some cases, such as when a canvas is hidden of offscreen, compositing
+  // will never happen and thus OnTextureTransferred will never be called. In
+  // those cases, getCurrentTexture is still required to return a new texture
+  // after the current frame has ended, so we'll mark that a new texture is
+  // required here.
+  new_texture_required_ = true;
 }
 
 // WebGPUSwapBufferProvider::Client implementation
