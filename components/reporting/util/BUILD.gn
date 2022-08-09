@@ -45,14 +45,6 @@ static_library("status") {
   deps = [ "//base" ]
 }
 
-source_set("shared_queue") {
-  sources = [ "shared_queue.h" ]
-  deps = [
-    ":status",
-    "//base",
-  ]
-}
-
 source_set("status_macros") {
   sources = [ "status_macros.h" ]
 
@@ -93,7 +85,6 @@ source_set("unit_tests") {
   sources = [
     "disconnectable_client_unittest.cc",
     "file_unittest.cc",
-    "shared_queue_unittest.cc",
     "status_macros_unittest.cc",
     "status_unittest.cc",
     "statusor_unittest.cc",
@@ -101,7 +92,6 @@ source_set("unit_tests") {
   deps = [
     ":disconnectable_client",
     ":file",
-    ":shared_queue",
     ":status",
     ":status_macros",
     ":status_proto",
