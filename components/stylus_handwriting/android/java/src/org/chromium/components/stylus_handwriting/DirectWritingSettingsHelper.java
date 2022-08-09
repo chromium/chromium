@@ -5,6 +5,7 @@
 package org.chromium.components.stylus_handwriting;
 
 import android.content.Context;
+import android.os.Build;
 import android.provider.Settings;
 
 /**
@@ -24,6 +25,8 @@ class DirectWritingSettingsHelper {
             DirectWritingConstants.SERVICE_PKG_NAME + "/.service.HoneyBoardService";
 
     static boolean isEnabled(Context context) {
+        // Samsung keyboard supports handwriting in Chrome and Webview from Android S onwards.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
         return isHoneyboardDefault(context) && isFeatureEnabled(context);
     }
 
