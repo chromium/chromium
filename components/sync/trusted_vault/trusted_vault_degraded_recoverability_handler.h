@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
-#define COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
+#ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_
+#define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_
 
 #include <memory>
 #include "base/callback.h"
@@ -25,9 +25,9 @@ constexpr base::TimeDelta kLongDegradedRecoverabilityRefreshPeriod =
 constexpr base::TimeDelta kShortDegradedRecoverabilityRefreshPeriod =
     base::Hours(1);
 
-// Schedules refresh of degraded recoverability state based on the current
-// state, heuristics and last refresh time.
-class DegradedRecoverabilityScheduler {
+// Refreshs the degraded recoverability state by scheduling the requests based
+// on the current state, heuristics and last refresh time.
+class TrustedVaultDegradedRecoverabilityHandler {
  public:
   class Delegate {
    public:
@@ -43,14 +43,15 @@ class DegradedRecoverabilityScheduler {
   };
 
   // `connection` and `delegate` must not be null and must outlive this object.
-  DegradedRecoverabilityScheduler(TrustedVaultConnection* connection,
-                                  Delegate* delegate,
-                                  const CoreAccountInfo& account_info);
-  DegradedRecoverabilityScheduler(const DegradedRecoverabilityScheduler&) =
-      delete;
-  DegradedRecoverabilityScheduler& operator=(
-      const DegradedRecoverabilityScheduler&) = delete;
-  ~DegradedRecoverabilityScheduler();
+  TrustedVaultDegradedRecoverabilityHandler(
+      TrustedVaultConnection* connection,
+      Delegate* delegate,
+      const CoreAccountInfo& account_info);
+  TrustedVaultDegradedRecoverabilityHandler(
+      const TrustedVaultDegradedRecoverabilityHandler&) = delete;
+  TrustedVaultDegradedRecoverabilityHandler& operator=(
+      const TrustedVaultDegradedRecoverabilityHandler&) = delete;
+  ~TrustedVaultDegradedRecoverabilityHandler();
 
   void StartLongIntervalRefreshing();
   void StartShortIntervalRefreshing();
@@ -79,4 +80,4 @@ class DegradedRecoverabilityScheduler {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_SCHEDULER_H_
+#endif  // COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_

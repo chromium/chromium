@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
+#include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 
 #include "base/callback.h"
 #include "base/location.h"
@@ -43,10 +43,11 @@ MakeDegradedRecoverabilityState(bool is_recoverability_degraded,
 
 namespace syncer {
 
-DegradedRecoverabilityScheduler::DegradedRecoverabilityScheduler(
-    TrustedVaultConnection* connection,
-    Delegate* delegate,
-    const CoreAccountInfo& account_info)
+TrustedVaultDegradedRecoverabilityHandler::
+    TrustedVaultDegradedRecoverabilityHandler(
+        TrustedVaultConnection* connection,
+        Delegate* delegate,
+        const CoreAccountInfo& account_info)
     : connection_(connection),
       delegate_(delegate),
       account_info_(account_info),
@@ -57,45 +58,47 @@ DegradedRecoverabilityScheduler::DegradedRecoverabilityScheduler(
   Start();
 }
 
-DegradedRecoverabilityScheduler::~DegradedRecoverabilityScheduler() = default;
+TrustedVaultDegradedRecoverabilityHandler::
+    ~TrustedVaultDegradedRecoverabilityHandler() = default;
 
-void DegradedRecoverabilityScheduler::StartLongIntervalRefreshing() {
+void TrustedVaultDegradedRecoverabilityHandler::StartLongIntervalRefreshing() {
   current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
   Start();
 }
 
-void DegradedRecoverabilityScheduler::StartShortIntervalRefreshing() {
+void TrustedVaultDegradedRecoverabilityHandler::StartShortIntervalRefreshing() {
   current_refresh_period_ = kShortDegradedRecoverabilityRefreshPeriod;
   Start();
 }
 
-void DegradedRecoverabilityScheduler::RefreshImmediately() {
+void TrustedVaultDegradedRecoverabilityHandler::RefreshImmediately() {
   if (!next_refresh_timer_.IsRunning()) {
     return;
   }
   next_refresh_timer_.FireNow();
 }
 
-void DegradedRecoverabilityScheduler::Start() {
+void TrustedVaultDegradedRecoverabilityHandler::Start() {
   next_refresh_timer_.Start(
       FROM_HERE,
       ComputeTimeUntilNextRefresh(current_refresh_period_, last_refresh_time_),
-      this, &DegradedRecoverabilityScheduler::Refresh);
+      this, &TrustedVaultDegradedRecoverabilityHandler::Refresh);
 }
 
-void DegradedRecoverabilityScheduler::Refresh() {
+void TrustedVaultDegradedRecoverabilityHandler::Refresh() {
   // Since destroying the request object causes actual request cancellation, so
   // it's safe to use base::Unretained() here.
   ongoing_get_recoverability_request_ =
       connection_->DownloadIsRecoverabilityDegraded(
           account_info_,
-          base::BindOnce(&DegradedRecoverabilityScheduler::
+          base::BindOnce(&TrustedVaultDegradedRecoverabilityHandler::
                              OnRecoverabilityIsDegradedDownloaded,
                          base::Unretained(this)));
 }
 
-void DegradedRecoverabilityScheduler::OnRecoverabilityIsDegradedDownloaded(
-    TrustedVaultRecoverabilityStatus status) {
+void TrustedVaultDegradedRecoverabilityHandler::
+    OnRecoverabilityIsDegradedDownloaded(
+        TrustedVaultRecoverabilityStatus status) {
   switch (status) {
     case TrustedVaultRecoverabilityStatus::kDegraded:
       is_recoverability_degraded_ = true;
@@ -110,8 +113,9 @@ void DegradedRecoverabilityScheduler::OnRecoverabilityIsDegradedDownloaded(
   last_refresh_time_ = base::TimeTicks::Now();
   delegate_->WriteDegradedRecoverabilityState(MakeDegradedRecoverabilityState(
       is_recoverability_degraded_, base::Time::Now()));
-  next_refresh_timer_.Start(FROM_HERE, current_refresh_period_, this,
-                            &DegradedRecoverabilityScheduler::Refresh);
+  next_refresh_timer_.Start(
+      FROM_HERE, current_refresh_period_, this,
+      &TrustedVaultDegradedRecoverabilityHandler::Refresh);
 }
 
 }  // namespace syncer

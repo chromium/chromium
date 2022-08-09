@@ -18,8 +18,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
-#include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -38,7 +38,7 @@ namespace syncer {
 // sequence.
 class StandaloneTrustedVaultBackend
     : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
-      public DegradedRecoverabilityScheduler::Delegate {
+      public TrustedVaultDegradedRecoverabilityHandler::Delegate {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -66,7 +66,7 @@ class StandaloneTrustedVaultBackend
   StandaloneTrustedVaultBackend& operator=(
       const StandaloneTrustedVaultBackend& other) = delete;
 
-  // TrustedVaultDegradedRecoverabilityScheduler::Delegate implementation.
+  // TrustedVaultDegradedRecoverabilityHandler::Delegate implementation.
   void WriteDegradedRecoverabilityState(
       const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
           degraded_recoverability_state) override;
