@@ -86,7 +86,8 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
 
     const Node& container = it.CurrentContainer();
     const LayoutObject* layout_object = container.GetLayoutObject();
-    DCHECK(layout_object);
+    if (!layout_object)
+      continue;
 
     // There are two ways that the size of text can be affected by the user. One
     // is the page scale factor, which is what the user changes by pinching on
