@@ -7,7 +7,7 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {Actions, changeDirectory} from '../actions.js';
+import {ActionType, changeDirectory, ClearStaleCachedEntriesAction} from '../actions.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 
 import {clearCachedEntries} from './all_entries.js';
@@ -85,7 +85,10 @@ export async function testClearStaleEntries(done: () => void) {
       ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/sub-dir']);
 
   // Running the clear multiple times should not change:
-  const action = {type: Actions.CLEAR_STALE_CACHED_ENTRIES};
+  const action: ClearStaleCachedEntriesAction = {
+    type: ActionType.CLEAR_STALE_CACHED_ENTRIES,
+    payload: undefined,
+  };
   clearCachedEntries(store.getState(), action);
   clearCachedEntries(store.getState(), action);
   assertEquals(

@@ -6,8 +6,12 @@
  * The base interface for actions.
  * The application should extend this to enforce its own Actions.
  */
-export interface BaseAction {
+export interface BaseAction<TPayload = any> {
+  // Unique type for the Action.
   type: string;
+
+  // Any additional data used by the Action.
+  payload?: TPayload;
 }
 
 /**

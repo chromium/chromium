@@ -9,10 +9,10 @@ import {ChangeDirectoryAction} from '../actions.js';
 /** Reducer that updates the `currentDirectory` attributes. */
 export function changeDirectory(
     currentState: State, action: ChangeDirectoryAction): CurrentDirectory {
-  const fileData = currentState.allEntries[action.key];
+  const fileData = currentState.allEntries[action.payload.key];
   const emptyDir = {
-    key: action.key,
-    status: action.status,
+    key: action.payload.key,
+    status: action.payload.status,
     pathComponents: [],
   };
 
@@ -35,8 +35,8 @@ export function changeDirectory(
       PathComponent.computeComponentsFromEntry(fileData.entry!, volumeManager);
 
   return Object.assign(currentState.currentDirectory || {}, {
-    status: action.status,
-    key: (action as ChangeDirectoryAction).key,
+    status: action.payload.status,
+    key: action.payload.key,
     pathComponents: components.map(c => {
       return {
         name: c.name,

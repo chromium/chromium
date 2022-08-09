@@ -4,7 +4,7 @@
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
-import {Action, Actions, ChangeDirectoryAction} from '../actions.js';
+import {Action, ActionType, ChangeDirectoryAction, ClearStaleCachedEntriesAction} from '../actions.js';
 import {getStore} from '../store.js';
 
 /**
@@ -22,7 +22,7 @@ let clearCachedEntriesRequestId = 0;
 /** Starts the action CLEAR_STALE_CACHED_ENTRIES.  */
 function startClearCache() {
   const store = getStore();
-  store.dispatch({type: Actions.CLEAR_STALE_CACHED_ENTRIES});
+  store.dispatch({type: ActionType.CLEAR_STALE_CACHED_ENTRIES});
   clearCachedEntriesRequestId = 0;
 }
 
@@ -30,10 +30,10 @@ function startClearCache() {
  * Scans the current state for entries still in use to be able to remove the
  * stale entries from the `allEntries`.
  */
-export function clearCachedEntries(state: State, _action: Action): State {
+export function clearCachedEntries(
+    state: State, _action: ClearStaleCachedEntriesAction): State {
   const entries = state.allEntries;
-  const currentDirectoryKey =
-      state.currentDirectory ? state.currentDirectory.key : null;
+  const currentDirectoryKey = state.currentDirectory?.key;
   const entriesToKeep = new Set<string>();
 
   if (currentDirectoryKey) {
@@ -61,7 +61,7 @@ export function clearCachedEntries(state: State, _action: Action): State {
  */
 function getEntry(state: State, action: ChangeDirectoryAction): Entry|
     FilesAppEntry|null {
-  const {newDirectory, key} = action;
+  const {newDirectory, key} = action.payload;
   if (newDirectory) {
     return newDirectory;
   }
@@ -78,8 +78,8 @@ export function cacheEntries(currentState: State, action: Action): State {
   // Schedule to clear the cached entries from the state.
   scheduleClearCachedEntries();
 
-  if (action.type === Actions.CHANGE_DIRECTORY) {
-    const {key} = (action as ChangeDirectoryAction);
+  if (action.type === ActionType.CHANGE_DIRECTORY) {
+    const {key} = action.payload;
     const allEntries = currentState.allEntries || {};
 
     const entry = getEntry(currentState, (action as ChangeDirectoryAction));

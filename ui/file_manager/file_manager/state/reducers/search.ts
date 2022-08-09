@@ -7,7 +7,7 @@ import {SearchAction} from '../actions.js';
 
 export function search(_state: State, action: SearchAction): SearchData {
   return {
-    term: action.term,
-    status: action.status,
+    term: action.payload.term,
+    status: action.payload.status,
   };
 }

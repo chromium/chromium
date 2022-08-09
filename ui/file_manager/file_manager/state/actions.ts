@@ -8,32 +8,43 @@ import {BaseAction} from '../lib/base_store.js';
 import {FileKey} from './file_key.js';
 
 /**
- * Base class for all Actions in Files app.
+ * Union of all types of Actions in Files app.
  *
- * It enforces the type/enum for the `type` attribute.
+ * It enforces the type/enum for the `type` and `payload` attributes.
+ * A good explanation of this feature is here:
+ * https://mariusschulz.com/blog/tagged-union-types-in-typescript
  */
-export interface Action extends BaseAction {
-  type: Actions;
-}
+export type Action =
+    ChangeDirectoryAction|ClearStaleCachedEntriesAction|SearchAction;
+
 
 /** Enum to identify every Action in Files app. */
-export const enum Actions {
+export const enum ActionType {
   CHANGE_DIRECTORY = 'change-directory',
   CLEAR_STALE_CACHED_ENTRIES = 'clear-stale-cached-entries',
   SEARCH = 'search',
 }
 
 /** Action to request to change the Current Directory. */
-export interface ChangeDirectoryAction extends Action {
-  newDirectory?: Entry;
-  key: FileKey;
-  status: PropStatus;
+export interface ChangeDirectoryAction extends BaseAction {
+  type: ActionType.CHANGE_DIRECTORY;
+  payload: {
+    newDirectory?: Entry, key: FileKey, status: PropStatus,
+  };
+}
+
+export interface ClearStaleCachedEntriesAction extends BaseAction {
+  type: ActionType.CLEAR_STALE_CACHED_ENTRIES;
+  payload?: undefined;
 }
 
 /** Action to update the search state. */
-export interface SearchAction extends Action {
-  term?: string;
-  status?: PropStatus;
+export interface SearchAction extends BaseAction {
+  type: ActionType.SEARCH;
+  payload: {
+    term?: string,
+    status?: PropStatus,
+  };
 }
 
 /** Factory for the ChangeDirectoryAction. */
@@ -41,18 +52,22 @@ export function changeDirectory(
     {to, toKey, status}: {to?: Entry, toKey: FileKey, status?: PropStatus}):
     ChangeDirectoryAction {
   return {
-    type: Actions.CHANGE_DIRECTORY,
-    newDirectory: to,
-    key: toKey ? toKey : to!.toURL(),
-    status: status ? status : PropStatus.STARTED,
+    type: ActionType.CHANGE_DIRECTORY,
+    payload: {
+      newDirectory: to,
+      key: toKey ? toKey : to!.toURL(),
+      status: status ? status : PropStatus.STARTED,
+    },
   };
 }
 
 export function searchAction(
     {term, status}: {term?: string, status?: PropStatus}): SearchAction {
   return {
-    type: Actions.SEARCH,
-    term,
-    status,
+    type: ActionType.SEARCH,
+    payload: {
+      term,
+      status,
+    },
   };
 }
