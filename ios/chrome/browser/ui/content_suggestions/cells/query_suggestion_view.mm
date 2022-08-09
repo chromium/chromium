@@ -28,9 +28,18 @@ const CGFloat kQueryLabelHeightAnchor = 11.0f;
 // Spacing between search ImageView and label.
 const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
 
+// Touchdown alpha for `queryLabel` when the user presses on this view.
+const CGFloat kTouchDownAlpha = 0.25f;
+
 }  // namespace
 
 @implementation QuerySuggestionConfig
+@end
+
+@interface QuerySuggestionView ()
+
+@property(nonatomic, strong) UILabel* queryLabel;
+
 @end
 
 @implementation QuerySuggestionView
@@ -44,26 +53,27 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
         [[UIImageView alloc] initWithImage:searchImage];
     searchImageView.tintColor = [UIColor colorNamed:kGrey500Color];
     searchImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    UILabel* queryLabel = [[UILabel alloc] init];
-    queryLabel.font =
+    self.queryLabel = [[UILabel alloc] init];
+    self.queryLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    queryLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    queryLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    queryLabel.numberOfLines = 2;
-    queryLabel.adjustsFontForContentSizeCategory = YES;
+    self.queryLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    self.queryLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.queryLabel.numberOfLines = 2;
+    self.queryLabel.adjustsFontForContentSizeCategory = YES;
+    //      self.userInteractionEnabled = YES;
 
     if (!config) {
       // If there is no config, then this is a placeholder tile.
-      queryLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
+      self.queryLabel.backgroundColor = [UIColor colorNamed:kGrey100Color];
     } else {
       _config = config;
-      queryLabel.text = config.query;
+      self.queryLabel.text = config.query;
       self.accessibilityLabel = config.query;
       self.isAccessibilityElement = YES;
     }
 
     [self addSubview:searchImageView];
-    [self addSubview:queryLabel];
+    [self addSubview:self.queryLabel];
 
     [NSLayoutConstraint activateConstraints:@[
       [searchImageView.widthAnchor
@@ -74,26 +84,29 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
           constraintEqualToAnchor:self.centerYAnchor],
       [searchImageView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor],
-      [queryLabel.leadingAnchor
+      [self.queryLabel.leadingAnchor
           constraintEqualToAnchor:searchImageView.trailingAnchor
                          constant:kQueryImageToLabelHorizontalSpacing],
-      [queryLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [self.queryLabel.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
       [self.heightAnchor constraintEqualToConstant:kViewHeightAnchor],
       [self.widthAnchor constraintEqualToConstant:kViewWidthAnchor]
     ]];
     if (config) {
       // Let label take up all vertical space for two-line query text.
       [NSLayoutConstraint activateConstraints:@[
-        [queryLabel.topAnchor constraintEqualToAnchor:self.topAnchor],
-        [queryLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
+        [self.queryLabel.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [self.queryLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
       ]];
     } else {
       // Vertically center and set thin height to visualize text placeholder.
       [NSLayoutConstraint activateConstraints:@[
-        [queryLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-        [queryLabel.heightAnchor
+        [self.queryLabel.centerYAnchor
+            constraintEqualToAnchor:self.centerYAnchor],
+        [self.queryLabel.heightAnchor
             constraintEqualToConstant:kQueryLabelHeightAnchor],
-        [queryLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor]
+        [self.queryLabel.trailingAnchor
+            constraintEqualToAnchor:self.trailingAnchor]
       ]];
     }
   }
@@ -115,6 +128,28 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
     [grayLine.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor],
     [grayLine.trailingAnchor constraintEqualToAnchor:safeArea.trailingAnchor],
   ]];
+}
+
+- (void)setHighlighted:(BOOL)highlighted {
+  if (highlighted) {
+    self.queryLabel.alpha = kTouchDownAlpha;
+  } else {
+    self.queryLabel.alpha = 1.0;
+  }
+}
+
+#pragma mark - UIResponder
+
+- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  [self setHighlighted:YES];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  [self setHighlighted:NO];
+}
+
+- (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  [self setHighlighted:NO];
 }
 
 @end
