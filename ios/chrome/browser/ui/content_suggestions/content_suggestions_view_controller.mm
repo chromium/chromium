@@ -440,6 +440,9 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     self.returnToRecentTabTile.iconImageView.image = config.icon;
     self.returnToRecentTabTile.iconImageView.hidden = NO;
   }
+  if (config.title) {
+    self.returnToRecentTabTile.subtitleLabel.text = config.subtitle;
+  }
 }
 
 - (void)hideReturnToRecentTabTile {
