@@ -356,6 +356,10 @@ class PrivacySandboxService : public KeyedService {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       bool third_party_cookies_blocked);
 
+  // Checks to see if initialization of the user's FPS pref is required, and if
+  // so, sets the default value based on the user's current cookie settings.
+  void MaybeInitializeFirstPartySetsPref();
+
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;

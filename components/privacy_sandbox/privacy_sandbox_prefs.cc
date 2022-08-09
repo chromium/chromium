@@ -54,6 +54,12 @@ extern const char kPrivacySandboxNoConfirmationManuallyControlled[] =
 extern const char kPrivacySandboxDisabledInsufficientConfirmation[] =
     "privacy_sandbox.disabled_insufficient_confirmation";
 
+extern const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
+    "privacy_sandbox.first_party_sets_data_access_allowed";
+
+extern const char kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[] =
+    "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
@@ -88,6 +94,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxNoConfirmationManuallyControlled, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxDisabledInsufficientConfirmation, false);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, false);
 }
 
 }  // namespace privacy_sandbox

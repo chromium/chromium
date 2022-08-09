@@ -658,6 +658,16 @@ void SetupDialogTestState(
       std::make_unique<base::Value>(test_state.confirmation_not_shown));
 }
 
+// Remove any user preference settings for First Party Set related preferences,
+// returning them to their default value.
+void ClearFpsUserPrefs(
+    sync_preferences::TestingPrefServiceSyncable* pref_service) {
+  pref_service->RemoveUserPref(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+  pref_service->RemoveUserPref(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
+}
+
 }  // namespace
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -1981,6 +1991,74 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
                                GURL("https://youtube.com")));
   EXPECT_EQ(absl::nullopt, privacy_sandbox_service()->GetFpsOwnerForDisplay(
                                GURL("https://example.com")));
+}
+
+TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
+  // Check that the init of the FPS pref occurs correctly.
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+
+  // Whilst the FPS UI is not available, the pref should not be init.
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
+
+  CreateService();
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+
+  // If the UI is available, the user blocks 3PC, and the pref has not been
+  // previously init, it should be.
+  ClearFpsUserPrefs(prefs());
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
+
+  CreateService();
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+
+  // Once the pref has been init, it should not be re-init, and updated user
+  // cookie settings should not impact it.
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+
+  CreateService();
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  CreateService();
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+
+  // Blocking all cookies should also init the FPS pref to off.
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  CreateService();
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 }
 
 class PrivacySandboxServiceTestNonRegularProfile

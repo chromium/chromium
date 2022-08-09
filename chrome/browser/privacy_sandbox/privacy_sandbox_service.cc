@@ -125,6 +125,10 @@ PrivacySandboxService::PrivacySandboxService(
   if (IsPrivacySandboxRestricted())
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
 
+  // Check for FPS pref init at each startup.
+  // TODO(crbug.com/1351327): Remove this logic when most users have run init.
+  MaybeInitializeFirstPartySetsPref();
+
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
 }
@@ -818,6 +822,34 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
   // Finally a notice is required.
   DCHECK(privacy_sandbox::kPrivacySandboxSettings3NoticeRequired.Get());
   return PromptType::kNotice;
+}
+
+void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
+  // If initialization has already run, it is not required.
+  if (pref_service_->GetBoolean(
+          prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized)) {
+    return;
+  }
+
+  // If the FPS UI is not available, no initialization is required.
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
+    return;
+  }
+
+  // If the user blocks 3P cookies, disable the FPS data access preference.
+  // As this logic relies on checking synced preference state, it is possible
+  // that synced state is available when this decision is made. To err on the
+  // side of privacy, this init logic is run per-device (the pref recording that
+  // init has been run is not synced). If any of the user's devices local state
+  // would disable the pref, it is disabled across all devices.
+  if (AreThirdPartyCookiesBlocked(cookie_settings_)) {
+    pref_service_->SetBoolean(
+        prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed, false);
+  }
+
+  pref_service_->SetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, true);
 }
 
 void PrivacySandboxService::InformSentimentService(
