@@ -19131,38 +19131,5 @@
         }
       }
     ]
-  },
-  "UnmanagedDeviceSignalsConsentFlowEnabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "device_signals.consent_collection_enabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": { "UnmanagedDeviceSignalsConsentFlowEnabled": false },
-        "prefs": {
-          "device_signals.consent_collection_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": { "UnmanagedDeviceSignalsConsentFlowEnabled": true },
-        "prefs": {
-          "device_signals.consent_collection_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
   }
 }
