@@ -915,7 +915,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&version_loader::GetVersion, version_loader::VERSION_FULL),
+      base::BindOnce(&chromeos::version_loader::GetVersion,
+                     chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
   arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();

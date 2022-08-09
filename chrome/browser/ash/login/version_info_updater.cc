@@ -69,10 +69,10 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&version_loader::GetVersion,
+        base::BindOnce(&chromeos::version_loader::GetVersion,
                        is_chrome_branded
-                           ? version_loader::VERSION_SHORT_WITH_DATE
-                           : version_loader::VERSION_FULL),
+                           ? chromeos::version_loader::VERSION_SHORT_WITH_DATE
+                           : chromeos::version_loader::VERSION_FULL),
         base::BindOnce(&VersionInfoUpdater::OnVersion,
                        weak_pointer_factory_.GetWeakPtr()));
   } else {

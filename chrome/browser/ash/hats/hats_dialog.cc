@@ -97,10 +97,11 @@ std::string HatsDialog::GetFormattedSiteContext(
       version_info::GetVersionNumber();
 
   context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
-      version_loader::GetVersion(version_loader::VERSION_FULL);
+      chromeos::version_loader::GetVersion(
+          chromeos::version_loader::VERSION_FULL);
 
   context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
-      version_loader::GetFirmware();
+      chromeos::version_loader::GetFirmware();
 
   context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
 
