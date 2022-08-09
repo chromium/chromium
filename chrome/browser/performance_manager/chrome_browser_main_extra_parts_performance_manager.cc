@@ -49,10 +49,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy_helper.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
+#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -211,8 +211,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
           performance_manager::features::kHighEfficiencyModeAvailable) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::kBatterySaverModeAvailable)) {
-    high_efficiency_mode_policy_helper_ = std::make_unique<
-        performance_manager::policies::HighEfficiencyModePolicyHelper>(
+    user_performance_tuning_manager_ = std::make_unique<
+        performance_manager::user_tuning::UserPerformanceTuningManager>(
         g_browser_process->local_state());
   }
 #endif
@@ -235,7 +235,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   page_load_metrics_observer_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
-  high_efficiency_mode_policy_helper_.reset();
+  user_performance_tuning_manager_.reset();
   profile_discard_opt_out_list_helper_.reset();
 #endif
 

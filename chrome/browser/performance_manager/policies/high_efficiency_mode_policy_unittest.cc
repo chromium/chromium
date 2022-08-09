@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy_helper.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
