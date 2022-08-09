@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -55,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::UTF8ToUTF16;
+using testing::_;
 
 namespace autofill {
 namespace {
@@ -423,6 +425,32 @@ auto UnorderedElementsCompareEqual(Matchers... matchers) {
 
 }  // anonymous namespace
 
+class MockVirtualCardEnrollmentManager
+    : public TestVirtualCardEnrollmentManager {
+ public:
+  MockVirtualCardEnrollmentManager(
+      TestPersonalDataManager* personal_data_manager,
+      payments::TestPaymentsClient* payments_client,
+      TestAutofillClient* autofill_client)
+      : TestVirtualCardEnrollmentManager(personal_data_manager,
+                                         payments_client,
+                                         autofill_client){};
+  MOCK_METHOD(
+      void,
+      InitVirtualCardEnroll,
+      (const CreditCard& credit_card,
+       VirtualCardEnrollmentSource virtual_card_enrollment_source,
+       absl::optional<
+           payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+           get_details_for_enrollment_response_details,
+       const raw_ptr<PrefService> user_prefs,
+       VirtualCardEnrollmentManager::RiskAssessmentFunction
+           risk_assessment_function,
+       VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback
+           virtual_card_enrollment_fields_loaded_callback),
+      (override));
+};
+
 class FormDataImporterTestBase {
  protected:
   FormDataImporterTestBase() : autofill_table_(nullptr) {}
@@ -459,6 +487,12 @@ class FormDataImporterTestBase {
         std::make_unique<FormDataImporter>(autofill_client_.get(),
                                            /*payments::PaymentsClient=*/nullptr,
                                            personal_data_manager_.get(), "en");
+    auto virtual_card_enrollment_manager =
+        std::make_unique<MockVirtualCardEnrollmentManager>(
+            nullptr, nullptr, autofill_client_.get());
+    virtual_card_enrollment_manager_ = virtual_card_enrollment_manager.get();
+    form_data_importer_->virtual_card_enrollment_manager_ =
+        std::move(virtual_card_enrollment_manager);
   }
 
   void SetUpHelper() {
@@ -667,6 +701,7 @@ class FormDataImporterTestBase {
   std::unique_ptr<TestAutofillClient> autofill_client_;
   std::unique_ptr<PersonalDataManager> personal_data_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
+  MockVirtualCardEnrollmentManager* virtual_card_enrollment_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -4512,6 +4547,52 @@ TEST_F(FormDataImporterNonParameterizedTest,
       /*is_credit_card_upstream_enabled=*/true));
   personal_data_manager_->OnSyncServiceInitialized(nullptr);
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessCreditCardImportCandidate_VirtualCardEligible) {
+  CreditCard imported_credit_card = test::GetMaskedServerCard();
+  imported_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
+  imported_credit_card.set_instrument_id(1111);
+  imported_credit_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+
+  form_data_importer_->imported_credit_card_record_type_ =
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD;
+  form_data_importer_->SetFetchedCardInstrumentId(2222);
+
+  // We need a sync service so that
+  // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not
+  // crash.
+  syncer::TestSyncService sync_service;
+  personal_data_manager_->OnSyncServiceInitialized(&sync_service);
+
+  EXPECT_CALL(*virtual_card_enrollment_manager_,
+              InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
+                                    _, _, _, _))
+      .Times(0);
+  EXPECT_FALSE(form_data_importer_->ProcessCreditCardImportCandidate(
+      *form_structure, std::make_unique<CreditCard>(imported_credit_card),
+      /*detected_upi_id=*/"",
+      /*credit_card_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true));
+
+  form_data_importer_->SetFetchedCardInstrumentId(1111);
+  EXPECT_CALL(*virtual_card_enrollment_manager_,
+              InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
+                                    _, _, _, _))
+      .Times(1);
+  EXPECT_TRUE(form_data_importer_->ProcessCreditCardImportCandidate(
+      *form_structure, std::make_unique<CreditCard>(imported_credit_card),
+      /*detected_upi_id=*/"",
+      /*credit_card_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/true));
+
+  personal_data_manager_->OnSyncServiceInitialized(nullptr);
+}
+#endif
 
 TEST_F(FormDataImporterNonParameterizedTest,
        ShouldOfferUploadCardOrLocalCardSave) {

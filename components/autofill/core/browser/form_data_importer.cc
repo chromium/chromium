@@ -206,6 +206,35 @@ bool IsMinimumAddress(const AutofillProfile& profile,
            is_line1_or_house_number_violated);
 }
 
+// |imported_credit_card| refers to credit card that was most recently submitted
+// and |fetched_card_instrument_id| refers to the instrument id of the most
+// recently downstreamed (fetched from the server) credit card. These need to
+// match to offer virtual card enrollment for the |imported_credit_card| .
+bool ShouldOfferVirtualCardEnrollment(
+    const CreditCard* imported_credit_card,
+    absl::optional<int64_t> fetched_card_instrument_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
+    return false;
+  }
+
+  if (!imported_credit_card)
+    return false;
+
+  if (imported_credit_card->virtual_card_enrollment_state() !=
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+    return false;
+  }
+
+  if (!fetched_card_instrument_id.has_value() ||
+      imported_credit_card->instrument_id() !=
+          fetched_card_instrument_id.value()) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
@@ -276,6 +305,7 @@ void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
   bool cc_prompt_potentially_shown = ProcessCreditCardImportCandidate(
       submitted_form, std::move(imported_credit_card), detected_upi_id,
       credit_card_autofill_enabled, is_credit_card_upstream_enabled);
+  fetched_card_instrument_id_.reset();
 
   // If a prompt for credit cards is potentially shown, do not allow for a
   // second address profile import dialog.
@@ -463,6 +493,10 @@ void FormDataImporter::RemoveInaccessibleProfileValues(
 void FormDataImporter::CacheFetchedVirtualCard(
     const std::u16string& last_four) {
   fetched_virtual_cards_.insert(last_four);
+}
+
+void FormDataImporter::SetFetchedCardInstrumentId(int64_t instrument_id) {
+  fetched_card_instrument_id_ = instrument_id;
 }
 
 bool FormDataImporter::ImportFormData(
@@ -903,15 +937,11 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   if (client_->IsAutofillAssistantShowing())
     return false;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    if (imported_credit_card &&
-        imported_credit_card->virtual_card_enrollment_state() ==
-            CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
-      virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-          *imported_credit_card, VirtualCardEnrollmentSource::kDownstream);
-      return true;
-    }
+  if (ShouldOfferVirtualCardEnrollment(imported_credit_card.get(),
+                                       fetched_card_instrument_id_)) {
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+        *imported_credit_card, VirtualCardEnrollmentSource::kDownstream);
+    return true;
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
