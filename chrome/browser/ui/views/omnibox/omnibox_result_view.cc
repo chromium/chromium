@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -283,7 +284,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   SetBackground(GetPopupCellBackground(this, state));
 
   // Reapply the dim color to account for the highlight state.
-  const bool selected = state == OmniboxPartState::SELECTED;
+  const bool selected = (state == OmniboxPartState::SELECTED);
   const ui::ColorId dimmed_id = selected
                                     ? kColorOmniboxResultsTextDimmedSelected
                                     : kColorOmniboxResultsTextDimmed;
@@ -384,6 +385,12 @@ views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
 }
 
 OmniboxPartState OmniboxResultView::GetThemeState() const {
+  // NULL_RESULT_MESSAGE matches are no-op suggestions that only deliver a
+  // message. The selected and hovered states imply an action can be taken from
+  // that suggestion, so do not allow those states for this result.
+  if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE)
+    return OmniboxPartState::NORMAL;
+
   if (GetMatchSelected())
     return OmniboxPartState::SELECTED;
 
