@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/linux/system_headers/linux_stat.h"
@@ -245,16 +246,6 @@ TEST(SyscallWrappers, LStat) {
     GTEST_FAIL();
   }
 
-  struct kernel_stat stat_info;
-  rc = sys_stat(symlink_name.c_str(), &stat_info);
-  if (rc < 0 && errno == EOVERFLOW) {
-    GTEST_SKIP();
-  }
-  if (rc != 0) {
-    PLOG(ERROR) << "Couldn't sys_stat " << symlink_name;
-    GTEST_FAIL();
-  }
-
   struct kernel_stat tmp_file_stat_info;
   rc = sys_stat(tmp_file.full_file_name(), &tmp_file_stat_info);
   if (rc < 0 && errno == EOVERFLOW) {
@@ -267,6 +258,24 @@ TEST(SyscallWrappers, LStat) {
 
   // lstat should produce information about a symlink.
   ASSERT_TRUE(S_ISLNK(lstat_info.st_mode));
+
+// /tmp is mounted with nosymfollow on ChromeOS so calling
+// sys_stat leads to an error.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    GTEST_SKIP();
+  }
+#endif
+
+  struct kernel_stat stat_info;
+  rc = sys_stat(symlink_name.c_str(), &stat_info);
+  if (rc < 0 && errno == EOVERFLOW) {
+    GTEST_SKIP();
+  }
+  if (rc != 0) {
+    PLOG(ERROR) << "Couldn't sys_stat " << symlink_name;
+    GTEST_FAIL();
+  }
 
   // stat-ing symlink_name and tmp_file should produce the same inode.
   ASSERT_EQ(stat_info.st_ino, tmp_file_stat_info.st_ino);
