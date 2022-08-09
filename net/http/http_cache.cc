@@ -925,11 +925,7 @@ int HttpCache::DoneWithResponseHeaders(ActiveEntry* entry,
 void HttpCache::DoneWithEntry(ActiveEntry* entry,
                               Transaction* transaction,
                               bool entry_is_complete,
-                              bool is_partial,
-                              base::SafeRef<ActiveEntry> entry_ref) {
-  // TODO(crbug.com/1348096): Remove this once the investigation is done.
-  *entry_ref;
-
+                              bool is_partial) {
   bool is_mode_read_only = transaction->mode() == Transaction::READ;
 
   if (!entry_is_complete && !is_mode_read_only && is_partial)
@@ -948,9 +944,6 @@ void HttpCache::DoneWithEntry(ActiveEntry* entry,
     return;
   }
 
-  // TODO(crbug.com/1348096): Remove this once the investigation is done.
-  *entry_ref;
-
   // Transaction is removed in the headers phase.
   if (transaction == entry->headers_transaction) {
     entry->headers_transaction = nullptr;
@@ -965,9 +958,6 @@ void HttpCache::DoneWithEntry(ActiveEntry* entry,
     return;
   }
 
-  // TODO(crbug.com/1348096): Remove this once the investigation is done.
-  *entry_ref;
-
   // Transaction is removed in the writing phase.
   if (entry->writers && entry->writers->HasTransaction(transaction)) {
     entry->writers->RemoveTransaction(transaction,
@@ -975,23 +965,10 @@ void HttpCache::DoneWithEntry(ActiveEntry* entry,
     return;
   }
 
-  // TODO(crbug.com/1348096): Remove this once the investigation is done.
-  *entry_ref;
-
   // Transaction is reading from the entry.
-  // TODO(crbug.com/1348096): Turn this CHECK into DCHECK once the
-  // investigation is done.
-  CHECK(!entry->writers);
-
+  DCHECK(!entry->writers);
   auto readers_it = entry->readers.find(transaction);
-
-  // TODO(crbug.com/1348096): Turn this CHECK into DCHECK once the
-  // investigation is done.
-  CHECK(readers_it != entry->readers.end());
-
-  // TODO(crbug.com/1348096): Remove this once the investigation is done.
-  *entry_ref;
-
+  DCHECK(readers_it != entry->readers.end());
   entry->readers.erase(readers_it);
   ProcessQueuedTransactions(entry);
 }
