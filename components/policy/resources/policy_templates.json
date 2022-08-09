@@ -30476,6 +30476,39 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
     ''',
     },
     {
+      'name': 'UnmanagedDeviceSignalsConsentFlowEnabled',
+      'owners': ['xzonghan@chromium.org', 'cbe-device-trust-eng@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': [
+        'chrome.*'
+      ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device signal consenting for managed users on unmanaged devices',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device signal consenting for managed users on unmanaged devices',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 1001,
+      'caption': '''Ask for consent from managed users to share device signals on unmanaged devices to gain access''',
+      'tags': [],
+      'desc': '''
+      Setting the policy to Enabled (True) lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> asks for managed users' consent prior to sharing device signals on unmanaged devices in order to gain access.
+
+      Setting the policy to Disabled (False) or leaving it unset disallows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from collecting device signals
+      Examples of device signals include (but are not limited to) OS information, registry, file presesnce.''',
+    },
+    {
       'name': 'LockIconInAddressBarEnabled',
       'owners': ['meacer@chromium.org', 'trusty-transport@chromium.org'],
       'type': 'main',
@@ -33528,6 +33561,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1000,
+  'highest_id_currently_used': 1001,
   'highest_atomic_group_id_currently_used': 43
 }

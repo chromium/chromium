@@ -123,6 +123,8 @@ include_rules = [
   "+components/desks_storage",
   "+components/dbus",
   "+components/device_event_log",
+  "+components/device_signals/core/browser",
+  "+components/device_signals/core/common",
   "+components/digital_asset_links",
   "+components/digital_goods",
   "+components/domain_reliability",
