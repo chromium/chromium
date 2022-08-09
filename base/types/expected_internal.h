@@ -5,6 +5,7 @@
 #ifndef BASE_TYPES_EXPECTED_INTERNAL_H_
 #define BASE_TYPES_EXPECTED_INTERNAL_H_
 
+// IWYU pragma: private, include "base/types/expected.h"
 #include <type_traits>
 #include <utility>
 

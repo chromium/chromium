@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/types/expected_internal.h"
+#include "base/types/expected_internal.h"  // IWYU pragma: export
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
 // Class template `expected<T, E>` is a vocabulary type which contains an
