@@ -43,7 +43,6 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ui/file_name.h"
-#include "pdf/ui/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -70,20 +69,6 @@ namespace {
 // A delay to wait between each accessibility page to keep the system
 // responsive.
 constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
-
-// Prepares messages from the plugin that reply to messages from the embedder.
-// If the "type" value of `message` is "foo", then the `reply_type` must be
-// "fooReply". The `message` from the embedder must have a "messageId" value
-// that will be copied to the reply message.
-base::Value::Dict PrepareReplyMessage(base::StringPiece reply_type,
-                                      const base::Value::Dict& message) {
-  DCHECK_EQ(reply_type, *message.FindString("type") + "Reply");
-
-  base::Value::Dict reply;
-  reply.Set("type", reply_type);
-  reply.Set("messageId", *message.FindString("messageId"));
-  return reply;
-}
 
 }  // namespace
 
@@ -173,22 +158,6 @@ void PdfViewPluginBase::NavigateToDestination(int page,
 void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
   base::Value::Dict message;
   message.Set("type", "touchSelectionOccurred");
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::GetDocumentPassword(
-    base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(password_callback_.is_null());
-  password_callback_ = std::move(callback);
-
-  base::Value::Dict message;
-  message.Set("type", "getPassword");
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::Beep() {
-  base::Value::Dict message;
-  message.Set("type", "beep");
   SendMessage(std::move(message));
 }
 
@@ -612,118 +581,6 @@ void PdfViewPluginBase::SetZoom(double scale) {
     paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
 
-void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
-    const base::Value::Dict& message) {
-  engine()->DisplayAnnotations(message.FindBool("display").value());
-}
-
-void PdfViewPluginBase::HandleGetNamedDestinationMessage(
-    const base::Value::Dict& message) {
-  absl::optional<PDFEngine::NamedDestination> named_destination =
-      engine()->GetNamedDestination(*message.FindString("namedDestination"));
-
-  const int page_number = named_destination.has_value()
-                              ? base::checked_cast<int>(named_destination->page)
-                              : -1;
-
-  base::Value::Dict reply =
-      PrepareReplyMessage("getNamedDestinationReply", message);
-  reply.Set("pageNumber", page_number);
-
-  if (named_destination.has_value() && !named_destination->view.empty()) {
-    std::ostringstream view_stream;
-    view_stream << named_destination->view;
-    if (named_destination->xyz_params.empty()) {
-      for (unsigned long i = 0; i < named_destination->num_params; ++i)
-        view_stream << "," << named_destination->params[i];
-    } else {
-      view_stream << "," << named_destination->xyz_params;
-    }
-
-    reply.Set("namedDestinationView", view_stream.str());
-  }
-
-  SendMessage(std::move(reply));
-}
-
-void PdfViewPluginBase::HandleGetPasswordCompleteMessage(
-    const base::Value::Dict& message) {
-  DCHECK(password_callback_);
-  std::move(password_callback_).Run(*message.FindString("password"));
-}
-
-void PdfViewPluginBase::HandleGetSelectedTextMessage(
-    const base::Value::Dict& message) {
-  // Always return unix newlines to JavaScript.
-  std::string selected_text;
-  base::RemoveChars(engine()->GetSelectedText(), "\r", &selected_text);
-
-  base::Value::Dict reply =
-      PrepareReplyMessage("getSelectedTextReply", message);
-  reply.Set("selectedText", selected_text);
-  SendMessage(std::move(reply));
-}
-
-void PdfViewPluginBase::HandleGetThumbnailMessage(
-    const base::Value::Dict& message) {
-  const int page_index = message.FindInt("page").value();
-  base::Value::Dict reply = PrepareReplyMessage("getThumbnailReply", message);
-
-  engine()->RequestThumbnail(page_index, device_scale(),
-                             base::BindOnce(&PdfViewPluginBase::SendThumbnail,
-                                            GetWeakPtr(), std::move(reply)));
-}
-
-void PdfViewPluginBase::HandlePrintMessage(
-    const base::Value::Dict& /*message*/) {
-  Print();
-}
-
-void PdfViewPluginBase::HandleRotateClockwiseMessage(
-    const base::Value::Dict& /*message*/) {
-  engine()->RotateClockwise();
-}
-
-void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
-    const base::Value::Dict& /*message*/) {
-  engine()->RotateCounterclockwise();
-}
-
-void PdfViewPluginBase::HandleSaveAttachmentMessage(
-    const base::Value::Dict& message) {
-  const int index = message.FindInt("attachmentIndex").value();
-
-  const std::vector<DocumentAttachmentInfo>& list =
-      engine()->GetDocumentAttachmentInfoList();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), list.size());
-  DCHECK(list[index].is_readable);
-  DCHECK(IsSaveDataSizeValid(list[index].size_bytes));
-
-  std::vector<uint8_t> data = engine()->GetAttachmentData(index);
-  base::Value data_to_save(
-      IsSaveDataSizeValid(data.size()) ? data : std::vector<uint8_t>());
-
-  base::Value::Dict reply = PrepareReplyMessage("saveAttachmentReply", message);
-  reply.Set("dataToSave", std::move(data_to_save));
-  SendMessage(std::move(reply));
-}
-
-void PdfViewPluginBase::HandleSelectAllMessage(
-    const base::Value::Dict& /*message*/) {
-  engine()->SelectAll();
-}
-
-void PdfViewPluginBase::HandleSetPresentationModeMessage(
-    const base::Value::Dict& message) {
-  engine()->SetReadOnly(message.FindBool("enablePresentationMode").value());
-}
-
-void PdfViewPluginBase::HandleSetTwoUpViewMessage(
-    const base::Value::Dict& message) {
-  engine()->SetTwoUpView(message.FindBool("enableTwoUpView").value());
-}
-
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {
@@ -805,17 +662,6 @@ void PdfViewPluginBase::ClearDeferredInvalidates() {
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
-}
-
-void PdfViewPluginBase::SendThumbnail(base::Value::Dict reply,
-                                      Thumbnail thumbnail) {
-  DCHECK_EQ(*reply.FindString("type"), "getThumbnailReply");
-  DCHECK(reply.FindString("messageId"));
-
-  reply.Set("imageData", thumbnail.TakeData());
-  reply.Set("width", thumbnail.image_size().width());
-  reply.Set("height", thumbnail.image_size().height());
-  SendMessage(std::move(reply));
 }
 
 void PdfViewPluginBase::LoadAccessibility() {

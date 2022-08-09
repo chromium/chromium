@@ -41,7 +41,6 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class PaintReadyRect;
-class Thumbnail;
 struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
@@ -87,9 +86,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
                              const float* y,
                              const float* zoom) override;
   void NotifyTouchSelectionOccurred() override;
-  void GetDocumentPassword(
-      base::OnceCallback<void(const std::string&)> callback) override;
-  void Beep() override;
   void Email(const std::string& to,
              const std::string& cc,
              const std::string& bcc,
@@ -313,21 +309,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   gfx::PointF GetScrollPositionFromOffset(
       const gfx::Vector2dF& scroll_offset) const;
 
-  // Message handlers.
-  void HandleDisplayAnnotationsMessage(const base::Value::Dict& message);
-  void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
-  void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
-  void HandleGetSelectedTextMessage(const base::Value::Dict& message);
-  void HandleGetThumbnailMessage(const base::Value::Dict& message);
-  void HandlePrintMessage(const base::Value::Dict& /*message*/);
-  void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
-  void HandleRotateCounterclockwiseMessage(
-      const base::Value::Dict& /*message*/);
-  void HandleSaveAttachmentMessage(const base::Value::Dict& message);
-  void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
-  void HandleSetPresentationModeMessage(const base::Value::Dict& message);
-  void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
-
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.
   void DoPaint(const std::vector<gfx::Rect>& paint_rects,
@@ -340,9 +321,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates();
-
-  // Sends the thumbnail image data.
-  void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
 
   // Starts loading accessibility information.
   void LoadAccessibility();
@@ -377,9 +355,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Whether OnPaint() is in progress or not.
   bool in_paint_ = false;
-
-  // The callback for receiving the password from the page.
-  base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The last document load progress value sent to the web page.
   double last_progress_sent_ = 0.0;

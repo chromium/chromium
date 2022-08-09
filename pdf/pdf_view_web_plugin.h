@@ -68,6 +68,7 @@ namespace chrome_pdf {
 class MetricsHandler;
 class PDFiumEngine;
 class PdfAccessibilityDataHandler;
+class Thumbnail;
 
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
@@ -275,6 +276,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
+  void GetDocumentPassword(
+      base::OnceCallback<void(const std::string&)> callback) override;
+  void Beep() override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
@@ -411,19 +415,27 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
 
-  // Handles message for saving the PDF.
+  // Message handlers.
+  void HandleDisplayAnnotationsMessage(const base::Value::Dict& message);
+  void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
+  void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
+  void HandleGetSelectedTextMessage(const base::Value::Dict& message);
+  void HandleGetThumbnailMessage(const base::Value::Dict& message);
+  void HandlePrintMessage(const base::Value::Dict& /*message*/);
+  void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
+  void HandleRotateCounterclockwiseMessage(
+      const base::Value::Dict& /*message*/);
+  void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSaveMessage(const base::Value::Dict& message);
+  void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
+  void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
+  void HandleSetPresentationModeMessage(const base::Value::Dict& message);
+  void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
+  void HandleStopScrollingMessage(const base::Value::Dict& message);
+  void HandleViewportMessage(const base::Value::Dict& message);
+
   void SaveToBuffer(const std::string& token);
   void SaveToFile(const std::string& token);
-
-  // Handles message for setting the background color.
-  void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
-
-  // Handles message to disable scrolling.
-  void HandleStopScrollingMessage(const base::Value::Dict& message);
-
-  // Handles message for viewport changes.
-  void HandleViewportMessage(const base::Value::Dict& message);
 
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();
@@ -478,6 +490,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Continues loading the next preview page.
   void LoadNextPreviewPage();
 
+  // Sends the thumbnail image data.
+  void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
+
   blink::WebString selected_text_;
 
   std::unique_ptr<Client> const client_;
@@ -491,6 +506,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The URL of the PDF document.
   std::string url_;
+
+  // The callback for receiving the password from the page.
+  base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The current cursor type.
   ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
