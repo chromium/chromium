@@ -45,6 +45,11 @@ export class TaskModuleElement extends I18nMixin
     return {
       task: Object,
 
+      showRelatedSearches_: {
+        type: Boolean,
+        computed: 'computeShowRelatedSearches_(task)',
+      },
+
       title_: {
         type: String,
         computed: 'computeTitle_()',
@@ -68,6 +73,7 @@ export class TaskModuleElement extends I18nMixin
   }
 
   task: Task;
+  private showRelatedSearches_: boolean;
   private title_: string;
   private dismissName_: string;
   private disableName_: string;
@@ -97,6 +103,10 @@ export class TaskModuleElement extends I18nMixin
     return loadTimeData.getBoolean('moduleRecipeExtendedExperimentEnabled') ?
         loadTimeData.getString('modulesRecipeExtendedInfo') :
         loadTimeData.getString('modulesRecipeInfo');
+  }
+
+  private computeShowRelatedSearches_(): boolean {
+    return this.task.relatedSearches && this.task.relatedSearches.length > 0;
   }
 
   private onTaskItemClick_(e: DomRepeatEvent<TaskItem>) {

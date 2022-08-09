@@ -10,9 +10,9 @@
     box-sizing: border-box;
     display: block;
     flex-grow: 1;
-    padding-bottom: 15px;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
     width: 100%;
   }
 
@@ -201,7 +201,7 @@
       </a>
     </template>
   </div>
-  <div id="relatedSearches">
+  <div hidden$="{{!showRelatedSearches_}}" id="relatedSearches">
     <template is="dom-repeat" id="relatedSearchesRepeat"
         items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
       <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
