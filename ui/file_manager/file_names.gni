@@ -236,7 +236,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/list_container.js",
-  "file_manager/foreground/js/ui/breadcrumb_controller.js",
   "file_manager/foreground/js/ui/multi_menu.js",
   "file_manager/foreground/js/ui/multi_menu_button.js",
   "file_manager/foreground/js/ui/progress_center_panel.js",
@@ -329,7 +328,6 @@ generated_js_files = [
   "file_manager/foreground/js/ui/banners/state_banner.js",
   "file_manager/foreground/js/ui/banners/trash_banner.js",
   "file_manager/foreground/js/ui/banners/warning_banner.js",
-  "file_manager/foreground/js/ui/breadcrumb.js",
 ]
 
 # END: generated_js_files.
@@ -405,7 +403,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/banners/state_banner_unittest.js",
   "file_manager/foreground/js/ui/banners/educational_banner_unittest.js",
   "file_manager/foreground/js/ui/banners/warning_banner_unittest.js",
-  "file_manager/foreground/js/ui/breadcrumb_unittest.js",
   "file_manager/foreground/js/ui/file_list_selection_model_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",

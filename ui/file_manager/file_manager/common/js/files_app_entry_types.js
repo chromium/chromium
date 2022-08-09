@@ -229,7 +229,7 @@ export class EntryList {
   addEntry(entry) {
     this.children_.push(entry);
     // Only VolumeEntry can have prefix set because it sets on VolumeInfo,
-    // which is then used on LocationInfo/BreadcrumbController.
+    // which is then used on LocationInfo/PathComponent.
     if (entry.type_name == 'VolumeEntry') {
       const volumeEntry = /** @type {VolumeEntry} */ (entry);
       volumeEntry.setPrefix(this);
@@ -520,7 +520,7 @@ export class VolumeEntry {
   addEntry(entry) {
     this.children_.push(entry);
     // Only VolumeEntry can have prefix set because it sets on VolumeInfo,
-    // which is then used on LocationInfo/BreadcrumbController.
+    // which is then used on LocationInfo/PathComponent.
     if (entry.type_name == 'VolumeEntry') {
       const volumeEntry = /** @type {VolumeEntry} */ (entry);
       volumeEntry.setPrefix(this);

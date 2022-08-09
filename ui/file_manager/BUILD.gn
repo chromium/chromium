@@ -116,7 +116,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
-    "//ui/file_manager/file_manager/foreground/js/ui:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui/banners:web_components",
   ]
 }

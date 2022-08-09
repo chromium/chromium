@@ -473,8 +473,7 @@ test.util.sync.unload = contentWindow => {
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
   const doc = contentWindow.document;
-  const breadcrumb = doc.querySelector('#location-breadcrumbs bread-crumb') ||
-      doc.querySelector('#location-breadcrumbs xf-breadcrumb');
+  const breadcrumb = doc.querySelector('#location-breadcrumbs xf-breadcrumb');
 
   if (!breadcrumb) {
     return '';

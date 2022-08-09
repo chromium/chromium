@@ -23,7 +23,6 @@ import {ProvidersModel} from '../providers_model.js';
 import {A11yAnnounce} from './a11y_announce.js';
 import {ActionModelUI} from './action_model_ui.js';
 import {ActionsSubmenu} from './actions_submenu.js';
-import {BreadcrumbController} from './breadcrumb_controller.js';
 import {ComboButton} from './combobutton.js';
 import {DefaultTaskDialog} from './default_task_dialog.js';
 import {DialogFooter} from './dialog_footer.js';
@@ -170,9 +169,9 @@ export class FileManagerUI {
 
     /**
      * Breadcrumb controller.
-     * @type {BreadcrumbController|BreadcrumbContainer}
+     * @private {?BreadcrumbContainer}
      */
-    this.breadcrumbController = null;
+    this.breadcrumbContainer_ = null;
 
     /**
      * The toolbar which contains controls.
@@ -450,8 +449,8 @@ export class FileManagerUI {
         util.queryRequiredElement('#list-container', this.element), table, grid,
         this.dialogType_);
 
-    // Breadcrumb controller.
-    this.breadcrumbController = new BreadcrumbContainer(
+    // Breadcrumb container.
+    this.breadcrumbContainer_ = new BreadcrumbContainer(
         util.queryRequiredElement('#location-breadcrumbs', this.element));
 
     // Splitter.

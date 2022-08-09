@@ -9,7 +9,6 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {TaskController} from './task_controller.js';
-import {BreadcrumbController} from './ui/breadcrumb_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {SearchBox} from './ui/search_box.js';
 
@@ -19,8 +18,6 @@ import {SearchBox} from './ui/search_box.js';
 export class SearchController {
   /**
    * @param {!SearchBox} searchBox Search box UI element.
-   * @param {!BreadcrumbController} breadcrumbController Breadcrumb controller
-   *     UI element.
    * @param {!DirectoryModel} directoryModel Directory model.
    * @param {!VolumeManager} volumeManager Volume manager.
    * @param {!TaskController} taskController Task controller to execute the
@@ -28,14 +25,9 @@ export class SearchController {
    * @param {!FileManagerUI} a11y FileManagerUI to be able to announce a11y
    *     messages.
    */
-  constructor(
-      searchBox, breadcrumbController, directoryModel, volumeManager,
-      taskController, a11y) {
+  constructor(searchBox, directoryModel, volumeManager, taskController, a11y) {
     /** @const @private {!SearchBox} */
     this.searchBox_ = searchBox;
-
-    /** @const @private {!BreadcrumbController} */
-    this.breadcrumbController_ = breadcrumbController;
 
     /** @const @private {!DirectoryModel} */
     this.directoryModel_ = directoryModel;

@@ -25,7 +25,6 @@ group("js_modules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
-    ":breadcrumb_controller",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -58,11 +57,6 @@ group("js_modules") {
   ]
 }
 
-html_to_js("web_components") {
-  visibility += [ "//ui/file_manager/*" ]
-  js_files = [ "breadcrumb.js" ]
-}
-
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
@@ -80,8 +74,6 @@ js_type_check("closure_compile_jsmodules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
-    ":breadcrumb",
-    ":breadcrumb_controller",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -149,20 +141,6 @@ js_unittest("actions_submenu_unittest") {
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:menu",
-  ]
-}
-
-js_library("breadcrumb") {
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
-  ]
-}
-
-js_unittest("breadcrumb_unittest") {
-  deps = [
-    ":breadcrumb",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -346,7 +324,6 @@ js_library("file_manager_ui") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
-    ":breadcrumb_controller",
     ":combobutton",
     ":default_task_dialog",
     ":dialog_footer",
@@ -383,6 +360,11 @@ js_library("file_manager_ui") {
     "//ui/webui/resources/js/cr/ui:menu",
     "//ui/webui/resources/js/cr/ui:menu_item",
   ]
+
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+  ]
+
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps" ]
 }
@@ -557,18 +539,6 @@ js_library("list_container") {
   ]
 }
 
-js_library("breadcrumb_controller") {
-  deps = [
-    ":breadcrumb",
-    ":list_container",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/js:path_component",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
 js_library("multi_menu") {
   deps = [
     "//ui/webui/resources/js:assert.m",
@@ -675,7 +645,6 @@ js_library("autocomplete_list") {
 js_test_type_check("js_test_type_check") {
   deps = [
     ":actions_submenu_unittest",
-    ":breadcrumb_unittest",
     ":directory_tree_unittest",
     ":file_grid_unittest",
     ":file_list_selection_model_unittest",

@@ -29,10 +29,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsSubmenuTest) {
   RunTestURL("foreground/js/ui/actions_submenu_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Breadcrumb) {
-  RunTestURL("foreground/js/ui/breadcrumb_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerController) {
   RunTestURL("foreground/js/banner_controller_unittest.js");
 }
