@@ -107,6 +107,22 @@ Buckets consist of slot spans, organized as linked lists (see below).
   other metadata (e.g. StarScan bitmaps) can bump the starting offset
   forward. While this term is entrenched in the code, the team
   considers it suboptimal and is actively looking for a replacement.
+* **Allocation Fast Path**: A path taken during an allocation that is
+  considered fast.  Usually means that an allocation request can be
+  immediately satisfied by grabbing a slot from the freelist of the
+  first active slot span in the bucket.
+* **Allocation Slow Path**: Anything which is not fast (see above).
+  Can involve
+  * finding another active slot span in the list,
+  * provisioning more slots in a slot span,
+  * bringing back a free (or decommitted) slot span,
+  * allocating a new slot span, or even
+  * allocating a new super page.
+
+*** aside
+By "slow" we may mean something as simple as extra logic (`if`
+statements etc.), or something as costly as system calls.
+***
 
 ## PartitionAlloc-Everywhere
 
