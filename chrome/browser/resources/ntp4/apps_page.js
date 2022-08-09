@@ -333,6 +333,7 @@ App.prototype = {
     assert(this.appData_.id, 'Got an app without an ID');
     this.id = this.appData_.id;
     this.setAttribute('role', 'menuitem');
+    this.setAttribute('aria-label', this.appData_.full_name);
 
     this.className = 'app focusable';
 
