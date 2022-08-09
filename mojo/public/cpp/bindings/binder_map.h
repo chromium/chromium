@@ -69,6 +69,12 @@ class BinderMapWithContext {
         Traits::MakeGenericBinder(std::move(binder)), std::move(task_runner));
   }
 
+  // Returns true if this map contains a binder for `Interface` receivers.
+  template <typename Interface>
+  bool Contains() {
+    return binders_.find(Interface::Name_) != binders_.end();
+  }
+
   // Attempts to bind the |receiver| using one of the registered binders in
   // this map. If a matching binder is found, ownership of the |receiver|'s
   // MessagePipe will be transferred and this will return |true|. If the binder

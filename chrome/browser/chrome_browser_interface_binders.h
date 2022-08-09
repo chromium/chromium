@@ -92,6 +92,8 @@ struct BinderHelper<Interface, 0, std::tuple<Subclass, Subclasses...>> {
 template <typename Interface, typename... WebUIControllerSubclasses>
 void RegisterWebUIControllerInterfaceBinder(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
+  DCHECK(!map->Contains<Interface>())
+      << "A binder for " << Interface::Name_ << " has already been registered.";
   map->Add<Interface>(
       base::BindRepeating([](content::RenderFrameHost* host,
                              mojo::PendingReceiver<Interface> receiver) {
