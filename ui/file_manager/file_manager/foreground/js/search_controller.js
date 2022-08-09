@@ -132,7 +132,7 @@ export class SearchController {
     // {@code DirectoryModel.search()}.
     if (this.directoryModel_.isSearching() &&
         this.directoryModel_.getLastSearchQuery() != searchString) {
-      this.directoryModel_.search('', () => {}, () => {});
+      this.directoryModel_.search('', () => {});
     }
 
     this.requestAutocompleteSuggestions_();
@@ -274,30 +274,8 @@ export class SearchController {
           count === 0 ? 'SEARCH_A11Y_NO_RESULT' : 'SEARCH_A11Y_RESULT';
       const msg = strf(msgId, searchString);
       this.a11y_.speakA11yMessage(msg);
-
-      // If the current location is somewhere in Drive, all files in Drive can
-      // be listed as search results regardless of current location.
-      // In this case, showing current location is confusing, so use the Drive
-      // root "My Drive" as the current location.
-      if (this.isOnDrive_) {
-        const locationInfo = this.currentLocationInfo_;
-        const rootEntry = locationInfo.volumeInfo.displayRoot;
-        if (rootEntry) {
-          if (!util.isFilesAppExperimental()) {
-            this.breadcrumbController_.show(rootEntry);
-          }
-        }
-      }
     };
 
-    const onClearSearch = function() {
-      if (!util.isFilesAppExperimental()) {
-        this.breadcrumbController_.show(
-            this.directoryModel_.getCurrentDirEntry());
-      }
-    };
-
-    this.directoryModel_.search(
-        searchString, onSearchRescan.bind(this), onClearSearch.bind(this));
+    this.directoryModel_.search(searchString, onSearchRescan.bind(this));
   }
 }

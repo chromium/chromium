@@ -144,10 +144,6 @@ export class MainWindowComponent {
         'focus', this.onFileListFocus_.bind(this));
     ui.listContainer.grid.addEventListener(
         'focus', this.onFileListFocus_.bind(this));
-    if (!util.isFilesAppExperimental()) {
-      ui.breadcrumbController.addEventListener(
-          'pathclick', this.onBreadcrumbClick_.bind(this));
-    }
     /**
      * We are binding both click/keyup event here because "click" event will
      * be triggered multiple times if the Enter/Space key is being pressed
@@ -196,14 +192,6 @@ export class MainWindowComponent {
 
       return false;
     });
-  }
-
-  /**
-   * @param {Event} event Click event.
-   * @private
-   */
-  onBreadcrumbClick_(event) {
-    this.directoryModel_.changeDirectoryEntry(event.entry);
   }
 
   /**
@@ -419,27 +407,14 @@ export class MainWindowComponent {
     switch (util.getKeyModifiers(event) + event.key) {
       case 'Backspace':  // Backspace => Up one directory.
         event.preventDefault();
-        if (util.isFilesAppExperimental()) {
-          const store = getStore();
-          const state = store.getState();
-          const components = state.currentDirectory?.pathComponents;
-          if (!components || components.length < 2) {
-            break;
-          }
-          const parent = components[components.length - 2];
-          store.dispatch(changeDirectory({toKey: parent.key}));
-        } else {
-          const components =
-              this.ui_.breadcrumbController.getCurrentPathComponents();
-          if (components.length < 2) {
-            break;
-          }
-          const parentPathComponent = components[components.length - 2];
-          parentPathComponent.resolveEntry().then((parentEntry) => {
-            this.directoryModel_.changeDirectoryEntry(
-                /** @type {!DirectoryEntry} */ (parentEntry));
-          });
+        const store = getStore();
+        const state = store.getState();
+        const components = state.currentDirectory?.pathComponents;
+        if (!components || components.length < 2) {
+          break;
         }
+        const parent = components[components.length - 2];
+        store.dispatch(changeDirectory({toKey: parent.key}));
         break;
 
       case 'Enter':  // Enter => Change directory or perform default action.
@@ -500,9 +475,6 @@ export class MainWindowComponent {
     this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
     if (event.newDirEntry) {
-      if (!util.isFilesAppExperimental()) {
-        this.ui_.breadcrumbController.show(event.newDirEntry);
-      }
       // Updates UI.
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
@@ -515,10 +487,6 @@ export class MainWindowComponent {
               'Could not find location info for entry: ' +
               event.newDirEntry.fullPath);
         }
-      }
-    } else {
-      if (!util.isFilesAppExperimental()) {
-        this.ui_.breadcrumbController.hide();
       }
     }
   }

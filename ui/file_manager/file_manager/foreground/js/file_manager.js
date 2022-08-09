@@ -944,10 +944,8 @@ export class FileManager extends EventTarget {
     await this.initSettingsPromise_;
     const fileSystemUIPromise = this.initFileSystemUI_();
     // Initialize the Store for the whole app.
-    if (util.isFilesAppExperimental()) {
-      const store = getStore();
-      store.init({});
-    }
+    const store = getStore();
+    store.init({});
     this.initUIFocus_();
     metrics.recordInterval('Load.InitUI');
     return fileSystemUIPromise;

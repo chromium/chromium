@@ -11,10 +11,7 @@ import {testcase} from '../testcase.js';
 import {expandTreeItem, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 async function getBreadcrumbTagName() {
-  const isFilesAppExperimental =
-      await sendTestMessage({name: 'isFilesAppExperimental'}) === 'true';
-
-  return isFilesAppExperimental ? 'xf-breadcrumb' : 'bread-crumb';
+  return 'xf-breadcrumb';
 }
 
 testcase.breadcrumbsNavigate = async () => {

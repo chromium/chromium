@@ -451,15 +451,8 @@ export class FileManagerUI {
         this.dialogType_);
 
     // Breadcrumb controller.
-    if (util.isFilesAppExperimental()) {
-      // TODO: Rename location-breadcrumbs to location-breadcrumb.
-      this.breadcrumbController = new BreadcrumbContainer(
-          util.queryRequiredElement('#location-breadcrumbs', this.element));
-    } else {
-      this.breadcrumbController = new BreadcrumbController(
-          util.queryRequiredElement('#location-breadcrumbs', this.element),
-          volumeManager, this.listContainer);
-    }
+    this.breadcrumbController = new BreadcrumbContainer(
+        util.queryRequiredElement('#location-breadcrumbs', this.element));
 
     // Splitter.
     this.decorateSplitter_(
