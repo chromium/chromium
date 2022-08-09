@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -37,6 +38,8 @@ class TipMarqueeView : public views::View, public views::WidgetObserver {
 
   // Constructs a tip marquee view which will display text with the given
   // display parameters (see views::Label::Label() for usage).
+  // TODO(crbug.com/1351405): Add setters for text_context and text_style for
+  // better compatibility with ViewBuilder.
   explicit TipMarqueeView(int text_context = views::style::CONTEXT_LABEL,
                           int text_style = views::style::STYLE_PRIMARY);
   ~TipMarqueeView() override;
@@ -89,5 +92,10 @@ class TipMarqueeView : public views::View, public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observer_{this};
 };
+
+BEGIN_VIEW_BUILDER(/*no export */, TipMarqueeView, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/*no export */, TipMarqueeView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_TIP_MARQUEE_VIEW_H_

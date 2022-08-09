@@ -62,29 +62,31 @@ class TipMarqueeViewTest : public views::ViewsTestBase {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(gfx::Point(), kTipMarqueeWidgetSize);
     widget_->Init(std::move(params));
-    views::View* contents = widget_->SetContentsView(
+    widget_->SetContentsView(
         views::Builder<views::FlexLayoutView>()
             .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .AddChildren(
+                views::Builder<views::View>()
+                    .CopyAddressTo(&spacer_)
+                    .SetPreferredSize(kSpacerPreferredSize)
+                    .SetProperty(views::kFlexBehaviorKey,
+                                 views::FlexSpecification(
+                                     views::LayoutOrientation::kHorizontal,
+                                     views::MinimumFlexSizeRule::kPreferred,
+                                     views::MaximumFlexSizeRule::kUnbounded)),
+                views::Builder<TipMarqueeView>(
+                    std::make_unique<TipMarqueeView>(
+                        views::style::CONTEXT_DIALOG_TITLE))
+                    .CopyAddressTo(&marquee_)
+                    .SetProperty(
+                        views::kFlexBehaviorKey,
+                        views::FlexSpecification(
+                            views::LayoutOrientation::kHorizontal,
+                            views::MinimumFlexSizeRule::kPreferredSnapToMinimum)
+                            .WithOrder(2))
+                    .SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kCenter))
             .Build());
-
-    spacer_ = contents->AddChildView(std::make_unique<views::View>());
-    spacer_->SetPreferredSize(kSpacerPreferredSize);
-    spacer_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-
-    marquee_ = contents->AddChildView(
-        std::make_unique<TipMarqueeView>(views::style::CONTEXT_DIALOG_TITLE));
-    marquee_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(
-            views::LayoutOrientation::kHorizontal,
-            views::MinimumFlexSizeRule::kPreferredSnapToMinimum)
-            .WithOrder(2));
-    marquee_->SetProperty(views::kCrossAxisAlignmentKey,
-                          views::LayoutAlignment::kCenter);
 
     widget_->Show();
   }
