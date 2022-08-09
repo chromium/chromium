@@ -489,6 +489,8 @@ source_set("ash") {
     "arc/session/arc_play_store_enabled_preference_handler.h",
     "arc/session/arc_provisioning_result.cc",
     "arc/session/arc_provisioning_result.h",
+    "arc/session/arc_requirement_checker.cc",
+    "arc/session/arc_requirement_checker.h",
     "arc/session/arc_service_launcher.cc",
     "arc/session/arc_service_launcher.h",
     "arc/session/arc_session_manager.cc",

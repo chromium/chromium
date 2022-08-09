@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
+#include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
@@ -47,7 +48,6 @@ class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
-class ArcTermsOfServiceNegotiator;
 class ArcUiAvailabilityReporter;
 
 enum class ProvisioningStatus;
@@ -462,7 +462,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<ArcDataRemover> data_remover_;
 
-  std::unique_ptr<ArcTermsOfServiceNegotiator> terms_of_service_negotiator_;
+  std::unique_ptr<ArcRequirementChecker> requirement_checker_;
 
   std::unique_ptr<ArcAndroidManagementChecker> android_management_checker_;
 

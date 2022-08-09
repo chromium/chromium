@@ -88,10 +88,6 @@ ArcSessionManager* g_arc_session_manager = nullptr;
 // Allows the session manager to skip creating UI in unit tests.
 bool g_ui_enabled = true;
 
-// Allows the session manager to create ArcTermsOfServiceOobeNegotiator in
-// tests, even when the tests are set to skip creating UI.
-bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
-
 absl::optional<bool> g_enable_check_android_management_in_tests;
 
 constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
@@ -507,12 +503,14 @@ ArcSessionManager* ArcSessionManager::Get() {
 // static
 void ArcSessionManager::SetUiEnabledForTesting(bool enable) {
   g_ui_enabled = enable;
+  ArcRequirementChecker::SetUiEnabledForTesting(enable);
 }
 
 // static
 void ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
     bool enable) {
-  g_enable_arc_terms_of_service_oobe_negotiator_in_tests = enable;
+  ArcRequirementChecker::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
+      enable);
 }
 
 // static
@@ -844,7 +842,7 @@ void ArcSessionManager::ResetArcState() {
   start_time_ = base::TimeTicks();
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
-  terms_of_service_negotiator_.reset();
+  requirement_checker_.reset();
   android_management_checker_.reset();
   wait_for_policy_timer_.AbandonAndStop();
 }
@@ -1141,7 +1139,7 @@ void ArcSessionManager::RequestArcDataRemoval() {
 void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
-  DCHECK(!terms_of_service_negotiator_);
+  DCHECK(!requirement_checker_);
   // In Kiosk and Public Session mode, Terms of Service negotiation should be
   // skipped. See also RequestEnableImpl().
   DCHECK(!IsRobotOrOfflineDemoAccountMode());
@@ -1175,20 +1173,6 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     return;
   }
 
-  if (IsArcOobeOptInActive()) {
-    if (g_enable_arc_terms_of_service_oobe_negotiator_in_tests ||
-        g_ui_enabled) {
-      VLOG(1) << "Use OOBE negotiator.";
-      terms_of_service_negotiator_ =
-          std::make_unique<ArcTermsOfServiceOobeNegotiator>();
-    }
-  } else if (support_host_) {
-    VLOG(1) << "Use default negotiator.";
-    terms_of_service_negotiator_ =
-        std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
-            profile_->GetPrefs(), support_host_.get());
-  }
-
   // Start the mini-container (or mini-VM) here to save time starting the OS if
   // the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
   // login screen, doing so on ToS screen is safe and desirable. The user has
@@ -1199,23 +1183,9 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   // faster.
   StartMiniArc();
 
-  if (!terms_of_service_negotiator_) {
-    // The only case reached here is when g_ui_enabled is false so
-    // 1. ARC support host is not created in SetProfile(), and
-    // 2. ArcTermsOfServiceOobeNegotiator is not created with OOBE test setup
-    // unless test explicitly called
-    // SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(true).
-    if (IsArcOobeOptInActive()) {
-      DCHECK(!g_enable_arc_terms_of_service_oobe_negotiator_in_tests &&
-             !g_ui_enabled)
-          << "OOBE negotiator is not created on production.";
-    } else {
-      DCHECK(!g_ui_enabled) << "Negotiator is not created on production.";
-    }
-    return;
-  }
-
-  terms_of_service_negotiator_->StartNegotiation(
+  requirement_checker_ =
+      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
+  requirement_checker_->StartTermsOfServiceNegotiation(
       base::BindOnce(&ArcSessionManager::OnTermsOfServiceNegotiated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1228,8 +1198,8 @@ void ArcSessionManager::StartArcForTesting() {
 void ArcSessionManager::OnTermsOfServiceNegotiated(bool accepted) {
   DCHECK_EQ(state_, State::NEGOTIATING_TERMS_OF_SERVICE);
   DCHECK(profile_);
-  DCHECK(terms_of_service_negotiator_ || !g_ui_enabled);
-  terms_of_service_negotiator_.reset();
+  DCHECK(requirement_checker_ || !g_ui_enabled);
+  requirement_checker_.reset();
 
   if (!accepted) {
     VLOG(1) << "Terms of services declined";
@@ -1594,7 +1564,7 @@ void ArcSessionManager::OnRetryClicked() {
   DCHECK(!g_ui_enabled || support_host_);
   DCHECK(!g_ui_enabled ||
          support_host_->ui_page() == ArcSupportHost::UIPage::ERROR);
-  DCHECK(!terms_of_service_negotiator_);
+  DCHECK(!requirement_checker_);
   DCHECK(!g_ui_enabled || !support_host_->HasAuthDelegate());
 
   UpdateOptInActionUMA(OptInActionType::RETRY);
