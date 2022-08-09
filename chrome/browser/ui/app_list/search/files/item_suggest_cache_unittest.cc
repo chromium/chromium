@@ -66,9 +66,6 @@ constexpr char kResponseSizeHistogramName[] =
 namespace app_list {
 using base::test::ScopedFeatureList;
 
-// TODO(crbug.com/1034842): Add test checking we make no requests when disabled
-// by experiment or policy.
-
 class ItemSuggestCacheTest : public testing::Test {
  protected:
   ItemSuggestCacheTest() = default;
