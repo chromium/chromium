@@ -10,14 +10,26 @@
     color-scheme: light dark;
 }
 body {
-    font: -apple-system-body;
     font-family: Arial;
-    font-size: 13px;
 }
 h2 {
-    font: -apple-system-headline;
-    font-size: 1em;
     margin-top: 0;
+}
+@supports (-webkit-touch-callout: none) {
+    body {
+        font: -apple-system-body;
+    }
+    h2 {
+        font: -apple-system-headline;
+    }
+}
+@supports not (-webkit-touch-callout: none) {
+    body {
+        font-size: 13px;
+    }
+    h2 {
+        font-size: 1em;
+    }
 }
 </style>
 </head>
