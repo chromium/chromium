@@ -34,7 +34,11 @@ using testing::Return;
 
 class MockBiometricAuthenticatorBridge : public BiometricAuthenticatorBridge {
  public:
-  MOCK_METHOD(BiometricsAvailability, CanAuthenticate, (), (override));
+  MOCK_METHOD(BiometricsAvailability,
+              CanAuthenticateWithBiometric,
+              (),
+              (override));
+  MOCK_METHOD(bool, CanAuthenticateWithBiometricOrScreenLock, (), (override));
   MOCK_METHOD(void,
               Authenticate,
               (base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
@@ -75,7 +79,7 @@ class BiometricAuthenticatorAndroidTest : public testing::Test {
 TEST_F(BiometricAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(bridge(), CanAuthenticate)
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_TRUE(authenticator()->CanAuthenticate(
       device_reauth::BiometricAuthRequester::kAllPasswordsList));
@@ -85,12 +89,13 @@ TEST_F(BiometricAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
       BiometricsAvailability::kAvailable, 1);
 }
 
-TEST_F(BiometricAuthenticatorAndroidTest,
-       CanAuthenticateDoesNotReecordHistogramForNonPasswordManager) {
+TEST_F(
+    BiometricAuthenticatorAndroidTest,
+    CanAuthenticateDoesNotReecordHistogramForNonPasswordManagerForIncognito) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(bridge(), CanAuthenticate)
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
   EXPECT_TRUE(authenticator()->CanAuthenticate(
       device_reauth::BiometricAuthRequester::kIncognitoReauthPage));
 

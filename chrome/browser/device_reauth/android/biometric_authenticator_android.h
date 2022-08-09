@@ -49,7 +49,8 @@ class BiometricAuthenticatorAndroid
     : public device_reauth::BiometricAuthenticator {
  public:
   // Returns true, when biometrics are available and also the device screen lock
-  // is setup, false otherwise.
+  // is set up, false otherwise. When the |requester| is kIncognitoReauthPage,
+  // it also returns true if just a screen lock is set up.
   bool CanAuthenticate(
       device_reauth::BiometricAuthRequester requester) override;
 
