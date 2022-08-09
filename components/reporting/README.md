@@ -23,9 +23,22 @@ build environment:
 1. Run `autoninja -C out/Default components_unittests` to build the components
    unit test executable.
 
-1. Then, run `out/Default/components_unittests --gtest_filter='<target tests>'` to
-   run relevant tests. Here, `<target tests>` is a wildcard pattern (refer to
+1. Then, run `out/Default/components_unittests --gtest_filter='<target tests>'`
+   to run relevant tests. Here, `<target tests>` is a wildcard pattern (refer to
    the document of gtest for more details). For example, to run all tests for
    `StorageQueue`, run
 
        $ out/Default/components_unittests --gtest_filter='*/StorageQueueTest.*'
+
+   For another example, to run all tests in this directory, run
+
+       $ tools/autotest.py -C out/Default --run_all components/reporting
+
+   You can also append a filter such as `--gtest_filter='*/StorageQueueTest.*'`
+   to the line above.
+
+   Another useful flag for dealing with flaky tests is `--gtest_repeat=`, which
+   repeats tests for multiple times.
+
+   For more gtest features, check out
+   [the gtest document](https://google.github.io/googletest/advanced.html).
