@@ -25,6 +25,12 @@ bool IsDialogOnboardingEnabled() {
       autofill_assistant::features::kAutofillAssistantDialogOnboarding);
 }
 
+// Synthetic field trial names and group names should match those specified
+// in google3/analysis/uma/dashboards/variations/
+// .../generate_server_hashes.py and
+// .../synthetic_trials.py
+const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
+
 }  // namespace
 
 namespace autofill_assistant {
@@ -118,6 +124,8 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     (*script_parameters)->MergeWith(trigger_context_->GetScriptParameters());
     trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
+  RegisterExperimentSyntheticFieldTrial(
+      trigger_context_->GetScriptParameters().GetExperiments());
   trigger_condition_check_interval_ = base::Milliseconds(check_interval_ms);
   if (trigger_condition_timeout_ms.has_value()) {
     // Note: add 1 for the initial, not-delayed check.
@@ -137,6 +145,22 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
       Metrics::TriggerScriptShownToUser::RUNNING);
   ui_delegate_->Attach(this);
   StartCheckingTriggerConditions();
+}
+
+void TriggerScriptCoordinator::RegisterExperimentSyntheticFieldTrial(
+    const std::vector<std::string>& experiments) const {
+  std::unique_ptr<AssistantFieldTrialUtil> field_trial_util =
+      starter_delegate_->CreateFieldTrialUtil();
+  if (!field_trial_util) {
+    // Failsafe, should never happen.
+    NOTREACHED();
+    return;
+  }
+  // Synthetic trial for experiments.
+  for (const std::string& experiment_id : experiments) {
+    field_trial_util->RegisterSyntheticFieldTrial(kExperimentsSyntheticTrial,
+                                                  experiment_id);
+  }
 }
 
 void TriggerScriptCoordinator::PerformTriggerScriptAction(

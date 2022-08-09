@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/mock_assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
 #include "components/autofill_assistant/browser/test_util.h"
@@ -1335,6 +1336,41 @@ TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
               UnorderedElementsAre(std::make_pair("name_1", "new_value_1"),
                                    std::make_pair("name_2", "new_value_2"),
                                    std::make_pair("name_3", "value_3")));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, RegisterSyntheticFieldTrial) {
+  auto mock_field_trial_util =
+      std::make_unique<NiceMock<MockAssistantFieldTrialUtil>>();
+  const auto* mock_field_trial_util_ptr = mock_field_trial_util.get();
+  fake_platform_delegate_.field_trial_util_ = std::move(mock_field_trial_util);
+
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  auto* param_1 = response.add_script_parameters();
+  param_1->set_name("EXPERIMENT_IDS");
+  param_1->set_value("1337,1001");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(
+      *mock_request_sender_,
+      OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("1337")));
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("1001")));
+
+  coordinator_->Start(
+      GURL(kFakeDeepLink),
+      std::make_unique<TriggerContext>(std::make_unique<ScriptParameters>(),
+                                       TriggerContext::Options()),
+      mock_callback_.Get());
 }
 
 TEST_F(TriggerScriptCoordinatorTest, UiTimeoutWhileShown) {

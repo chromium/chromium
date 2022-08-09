@@ -59,9 +59,9 @@ constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
 constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
 
 // Synthetic field trial names and group names should match those specified
-// in google3/analysis/uma/dashboards/
-// .../variations/generate_server_hashes.py and
-// .../website/components/variations_dash/variations_histogram_entry.js.
+// in google3/analysis/uma/dashboards/variations/
+// .../generate_server_hashes.py and
+// .../synthetic_trials.py
 const char kTriggeredSyntheticTrial[] = "AutofillAssistantTriggered";
 const char kEnabledGroupName[] = "Enabled";
 const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
