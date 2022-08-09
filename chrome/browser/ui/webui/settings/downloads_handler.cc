@@ -210,17 +210,17 @@ void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
                                    settings.value(), profile_->GetPrefs()))
                                   .has_value();
   // Dict to match the fields used in downloads_page.html.
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("linked", got_linked_account);
+  base::Value::Dict dict;
+  dict.Set("linked", got_linked_account);
   if (got_linked_account) {
-    base::Value account(base::Value::Type::DICTIONARY);
-    account.SetStringKey("name", info->account_name);
-    account.SetStringKey("login", info->account_login);
-    dict.SetKey("account", std::move(account));
-    base::Value folder(base::Value::Type::DICTIONARY);
-    folder.SetStringKey("name", info->folder_name);
-    folder.SetStringKey("link", info->folder_link);
-    dict.SetKey("folder", std::move(folder));
+    base::Value::Dict account;
+    account.Set("name", info->account_name);
+    account.Set("login", info->account_login);
+    dict.Set("account", std::move(account));
+    base::Value::Dict folder;
+    folder.Set("name", info->folder_name);
+    folder.Set("link", info->folder_link);
+    dict.Set("folder", std::move(folder));
   }
   FireWebUIListener("downloads-connection-link-changed", dict);
 }
