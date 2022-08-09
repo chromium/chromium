@@ -426,7 +426,9 @@ void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
   if (!frame_tree_node)
     return;
   blink::mojom::PreferredColorScheme preferred_color_scheme =
-      frame_tree_node->current_frame_host()->GetPreferredColorScheme();
+      WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
+          ->GetOrCreateWebPreferences()
+          .preferred_color_scheme;
   bool is_dark_mode =
       preferred_color_scheme == blink::mojom::PreferredColorScheme::kDark;
   SetHeaderToString(headers, WebClientHintsType::kPrefersColorScheme,

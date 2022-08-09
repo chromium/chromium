@@ -8277,12 +8277,6 @@ void Document::ColorSchemeChanged() {
   UpdateForcedColors();
   GetStyleEngine().ColorSchemeChanged();
   MediaQueryAffectingValueChanged(MediaValueChange::kOther);
-  MediaValues* media_values =
-      MediaValues::CreateDynamicIfFrameExists(GetFrame());
-  if (GetFrame()) {
-    GetFrame()->GetLocalFrameHostRemote().DidUpdatePreferredColorScheme(
-        media_values->GetPreferredColorScheme());
-  }
 }
 
 void Document::VisionDeficiencyChanged() {

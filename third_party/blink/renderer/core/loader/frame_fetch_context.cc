@@ -445,11 +445,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       image_info->viewport_height = GetFrame()->View()->ViewportHeight();
     }
 
-    MediaValues* media_values =
-        MediaValues::CreateDynamicIfFrameExists(GetFrame());
-    bool is_dark_mode = media_values->GetPreferredColorScheme() ==
-                        mojom::blink::PreferredColorScheme::kDark;
-    prefers_color_scheme = is_dark_mode ? "dark" : "light";
+    prefers_color_scheme = document_->InDarkMode() ? "dark" : "light";
   }
 
   // GetClientHintsPreferences() has things parsed for this document

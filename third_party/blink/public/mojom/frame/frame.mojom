@@ -519,10 +519,6 @@ interface LocalFrameHost {
   // navigation.
   FrameSizeChanged(gfx.mojom.Size size);
 
-  // Notifies the frame that the document preferred color scheme has changed
-  // due to DevTools media emulation.
-  DidUpdatePreferredColorScheme(PreferredColorScheme preferred_color_scheme);
-
   // Notifies the frame that the document's color scheme has been inferred.
   DidInferColorScheme(PreferredColorScheme color_scheme);
 

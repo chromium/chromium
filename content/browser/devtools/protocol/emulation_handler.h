@@ -82,6 +82,11 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   Response SetFocusEmulationEnabled(bool) override;
 
+  Response SetEmulatedMedia(
+      Maybe<std::string> media,
+      Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features)
+      override;
+
   blink::DeviceEmulationParams GetDeviceEmulationParams();
   void SetDeviceEmulationParams(const blink::DeviceEmulationParams& params);
 
@@ -114,6 +119,9 @@ class EmulationHandler : public DevToolsDomainHandler,
   // non-nullopt value will be sent.
   absl::optional<blink::UserAgentMetadata> user_agent_metadata_;
   std::string accept_language_;
+  // If |prefers_color_scheme_| is either "light" or "dark", it is used to
+  // override the "prefers-color-scheme" client hint header, when present.
+  std::string prefers_color_scheme_;
 
   RenderFrameHostImpl* host_;
 

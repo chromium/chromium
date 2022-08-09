@@ -23,6 +23,7 @@
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
@@ -126,6 +127,7 @@ Response EmulationHandler::Disable() {
   }
   if (focus_emulation_enabled_)
     SetFocusEmulationEnabled(false);
+  prefers_color_scheme_ = "";
   return Response::Success();
 }
 
@@ -537,6 +539,27 @@ Response EmulationHandler::SetFocusEmulationEnabled(bool enabled) {
   return Response::FallThrough();
 }
 
+Response EmulationHandler::SetEmulatedMedia(
+    Maybe<std::string> media,
+    Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
+  if (!host_)
+    return Response::InternalError();
+
+  prefers_color_scheme_ = "";
+  if (features.isJust()) {
+    for (auto const& mediaFeature : *features.fromJust()) {
+      if (mediaFeature->GetName() == "prefers-color-scheme") {
+        auto const& value = mediaFeature->GetValue();
+        prefers_color_scheme_ =
+            (value == "light" || value == "dark") ? value : "";
+        return Response::FallThrough();
+      }
+    }
+  }
+
+  return Response::FallThrough();
+}
+
 blink::DeviceEmulationParams EmulationHandler::GetDeviceEmulationParams() {
   return device_emulation_params_;
 }
@@ -629,6 +652,15 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
     headers->SetHeader(
         net::HttpRequestHeaders::kAcceptLanguage,
         net::HttpUtil::GenerateAcceptLanguageHeader(accept_language_));
+  }
+  if (!prefers_color_scheme_.empty()) {
+    const auto& prefersColorSchemeClientHintHeader =
+        network::GetClientHintToNameMap().at(
+            network::mojom::WebClientHintsType::kPrefersColorScheme);
+    if (headers->HasHeader(prefersColorSchemeClientHintHeader)) {
+      headers->SetHeader(prefersColorSchemeClientHintHeader,
+                         prefers_color_scheme_);
+    }
   }
 }
 

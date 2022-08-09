@@ -229,9 +229,6 @@ void FakeLocalFrameHost::DidAddMessageToConsole(
 
 void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
 
-void FakeLocalFrameHost::DidUpdatePreferredColorScheme(
-    blink::mojom::PreferredColorScheme preferred_color_scheme) {}
-
 void FakeLocalFrameHost::DidInferColorScheme(
     blink::mojom::PreferredColorScheme preferred_color_scheme) {}
 
