@@ -104,6 +104,7 @@ char kTSanDefaultSuppressions[] =
 
     // https://crbug.com/794920
     "race:base::debug::SetCrashKeyString\n"
+    "race:crash_reporter::internal::CrashKeyStringImpl::Clear\n"
     "race:crash_reporter::internal::CrashKeyStringImpl::Set\n"
 
     // http://crbug.com/927330
