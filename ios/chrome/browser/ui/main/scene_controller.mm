@@ -68,6 +68,8 @@
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_scene_agent.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -319,6 +321,8 @@ bool IsSigninForcedByPolicy() {
     [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
     [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
     [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+    if (IsFullscreenPromosManagerEnabled())
+      [_sceneState addAgent:[[PromosManagerSceneAgent alloc] init]];
   }
   return self;
 }

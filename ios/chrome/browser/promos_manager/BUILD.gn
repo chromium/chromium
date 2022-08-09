@@ -16,6 +16,19 @@ source_set("promos_manager") {
   ]
 }
 
+source_set("promos_manager_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "promos_manager_scene_agent.h",
+    "promos_manager_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
