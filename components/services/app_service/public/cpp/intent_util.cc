@@ -96,6 +96,7 @@ const char kIntentActionEdit[] = "edit";
 const char kIntentActionPotentialFileHandler[] = "potential_file_handler";
 
 const char kUseBrowserForLink[] = "use_browser";
+const char kGuestOsActivityName[] = "open-with";
 
 apps::IntentPtr MakeShareIntent(const std::vector<GURL>& filesystem_urls,
                                 const std::vector<std::string>& mime_types) {

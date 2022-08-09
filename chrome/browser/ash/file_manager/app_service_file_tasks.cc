@@ -69,8 +69,9 @@ TaskType GetTaskType(apps::AppType app_type) {
       // because both are executed through App Service, which can tell the
       // difference itself.
       return TASK_TYPE_FILE_HANDLER;
-    case apps::AppType::kUnknown:
     case apps::AppType::kCrostini:
+      return TASK_TYPE_CROSTINI_APP;
+    case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
     case apps::AppType::kMacOs:
     case apps::AppType::kPluginVm:
@@ -94,6 +95,24 @@ bool FileHandlerIsEnabled(Profile* profile,
   }
   if (file_handler_id == kImportCrostiniImageHandlerId) {
     return crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile);
+  }
+  return true;
+}
+
+// Check if the file URLs can be mapped to a path inside VMs for
+// GuestOS apps to access.
+bool FilesCanBeSharedToVm(Profile* profile, std::vector<GURL> file_urls) {
+  storage::FileSystemContext* file_system_context =
+      util::GetFileManagerFileSystemContext(profile);
+  base::FilePath placeholder_vm_mount("/");
+  base::FilePath not_used;
+  for (const GURL& file_url : file_urls) {
+    if (!file_manager::util::ConvertFileSystemURLToPathInsideVM(
+            profile, file_system_context->CrackURLInFirstPartyContext(file_url),
+            placeholder_vm_mount,
+            /*map_crostini_home=*/false, &not_used)) {
+      return false;
+    }
   }
   return true;
 }
@@ -144,10 +163,15 @@ void FindAppServiceTasks(Profile* profile,
   // the base profile in these cases (see crbug.com/1111695).
   Profile* profile_with_app_service = GetProfileWithAppService(profile);
   if (!profile_with_app_service) {
+    LOG(WARNING) << "Unexpected profile type";
     return;
   }
+
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service);
+
+  bool files_shareable_to_vm =
+      FilesCanBeSharedToVm(profile_with_app_service, file_urls);
 
   std::vector<apps::IntentFilePtr> intent_files;
   intent_files.reserve(entries.size());
@@ -169,6 +193,7 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kStandaloneBrowserExtension};
   if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
     supported_app_types.push_back(apps::AppType::kArc);
+    supported_app_types.push_back(apps::AppType::kCrostini);
   }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
@@ -211,6 +236,10 @@ void FindAppServiceTasks(Profile* profile,
       if (!FileHandlerIsEnabled(profile_with_app_service,
                                 launch_entry.activity_name))
         continue;
+    }
+
+    if (app_type == apps::AppType::kCrostini && !files_shareable_to_vm) {
+      continue;
     }
 
     constexpr int kIconSize = 32;
@@ -265,7 +294,8 @@ void ExecuteAppServiceTask(
   if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
     DCHECK(task.task_type == TASK_TYPE_ARC_APP ||
            task.task_type == TASK_TYPE_WEB_APP ||
-           task.task_type == TASK_TYPE_FILE_HANDLER);
+           task.task_type == TASK_TYPE_FILE_HANDLER ||
+           task.task_type == TASK_TYPE_CROSTINI_APP);
   } else {
     DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
            task.task_type == TASK_TYPE_FILE_HANDLER);

@@ -9,10 +9,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -29,6 +33,8 @@ class CrostiniAppsTest : public testing::Test {
   crostini::CrostiniTestHelper* test_helper() { return test_helper_.get(); }
 
   AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
+
+  TestingProfile* profile() { return profile_.get(); }
 
   void SetUp() override {
     ash::CiceroneClient::InitializeFake();
@@ -105,6 +111,43 @@ TEST_F(CrostiniAppsTest, AppServiceHasCrostiniIntentFilters) {
     ASSERT_EQ(condition->condition_values[0]->value, mime_types[0]);
     ASSERT_EQ(condition->condition_values[1]->value, mime_types[1]);
   }
+}
+
+TEST_F(CrostiniAppsTest, AppReadinessUpdatesWhenCrostiniDisabled) {
+  // Install a Crostini app.
+  vm_tools::apps::App app;
+  app.set_desktop_file_id("app_id");
+  vm_tools::apps::App::LocaleString::Entry* entry =
+      app.mutable_name()->add_values();
+  entry->set_locale(std::string());
+  entry->set_value("app_name");
+  test_helper()->AddApp(app);
+
+  // Get the app ID so that we can find the Crostini app in App Service later.
+  std::string app_service_id = crostini::CrostiniTestHelper::GenerateAppId(
+      app.desktop_file_id(), crostini::kCrostiniDefaultVmName,
+      crostini::kCrostiniDefaultContainerName);
+
+  // Check that the app is ready.
+  apps::Readiness readiness_before;
+  app_service_proxy()->AppRegistryCache().ForOneApp(
+      app_service_id, [&readiness_before](const AppUpdate& update) {
+        readiness_before = update.Readiness();
+      });
+  ASSERT_EQ(readiness_before, Readiness::kReady);
+
+  // Disable Crostini. This call uninstalls all Crostini apps.
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
+      ->ClearApplicationList(guest_os::VmType::TERMINA,
+                             crostini::kCrostiniDefaultVmName, "");
+
+  // Check that the app is now disabled.
+  apps::Readiness readiness_after;
+  app_service_proxy()->AppRegistryCache().ForOneApp(
+      app_service_id, [&readiness_after](const AppUpdate& update) {
+        readiness_after = update.Readiness();
+      });
+  ASSERT_EQ(readiness_after, Readiness::kUninstalledByUser);
 }
 
 }  // namespace apps

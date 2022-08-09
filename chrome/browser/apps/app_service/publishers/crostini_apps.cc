@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +33,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -71,7 +74,10 @@ apps::IntentFilters CreateIntentFilterForCrostini(
   std::vector<std::string> mime_types_vector(mime_types.begin(),
                                              mime_types.end());
   apps::IntentFilterPtr intent_filter = apps_util::CreateFileFilter(
-      {apps_util::kIntentActionView}, mime_types_vector, {});
+      {apps_util::kIntentActionView}, mime_types_vector, {},
+      // TODO(crbug/1349974): Remove activity_name when default file handling
+      // preferences for Files App are migrated.
+      /*activity_name=*/apps_util::kGuestOsActivityName);
   intent_filters.push_back(std::move(intent_filter));
   return intent_filters;
 }
@@ -144,10 +150,21 @@ void CrostiniApps::LaunchAppWithIntent(
     LaunchSource launch_source,
     WindowInfoPtr window_info,
     base::OnceCallback<void(bool)> callback) {
+  // Retrieve URLs from the files in the intent.
+  std::vector<crostini::LaunchArg> args;
+  if (intent && intent->files.size() > 0) {
+    args.reserve(intent->files.size());
+    storage::FileSystemContext* file_system_context =
+        file_manager::util::GetFileManagerFileSystemContext(profile_);
+    for (auto& file : intent->files) {
+      args.emplace_back(
+          file_system_context->CrackURLInFirstPartyContext(file->url));
+    }
+  }
   crostini::LaunchCrostiniAppWithIntent(
       profile_, app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
-      std::move(intent), /*args=*/{},
+      std::move(intent), args,
       base::BindOnce(
           [](LaunchAppWithIntentCallback callback, bool success,
              const std::string& failure_reason) {
@@ -217,10 +234,21 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
                                        apps::mojom::LaunchSource launch_source,
                                        apps::mojom::WindowInfoPtr window_info,
                                        LaunchAppWithIntentCallback callback) {
+  // Retrieve URLs from the files in the intent.
+  std::vector<crostini::LaunchArg> args;
+  if (intent && intent->files.has_value()) {
+    storage::FileSystemContext* file_system_context =
+        file_manager::util::GetFileManagerFileSystemContext(profile_);
+    args.reserve(intent->files.value().size());
+    for (auto& file : intent->files.value()) {
+      args.emplace_back(
+          file_system_context->CrackURLInFirstPartyContext(file->url));
+    }
+  }
   crostini::LaunchCrostiniAppWithIntent(
       profile_, app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
-      ConvertMojomIntentToIntent(intent), /*args=*/{},
+      ConvertMojomIntentToIntent(intent), args,
       base::BindOnce(
           [](LaunchAppWithIntentCallback callback, bool success,
              const std::string& failure_reason) {

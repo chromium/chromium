@@ -717,10 +717,12 @@ bool ExecuteFileTask(Profile* profile,
     return true;
   }
 
-  // ARC apps and web apps need mime types for launching. Retrieve them first.
+  // Apps from App Service need mime types for launching. Retrieve them first.
   if (task.task_type == TASK_TYPE_ARC_APP ||
       task.task_type == TASK_TYPE_WEB_APP ||
-      task.task_type == TASK_TYPE_FILE_HANDLER) {
+      task.task_type == TASK_TYPE_FILE_HANDLER ||
+      (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+       task.task_type == TASK_TYPE_CROSTINI_APP)) {
     // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
     // necessary, for Chrome Apps.
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =
@@ -732,8 +734,9 @@ bool ExecuteFileTask(Profile* profile,
     return true;
   }
 
-  if (task.task_type == TASK_TYPE_CROSTINI_APP ||
-      task.task_type == TASK_TYPE_PLUGIN_VM_APP) {
+  if (!ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+      (task.task_type == TASK_TYPE_CROSTINI_APP ||
+       task.task_type == TASK_TYPE_PLUGIN_VM_APP)) {
     DCHECK_EQ(kGuestOsAppActionID, task.action_id);
     ExecuteGuestOsTask(profile, task, file_urls, std::move(done));
     return true;
@@ -817,9 +820,11 @@ void FindAllTypesOfTasks(Profile* profile,
       new std::vector<FullTaskDescriptor>);
 
   if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
-    // Skip FindArcTasks since ARC tasks are now found in App Service.
-    FindExtensionAndAppTasks(profile, entries, file_urls, std::move(callback),
-                             std::move(result_list));
+    // Skip FindArcTasks and FindGuestOsTasks since these tasks are now found in
+    // App Service.
+    FindAppServiceTasks(profile, entries, file_urls, result_list.get());
+    PostProcessFoundTasks(profile, entries, std::move(callback),
+                          std::move(result_list));
   } else {
     // 1. Find and append ARC handler tasks.
     FindArcTasks(profile, entries, file_urls, std::move(result_list),
