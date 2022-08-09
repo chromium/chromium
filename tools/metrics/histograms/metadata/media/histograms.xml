@@ -1322,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2022-12-04">
+    expires_after="2023-02-05">
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <summary>
@@ -1597,7 +1597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2023-01-29">
+    expires_after="2023-02-05">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererMissedDeadline" units="%"
-    expires_after="2023-01-29">
+    expires_after="2023-02-05">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -5422,7 +5422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2022-12-01">
+    enum="VTVDASessionFailureType" expires_after="2023-02-05">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

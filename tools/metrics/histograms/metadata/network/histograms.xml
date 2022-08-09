@@ -1170,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.RadioUtilsOverhead"
-    units="ms" expires_after="2022-12-04">
+    units="ms" expires_after="2023-02-05">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

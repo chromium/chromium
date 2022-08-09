@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2022-12-04">
+    enum="CrosDisksClientFormatError" expires_after="2023-02-05">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

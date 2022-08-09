@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="2022-12-04">
+    expires_after="2023-02-05">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -712,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-05">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
