@@ -267,7 +267,10 @@ bool Section::SetPrefixFromAutocomplete(const std::string& autocomplete_section,
                                         HtmlFieldMode autocomplete_mode) {
   if (autocomplete_section.empty() && autocomplete_mode == HTML_MODE_NONE)
     return false;
-
+  // To prevent potential section name collisions, append `kDefaultSection`
+  // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
+  // attribute values "section--shipping street-address" and "shipping
+  // street-address" would result in the same `prefix_`.
   prefix_ =
       autocomplete_section +
       (autocomplete_mode != HTML_MODE_NONE

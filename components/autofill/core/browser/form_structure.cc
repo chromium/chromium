@@ -1279,14 +1279,6 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   has_author_specified_sections_ = false;
   has_author_specified_upi_vpa_hint_ = false;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
-    // To prevent potential section name collisions, add a default suffix for
-    // other fields. Without this, 'autocomplete' attribute values
-    // "section--shipping street-address" and "shipping street-address" would be
-    // parsed identically, given the section handling code below. We do this
-    // before any validation so that fields with invalid attributes still end up
-    // in the default section. These default section names will be overridden
-    // by subsequent heuristic parsing steps if there are no author-specified
-    // section names.
     field->section = Section();
     auto parsing_result = ParseAutocompleteAttribute(*field);
     if (!parsing_result)
