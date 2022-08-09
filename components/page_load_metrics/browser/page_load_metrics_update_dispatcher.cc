@@ -53,7 +53,8 @@ bool EventsInOrder(const absl::optional<base::TimeDelta>& first,
 }
 
 internal::PageLoadTimingStatus IsValidPageLoadTiming(
-    const mojom::PageLoadTiming& timing) {
+    const mojom::PageLoadTiming& timing,
+    bool is_prerendered) {
   if (page_load_metrics::IsEmpty(timing))
     return internal::INVALID_EMPTY_TIMING;
 
@@ -150,11 +151,30 @@ internal::PageLoadTimingStatus IsValidPageLoadTiming(
     return internal::INVALID_ORDER_DOM_CONTENT_LOADED_LOAD;
   }
 
-  if (!EventsInOrder(timing.parse_timing->parse_start,
-                     timing.paint_timing->first_paint)) {
-    LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
-               << " for first_paint " << timing.paint_timing->first_paint;
-    return internal::INVALID_ORDER_PARSE_START_FIRST_PAINT;
+  // If the page is prerendered, `parse_start <= activation_start <=
+  // first_paint`.
+  // If the page is non prerendered, `parse_start <= first_paint`.
+  if (is_prerendered) {
+    if (!EventsInOrder(timing.parse_timing->parse_start,
+                       timing.activation_start)) {
+      LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
+                 << " for activation_start " << timing.activation_start;
+      return internal::INVALID_ORDER_PARSE_START_ACTIVATION_START;
+    }
+
+    if (!EventsInOrder(timing.activation_start,
+                       timing.paint_timing->first_paint)) {
+      LOG(ERROR) << "Invalid activation_start " << timing.activation_start
+                 << " for first_paint " << timing.paint_timing->first_paint;
+      return internal::INVALID_ORDER_ACTIVATION_START_FIRST_PAINT;
+    }
+  } else {
+    if (!EventsInOrder(timing.parse_timing->parse_start,
+                       timing.paint_timing->first_paint)) {
+      LOG(ERROR) << "Invalid parse_start " << timing.parse_timing->parse_start
+                 << " for first_paint " << timing.paint_timing->first_paint;
+      return internal::INVALID_ORDER_PARSE_START_FIRST_PAINT;
+    }
   }
 
   if (!EventsInOrder(timing.paint_timing->first_paint,
@@ -699,7 +719,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameTiming(
     return;
   }
 
-  internal::PageLoadTimingStatus status = IsValidPageLoadTiming(*new_timing);
+  const bool is_prerendered =
+      (client_->GetPrerenderingState() != PrerenderingState::kNoPrerendering);
+  internal::PageLoadTimingStatus status =
+      IsValidPageLoadTiming(*new_timing, is_prerendered);
   UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingStatus, status,
                             internal::LAST_PAGE_LOAD_TIMING_STATUS);
   if (status != internal::VALID) {
@@ -877,8 +900,10 @@ void PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates() {
 
   current_merged_page_timing_ = pending_merged_page_timing_->Clone();
 
+  const bool is_prerendered =
+      (client_->GetPrerenderingState() != PrerenderingState::kNoPrerendering);
   internal::PageLoadTimingStatus status =
-      IsValidPageLoadTiming(*pending_merged_page_timing_);
+      IsValidPageLoadTiming(*pending_merged_page_timing_, is_prerendered);
   UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingDispatchStatus, status,
                             internal::LAST_PAGE_LOAD_TIMING_STATUS);
 

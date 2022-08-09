@@ -9,6 +9,7 @@ This document provides a detailed guide to implementing a `PageLoadMetricsObserv
 For a quick introduction, you may wish to read the [implementation basics](#implementation-basics)
 section below, browse the [`PageLoadMetricsObserver`](/components/page_load_metrics/browser/page_load_metrics_observer.h)
 interface, and look over [existing `PageLoadMetricsObserver` implementations](/chrome/browser/page_load_metrics/observers/).
+You can refer [`AssertPageLoadMetricsObserver`](/components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h) for context and assumptions that callbacks can be rely on.
 
 `PageLoadMetricsObserver`s can track [web vitals](https://web.dev/vitals/) like time to [Largest Contentful Paint](https://web.dev/lcp) and other per-page metrics such as time to first user input in [UMA](/tools/metrics/histograms/README.md) or [UKM](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/services/metrics/ukm_api.md).
 

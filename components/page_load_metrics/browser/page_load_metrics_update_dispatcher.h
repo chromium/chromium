@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
@@ -92,6 +93,10 @@ enum PageLoadTimingStatus {
   // Longest input delay cannot be less than first input delay.
   INVALID_LONGEST_INPUT_DELAY_LESS_THAN_FIRST_INPUT_DELAY,
 
+  // Activation start should be occur between parse start and first paint.
+  INVALID_ORDER_PARSE_START_ACTIVATION_START,
+  INVALID_ORDER_ACTIVATION_START_FIRST_PAINT,
+
   // New values should be added before this final entry.
   LAST_PAGE_LOAD_TIMING_STATUS
 };
@@ -112,6 +117,7 @@ class PageLoadMetricsUpdateDispatcher {
    public:
     virtual ~Client() {}
 
+    virtual PrerenderingState GetPrerenderingState() const = 0;
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
     virtual void OnPageInputTimingChanged(uint64_t num_input_events) = 0;

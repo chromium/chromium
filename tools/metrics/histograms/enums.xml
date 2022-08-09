@@ -74135,6 +74135,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="22"
       label="Longest input timestamp earlier than first input timestamp"/>
   <int value="23" label="Longest input delay less than first input delay"/>
+  <int value="24" label="Invalid order - parse start / activation start"/>
+  <int value="25" label="Invalid order - activation start / first paint"/>
 </enum>
 
 <enum name="PageLoadTimingUnderStat">

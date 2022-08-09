@@ -14,6 +14,8 @@ source_set("browser") {
     "metrics_navigation_throttle.h",
     "metrics_web_contents_observer.cc",
     "metrics_web_contents_observer.h",
+    "observers/assert_page_load_metrics_observer.cc",
+    "observers/assert_page_load_metrics_observer.h",
     "observers/back_forward_cache_page_load_metrics_observer.cc",
     "observers/back_forward_cache_page_load_metrics_observer.h",
     "observers/click_input_tracker.cc",

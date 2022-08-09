@@ -455,24 +455,23 @@ class PageLoadMetricsObserverInterface {
   virtual ObservePolicy FlushMetricsOnAppEnterBackground(
       const mojom::PageLoadTiming& timing) = 0;
 
-  // One of OnComplete or OnFailedProvisionalLoad is invoked for tracked page
-  // loads, immediately before the observer is deleted. These callbacks will not
-  // be invoked for page loads that did not meet the criteria for being tracked
-  // at the time the navigation completed. The PageLoadTiming struct contains
-  // timing data. Other useful data collected over the course of the page load
-  // is exposed by the observer delegate API. Most observers should not need
-  // to implement these callbacks, and should implement the On* timing callbacks
-  // instead.
-
-  // OnComplete is invoked for tracked page loads that committed, immediately
-  // before the observer is deleted. Observers that implement OnComplete may
-  // also want to implement FlushMetricsOnAppEnterBackground, to avoid loss of
-  // data if the application is killed while in the background (this happens
-  // frequently on Android).
+  // A destructor of observer is invoked in the following mutually exclusive
+  // paths:
+  //
+  // - (If an ovserver doesn't override OnEnterBackForwardCache) When
+  //   OnEnterBackForwardCache is invoked, it calls OnComplete and returns
+  //   STOP_OBSERVING, then the ovserver is pruned.
+  // - When some callback returned STOP_OBSERVING, the observer is pruned with
+  //   no more callback.
+  // - When PageLoadTracker destructed, OnComplete is invoked just before
+  //   destruction if the load is committed.
+  // - When PageLoadTracker destructed, OnFailedProvisionalLoad is invoked just
+  //   before destruction if the load is not committed.
+  //
+  // Observers that implement OnComplete may also want to implement
+  // FlushMetricsOnAppEnterBackground, to avoid loss of data if the application
+  // is killed while in the background (this happens frequently on Android).
   virtual void OnComplete(const mojom::PageLoadTiming& timing) = 0;
-
-  // OnFailedProvisionalLoad is invoked for tracked page loads that did not
-  // commit, immediately before the observer is deleted.
   virtual void OnFailedProvisionalLoad(
       const FailedProvisionalLoadInfo& failed_provisional_load_info) = 0;
 
