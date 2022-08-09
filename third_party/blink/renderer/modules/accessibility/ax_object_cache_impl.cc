@@ -1860,6 +1860,8 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
     UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
 
     tree_updates_paused_ = true;
+    LOG(INFO) << "Accessibility tree update queue is too big, updates have "
+                 "been paused";
     queue.clear();
     return;
   }
@@ -1910,6 +1912,8 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
     UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
 
     tree_updates_paused_ = true;
+    LOG(INFO) << "Accessibility tree update queue is too big, updates have "
+                 "been paused";
     queue.clear();
     return;
   }
@@ -2425,7 +2429,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     return;
   }
 
-  if (!IsDirty())
+  // When tree updates are paused, IsDirty() will return false. In this
+  // situation we should not return early because we would never trigger the
+  // code that resumes the tree updates, inside ProcessCleanLayoutCallbacks.
+  if (!IsDirty() && !tree_updates_paused_)
     return;
 
   DCHECK(GetDocument().IsAccessibilityEnabled())
@@ -2669,6 +2676,8 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   if (tree_updates_paused_) {
     ChildrenChangedWithCleanLayout(nullptr, GetOrCreate(&document));
     tree_updates_paused_ = false;
+    LOG(INFO) << "Accessibility tree updates resumed after rebuilding the tree "
+                 "from root";
     return;
   }
 
