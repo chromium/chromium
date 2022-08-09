@@ -5823,6 +5823,7 @@ others/histograms.xml -->
   <int value="29" label="TILE_NAVSUGGEST"/>
   <int value="30" label="OPEN_TAB"/>
   <int value="31" label="HISTORY_CLUSTER"/>
+  <int value="32" label="NULL_RESULT_MESSAGE"/>
 </enum>
 
 <enum name="AutoDSEPermissionRevertTransition">

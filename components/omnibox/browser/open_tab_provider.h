@@ -32,6 +32,14 @@ class OpenTabProvider : public AutocompleteProvider {
                                        int score,
                                        const TemplateURL* template_url);
 
+  // This is called when no other matches were found and generates a
+  // NULL_RESULT_MESSAGE match. This match is intended only to display a message
+  // to the user and keep the keyword mode UI.  No action can be taken by
+  // opening this match.
+  AutocompleteMatch CreateNullResultMessageMatch(
+      const AutocompleteInput& input,
+      const TemplateURL* template_url);
+
   raw_ptr<AutocompleteProviderClient> client_;
 };
 

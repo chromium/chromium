@@ -930,13 +930,6 @@ void TemplateURLService::RepairStarterPackEngines() {
   }
 }
 
-bool TemplateURLService::IsKeywordFromStarterPackTabSearch(
-    const std::u16string& keyword) {
-  const TemplateURL* turl = GetTemplateURLForKeyword(keyword);
-
-  return (turl && turl->starter_pack_id() == TemplateURLStarterPackData::kTabs);
-}
-
 void TemplateURLService::AddObserver(TemplateURLServiceObserver* observer) {
   model_observers_.AddObserver(observer);
 }

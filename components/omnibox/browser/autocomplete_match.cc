@@ -474,6 +474,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return omnibox::kCalculatorIcon;
 
     case Type::SEARCH_SUGGEST_TAIL:
+    case Type::NULL_RESULT_MESSAGE:
       return omnibox::kBlankIcon;
 
     case Type::DOCUMENT_SUGGESTION:
@@ -1213,6 +1214,8 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
+    // NULL_RESULT_MESSAGE suggestions cannot be acted upon, so no need to log.
+    case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       break;
   }

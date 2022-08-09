@@ -89,6 +89,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       // Not reached.
       return SearchResult::OmniboxType::kDomain;

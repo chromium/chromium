@@ -8,14 +8,18 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/query_parser/query_parser.h"
 #include "components/search_engines/template_url.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/public/browser/web_contents.h"
@@ -108,6 +112,15 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
           adjusted_input, web_contents->GetTitle(), url, score, template_url));
     }
   }
+
+  // If there were no open tab results found, and we're in keyword mode,
+  // generate a NULL_RESULT_MESSAGE suggestion to keep the user in keyword mode
+  // and display a no results message.
+  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      InKeywordMode(adjusted_input) && matches_.empty()) {
+    matches_.push_back(
+        CreateNullResultMessageMatch(adjusted_input, template_url));
+  }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
@@ -161,6 +174,35 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   if (InKeywordMode(input)) {
     match.from_keyword = true;
   }
+
+  return match;
+}
+
+AutocompleteMatch OpenTabProvider::CreateNullResultMessageMatch(
+    const AutocompleteInput& input,
+    const TemplateURL* template_url) {
+  DCHECK(template_url);
+
+  // This value doesn't really matter as this suggestion is only displayed when
+  // no other suggestions were found. Use an arbitrary constant.
+  constexpr int kRelevanceScore = 1000;
+  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/false,
+                          AutocompleteMatchType::NULL_RESULT_MESSAGE);
+
+  // These fields are filled in to enable the Keyword UI when only this
+  // suggestion is available.
+  match.fill_into_edit = input.text();
+  match.allowed_to_be_default_match = true;
+  match.keyword = template_url->keyword();
+  match.transition = ui::PAGE_TRANSITION_KEYWORD;
+
+  // Use this suggestion's contents field to display a message to the user that
+  // there were no matching results found.
+  match.contents =
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SEARCH_NO_RESULTS_FOUND);
+  match.contents_class.push_back(
+      ACMatchClassification(0, ACMatchClassification::NONE));
+  match.from_keyword = true;
 
   return match;
 }

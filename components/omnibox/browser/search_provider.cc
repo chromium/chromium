@@ -1114,8 +1114,13 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     // Note: in this provider, SEARCH_OTHER_ENGINE must correspond
     // to the keyword verbatim search query.  Do not create other matches
     // of type SEARCH_OTHER_ENGINE.
+    //
+    // In tabs search keyword mode, navigation (switch to open tab) suggestions
+    // are provided, but there's no search results landing page to navigate to,
+    // so it's not possible to open a verbatim search match. Do not provide one.
     if (keyword_url &&
-        (keyword_url->type() != TemplateURL::OMNIBOX_API_EXTENSION)) {
+        (keyword_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) &&
+        (keyword_url->starter_pack_id() != TemplateURLStarterPackData::kTabs)) {
       bool keyword_relevance_from_server;
       const int keyword_verbatim_relevance =
           GetKeywordVerbatimRelevance(&keyword_relevance_from_server);
