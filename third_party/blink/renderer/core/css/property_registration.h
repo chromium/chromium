@@ -52,6 +52,8 @@ class CORE_EXPORT PropertyRegistration final
   const InterpolationTypes& GetInterpolationTypes() const {
     return interpolation_types_;
   }
+  // See `ViewportUnitFlag`.
+  unsigned GetViewportUnitFlags() const;
 
   void Trace(Visitor* visitor) const { visitor->Trace(initial_); }
 

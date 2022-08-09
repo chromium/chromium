@@ -54,6 +54,20 @@ PropertyRegistration::PropertyRegistration(const AtomicString& name,
 
 PropertyRegistration::~PropertyRegistration() = default;
 
+unsigned PropertyRegistration::GetViewportUnitFlags() const {
+  unsigned flags = 0;
+  if (const auto* primitive_value =
+          DynamicTo<CSSPrimitiveValue>(initial_.Get())) {
+    CSSPrimitiveValue::LengthTypeFlags length_type_flags;
+    primitive_value->AccumulateLengthUnitTypes(length_type_flags);
+    if (CSSPrimitiveValue::HasStaticViewportUnits(length_type_flags))
+      flags |= static_cast<unsigned>(ViewportUnitFlag::kStatic);
+    if (CSSPrimitiveValue::HasDynamicViewportUnits(length_type_flags))
+      flags |= static_cast<unsigned>(ViewportUnitFlag::kDynamic);
+  }
+  return flags;
+}
+
 static bool ComputationallyIndependent(const CSSValue& value) {
   DCHECK(!value.IsCSSWideKeyword());
 
