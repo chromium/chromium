@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/follow/follow_service_factory.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/google/google_logo_service_factory.h"
 #include "ios/chrome/browser/history/domain_diversity_reporter_factory.h"
@@ -131,6 +132,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   DiscoverFeedServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
+  FollowServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeContentSuggestionsServiceFactory::GetInstance();

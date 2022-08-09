@@ -13,6 +13,7 @@
 @protocol FollowedWebChannelsDataSource;
 @protocol FollowManagementViewDelegate;
 @protocol TableViewFaviconDataSource;
+@protocol FollowManagementFollowDelegate;
 
 // The UI that displays the web channels that the user is following.
 @interface FollowManagementViewController
@@ -34,6 +35,9 @@
 // Delegate to execute user actions related to navigation.
 @property(nonatomic, weak) id<FeedManagementNavigationDelegate>
     navigationDelegate;
+
+// Delegate to unfollow a channel.
+@property(nonatomic, weak) id<FollowManagementFollowDelegate> followDelegate;
 
 @end
 

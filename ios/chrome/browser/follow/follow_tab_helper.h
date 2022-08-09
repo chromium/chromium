@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
@@ -22,7 +23,7 @@ class WebState;
 }
 
 class GURL;
-@class FollowWebPageURLs;
+@class WebPageURLs;
 @protocol FollowIPHPresenter;
 @protocol FollowMenuUpdater;
 
@@ -79,20 +80,22 @@ class FollowTabHelper : public web::WebStateObserver,
   // before displaying UI.
   void OnSuccessfulPageLoad(const GURL& url,
                             base::Time page_load_time,
-                            FollowWebPageURLs* web_page_urls);
+                            WebPageURLs* web_page_urls);
 
   // Invoked with daily visit from history `result`. The initial time of the
   // page load is recorded in `page_load_time` and can be used to limit the
-  // delay before displaying UI.
+  // delay before displaying UI. `recommended_url` is the recommended URL for
+  // the website whose visit have been queried.
   void OnDailyVisitQueryResult(base::Time page_load_time,
+                               NSURL* recommended_url,
                                history::DailyVisitsResult result);
 
   // Updates follow menu item. `web_page_urls` is the page url object used to
   // check follow status.
-  void UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls);
+  void UpdateFollowMenuItem(WebPageURLs* web_page_urls);
 
-  // Presents the Follow in-product help (IPH).
-  void PresentFollowIPH();
+  // Presents the Follow in-product help (IPH) for `recommended_url`.
+  void PresentFollowIPH(NSURL* recommended_url);
 
   web::WebState* web_state_ = nullptr;
 
@@ -110,10 +113,6 @@ class FollowTabHelper : public web::WebStateObserver,
 
   // Used to update the follow menu item.
   __weak id<FollowMenuUpdater> follow_menu_updater_ = nil;
-
-  // The recommended url of the current website. Nil if
-  // the site is not recommended.
-  NSURL* recommended_url_ = nil;
 
   base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<FollowTabHelper> weak_ptr_factory_{this};

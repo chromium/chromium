@@ -32,7 +32,7 @@ class PrefService;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
-@class FeedMetricsRecorder;
+class FollowBrowserAgent;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -90,8 +90,8 @@ class WebStateList;
 // The current browser policy connector.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
 
-// The metrics recorder to record follow related metrics.
-@property(nonatomic, assign) FeedMetricsRecorder* feedMetricsRecorder;
+// The FollowBrowserAgent used to manage web channels subscriptions.
+@property(nonatomic, assign) FollowBrowserAgent* followBrowserAgent;
 
 // Disconnect the mediator.
 - (void)disconnect;

@@ -52,6 +52,8 @@ source_set("browser_view") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/follow:tab_helper",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/infobars",

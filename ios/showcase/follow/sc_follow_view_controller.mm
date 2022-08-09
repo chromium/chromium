@@ -5,7 +5,6 @@
 #import "ios/showcase/follow/sc_follow_view_controller.h"
 
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
@@ -41,8 +40,7 @@ NSInteger kFaviconSymbolPointSize = 17;
 
 }  // namespace
 
-@interface SCFollowViewController () <FirstFollowFaviconDataSource,
-                                      FollowedWebChannelsDataSource,
+@interface SCFollowViewController () <FollowedWebChannelsDataSource,
                                       TableViewFaviconDataSource>
 // Shows alerts of protocol method calls.
 @property(nonatomic, strong) ProtocolAlerter* alerter;
@@ -129,18 +127,19 @@ NSInteger kFaviconSymbolPointSize = 17;
 }
 
 - (void)handleFirstFollowButtonTapped {
+  __weak __typeof(self) weakSelf = self;
   FirstFollowViewController* firstFollowViewController =
-      [[FirstFollowViewController alloc] init];
+      [[FirstFollowViewController alloc]
+          initWithTitle:@"First Web Channel"
+              available:YES
+          faviconSource:^(void (^completion)(UIImage* favicon)) {
+            [weakSelf faviconForURL:nil
+                         completion:^(FaviconAttributes* attributes) {
+                           completion(attributes.faviconImage);
+                         }];
+          }];
 
-  FollowedWebChannel* ch1 = [[FollowedWebChannel alloc] init];
-  ch1.title = @"First Web Channel";
-  ch1.available = YES;
-  ch1.webPageURL =
-      [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
-
-  firstFollowViewController.followedWebChannel = ch1;
   self.alerter.baseViewController = firstFollowViewController;
-  firstFollowViewController.faviconDataSource = self;
   firstFollowViewController.imageEnclosedWithShadowAndBadge = YES;
 
   if (@available(iOS 15, *)) {
@@ -188,7 +187,7 @@ NSInteger kFaviconSymbolPointSize = 17;
   return channel;
 }
 
-#pragma mark - TableViewFaviconDataSource & FirstFollowFaviconDataSource
+#pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {

@@ -53,6 +53,9 @@ const char kDefaultCharset[] = "intl.charset_default";
 // Whether to send the DNT header.
 const char kEnableDoNotTrack[] = "enable_do_not_track";
 
+// Number of times the First Follow UI has been shown.
+const char kFirstFollowUIShownCount[] = "follow.first_follow_ui_modal_count";
+
 // Prefs for persisting HttpServerProperties.
 const char kHttpServerProperties[] = "net.http_server_properties";
 

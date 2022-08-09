@@ -25,7 +25,9 @@
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/followed_web_site.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -94,7 +96,6 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 #import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
-#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -1354,12 +1355,16 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 #pragma mark - FeedCommands
 
-- (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel {
+- (void)showFirstFollowUIForWebSite:(FollowedWebSite*)followedWebSite {
   self.firstFollowCoordinator = [[FirstFollowCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.firstFollowCoordinator.followedWebChannel = followedWebChannel;
+                         browser:self.browser
+                 followedWebSite:followedWebSite];
   [self.firstFollowCoordinator start];
+}
+
+- (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel {
+  NOTREACHED();
 }
 
 #pragma mark - FindInPageCommands
@@ -1688,6 +1693,15 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   AccountConsistencyBrowserAgent::CreateForBrowser(
       self.browser, self.viewController, applicationCommandHandler);
+
+  if (FollowBrowserAgent::FromBrowser(self.browser)) {
+    CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
+    FollowBrowserAgent::FromBrowser(self.browser)
+        ->SetUIProviders(
+            HandlerForProtocol(commandDispatcher, NewTabPageCommands),
+            static_cast<id<SnackbarCommands>>(commandDispatcher),
+            HandlerForProtocol(commandDispatcher, FeedCommands));
+  }
 }
 
 // Installs delegates for self.browser->GetBrowserState()
@@ -1721,6 +1735,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
 
   SyncErrorBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+
+  if (FollowBrowserAgent::FromBrowser(self.browser)) {
+    FollowBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+  }
 }
 
 // Uninstalls delegates for each WebState in WebStateList.
@@ -1764,9 +1782,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
         self.storeKitCoordinator);
   }
 
-  if (FollowTabHelper::FromWebState(webState)) {
-    FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(
-        self.followIPHCoordinator);
+  FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
+  if (followTabHelper) {
+    followTabHelper->set_follow_iph_presenter(self.followIPHCoordinator);
   }
 
   if (CaptivePortalTabHelper::FromWebState(webState)) {
@@ -1805,8 +1823,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
     StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);
   }
 
-  if (FollowTabHelper::FromWebState(webState)) {
-    FollowTabHelper::FromWebState(webState)->set_follow_iph_presenter(nil);
+  FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
+  if (followTabHelper) {
+    followTabHelper->set_follow_iph_presenter(nil);
   }
 
   if (CaptivePortalTabHelper::FromWebState(webState)) {

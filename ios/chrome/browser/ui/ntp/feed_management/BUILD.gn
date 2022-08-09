@@ -13,12 +13,13 @@ source_set("feed_management") {
     ":follow_management",
     ":follow_management_ui",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/follow",
   ]
   public_deps = [ ":navigation_delegate" ]
 }
@@ -52,17 +53,18 @@ source_set("follow_management") {
   deps = [
     ":follow_management_ui",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon:favicon_constants",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/follow",
   ]
 }
 
 source_set("follow_management_ui") {
   sources = [
+    "follow_management_follow_delegate.h",
     "follow_management_ui_updater.h",
     "follow_management_view_controller.h",
     "follow_management_view_controller.mm",
@@ -73,6 +75,7 @@ source_set("follow_management_ui") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":feed_management_ui",
     "resources:following_empty",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",

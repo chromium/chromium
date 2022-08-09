@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
-#include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,7 +26,22 @@ constexpr CGFloat customSpacingAfterImage = 24;
 
 }  // namespace
 
-@implementation FirstFollowViewController
+@implementation FirstFollowViewController {
+  std::u16string _webSiteTitle;
+  BOOL _webSiteIsAvailable;
+  FirstFollowFaviconSource _faviconSource;
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                    available:(BOOL)available
+                faviconSource:(FirstFollowFaviconSource)faviconSource {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
+    _webSiteTitle = base::SysNSStringToUTF16(title);
+    _webSiteIsAvailable = available;
+    _faviconSource = faviconSource;
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   self.imageHasFixedSize = YES;
@@ -39,15 +53,13 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
 
-  self.titleString = l10n_util::GetNSStringF(
-      IDS_IOS_FIRST_FOLLOW_TITLE,
-      base::SysNSStringToUTF16(self.followedWebChannel.title));
-  self.secondaryTitleString = l10n_util::GetNSStringF(
-      IDS_IOS_FIRST_FOLLOW_SUBTITLE,
-      base::SysNSStringToUTF16(self.followedWebChannel.title));
+  self.titleString =
+      l10n_util::GetNSStringF(IDS_IOS_FIRST_FOLLOW_TITLE, _webSiteTitle);
+  self.secondaryTitleString =
+      l10n_util::GetNSStringF(IDS_IOS_FIRST_FOLLOW_SUBTITLE, _webSiteTitle);
   self.subtitleString = l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_BODY);
 
-  if (self.followedWebChannel.available) {
+  if (_webSiteIsAvailable) {
     // Go To Feed button is only displayed if the web channel is available.
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GO_TO_FEED);
@@ -62,11 +74,11 @@ constexpr CGFloat customSpacingAfterImage = 24;
 
   // TODO(crbug.com/1312124): Favicon styling needs more whitespace, shadow, and
   // corner green checkmark badge.
-  if (self.followedWebChannel.webPageURL) {
-    [self.faviconDataSource faviconForURL:self.followedWebChannel.webPageURL
-                               completion:^(FaviconAttributes* attributes) {
-                                 self.image = attributes.faviconImage;
-                               }];
+  if (_faviconSource) {
+    __weak __typeof(self) weakSelf = self;
+    _faviconSource(^(UIImage* favicon) {
+      weakSelf.image = favicon;
+    });
   }
 
   [super viewDidLoad];

@@ -5,26 +5,27 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 
 #import "base/ios/ios_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_prefs.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "components/profile_metrics/browser_profile_type.h"
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#import "ios/chrome/browser/follow/follow_java_script_feature.h"
+#import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_util.h"
@@ -32,13 +33,13 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
@@ -50,7 +51,6 @@
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
 #import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
@@ -66,20 +66,19 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
-#include "ios/web/common/user_agent.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/common/user_agent.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/web_client.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -258,9 +257,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   if (self.webState && self.followAction) {
-    FollowTabHelper::FromWebState(self.webState)->RemoveFollowMenuUpdater();
+    FollowTabHelper* followTabHelper =
+        FollowTabHelper::FromWebState(self.webState);
+    if (followTabHelper) {
+      followTabHelper->RemoveFollowMenuUpdater();
+    }
   }
 
+  self.followBrowserAgent = nullptr;
   self.destinationUsageHistory = nil;
   self.webState = nullptr;
   self.webStateList = nullptr;
@@ -315,8 +319,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   self.webState = (_webStateList) ? _webStateList->GetActiveWebState() : nil;
 
-  if (self.webState && !self.isIncognito && IsWebChannelsEnabled()) {
-    FollowTabHelper::FromWebState(self.webState)->SetFollowMenuUpdater(self);
+  if (self.webState) {
+    FollowTabHelper* followTabHelper =
+        FollowTabHelper::FromWebState(self.webState);
+    if (followTabHelper) {
+      followTabHelper->SetFollowMenuUpdater(self);
+    }
   }
 
   if (_webStateList) {
@@ -1185,7 +1193,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                      reason:(ActiveWebStateChangeReason)reason {
   self.webState = newWebState;
   if (self.webState && self.followAction) {
-    FollowTabHelper::FromWebState(self.webState)->SetFollowMenuUpdater(self);
+    FollowTabHelper* followTabHelper =
+        FollowTabHelper::FromWebState(self.webState);
+    if (followTabHelper) {
+      followTabHelper->SetFollowMenuUpdater(self);
+    }
   }
 }
 
@@ -1224,30 +1236,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 #pragma mark - FollowMenuUpdater
 
-- (void)updateFollowMenuItemWithFollowWebPageURLs:
-            (FollowWebPageURLs*)webPageURLs
-                                           status:(BOOL)status
-                                       domainName:(NSString*)domainName
-                                          enabled:(BOOL)enable {
+- (void)updateFollowMenuItemWithWebPage:(WebPageURLs*)webPageURLs
+                               followed:(BOOL)followed
+                             domainName:(NSString*)domainName
+                                enabled:(BOOL)enable {
   DCHECK(IsWebChannelsEnabled());
   self.followAction.enabled = enable;
-  self.followAction.name =
-      status ? l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_UNFOLLOW,
-                                       base::SysNSStringToUTF16(domainName))
-             : l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
-                                       base::SysNSStringToUTF16(domainName));
-  [self.followAction setStoredImageName:status
-                                            ? @"overflow_menu_action_unfollow"
-                                            : @"overflow_menu_action_follow"];
-  __weak __typeof(self) weakSelf = self;
-  self.followAction.handler = ^{
-    if (status) {
-      [weakSelf.feedMetricsRecorder recordUnfollowFromMenu];
-    } else {
-      [weakSelf.feedMetricsRecorder recordFollowFromMenu];
-    }
-    [weakSelf updateFollowStatus:!status withFollowWebPageURLs:webPageURLs];
-  };
+  if (followed) {
+    __weak __typeof(self) weakSelf = self;
+    self.followAction.name = l10n_util::GetNSStringF(
+        IDS_IOS_TOOLS_MENU_UNFOLLOW, base::SysNSStringToUTF16(domainName));
+    self.followAction.storedImageName = @"overflow_menu_action_unfollow";
+    self.followAction.handler = ^{
+      [weakSelf unfollowWebPage:webPageURLs];
+    };
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    self.followAction.name = l10n_util::GetNSStringF(
+        IDS_IOS_TOOLS_MENU_FOLLOW, base::SysNSStringToUTF16(domainName));
+    self.followAction.storedImageName = @"overflow_menu_action_follow";
+    self.followAction.handler = ^{
+      [weakSelf followWebPage:webPageURLs];
+    };
+  }
 }
 
 #pragma mark - BrowserContainerConsumer
@@ -1336,12 +1347,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher showClearBrowsingDataSettings];
 }
 
-// Updates the follow status of the website corresponding to `webPageURLs`
-// with `followStatus`, and dismisses the menu.
-- (void)updateFollowStatus:(BOOL)followStatus
-     withFollowWebPageURLs:(FollowWebPageURLs*)webPageURLs {
-  ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
-      webPageURLs, followStatus);
+// Follows the website corresponding to `webPage` and dismisses the menu.
+- (void)followWebPage:(WebPageURLs*)webPage {
+  // FollowBrowserAgent may be null after -disconnect has been called.
+  FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
+  if (followBrowserAgent)
+    followBrowserAgent->FollowWebSite(webPage, FollowSource::OverflowMenu);
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+}
+
+// Unfollows the website corresponding to `webPage` and dismisses the menu.
+- (void)unfollowWebPage:(WebPageURLs*)webPage {
+  // FollowBrowserAgent may be null after -disconnect has been called.
+  FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
+  if (followBrowserAgent)
+    followBrowserAgent->UnfollowWebSite(webPage, FollowSource::OverflowMenu);
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 

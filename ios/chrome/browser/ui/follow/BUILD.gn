@@ -46,6 +46,7 @@ source_set("first_follow") {
     "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/commands",
@@ -59,7 +60,6 @@ source_set("first_follow") {
 
 source_set("first_follow_ui") {
   sources = [
-    "first_follow_favicon_data_source.h",
     "first_follow_view_controller.h",
     "first_follow_view_controller.mm",
   ]

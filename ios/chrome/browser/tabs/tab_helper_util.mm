@@ -105,8 +105,9 @@
 #import "ios/web/public/web_state.h"
 
 void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
-  ChromeBrowserState* browser_state =
+  ChromeBrowserState* const browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  const bool is_off_the_record = browser_state->IsOffTheRecord();
 
   // IOSChromeSessionTabHelper sets up the session ID used by other helpers,
   // so it needs to be created before them.
@@ -128,7 +129,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       IsPriceAlertsEligible(web_state->GetBrowserState()))
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
   commerce::CommerceTabHelper::CreateForWebState(
-      web_state, browser_state->IsOffTheRecord(),
+      web_state, is_off_the_record,
       commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
   AppLauncherTabHelper::CreateForWebState(web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
@@ -252,7 +253,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(web_state);
   }
 
-  if (IsWebChannelsEnabled()) {
+  if (IsWebChannelsEnabled() && !is_off_the_record) {
     FollowTabHelper::CreateForWebState(web_state);
   }
 

@@ -4,22 +4,21 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 
-#include "base/check.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "base/check.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
+#import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -49,8 +48,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -342,12 +339,6 @@ enum class IOSOverflowMenuActionType {
             .triggerFollowUpAction;
     self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
         NO;
-    if (IsWebChannelsEnabled() &&
-        !self.browser->GetBrowserState()->IsOffTheRecord()) {
-      ios::GetChromeBrowserProvider()
-          .GetFollowProvider()
-          ->SetFollowEventDelegate(self.browser);
-    }
   }
 
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
@@ -398,13 +389,9 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.browserPolicyConnector =
             GetApplicationContext()->GetBrowserPolicyConnector();
 
-        if (IsWebChannelsEnabled() &&
-            DiscoverFeedServiceFactory::GetForBrowserState(
-                self.browser->GetBrowserState())) {
-          self.overflowMenuMediator.feedMetricsRecorder =
-              DiscoverFeedServiceFactory::GetForBrowserState(
-                  self.browser->GetBrowserState())
-                  ->GetFeedMetricsRecorder();
+        if (IsWebChannelsEnabled()) {
+          self.overflowMenuMediator.followBrowserAgent =
+              FollowBrowserAgent::FromBrowser(self.browser);
         }
 
         self.contentBlockerMediator.consumer = self.overflowMenuMediator;
@@ -491,12 +478,9 @@ enum class IOSOverflowMenuActionType {
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  if (IsWebChannelsEnabled() && DiscoverFeedServiceFactory::GetForBrowserState(
-                                    self.browser->GetBrowserState())) {
-    self.mediator.feedMetricsRecorder =
-        DiscoverFeedServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState())
-            ->GetFeedMetricsRecorder();
+  if (IsWebChannelsEnabled()) {
+    self.mediator.followBrowserAgent =
+        FollowBrowserAgent::FromBrowser(self.browser);
   }
 
   self.contentBlockerMediator.consumer = self.mediator;

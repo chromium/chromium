@@ -23,12 +23,12 @@
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
+#import "ios/chrome/browser/follow/follow_service.h"
+#import "ios/chrome/browser/follow/follow_service_factory.h"
 #import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -73,7 +73,9 @@ void FollowTabHelper::CreateForWebState(web::WebState* web_state) {
 
 FollowTabHelper::FollowTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  // Ensure that follow is not enabled for incognito.
   DCHECK(web_state_);
+  DCHECK(!web_state_->GetBrowserState()->IsOffTheRecord());
   web_state_observation_.Observe(web_state_);
 }
 
@@ -84,7 +86,7 @@ void FollowTabHelper::SetFollowMenuUpdater(
   if (should_update_follow_item_ && !web_state_->IsLoading()) {
     // If the page has finished loading check if the Follow menu item should be
     // updated, if not it will be updated once the page finishes loading.
-    FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
+    FollowJavaScriptFeature::GetInstance()->GetWebPageURLs(
         web_state_, base::BindOnce(&FollowTabHelper::UpdateFollowMenuItem,
                                    weak_ptr_factory_.GetWeakPtr()));
   }
@@ -119,12 +121,6 @@ void FollowTabHelper::PageLoaded(
   // displayed.
   const base::Time page_load_time = base::Time::Now();
 
-  // Do not update follow menu option and do not show IPH when browsing in
-  // incognito.
-  if (web_state->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
   // Do not update follow menu option and do not show IPH when browsing non
   // http,https URLs and Chrome URLs, such as NTP, flags, version, sad tab, etc.
   const GURL& url = web_state->GetVisibleURL();
@@ -136,23 +132,27 @@ void FollowTabHelper::PageLoaded(
     case web::PageLoadCompletionStatus::FAILURE:
       break;
     case web::PageLoadCompletionStatus::SUCCESS:
-      FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
+      FollowJavaScriptFeature::GetInstance()->GetWebPageURLs(
           web_state,
           base::BindOnce(&FollowTabHelper::OnSuccessfulPageLoad,
                          weak_ptr_factory_.GetWeakPtr(), url, page_load_time));
+      break;
   }
 }
 
 void FollowTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(web_state_observation_.IsObservingSource(web_state));
+  weak_ptr_factory_.InvalidateWeakPtrs();
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
 
 void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
                                            base::Time page_load_time,
-                                           FollowWebPageURLs* web_page_urls) {
+                                           WebPageURLs* web_page_urls) {
+  DCHECK(web_state_);
+
   // Update follow menu option if needed.
   if (follow_menu_updater_ && should_update_follow_item_) {
     UpdateFollowMenuItem(web_page_urls);
@@ -168,14 +168,10 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
 
   // Always show IPH for eligible website if experimental setting is enabled.
   if (experimental_flags::ShouldAlwaysShowFollowIPH()) {
-    // Set up the recommended url property for storing the IPH displaying event,
-    // otherwise it will crash when trying to store a nil value into the last
-    // follow IPH display event. It needs to be restored after removing the IPH
-    // display event from the experiment.
-    recommended_url_ = web_page_urls.webPageURL;
-    PresentFollowIPH();
-    // Restore the recommended url.
-    recommended_url_ = nil;
+    // A non-nil URL is required to display the IPH (as PresentFollowIPH
+    // crash when trying to store a nil URL). Use the -URL property of
+    // `web_page_urls`.
+    PresentFollowIPH(web_page_urls.URL);
     return;
   }
 
@@ -189,17 +185,18 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
     return;
   }
 
-  recommended_url_ = ios::GetChromeBrowserProvider()
-                         .GetFollowProvider()
-                         ->GetRecommendedSiteURL(web_page_urls);
+  NSURL* recommended_url =
+      FollowServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()))
+          ->GetRecommendedSiteURL(web_page_urls);
 
   // Do not show follow IPH if:
   // 1. The site is not recommended;
   // 2. The recommended url is empty (it happens if there's an error when
   // fetching);
   // 3. The IPH was shown too recently.
-  if (!recommended_url_ || recommended_url_.absoluteString.length == 0 ||
-      !IsFollowIPHShownFrequencyEligible(recommended_url_.host)) {
+  if (!recommended_url || recommended_url.absoluteString.length == 0 ||
+      !IsFollowIPHShownFrequencyEligible(recommended_url.host)) {
     return;
   }
 
@@ -218,12 +215,14 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   history_service->GetDailyVisitsToHost(
       url, begin_time, end_time,
       base::BindOnce(&FollowTabHelper::OnDailyVisitQueryResult,
-                     weak_ptr_factory_.GetWeakPtr(), page_load_time),
+                     weak_ptr_factory_.GetWeakPtr(), page_load_time,
+                     recommended_url),
       &history_task_tracker_);
 }
 
 void FollowTabHelper::OnDailyVisitQueryResult(
     base::Time page_load_time,
+    NSURL* recommended_url,
     history::DailyVisitsResult result) {
   // Do not display the IPH if there are not enough visits.
   if (result.total_visits < kDefaultNumVisitMin ||
@@ -234,49 +233,50 @@ void FollowTabHelper::OnDailyVisitQueryResult(
   // Check how much time remains before the IPH needs to be displayed.
   const base::TimeDelta elapsed_time = base::Time::Now() - page_load_time;
   if (elapsed_time >= kShowFollowIPHAfterLoaded) {
-    PresentFollowIPH();
+    PresentFollowIPH(recommended_url);
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FollowTabHelper::PresentFollowIPH,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(), recommended_url),
         kShowFollowIPHAfterLoaded - elapsed_time);
   }
 }
 
-void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
+void FollowTabHelper::UpdateFollowMenuItem(WebPageURLs* web_page_urls) {
   DCHECK(web_state_);
 
   web::WebFrame* web_frame = web::GetMainFrame(web_state_);
   // Only update the follow menu item when web_page_urls is not null and when
   // webFrame can be retrieved. Otherwise, leave the option disabled.
   if (web_page_urls && web_frame) {
-    BOOL status =
-        ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
-            web_page_urls);
+    const bool followed =
+        FollowServiceFactory::GetForBrowserState(
+            ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()))
+            ->IsWebSiteFollowed(web_page_urls);
 
     std::string domain_name = web_frame->GetSecurityOrigin().host();
     if (base::StartsWith(domain_name, kRemovablePrefix)) {
       domain_name = domain_name.substr(strlen(kRemovablePrefix));
     }
 
-    bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
+    const bool enabled =
+        GetFollowActionState(web_state_) == FollowActionStateEnabled;
 
     [follow_menu_updater_
-        updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
-                                           status:status
-                                       domainName:base::SysUTF8ToNSString(
-                                                      domain_name)
-                                          enabled:enabled];
+        updateFollowMenuItemWithWebPage:web_page_urls
+                               followed:followed
+                             domainName:base::SysUTF8ToNSString(domain_name)
+                                enabled:enabled];
   }
 
   should_update_follow_item_ = false;
 }
 
-void FollowTabHelper::PresentFollowIPH() {
+void FollowTabHelper::PresentFollowIPH(NSURL* recommended_url) {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-  StoreFollowIPHDisplayEvent(recommended_url_.host);
+  StoreFollowIPHDisplayEvent(recommended_url.host);
   if (experimental_flags::ShouldAlwaysShowFollowIPH()) {
     // Remove the follow IPH display event that just added because it's
     // triggered by experimental settings.

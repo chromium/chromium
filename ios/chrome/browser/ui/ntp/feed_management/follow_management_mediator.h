@@ -7,20 +7,32 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/ntp/feed_management/follow_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 
-class ChromeBrowserState;
+class Browser;
+@protocol FollowManagementUIUpdater;
 
 // The intermediary between the model and view layers for the follow management
 // UI.
-@interface FollowManagementMediator
-    : NSObject <FollowedWebChannelsDataSource, TableViewFaviconDataSource>
+@interface FollowManagementMediator : NSObject <FollowedWebChannelsDataSource,
+                                                TableViewFaviconDataSource,
+                                                FollowManagementFollowDelegate>
+
+// Init method. `browser` can't be nil.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. `browserState` can't be nil.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+
+// Add the FollowManagementUIUpdater `updater`.
+- (void)addFollowManagementUIUpdater:(id<FollowManagementUIUpdater>)updater;
+
+// Remove he FollowManagementUIUpdater `updater`.
+- (void)removeFollowManagementUIUpdater:(id<FollowManagementUIUpdater>)updater;
+
+// Detach the mediator. Must be called before -dealloc.
+- (void)detach;
 
 @end
 

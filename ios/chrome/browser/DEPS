@@ -28,6 +28,7 @@ include_rules = [
   "+components/favicon/ios",
   "+components/favicon_base",
   "+components/feature_engagement",
+  "+components/feed/core/shared_prefs",
   "+components/feed/core/v2/public",
   "+components/feed/feed_feature_list.h",
   "+components/flags_ui",

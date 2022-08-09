@@ -4,14 +4,16 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_controller.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/follow_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
-#include "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -257,10 +259,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)addFollowedWebChannel:(FollowedWebChannel*)channel {
-  DCHECK(
-      [self.lastUnfollowedWebChannelItem.followedWebChannel isEqual:channel]);
-  [self addItem:self.lastUnfollowedWebChannelItem
-        atIndex:self.indexPathOfLastUnfollowAttempt];
+  if ([self.lastUnfollowedWebChannelItem.followedWebChannel isEqual:channel]) {
+    [self addItem:self.lastUnfollowedWebChannelItem
+          atIndex:self.indexPathOfLastUnfollowAttempt];
+  } else {
+    FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
+        initWithType:FollowedWebChannelItemType];
+    item.followedWebChannel = channel;
+
+    const NSUInteger sectionIndex = [self.tableViewModel
+        sectionForSectionIdentifier:DefaultSectionIdentifier];
+
+    const NSUInteger countOfItemsInSection =
+        [self.tableViewModel numberOfItemsInSection:sectionIndex];
+
+    NSIndexPath* index = [NSIndexPath indexPathForRow:countOfItemsInSection
+                                            inSection:sectionIndex];
+
+    [self addItem:item atIndex:index];
+  }
 }
 
 #pragma mark - Helpers
@@ -289,10 +306,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(
           [self.tableView cellForRowAtIndexPath:indexPath]);
   [followedWebChannelCell startAnimatingActivityIndicator];
-
-  // TODO(crbug.com/1264872): replace the unfollowRequestBlock with one that
-  // doesn't take a parameter.
-  followedWebChannelCell.followedWebChannel.unfollowRequestBlock(nil);
+  [self.followDelegate
+      unfollowFollowedWebChannel:followedWebChannelCell.followedWebChannel];
 }
 
 - (void)showOrHideEmptyTableViewBackground {

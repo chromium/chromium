@@ -42,9 +42,8 @@ FollowJavaScriptFeature::FollowJavaScriptFeature()
 
 FollowJavaScriptFeature::~FollowJavaScriptFeature() = default;
 
-void FollowJavaScriptFeature::GetFollowWebPageURLs(
-    web::WebState* web_state,
-    base::OnceCallback<void(FollowWebPageURLs*)> callback) {
+void FollowJavaScriptFeature::GetWebPageURLs(web::WebState* web_state,
+                                             ResultCallback callback) {
   if (!web::GetMainFrame(web_state)) {
     std::move(callback).Run(nil);
     return;
@@ -57,27 +56,28 @@ void FollowJavaScriptFeature::GetFollowWebPageURLs(
       base::Milliseconds(kJavaScriptExecutionTimeoutInMs));
 }
 
-void FollowJavaScriptFeature::HandleResponse(
-    const GURL& url,
-    base::OnceCallback<void(FollowWebPageURLs*)> callback,
-    const base::Value* response) {
+void FollowJavaScriptFeature::HandleResponse(const GURL& url,
+                                             ResultCallback callback,
+                                             const base::Value* response) {
+  NSMutableArray<NSURL*>* rss_urls = nil;
   if (response && response->is_list()) {
-    NSMutableArray* rss_links = [[NSMutableArray alloc] init];
     for (const auto& link : response->GetListDeprecated()) {
       if (link.is_string()) {
         NSURL* url = net::NSURLWithGURL(GURL(link.GetString()));
         if (url) {
-          [rss_links addObject:url];
+          if (!rss_urls) {
+            rss_urls = [[NSMutableArray alloc] init];
+          }
+
+          [rss_urls addObject:url];
         }
       }
     }
-    std::move(callback).Run([[FollowWebPageURLs alloc]
-        initWithWebPageURL:net::NSURLWithGURL(url)
-                  RSSLinks:rss_links]);
-    return;
   }
 
-  std::move(callback).Run([[FollowWebPageURLs alloc]
-      initWithWebPageURL:net::NSURLWithGURL(url)
-                RSSLinks:nil]);
+  WebPageURLs* web_page_urls =
+      [[WebPageURLs alloc] initWithURL:net::NSURLWithGURL(url)
+                               RSSURLs:rss_urls];
+
+  std::move(callback).Run(web_page_urls);
 }
