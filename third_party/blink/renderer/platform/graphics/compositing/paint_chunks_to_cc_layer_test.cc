@@ -1308,6 +1308,33 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   EXPECT_EFFECT_BOUNDS(7, 15, 93, 85, *output, 2);
 }
 
+TEST_P(PaintChunksToCcLayerTest, FilterClipExpanderUnderClip) {
+  // This tests the situation of crbug.com/1350017.
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(10);
+  auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 20, 30, 40));
+  auto clip_expander = CreatePixelMovingFilterClipExpander(*c1, *e1);
+  TestChunks chunks;
+  chunks.AddChunk(t0(), *clip_expander, *e1, gfx::Rect(5, 10, 200, 300),
+                  gfx::Rect(10, 15, 20, 30));
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(
+      cc::DisplayItemList::kTopLevelDisplayItemList);
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), *cc_list);
+  ASSERT_EQ(7u, cc_list->TotalOpCount());
+  auto output = cc_list->ReleaseAsRecord();
+  EXPECT_THAT(*output,
+              PaintRecordMatcher::Make(
+                  {cc::PaintOpType::SaveLayer,  // <e1>
+                   cc::PaintOpType::Save,
+                   cc::PaintOpType::ClipRect,    // <c1>
+                   cc::PaintOpType::DrawRecord,  // the DrawingDisplayItem
+                   cc::PaintOpType::Restore,     // </c1>
+                   cc::PaintOpType::Restore}));  // </e1>
+}
+
 TEST_P(PaintChunksToCcLayerTest,
        UpdateLayerPropertiesRegionCaptureDataSetOnLayer) {
   auto layer = cc::Layer::Create();

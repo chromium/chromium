@@ -195,7 +195,21 @@ class ConversionContext {
   struct StateEntry {
     // Remembers the type of paired begin that caused a state to be saved.
     // This is for checking integrity of the algorithm.
-    enum PairedType { kClip, kEffect } type;
+    enum PairedType { kClip, kClipOmitted, kEffect };
+    explicit StateEntry(PairedType type,
+                        const TransformPaintPropertyNode* transform,
+                        const ClipPaintPropertyNode* clip,
+                        const EffectPaintPropertyNode* effect,
+                        const TransformPaintPropertyNode* previous_transform)
+        : transform(transform),
+          clip(clip),
+          effect(effect),
+          previous_transform(previous_transform),
+          type_(type) {}
+
+    bool IsClip() const { return type_ != kEffect; }
+    bool IsEffect() const { return type_ == kEffect; }
+    bool NeedsRestore() const { return type_ != kClipOmitted; }
 
     // These fields are neve nullptr.
     const TransformPaintPropertyNode* transform;
@@ -206,6 +220,9 @@ class ConversionContext {
 #if DCHECK_IS_ON()
     bool has_pre_cap_effect_hierarchy_issue = false;
 #endif
+
+   private:
+    PairedType type_;
   };
   void PushState(StateEntry::PairedType);
   void PopState();
@@ -255,7 +272,7 @@ class ConversionContext {
 ConversionContext::~ConversionContext() {
   // End all states.
   while (state_stack_.size()) {
-    if (state_stack_.back().type == StateEntry::kEffect)
+    if (state_stack_.back().IsEffect())
       EndEffect();
     else
       EndClip();
@@ -290,6 +307,9 @@ void ConversionContext::SwitchToChunkState(const PaintChunk& chunk) {
 // Returns whether the clip has been combined.
 static bool CombineClip(const ClipPaintPropertyNode& clip,
                         FloatRoundedRect& combined_clip_rect) {
+  if (clip.PixelMovingFilter())
+    return true;
+
   // Don't combine into a clip with clip path.
   DCHECK(clip.Parent());
   if (clip.UnaliasedParent()->ClipPath())
@@ -338,7 +358,7 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
   const auto* lca_clip =
       &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
   while (current_clip_ != lca_clip) {
-    if (!state_stack_.size() || state_stack_.back().type != StateEntry::kClip) {
+    if (!state_stack_.size() || !state_stack_.back().IsClip()) {
       // TODO(crbug.com/803649): We still have clip hierarchy issues with
       // fragment clips. See crbug.com/1240080 for the test case. Will change
       // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
@@ -374,14 +394,11 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
     // This should never happen unless the DCHECK in step 1 failed.
     if (!clip)
       break;
-    if (!clip->PixelMovingFilter())
-      pending_clips.push_back(clip);
+    pending_clips.push_back(clip);
   }
 
-  if (pending_clips.IsEmpty())
-    return;
-
   // Step 3: Now apply the list of clips in top-down order.
+  DCHECK(pending_clips.size());
   auto pending_combined_clip_rect = pending_clips.back()->PaintClipRect();
   const auto* lowest_combined_clip_node = pending_clips.back();
   for (auto i = pending_clips.size() - 1; i--;) {
@@ -405,31 +422,35 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
 void ConversionContext::StartClip(
     const FloatRoundedRect& combined_clip_rect,
     const ClipPaintPropertyNode& lowest_combined_clip_node) {
-  DCHECK_EQ(&lowest_combined_clip_node, &lowest_combined_clip_node);
-  const auto& local_transform =
-      lowest_combined_clip_node.LocalTransformSpace().Unalias();
-  if (&local_transform != current_transform_)
-    EndTransform();
-  cc_list_.StartPaint();
-  cc_list_.push<cc::SaveOp>();
-  ApplyTransform(local_transform);
-  const bool antialias = true;
-  if (combined_clip_rect.IsRounded()) {
-    cc_list_.push<cc::ClipRRectOp>(SkRRect(combined_clip_rect),
-                                   SkClipOp::kIntersect, antialias);
+  if (combined_clip_rect.Rect() == gfx::RectF(LayoutRect::InfiniteIntRect())) {
+    PushState(StateEntry::kClipOmitted);
   } else {
-    cc_list_.push<cc::ClipRectOp>(gfx::RectFToSkRect(combined_clip_rect.Rect()),
-                                  SkClipOp::kIntersect, antialias);
-  }
-  if (const auto& clip_path = lowest_combined_clip_node.ClipPath()) {
-    cc_list_.push<cc::ClipPathOp>(clip_path->GetSkPath(), SkClipOp::kIntersect,
-                                  antialias);
-  }
-  cc_list_.EndPaintOfPairedBegin();
+    const auto& local_transform =
+        lowest_combined_clip_node.LocalTransformSpace().Unalias();
+    if (&local_transform != current_transform_)
+      EndTransform();
+    cc_list_.StartPaint();
+    cc_list_.push<cc::SaveOp>();
+    ApplyTransform(local_transform);
+    const bool antialias = true;
+    if (combined_clip_rect.IsRounded()) {
+      cc_list_.push<cc::ClipRRectOp>(SkRRect(combined_clip_rect),
+                                     SkClipOp::kIntersect, antialias);
+    } else {
+      cc_list_.push<cc::ClipRectOp>(
+          gfx::RectFToSkRect(combined_clip_rect.Rect()), SkClipOp::kIntersect,
+          antialias);
+    }
+    if (const auto& clip_path = lowest_combined_clip_node.ClipPath()) {
+      cc_list_.push<cc::ClipPathOp>(clip_path->GetSkPath(),
+                                    SkClipOp::kIntersect, antialias);
+    }
+    cc_list_.EndPaintOfPairedBegin();
 
-  PushState(StateEntry::kClip);
+    PushState(StateEntry::kClip);
+    current_transform_ = &local_transform;
+  }
   current_clip_ = &lowest_combined_clip_node;
-  current_transform_ = &local_transform;
 }
 
 bool HasRealEffects(const EffectPaintPropertyNode& current,
@@ -609,7 +630,7 @@ void ConversionContext::UpdateEffectBounds(
 void ConversionContext::EndEffect() {
 #if DCHECK_IS_ON()
   const auto& previous_state = state_stack_.back();
-  DCHECK_EQ(previous_state.type, StateEntry::kEffect);
+  DCHECK(previous_state.IsEffect());
   if (!previous_state.has_pre_cap_effect_hierarchy_issue)
     DCHECK_EQ(current_effect_->UnaliasedParent(), previous_state.effect);
   DCHECK_EQ(current_clip_, previous_state.clip);
@@ -640,20 +661,20 @@ void ConversionContext::EndEffect() {
 }
 
 void ConversionContext::EndClips() {
-  while (state_stack_.size() && state_stack_.back().type == StateEntry::kClip)
+  while (state_stack_.size() && state_stack_.back().IsClip())
     EndClip();
 }
 
 void ConversionContext::EndClip() {
-  DCHECK_EQ(state_stack_.back().type, StateEntry::kClip);
+  DCHECK(state_stack_.back().IsClip());
   DCHECK_EQ(state_stack_.back().effect, current_effect_);
   EndTransform();
   PopState();
 }
 
 void ConversionContext::PushState(StateEntry::PairedType type) {
-  state_stack_.emplace_back(StateEntry{type, current_transform_, current_clip_,
-                                       current_effect_, previous_transform_});
+  state_stack_.emplace_back(type, current_transform_, current_clip_,
+                            current_effect_, previous_transform_);
   previous_transform_ = nullptr;
 }
 
@@ -661,7 +682,8 @@ void ConversionContext::PopState() {
   DCHECK_EQ(nullptr, previous_transform_);
 
   const auto& previous_state = state_stack_.back();
-  AppendRestore();
+  if (previous_state.NeedsRestore())
+    AppendRestore();
   current_transform_ = previous_state.transform;
   previous_transform_ = previous_state.previous_transform;
   current_clip_ = previous_state.clip;
