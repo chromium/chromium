@@ -1255,13 +1255,13 @@
   },
   {
     "name": "destroy-profile-on-browser-close",
-    "owners": [ "nicolaso" ],
-    "expiry_milestone": 100
+    "owners": [ "nicolaso", "droger" ],
+    "expiry_milestone": 112
   },
   {
     "name": "destroy-system-profiles",
     "owners": [ "nicolaso" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 112
   },
   {
     "name": "device-force-scheduled-reboot",
