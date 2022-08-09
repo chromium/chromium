@@ -9301,6 +9301,7 @@
         },
         "prefs": {
           "security_token_session_behavior": {
+            "location": "local_state",
             "value": "LOGOUT"
           }
         }
@@ -9309,6 +9310,7 @@
         "policies": {},
         "prefs": {
           "security_token_session_behavior": {
+            "location": "local_state",
             "default_value": "IGNORE"
           }
         }
@@ -9326,6 +9328,7 @@
         },
         "prefs": {
           "security_token_session_notification_seconds": {
+            "location": "local_state",
             "value": 10
           }
         }
@@ -9334,6 +9337,7 @@
         "policies": {},
         "prefs": {
           "security_token_session_notification_seconds": {
+            "location": "local_state",
             "default_value": 0
           }
         }

@@ -1190,7 +1190,6 @@ extern const char kLacrosLaunchSwitch[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kSecurityTokenSessionBehavior[];
 extern const char kSecurityTokenSessionNotificationSeconds[];
-extern const char kSecurityTokenSessionNotificationDisplayed[];
 extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #endif
 

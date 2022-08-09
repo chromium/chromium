@@ -1694,6 +1694,9 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       login::SecurityTokenSessionControllerFactory::GetForBrowserContext(
           profile)
           ->OnChallengeResponseKeysUpdated();
+      login::SecurityTokenSessionControllerFactory::GetForBrowserContext(
+          ProfileHelper::GetSigninProfile())
+          ->OnChallengeResponseKeysUpdated();
     }
 
     if (user_context_.GetSyncTrustedVaultKeys().has_value()) {

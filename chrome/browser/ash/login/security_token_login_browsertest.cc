@@ -25,7 +25,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/security_token_saml_test.h"
+#include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -244,8 +246,13 @@ class ChromeSessionObserver : public SessionObserver {
 
   void WaitForChromeTerminating() { termination_loop_.Run(); }
 
+  bool is_chrome_terminating() const { return is_chrome_terminating_; }
+
   // SessionObserver
-  void OnChromeTerminating() override { termination_loop_.Quit(); }
+  void OnChromeTerminating() override {
+    is_chrome_terminating_ = true;
+    termination_loop_.Quit();
+  }
 
   void OnSessionStateChanged(session_manager::SessionState state) override {
     if (state == session_manager::SessionState::LOCKED)
@@ -253,6 +260,7 @@ class ChromeSessionObserver : public SessionObserver {
   }
 
  private:
+  bool is_chrome_terminating_ = false;
   base::RunLoop session_locked_loop_;
   base::RunLoop termination_loop_;
 };
@@ -566,6 +574,14 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
         GetChallengeResponseAccountId());
   }
 
+  void Lock() {
+    ScreenLockerTester().Lock();
+    // Mimic the behavior of real-world smart card middleware extensions, which
+    // stop talking to smart cards in-session while at the lock screen.
+    SetSecurityTokenAvailability(/*available_on_login_screen=*/true,
+                                 /*available_in_session=*/false);
+  }
+
   // Configures and installs the user session certificate provider extension.
   void PrepareUserCertificateProviderExtension() {
     user_extension_mixin_.InitWithMockPolicyProvider(profile(),
@@ -574,13 +590,20 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
         test_certificate_provider_extension_mixin_.ForceInstall(profile()));
   }
 
-  // Makes the user session extension call certificateProvider.setCertificates()
-  // without providing any certificates, thus simulating the removal of a
-  // security token.
-  void SimulateSecurityTokenRemoval() {
+  // Makes the extensions call certificateProvider.setCertificates(). Depending
+  // on the passed flags, extensions will pass empty or non-empty sets of
+  // certificates.
+  void SetSecurityTokenAvailability(bool available_on_login_screen,
+                                    bool available_in_session) {
+    // Configure the sign-in screen extension.
+    ASSERT_TRUE(certificate_provider_extension());
+    certificate_provider_extension()->set_should_provide_certificates(
+        available_on_login_screen);
+    certificate_provider_extension()->TriggerSetCertificates();
+    // Configure the in-session extension.
     ASSERT_TRUE(user_certificate_provider_extension());
     user_certificate_provider_extension()->set_should_provide_certificates(
-        false);
+        available_in_session);
     user_certificate_provider_extension()->TriggerSetCertificates();
   }
 
@@ -605,6 +628,14 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
     return has_notification;
   }
 
+  bool GetNotificationDisplayedKnownUserFlag() const {
+    return user_manager::KnownUser(g_browser_process->local_state())
+        .FindBoolPath(GetChallengeResponseAccountId(),
+                      login::SecurityTokenSessionController::
+                          kNotificationDisplayedKnownUserKey)
+        .value_or(false);
+  }
+
   Profile* profile() const { return profile_; }
 
   TestCertificateProviderExtension* user_certificate_provider_extension() {
@@ -623,35 +654,39 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
 // Tests the SecurityTokenSessionBehavior policy with value "LOCK".
 IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, Lock) {
   Login();
-  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
-                                   "LOCK");
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOCK");
   PrepareUserCertificateProviderExtension();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/true);
   ChromeSessionObserver chrome_session_observer;
 
-  SimulateSecurityTokenRemoval();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/false);
   chrome_session_observer.WaitForSessionLocked();
 
   EXPECT_TRUE(ProfileHasNotification(
       profile(), "security_token_session_controller_notification"));
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kSecurityTokenSessionNotificationDisplayed));
+  EXPECT_TRUE(GetNotificationDisplayedKnownUserFlag());
 }
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOGOUT".
 IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, PRE_Logout) {
   Login();
   ChromeSessionObserver chrome_session_observer;
-  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
-                                   "LOGOUT");
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOGOUT");
   PrepareUserCertificateProviderExtension();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/true);
 
   // Removal of the certificate should lead to the end of the current session.
-  SimulateSecurityTokenRemoval();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/false);
   chrome_session_observer.WaitForChromeTerminating();
 
   // Check login screen notification is scheduled.
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kSecurityTokenSessionNotificationDisplayed));
+  EXPECT_TRUE(GetNotificationDisplayedKnownUserFlag());
 }
 
 IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, Logout) {
@@ -661,12 +696,54 @@ IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, Logout) {
                              "security_token_session_controller_notification"));
 }
 
+// Test that entering the Lock Screen doesn't cause the logout if the policy is
+// set to LOGOUT. This is a regression test for crbug.com/1349140.
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest,
+                       LockScreenWhileLogoutPolicy) {
+  Login();
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOGOUT");
+  PrepareUserCertificateProviderExtension();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/true);
+  ChromeSessionObserver chrome_session_observer;
+  Lock();
+
+  // We want to check that the user session doesn't get terminated erroneously
+  // here. There's no good way of testing something not to happen if the exact
+  // timing is unknown, so we're doing a best-effort here:
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(chrome_session_observer.is_chrome_terminating());
+  EXPECT_FALSE(GetNotificationDisplayedKnownUserFlag());
+}
+
+// Test that removing the security token while at the Lock Screen causes the
+// logout if the policy is set to LOGOUT.
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, LogoutFromLockScreen) {
+  Login();
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOGOUT");
+  PrepareUserCertificateProviderExtension();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/true);
+  ChromeSessionObserver chrome_session_observer;
+  Lock();
+
+  // Removal of the certificate should lead to the end of the current session.
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/false);
+  chrome_session_observer.WaitForChromeTerminating();
+
+  // Check login screen notification is scheduled.
+  EXPECT_TRUE(GetNotificationDisplayedKnownUserFlag());
+}
+
 // Tests the SecurityTokenSessionNotificationSeconds policy.
 IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
   Login();
-  profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
-                                   "LOCK");
-  profile()->GetPrefs()->SetInteger(
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOCK");
+  g_browser_process->local_state()->SetInteger(
       prefs::kSecurityTokenSessionNotificationSeconds, 1);
   PrepareUserCertificateProviderExtension();
   ChromeSessionObserver chrome_session_observer;
@@ -675,7 +752,8 @@ IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
       views::test::AnyWidgetTestPasskey{},
       "SecurityTokenSessionRestrictionView");
 
-  SimulateSecurityTokenRemoval();
+  SetSecurityTokenAvailability(/*available_on_login_screen=*/false,
+                               /*available_in_session=*/false);
 
   views::Widget* notification = notification_waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter notification_closing_observer(
@@ -743,8 +821,8 @@ IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorSamlTest, Logout) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
   PrepareUserCertificateProviderExtension(profile);
-  profile->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
-                                 "LOGOUT");
+  g_browser_process->local_state()->SetString(
+      prefs::kSecurityTokenSessionBehavior, "LOGOUT");
 
   // Removal of the certificate should lead to the end of the current session.
   ChromeSessionObserver chrome_session_observer;

@@ -36,6 +36,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/extension_id.h"
@@ -159,29 +161,34 @@ std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
 
 }  // namespace
 
+const char* const
+    SecurityTokenSessionController::kNotificationDisplayedKnownUserKey =
+        "security_token_session_notification_displayed";
+
 SecurityTokenSessionController::SecurityTokenSessionController(
+    bool is_user_profile,
     PrefService* local_state,
-    PrefService* profile_prefs,
-    const user_manager::User* user,
+    const user_manager::User* primary_user,
     chromeos::CertificateProviderService* certificate_provider_service)
-    : local_state_(local_state),
-      profile_prefs_(profile_prefs),
-      user_(user),
-      certificate_provider_service_(certificate_provider_service) {
+    : is_user_profile_(is_user_profile),
+      local_state_(local_state),
+      primary_user_(primary_user),
+      certificate_provider_service_(certificate_provider_service),
+      session_manager_(session_manager::SessionManager::Get()) {
   DCHECK(local_state_);
-  DCHECK(profile_prefs_);
-  DCHECK(user_);
+  DCHECK(primary_user_);
   DCHECK(certificate_provider_service_);
+  session_manager_observation_.Observe(session_manager_);
   certificate_provider_ =
       certificate_provider_service_->CreateCertificateProvider();
   LoadStoredChallengeResponseSpkiKeysForUser(
-      local_state_, user_->GetAccountId(), &extension_to_spkis_,
+      local_state_, primary_user_->GetAccountId(), &extension_to_spkis_,
       &observed_extensions_);
   UpdateNotificationPref();
-  behavior_ = GetBehaviorFromPref();
-  pref_change_registrar_.Init(profile_prefs_);
+  behavior_ = GetBehaviorFromPrefAndSessionState();
+  pref_change_registrar_.Init(local_state_);
   base::RepeatingClosure behavior_pref_changed_callback =
-      base::BindRepeating(&SecurityTokenSessionController::UpdateBehaviorPref,
+      base::BindRepeating(&SecurityTokenSessionController::UpdateBehavior,
                           weak_ptr_factory_.GetWeakPtr());
   base::RepeatingClosure notification_pref_changed_callback =
       base::BindRepeating(
@@ -206,7 +213,7 @@ void SecurityTokenSessionController::OnChallengeResponseKeysUpdated() {
   extension_to_spkis_.clear();
   observed_extensions_.clear();
   LoadStoredChallengeResponseSpkiKeysForUser(
-      local_state_, user_->GetAccountId(), &extension_to_spkis_,
+      local_state_, primary_user_->GetAccountId(), &extension_to_spkis_,
       &observed_extensions_);
 }
 
@@ -247,22 +254,33 @@ void SecurityTokenSessionController::OnCertificatesUpdated(
   }
 }
 
-// static
-void SecurityTokenSessionController::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(
-      prefs::kSecurityTokenSessionNotificationScheduledDomain, "");
+void SecurityTokenSessionController::OnSessionStateChanged() {
+  if (session_manager_->session_state() ==
+      session_manager::SessionState::LOCKED) {
+    had_lock_screen_transition_ = true;
+  }
+
+  // Reset the flag, so that after the certificates are collected from all
+  // extensions we know whether the absence of some should be tolerated.
+  all_required_certificates_were_observed_ = false;
+
+  UpdateBehavior();
 }
 
 // static
-void SecurityTokenSessionController::RegisterProfilePrefs(
+void SecurityTokenSessionController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
+  // Prefs that contain policy values. We use the Local State for these, so that
+  // the values are available for the controller regardless of the profile it's
+  // attached to (the policy stack has code to automatically copy the primary
+  // profile's policies into the Local State).
   registry->RegisterStringPref(prefs::kSecurityTokenSessionBehavior,
                                kIgnorePrefValue);
   registry->RegisterIntegerPref(prefs::kSecurityTokenSessionNotificationSeconds,
                                 0);
-  registry->RegisterBooleanPref(
-      prefs::kSecurityTokenSessionNotificationDisplayed, false);
+  // Prefs that contain state that needs to be persisted across Chrome restarts.
+  registry->RegisterStringPref(
+      prefs::kSecurityTokenSessionNotificationScheduledDomain, "");
 }
 
 // static
@@ -294,9 +312,9 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
                                  base::UTF8ToUTF16(sanitized_domain)));
 }
 
-void SecurityTokenSessionController::UpdateBehaviorPref() {
+void SecurityTokenSessionController::UpdateBehavior() {
   Behavior previous_behavior = behavior_;
-  behavior_ = GetBehaviorFromPref();
+  behavior_ = GetBehaviorFromPrefAndSessionState();
   if (behavior_ == Behavior::kIgnore) {
     Reset();
   } else if (previous_behavior == Behavior::kIgnore) {
@@ -307,14 +325,49 @@ void SecurityTokenSessionController::UpdateBehaviorPref() {
 }
 
 void SecurityTokenSessionController::UpdateNotificationPref() {
-  notification_seconds_ = base::Seconds(profile_prefs_->GetInteger(
+  notification_seconds_ = base::Seconds(local_state_->GetInteger(
       prefs::kSecurityTokenSessionNotificationSeconds));
 }
 
+bool SecurityTokenSessionController::ShouldApplyPolicyInCurrentSessionState()
+    const {
+  switch (session_manager_->session_state()) {
+    case session_manager::SessionState::UNKNOWN:
+    case session_manager::SessionState::OOBE:
+    case session_manager::SessionState::LOGIN_PRIMARY:
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+    case session_manager::SessionState::LOGIN_SECONDARY:
+    case session_manager::SessionState::RMA:
+      return false;
+    case session_manager::SessionState::ACTIVE:
+      if (!is_user_profile_) {
+        // Inside the user session, only the controller that's tied to the user
+        // profile should work.
+        return false;
+      }
+      return true;
+    case session_manager::SessionState::LOCKED:
+      if (is_user_profile_) {
+        // On the lock screen, only the controller that's tied to the sign-in
+        // profile should work.
+        return false;
+      }
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
 SecurityTokenSessionController::Behavior
-SecurityTokenSessionController::GetBehaviorFromPref() const {
+SecurityTokenSessionController::GetBehaviorFromPrefAndSessionState() const {
+  // First determine if we're in a session state in which our instance should do
+  // nothing (ignore the policy).
+  if (!ShouldApplyPolicyInCurrentSessionState())
+    return Behavior::kIgnore;
+  // After passing the session state checks, use the policy value as the desired
+  // behavior.
   return ParseBehaviorPrefValue(
-      profile_prefs_->GetString(prefs::kSecurityTokenSessionBehavior));
+      local_state_->GetString(prefs::kSecurityTokenSessionBehavior));
 }
 
 void SecurityTokenSessionController::TriggerAction() {
@@ -341,17 +394,30 @@ void SecurityTokenSessionController::TriggerAction() {
 void SecurityTokenSessionController::ExtensionProvidesAllRequiredCertificates(
     const extensions::ExtensionId& extension_id) {
   extensions_missing_required_certificates_.erase(extension_id);
-  if (extensions_missing_required_certificates_.empty())
+  if (extensions_missing_required_certificates_.empty()) {
+    all_required_certificates_were_observed_ = true;
     Reset();
+  }
 }
 
 void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
     const extensions::ExtensionId& extension_id) {
   extensions_missing_required_certificates_.insert(extension_id);
 
-  if (fullscreen_notification_)
+  if (!all_required_certificates_were_observed_ &&
+      had_lock_screen_transition_) {
+    // When transitioning to/from the Lock Screen, we delay applying the policy
+    // until we saw the full list of the required certificates at least once.
+    // This is needed because the extensions report a spuriously empty list of
+    // certificates shortly after such session state transition, due to the USB
+    // access conflicts between two profiles.
+    return;
+  }
+
+  if (fullscreen_notification_) {
     // There was already a security token missing.
     return;
+  }
 
   // Schedule session lock / logout.
   action_timer_.Start(
@@ -367,24 +433,21 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
                            weak_ptr_factory_.GetWeakPtr()),
             behavior_,
             chrome::enterprise_util::GetDomainFromEmail(
-                user_->GetDisplayEmail())),
+                primary_user_->GetDisplayEmail())),
         nullptr, nullptr);
     fullscreen_notification_->Show();
   }
 }
 
-void SecurityTokenSessionController::AddLockNotification() const {
+void SecurityTokenSessionController::AddLockNotification() {
   // A user should see the notification only the first time their session is
   // locked.
-  if (profile_prefs_->GetBoolean(
-          prefs::kSecurityTokenSessionNotificationDisplayed)) {
+  if (GetNotificationDisplayedKnownUserFlag())
     return;
-  }
-  profile_prefs_->SetBoolean(prefs::kSecurityTokenSessionNotificationDisplayed,
-                             true);
+  SetNotificationDisplayedKnownUserFlag();
 
-  std::string domain =
-      chrome::enterprise_util::GetDomainFromEmail(user_->GetDisplayEmail());
+  std::string domain = chrome::enterprise_util::GetDomainFromEmail(
+      primary_user_->GetDisplayEmail());
   DisplayNotification(
       l10n_util::GetStringFUTF16(IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE,
                                  ui::GetChromeOSDeviceName()),
@@ -392,21 +455,18 @@ void SecurityTokenSessionController::AddLockNotification() const {
                                  base::UTF8ToUTF16(domain)));
 }
 
-void SecurityTokenSessionController::ScheduleLogoutNotification() const {
+void SecurityTokenSessionController::ScheduleLogoutNotification() {
   // The notification can not be created directly, since it will not persist
   // after the session is ended. Instead, use local state to schedule the
   // creation of a notification.
-  if (profile_prefs_->GetBoolean(
-          prefs::kSecurityTokenSessionNotificationDisplayed)) {
-    // A user should see the notification only the first time they are logged
-    // out.
+  if (GetNotificationDisplayedKnownUserFlag())
     return;
-  }
-  profile_prefs_->SetBoolean(prefs::kSecurityTokenSessionNotificationDisplayed,
-                             true);
+  SetNotificationDisplayedKnownUserFlag();
+
   local_state_->SetString(
       prefs::kSecurityTokenSessionNotificationScheduledDomain,
-      chrome::enterprise_util::GetDomainFromEmail(user_->GetDisplayEmail()));
+      chrome::enterprise_util::GetDomainFromEmail(
+          primary_user_->GetDisplayEmail()));
 }
 
 void SecurityTokenSessionController::Reset() {
@@ -419,6 +479,24 @@ void SecurityTokenSessionController::Reset() {
     }
     fullscreen_notification_ = nullptr;
   }
+}
+
+bool SecurityTokenSessionController::GetNotificationDisplayedKnownUserFlag()
+    const {
+  return user_manager::KnownUser(local_state_)
+      .FindBoolPath(primary_user_->GetAccountId(),
+                    kNotificationDisplayedKnownUserKey)
+      .value_or(false);
+}
+
+void SecurityTokenSessionController::SetNotificationDisplayedKnownUserFlag() {
+  // The reason we use `KnownUser` (i.e., the Local State) here is because the
+  // flag needs to be readable/writable from the instance of our class that's
+  // tied to the sign-in profile. There's no direct/safe way to access a
+  // profile's pref service from a keyed service tied to a different profile.
+  user_manager::KnownUser(local_state_)
+      .SetBooleanPref(primary_user_->GetAccountId(),
+                      kNotificationDisplayedKnownUserKey, true);
 }
 
 }  // namespace login

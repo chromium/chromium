@@ -747,6 +747,12 @@ const char kExtensionToolbar[] = "extensions.toolbar";
 const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 08/2022.
+constexpr char kSecurityTokenSessionNotificationDisplayed[] =
+    "security_token_session_notification_displayed";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -970,6 +976,12 @@ void RegisterProfilePrefsForMigration(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kSettingsShowOSBanner, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 08/2022
+  registry->RegisterBooleanPref(kSecurityTokenSessionNotificationDisplayed,
+                                false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1444,7 +1456,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::file_system_provider::RegisterProfilePrefs(registry);
   ash::full_restore::RegisterProfilePrefs(registry);
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
-  ash::login::SecurityTokenSessionController::RegisterProfilePrefs(registry);
   ash::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
   ash::MultiProfileUserController::RegisterProfilePrefs(registry);
@@ -1915,6 +1926,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 07/2022.
   profile_prefs->ClearPref(kSettingsShowOSBanner);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 08/2022.
+  profile_prefs->ClearPref(kSecurityTokenSessionNotificationDisplayed);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
