@@ -169,19 +169,6 @@ FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
 
 void FeatureStatusProviderImpl::OnReady() {
   UpdateStatus();
-
-  // The status may change a few times before initialization is
-  // complete. Before the login status is recorded, all asynchronous
-  // action should be complete. Note that scheduling
-  // RecordFeatureStatusOnLogin() with BEST_EFFORT sooner (e.g in the
-  // constructor) may yield an incorrect metric, because there may be many
-  // cycles between the constructor being called and |device_sync_client_| being
-  // ready, allowing tasks posted even with BEST_EFFORT to succeed before
-  // initialization.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&FeatureStatusProviderImpl::RecordFeatureStatusOnLogin,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FeatureStatusProviderImpl::OnNewDevicesSynced() {
@@ -243,9 +230,6 @@ void FeatureStatusProviderImpl::UpdateStatus() {
   *status_ = computed_status;
   NotifyStatusChanged();
 
-  if (!is_login_status_metric_recorded_)
-    return;
-
   UMA_HISTOGRAM_ENUMERATION("PhoneHub.Adoption.FeatureStatusChangesSinceLogin",
                             GetStatus());
 }
@@ -300,12 +284,6 @@ bool FeatureStatusProviderImpl::IsBluetoothOn() const {
     return false;
 
   return bluetooth_adapter_->IsPresent() && bluetooth_adapter_->IsPowered();
-}
-
-void FeatureStatusProviderImpl::RecordFeatureStatusOnLogin() {
-  UMA_HISTOGRAM_ENUMERATION("PhoneHub.Adoption.LoginFeatureStatus",
-                            GetStatus());
-  is_login_status_metric_recorded_ = true;
 }
 
 void FeatureStatusProviderImpl::SuspendImminent(

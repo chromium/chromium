@@ -34,6 +34,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PhoneHub.Adoption.LoginFeatureStatus"
     enum="PhoneHubFeatureStatus" expires_after="2022-10-31">
+  <obsolete>
+    There was a bug associated with the recording on this metric. During
+    investigation, we decided that this metric is of no value and so it was
+    removed. Deprecated 07/2022
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>The steady state feature status of PhoneHub on user login.</summary>
