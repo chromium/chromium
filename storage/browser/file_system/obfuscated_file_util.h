@@ -298,6 +298,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   friend class ObfuscatedFileEnumerator;
   friend class ObfuscatedFileUtilTest;
   friend class QuotaBackendImplTest;
+  friend class SandboxFileSystemBackendDelegate;
 
   // Helper method to create an obfuscated file util for regular
   // (temporary, persistent) file systems. Used only for testing.
@@ -429,8 +430,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   std::set<std::string> known_type_strings_;
 
   // Not owned.
-  raw_ptr<SandboxFileSystemBackendDelegate, DanglingUntriaged>
-      sandbox_delegate_;
+  raw_ptr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
 
   std::unique_ptr<ObfuscatedFileUtilDelegate> delegate_;
 };

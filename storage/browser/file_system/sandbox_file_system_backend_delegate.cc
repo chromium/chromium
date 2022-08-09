@@ -227,6 +227,8 @@ SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {
     // `quota_observer_` depends on `sandbox_file_util_` and
     // `file_system_usage_cache_` so it must be released first.
     DeleteSoon(file_task_runner_.get(), quota_observer_.release());
+    // Clear pointer to |this| to avoid holding a dangling ptr.
+    obfuscated_file_util()->sandbox_delegate_ = nullptr;
     DeleteSoon(file_task_runner_.get(), sandbox_file_util_.release());
     DeleteSoon(file_task_runner_.get(), file_system_usage_cache_.release());
   }
