@@ -10,6 +10,9 @@ if (is_android) {
 
 static_library("core") {
   sources = [
+    "power_bookmark_data_provider.h",
+    "power_bookmark_service.cc",
+    "power_bookmark_service.h",
     "power_bookmark_utils.cc",
     "power_bookmark_utils.h",
   ]
@@ -21,6 +24,7 @@ static_library("core") {
     "//base:i18n",
     "//components/bookmarks/browser",
     "//components/commerce/core:proto",
+    "//components/keyed_service/core:core",
     "//ui/base",
     "//url",
   ]
