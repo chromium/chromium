@@ -270,10 +270,12 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
 
   // Set adjusted_position to 'top' or 'left' property as a percentage value,
   // which will work well even if the video rendering area is resized.
+  double percentage_position =
+      full_dimension ? (adjusted_position * 100 / full_dimension).ToDouble()
+                     : 100.0;
   cue_.SetInlineStyleProperty(
       is_horizontal ? CSSPropertyID::kTop : CSSPropertyID::kLeft,
-      (adjusted_position * 100 / full_dimension).ToDouble(),
-      CSSPrimitiveValue::UnitType::kPercentage);
+      percentage_position, CSSPrimitiveValue::UnitType::kPercentage);
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {
