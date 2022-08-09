@@ -2165,4 +2165,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, Prerendering_MV3) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering_mv3")) << message_;
+}
+
 }  // namespace extensions

@@ -6,12 +6,22 @@ let testServerPort = 0;
 
 // Obtains a full URL that match a configuration that meets the expectations for
 // options described in `details`.
-function getUrl(path, details) {
+function getHostByDetails(details) {
   let host = 'default.test';
   if (details && details.matchAboutBlank)
     host = 'match_about_blank.test';
+  return host
+}
+
+function getUrl(path, details) {
+  let host = getHostByDetails(details);
   const url = `http://${host}:${testServerPort}/extensions/${path}`;
   return url;
+}
+
+function getHostname(urlString) {
+  let url = new URL(urlString);
+  return url.hostname;
 }
 
 // Tests receiving messages from a content script to ensure pre-rendered frames
@@ -25,6 +35,8 @@ function getUrl(path, details) {
 async function testWithIframe() {
   let numAllFramesMessages = 0;
   let numTopFrameOnlyMessages = 0;
+  let [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+
   const testCallback = (message, sender, sendResponse) => {
     if (message == 'all_frames') {
       numAllFramesMessages++;
@@ -39,26 +51,25 @@ async function testWithIframe() {
       // Inject a second script into the now-activated frame, but run it at
       // document_idle. This ensures that any content scripts that will run on
       // the frame have already done so, since they run at document_start.
-      chrome.tabs.executeScript(
-          {
-            code: '// Empty',
-            runAt: 'document_idle',
-          },
-          () => {
-            chrome.test.assertEq(3, numAllFramesMessages);
-            chrome.test.assertEq(2, numTopFrameOnlyMessages);
-            chrome.test.succeed();
-          });
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: function () {},
+      }, function() {
+        chrome.test.assertEq(3, numAllFramesMessages);
+        chrome.test.assertEq(2, numTopFrameOnlyMessages);
+        chrome.test.succeed();
+      });
     } else {
       chrome.runtime.onMessage.removeListener(testCallback);
       chrome.test.fail('Unexpected message: ' + JSON.stringify(message));
     }
     if (numAllFramesMessages == 3 && numTopFrameOnlyMessages == 2) {
       // Navigate to the pre-rendered page.
-      // TODO(https://crbug.com/1278141): `chrome.tabs.update` can not activate
-      // the pre-rendered page, but takes a new navigation instead.
-      const url = getUrl('test_file_with_iframe.html');
-      chrome.tabs.executeScript({code: `location.href = '${url}';`});
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: function (url) { location.href = url; },
+        args: [getUrl('test_file_with_iframe.html')],
+      });
     }
   };
   chrome.runtime.onMessage.addListener(testCallback);
@@ -80,14 +91,26 @@ async function testWithAboutBlankIframe(details) {
   const matchAboutBlank = details && details.matchAboutBlank;
   const expectedNumAllFramesMessages = 2 + (matchAboutBlank ? 1 : 0);
   const expectedNumTopFrameOnlyMessages = 2;
+  const hostNameForThisTest = getHostByDetails(details);
   let numAllFramesMessages = 0;
   let numTopFrameOnlyMessages = 0;
+  let [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+
   const testCallback = (message, sender, sendResponse) => {
+    // skip the url unrelated to this test case
+    if (hostNameForThisTest !== getHostname(sender.url)
+        && sender.url != 'about:blank') {
+      console.log('expected ' + hostNameForThisTest +
+          ' received ' + sender.url);
+      return ;
+    }
+
     if (message == 'all_frames') {
       numAllFramesMessages++;
       chrome.test.assertTrue(
           numAllFramesMessages <= expectedNumAllFramesMessages,
-          'Unexpected: maybe running on about:blank');
+          'Unexpected: maybe running on about:blank with matchAboutBlank: '
+          + matchAboutBlank);
     } else if (message == 'top_frame_only') {
       numTopFrameOnlyMessages++;
       chrome.test.assertTrue(
@@ -98,18 +121,16 @@ async function testWithAboutBlankIframe(details) {
       // Inject a second script into the now-activated frame, but run it at
       // document_idle. This ensures that any content scripts that will run on
       // the frame have already done so, since they run at document_start.
-      chrome.tabs.executeScript(
-          {
-            code: '// Empty',
-            runAt: 'document_idle',
-          },
-          () => {
-            chrome.test.assertEq(
-                expectedNumAllFramesMessages, numAllFramesMessages);
-            chrome.test.assertEq(
-                expectedNumTopFrameOnlyMessages, numTopFrameOnlyMessages);
-            chrome.test.succeed();
-          });
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: function () {},
+      }, function() {
+        chrome.test.assertEq(
+          expectedNumAllFramesMessages, numAllFramesMessages);
+        chrome.test.assertEq(
+            expectedNumTopFrameOnlyMessages, numTopFrameOnlyMessages);
+        chrome.test.succeed();
+      });
     } else {
       chrome.runtime.onMessage.removeListener(testCallback);
       chrome.test.fail('Unexpected message: ' + JSON.stringify(message));
@@ -117,10 +138,11 @@ async function testWithAboutBlankIframe(details) {
     if (numAllFramesMessages == expectedNumAllFramesMessages &&
         numTopFrameOnlyMessages == expectedNumTopFrameOnlyMessages) {
       // Navigate to the pre-rendered page.
-      // TODO(https://crbug.com/1278141): `chrome.tabs.update` can not activate
-      // the pre-rendered page, but takes a new navigation instead.
-      const url = getUrl('test_file_with_about_blank_iframe.html', details);
-      chrome.tabs.executeScript({code: `location.href = '${url}';`});
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: function (url) { location.href = url; },
+        args: [getUrl('test_file_with_about_blank_iframe.html', details)],
+      });
     }
   };
   chrome.runtime.onMessage.addListener(testCallback);
@@ -132,6 +154,8 @@ async function testWithAboutBlankIframe(details) {
 chrome.test.getConfig(async config => {
   testServerPort = config.testServer.port;
 
+  // TODO(https://crbug.com/3731231): Add more tests for
+  // `match_origin_as_fallback`.
   chrome.test.runTests([
     testWithIframe,
     testWithAboutBlankIframe,
