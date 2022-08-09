@@ -1087,12 +1087,16 @@ gfx::Rect ShelfWidget::GetTargetBounds() const {
 
 void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
   // Do not show shelf widget:
-  // * when views based shelf is disabled
-  // * in UNKNOWN state - it might be called before shelf was initialized
-  // * on secondary screens in states other than ACTIVE
-  bool unknown_state = state == session_manager::SessionState::UNKNOWN;
+  // 1. when views based shelf is disabled; or
+  // 2. in UNKNOWN state - it might be called before shelf was initialized; or
+  // 3. in RMA state - shelf should be hidden to avoid blocking the RMA app
+  // controls or intercepting UI events; or
+  // 4. on secondary screens in states other than ACTIVE.
+  bool hide_for_session_state =
+      state == session_manager::SessionState::UNKNOWN ||
+      state == session_manager::SessionState::RMA;
   bool hide_on_secondary_screen = shelf_->ShouldHideOnSecondaryDisplay(state);
-  if (unknown_state || hide_on_secondary_screen) {
+  if (hide_for_session_state || hide_on_secondary_screen) {
     HideIfShown();
   } else {
     bool show_hotseat = (state == session_manager::SessionState::ACTIVE);

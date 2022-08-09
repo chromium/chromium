@@ -164,12 +164,18 @@ bool LoginShelfWidget::OnNativeWidgetActivationChanged(bool active) {
 
 void LoginShelfWidget::OnSessionStateChanged(
     session_manager::SessionState state) {
-  bool is_active = (state == session_manager::SessionState::ACTIVE);
+  // The login shelf should be hidden if:
+  // 1. the user session is active; or
+  // 2. the RMA app is active. The login shelf should be hidden to avoid
+  // blocking the RMA app controls or intercepting UI events.
+  bool hide_for_session_state =
+      (state == session_manager::SessionState::ACTIVE ||
+       state == session_manager::SessionState::RMA);
 
   // The visibility of `login_shelf_view_` is accessed in different places.
   // Therefore, ensure the consistency between the widget's visibility and the
   // view's visibility.
-  if (!is_active && !shelf_->ShouldHideOnSecondaryDisplay(state)) {
+  if (!hide_for_session_state && !shelf_->ShouldHideOnSecondaryDisplay(state)) {
     if (!IsVisible()) {
       Show();
       login_shelf_view_->SetVisible(true);
