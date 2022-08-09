@@ -21,6 +21,7 @@
 
 @property(nonatomic, retain) NSArray<NSString*>* buttonTitles;
 @property(nonatomic, weak) id<OmniboxAssistiveKeyboardDelegate> delegate;
+@property(nonatomic, weak) id<UIPasteConfigurationSupporting> pasteTarget;
 
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
@@ -35,12 +36,15 @@
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
-                       delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate {
+                       delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
+                    pasteTarget:
+                        (id<UIPasteConfigurationSupporting>)pasteTarget {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
     _buttonTitles = buttonTitles;
     _delegate = delegate;
+    _pasteTarget = pasteTarget;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
     [self addSubviews];
@@ -75,13 +79,13 @@
   [self addSubview:shortcutStackView];
 
   // Create and add a stackview containing the leading assistive buttons, i.e.
-  // Voice search and camera search.
-  NSArray<UIButton*>* leadingButtons =
-      OmniboxAssistiveKeyboardLeadingButtons(_delegate);
+  // Voice search, camera search and paste search.
+  NSArray<UIControl*>* leadingControls =
+      OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget);
   UIStackView* searchStackView = [[UIStackView alloc] init];
   searchStackView.translatesAutoresizingMaskIntoConstraints = NO;
   searchStackView.spacing = kBetweenSearchButtonSpacing;
-  for (UIButton* button in leadingButtons) {
+  for (UIControl* button in leadingControls) {
     [searchStackView addArrangedSubview:button];
   }
   [self addSubview:searchStackView];

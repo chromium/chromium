@@ -23,7 +23,7 @@ void ConfigureAssistiveKeyboardViews(
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     textField.inputAssistantItem.leadingBarButtonGroups =
-        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate);
+        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate, textField);
     textField.inputAssistantItem.trailingBarButtonGroups =
         OmniboxAssistiveKeyboardTrailingBarButtonGroups(delegate, buttonTitles);
   } else {
@@ -31,7 +31,8 @@ void ConfigureAssistiveKeyboardViews(
     textField.inputAssistantItem.trailingBarButtonGroups = @[];
     UIView* keyboardAccessoryView =
         [[OmniboxKeyboardAccessoryView alloc] initWithButtons:buttonTitles
-                                                     delegate:delegate];
+                                                     delegate:delegate
+                                                  pasteTarget:textField];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textField setInputAccessoryView:keyboardAccessoryView];
   }

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_ui_bar_button_item.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/voice_search_keyboard_bar_button_item.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -22,7 +23,8 @@
 #pragma mark - Util Functions
 
 NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
-    id<OmniboxAssistiveKeyboardDelegate> delegate) {
+    id<OmniboxAssistiveKeyboardDelegate> delegate,
+    id<UIPasteConfigurationSupporting> pasteTarget) {
   NSMutableArray<UIBarButtonItem*>* items = [NSMutableArray array];
 
   UIImage* voiceSearchIcon =
@@ -52,11 +54,32 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
       cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
       @"QR code Search");
   [items addObject:cameraItem];
+  if (base::FeatureList::IsEnabled(kOmniboxKeyboardPasteButton)) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+    if (@available(iOS 16, *)) {
+      UIPasteControl* pasteControl =
+          OmniboxAssistiveKeyboardPasteControl(pasteTarget);
+      UIView* pasteControlContainer = [[UIView alloc] init];
+      [pasteControlContainer addSubview:pasteControl];
+      [pasteControlContainer setTranslatesAutoresizingMaskIntoConstraints:NO];
+      [NSLayoutConstraint activateConstraints:@[
+        [pasteControlContainer.widthAnchor
+            constraintEqualToConstant:kPasteButtonSize],
+        [pasteControlContainer.centerXAnchor
+            constraintEqualToAnchor:pasteControl.centerXAnchor],
+        [pasteControlContainer.centerYAnchor
+            constraintEqualToAnchor:pasteControl.centerYAnchor]
+      ]];
+      UIBarButtonItem* pasteButtonItem =
+          [[UIBarButtonItem alloc] initWithCustomView:pasteControlContainer];
+      [items addObject:pasteButtonItem];
+    }
+#endif  // defined(__IPHONE_16_0)
+  }
 
-  UIBarButtonItemGroup* group = [[UIBarButtonItemGroup alloc]
-      initWithBarButtonItems:@[ voiceSearchItem, cameraItem ]
-          representativeItem:nil];
-
+  UIBarButtonItemGroup* group =
+      [[UIBarButtonItemGroup alloc] initWithBarButtonItems:items
+                                        representativeItem:nil];
   return @[ group ];
 }
 

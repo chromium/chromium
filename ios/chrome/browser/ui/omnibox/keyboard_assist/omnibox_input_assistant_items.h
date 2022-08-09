@@ -11,7 +11,8 @@
 
 // Returns the leading button groups for the omnibox's inputAssistantItem.
 NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
-    id<OmniboxAssistiveKeyboardDelegate> delegate);
+    id<OmniboxAssistiveKeyboardDelegate> delegate,
+    id<UIPasteConfigurationSupporting> pasteTarget);
 
 // Returns the trailing button groups for the omnibox's inputAssistantItem.
 NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardTrailingBarButtonGroups(

@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/voice_search_keyboard_accessory_button.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -18,6 +19,8 @@
 
 NSString* const kVoiceSearchInputAccessoryViewID =
     @"kVoiceSearchInputAccessoryViewID";
+
+const CGFloat kPasteButtonSize = 36.0;
 
 namespace {
 
@@ -37,9 +40,10 @@ void SetUpButtonWithIcon(UIButton* button, NSString* iconName) {
 
 }  // namespace
 
-NSArray<UIButton*>* OmniboxAssistiveKeyboardLeadingButtons(
-    id<OmniboxAssistiveKeyboardDelegate> delegate) {
-  NSMutableArray<UIButton*>* buttons = [NSMutableArray<UIButton*> array];
+NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
+    id<OmniboxAssistiveKeyboardDelegate> delegate,
+    id<UIPasteConfigurationSupporting> pasteTarget) {
+  NSMutableArray<UIControl*>* controls = [NSMutableArray<UIControl*> array];
 
   UIButton* voiceSearchButton = [[VoiceSearchKeyboardAccessoryButton alloc]
       initWithVoiceSearchAvailability:std::make_unique<
@@ -53,7 +57,7 @@ NSArray<UIButton*>* OmniboxAssistiveKeyboardLeadingButtons(
              addTarget:delegate
                 action:@selector(keyboardAccessoryVoiceSearchTouchUpInside:)
       forControlEvents:UIControlEventTouchUpInside];
-  [buttons addObject:voiceSearchButton];
+  [controls addObject:voiceSearchButton];
 
   UIButton* cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
   SetUpButtonWithIcon(cameraButton, @"keyboard_accessory_qr_scanner");
@@ -63,7 +67,40 @@ NSArray<UIButton*>* OmniboxAssistiveKeyboardLeadingButtons(
   SetA11yLabelAndUiAutomationName(
       cameraButton, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
       @"QR code Search");
-  [buttons addObject:cameraButton];
+  [controls addObject:cameraButton];
 
-  return buttons;
+  if (base::FeatureList::IsEnabled(kOmniboxKeyboardPasteButton)) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+    if (@available(iOS 16, *)) {
+      [controls addObject:OmniboxAssistiveKeyboardPasteControl(pasteTarget)];
+    }
+#endif  // defined(__IPHONE_16_0)
+  }
+
+  return controls;
 }
+
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+UIPasteControl* OmniboxAssistiveKeyboardPasteControl(
+    id<UIPasteConfigurationSupporting> pasteTarget) API_AVAILABLE(ios(16)) {
+  UIPasteControlConfiguration* pasteControlConfiguration =
+      [[UIPasteControlConfiguration alloc] init];
+  [pasteControlConfiguration setDisplayMode:UIPasteControlDisplayModeIconOnly];
+  [pasteControlConfiguration
+      setCornerStyle:UIButtonConfigurationCornerStyleCapsule];
+  [pasteControlConfiguration setBaseBackgroundColor:UIColor.systemBlueColor];
+  [pasteControlConfiguration setBaseForegroundColor:UIColor.whiteColor];
+  UIPasteControl* pasteControl =
+      [[UIPasteControl alloc] initWithConfiguration:pasteControlConfiguration];
+  pasteControl.target = pasteTarget;
+  // Set content size category to extra small to reduce the size of the paste
+  // icon.
+  [pasteControl setMaximumContentSizeCategory:UIContentSizeCategoryExtraSmall];
+  [pasteControl setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [NSLayoutConstraint activateConstraints:@[
+    [pasteControl.widthAnchor constraintEqualToConstant:kPasteButtonSize],
+    [pasteControl.heightAnchor constraintEqualToConstant:kPasteButtonSize]
+  ]];
+  return pasteControl;
+}
+#endif  // defined(__IPHONE_16_0)

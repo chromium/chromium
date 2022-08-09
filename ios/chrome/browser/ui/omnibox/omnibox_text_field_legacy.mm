@@ -673,6 +673,20 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [super paste:sender];
 }
 
+#pragma mark UIPasteConfigurationSupporting
+
+// Used by UIPasteControl to check if can paste.
+- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  // TODO(crbug.com/1349095) Add support for image.
+  return [super canPasteItemProviders:itemProviders];
+}
+
+// Used by UIPasteControl to paste.
+- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+  // TODO(crbug.com/1349095) Add support for image and paste to search.
+  [super pasteItemProviders:itemProviders];
+}
+
 #pragma mark UIKeyInput
 
 - (void)deleteBackward {

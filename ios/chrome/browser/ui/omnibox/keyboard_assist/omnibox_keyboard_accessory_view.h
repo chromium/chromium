@@ -11,7 +11,7 @@
 
 // Accessory View above the keyboard.
 // Shows keys that are shortcuts to commonly used characters or strings,
-// and buttons to start Voice Search or a Camera Search.
+// and buttons to start Voice Search, Camera Search or Paste Search.
 @interface OmniboxKeyboardAccessoryView : UIInputView <UIInputViewAudioFeedback>
 
 // Designated initializer. `buttonTitles` lists the titles of the shortcut
@@ -19,6 +19,7 @@
 // retained, and can be nil.
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
+                    pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

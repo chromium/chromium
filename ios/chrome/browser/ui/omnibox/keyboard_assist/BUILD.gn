@@ -31,6 +31,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/location_bar:constants",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util/",
