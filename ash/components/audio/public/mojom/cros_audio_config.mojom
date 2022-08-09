@@ -87,4 +87,8 @@ interface CrosAudioConfig {
   // To stop observing, disconnect |observer|.
   ObserveAudioSystemProperties(
     pending_remote<AudioSystemPropertiesObserver> observer);
+
+  // Sets the volume of the active output device. If |volume| is above a
+  // threshold and the device is muted, it's unmuted.
+  SetOutputVolumePercent(int8 volume);
 };

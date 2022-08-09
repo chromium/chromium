@@ -25,6 +25,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   mojom::MuteState GetOutputMuteState() const override;
   void GetAudioDevices(
       std::vector<mojom::AudioDevicePtr>* output_devices_out) const override;
+  void SetOutputVolumePercent(int8_t volume) override;
 
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;

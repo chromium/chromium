@@ -140,11 +140,20 @@ export class FakeCrosAudioConfig {
   }
 
   /**
-   * Sets the outputVolumePercent to the desired volume.
+   * Sets audioSystemProperties to the desired properties.
    * @param {!ash.audioConfig.mojom.AudioSystemProperties} properties
    */
   setAudioSystemProperties(properties) {
     this.audioSystemProperties_ = properties;
+    this.notifyAudioSystemPropertiesUpdated_();
+  }
+
+  /**
+   * Sets the outputVolumePercent to the desired volume.
+   * @param {!number} volume
+   */
+  setOutputVolumePercent(volume) {
+    this.audioSystemProperties_.outputVolumePercent = volume;
     this.notifyAudioSystemPropertiesUpdated_();
   }
 

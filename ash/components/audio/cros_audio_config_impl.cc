@@ -96,6 +96,17 @@ void CrosAudioConfigImpl::GetAudioDevices(
   }
 };
 
+void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  audio_handler->SetOutputVolumePercent(volume);
+
+  // If the volume is above certain level and it's muted, it should be unmuted.
+  if (audio_handler->IsOutputMuted() &&
+      volume > audio_handler->GetOutputDefaultVolumeMuteThreshold()) {
+    audio_handler->SetOutputMute(false);
+  }
+}
+
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                     int volume) {
   NotifyObserversAudioSystemPropertiesChanged();
