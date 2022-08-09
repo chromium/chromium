@@ -473,6 +473,12 @@ _LACROS_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
+_FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('speedometer2'),
+])
+_FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('speedometer2'),
+])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
@@ -685,6 +691,20 @@ LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                8, 'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                12, 'chromeos')
+# Fuchsia
+FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
+                                  '',
+                                  _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
+                                  1,
+                                  'fuchsia',
+                                  executables=FUCHSIA_EXEC_CONFIGS['astro'])
+FUCHSIA_PERF_SHERLOCK = PerfPlatform(
+    'fuchsia-perf-shk',
+    '',
+    _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
+    1,
+    'fuchsia',
+    executables=FUCHSIA_EXEC_CONFIGS['sherlock'])
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(

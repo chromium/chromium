@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 37,
+                "end": 20,
                 "abridged": false
             }
         },
@@ -28,8 +28,8 @@
     "1": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 37,
-                "end": 121,
+                "begin": 20,
+                "end": 119,
                 "abridged": false
             }
         }
@@ -37,8 +37,8 @@
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 121,
-                "end": 250,
+                "begin": 119,
+                "end": 267,
                 "abridged": false
             }
         }
@@ -46,8 +46,8 @@
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 250,
-                "end": 346,
+                "begin": 267,
+                "end": 369,
                 "abridged": false
             }
         }
@@ -55,16 +55,7 @@
     "4": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 346,
-                "end": 420,
-                "abridged": false
-            }
-        }
-    },
-    "5": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "begin": 420,
+                "begin": 369,
                 "abridged": false
             },
             "speedometer": {
@@ -74,21 +65,30 @@
                 "abridged": false
             },
             "system_health.memory_desktop": {
+                "end": 24,
+                "abridged": false
+            }
+        }
+    },
+    "5": {
+        "benchmarks": {
+            "system_health.memory_desktop": {
+                "begin": 24,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
         "num_stories": 522,
-        "predicted_min_shard_time": 1945.0,
-        "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 1977.0,
-        "predicted_max_shard_index": 5,
-        "shard #0": 1965.0,
-        "shard #1": 1964.0,
-        "shard #2": 1959.0,
-        "shard #3": 1945.0,
-        "shard #4": 1964.0,
-        "shard #5": 1977.0
+        "predicted_min_shard_time": 2647.0,
+        "predicted_min_shard_index": 5,
+        "predicted_max_shard_time": 2697.0,
+        "predicted_max_shard_index": 4,
+        "shard #0": 2660.0,
+        "shard #1": 2656.0,
+        "shard #2": 2666.0,
+        "shard #3": 2666.0,
+        "shard #4": 2697.0,
+        "shard #5": 2647.0
     }
 }

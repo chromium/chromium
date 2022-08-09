@@ -34,6 +34,8 @@ _VALID_PERF_POOLS = {
     'fuchsia-perf-fyi': {'chrome.tests'},
     'fuchsia-perf-atlas-fyi': {'chrome.tests'},
     'fuchsia-perf-sherlock-fyi': {'chrome.tests'},
+    'fuchsia-perf-ast': {'chrome.tests'},
+    'fuchsia-perf-shk': {'chrome.tests'},
     'linux-builder-perf': {'chrome.tests'},
     'mac-arm-builder-perf': {'chrome.tests'},
     'mac-builder-perf': {'chrome.tests'},

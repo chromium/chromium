@@ -1,0 +1,29 @@
+{
+    "0": {
+        "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=update",
+                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
+                ],
+                "path": "bin/run_base_perftests"
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 2,
+        "predicted_min_shard_time": 910.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 910.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 910.0
+    }
+}

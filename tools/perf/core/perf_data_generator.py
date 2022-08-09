@@ -338,9 +338,6 @@ FYI_BUILDERS = {
             'chromium_builder_perf', 'base_perftests'
         ],
     },
-    'fuchsia-builder-perf-x64': {
-        'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
-    },
 }
 
 # These configurations are taken from chromium_perf.py in
@@ -570,6 +567,15 @@ BUILDERS = {
         },
         'perf_trigger':
         False,
+    },
+    'fuchsia-builder-perf-arm64': {
+        'additional_compile_targets': [
+            'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
+            'chromium_builder_perf', 'base_perftests'
+        ],
+    },
+    'fuchsia-builder-perf-x64': {
+        'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
     },
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
@@ -1176,6 +1182,44 @@ BUILDERS = {
             'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
+    'fuchsia-perf-ast': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia-wes',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Astro',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
+    'fuchsia-perf-shk': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia-wes',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Sherlock',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
     'mac-laptop_high_end-perf': {
         'tests': [
             {
@@ -1559,6 +1603,7 @@ PERFORMANCE_TEST_SUITES = [
     'performance_test_suite_octopus',
     'performance_webview_test_suite',
     'performance_weblayer_test_suite',
+    'performance_web_engine_test_suite',
 ]
 for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
   PERFORMANCE_TEST_SUITES.append('performance_test_suite' + suffix)

@@ -186,12 +186,6 @@
       "base_perftests"
     ]
   },
-  "fuchsia-builder-perf-x64": {
-    "additional_compile_targets": [
-      "chrome_pkg",
-      "base_perftests"
-    ]
-  },
   "fuchsia-perf-atlas-fyi": {
     "isolated_scripts": [
       {
