@@ -169,6 +169,9 @@ void FileTransferMessageHandler::OnRequestTransfer() {
 void FileTransferMessageHandler::OnSuccess() {
   DCHECK_EQ(kEof, state_);
   SetState(kClosed);
+
+  // Ensure any resources tied to the reader's lifetime are released.
+  file_reader_.reset();
 }
 
 void FileTransferMessageHandler::OnError(protocol::FileTransfer_Error error) {

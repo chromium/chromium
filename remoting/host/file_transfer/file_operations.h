@@ -86,7 +86,7 @@ class FileOperations {
     // complete.
     virtual void Open(const base::FilePath& filename, Callback callback) = 0;
 
-    // Writes a chuck to the file. Chunks cannot be queued; the caller must
+    // Writes a chunk to the file. Chunks cannot be queued; the caller must
     // wait until callback is called before calling WriteChunk again or calling
     // Close.
     virtual void WriteChunk(std::vector<std::uint8_t> data,

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -173,14 +174,11 @@ class DesktopSessionProxy
   void ExecuteAction(const protocol::ActionRequest& request);
 
   // IpcFileOperations::RequestHandler implementation.
-  void ReadFile(std::uint64_t file_id) override;
-  void ReadChunk(std::uint64_t file_id, std::uint64_t size) override;
-  void WriteFile(std::uint64_t file_id,
-                 const base::FilePath& filename) override;
-  void WriteChunk(std::uint64_t file_id,
-                  std::vector<std::uint8_t> data) override;
-  void Close(std::uint64_t file_id) override;
-  void Cancel(std::uint64_t file_id) override;
+  void BeginFileRead(IpcFileOperations::BeginFileReadCallback callback,
+                     base::OnceClosure on_disconnect) override;
+  void BeginFileWrite(const base::FilePath& file_path,
+                      IpcFileOperations::BeginFileWriteCallback callback,
+                      base::OnceClosure on_disconnect) override;
 
   // mojom::DesktopSessionEventHandler implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
@@ -229,11 +227,19 @@ class DesktopSessionProxy
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        const SerializedDesktopFrame& serialized_frame);
 
-  void SignalWebAuthnExtension();
+  // Handles the BeginFileReadResult returned from the DesktopSessionAgent.
+  void OnBeginFileReadResult(
+      IpcFileOperations::BeginFileReadCallback callback,
+      base::CallbackListSubscription disconnect_handler_subscription,
+      mojom::BeginFileReadResultPtr result);
 
-  // Sends a message to the desktop session agent. The message is silently
-  // deleted if the channel is broken.
-  void SendToDesktop(IPC::Message* message);
+  // Handles the BeginFileWriteResult returned from the DesktopSessionAgent.
+  void OnBeginFileWriteResult(
+      IpcFileOperations::BeginFileWriteCallback callback,
+      base::CallbackListSubscription disconnect_handler_subscription,
+      mojom::BeginFileWriteResultPtr result);
+
+  void SignalWebAuthnExtension();
 
   // Task runners:
   //   - |audio_capturer_| is called back on |audio_capture_task_runner_|.
@@ -297,6 +303,9 @@ class DesktopSessionProxy
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
+
+  // Used to notify registered handlers when the IPC channel is disconnected.
+  base::OnceClosureList disconnect_handlers_;
 
   // |desktop_session_agent_| is only valid when |desktop_channel_| is
   // connected.

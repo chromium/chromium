@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
@@ -29,7 +28,6 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
@@ -240,33 +238,8 @@ DesktopSessionAgent::DesktopSessionAgent(
 
 bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  CHECK(started_);
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(DesktopSessionAgent, message)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFile,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::ReadFile)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFileChunk,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::ReadChunk)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFile,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::WriteFile)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFileChunk,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::WriteChunk)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CloseFile,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::Close)
-    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CancelFile,
-                        &*session_file_operations_handler_,
-                        SessionFileOperationsHandler::Cancel)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  CHECK(handled) << "Received unexpected IPC type: " << message.type();
-  return handled;
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
+  return false;
 }
 
 void DesktopSessionAgent::OnChannelConnected(int32_t peer_pid) {
@@ -462,7 +435,7 @@ void DesktopSessionAgent::Start(
 
   // Set up the message handler for file transfers.
   session_file_operations_handler_.emplace(
-      this, desktop_environment_->CreateFileOperations());
+      desktop_environment_->CreateFileOperations());
 
   url_forwarder_configurator_ =
       desktop_environment_->CreateUrlForwarderConfigurator();
@@ -552,30 +525,6 @@ void DesktopSessionAgent::ProcessAudioPacket(
   if (desktop_session_event_handler_) {
     desktop_session_event_handler_->OnAudioPacket(std::move(packet));
   }
-}
-
-void DesktopSessionAgent::OnResult(uint64_t file_id,
-                                   ResultHandler::Result result) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_FileResult>(
-      file_id, std::move(result)));
-}
-
-void DesktopSessionAgent::OnInfoResult(std::uint64_t file_id,
-                                       ResultHandler::InfoResult result) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_FileInfoResult>(
-      file_id, std::move(result)));
-}
-
-void DesktopSessionAgent::OnDataResult(std::uint64_t file_id,
-                                       ResultHandler::DataResult result) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  SendToNetwork(std::make_unique<ChromotingDesktopNetworkMsg_FileDataResult>(
-      file_id, std::move(result)));
 }
 
 mojo::ScopedMessagePipeHandle DesktopSessionAgent::Initialize(
@@ -773,19 +722,6 @@ void DesktopSessionAgent::SetScreenResolution(
     screen_controls_->SetScreenResolution(resolution, absl::nullopt);
 }
 
-void DesktopSessionAgent::SendToNetwork(std::unique_ptr<IPC::Message> message) {
-  if (!caller_task_runner_->BelongsToCurrentThread()) {
-    caller_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DesktopSessionAgent::SendToNetwork, this,
-                                  std::move(message)));
-    return;
-  }
-
-  if (network_channel_) {
-    network_channel_->Send(message.release());
-  }
-}
-
 void DesktopSessionAgent::StartAudioCapturer() {
   DCHECK(audio_capture_task_runner_->BelongsToCurrentThread());
 
@@ -814,6 +750,22 @@ void DesktopSessionAgent::SignalWebAuthnExtension() {
   CHECK(started_);
 
   webauthn_state_change_notifier_->NotifyStateChange();
+}
+
+void DesktopSessionAgent::BeginFileRead(BeginFileReadCallback callback) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
+  session_file_operations_handler_->BeginFileRead(std::move(callback));
+}
+
+void DesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
+                                         BeginFileWriteCallback callback) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
+  session_file_operations_handler_->BeginFileWrite(file_path,
+                                                   std::move(callback));
 }
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {

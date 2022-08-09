@@ -124,14 +124,16 @@
 
 namespace remoting {
 
+// TODO(joedow): Migrate instances of remoting::Result to base::expected.
+
 // SuccessTag and ErrorTag are used for constructing a Result in the success
 // state or error state, respectively.
 class SuccessTag {};
 class ErrorTag {};
-// absl::Monostate can be used for SuccessType or ErrorType to indicate that
-// there is no data for that state. Thus, Result<SomeType, Monostate> is
-// somewhat analogous to absl::optional<SomeType>, and Result<Monostate,
-// Monostate> is effectively a (2-byte) boolean. Result<Monostate, ErrorType>
+// absl::monostate can be used for SuccessType or ErrorType to indicate that
+// there is no data for that state. Thus, Result<SomeType, monostate> is
+// somewhat analogous to absl::optional<SomeType>, and Result<monostate,
+// monostate> is effectively a (2-byte) boolean. Result<monostate, ErrorType>
 // can be useful for cases where an operation can fail, but there is no return
 // value in the success case.
 

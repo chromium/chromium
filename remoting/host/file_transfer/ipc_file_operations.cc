@@ -5,19 +5,80 @@
 #include "remoting/host/file_transfer/ipc_file_operations.h"
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 
 namespace remoting {
 
+// This is an overview of how IpcFileOperations is integrated and used in the
+// multi-process host architecture. Reasoning about the lifetime and ownership
+// of the various pieces currently requires digging through the code so this
+// comment block describes the relationships and pieces involved at a high-level
+// to help those looking to understand the code.
+//
+// The IpcFileOperations and related classes are all used in the low-privilege
+// network process. They handle network communication with the website client
+// over a WebRTC data channel and proxy those requests using Mojo to the
+// SessionFileOperationsHandler (and friends) which lives in the high-privilege
+// desktop process and handles the actual file reading and writing.
+//
+// When a new file transfer data channel is opened by the client, the
+// ClientSession instance on the host (running in the network process) will
+// create a FileTransferMessageHandler (FTMH) instance to service it. As part of
+// the FTMH creation, ClientSession will ask the IpcDesktopEnvironment to create
+// a new IpcFileOperations instance. This instance will be provided with a
+// WeakPtr<IpcFileOperations::RequestHandler> which is used to start a file read
+// or write operation in the desktop process over an existing IPC channel owned
+// by the DesktopSessionProxy.
+//
+// After the FTMH receives the initial message indicating the type of operation
+// to perform, it creates an IpcFileReader or an IpcFileWriter instance. The
+// IpcFile{Reader|Writer} begins an operation by calling the appropriate method
+// on the IpcFileOperations::RequestHandler interface. This interface is
+// implemented by the DesktopSessionProxy (DSP) which in turn calls the
+// DesktopSessionAgent (DSA) via its mojom::DesktopSessionControl remote. The
+// DSA passes the request to its SessionFileOperationsHandler instance which, if
+// successful, will create a new IPC channel for the transfer and return a
+// remote to the IpcFile{Reader|Writer} to allow it to proceed with the file
+// operation. The receiver is owned by a MojoFileReader or MojoFileWriter
+// instance whose lifetime is tied to the Mojo channel meaning the
+// MojoFile{Reader|Writer} will be destroyed when the channel is disconnected.
+//
+// The lifetime of an FTMH instance is tied to the WebRTC file transfer data
+// channel that it was created to service. Each data channel exists for one
+// transfer request, so once the operation completes, or encounters an error,
+// the IpcFileOperations instance and the IpcFile{Reader|Writer} it created will
+// be destroyed (this will also trigger destruction of a MojoFile{Reader|Writer}
+// in the desktop process).
+//
+// The lifetime of the DesktopSessionProxy is a bit harder to reason about as a
+// number of classes and callbacks hold a scoped_refptr reference to it. At the
+// very earliest, the DSP will be destroyed when the chromoting session is
+// terminated. When this occurs, the scoped_refptr in ClientSession is released
+// and the IpcDesktopEnvironment and IpcFileOperationsFactory are destroyed.
+//
+// Because of the objects involved, the two UaF concerns are:
+// - Calling into |request_handler_| after the DSP has been destroyed.
+//   This is unlikely given that a DSP lasts for the entire session but it
+//   could occur if the timing was just right near the end of a session.
+//   Mitigation: |request_handler_| is wrapped in a WeakPtr and provided to each
+//               IpcFile{Reader|Writer} instance.
+// - The DSP could invoke a disconnect_handler on the IpcFile{Reader|Writer} if
+//   the file transfer request was canceled just after the operation started.
+//   Mitigation: The disconnect_handler callback provided to the BeginFileRead
+//               BeginFileWrite method is bound with a WeakPtr.
 class IpcFileOperations::IpcReader : public FileOperations::Reader {
  public:
-  IpcReader(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+  explicit IpcReader(base::WeakPtr<RequestHandler> request_handler);
 
   IpcReader(const IpcReader&) = delete;
   IpcReader& operator=(const IpcReader&) = delete;
@@ -31,20 +92,30 @@ class IpcFileOperations::IpcReader : public FileOperations::Reader {
   std::uint64_t size() const override;
   State state() const override;
 
- private:
-  void OnOpenResult(OpenCallback callback, ResultHandler::InfoResult result);
-  void OnReadResult(ReadCallback callback, ResultHandler::DataResult result);
+  void OnChannelDisconnected();
 
-  State state_ = kCreated;
-  std::uint64_t file_id_;
-  base::FilePath filename_;
-  std::uint64_t size_ = 0;
-  base::WeakPtr<SharedState> shared_state_;
+  base::WeakPtr<IpcReader> GetWeakPtr() const;
+
+ private:
+  void OnOpenResult(mojom::BeginFileReadResultPtr result);
+  void OnReadResult(
+      const protocol::FileTransferResult<std::vector<std::uint8_t>>& result);
+
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = kCreated;
+  base::FilePath filename_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::uint64_t size_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  OpenCallback pending_open_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ReadCallback pending_read_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtr<IpcFileOperations::RequestHandler> request_handler_;
+  mojo::AssociatedRemote<mojom::FileReader> remote_file_reader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<IpcReader> weak_ptr_factory_{this};
 };
 
 class IpcFileOperations::IpcWriter : public FileOperations::Writer {
  public:
-  IpcWriter(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+  explicit IpcWriter(base::WeakPtr<RequestHandler> request_handler);
 
   IpcWriter(const IpcWriter&) = delete;
   IpcWriter& operator=(const IpcWriter&) = delete;
@@ -57,308 +128,309 @@ class IpcFileOperations::IpcWriter : public FileOperations::Writer {
   void Close(Callback callback) override;
   State state() const override;
 
- private:
-  void OnOperationResult(Callback callback, ResultHandler::Result result);
-  void OnCloseResult(Callback callback, ResultHandler::Result result);
+  void OnChannelDisconnected();
 
-  State state_ = kCreated;
-  std::uint64_t file_id_;
-  base::WeakPtr<SharedState> shared_state_;
+  base::WeakPtr<IpcWriter> GetWeakPtr() const;
+
+ private:
+  void OnOpenResult(mojom::BeginFileWriteResultPtr result);
+  void OnOperationResult(
+      const absl::optional<::remoting::protocol::FileTransfer_Error>& error);
+  void OnCloseResult(
+      const absl::optional<::remoting::protocol::FileTransfer_Error>& error);
+
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = kCreated;
+  Callback pending_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtr<IpcFileOperations::RequestHandler> request_handler_;
+  mojo::AssociatedRemote<mojom::FileWriter> remote_file_writer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<IpcWriter> weak_ptr_factory_{this};
 };
 
-IpcFileOperations::IpcFileOperations(base::WeakPtr<SharedState> shared_state)
-    : shared_state_(std::move(shared_state)) {}
+IpcFileOperations::IpcFileOperations(
+    base::WeakPtr<RequestHandler> request_handler)
+    : request_handler_(std::move(request_handler)) {}
 
 IpcFileOperations::~IpcFileOperations() = default;
 
 std::unique_ptr<FileOperations::Reader> IpcFileOperations::CreateReader() {
-  return std::make_unique<IpcReader>(GetNextFileId(), shared_state_);
+  return std::make_unique<IpcReader>(request_handler_);
 }
 
 std::unique_ptr<FileOperations::Writer> IpcFileOperations::CreateWriter() {
-  return std::make_unique<IpcWriter>(GetNextFileId(), shared_state_);
+  return std::make_unique<IpcWriter>(request_handler_);
 }
-
-std::uint64_t IpcFileOperations::GetNextFileId() {
-  // If shared_state_ is invalid, it means the connection is being torn down.
-  // Using a dummy id is okay in that case, as the IpcReader/IpcWriter won't
-  // actually do anything with an invalid shared_state_, and our call should be
-  // torn down soon, as well.
-  return shared_state_ ? shared_state_->next_file_id++ : 0;
-}
-
-IpcFileOperations::SharedState::SharedState(RequestHandler* request_handler)
-    : request_handler(request_handler) {}
-
-void IpcFileOperations::SharedState::Abort(std::uint64_t file_id) {
-  request_handler->Cancel(file_id);
-
-  protocol::FileTransfer_Error error = protocol::MakeFileTransferError(
-      FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
-
-  // Any given file_id is expected to have at most one callback at a time, so
-  // the order in which we search the maps is arbitrary.
-
-  auto callback_iter = result_callbacks.find(file_id);
-  if (callback_iter != result_callbacks.end()) {
-    IpcFileOperations::ResultCallback callback =
-        std::move(callback_iter->second);
-    result_callbacks.erase(callback_iter);
-    std::move(callback).Run(error);
-  }
-
-  auto info_callback_iter = info_result_callbacks.find(file_id);
-  if (info_callback_iter != info_result_callbacks.end()) {
-    IpcFileOperations::InfoResultCallback info_callback =
-        std::move(info_callback_iter->second);
-    info_result_callbacks.erase(info_callback_iter);
-    std::move(info_callback).Run(error);
-  }
-
-  auto data_callback_iter = data_result_callbacks.find(file_id);
-  if (data_callback_iter != data_result_callbacks.end()) {
-    IpcFileOperations::DataResultCallback data_callback =
-        std::move(data_callback_iter->second);
-    data_result_callbacks.erase(data_callback_iter);
-    std::move(data_callback).Run(error);
-  }
-}
-
-IpcFileOperations::SharedState::~SharedState() = default;
 
 IpcFileOperationsFactory::IpcFileOperationsFactory(
     IpcFileOperations::RequestHandler* request_handler)
-    : shared_state_(request_handler) {}
+    : request_handler_weak_ptr_factory_(request_handler) {}
 
 IpcFileOperationsFactory::~IpcFileOperationsFactory() = default;
 
 std::unique_ptr<FileOperations>
 IpcFileOperationsFactory::CreateFileOperations() {
   return base::WrapUnique(
-      new IpcFileOperations(shared_state_.weak_ptr_factory.GetWeakPtr()));
+      new IpcFileOperations(request_handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IpcFileOperationsFactory::OnResult(uint64_t file_id, Result result) {
-  auto callback_iter = shared_state_.result_callbacks.find(file_id);
-  if (callback_iter == shared_state_.result_callbacks.end()) {
-    shared_state_.Abort(file_id);
-    return;
-  }
+IpcFileOperations::IpcReader::IpcReader(
+    base::WeakPtr<RequestHandler> request_handler)
+    : request_handler_(std::move(request_handler)) {}
 
-  IpcFileOperations::ResultCallback callback = std::move(callback_iter->second);
-  shared_state_.result_callbacks.erase(callback_iter);
-  std::move(callback).Run(std::move(result));
-}
-
-void IpcFileOperationsFactory::OnInfoResult(std::uint64_t file_id,
-                                            InfoResult result) {
-  auto callback_iter = shared_state_.info_result_callbacks.find(file_id);
-  if (callback_iter == shared_state_.info_result_callbacks.end()) {
-    shared_state_.Abort(file_id);
-    return;
-  }
-
-  IpcFileOperations::InfoResultCallback callback =
-      std::move(callback_iter->second);
-  shared_state_.info_result_callbacks.erase(callback_iter);
-  std::move(callback).Run(std::move(result));
-}
-
-void IpcFileOperationsFactory::OnDataResult(std::uint64_t file_id,
-                                            DataResult result) {
-  auto callback_iter = shared_state_.data_result_callbacks.find(file_id);
-  if (callback_iter == shared_state_.data_result_callbacks.end()) {
-    shared_state_.Abort(file_id);
-    return;
-  }
-
-  IpcFileOperations::DataResultCallback callback =
-      std::move(callback_iter->second);
-  shared_state_.data_result_callbacks.erase(callback_iter);
-  std::move(callback).Run(std::move(result));
-}
-
-IpcFileOperations::IpcReader::IpcReader(std::uint64_t file_id,
-                                        base::WeakPtr<SharedState> shared_state)
-    : file_id_(file_id), shared_state_(std::move(shared_state)) {}
-
-IpcFileOperations::IpcReader::~IpcReader() {
-  if (!shared_state_ || state_ == kCreated || state_ == kComplete ||
-      state_ == kFailed) {
-    return;
-  }
-
-  shared_state_->request_handler->Cancel(file_id_);
-
-  // Destroy any pending callbacks.
-  auto info_callback_iter = shared_state_->info_result_callbacks.find(file_id_);
-  if (info_callback_iter != shared_state_->info_result_callbacks.end()) {
-    shared_state_->info_result_callbacks.erase(info_callback_iter);
-  }
-
-  auto data_callback_iter = shared_state_->data_result_callbacks.find(file_id_);
-  if (data_callback_iter != shared_state_->data_result_callbacks.end()) {
-    shared_state_->data_result_callbacks.erase(data_callback_iter);
-  }
-}
+IpcFileOperations::IpcReader::~IpcReader() = default;
 
 void IpcFileOperations::IpcReader::Open(OpenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(kCreated, state_);
-  if (!shared_state_) {
+
+  if (!request_handler_) {
+    state_ = kFailed;
+    std::move(callback).Run(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
     return;
   }
 
   state_ = kBusy;
-  // Unretained is sound because we destroy any pending callbacks in our
-  // destructor.
-  shared_state_->info_result_callbacks.emplace(
-      file_id_, base::BindOnce(&IpcReader::OnOpenResult, base::Unretained(this),
-                               std::move(callback)));
-  shared_state_->request_handler->ReadFile(file_id_);
+  pending_open_callback_ = std::move(callback);
+  request_handler_->BeginFileRead(
+      base::BindOnce(&IpcReader::OnOpenResult, GetWeakPtr()),
+      base::BindOnce(&IpcReader::OnChannelDisconnected, GetWeakPtr()));
 }
 
-void IpcFileOperations::IpcReader::ReadChunk(
-    std::size_t size,
-    FileOperations::Reader::ReadCallback callback) {
-  DCHECK_EQ(kReady, state_);
-  if (!shared_state_) {
+void IpcFileOperations::IpcReader::ReadChunk(std::size_t size,
+                                             ReadCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state_ != kReady || !remote_file_reader_.is_connected()) {
+    state_ = kFailed;
+    std::move(callback).Run(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
     return;
   }
 
   state_ = kBusy;
-  // Unretained is sound because we destroy any pending callbacks in our
-  // destructor.
-  shared_state_->data_result_callbacks.emplace(
-      file_id_, base::BindOnce(&IpcReader::OnReadResult, base::Unretained(this),
-                               std::move(callback)));
-  shared_state_->request_handler->ReadChunk(file_id_, size);
+  pending_read_callback_ = std::move(callback);
+  // Unretained is sound because the remote is owned by this instance and will
+  // be destroyed at the same time which will clear any callbacks.
+  remote_file_reader_->ReadChunk(
+      size, base::BindOnce(&IpcReader::OnReadResult, base::Unretained(this)));
 }
 
 const base::FilePath& IpcFileOperations::IpcReader::filename() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return filename_;
 }
 
 std::uint64_t IpcFileOperations::IpcReader::size() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return size_;
 }
 
 FileOperations::State IpcFileOperations::IpcReader::state() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_;
 }
 
+void IpcFileOperations::IpcReader::OnChannelDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = kFailed;
+
+  if (pending_open_callback_) {
+    std::move(pending_open_callback_)
+        .Run(protocol::MakeFileTransferError(
+            FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
+  } else if (pending_read_callback_) {
+    std::move(pending_read_callback_)
+        .Run(protocol::MakeFileTransferError(
+            FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
+  }
+}
+
+base::WeakPtr<IpcFileOperations::IpcReader>
+IpcFileOperations::IpcReader::GetWeakPtr() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void IpcFileOperations::IpcReader::OnOpenResult(
-    OpenCallback callback,
-    ResultHandler::InfoResult result) {
-  if (!result) {
+    mojom::BeginFileReadResultPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result->is_error()) {
     state_ = kFailed;
-    std::move(callback).Run(result.error());
+    std::move(pending_open_callback_).Run(result->get_error());
     return;
   }
 
   state_ = kReady;
-  filename_ = std::move(std::get<0>(*result));
-  size_ = std::move(std::get<1>(*result));
-  std::move(callback).Run(kSuccessTag);
+  auto& success_ptr = result->get_success();
+  filename_ = std::move(success_ptr->filename);
+  size_ = success_ptr->size;
+
+  remote_file_reader_.Bind(std::move(success_ptr->file_reader));
+  // base::Unretained is sound because this instance owns |remote_file_reader_|
+  // and the handler will not run after it is destroyed.
+  remote_file_reader_.set_disconnect_handler(base::BindOnce(
+      &IpcReader::OnChannelDisconnected, base::Unretained(this)));
+
+  std::move(pending_open_callback_).Run(kSuccessTag);
 }
 
 void IpcFileOperations::IpcReader::OnReadResult(
-    ReadCallback callback,
-    ResultHandler::DataResult result) {
+    const protocol::FileTransferResult<std::vector<std::uint8_t>>& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (result) {
     state_ = result->size() == 0 ? kComplete : kReady;
   } else {
     state_ = kFailed;
   }
-  std::move(callback).Run(std::move(result));
-}
 
-IpcFileOperations::IpcWriter::IpcWriter(std::uint64_t file_id,
-                                        base::WeakPtr<SharedState> shared_state)
-    : file_id_(file_id), shared_state_(std::move(shared_state)) {}
-
-IpcFileOperations::IpcWriter::~IpcWriter() {
-  if (!shared_state_ || state_ == kCreated || state_ == kComplete ||
-      state_ == kFailed) {
-    return;
+  if (state_ != kReady) {
+    // Don't need the remote if we're done or an error occurred.
+    remote_file_reader_.reset();
   }
 
-  shared_state_->request_handler->Cancel(file_id_);
-
-  // Destroy any pending callbacks.
-  auto callback_iter = shared_state_->result_callbacks.find(file_id_);
-  if (callback_iter != shared_state_->result_callbacks.end()) {
-    shared_state_->result_callbacks.erase(callback_iter);
-  }
+  std::move(pending_read_callback_).Run(std::move(result));
 }
+
+IpcFileOperations::IpcWriter::IpcWriter(
+    base::WeakPtr<RequestHandler> request_handler)
+    : request_handler_(std::move(request_handler)) {}
+
+IpcFileOperations::IpcWriter::~IpcWriter() = default;
 
 void IpcFileOperations::IpcWriter::Open(const base::FilePath& filename,
                                         Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(kCreated, state_);
-  if (!shared_state_) {
+
+  if (!request_handler_) {
+    state_ = kFailed;
+    std::move(callback).Run(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
     return;
   }
 
   state_ = kBusy;
-  shared_state_->result_callbacks.emplace(
-      file_id_, base::BindOnce(&IpcWriter::OnOperationResult,
-                               base::Unretained(this), std::move(callback)));
-  shared_state_->request_handler->WriteFile(file_id_, filename);
+  pending_callback_ = std::move(callback);
+  request_handler_->BeginFileWrite(
+      filename, base::BindOnce(&IpcWriter::OnOpenResult, GetWeakPtr()),
+      base::BindOnce(&IpcWriter::OnChannelDisconnected, GetWeakPtr()));
 }
 
 void IpcFileOperations::IpcWriter::WriteChunk(std::vector<std::uint8_t> data,
                                               Callback callback) {
-  DCHECK_EQ(kReady, state_);
-  if (!shared_state_) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state_ != kReady) {
+    state_ = kFailed;
+    std::move(callback).Run(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
     return;
   }
 
   state_ = kBusy;
-  // Unretained is sound because IpcWriter will destroy any outstanding callback
-  // in its destructor.
-  shared_state_->result_callbacks.emplace(
-      file_id_, base::BindOnce(&IpcWriter::OnOperationResult,
-                               base::Unretained(this), std::move(callback)));
-  shared_state_->request_handler->WriteChunk(file_id_, std::move(data));
+  pending_callback_ = std::move(callback);
+  // Unretained is sound because the remote is owned by this instance and will
+  // be destroyed at the same time which will clear this callback.
+  remote_file_writer_->WriteChunk(
+      std::move(data),
+      base::BindOnce(&IpcWriter::OnOperationResult, base::Unretained(this)));
 }
 
 void IpcFileOperations::IpcWriter::Close(Callback callback) {
-  DCHECK_EQ(kReady, state_);
-  if (!shared_state_) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state_ != kReady) {
+    state_ = kFailed;
+    std::move(callback).Run(protocol::MakeFileTransferError(
+        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
     return;
   }
 
   state_ = kBusy;
-  shared_state_->request_handler->Close(file_id_);
-  // Unretained is sound because IpcWriter will destroy any outstanding callback
-  // in its destructor.
-  shared_state_->result_callbacks.emplace(
-      file_id_, base::BindOnce(&IpcWriter::OnCloseResult,
-                               base::Unretained(this), std::move(callback)));
+  pending_callback_ = std::move(callback);
+  // Unretained is sound because the remote is owned by this instance and will
+  // be destroyed at the same time which will clear this callback.
+  remote_file_writer_->CloseFile(
+      base::BindOnce(&IpcWriter::OnCloseResult, base::Unretained(this)));
 }
 
 FileOperations::State IpcFileOperations::IpcWriter::state() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_;
 }
 
-void IpcFileOperations::IpcWriter::OnOperationResult(
-    Callback callback,
-    ResultHandler::Result result) {
-  if (result) {
-    state_ = kReady;
-  } else {
-    state_ = kFailed;
+void IpcFileOperations::IpcWriter::OnChannelDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  state_ = kFailed;
+
+  if (pending_callback_) {
+    std::move(pending_callback_)
+        .Run(protocol::MakeFileTransferError(
+            FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
   }
-  std::move(callback).Run(std::move(result));
 }
 
-void IpcFileOperations::IpcWriter::OnCloseResult(Callback callback,
-                                                 ResultHandler::Result result) {
-  if (result) {
-    state_ = kComplete;
-  } else {
+base::WeakPtr<IpcFileOperations::IpcWriter>
+IpcFileOperations::IpcWriter::GetWeakPtr() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void IpcFileOperations::IpcWriter::OnOpenResult(
+    mojom::BeginFileWriteResultPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result->is_error()) {
     state_ = kFailed;
+    std::move(pending_callback_).Run(result->get_error());
+    return;
   }
-  std::move(callback).Run(std::move(result));
+
+  state_ = kReady;
+  auto& success_ptr = result->get_success();
+  remote_file_writer_.Bind(std::move(success_ptr->file_writer));
+  // base::Unretained is sound because this instance owns |remote_file_writer_|
+  // and the handler will not run after it is destroyed.
+  remote_file_writer_.set_disconnect_handler(base::BindOnce(
+      &IpcWriter::OnChannelDisconnected, base::Unretained(this)));
+
+  std::move(pending_callback_).Run(kSuccessTag);
+}
+
+void IpcFileOperations::IpcWriter::OnOperationResult(
+    const absl::optional<::remoting::protocol::FileTransfer_Error>& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (error) {
+    state_ = kFailed;
+    std::move(pending_callback_).Run(std::move(*error));
+    remote_file_writer_.reset();
+    return;
+  }
+
+  state_ = kReady;
+  std::move(pending_callback_).Run({kSuccessTag});
+}
+
+void IpcFileOperations::IpcWriter::OnCloseResult(
+    const absl::optional<::remoting::protocol::FileTransfer_Error>& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // We're done with the remote regardless of the result.
+  remote_file_writer_.reset();
+
+  if (error) {
+    state_ = kFailed;
+    std::move(pending_callback_).Run(std::move(*error));
+  } else {
+    state_ = kComplete;
+    std::move(pending_callback_).Run({kSuccessTag});
+  }
 }
 
 }  // namespace remoting

@@ -5,53 +5,46 @@
 #ifndef REMOTING_HOST_FILE_TRANSFER_SESSION_FILE_OPERATIONS_HANDLER_H_
 #define REMOTING_HOST_FILE_TRANSFER_SESSION_FILE_OPERATIONS_HANDLER_H_
 
-#include <cstdint>
 #include <memory>
-#include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
-#include "remoting/host/file_transfer/ipc_file_operations.h"
+#include "base/files/file_path.h"
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "remoting/host/file_transfer/file_operations.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
 
-// An implementation of IpcFileOperations::RequestHandler that forwards all
-// operations to another FileOperations implementation.
-class SessionFileOperationsHandler : public IpcFileOperations::RequestHandler {
+// A Mojo-aware FileOperations wrapper which handles requests to begin file read
+// and write operations. This class can handle concurrent requests as it creates
+// a new handler for each one and ensures and resource are released when the
+// new Mojo channel is closed.
+class SessionFileOperationsHandler {
  public:
-  // |result_handler| must be valid for the entire lifetime of
-  // SessionFileOperationsHandler.
   explicit SessionFileOperationsHandler(
-      IpcFileOperations::ResultHandler* result_handler,
       std::unique_ptr<FileOperations> file_operations);
-  ~SessionFileOperationsHandler() override;
 
-  // IpcFileOperations::RequestHandler implementation
-  void ReadFile(std::uint64_t file_id) override;
-  void ReadChunk(std::uint64_t file_id, std::uint64_t size) override;
-  void WriteFile(std::uint64_t file_id,
-                 const base::FilePath& filename) override;
-  void WriteChunk(std::uint64_t file_id,
-                  std::vector<std::uint8_t> data) override;
-  void Close(std::uint64_t file_id) override;
-  void Cancel(std::uint64_t file_id) override;
+  SessionFileOperationsHandler(const SessionFileOperationsHandler&) = delete;
+  SessionFileOperationsHandler& operator=(const SessionFileOperationsHandler&) =
+      delete;
+
+  ~SessionFileOperationsHandler();
+
+  using BeginFileReadCallback =
+      base::OnceCallback<void(mojom::BeginFileReadResultPtr)>;
+  void BeginFileRead(BeginFileReadCallback callback);
+
+  using BeginFileWriteCallback =
+      base::OnceCallback<void(mojom::BeginFileWriteResultPtr)>;
+  void BeginFileWrite(const base::FilePath& file_path,
+                      BeginFileWriteCallback callback);
 
  private:
-  void OnReaderOpenResult(std::uint64_t file_id,
-                          FileOperations::Reader::OpenResult result);
-  void OnReaderReadResult(std::uint64_t file_id,
-                          FileOperations::Reader::ReadResult result);
-  void OnWriterOperationResult(std::uint64_t file_id,
-                               FileOperations::Writer::Result result);
-  void OnWriterCloseResult(std::uint64_t file_id,
-                           FileOperations::Writer::Result result);
+  friend class IpcFileOperationsTest;
 
-  IpcFileOperations::ResultHandler* result_handler_;
-  std::unique_ptr<FileOperations> file_operations_;
-  base::flat_map<std::uint64_t, std::unique_ptr<FileOperations::Writer>>
-      writers_;
-  base::flat_map<std::uint64_t, std::unique_ptr<FileOperations::Reader>>
-      readers_;
+  const std::unique_ptr<FileOperations> file_operations_;
+
+  mojo::UniqueAssociatedReceiverSet<mojom::FileReader> file_readers_;
+  mojo::UniqueAssociatedReceiverSet<mojom::FileWriter> file_writers_;
 };
 
 }  // namespace remoting

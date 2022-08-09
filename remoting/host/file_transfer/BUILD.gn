@@ -41,6 +41,7 @@ source_set("file_transfer") {
       "//ipc:ipc",
       "//remoting/host:common",
       "//remoting/host/base",
+      "//remoting/host/mojom",
       "//remoting/host/win",
     ]
   } else {
@@ -85,6 +86,7 @@ source_set("common") {
     "//base",
     "//net:net",
     "//remoting/base:base",
+    "//remoting/host/mojom",
     "//remoting/protocol",
     "//ui/base:base",
     "//url:url",
@@ -128,6 +130,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//net:net",
     "//remoting/base:base",
+    "//remoting/host/mojom",
     "//remoting/protocol",
     "//remoting/protocol:test_support",
     "//testing/gtest",

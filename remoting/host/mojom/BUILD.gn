@@ -79,6 +79,18 @@ mojom("mojom") {
           cpp = "::webrtc::DesktopVector"
         },
         {
+          mojom = "remoting.mojom.FileChooserResult"
+          cpp = "::remoting::Result<base::FilePath, ::remoting::protocol::FileTransfer_Error>"
+        },
+        {
+          mojom = "remoting.mojom.FileTransferError"
+          cpp = "::remoting::protocol::FileTransfer_Error"
+        },
+        {
+          mojom = "remoting.mojom.FileTransferError.Type"
+          cpp = "::remoting::protocol::FileTransfer_Error_Type"
+        },
+        {
           mojom = "remoting.mojom.KeyboardLayout"
           cpp = "::remoting::protocol::KeyboardLayout"
         },
@@ -113,6 +125,10 @@ mojom("mojom") {
         {
           mojom = "remoting.mojom.ProtocolErrorCode"
           cpp = "::remoting::protocol::ErrorCode"
+        },
+        {
+          mojom = "remoting.mojom.ReadChunkResult"
+          cpp = "::remoting::protocol::FileTransferResult<std::vector<uint8_t>>"
         },
         {
           mojom = "remoting.mojom.ScreenResolution"
@@ -159,6 +175,7 @@ mojom("mojom") {
         "//mojo/public/cpp/bindings:protobuf_support",
         "//remoting/host/base",
         "//remoting/proto",
+        "//remoting/protocol",
         "//remoting/protocol:errors",
         "//remoting/protocol:transport",
         "//services/network/public/cpp:ip_address_mojom_support",

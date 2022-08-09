@@ -10,14 +10,17 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
+#include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "remoting/base/result.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
@@ -27,6 +30,8 @@
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/file_transfer.pb.h"
+#include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -560,6 +565,184 @@ class mojo::StructTraits<remoting::mojom::ClipboardEventDataView,
   static bool Read(remoting::mojom::ClipboardEventDataView data_view,
                    ::remoting::protocol::ClipboardEvent* out_event);
 };
+
+template <>
+class mojo::UnionTraits<
+    remoting::mojom::ReadChunkResultDataView,
+    ::remoting::Result<std::vector<uint8_t>,
+                       ::remoting::protocol::FileTransfer_Error>> {
+ public:
+  static remoting::mojom::ReadChunkResultDataView::Tag GetTag(
+      const ::remoting::Result<std::vector<uint8_t>,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    if (result.is_success())
+      return remoting::mojom::ReadChunkResultDataView::Tag::kData;
+    else if (result.is_error())
+      return remoting::mojom::ReadChunkResultDataView::Tag::kError;
+
+    NOTREACHED();
+    return remoting::mojom::ReadChunkResultDataView::Tag::kError;
+  }
+
+  static const std::vector<uint8_t>& data(
+      const ::remoting::Result<std::vector<uint8_t>,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    return result.success();
+  }
+
+  static const ::remoting::protocol::FileTransfer_Error& error(
+      const ::remoting::Result<std::vector<uint8_t>,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    return result.error();
+  }
+
+  static bool Read(
+      remoting::mojom::ReadChunkResultDataView data_view,
+      ::remoting::Result<std::vector<uint8_t>,
+                         ::remoting::protocol::FileTransfer_Error>* out_result);
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::FileTransferErrorDataView,
+                         ::remoting::protocol::FileTransfer_Error> {
+ public:
+  static ::remoting::protocol::FileTransfer_Error_Type type(
+      const ::remoting::protocol::FileTransfer_Error& error) {
+    return error.type();
+  }
+
+  static absl::optional<int32_t> api_error_code(
+      const ::remoting::protocol::FileTransfer_Error& error) {
+    if (error.has_api_error_code()) {
+      return error.api_error_code();
+    }
+    return absl::nullopt;
+  }
+
+  static const std::string& function(
+      const ::remoting::protocol::FileTransfer_Error& error) {
+    return error.function();
+  }
+
+  static const std::string& source_file(
+      const ::remoting::protocol::FileTransfer_Error& error) {
+    return error.source_file();
+  }
+
+  static uint32_t line_number(
+      const ::remoting::protocol::FileTransfer_Error& error) {
+    return error.line_number();
+  }
+
+  static bool Read(remoting::mojom::FileTransferErrorDataView data_view,
+                   ::remoting::protocol::FileTransfer_Error* out_error);
+};
+
+template <>
+struct EnumTraits<remoting::mojom::FileTransferError_Type,
+                  ::remoting::protocol::FileTransfer_Error_Type> {
+  static remoting::mojom::FileTransferError_Type ToMojom(
+      ::remoting::protocol::FileTransfer_Error_Type input) {
+    switch (input) {
+      case ::remoting::protocol::FileTransfer_Error::UNSPECIFIED:
+        return remoting::mojom::FileTransferError_Type::kUnknown;
+      case ::remoting::protocol::FileTransfer_Error::CANCELED:
+        return remoting::mojom::FileTransferError_Type::kCanceled;
+      case ::remoting::protocol::FileTransfer_Error::UNEXPECTED_ERROR:
+        return remoting::mojom::FileTransferError_Type::kUnexpectedError;
+      case ::remoting::protocol::FileTransfer_Error::PROTOCOL_ERROR:
+        return remoting::mojom::FileTransferError_Type::kProtocolError;
+      case ::remoting::protocol::FileTransfer_Error::PERMISSION_DENIED:
+        return remoting::mojom::FileTransferError_Type::kPermissionDenied;
+      case ::remoting::protocol::FileTransfer_Error::OUT_OF_DISK_SPACE:
+        return remoting::mojom::FileTransferError_Type::kOutOfDiskSpace;
+      case ::remoting::protocol::FileTransfer_Error::IO_ERROR:
+        return remoting::mojom::FileTransferError_Type::kIoError;
+      case ::remoting::protocol::FileTransfer_Error::NOT_LOGGED_IN:
+        return remoting::mojom::FileTransferError_Type::kNotLoggedIn;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::FileTransferError_Type::kUnknown;
+  }
+
+  static bool FromMojom(remoting::mojom::FileTransferError_Type input,
+                        ::remoting::protocol::FileTransfer_Error_Type* out) {
+    switch (input) {
+      case remoting::mojom::FileTransferError_Type::kUnknown:
+        *out = ::remoting::protocol::FileTransfer_Error::UNSPECIFIED;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kCanceled:
+        *out = ::remoting::protocol::FileTransfer_Error::CANCELED;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kUnexpectedError:
+        *out = ::remoting::protocol::FileTransfer_Error::UNEXPECTED_ERROR;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kProtocolError:
+        *out = ::remoting::protocol::FileTransfer_Error::PROTOCOL_ERROR;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kPermissionDenied:
+        *out = ::remoting::protocol::FileTransfer_Error::PERMISSION_DENIED;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kOutOfDiskSpace:
+        *out = ::remoting::protocol::FileTransfer_Error::OUT_OF_DISK_SPACE;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kIoError:
+        *out = ::remoting::protocol::FileTransfer_Error::IO_ERROR;
+        return true;
+      case remoting::mojom::FileTransferError_Type::kNotLoggedIn:
+        *out = ::remoting::protocol::FileTransfer_Error::NOT_LOGGED_IN;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+#if BUILDFLAG(IS_WIN)
+template <>
+class mojo::UnionTraits<
+    remoting::mojom::FileChooserResultDataView,
+    ::remoting::Result<base::FilePath,
+                       ::remoting::protocol::FileTransfer_Error>> {
+ public:
+  static remoting::mojom::FileChooserResultDataView::Tag GetTag(
+      const ::remoting::Result<base::FilePath,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    if (result.is_success())
+      return remoting::mojom::FileChooserResultDataView::Tag::kFilepath;
+    else if (result.is_error())
+      return remoting::mojom::FileChooserResultDataView::Tag::kError;
+
+    NOTREACHED();
+    return remoting::mojom::FileChooserResultDataView::Tag::kError;
+  }
+
+  static const base::FilePath& filepath(
+      const ::remoting::Result<base::FilePath,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    return result.success();
+  }
+
+  static const ::remoting::protocol::FileTransfer_Error& error(
+      const ::remoting::Result<base::FilePath,
+                               ::remoting::protocol::FileTransfer_Error>&
+          result) {
+    return result.error();
+  }
+
+  static bool Read(
+      remoting::mojom::FileChooserResultDataView data_view,
+      ::remoting::Result<base::FilePath,
+                         ::remoting::protocol::FileTransfer_Error>* out_result);
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 class mojo::StructTraits<remoting::mojom::KeyboardLayoutDataView,

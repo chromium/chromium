@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -18,12 +19,11 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
-#include "ipc/ipc_message_utils.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/chromoting_param_traits.h"
-#include "remoting/host/chromoting_param_traits_impl.h"
 #include "remoting/host/file_transfer/file_chooser_common_win.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
 
@@ -156,10 +156,10 @@ void FileChooserWindows::OnObjectSignaled(HANDLE object) {
   }
   process_.Close();
 
-  char raw_response[kFileChooserPipeBufferSize];
+  std::vector<uint8_t> response_bytes(kFileChooserPipeBufferSize);
   DWORD bytes_read;
-  if (!PeekNamedPipe(pipe_read_.Get(), raw_response, sizeof(raw_response),
-                     &bytes_read, nullptr, nullptr)) {
+  if (!PeekNamedPipe(pipe_read_.Get(), response_bytes.data(),
+                     response_bytes.size(), &bytes_read, nullptr, nullptr)) {
     PLOG(ERROR) << "Failed to read response from pipe";
     std::move(callback_).Run(MakeFileTransferError(
         FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR,
@@ -167,10 +167,13 @@ void FileChooserWindows::OnObjectSignaled(HANDLE object) {
     return;
   }
 
+  mojo::Message serialized_message(
+      base::span<uint8_t>(response_bytes.begin(), bytes_read),
+      base::span<mojo::ScopedHandle>());
+
   FileChooser::Result result;
-  base::Pickle pickle(raw_response, bytes_read);
-  base::PickleIterator iterator(pickle);
-  if (!IPC::ReadParam(&pickle, &iterator, &result)) {
+  if (!mojom::FileChooserResult::DeserializeFromMessage(
+          std::move(serialized_message), &result)) {
     LOG(ERROR) << "Failed to deserialize response.";
     std::move(callback_).Run(MakeFileTransferError(
         FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));

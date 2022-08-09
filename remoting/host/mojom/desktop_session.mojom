@@ -5,6 +5,7 @@
 module remoting.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
@@ -297,6 +298,101 @@ interface DesktopSessionAgent {
              desktop_session_control);
 };
 
+// Enables writing to a file, this is used when the client website uploads a
+// a file to the host machine. The remote is provided in the return value of a
+// successful mojom::DesktopSessionControl::BeginFileWrite() call.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface FileWriter {
+  // Writes |data| to the file opened in the BeginFileWrite call. Returns
+  // |error| if the data could not be written.
+  WriteChunk(array<uint8> data) => (FileTransferError? error);
+
+  // Closes the file opened in the BeginFileWrite call and moves it from the
+  // temporary location to the desktop of the logged-in user. Returns |error| if
+  // a problem occurs during this process.
+  CloseFile() => (FileTransferError? error);
+};
+
+// Returned by FileReader::ReadChunk(). |data| is populated if the read request
+// succeeded, otherwise |error| will indicate why the request failed.
+union ReadChunkResult {
+  array<uint8> data;
+  FileTransferError error;
+};
+
+// Allows reading from a file, this is used when the client website downloads
+// a file from the host machine. The remote is provided after a successful call
+// to mojom::DesktopSessionControl::BeginFileRead().
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface FileReader {
+  // Reads |bytes_to_read| from the file opened in the BeginFileRead call.
+  // |result| contains the file data if successful, otherwise an error.
+  ReadChunk(uint64 bytes_to_read) => (ReadChunkResult result);
+};
+
+// Used by the remoting::FileChooser class which prompts the user to select a
+// file to download to the client machine using a file picker dialog.
+// |filepath| is populated if the user selected a file from the dialog,
+// otherwise |error| indicates why the operation failed.
+// This message is serialized in a child process which is running in the current
+// user context, sent over STDIO as a stream of bytes, then deserialized in the
+// parent process which is the high-privilege desktop integration process.
+[EnableIf=is_win]
+union FileChooserResult {
+  mojo_base.mojom.FilePath filepath;
+  FileTransferError error;
+};
+
+// Error information for file transfer operations.
+// This enum mirrors the remoting::protocol::FileTransfer_Error message.
+struct FileTransferError {
+  // The set of errors which may occur while transferring files.
+  // This enum mirrors the remoting::protocol::FileTransfer_Error_Type enum.
+  enum Type {
+    kUnknown = 0,
+    kCanceled = 1,
+    kUnexpectedError = 2,
+    kProtocolError = 3,
+    kPermissionDenied = 4,
+    kOutOfDiskSpace = 5,
+    kIoError = 6,
+    kNotLoggedIn = 7,
+  };
+  Type type;
+  Int32? api_error_code;
+  string function;
+  string source_file;
+  uint32 line_number;
+};
+
+// Returned when the user has selected a file to begin transferring. This struct
+// contains the metadata for the file and the remote used to read from the file.
+struct BeginFileReadSuccess {
+  pending_associated_remote<FileReader> file_reader;
+  mojo_base.mojom.FilePath filename;
+  uint64 size;
+};
+
+// |success| is populated if BeginFileRead() succeeded, otherwise |error|.
+union BeginFileReadResult {
+  BeginFileReadSuccess success;
+  FileTransferError error;
+};
+
+// Returned when a new file has been written and the client can begin
+// transferring data. This struct contains the remote used to write to the file.
+struct BeginFileWriteSuccess {
+  pending_associated_remote<FileWriter> file_writer;
+};
+
+// |success| is populated if BeginFileRead() succeeded, otherwise |error|.
+union BeginFileWriteResult {
+  BeginFileWriteSuccess success;
+  FileTransferError error;
+};
+
 // Allows the network process to inject input events and control A/V capture in
 // the desktop session.
 // The remote for this interface is owned in the low-privilege network process
@@ -341,6 +437,15 @@ interface DesktopSessionControl {
   // change, so the extension can determine whether it should attach to or
   // detach to the WebAuthn proxy API.
   SignalWebAuthnExtension();
+
+  // Opens a file chooser dialog so the user can choose a file to transfer to
+  // the client machine. This action is requested when the remote user chooses
+  // to download a file.
+  BeginFileRead() => (BeginFileReadResult result);
+
+  // Opens a new file for writing when the remote user chooses to upload a file.
+  BeginFileWrite(mojo_base.mojom.FilePath file_path)
+      => (BeginFileWriteResult result);
 };
 
 // |frame| is set and contains valid frame data when a frame is captured

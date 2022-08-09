@@ -139,6 +139,102 @@ bool mojo::StructTraits<remoting::mojom::DesktopVectorDataView,
   return true;
 }
 
+#if BUILDFLAG(IS_WIN)
+// static
+bool mojo::UnionTraits<
+    remoting::mojom::FileChooserResultDataView,
+    ::remoting::Result<base::FilePath,
+                       ::remoting::protocol::FileTransfer_Error>>::
+    Read(remoting::mojom::FileChooserResultDataView data_view,
+         ::remoting::Result<base::FilePath,
+                            ::remoting::protocol::FileTransfer_Error>*
+             out_result) {
+  switch (data_view.tag()) {
+    case remoting::mojom::FileChooserResultDataView::Tag::kFilepath: {
+      base::FilePath filepath;
+      if (!data_view.ReadFilepath(&filepath)) {
+        return false;
+      }
+      out_result->EmplaceSuccess(std::move(filepath));
+      return true;
+    }
+    case remoting::mojom::FileChooserResultDataView::Tag::kError: {
+      ::remoting::protocol::FileTransfer_Error error;
+      if (!data_view.ReadError(&error)) {
+        return false;
+      }
+      out_result->EmplaceError(std::move(error));
+      return true;
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+// static
+bool mojo::UnionTraits<
+    remoting::mojom::ReadChunkResultDataView,
+    ::remoting::Result<std::vector<uint8_t>,
+                       ::remoting::protocol::FileTransfer_Error>>::
+    Read(remoting::mojom::ReadChunkResultDataView data_view,
+         ::remoting::Result<std::vector<uint8_t>,
+                            ::remoting::protocol::FileTransfer_Error>*
+             out_result) {
+  switch (data_view.tag()) {
+    case remoting::mojom::ReadChunkResultDataView::Tag::kData: {
+      std::vector<uint8_t> data;
+      if (!data_view.ReadData(&data)) {
+        return false;
+      }
+      out_result->EmplaceSuccess(std::move(data));
+      return true;
+    }
+    case remoting::mojom::ReadChunkResultDataView::Tag::kError: {
+      ::remoting::protocol::FileTransfer_Error error;
+      if (!data_view.ReadError(&error)) {
+        return false;
+      }
+      out_result->EmplaceError(std::move(error));
+      return true;
+    }
+  }
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::FileTransferErrorDataView,
+                        ::remoting::protocol::FileTransfer_Error>::
+    Read(remoting::mojom::FileTransferErrorDataView data_view,
+         ::remoting::protocol::FileTransfer_Error* out_error) {
+  ::remoting::protocol::FileTransfer_Error_Type type;
+  if (!data_view.ReadType(&type)) {
+    return false;
+  }
+  out_error->set_type(type);
+
+  absl::optional<int32_t> api_error_code;
+  if (!data_view.ReadApiErrorCode(&api_error_code)) {
+    return false;
+  }
+  if (api_error_code) {
+    out_error->set_api_error_code(*api_error_code);
+  }
+
+  std::string function;
+  if (!data_view.ReadFunction(&function)) {
+    return false;
+  }
+  out_error->set_function(std::move(function));
+
+  std::string source_file;
+  if (!data_view.ReadSourceFile(&source_file)) {
+    return false;
+  }
+  out_error->set_source_file(std::move(source_file));
+
+  out_error->set_line_number(data_view.line_number());
+
+  return true;
+}
+
 // static
 bool mojo::StructTraits<remoting::mojom::KeyboardLayoutDataView,
                         ::remoting::protocol::KeyboardLayout>::
@@ -192,7 +288,7 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
     return false;
   }
   if (caps_lock_state.has_value()) {
-    out_event->set_caps_lock_state(caps_lock_state.value());
+    out_event->set_caps_lock_state(*caps_lock_state);
   }
 
   absl::optional<bool> num_lock_state;
@@ -200,7 +296,7 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
     return false;
   }
   if (num_lock_state.has_value()) {
-    out_event->set_num_lock_state(num_lock_state.value());
+    out_event->set_num_lock_state(*num_lock_state);
   }
 
   return true;
@@ -258,7 +354,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (x.has_value()) {
-    out_event->set_x(x.value());
+    out_event->set_x(*x);
   }
 
   absl::optional<int32_t> y;
@@ -266,7 +362,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (y.has_value()) {
-    out_event->set_y(y.value());
+    out_event->set_y(*y);
   }
 
   if (data_view.button() != remoting::mojom::MouseButton::kUndefined) {
@@ -282,7 +378,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (button_down.has_value()) {
-    out_event->set_button_down(button_down.value());
+    out_event->set_button_down(*button_down);
   }
 
   absl::optional<float> wheel_delta_x;
@@ -290,7 +386,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (wheel_delta_x.has_value()) {
-    out_event->set_wheel_delta_x(wheel_delta_x.value());
+    out_event->set_wheel_delta_x(*wheel_delta_x);
   }
 
   absl::optional<float> wheel_delta_y;
@@ -298,7 +394,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (wheel_delta_y.has_value()) {
-    out_event->set_wheel_delta_y(wheel_delta_y.value());
+    out_event->set_wheel_delta_y(*wheel_delta_y);
   }
 
   absl::optional<float> wheel_ticks_x;
@@ -306,7 +402,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (wheel_ticks_x.has_value()) {
-    out_event->set_wheel_ticks_x(wheel_ticks_x.value());
+    out_event->set_wheel_ticks_x(*wheel_ticks_x);
   }
 
   absl::optional<float> wheel_ticks_y;
@@ -314,7 +410,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (wheel_ticks_y.has_value()) {
-    out_event->set_wheel_ticks_y(wheel_ticks_y.value());
+    out_event->set_wheel_ticks_y(*wheel_ticks_y);
   }
 
   absl::optional<int32_t> delta_x;
@@ -322,7 +418,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (delta_x.has_value()) {
-    out_event->set_delta_x(delta_x.value());
+    out_event->set_delta_x(*delta_x);
   }
 
   absl::optional<int32_t> delta_y;
@@ -330,7 +426,7 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     return false;
   }
   if (delta_y.has_value()) {
-    out_event->set_delta_y(delta_y.value());
+    out_event->set_delta_y(*delta_y);
   }
 
   return true;
