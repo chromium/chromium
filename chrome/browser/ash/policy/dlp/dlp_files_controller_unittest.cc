@@ -51,6 +51,7 @@ using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileSystemFileInfo;
 using blink::mojom::NativeFileInfo;
 using testing::_;
+using testing::Mock;
 
 namespace policy {
 
@@ -68,6 +69,9 @@ bool CreateDummyFile(const base::FilePath& path) {
 }
 
 }  // namespace
+
+using MockIsFilesTransferRestrictedCallback = testing::StrictMock<
+    base::MockCallback<DlpFilesController::IsFilesTransferRestrictedCallback>>;
 
 class DlpFilesControllerTest : public testing::Test {
  public:
@@ -500,6 +504,9 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       {GURL(kExample1), GURL(kExample2), GURL(kExample3)});
   std::vector<GURL> disallowed_sources({GURL(kExample1), GURL(kExample3)});
 
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(disallowed_sources)).Times(1);
+
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
@@ -510,9 +517,8 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
-  EXPECT_EQ(disallowed_sources,
-            files_controller_.IsFilesTransferRestricted(
-                profile_.get(), files_sources, dst_url.path().value()));
+  files_controller_.IsFilesTransferRestricted(profile_.get(), files_sources,
+                                              dst_url.path().value(), cb.Get());
 }
 
 }  // namespace policy

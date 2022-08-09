@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_file_picker.h"
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -105,7 +106,6 @@ DownloadFilePicker::~DownloadFilePicker() {
 }
 
 void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
-  base::FilePath selected_path(path);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* web_contents =
       download_item_
@@ -113,13 +113,27 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
           : nullptr;
   if (web_contents && !path.empty()) {
     DCHECK(download_item_);
-    auto restricted_urls =
-        policy::DlpFilesController::IsFilesTransferRestricted(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-            {download_item_->GetURL()}, selected_path.value());
-    if (!restricted_urls.empty())
-      selected_path.clear();
+    dlp_files_controller_.emplace();
+    dlp_files_controller_->IsFilesTransferRestricted(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+        {download_item_->GetURL()}, path.value(),
+        base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
+                       base::Unretained(this), path));
+    return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  CompleteFileSelection(path, std::vector<GURL>());
+  // Deletes |this|
+}
+
+void DownloadFilePicker::CompleteFileSelection(
+    const base::FilePath& path,
+    const std::vector<GURL>& restricted_sources) {
+  base::FilePath selected_path(path);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  dlp_files_controller_.reset();
+  if (!restricted_sources.empty())
+    selected_path.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::move(file_selected_callback_)
       .Run(selected_path.empty() ? DownloadConfirmationResult::CANCELED

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -173,19 +174,28 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     return;
   }
 
-  dlp::IsFilesTransferRestrictedResponse response_proto;
-
   std::vector<GURL> source_urls;
   for (const auto& url : request.files_sources())
     source_urls.push_back(GURL(url));
 
-  std::vector<GURL> restricted_sources;
-
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
 
-  restricted_sources = policy::DlpFilesController::IsFilesTransferRestricted(
-      profile, source_urls, request.destination_url());
+  dlp_files_controller_.emplace();
+  dlp_files_controller_->IsFilesTransferRestricted(
+      profile, source_urls, request.destination_url(),
+      base::BindOnce(
+          &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(response_sender)));
+}
+
+void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender,
+    const std::vector<GURL>& restricted_sources) {
+  dlp::IsFilesTransferRestrictedResponse response_proto;
+  dlp_files_controller_.reset();
 
   for (const auto& source : restricted_sources) {
     response_proto.add_files_sources(source.spec());

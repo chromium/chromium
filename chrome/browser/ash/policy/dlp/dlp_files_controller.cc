@@ -177,16 +177,18 @@ void DlpFilesController::FilterDisallowedUploads(
                      std::move(result_callback)));
 }
 
-// static
-std::vector<GURL> DlpFilesController::IsFilesTransferRestricted(
+void DlpFilesController::IsFilesTransferRestricted(
     Profile* profile,
     std::vector<GURL> files_sources,
-    std::string destination) {
+    std::string destination,
+    IsFilesTransferRestrictedCallback result_callback) {
   DCHECK(profile);
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!dlp_rules_manager)
-    return std::vector<GURL>();
+  if (!dlp_rules_manager) {
+    std::move(result_callback).Run(std::vector<GURL>());
+    return;
+  }
 
   auto dst_component =
       MapFilePathtoPolicyComponent(profile, base::FilePath(destination));
@@ -208,7 +210,7 @@ std::vector<GURL> DlpFilesController::IsFilesTransferRestricted(
     if (level == DlpRulesManager::Level::kBlock)
       restricted_files_sources.push_back(src);
   }
-  return restricted_files_sources;
+  std::move(result_callback).Run(std::move(restricted_files_sources));
 }
 
 std::map<std::string, std::set<std::string>>

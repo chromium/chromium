@@ -55,6 +55,8 @@ class DlpFilesController {
       std::vector<blink::mojom::FileChooserFileInfoPtr>)>;
   using GetDlpMetadataCallback =
       base::OnceCallback<void(std::vector<DlpFileMetadata>)>;
+  using IsFilesTransferRestrictedCallback =
+      base::OnceCallback<void(const std::vector<GURL>&)>;
 
   DlpFilesController();
   DlpFilesController(const DlpFilesController& other) = delete;
@@ -79,12 +81,13 @@ class DlpFilesController {
       const GURL& destination,
       FilterDisallowedUploadsCallback result_callback);
 
-  // Returns a list of `files_sources` from from which files aren't allowed to
-  // be transferred to `destination`.
-  static std::vector<GURL> IsFilesTransferRestricted(
+  // Returns a list of |files_sources| from which files aren't allowed to
+  // be transferred to |destination| in |result_callback|.
+  void IsFilesTransferRestricted(
       Profile* profile,
       std::vector<GURL> files_sources,
-      std::string destination);
+      std::string destination,
+      IsFilesTransferRestrictedCallback result_callback);
 
   // TODO(crbug.com/1346254): Add comments when implementation is complete.
   std::map<std::string, std::set<std::string>> GetDlpRestrictionDetails(
