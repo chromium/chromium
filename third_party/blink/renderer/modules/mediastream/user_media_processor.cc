@@ -138,10 +138,9 @@ void MaybeLogStreamDevice(const int32_t& request_id,
 std::string GetTrackLogString(MediaStreamComponent* component,
                               bool is_pending) {
   String str = String::Format(
-      "StartAudioTrack({track=[id: %s, enabled: %d, muted: %d]}, "
+      "StartAudioTrack({track=[id: %s, enabled: %d]}, "
       "{is_pending=%d})",
-      component->Id().Utf8().c_str(), component->Enabled(), component->Muted(),
-      is_pending);
+      component->Id().Utf8().c_str(), component->Enabled(), is_pending);
   return str.Utf8();
 }
 

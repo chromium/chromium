@@ -185,6 +185,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   Member<ImageCapture> image_capture_;
   WeakMember<ExecutionContext> execution_context_;
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
+  bool muted_ = false;
 };
 
 }  // namespace blink

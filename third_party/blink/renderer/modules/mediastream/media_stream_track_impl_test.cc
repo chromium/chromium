@@ -105,4 +105,44 @@ TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
   EXPECT_FALSE(platform_track_ptr->IsEnabled());
 }
 
+TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
+  V8TestingScope v8_scope;
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
+      false /* remote */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  EXPECT_EQ(track->muted(), false);
+
+  source->SetReadyState(MediaStreamSource::kReadyStateMuted);
+  EXPECT_EQ(track->muted(), true);
+
+  source->SetReadyState(MediaStreamSource::kReadyStateLive);
+  EXPECT_EQ(track->muted(), false);
+}
+
+TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
+  V8TestingScope v8_scope;
+
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
+      false /* remote */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  ASSERT_EQ(track->muted(), false);
+
+  track->stopTrack(v8_scope.GetExecutionContext());
+
+  source->SetReadyState(MediaStreamSource::kReadyStateMuted);
+
+  EXPECT_EQ(track->muted(), false);
+}
+
 }  // namespace blink

@@ -84,8 +84,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   int UniqueId() const override { return unique_id_; }
   bool Enabled() const override { return enabled_; }
   void SetEnabled(bool enabled) override { enabled_ = enabled; }
-  bool Muted() const override { return muted_; }
-  void SetMuted(bool muted) override { muted_ = muted; }
   WebMediaStreamTrack::ContentHintType ContentHint() override {
     return content_hint_;
   }
@@ -121,7 +119,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   const String id_;
   const int unique_id_;
   bool enabled_ = true;
-  bool muted_ = false;
   WebMediaStreamTrack::ContentHintType content_hint_ =
       WebMediaStreamTrack::ContentHintType::kNone;
   MediaConstraints constraints_;

@@ -1233,7 +1233,6 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
-  component->SetMuted(true);
   component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component,

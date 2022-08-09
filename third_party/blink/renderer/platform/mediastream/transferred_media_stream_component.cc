@@ -62,23 +62,6 @@ void TransferredMediaStreamComponent::SetEnabled(bool enabled) {
   // initialized.
 }
 
-bool TransferredMediaStreamComponent::Muted() const {
-  if (component_) {
-    return component_->Muted();
-  }
-  // TODO(https://crbug.com/1288839): Return the transferred value.
-  return false;
-}
-
-void TransferredMediaStreamComponent::SetMuted(bool muted) {
-  if (component_) {
-    component_->SetMuted(muted);
-    return;
-  }
-  // TODO(https://crbug.com/1288839): Save and forward to component_ once it's
-  // initialized.
-}
-
 WebMediaStreamTrack::ContentHintType
 TransferredMediaStreamComponent::ContentHint() {
   if (component_) {

@@ -41,8 +41,6 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   int UniqueId() const override;
   bool Enabled() const override;
   void SetEnabled(bool enabled) override;
-  bool Muted() const override;
-  void SetMuted(bool muted) override;
   WebMediaStreamTrack::ContentHintType ContentHint() override;
   void SetContentHint(WebMediaStreamTrack::ContentHintType) override;
   const MediaConstraints& Constraints() const override;

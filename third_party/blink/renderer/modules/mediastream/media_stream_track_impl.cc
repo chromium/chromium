@@ -279,7 +279,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
 
   // If the source is already non-live at this point, the observer won't have
   // been called. Update the muted state manually.
-  component_->SetMuted(ready_state_ == MediaStreamSource::kReadyStateMuted);
+  muted_ = ready_state_ == MediaStreamSource::kReadyStateMuted;
 
   SendLogMessage(String::Format("%s()", __func__));
 
@@ -354,7 +354,7 @@ void MediaStreamTrackImpl::setEnabled(bool enabled) {
 }
 
 bool MediaStreamTrackImpl::muted() const {
-  return component_->Muted();
+  return muted_;
 }
 
 String MediaStreamTrackImpl::ContentHint() const {
@@ -798,12 +798,12 @@ void MediaStreamTrackImpl::SourceChangedState() {
   setReadyState(component_->Source()->GetReadyState());
   switch (ready_state_) {
     case MediaStreamSource::kReadyStateLive:
-      component_->SetMuted(false);
+      muted_ = false;
       DispatchEvent(*Event::Create(event_type_names::kUnmute));
       EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateMuted:
-      component_->SetMuted(true);
+      muted_ = true;
       DispatchEvent(*Event::Create(event_type_names::kMute));
       EnsureFeatureHandleForScheduler();
       break;

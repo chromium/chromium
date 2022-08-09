@@ -66,8 +66,6 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual int UniqueId() const = 0;
   virtual bool Enabled() const = 0;
   virtual void SetEnabled(bool enabled) = 0;
-  virtual bool Muted() const = 0;
-  virtual void SetMuted(bool muted) = 0;
   virtual WebMediaStreamTrack::ContentHintType ContentHint() = 0;
   virtual void SetContentHint(WebMediaStreamTrack::ContentHintType) = 0;
   virtual const MediaConstraints& Constraints() const = 0;
