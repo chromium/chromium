@@ -332,7 +332,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
   // </if>
 
-  // <if expr="chromeos_ash or chromeos_lacros">
+  // <if expr="is_chromeos">
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }

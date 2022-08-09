@@ -38,7 +38,7 @@ import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import './people_page/import_data_dialog.js';
 // </if>
 // <if expr="not chromeos_ash">
@@ -82,7 +82,7 @@ export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialo
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
-// <if expr="chromeos_ash or chromeos_lacros">
+// <if expr="is_chromeos">
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
@@ -140,7 +140,7 @@ export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.j
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
 // </if>
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
 // </if>

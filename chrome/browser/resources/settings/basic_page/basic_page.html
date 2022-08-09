@@ -69,7 +69,7 @@
             section="search">
           <settings-search-page prefs="{{prefs}}"></settings-search-page>
         </settings-section>
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not is_chromeos">
         <template is="dom-if" if="[[showPage_(pageVisibility.defaultBrowser)]]"
             restamp>
           <settings-section page-title="$i18n{defaultBrowser}"

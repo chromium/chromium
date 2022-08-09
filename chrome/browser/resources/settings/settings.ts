@@ -31,7 +31,7 @@ export {ExtensionControlledIndicatorElement} from './controls/extension_controll
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
 // </if>

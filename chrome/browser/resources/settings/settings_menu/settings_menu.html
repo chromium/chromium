@@ -91,7 +91,7 @@
             $i18n{searchPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-    <if expr="not chromeos_ash and not chromeos_lacros">
+    <if expr="not is_chromeos">
           <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
             href="/defaultBrowser"
             hidden="[[!pageVisibility.defaultBrowser]]">

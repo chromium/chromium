@@ -83,7 +83,7 @@
       </div>
     </div>
 
-<if expr="chromeos_ash or chromeos_lacros">
+<if expr="is_chromeos">
     <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
       rollout stage. -->
     <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">

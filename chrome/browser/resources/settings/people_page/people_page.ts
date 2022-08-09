@@ -367,7 +367,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   private onImportDataTap_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }

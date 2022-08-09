@@ -168,7 +168,7 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
     addPrivacyChildRoutes(r);
   }
 
-  // <if expr="not chromeos_ash and not chromeos_lacros">
+  // <if expr="not is_chromeos">
   if (visibility.defaultBrowser !== false) {
     r.DEFAULT_BROWSER = r.BASIC.createSection(
         '/defaultBrowser', 'defaultBrowser',

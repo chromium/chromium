@@ -23,7 +23,7 @@ import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 
-// <if expr="not chromeos_ash and not chromeos_lacros">
+// <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 // </if>
 
