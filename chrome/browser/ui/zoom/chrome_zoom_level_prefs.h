@@ -10,16 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/zoom_level_delegate.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace zoom {
 class ZoomEventManager;
@@ -56,9 +53,8 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 
-  void ExtractPerHostZoomLevels(
-      const base::DictionaryValue* host_zoom_dictionary,
-      bool sanitize_partition_host_zoom_levels);
+  void ExtractPerHostZoomLevels(const base::Value::Dict& host_zoom_dictionary,
+                                bool sanitize_partition_host_zoom_levels);
 
   // content::ZoomLevelDelegate
   void InitHostZoomMap(content::HostZoomMap* host_zoom_map) override;
