@@ -14,10 +14,10 @@ namespace chrome_pdf {
 
 // See Table 3.20 in the PDF 1.7 spec for details on how to interpret permission
 // bits. Exposed for use in testing.
-constexpr uint32_t kPDFPermissionPrintMask = 1 << 2;
-constexpr uint32_t kPDFPermissionPrintHighQualityMask = 1 << 11;
-constexpr uint32_t kPDFPermissionCopyMask = 1 << 4;
-constexpr uint32_t kPDFPermissionCopyAccessibleMask = 1 << 9;
+constexpr uint32_t kPDFPermissionBit03PrintMask = 1 << 2;
+constexpr uint32_t kPDFPermissionBit05CopyMask = 1 << 4;
+constexpr uint32_t kPDFPermissionBit10CopyAccessibleMask = 1 << 9;
+constexpr uint32_t kPDFPermissionBit12PrintHighQualityMask = 1 << 11;
 
 // The permissions for a given FPDF_DOCUMENT.
 class PDFiumPermissions final {
