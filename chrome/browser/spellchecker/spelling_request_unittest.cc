@@ -82,7 +82,15 @@ std::vector<RemoteCheckTestCase> BuildTestCases() {
           // "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc66\u200d\ud83d\udc66
           //     Tihs \ud83d\ude01 has \ud83e\uddd1\ud83c\udfff emjis"
           {MakeResult(8, 4), MakeResult(22, 5)},
-          {MakeResult(12, 4), MakeResult(29, 5)}}};
+          {MakeResult(12, 4), MakeResult(29, 5)}},
+      RemoteCheckTestCase{
+          "surrogate_pairs_inside_word",
+          u"I ufort👨‍👩‍👦‍👦😁🧑🏿unately cant",
+          // The code point representation of the emojis in the above string is:
+          // "I ufort\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc66\u200d
+          //     \ud83d\udc66\ud83d\ude01\ud83e\uddd1\ud83c\udfffunately cant"
+          {MakeResult(2, 22), MakeResult(25, 4)},
+          {MakeResult(2, 29), MakeResult(32, 4)}}};
 
   return test_cases;
 }

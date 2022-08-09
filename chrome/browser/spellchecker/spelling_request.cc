@@ -167,12 +167,33 @@ void SpellingRequest::OnRemoteCheckCompleted(
 
       if (char_iter.char_offset() > result_iter->location) {
         // This remote result has a logical position that somehow doesn't
-        // correspond to a code point boundary position in the string. Behavior
-        // is undefined, so leave it as is.
+        // correspond to a code point boundary position in the string. This is
+        // undefined behavior, so leave the result as is.
         continue;
       }
 
       result_iter->location = char_iter.array_pos();
+
+      // Also fix the result's length.
+      base::i18n::UTF16CharIterator length_iter =
+          base::i18n::UTF16CharIterator::LowerBound(text,
+                                                    char_iter.array_pos());
+      int32_t initial_char_offset = length_iter.char_offset();
+
+      while (length_iter.char_offset() - initial_char_offset <
+             result_iter->length) {
+        length_iter.Advance();
+      }
+
+      if (length_iter.char_offset() - initial_char_offset >
+          result_iter->length) {
+        // The corrected position + logical length of this remote result does
+        // not match a code point boundary position in the string. This is
+        // undefined behavior, so leave the result as is.
+        continue;
+      }
+
+      result_iter->length = length_iter.array_pos() - char_iter.array_pos();
     }
   }
 
