@@ -50,6 +50,10 @@ const char kIOSOmniboxUpdatedPopupUIVariationName[] = "PopupUIVariant";
 
 extern const char kIOSOmniboxUpdatedPopupUIVariation1[] = "variant-one";
 extern const char kIOSOmniboxUpdatedPopupUIVariation2[] = "variant-two";
+extern const char kIOSOmniboxUpdatedPopupUIVariation1UIKit[] =
+    "variant-one-UIKit";
+extern const char kIOSOmniboxUpdatedPopupUIVariation2UIKit[] =
+    "variant-two-UIKit";
 
 const base::Feature kIOSLocationBarUseNativeContextMenu{
     "IOSLocationBarUseNativeContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};

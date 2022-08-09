@@ -320,4 +320,5 @@ source_set("features") {
     "omnibox_ui_features.h",
   ]
   public_deps = [ "//base" ]
+  deps = [ "//ios/chrome/browser/ui:feature_flags" ]
 }

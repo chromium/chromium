@@ -95,7 +95,7 @@
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
-  if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+  if (IsSwiftUIPopupEnabled()) {
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
                                           dataSource:self.mediator
@@ -114,13 +114,9 @@
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;
 
-    std::string variationName = base::GetFieldTrialParamValueByFeature(
-        kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
-
-    PopupUIVariation popupUIVariation =
-        (variationName == kIOSOmniboxUpdatedPopupUIVariation1)
-            ? PopupUIVariationOne
-            : PopupUIVariationTwo;
+    PopupUIVariation popupUIVariation = IsOmniboxActionsVisualTreatment1()
+                                            ? PopupUIVariationOne
+                                            : PopupUIVariationTwo;
 
     std::string pasteButtonVariationName =
         base::GetFieldTrialParamValueByFeature(
@@ -142,12 +138,6 @@
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.model
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
-    OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-    annotator.pedalsEndpoint = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    annotator.omniboxCommandHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), OmniboxCommands);
-    self.mediator.pedalAnnotator = annotator;
     self.mediator.consumer = self.pedalExtractor;
     self.pedalExtractor.dataSink = self.model;
     self.pedalExtractor.delegate = self.mediator;
@@ -168,6 +158,15 @@
     self.pedalExtractor.delegate = self.mediator;
 
     self.popupViewController = popupViewController;
+  }
+
+  if (IsOmniboxActionsEnabled()) {
+    OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
+    annotator.pedalsEndpoint = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    annotator.omniboxCommandHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), OmniboxCommands);
+    self.mediator.pedalAnnotator = annotator;
   }
 
   self.mediator.incognito = isIncognito;

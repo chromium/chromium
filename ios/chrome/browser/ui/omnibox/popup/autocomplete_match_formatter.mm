@@ -25,16 +25,6 @@
 
 namespace {
 
-// The current popup UI variation according to flags.
-PopupUIVariation CurrentPopupUIVariation() {
-  std::string variationName = base::GetFieldTrialParamValueByFeature(
-      kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
-
-  return variationName == kIOSOmniboxUpdatedPopupUIVariation1
-             ? PopupUIVariationOne
-             : PopupUIVariationTwo;
-}
-
 // The color of the main text of a suggest cell.
 UIColor* SuggestionTextColor() {
   return [UIColor colorNamed:kTextPrimaryColor];
@@ -131,8 +121,7 @@ UIColor* DimColorIncognito() {
     // instead.
     UIColor* suggestionDetailTextColor = nil;
     if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-        (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI) &&
-         CurrentPopupUIVariation() == PopupUIVariationTwo)) {
+        IsOmniboxActionsVisualTreatment2()) {
       suggestionDetailTextColor = SuggestionDetailTextColor();
     } else {
       suggestionDetailTextColor = SuggestionTextColor();

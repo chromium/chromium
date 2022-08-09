@@ -24,4 +24,14 @@ extern const char kOmniboxPasteButtonParameterBlueFullCapsule[];
 // Feature flag to enable paste button on the omnibox keyboard accessories.
 extern const base::Feature kOmniboxKeyboardPasteButton;
 
+// Simply returns if kIOSOmniboxUpdatedPopupUI is enabled.
+bool IsOmniboxActionsEnabled();
+// Returns true when kIOSOmniboxUpdatedPopupUI is set to "version 1" either in
+// UIKit or SwiftUI.
+bool IsOmniboxActionsVisualTreatment1();
+// Same as above, but for "version 2".
+bool IsOmniboxActionsVisualTreatment2();
+// Returns true when Actions are set to one of the SwiftUI variations.
+bool IsSwiftUIPopupEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

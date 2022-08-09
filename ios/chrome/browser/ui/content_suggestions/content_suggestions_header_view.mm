@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -394,10 +395,9 @@ CGFloat ToolbarHeight() {
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
   CGFloat inset = !IsSplitToolbarMode(self) ? kBackgroundLandscapeInset : 0;
-  CGFloat leadingMargin =
-      base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)
-          ? kExpandedLocationBarLeadingMarginRefreshedPopup
-          : kExpandedLocationBarHorizontalMargin;
+  CGFloat leadingMargin = IsOmniboxActionsEnabled()
+                              ? kExpandedLocationBarLeadingMarginRefreshedPopup
+                              : kExpandedLocationBarHorizontalMargin;
   self.fakeLocationBarLeadingConstraint.constant =
       (safeAreaInsets.left + leadingMargin + inset) * percent;
   self.fakeLocationBarTrailingConstraint.constant =

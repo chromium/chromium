@@ -564,7 +564,7 @@ const char kOmniboxZeroSuggestPrefetchingDescription[] =
 
 const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
 const char kIOSOmniboxUpdatedPopupUIDescription[] =
-    "Enable the new SwiftUI Popup implementation";
+    "Enable the new Popup implementation with Actions";
 
 const char kOptimizationGuideModelDownloadingName[] =
     "Allow optimization guide model downloads";

@@ -514,8 +514,8 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 
-// Title and description for the flag to enable the SwiftUI omnibox popup
-// implementation.
+// Title and description for the flag to enable ChromeActions (and optionally
+// SwiftUI omnibox popup implementation).
 extern const char kIOSOmniboxUpdatedPopupUIName[];
 extern const char kIOSOmniboxUpdatedPopupUIDescription[];
 

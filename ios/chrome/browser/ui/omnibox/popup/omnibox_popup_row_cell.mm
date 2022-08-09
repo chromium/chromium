@@ -8,6 +8,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -115,7 +116,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
 
-    self.backgroundColor = UIColor.clearColor;
+    if (!IsOmniboxActionsVisualTreatment2()) {
+      self.backgroundColor = UIColor.clearColor;
+    }
     [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;

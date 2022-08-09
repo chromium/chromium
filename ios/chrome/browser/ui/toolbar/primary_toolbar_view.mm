@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -341,10 +342,9 @@
                        constant:kContractedLocationBarHorizontalMargin],
   ]];
 
-  CGFloat leadingMargin =
-      base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)
-          ? kExpandedLocationBarLeadingMarginRefreshedPopup
-          : kExpandedLocationBarHorizontalMargin;
+  CGFloat leadingMargin = IsOmniboxActionsEnabled()
+                              ? kExpandedLocationBarLeadingMarginRefreshedPopup
+                              : kExpandedLocationBarHorizontalMargin;
 
   // Constraints for contractedNoMarginConstraints.
   [self.contractedNoMarginConstraints addObjectsFromArray:@[

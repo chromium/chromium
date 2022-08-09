@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #include "ios/chrome/browser/ui/elements/self_sizing_table_view.h"
 #include "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
@@ -19,6 +20,7 @@
 #include "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #include "ui/base/device_form_factor.h"
@@ -115,9 +117,11 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 }
 
 - (void)loadView {
-  self.tableView =
-      [[SelfSizingTableView alloc] initWithFrame:CGRectZero
-                                           style:UITableViewStylePlain];
+  UITableViewStyle style = IsOmniboxActionsVisualTreatment2()
+                               ? UITableViewStyleInsetGrouped
+                               : UITableViewStylePlain;
+  self.tableView = [[SelfSizingTableView alloc] initWithFrame:CGRectZero
+                                                        style:style];
   self.tableView.delegate = self;
   self.tableView.dataSource = self;
   self.view = self.tableView;
@@ -418,7 +422,10 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   if (IsRegularXRegularSizeClass(self)) {
     self.view.backgroundColor = configuration.backgroundColor;
   } else {
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor =
+        IsOmniboxActionsVisualTreatment2()
+            ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+            : [UIColor clearColor];
   }
 }
 
@@ -531,6 +538,11 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 #pragma mark - ContentProviding
 
 - (BOOL)hasContent {
+  if (IsOmniboxActionsVisualTreatment2()) {
+    return self.tableView.numberOfSections > 0 &&
+           [self.tableView numberOfRowsInSection:0] > 0;
+  }
+
   // The table view is a `SelfSizingTableView`, so its intrinsic content size
   // can tell whether it has content.
   return self.view.intrinsicContentSize.height > 0;

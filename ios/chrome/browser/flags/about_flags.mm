@@ -267,11 +267,21 @@ const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion1[] = {
 const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion2[] = {
     {kIOSOmniboxUpdatedPopupUIVariationName,
      kIOSOmniboxUpdatedPopupUIVariation2}};
+const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion3[] = {
+    {kIOSOmniboxUpdatedPopupUIVariationName,
+     kIOSOmniboxUpdatedPopupUIVariation1UIKit}};
+const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion4[] = {
+    {kIOSOmniboxUpdatedPopupUIVariationName,
+     kIOSOmniboxUpdatedPopupUIVariation2UIKit}};
 const FeatureEntry::FeatureVariation kiOSOmniboxUpdatedPopupUIVariations[] = {
-    {"Version 1", kiOSOmniboxUpdatedPopupUIVersion1,
+    {"Version 1 - SwiftUI", kiOSOmniboxUpdatedPopupUIVersion1,
      std::size(kiOSOmniboxUpdatedPopupUIVersion1), nullptr},
-    {"Version 2", kiOSOmniboxUpdatedPopupUIVersion2,
-     std::size(kiOSOmniboxUpdatedPopupUIVersion2), nullptr}};
+    {"Version 2 - SwiftUI", kiOSOmniboxUpdatedPopupUIVersion2,
+     std::size(kiOSOmniboxUpdatedPopupUIVersion2), nullptr},
+    {"Version 1 - UIKit", kiOSOmniboxUpdatedPopupUIVersion3,
+     std::size(kiOSOmniboxUpdatedPopupUIVersion3), nullptr},
+    {"Version 2 - UIKit", kiOSOmniboxUpdatedPopupUIVersion4,
+     std::size(kiOSOmniboxUpdatedPopupUIVersion4), nullptr}};
 
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},

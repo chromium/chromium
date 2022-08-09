@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -67,7 +68,7 @@ const CGFloat kVerticalOffset = 6;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    if (!IsSwiftUIPopupEnabled()) {
       _popupContainerView.backgroundColor = [configuration backgroundColor];
     }
 
@@ -75,7 +76,7 @@ const CGFloat kVerticalOffset = 6;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(viewController.view, _popupContainerView);
 
-    if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+    if (!IsSwiftUIPopupEnabled()) {
       // Add bottom separator. This will only be visible on iPad where
       // the omnibox doesn't fill the whole screen.
       _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
@@ -108,7 +109,7 @@ const CGFloat kVerticalOffset = 6;
     // If intrinsic size is 0 and popup is onscreen, we want to remove the
     // popup view.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-        base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+        IsSwiftUIPopupEnabled()) {
       self.bottomConstraint.active = NO;
       self.bottomSeparator.hidden = YES;
     }
@@ -131,7 +132,7 @@ const CGFloat kVerticalOffset = 6;
     [self initialLayout];
 
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-        base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+        IsOmniboxActionsEnabled()) {
       self.bottomConstraint.active = YES;
       self.bottomSeparator.hidden = NO;
     }
