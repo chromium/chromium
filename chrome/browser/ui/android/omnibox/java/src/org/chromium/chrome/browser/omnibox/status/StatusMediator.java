@@ -209,59 +209,42 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
-     * Specify whether displayed page is an offline page.
+     * Updates the icon, tint, and description of the security chip.
      */
-    void setPageIsOffline(boolean pageIsOffline) {
-        if (mPageIsOffline != pageIsOffline) {
-            mPageIsOffline = pageIsOffline;
-            updateVerbaseStatusTextVisibility();
-            updateColorTheme();
-        }
-    }
-
-    /**
-     * Specify whether displayed page is a preview page.
-     */
-    void setPageIsPaintPreview(boolean pageIsPaintPreview) {
-        if (mPageIsPaintPreview != pageIsPaintPreview) {
-            mPageIsPaintPreview = pageIsPaintPreview;
-            updateVerbaseStatusTextVisibility();
-            updateColorTheme();
-        }
-    }
-
-    /**
-     * Specify displayed page's security level.
-     */
-    void setPageSecurityLevel(@ConnectionSecurityLevel int level) {
-        if (mPageSecurityLevel == level) return;
-        mPageSecurityLevel = level;
-        updateVerbaseStatusTextVisibility();
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    /**
-     * Specify icon displayed by the security chip.
-     */
-    void setSecurityIconResource(@DrawableRes int securityIcon) {
+    void updateSecurityIcon(
+            @DrawableRes int securityIcon, @ColorRes int tintList, @StringRes int desc) {
         mSecurityIconRes = securityIcon;
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    /**
-     * Specify tint of icon displayed by the security chip.
-     */
-    void setSecurityIconTint(@ColorRes int tintList) {
         mSecurityIconTintRes = tintList;
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    /**
-     * Specify tint of icon displayed by the security chip.
-     */
-    void setSecurityIconDescription(@StringRes int desc) {
         mSecurityIconDescriptionRes = desc;
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
+    /**
+     * Update the displayed page's security level and whether it's a paint preview or offline page.
+     */
+    void updateVerboseStatus(@ConnectionSecurityLevel int securityLevel, boolean pageIsOffline,
+            boolean pageIsPaintPreview) {
+        boolean didUpdate = false;
+        if (mPageSecurityLevel != securityLevel) {
+            mPageSecurityLevel = securityLevel;
+            didUpdate = true;
+        }
+
+        if (mPageIsPaintPreview != pageIsPaintPreview) {
+            mPageIsPaintPreview = pageIsPaintPreview;
+            didUpdate = true;
+        }
+
+        if (mPageIsOffline != pageIsOffline) {
+            mPageIsOffline = pageIsOffline;
+            didUpdate = true;
+        }
+
+        if (didUpdate) {
+            updateVerbaseStatusTextVisibility();
+            updateLocationBarIcon(IconTransitionType.CROSSFADE);
+            updateColorTheme();
+        }
     }
 
     /**

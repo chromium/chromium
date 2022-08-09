@@ -55,6 +55,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -297,7 +298,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.setSecurityIconResource(0);
+        mMediator.updateSecurityIcon(0, 0, 0);
 
         Assert.assertEquals(null, mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
     }
@@ -307,7 +308,7 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconChanges() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.setSecurityIconResource(0);
+        mMediator.updateSecurityIcon(0, 0, 0);
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
 
@@ -322,7 +323,7 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconNoChanges() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(false);
-        mMediator.setSecurityIconResource(0);
+        mMediator.updateSecurityIcon(0, 0, 0);
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
 
@@ -379,8 +380,7 @@ public final class StatusMediatorUnitTest {
     @SmallTest
     public void testStatusText() {
         mMediator.setUnfocusedLocationBarWidth(10);
-        mMediator.setPageIsOffline(true);
-        mMediator.setPageIsPaintPreview(true);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, true);
         // When both states, offline, and preview are enabled, paint preview has
         // the highest priority.
         Assert.assertEquals("Incorrect text for paint preview status text",
@@ -395,7 +395,7 @@ public final class StatusMediatorUnitTest {
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
 
         // When only offline is enabled, it should be shown.
-        mMediator.setPageIsPaintPreview(false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
         mMediator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         Assert.assertEquals("Incorrect text for offline page status text",
                 R.string.location_bar_verbose_status_offline,

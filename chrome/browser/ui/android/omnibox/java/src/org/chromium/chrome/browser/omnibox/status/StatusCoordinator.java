@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,7 +49,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final StatusMediator mMediator;
     private final PropertyModel mModel;
     private final boolean mIsTablet;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final PageInfoAction mPageInfoAction;
     private LocationBarDataProvider mLocationBarDataProvider;
     private boolean mUrlHasFocus;
@@ -61,8 +59,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param isTablet Whether the UI is shown on a tablet.
      * @param statusView The status view, used to supply and manipulate child views.
      * @param urlBarEditingTextStateProvider The url coordinator.
-     * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} used to display a
-     *         dialog.
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query
      *         the default search engine.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
@@ -76,7 +72,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             LocationBarDataProvider locationBarDataProvider,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
@@ -86,7 +81,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mIsTablet = isTablet;
         mStatusView = statusView;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mLocationBarDataProvider = locationBarDataProvider;
         mPageInfoAction = pageInfoAction;
 
@@ -118,7 +112,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         // Update status immediately after receiving the data provider to avoid initial presence
         // glitch on tablet devices. This glitch would be typically seen upon launch of app, right
         // before the landing page is presented to the user.
-        updateStatusIcon();
+        updateSecurityIcon();
         updateVerboseStatusVisibility();
         mLocationBarDataProvider.addObserver(this);
         mStatusView.setBrowserControlsVisibilityDelegate(browserControlsVisibilityDelegate);
@@ -162,7 +156,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         // TODO(ender): remove this once icon selection has complete set of
         // corresponding properties (for tinting etc).
-        updateStatusIcon();
+        updateSecurityIcon();
     }
 
     // LocationBarData.Observer implementation
@@ -182,16 +176,14 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     @Override
     public void onSecurityStateChanged() {
-        updateStatusIcon();
+        updateSecurityIcon();
         updateVerboseStatusVisibility();
     }
 
     /** Updates the security icon displayed in the LocationBar. */
-    private void updateStatusIcon() {
-        mMediator.setSecurityIconResource(
-                mLocationBarDataProvider.getSecurityIconResource(mIsTablet));
-        mMediator.setSecurityIconTint(mLocationBarDataProvider.getSecurityIconColorStateList());
-        mMediator.setSecurityIconDescription(
+    private void updateSecurityIcon() {
+        mMediator.updateSecurityIcon(mLocationBarDataProvider.getSecurityIconResource(mIsTablet),
+                mLocationBarDataProvider.getSecurityIconColorStateList(),
                 mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId());
     }
 
@@ -232,9 +224,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * omnibox.
      */
     private void updateVerboseStatusVisibility() {
-        mMediator.setPageSecurityLevel(mLocationBarDataProvider.getSecurityLevel());
-        mMediator.setPageIsOffline(mLocationBarDataProvider.isOfflinePage());
-        mMediator.setPageIsPaintPreview(mLocationBarDataProvider.isPaintPreview());
+        mMediator.updateVerboseStatus(mLocationBarDataProvider.getSecurityLevel(),
+                mLocationBarDataProvider.isOfflinePage(),
+                mLocationBarDataProvider.isPaintPreview());
     }
 
     @Override

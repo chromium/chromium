@@ -196,8 +196,8 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
                         tabWindowManagerSupplier, bookmarkState, jankTracker, omniboxPedalDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
-                modalDialogManagerSupplier, locationBarDataProvider, mTemplateUrlServiceSupplier,
-                searchEngineLogoUtils, profileObservableSupplier, windowAndroid, pageInfoAction,
+                locationBarDataProvider, mTemplateUrlServiceSupplier, searchEngineLogoUtils,
+                profileObservableSupplier, windowAndroid, pageInfoAction,
                 merchantTrustSignalsCoordinatorSupplier, browserControlsVisibilityDelegate);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);

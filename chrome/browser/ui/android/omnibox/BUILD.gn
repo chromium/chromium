@@ -463,6 +463,7 @@ robolectric_library("junit") {
     "//components/omnibox/browser:junit_test_support",
     "//components/permissions/android:java",
     "//components/search_engines/android:java",
+    "//components/security_state/core:security_state_enums_java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
     "//content/public/android:content_java",
