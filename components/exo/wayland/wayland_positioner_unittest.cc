@@ -5,6 +5,7 @@
 #include "components/exo/wayland/wayland_positioner.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "xdg-shell-server-protocol.h"
 #include "xdg-shell-unstable-v6-server-protocol.h"
 
@@ -45,6 +46,11 @@ class WaylandPositionerTest : public testing::Test {
 
     TestCaseBuilder& SetAnchorRect(int x, int y, int w, int h) {
       positioner.SetAnchorRect({x, y, w, h});
+      return *this;
+    }
+
+    TestCaseBuilder& SetWorkArea(const gfx::Rect& rect) {
+      work_area = rect;
       return *this;
     }
 
@@ -232,6 +238,22 @@ TEST_F(WaylandPositionerTest,
       gfx::Rect(1, 1, 4, 4));
 }
 
+TEST_F(WaylandPositionerTest,
+       AllowsAdditionalAdjustmentsIfNoSolutionCanBeFoundUnstable) {
+  EXPECT_EQ(
+      TestCaseBuilder(WaylandPositioner::Version::UNSTABLE)
+          .SetWorkArea(gfx::Rect(5, 5))
+          .SetSize(10, 10)
+          .SetAnchorRect(0, 0, 0, 0)
+          .SetGravity(ZXDG_POSITIONER_V6_GRAVITY_BOTTOM |
+                      ZXDG_POSITIONER_V6_GRAVITY_RIGHT)
+          // No solution should forcibly allow resize
+          .SetAdjustment(ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_X |
+                         ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_SLIDE_Y)
+          .SolveToRect(),
+      gfx::Rect(0, 0, 5, 5));
+}
+
 // Tests for the stable protocol.
 
 TEST_F(WaylandPositionerTest, UnconstrainedCases) {
@@ -399,6 +421,20 @@ TEST_F(WaylandPositionerTest, ResizableShouldNotBeEmpty) {
                 .SetAnchorRect(-10, 2, 4, 4)
                 .SolveToRect(),
             gfx::Rect(0, 2, 1, 3));
+}
+
+TEST_F(WaylandPositionerTest,
+       AllowsAdditionalAdjustmentsIfNoSolutionCanBeFound) {
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetWorkArea(gfx::Rect(5, 5))
+                .SetSize(10, 10)
+                .SetAnchorRect(0, 0, 0, 0)
+                .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT)
+                // No solution should forcibly allow resize
+                .SetAdjustment(XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X |
+                               XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y)
+                .SolveToRect(),
+            gfx::Rect(0, 0, 5, 5));
 }
 
 }  // namespace
