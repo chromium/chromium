@@ -4,18 +4,6 @@
 
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-# TODO: Remove this file copy when breadcrumb.js supports only JS modules.
-copy("fix_broken_images") {
-  sources = [
-    "foreground/images/files/ui/arrow_right.svg",
-    "foreground/images/files/ui/error_banner_icon.svg",
-    "foreground/images/files/ui/menu_ng.svg",
-    "foreground/images/files/ui/state_banner_icon.svg",
-    "foreground/images/files/ui/warning_banner_icon.svg",
-  ]
-  outputs = [ "$target_gen_dir/images/files/ui/{{source_file_part}}" ]
-}
-
 generated_static_grdp = "$target_gen_dir/static_resources.grdp"
 
 generate_grd("build_static_grdp") {

@@ -246,21 +246,11 @@ generate_grd("build_grd") {
   deps = [
     ":build_ts",
     "file_manager:build_static_grdp",
-    "//ui/file_manager/file_manager:fix_broken_images",
     "//ui/file_manager/image_loader:build",
   ]
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [
-    # Fix broken images:
-    "file_manager/images/files/ui/arrow_right.svg",
-    "file_manager/images/files/ui/state_banner_icon.svg",
-    "file_manager/images/files/ui/warning_banner_icon.svg",
-    "file_manager/images/files/ui/error_banner_icon.svg",
-    "file_manager/images/files/ui/menu_ng.svg",
-
-    "image_loader/background.rollup.js",
-  ]
+  input_files = [ "image_loader/background.rollup.js" ]
 
   resource_path_rewrites =
       [ "image_loader/background.rollup.js|image_loader/background.js" ]
