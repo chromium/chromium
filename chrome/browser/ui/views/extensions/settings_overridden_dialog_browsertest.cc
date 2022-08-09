@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view.h"
+#include "chrome/browser/ui/views/extensions/settings_overridden_dialog.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -29,6 +27,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+
+using DialogResult = SettingsOverriddenDialogController::DialogResult;
 
 namespace {
 
@@ -100,22 +102,23 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     }
   }
 
-  // Creates, shows, and returns a dialog anchored to the given |browser|. The
+  // Creates, shows, and returns a dialog anchored to the given `browser`. The
   // dialog is owned by the views framework.
-  SettingsOverriddenDialogView* ShowSimpleDialog(bool show_icon,
-                                                 Browser* browser) {
+  views::Widget* ShowSimpleDialog(bool show_icon, Browser* browser) {
     SettingsOverriddenDialogController::ShowParams params{
         u"Settings overridden dialog title",
         u"Settings overriden dialog body, which is quite a bit "
         u"longer than the title alone"};
     if (show_icon)
       params.icon = &kProductIcon;
-    auto* dialog =
-        new SettingsOverriddenDialogView(std::make_unique<TestDialogController>(
-            std::move(params), &dialog_result_));
-    dialog->Show(browser->window()->GetNativeWindow());
 
-    return dialog;
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         kExtensionSettingsOverridenDialogName);
+    extensions::ShowSettingsOverriddenDialog(
+        std::make_unique<TestDialogController>(std::move(params),
+                                               &dialog_result_),
+        browser);
+    return waiter.WaitIfNeededAndGet();
   }
 
   void ShowNtpOverriddenDefaultDialog() {
@@ -156,10 +159,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     return true;
   }
 
-  absl::optional<SettingsOverriddenDialogController::DialogResult>
-  dialog_result() const {
-    return dialog_result_;
-  }
+  absl::optional<DialogResult> dialog_result() const { return dialog_result_; }
 
  private:
   void LoadExtensionOverridingNewTab() {
@@ -231,9 +231,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   std::string test_name_;
-
-  absl::optional<SettingsOverriddenDialogController::DialogResult>
-      dialog_result_;
+  absl::optional<DialogResult> dialog_result_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -296,15 +294,11 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
   Browser* second_browser = CreateBrowser(browser()->profile());
   ASSERT_TRUE(second_browser);
 
-  SettingsOverriddenDialogView* dialog =
-      ShowSimpleDialog(false, second_browser);
-
-  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
-      dialog->GetWidget());
+  views::Widget* dialog = ShowSimpleDialog(false, second_browser);
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(dialog);
   CloseBrowserSynchronously(second_browser);
   widget_destroyed_waiter.Wait();
+
   ASSERT_TRUE(dialog_result());
-  EXPECT_EQ(SettingsOverriddenDialogController::DialogResult::
-                kDialogClosedWithoutUserAction,
-            *dialog_result());
+  EXPECT_EQ(DialogResult::kDialogClosedWithoutUserAction, *dialog_result());
 }
