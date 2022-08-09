@@ -112,6 +112,15 @@ bool PrecompileInlineScriptsEnabled() {
   return kEnabled;
 }
 
+bool PretokenizeCSSEnabled() {
+  // Cache the feature value since checking for each parser regresses some micro
+  // benchmarks.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kPretokenizeCSS) &&
+      features::kPretokenizeInlineSheets.Get();
+  return kEnabled;
+}
+
 Thread* GetPreloadScannerThread() {
   DCHECK(ThreadedPreloadScannerEnabled());
 
@@ -1528,7 +1537,7 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     return;
   }
 
-  if (!PrecompileInlineScriptsEnabled())
+  if (!PrecompileInlineScriptsEnabled() && !PretokenizeCSSEnabled())
     return;
 
   DCHECK(!background_scanner_);

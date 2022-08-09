@@ -1557,6 +1557,11 @@ const base::Feature kPrefetchFontLookupTables{
 const base::Feature kPrecompileInlineScripts{"PrecompileInlineScripts",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPretokenizeCSS{"PretokenizeCSS",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kPretokenizeInlineSheets = {
+    &kPretokenizeCSS, "pretokenize_inline_sheets", true};
+
 const base::Feature kSimulateClickOnAXFocus {
   "SimulateClickOnAXFocus",
 #if BUILDFLAG(IS_WIN)

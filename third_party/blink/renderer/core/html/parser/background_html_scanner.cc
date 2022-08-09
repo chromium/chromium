@@ -72,6 +72,16 @@ scoped_refptr<base::SequencedTaskRunner> GetCompileTaskRunner() {
       {base::TaskPriority::USER_BLOCKING});
 }
 
+void TokenizeInlineCSS(const String& style_text,
+                       ScriptableDocumentParser* parser) {
+  if (!parser)
+    return;
+
+  TRACE_EVENT0("blink", "TokenizeInlineCSS");
+  parser->AddCSSTokenizer(style_text,
+                          CSSTokenizer::CreateCachedTokenizer(style_text));
+}
+
 }  // namespace
 
 // static
@@ -93,7 +103,9 @@ BackgroundHTMLScanner::BackgroundHTMLScanner(
     std::unique_ptr<HTMLTokenizer> tokenizer,
     std::unique_ptr<ScriptTokenScanner> token_scanner)
     : tokenizer_(std::move(tokenizer)),
-      token_scanner_(std::move(token_scanner)) {}
+      token_scanner_(std::move(token_scanner)) {
+  DCHECK(token_scanner_);
+}
 
 BackgroundHTMLScanner::~BackgroundHTMLScanner() = default;
 
@@ -114,42 +126,68 @@ void BackgroundHTMLScanner::Scan(const String& source) {
 std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
 BackgroundHTMLScanner::ScriptTokenScanner::Create(
     ScriptableDocumentParser* parser) {
-  return std::make_unique<ScriptTokenScanner>(parser, GetCompileTaskRunner());
+  bool precompile_scripts =
+      base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
+  bool pretokenize_css =
+      base::FeatureList::IsEnabled(features::kPretokenizeCSS) &&
+      features::kPretokenizeInlineSheets.Get();
+  if (!precompile_scripts && !pretokenize_css)
+    return nullptr;
+
+  return std::make_unique<ScriptTokenScanner>(
+      parser, GetCompileTaskRunner(), precompile_scripts, pretokenize_css);
 }
 
 BackgroundHTMLScanner::ScriptTokenScanner::ScriptTokenScanner(
     ScriptableDocumentParser* parser,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : parser_(parser), task_runner_(std::move(task_runner)) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool precompile_scripts,
+    bool pretokenize_css)
+    : parser_(parser),
+      task_runner_(std::move(task_runner)),
+      precompile_scripts_(precompile_scripts),
+      pretokenize_css_(pretokenize_css) {
+  DCHECK(precompile_scripts_ || pretokenize_css_);
+}
 
 void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
     const HTMLToken& token) {
   switch (token.GetType()) {
     case HTMLToken::kCharacter: {
-      if (in_script_) {
+      if (in_tag_ != InsideTag::kNone) {
         if (token.IsAll8BitData())
-          script_builder_.Append(token.Data().AsString8());
+          builder_.Append(token.Data().AsString8());
         else
-          script_builder_.Append(token.Data().AsString());
+          builder_.Append(token.Data().AsString());
       }
       return;
     }
     case HTMLToken::kStartTag: {
-      if (Match(TagImplFor(token.Data()), html_names::kScriptTag)) {
-        in_script_ = true;
-        script_builder_.Clear();
+      if (precompile_scripts_ &&
+          Match(TagImplFor(token.Data()), html_names::kScriptTag)) {
+        DCHECK_EQ(in_tag_, InsideTag::kNone);
+        in_tag_ = InsideTag::kScript;
+      } else if (pretokenize_css_ &&
+                 Match(TagImplFor(token.Data()), html_names::kStyleTag)) {
+        DCHECK_EQ(in_tag_, InsideTag::kNone);
+        in_tag_ = InsideTag::kStyle;
+      } else {
+        in_tag_ = InsideTag::kNone;
       }
+      builder_.Clear();
       return;
     }
     case HTMLToken::kEndTag: {
-      if (Match(TagImplFor(token.Data()), html_names::kScriptTag)) {
-        in_script_ = false;
+      if (precompile_scripts_ &&
+          Match(TagImplFor(token.Data()), html_names::kScriptTag) &&
+          in_tag_ == InsideTag::kScript) {
+        in_tag_ = InsideTag::kNone;
         // The script was empty, do nothing.
-        if (script_builder_.IsEmpty())
+        if (builder_.IsEmpty())
           return;
 
-        String script_text = script_builder_.ReleaseString();
-        script_builder_.Clear();
+        String script_text = builder_.ReleaseString();
+        builder_.Clear();
 
         auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
             script_text, GetCompileOptions(first_script_in_scan_));
@@ -169,6 +207,33 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
               FROM_HERE, {base::TaskPriority::USER_BLOCKING},
               CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run,
                                   std::move(streamer)));
+        }
+      } else if (pretokenize_css_ &&
+                 Match(TagImplFor(token.Data()), html_names::kStyleTag) &&
+                 in_tag_ == InsideTag::kStyle) {
+        in_tag_ = InsideTag::kNone;
+        // The style was empty, do nothing.
+        if (builder_.IsEmpty())
+          return;
+
+        String style_text = builder_.ReleaseString();
+        builder_.Clear();
+
+        // We don't need to tokenize duplicate stylesheets, as these will
+        // already be cached. The set stores just the hash of the string to
+        // optimize memory usage, and it's fine to do extra work in the rare
+        // case of a hash collision.
+        if (!css_text_hashes_.insert(style_text.Impl()->GetHash()).is_new_entry)
+          return;
+
+        if (use_task_runner_for_css_for_testing_) {
+          PostCrossThreadTask(
+              *task_runner_, FROM_HERE,
+              CrossThreadBindOnce(&TokenizeInlineCSS, style_text, parser_));
+        } else {
+          worker_pool::PostTask(
+              FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+              CrossThreadBindOnce(&TokenizeInlineCSS, style_text, parser_));
         }
       }
       return;

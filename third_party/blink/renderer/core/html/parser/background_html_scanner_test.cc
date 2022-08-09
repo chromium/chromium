@@ -15,6 +15,8 @@
 namespace blink {
 namespace {
 
+constexpr char kStyleText[] = ".foo { color: red; }";
+
 class TestParser : public ScriptableDocumentParser {
  public:
   explicit TestParser(Document& document)
@@ -44,11 +46,17 @@ class BackgroundHTMLScannerTest : public PageTestBase {
             {base::TaskPriority::USER_BLOCKING})) {}
 
  protected:
-  std::unique_ptr<BackgroundHTMLScanner> CreateScanner(TestParser* parser) {
+  std::unique_ptr<BackgroundHTMLScanner> CreateScanner(
+      TestParser* parser,
+      bool precompile_scripts = true,
+      bool pretokenize_css = true) {
+    auto token_scanner =
+        std::make_unique<BackgroundHTMLScanner::ScriptTokenScanner>(
+            parser, task_runner_, precompile_scripts, pretokenize_css);
+    token_scanner->UseTaskRunnerForCSSForTesting();
     return std::make_unique<BackgroundHTMLScanner>(
         std::make_unique<HTMLTokenizer>(HTMLParserOptions()),
-        std::make_unique<BackgroundHTMLScanner::ScriptTokenScanner>(
-            parser, task_runner_));
+        std::move(token_scanner));
   }
 
   void FlushTaskRunner() {
@@ -68,6 +76,14 @@ TEST_F(BackgroundHTMLScannerTest, SimpleScript) {
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
 }
 
+TEST_F(BackgroundHTMLScannerTest, PrecompileTurnedOff) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser, false);
+  scanner->Scan("<script>foo</script>");
+  FlushTaskRunner();
+  EXPECT_EQ(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
 TEST_F(BackgroundHTMLScannerTest, InsideHTMLPreloadScanner) {
   GetDocument().SetURL(KURL("https://www.example.com"));
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
@@ -79,7 +95,7 @@ TEST_F(BackgroundHTMLScannerTest, InsideHTMLPreloadScanner) {
       MediaValuesCached::MediaValuesCachedData(GetDocument()),
       TokenPreloadScanner::ScannerType::kMainDocument,
       std::make_unique<BackgroundHTMLScanner::ScriptTokenScanner>(
-          parser, task_runner_));
+          parser, task_runner_, true, true));
   preload_scanner.ScanInBackground(
       "<script>foo</script>", GetDocument().ValidBaseElementURL(),
       CrossThreadBindRepeating([](std::unique_ptr<PendingPreloadData>) {}));
@@ -142,6 +158,86 @@ TEST_F(BackgroundHTMLScannerTest, UTF16Characters) {
   scanner->Scan(source);
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer(u"hello \u3042"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, SimpleStyle) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan(String("<style>") + kStyleText + "</style>");
+  FlushTaskRunner();
+  auto tokenizer = parser->TakeCSSTokenizer(kStyleText);
+  EXPECT_NE(tokenizer, nullptr);
+  // Finish tokenizing and grab the token count.
+  while (tokenizer->TokenizeSingle().GetType() != kEOFToken) {
+  }
+  EXPECT_GT(tokenizer->TokenCount(), 1u);
+}
+
+TEST_F(BackgroundHTMLScannerTest, DuplicateSheets) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan(String("<style>") + kStyleText + "</style>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeCSSTokenizer(kStyleText), nullptr);
+
+  scanner->Scan(String("<style>") + kStyleText + "</style>");
+  FlushTaskRunner();
+  // Tokenizer should not be created a second time.
+  EXPECT_EQ(parser->TakeCSSTokenizer(kStyleText), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, PrecompileScriptsTurnedOff) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser, false);
+  scanner->Scan(String("<script>foo</script><style>") + kStyleText +
+                "</style>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeCSSTokenizer(kStyleText), nullptr);
+  EXPECT_EQ(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, PretokenizeCSSTurnedOff) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser, true, false);
+  scanner->Scan(String("<script>foo</script><style>") + kStyleText +
+                "</style>");
+  FlushTaskRunner();
+  EXPECT_EQ(parser->TakeCSSTokenizer(kStyleText), nullptr);
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, StyleAndScript) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan(String("<style>") + kStyleText +
+                "</style><script>foo</script>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeCSSTokenizer(kStyleText), nullptr);
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, MismatchedStyleEndTags) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan("<style>foo</script></style></script>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeCSSTokenizer("foo</script>"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, MismatchedScriptEndTags) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan("<script>foo</style></script></style>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo</style>"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, ExtraStartTag) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan("<script>foo<script>bar</script>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo<script>bar"), nullptr);
 }
 
 }  // namespace

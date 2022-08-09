@@ -1082,9 +1082,7 @@ WTF::SequenceBound<HTMLPreloadScanner> HTMLPreloadScanner::CreateBackground(
       std::make_unique<CachedDocumentParameters>(document),
       MediaValuesCached::MediaValuesCachedData(*document),
       TokenPreloadScanner::ScannerType::kMainDocument,
-      base::FeatureList::IsEnabled(features::kPrecompileInlineScripts)
-          ? BackgroundHTMLScanner::ScriptTokenScanner::Create(parser)
-          : nullptr);
+      BackgroundHTMLScanner::ScriptTokenScanner::Create(parser));
 }
 
 HTMLPreloadScanner::HTMLPreloadScanner(

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -52,19 +53,32 @@ class CORE_EXPORT BackgroundHTMLScanner {
         ScriptableDocumentParser* parser);
 
     ScriptTokenScanner(ScriptableDocumentParser* parser,
-                       scoped_refptr<base::SequencedTaskRunner> task_runner);
+                       scoped_refptr<base::SequencedTaskRunner> task_runner,
+                       bool precompile_scripts,
+                       bool pretokenize_css);
 
     void ScanToken(const HTMLToken& token);
 
     void set_first_script_in_scan(bool value) { first_script_in_scan_ = value; }
 
+    void UseTaskRunnerForCSSForTesting() {
+      use_task_runner_for_css_for_testing_ = true;
+    }
+
    private:
     CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
-    StringBuilder script_builder_;
 
-    bool in_script_ = false;
+    enum class InsideTag { kNone, kScript, kStyle };
+    InsideTag in_tag_ = InsideTag::kNone;
+    StringBuilder builder_;
+    HashSet<wtf_size_t> css_text_hashes_;
+
     bool first_script_in_scan_ = false;
+    bool precompile_scripts_;
+    bool pretokenize_css_;
+
+    bool use_task_runner_for_css_for_testing_ = false;
   };
 
   // Creates a sequence bound BackgroundHTMLScanner which will live on a
