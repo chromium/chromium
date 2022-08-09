@@ -395,7 +395,11 @@ void BaseAudioContext::HandleDecodeAudioData(
     }
   }
 
-  // We've resolved the promise.  Remove it now.
+  // Resolving a promise above can result in uninitializing/clearing of the
+  // context. (e.g. dropping an iframe. See crbug.com/1350086)
+  if (is_cleared_) return;
+
+  // Otherwise the resolver should exist in the set. Check and remove it.
   DCHECK(decode_audio_resolvers_.Contains(resolver));
   decode_audio_resolvers_.erase(resolver);
 }
