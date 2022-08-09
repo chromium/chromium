@@ -217,8 +217,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     ThrottleEntry& operator=(ThrottleEntry&& other);
     ~ThrottleEntry();
 
-    std::unique_ptr<ForwardingThrottleDelegate> delegate;
     std::unique_ptr<URLLoaderThrottle> throttle;
+    std::unique_ptr<ForwardingThrottleDelegate> delegate;
   };
 
   std::vector<ThrottleEntry> throttles_;

@@ -251,7 +251,7 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
   };
 
   raw_ptr<ThrottlingURLLoader> loader_;
-  const raw_ptr<URLLoaderThrottle, DanglingUntriaged> throttle_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(
@@ -1090,17 +1090,20 @@ const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(
     ThrottlingURLLoader* loader,
     std::unique_ptr<URLLoaderThrottle> the_throttle)
-    : delegate(
-          std::make_unique<ForwardingThrottleDelegate>(loader,
-                                                       the_throttle.get())),
-      throttle(std::move(the_throttle)) {
+    : throttle(std::move(the_throttle)),
+      delegate(std::make_unique<ForwardingThrottleDelegate>(loader,
+                                                            throttle.get())) {
   throttle->set_delegate(delegate.get());
 }
 
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(ThrottleEntry&& other) =
     default;
 
-ThrottlingURLLoader::ThrottleEntry::~ThrottleEntry() = default;
+ThrottlingURLLoader::ThrottleEntry::~ThrottleEntry() {
+  // `delegate` is destroyed before `throttle`; clear the pointer so the
+  // throttle cannot inadvertently use-after-free the delegate.
+  throttle->set_delegate(nullptr);
+}
 
 ThrottlingURLLoader::ThrottleEntry& ThrottlingURLLoader::ThrottleEntry::
 operator=(ThrottleEntry&& other) = default;
