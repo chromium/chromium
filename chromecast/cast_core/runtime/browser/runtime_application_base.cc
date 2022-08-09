@@ -336,6 +336,8 @@ void RuntimeApplicationBase::OnPageLoaded() {
     cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
                                            VisibilityPriority::HIDDEN);
   }
+
+  NotifyApplicationStarted();
 }
 
 void RuntimeApplicationBase::HandlePostMessage(
