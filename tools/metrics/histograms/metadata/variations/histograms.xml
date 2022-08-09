@@ -468,6 +468,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Variations.SeedFetchTimeOnFirstRun" units="ms"
+    expires_after="2023-02-09">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The latency of fetching an initial variations seed during first run on
+    non-Android platforms. Only considers cases where an HTTP 200 result was
+    received.
+
+    The respective metric for Android's is Variations.FirstRun.SeedFetchTime.
+  </summary>
+</histogram>
+
 <histogram name="Variations.SeedFreshness" units="minutes"
     expires_after="2023-01-15">
   <owner>asvitkine@chromium.org</owner>

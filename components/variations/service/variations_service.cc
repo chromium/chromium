@@ -350,18 +350,14 @@ VariationsService::VariationsService(
       local_state_(local_state),
       state_manager_(state_manager),
       policy_pref_service_(local_state),
-      initial_request_completed_(false),
-      delta_error_since_last_success_(false),
       resource_request_allowed_notifier_(std::move(notifier)),
-      request_count_(0),
       safe_seed_manager_(local_state),
       field_trial_creator_(client_.get(),
                            std::make_unique<VariationsSeedStore>(
                                local_state,
                                MaybeImportFirstRunSeed(local_state),
                                /*signature_verification_enabled=*/true),
-                           ui_string_overrider),
-      last_request_was_http_retry_(false) {
+                           ui_string_overrider) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 
@@ -764,6 +760,13 @@ void VariationsService::OnSimpleLoaderComplete(
   const bool is_first_request = !initial_request_completed_;
   initial_request_completed_ = true;
 
+  const base::TimeTicks now = base::TimeTicks::Now();
+  if (is_first_request &&
+      !local_state_->HasPrefPath(prefs::kVariationsSeedSignature)) {
+    base::UmaHistogramTimes("Variations.SeedFetchTimeOnFirstRun",
+                            now - last_request_started_time_);
+  }
+
   const network::mojom::URLResponseHead* response_info =
       pending_seed_request_->ResponseInfo();
   const scoped_refptr<net::HttpResponseHeaders> headers =
@@ -819,7 +822,6 @@ void VariationsService::OnSimpleLoaderComplete(
   if (headers->GetDateValue(&response_date)) {
     DCHECK(!response_date.is_null());
 
-    const base::TimeTicks now = base::TimeTicks::Now();
     const base::TimeDelta latency = now - last_request_started_time_;
     client_->GetNetworkTimeTracker()->UpdateNetworkTime(
         response_date, base::Seconds(kServerTimeResolutionInSeconds), latency,
