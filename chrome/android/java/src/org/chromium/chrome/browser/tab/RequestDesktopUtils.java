@@ -8,9 +8,14 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -26,12 +31,14 @@ import java.lang.annotation.RetentionPolicy;
  * Utilities for requesting desktop sites support.
  */
 public class RequestDesktopUtils {
-    private static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
-            "default_on_display_size_threshold_inches";
-    private static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
-            12.0;
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String SITE_WILDCARD = "*";
+
+    static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
+            "default_on_display_size_threshold_inches";
+    static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 12.0;
+    static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES =
+            "default_on_on_low_end_devices";
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -142,12 +149,43 @@ public class RequestDesktopUtils {
             return false;
         }
 
-        // TODO(crbug.com/1343916): Also check new SharedPreferences for REQUEST_DESKTOP_SITE to
-        // determine if the setting should be updated. Also nice to have a Finch configurable
-        // boolean to disable default-enabling this setting on low RAM devices.
-        return displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                       ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                       PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                       DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+        // Check whether default-on for low end devices is disabled.
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                    PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, true)
+                && SysUtils.isLowEndDevice()) {
+            return false;
+        }
+
+        boolean previouslyDefaultEnabled = SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
+        boolean previouslyUpdatedByUser = SharedPreferencesManager.getInstance().contains(
+                SingleCategorySettings.USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+
+        return !previouslyDefaultEnabled && !previouslyUpdatedByUser
+                && displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                           ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                           PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                           DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+    }
+
+    /**
+     * Default-enables the desktop site global setting if {@code shouldDefaultEnableGlobalSetting}
+     * returns true.
+     * @param displaySizeInInches The device primary display size, in inches.
+     * @param profile The current {@link Profile}.
+     * @return Whether the desktop site global setting was default-enabled.
+     */
+    public static boolean maybeDefaultEnableGlobalSetting(
+            double displaySizeInInches, Profile profile) {
+        if (!shouldDefaultEnableGlobalSetting(displaySizeInInches)) {
+            return false;
+        }
+
+        WebsitePreferenceBridge.setCategoryEnabled(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, true);
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
+        return true;
     }
 }

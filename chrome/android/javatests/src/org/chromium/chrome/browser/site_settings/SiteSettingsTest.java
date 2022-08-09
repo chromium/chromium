@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -152,6 +153,11 @@ public class SiteSettingsTest {
         LocationProviderOverrider.setLocationProviderImpl(null);
         NfcSystemLevelSetting.resetNfcForTesting();
         IncognitoUtils.setEnabledForTesting(null);
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .remove(SingleCategorySettings
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)
+                .apply();
     }
 
     @AfterClass
@@ -1082,6 +1088,11 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesRequestDesktopSite() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, BINARY_TOGGLE, BINARY_TOGGLE);
+        Assert.assertTrue(
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
+                ContextUtils.getAppSharedPreferences().contains(
+                        SingleCategorySettings
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
     }
 
     @Test

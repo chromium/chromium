@@ -237,6 +237,12 @@ public final class ChromePreferenceKeys {
     public static final String DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS =
             "Chrome.DefaultBrowserPromo.PromoedBySystemSettings";
 
+    /**
+     * Indicates whether the desktop site global setting was enabled by default for a device.
+     */
+    public static final String DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING =
+            "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabled";
+
     public static final String DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT = "ResumptionAttemptLeft";
     public static final String DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
     public static final String DOWNLOAD_IS_DOWNLOAD_HOME_ENABLED =
@@ -1012,6 +1018,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
+                DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,

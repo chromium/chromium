@@ -1716,6 +1716,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.finishNativeInitialization();
 
+        if (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                    getPrimaryDisplaySizeInInches(), Profile.getLastUsedRegularProfile())) {
+            // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
+            if (getActivityTab() != null) {
+                getActivityTab().loadIfNeeded(LoadIfNeededCaller.OTHER);
+            }
+        }
+
         mManualFillingComponentSupplier.get().initialize(getWindowAndroid(),
                 mRootUiCoordinator.getBottomSheetController(),
                 (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
