@@ -83,9 +83,6 @@ class BASE_EXPORT SequenceManagerImpl
  public:
   using Observer = SequenceManager::Observer;
 
-  // This feature controls whether wake ups are possible for canceled tasks.
-  static const Feature kNoWakeUpsForCanceledTasks;
-
   SequenceManagerImpl(const SequenceManagerImpl&) = delete;
   SequenceManagerImpl& operator=(const SequenceManagerImpl&) = delete;
   ~SequenceManagerImpl() override;

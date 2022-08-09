@@ -194,10 +194,6 @@ SequenceManagerImpl* SequenceManagerImpl::GetCurrent() {
   return GetTLSSequenceManagerImpl()->Get();
 }
 
-// static
-const Feature SequenceManagerImpl::kNoWakeUpsForCanceledTasks{
-    "NoWakeUpsForCanceledTasks", FEATURE_DISABLED_BY_DEFAULT};
-
 SequenceManagerImpl::SequenceManagerImpl(
     std::unique_ptr<internal::ThreadController> controller,
     SequenceManager::Settings settings)

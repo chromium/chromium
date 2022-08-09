@@ -68,6 +68,9 @@ extern const BASE_EXPORT Feature kUseBackgroundNativeThreadPool;
 // minutes, instead of 30 seconds.
 extern const BASE_EXPORT Feature kUseFiveMinutesThreadReclaimTime;
 
+// This feature controls whether wake ups are possible for canceled tasks.
+extern const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks;
+
 // Controls whether or not canceled delayed tasks are removed from task queues.
 extern const BASE_EXPORT base::Feature kRemoveCanceledTasksInTaskQueue;
 

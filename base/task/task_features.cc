@@ -47,6 +47,10 @@ const Feature kUseBackgroundNativeThreadPool = {
 const Feature kUseFiveMinutesThreadReclaimTime = {
     "UseFiveMinutesThreadReclaimTime", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// static
+const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks{
+    "NoWakeUpsForCanceledTasks", FEATURE_DISABLED_BY_DEFAULT};
+
 const BASE_EXPORT Feature kRemoveCanceledTasksInTaskQueue = {
     "RemoveCanceledTasksInTaskQueue2", base::FEATURE_DISABLED_BY_DEFAULT};
 

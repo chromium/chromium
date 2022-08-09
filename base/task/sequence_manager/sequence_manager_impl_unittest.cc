@@ -509,7 +509,7 @@ class QueueTimeTaskObserver : public TaskObserver {
 class ScopedNoWakeUpsForCanceledTasks {
  public:
   ScopedNoWakeUpsForCanceledTasks()
-      : scoped_feature_list_(SequenceManagerImpl::kNoWakeUpsForCanceledTasks) {
+      : scoped_feature_list_(kNoWakeUpsForCanceledTasks) {
     SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks();
   }
 
