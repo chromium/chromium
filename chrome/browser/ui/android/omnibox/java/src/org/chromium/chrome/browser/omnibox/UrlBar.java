@@ -62,6 +62,13 @@ public abstract class UrlBar extends AutocompleteEditText {
     private static final int MAX_DISPLAYABLE_LENGTH = 4000;
     private static final int MAX_DISPLAYABLE_LENGTH_LOW_END = 1000;
 
+    // Stylus handwriting: Setting this ime option instructs stylus writing service to restrict
+    // capturing writing events slightly outside the Url bar area. This is needed to prevent stylus
+    // handwriting in inputs in web content area that are very close to url bar area, from being
+    // committed to Url bar's Edit text. Ex: google.com search field.
+    private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
+            "restrictDirectWritingArea=true";
+
     private boolean mFirstDrawComplete;
 
     /**
@@ -303,6 +310,12 @@ public abstract class UrlBar extends AutocompleteEditText {
             mPendingScroll = false;
         }
         fixupTextDirection();
+    }
+
+    @Override
+    public void onFinishInflate() {
+        super.onFinishInflate();
+        setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
     /**
