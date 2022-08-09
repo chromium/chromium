@@ -13,7 +13,7 @@ from devil.utils import reraiser_thread
 from pylib import constants
 
 
-_MINIUMUM_TIMEOUT = 3.0
+_MINIUMUM_TIMEOUT = 5.0
 _PER_LINE_TIMEOUT = .002  # Should be able to process 500 lines per second.
 _PROCESS_START_TIMEOUT = 10.0
 _MAX_RESTARTS = 10  # Should be plenty unless tool is crashing on start-up.
