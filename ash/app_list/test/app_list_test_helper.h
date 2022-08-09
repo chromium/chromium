@@ -153,6 +153,7 @@ class AppListTestHelper {
   std::vector<ash::AppListSearchResultCategory>* GetOrderedResultCategories();
 
   test::AppListTestModel* model() { return &model_; }
+  SearchModel* search_model() { return &search_model_; }
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
  private:
