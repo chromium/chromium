@@ -227,8 +227,16 @@ base::TimeDelta GetRandomRejectionTime() {
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost& host,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_context,
+    FederatedIdentityActiveSessionPermissionContextDelegate*
+        active_session_permission_context,
+    FederatedIdentitySharingPermissionContextDelegate*
+        sharing_permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
+      api_permission_delegate_(api_permission_context),
+      active_session_permission_delegate_(active_session_permission_context),
+      sharing_permission_delegate_(sharing_permission_context),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
@@ -248,17 +256,40 @@ void FederatedAuthRequestImpl::Create(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   CHECK(host);
 
+  BrowserContext* browser_context = host->GetBrowserContext();
+  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
+      api_permission_context =
+          browser_context->GetFederatedIdentityApiPermissionContext();
+  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
+      active_session_permission_context =
+          browser_context->GetFederatedIdentityActiveSessionPermissionContext();
+  raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
+      sharing_permission_context =
+          browser_context->GetFederatedIdentitySharingPermissionContext();
+  if (!api_permission_context || !active_session_permission_context ||
+      !sharing_permission_context) {
+    return;
+  }
+
   // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
-  new FederatedAuthRequestImpl(*host, std::move(receiver));
+  new FederatedAuthRequestImpl(*host, api_permission_context,
+                               active_session_permission_context,
+                               sharing_permission_context, std::move(receiver));
 }
 
-// static
 FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
     RenderFrameHost& host,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_context,
+    FederatedIdentityActiveSessionPermissionContextDelegate*
+        active_session_permission_context,
+    FederatedIdentitySharingPermissionContextDelegate*
+        sharing_permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  return *new FederatedAuthRequestImpl(host, std::move(receiver));
+  return *new FederatedAuthRequestImpl(
+      host, api_permission_context, active_session_permission_context,
+      sharing_permission_context, std::move(receiver));
 }
 
 void FederatedAuthRequestImpl::RequestToken(const GURL& provider,
@@ -286,12 +317,6 @@ void FederatedAuthRequestImpl::RequestToken(const GURL& provider,
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
 
-  if (!GetApiPermissionContext()) {
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_delay_callback=*/false);
-    return;
-  }
-
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNoNetworkManager);
@@ -303,7 +328,7 @@ void FederatedAuthRequestImpl::RequestToken(const GURL& provider,
   }
 
   FederatedApiPermissionStatus permission_status =
-      GetApiPermissionContext()->GetApiPermissionStatus(origin());
+      api_permission_delegate_->GetApiPermissionStatus(origin());
 
   absl::optional<TokenStatus> error_token_status;
   FederatedAuthRequestResult request_result =
@@ -392,7 +417,7 @@ void FederatedAuthRequestImpl::LogoutRps(
   }
 
   network_manager_ = CreateNetworkManager(origin().GetURL());
-  if (!network_manager_ || !GetApiPermissionContext()) {
+  if (!network_manager_) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }
@@ -402,7 +427,7 @@ void FederatedAuthRequestImpl::LogoutRps(
     return;
   }
 
-  if (GetApiPermissionContext()->GetApiPermissionStatus(origin()) !=
+  if (api_permission_delegate_->GetApiPermissionStatus(origin()) !=
       FederatedApiPermissionStatus::GRANTED) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
@@ -683,8 +708,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // Record when IDP and browser have different user sign-in states.
         bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
         bool browser_observed_sign_in =
-            GetSharingPermissionContext() &&
-            GetSharingPermissionContext()->HasSharingPermission(
+            sharing_permission_delegate_->HasSharingPermission(
                 origin(), url::Origin::Create(provider_), account.id);
 
         if (idp_claimed_sign_in == browser_observed_sign_in) {
@@ -753,7 +777,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
-  if (GetApiPermissionContext()->GetApiPermissionStatus(origin()) !=
+  if (api_permission_delegate_->GetApiPermissionStatus(origin()) !=
       FederatedApiPermissionStatus::GRANTED) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kDisabledInSettings);
 
@@ -764,9 +788,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
 
   RecordIsSignInUser(is_sign_in);
 
-  if (GetApiPermissionContext()) {
-    GetApiPermissionContext()->RemoveEmbargoAndResetCounts(origin());
-  }
+  api_permission_delegate_->RemoveEmbargoAndResetCounts(origin());
 
   account_id_ = account_id;
   select_account_time_ = base::TimeTicks::Now();
@@ -804,8 +826,8 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNotSelectAccount);
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  if (should_embargo && GetApiPermissionContext()) {
-    GetApiPermissionContext()->RecordDismissAndEmbargo(origin());
+  if (should_embargo) {
+    api_permission_delegate_->RecordDismissAndEmbargo(origin());
   }
 
   // Reject the promise immediately if the UI is dismissed without selecting
@@ -877,28 +899,24 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      if (GetSharingPermissionContext()) {
-        // Grant sharing permission specific to *this account*.
-        //
-        // TODO(majidvp): But wait which account?
-        //   1) The account that user selected in our UI (i.e., account_id_) or
-        //   2) The one for which the IDP generated a token.
-        //
-        // Ideally these are one and the same but currently there is no
-        // enforcement for that equality so they could be different. In the
-        // future we may want to enforce that the token account (aka subject)
-        // matches the user selected account. But for now these questions are
-        // moot since we don't actually inspect the returned idtoken.
-        // https://crbug.com/1199088
-        CHECK(!account_id_.empty());
-        GetSharingPermissionContext()->GrantSharingPermission(
-            origin(), url::Origin::Create(provider_), account_id_);
-      }
+      // Grant sharing permission specific to *this account*.
+      //
+      // TODO(majidvp): But wait which account?
+      //   1) The account that user selected in our UI (i.e., account_id_) or
+      //   2) The one for which the IDP generated a token.
+      //
+      // Ideally these are one and the same but currently there is no
+      // enforcement for that equality so they could be different. In the
+      // future we may want to enforce that the token account (aka subject)
+      // matches the user selected account. But for now these questions are
+      // moot since we don't actually inspect the returned idtoken.
+      // https://crbug.com/1199088
+      CHECK(!account_id_.empty());
+      sharing_permission_delegate_->GrantSharingPermission(
+          origin(), url::Origin::Create(provider_), account_id_);
 
-      if (GetActiveSessionPermissionContext()) {
-        GetActiveSessionPermissionContext()->GrantActiveSession(
-            origin(), url::Origin::Create(provider_), account_id_);
-      }
+      active_session_permission_delegate_->GrantActiveSession(
+          origin(), url::Origin::Create(provider_), account_id_);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           token_response_time_ - select_account_time_,
@@ -918,18 +936,13 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   auto logout_origin = url::Origin::Create(logout_request->url);
   logout_requests_.pop();
 
-  if (!GetActiveSessionPermissionContext()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  if (GetActiveSessionPermissionContext()->HasActiveSession(
+  if (active_session_permission_delegate_->HasActiveSession(
           logout_origin, origin(), account_id)) {
     network_manager_->SendLogout(
         logout_request->url,
         base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
-    GetActiveSessionPermissionContext()->RevokeActiveSession(
+    active_session_permission_delegate_->RevokeActiveSession(
         logout_origin, origin(), account_id);
   } else {
     if (logout_requests_.empty()) {
@@ -1027,8 +1040,7 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
 }
 
 bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediately() {
-  return GetApiPermissionContext() &&
-         GetApiPermissionContext()->ShouldCompleteRequestImmediately();
+  return api_permission_delegate_->ShouldCompleteRequestImmediately();
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(
@@ -1080,55 +1092,6 @@ void FederatedAuthRequestImpl::SetNetworkManagerForTests(
 void FederatedAuthRequestImpl::SetDialogControllerForTests(
     std::unique_ptr<IdentityRequestDialogController> controller) {
   mock_dialog_controller_ = std::move(controller);
-}
-
-void FederatedAuthRequestImpl::SetActiveSessionPermissionDelegateForTests(
-    FederatedIdentityActiveSessionPermissionContextDelegate*
-        active_session_permission_delegate) {
-  active_session_permission_delegate_ = active_session_permission_delegate;
-}
-
-void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
-    FederatedIdentitySharingPermissionContextDelegate*
-        sharing_permission_delegate) {
-  sharing_permission_delegate_ = sharing_permission_delegate;
-}
-
-void FederatedAuthRequestImpl::SetApiPermissionDelegateForTests(
-    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
-  api_permission_delegate_ = api_permission_delegate;
-}
-
-FederatedIdentityActiveSessionPermissionContextDelegate*
-FederatedAuthRequestImpl::GetActiveSessionPermissionContext() {
-  if (!active_session_permission_delegate_) {
-    active_session_permission_delegate_ =
-        render_frame_host()
-            .GetBrowserContext()
-            ->GetFederatedIdentityActiveSessionPermissionContext();
-  }
-  return active_session_permission_delegate_;
-}
-
-FederatedIdentityApiPermissionContextDelegate*
-FederatedAuthRequestImpl::GetApiPermissionContext() {
-  if (!api_permission_delegate_) {
-    api_permission_delegate_ = render_frame_host()
-                                   .GetBrowserContext()
-                                   ->GetFederatedIdentityApiPermissionContext();
-  }
-  return api_permission_delegate_;
-}
-
-FederatedIdentitySharingPermissionContextDelegate*
-FederatedAuthRequestImpl::GetSharingPermissionContext() {
-  if (!sharing_permission_delegate_) {
-    sharing_permission_delegate_ =
-        render_frame_host()
-            .GetBrowserContext()
-            ->GetFederatedIdentitySharingPermissionContext();
-  }
-  return sharing_permission_delegate_;
 }
 
 void FederatedAuthRequestImpl::OnRejectRequest() {

@@ -45,6 +45,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
   static FederatedAuthRequestImpl& CreateForTesting(
       RenderFrameHost&,
+      FederatedIdentityApiPermissionContextDelegate*,
+      FederatedIdentityActiveSessionPermissionContextDelegate*,
+      FederatedIdentitySharingPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
@@ -67,12 +70,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
-  void SetActiveSessionPermissionDelegateForTests(
-      FederatedIdentityActiveSessionPermissionContextDelegate*);
-  void SetSharingPermissionDelegateForTests(
-      FederatedIdentitySharingPermissionContextDelegate*);
-  void SetApiPermissionDelegateForTests(
-      FederatedIdentityApiPermissionContextDelegate*);
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
@@ -82,6 +79,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   FederatedAuthRequestImpl(
       RenderFrameHost&,
+      FederatedIdentityApiPermissionContextDelegate*,
+      FederatedIdentityActiveSessionPermissionContextDelegate*,
+      FederatedIdentitySharingPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
@@ -125,12 +125,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
       const GURL& provider);
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
-
-  FederatedIdentityActiveSessionPermissionContextDelegate*
-  GetActiveSessionPermissionContext();
-  FederatedIdentityApiPermissionContextDelegate* GetApiPermissionContext();
-  FederatedIdentitySharingPermissionContextDelegate*
-  GetSharingPermissionContext();
 
   // Creates an inspector issue related to a federated authentication request to
   // the Issues panel in DevTools.
@@ -185,10 +179,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool manifest_list_checked_ = false;
   absl::optional<IdentityProviderMetadata> idp_metadata_;
 
-  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
-      active_session_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
+  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
+      active_session_permission_delegate_ = nullptr;
   raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
       sharing_permission_delegate_ = nullptr;
 

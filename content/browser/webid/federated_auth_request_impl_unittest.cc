@@ -533,19 +533,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
-        *main_test_rfh(), request_remote_.BindNewPipeAndPassReceiver());
+        *main_test_rfh(), test_api_permission_delegate_.get(),
+        mock_active_session_permission_delegate_.get(),
+        mock_sharing_permission_delegate_.get(),
+        request_remote_.BindNewPipeAndPassReceiver());
     auto mock_dialog_controller =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
     mock_dialog_controller_ = mock_dialog_controller.get();
     federated_auth_request_impl_->SetDialogControllerForTests(
         std::move(mock_dialog_controller));
-
-    federated_auth_request_impl_->SetApiPermissionDelegateForTests(
-        test_api_permission_delegate_.get());
-    federated_auth_request_impl_->SetSharingPermissionDelegateForTests(
-        mock_sharing_permission_delegate_.get());
-    federated_auth_request_impl()->SetActiveSessionPermissionDelegateForTests(
-        mock_active_session_permission_delegate_.get());
 
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
