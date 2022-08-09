@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_USER_NUDGE_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_USER_NUDGE_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
 
@@ -94,6 +95,8 @@ class UserNudgeController {
   // If set to true, we will set a user pref to disable this nudge forever at
   // the time when `this` is destroyed.
   bool should_dismiss_nudge_forever_ = false;
+
+  base::WeakPtrFactory<UserNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

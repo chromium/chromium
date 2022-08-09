@@ -140,7 +140,7 @@ void UserNudgeController::SetVisible(bool visible) {
   // animation.
   builder
       .OnEnded(base::BindOnce(&UserNudgeController::PerformNudgeAnimations,
-                              base::Unretained(this)))
+                              weak_ptr_factory_.GetWeakPtr()))
       .Once()
       .SetDuration(kDelayToShowNudge)
       .SetOpacity(&base_ring_, kBaseRingOpacity, gfx::Tween::FAST_OUT_SLOW_IN);
@@ -216,7 +216,7 @@ void UserNudgeController::PerformViewScaleAnimation() {
 void UserNudgeController::OnBaseRingAnimationEnded() {
   timer_.Start(FROM_HERE, kDelayToRepeatNudge,
                base::BindOnce(&UserNudgeController::PerformNudgeAnimations,
-                              base::Unretained(this)));
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 aura::Window* UserNudgeController::GetParentWindow() const {

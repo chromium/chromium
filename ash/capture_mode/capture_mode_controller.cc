@@ -423,6 +423,13 @@ CaptureModeController::CaptureModeController(
 }
 
 CaptureModeController::~CaptureModeController() {
+  if (IsActive()) {
+    // If for some reason a session was started after `OnChromeTerminating()`
+    // was called (see https://crbug.com/1350711), we must explicitly shut it
+    // down, so that it can stop observing the things it observes.
+    Stop();
+  }
+
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
   // Remove the custom notification view factories.

@@ -778,11 +778,16 @@ Shell::~Shell() {
   window_cycle_controller_.reset();
   overview_controller_.reset();
 
+  // This must be destroyed before deleting all the windows below in
+  // `CloseAllRootWindowChildWindows()`, since shutting down the session will
+  // need to access those windows and it will be a UAF.
+  // https://crbug.com/1350711.
+  capture_mode_controller_.reset();
+
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 
   multitask_menu_nudge_controller_.reset();
-  capture_mode_controller_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
   system_notification_controller_.reset();
