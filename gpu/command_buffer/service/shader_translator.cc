@@ -166,25 +166,6 @@ bool ShaderTranslator::Init(GLenum shader_type,
   }
 
   compile_options_ = driver_bug_workarounds;
-#if ANGLE_SH_VERSION < 300
-  compile_options_ |=
-      SH_OBJECT_CODE | SH_VARIABLES | SH_ENFORCE_PACKING_RESTRICTIONS |
-      SH_LIMIT_EXPRESSION_COMPLEXITY | SH_LIMIT_CALL_STACK_DEPTH |
-      SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_EMULATE_GL_DRAW_ID |
-      SH_EMULATE_GL_BASE_VERTEX_BASE_INSTANCE;
-  if (gl_shader_interm_output)
-    compile_options_ |= SH_INTERMEDIATE_TREE;
-  switch (shader_spec) {
-    case SH_WEBGL_SPEC:
-    case SH_WEBGL2_SPEC:
-      compile_options_ |= SH_INIT_OUTPUT_VARIABLES;
-      break;
-    default:
-      break;
-  }
-  std::string compile_options_string =
-      base::NumberToString(GetCompileOptions());
-#else
   compile_options_.objectCode = true;
   compile_options_.variables = true;
   compile_options_.enforcePackingRestrictions = true;
@@ -208,12 +189,47 @@ bool ShaderTranslator::Init(GLenum shader_type,
     case SH_WEBGL_SPEC:
     case SH_WEBGL2_SPEC:
       compile_options_.initOutputVariables = true;
-      compile_options_string += ":initOutputVariables";
       break;
     default:
       break;
   }
-#endif
+
+  // Build the options string for additional features that may be set by the
+  // caller.  Note that this code is used by the validating command decoder,
+  // which is deprecated.  No new features are expected to be enabled, neither
+  // is it expected for there to be new users of this code.
+  if (compile_options_.initOutputVariables)
+    compile_options_string += ":initOutputVariables";
+  if (compile_options_.initGLPosition)
+    compile_options_string += ":initGLPosition";
+  if (compile_options_.unfoldShortCircuit)
+    compile_options_string += ":unfoldShortCircuit";
+  if (compile_options_.scalarizeVecAndMatConstructorArgs)
+    compile_options_string += ":scalarizeVecAndMatConstructorArgs";
+  if (compile_options_.regenerateStructNames)
+    compile_options_string += ":regenerateStructNames";
+  if (compile_options_.emulateAbsIntFunction)
+    compile_options_string += ":emulateAbsIntFunction";
+  if (compile_options_.rewriteTexelFetchOffsetToTexelFetch)
+    compile_options_string += ":rewriteTexelFetchOffsetToTexelFetch";
+  if (compile_options_.addAndTrueToLoopCondition)
+    compile_options_string += ":addAndTrueToLoopCondition";
+  if (compile_options_.rewriteDoWhileLoops)
+    compile_options_string += ":rewriteDoWhileLoops";
+  if (compile_options_.emulateIsnanFloatFunction)
+    compile_options_string += ":emulateIsnanFloatFunction";
+  if (compile_options_.useUnusedStandardSharedBlocks)
+    compile_options_string += ":useUnusedStandardSharedBlocks";
+  if (compile_options_.removeInvariantAndCentroidForESSL3)
+    compile_options_string += ":removeInvariantAndCentroidForESSL3";
+  if (compile_options_.rewriteFloatUnaryMinusOperator)
+    compile_options_string += ":rewriteFloatUnaryMinusOperator";
+  if (compile_options_.dontUseLoopsToInitializeVariables)
+    compile_options_string += ":dontUseLoopsToInitializeVariables";
+  if (compile_options_.removeDynamicIndexingOfSwizzledVector)
+    compile_options_string += ":removeDynamicIndexingOfSwizzledVector";
+  if (compile_options_.initializeUninitializedLocals)
+    compile_options_string += ":initializeUninitializedLocals";
 
   if (compiler_) {
     options_affecting_compilation_ =

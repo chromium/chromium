@@ -4533,40 +4533,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   }
 
   ShCompileOptions driver_bug_workarounds{};
-#if ANGLE_SH_VERSION < 300
-  if (workarounds().init_gl_position_in_vertex_shader)
-    driver_bug_workarounds |= SH_INIT_GL_POSITION;
-  if (workarounds().unfold_short_circuit_as_ternary_operation)
-    driver_bug_workarounds |= SH_UNFOLD_SHORT_CIRCUIT;
-  if (workarounds().scalarize_vec_and_mat_constructor_args)
-    driver_bug_workarounds |= SH_SCALARIZE_VEC_AND_MAT_CONSTRUCTOR_ARGS;
-  if (workarounds().regenerate_struct_names)
-    driver_bug_workarounds |= SH_REGENERATE_STRUCT_NAMES;
-  if (workarounds().emulate_abs_int_function)
-    driver_bug_workarounds |= SH_EMULATE_ABS_INT_FUNCTION;
-  if (workarounds().rewrite_texelfetchoffset_to_texelfetch)
-    driver_bug_workarounds |= SH_REWRITE_TEXELFETCHOFFSET_TO_TEXELFETCH;
-  if (workarounds().add_and_true_to_loop_condition)
-    driver_bug_workarounds |= SH_ADD_AND_TRUE_TO_LOOP_CONDITION;
-  if (workarounds().rewrite_do_while_loops)
-    driver_bug_workarounds |= SH_REWRITE_DO_WHILE_LOOPS;
-  if (workarounds().emulate_isnan_on_float)
-    driver_bug_workarounds |= SH_EMULATE_ISNAN_FLOAT_FUNCTION;
-  if (workarounds().use_unused_standard_shared_blocks)
-    driver_bug_workarounds |= SH_USE_UNUSED_STANDARD_SHARED_BLOCKS;
-  if (workarounds().remove_invariant_and_centroid_for_essl3)
-    driver_bug_workarounds |= SH_REMOVE_INVARIANT_AND_CENTROID_FOR_ESSL3;
-  if (workarounds().rewrite_float_unary_minus_operator)
-    driver_bug_workarounds |= SH_REWRITE_FLOAT_UNARY_MINUS_OPERATOR;
-  if (workarounds().dont_use_loops_to_initialize_variables)
-    driver_bug_workarounds |= SH_DONT_USE_LOOPS_TO_INITIALIZE_VARIABLES;
-  if (workarounds().remove_dynamic_indexing_of_swizzled_vector)
-    driver_bug_workarounds |= SH_REMOVE_DYNAMIC_INDEXING_OF_SWIZZLED_VECTOR;
-
-  // Initialize uninitialized locals by default
-  if (!workarounds().dont_initialize_uninitialized_locals)
-    driver_bug_workarounds |= SH_INITIALIZE_UNINITIALIZED_LOCALS;
-#else
   if (workarounds().init_gl_position_in_vertex_shader)
     driver_bug_workarounds.initGLPosition = true;
   if (workarounds().unfold_short_circuit_as_ternary_operation)
@@ -4599,7 +4565,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   // Initialize uninitialized locals by default
   if (!workarounds().dont_initialize_uninitialized_locals)
     driver_bug_workarounds.initializeUninitializedLocals = true;
-#endif
 
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(gl_version_info());

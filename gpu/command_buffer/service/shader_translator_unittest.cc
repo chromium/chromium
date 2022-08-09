@@ -400,12 +400,14 @@ TEST_F(ShaderTranslatorTest, OptionsString) {
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
 
+  ShCompileOptions with_init_output_variables{};
+  with_init_output_variables.initOutputVariables = true;
+
   ASSERT_TRUE(translator_1->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT, {}, false));
   ASSERT_TRUE(translator_2->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT,
-                                 SH_INIT_OUTPUT_VARIABLES,
-                                 false));
+                                 with_init_output_variables, false));
   resources.EXT_draw_buffers = 1;
   ASSERT_TRUE(translator_3->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT, {}, false));
@@ -435,12 +437,10 @@ class ShaderTranslatorOutputVersionTest
 TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
-#if ANGLE_SH_VERSION < 300
-  ShCompileOptions compile_options = SH_OBJECT_CODE;
-#else
+
   ShCompileOptions compile_options{};
   compile_options.objectCode = true;
-#endif
+
   ShShaderOutput shader_output_language = SH_GLSL_COMPATIBILITY_OUTPUT;
   scoped_refptr<ShaderTranslator> vertex_translator = new ShaderTranslator();
   ASSERT_TRUE(vertex_translator->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
@@ -509,12 +509,10 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
   scoped_refptr<ShaderTranslator> translator = new ShaderTranslator();
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
-#if ANGLE_SH_VERSION < 300
-  ShCompileOptions compile_options = SH_OBJECT_CODE;
-#else
+
   ShCompileOptions compile_options{};
   compile_options.objectCode = true;
-#endif
+
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(
           output_context_version);
