@@ -2451,40 +2451,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Tokenizer.MainDocument.ATypicalStates" units="bitmask"
-    expires_after="2022-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    This metric is reported for the main document when tokenizing of the input
-    completes. The histogram is a bitmask of values capturing how often
-    non-typical states are encountered. A value of 0 means none were
-    encountered. Bitmask values are:
-
-    Bit 1: Set if document.write() is encountered.
-
-    Bit 2: Set if the tokenizer state as determined by HTMLTreeBuilder does not
-    match the speculative state from HTMLTokenizer.
-
-    Bit 3: Set if the input contains a null character.
-
-    Bit 4: Set if input contains CDATA.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Tokenizer.MainDocument.LocationOfFirstATypicalState"
-    units="location" expires_after="2022-09-01">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    This metric is reported for the main document when tokenizing of the input
-    completes. This is emitted if a non-typical tokenization state is
-    encountered (see Blink.Tokenizer.MainDocument.ATypicalStates for more
-    details). The value is the location in the input stream of the first
-    non-typical state.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
     units="microseconds" expires_after="2022-12-11">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

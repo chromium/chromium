@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
-#include "third_party/blink/renderer/core/html/parser/html_tokenizer_metrics_reporter.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -111,16 +110,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   bool HasPendingWorkScheduledForTesting() const;
 
   HTMLTokenizer* Tokenizer() const { return tokenizer_.get(); }
-
-  void SetTokenizerState(const AtomicHTMLToken& token,
-                         HTMLTokenizer::State state) {
-    DCHECK(tokenizer_);
-    if (tokenizer_metrics_reporter_) {
-      tokenizer_metrics_reporter_->WillChangeTokenizerState(input_.Current(),
-                                                            token, state);
-    }
-    tokenizer_->SetState(state);
-  }
 
   TextPosition GetTextPosition() const final;
   OrdinalNumber LineNumber() const final;
@@ -230,7 +219,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   Member<HTMLParserReentryPermit> reentry_permit_ =
       MakeGarbageCollected<HTMLParserReentryPermit>();
 
-  std::unique_ptr<HTMLTokenizerMetricsReporter> tokenizer_metrics_reporter_;
   std::unique_ptr<HTMLToken> token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   Member<HTMLParserScriptRunner> script_runner_;
