@@ -64,15 +64,18 @@ void OptimizationGuideMessageHandler::OnMessage(
   optimization_guide::proto::HintNotificationPayload hint_notification_payload;
   if (!hint_notification_payload.ParseFromString(
           notification_proto.hint_notification_payload_bytes())) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
-                           "Can't parse the HintNotificationPayload proto from "
-                           "OptimizationGuidePushNotification.");
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::HINTS_NOTIFICATIONS,
+        optimization_guide_logger_,
+        "Can't parse the HintNotificationPayload proto from "
+        "OptimizationGuidePushNotification.");
     std::move(done_callback).Run(/*response=*/nullptr);
     return;
   }
   OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::HINTS_NOTIFICATIONS,
       optimization_guide_logger_,
-      base::StrCat({"Received push notifation for type:",
+      base::StrCat({"Received push notification for type:",
                     optimization_guide::GetStringNameForOptimizationType(
                         hint_notification_payload.optimization_type()),
                     " hint_key:", hint_notification_payload.hint_key()}));

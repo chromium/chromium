@@ -16,6 +16,8 @@ static_library("webui") {
   deps = [
     "//base",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:interfaces",
     "//components/optimization_guide/optimization_guide_internals/resources:resources",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//third_party/abseil-cpp:absl",
@@ -26,5 +28,8 @@ static_library("webui") {
 mojom("mojo_bindings") {
   sources = [ "optimization_guide_internals.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//components/optimization_guide/core:interfaces",
+    "//mojo/public/mojom/base",
+  ]
 }

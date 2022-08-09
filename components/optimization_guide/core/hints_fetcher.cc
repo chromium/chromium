@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -181,6 +182,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   if (active_url_loader_) {
     OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::HINTS,
         optimization_guide_logger_,
         "No hints fetched: HintsFetcher busy in another fetch");
     RecordRequestStatusHistogram(request_context_,
@@ -193,7 +195,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
       GetSizeLimitedHostsDueForHintsRefresh(hosts);
   std::vector<GURL> valid_urls = GetSizeLimitedURLsForFetching(urls);
   if (filtered_hosts.empty() && valid_urls.empty()) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_common::mojom::LogSource::HINTS,
+                           optimization_guide_logger_,
                            "No hints fetched: No hosts/URLs");
     RecordRequestStatusHistogram(
         request_context_, HintsFetcherRequestStatus::kNoHostsOrURLsToFetch);
@@ -207,7 +210,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
             valid_urls.size());
 
   if (optimization_types.empty()) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_common::mojom::LogSource::HINTS,
+                           optimization_guide_logger_,
                            "No hints fetched: No supported optimization types");
     RecordRequestStatusHistogram(
         request_context_,
@@ -442,6 +446,7 @@ std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
               GetStringNameForRequestContext(request_context_),
           urls.size() - i);
       OPTIMIZATION_GUIDE_LOG(
+          optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding URL due to limit, context:",
                         GetStringNameForRequestContext(request_context_),
@@ -452,6 +457,7 @@ std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
       valid_urls.push_back(urls[i]);
     } else {
       OPTIMIZATION_GUIDE_LOG(
+          optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding invalid URL, context:",
                         GetStringNameForRequestContext(request_context_),
@@ -490,6 +496,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     if (host_info.IsIPAddress() ||
         !net::IsCanonicalizedHostCompliant(canonicalized_host)) {
       OPTIMIZATION_GUIDE_LOG(
+          optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding invalid host:", host}));
       continue;
@@ -510,6 +517,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
       target_hosts.push_back(host);
     } else {
       OPTIMIZATION_GUIDE_LOG(
+          optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped refreshing hints for host:", host}));
     }

@@ -28,6 +28,7 @@ class OptimizationGuideInternalsPageHandlerImpl
  private:
   // optimization_guide::OptimizationGuideLogger::Observer overrides.
   void OnLogMessageAdded(base::Time event_time,
+                         optimization_guide_common::mojom::LogSource log_source,
                          const std::string& source_file,
                          int source_line,
                          const std::string& message) override;

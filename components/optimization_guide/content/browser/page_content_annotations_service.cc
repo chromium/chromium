@@ -590,7 +590,9 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
   replacements.ClearQuery();
   replacements.ClearRef();
 
-  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
+      optimization_guide_logger_)
       << "Entities: Url=" << url.ReplaceComponents(replacements)
       << " Weight=" << std::to_string(weight) << ". "
       << entity_metadata->ToHumanReadableString();

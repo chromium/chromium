@@ -113,27 +113,34 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
   if (!optimization_guide::switches::IsDebugLogsEnabled())
     return;
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
-                           "FEATURE_FLAG Hints component disabled");
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger, "FEATURE_FLAG Hints component disabled");
   }
   if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
-                           "FEATURE_FLAG remote fetching feature disabled");
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching feature disabled");
   }
   if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
           profile->IsOffTheRecord(), profile->GetPrefs())) {
     OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
         optimization_guide_logger,
         "FEATURE_FLAG remote fetching user permission disabled");
   }
   if (!optimization_guide::features::IsPushNotificationsEnabled()) {
     OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
         optimization_guide_logger,
         "FEATURE_FLAG remote push notification feature disabled");
   }
   if (!optimization_guide::features::IsModelDownloadingEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
-                           "FEATURE_FLAG model downloading feature disabled");
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG model downloading feature disabled");
   }
 }
 
@@ -303,8 +310,10 @@ void OptimizationGuideKeyedService::Initialize() {
   // stores deleted.
   DeleteOldStorePaths(profile_path);
 
-  OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
-                         "OptimizationGuide: KeyedService is initalized");
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+      optimization_guide_logger_,
+      "OptimizationGuide: KeyedService is initalized");
 
   LogFeatureFlagsInfo(optimization_guide_logger_.get(), profile);
 }

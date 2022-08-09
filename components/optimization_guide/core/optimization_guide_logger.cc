@@ -20,10 +20,12 @@ constexpr size_t kMaxRecentLogMessages = 100;
 }  // namespace
 
 OptimizationGuideLogger::LogMessageBuilder::LogMessageBuilder(
+    optimization_guide_common::mojom::LogSource log_source,
     const std::string& source_file,
     int source_line,
     OptimizationGuideLogger* optimization_guide_logger)
-    : source_file_(source_file),
+    : log_source_(log_source),
+      source_file_(source_file),
       source_line_(source_line),
       optimization_guide_logger_(optimization_guide_logger) {}
 
@@ -35,8 +37,8 @@ OptimizationGuideLogger::LogMessageBuilder::~LogMessageBuilder() {
   }
 
   std::string message = base::StrCat(messages_);
-  optimization_guide_logger_->OnLogMessageAdded(base::Time::Now(), source_file_,
-                                                source_line_, message);
+  optimization_guide_logger_->OnLogMessageAdded(
+      base::Time::Now(), log_source_, source_file_, source_line_, message);
   DVLOG(0) << source_file_ << "(" << source_line_ << ") " << message;
 }
 
@@ -99,11 +101,14 @@ OptimizationGuideLogger::LogMessageBuilder::operator<<(
   return *this;
 }
 
-OptimizationGuideLogger::LogMessage::LogMessage(base::Time event_time,
-                                                const std::string& source_file,
-                                                int source_line,
-                                                const std::string& message)
+OptimizationGuideLogger::LogMessage::LogMessage(
+    base::Time event_time,
+    optimization_guide_common::mojom::LogSource log_source,
+    const std::string& source_file,
+    int source_line,
+    const std::string& message)
     : event_time(event_time),
+      log_source(log_source),
       source_file(source_file),
       source_line(source_line),
       message(message) {}
@@ -121,8 +126,9 @@ void OptimizationGuideLogger::AddObserver(
   if (optimization_guide::switches::IsDebugLogsEnabled()) {
     for (const auto& message : recent_log_messages_) {
       for (Observer& obs : observers_) {
-        obs.OnLogMessageAdded(message.event_time, message.source_file,
-                              message.source_line, message.message);
+        obs.OnLogMessageAdded(message.event_time, message.log_source,
+                              message.source_file, message.source_line,
+                              message.message);
       }
     }
   }
@@ -133,18 +139,21 @@ void OptimizationGuideLogger::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void OptimizationGuideLogger::OnLogMessageAdded(base::Time event_time,
-                                                const std::string& source_file,
-                                                int source_line,
-                                                const std::string& message) {
+void OptimizationGuideLogger::OnLogMessageAdded(
+    base::Time event_time,
+    optimization_guide_common::mojom::LogSource log_source,
+    const std::string& source_file,
+    int source_line,
+    const std::string& message) {
   if (optimization_guide::switches::IsDebugLogsEnabled()) {
-    recent_log_messages_.emplace_back(event_time, source_file, source_line,
-                                      message);
+    recent_log_messages_.emplace_back(event_time, log_source, source_file,
+                                      source_line, message);
     if (recent_log_messages_.size() > kMaxRecentLogMessages)
       recent_log_messages_.pop_front();
   }
   for (Observer& obs : observers_)
-    obs.OnLogMessageAdded(event_time, source_file, source_line, message);
+    obs.OnLogMessageAdded(event_time, log_source, source_file, source_line,
+                          message);
 }
 
 bool OptimizationGuideLogger::ShouldEnableDebugLogs() const {

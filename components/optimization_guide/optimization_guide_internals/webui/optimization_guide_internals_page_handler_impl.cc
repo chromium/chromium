@@ -24,8 +24,10 @@ OptimizationGuideInternalsPageHandlerImpl::
 
 void OptimizationGuideInternalsPageHandlerImpl::OnLogMessageAdded(
     base::Time event_time,
+    optimization_guide_common::mojom::LogSource log_source,
     const std::string& source_file,
     int source_line,
     const std::string& message) {
-  page_->OnLogMessageAdded(event_time, source_file, source_line, message);
+  page_->OnLogMessageAdded(event_time, log_source, source_file, source_line,
+                           message);
 }

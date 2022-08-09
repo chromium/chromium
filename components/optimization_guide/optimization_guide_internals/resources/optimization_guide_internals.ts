@@ -8,8 +8,12 @@ import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-we
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
 // Contains all the log events received when the internals page is open.
-const logMessages:
-    Array<{eventTime: string, sourceLocation: string, message: string}> = [];
+const logMessages: Array<{
+  eventTime: string,
+  logSource: string,
+  sourceLocation: string,
+  message: string,
+}> = [];
 
 /**
  * Converts a mojo time to a JS time.
@@ -52,6 +56,32 @@ function getChromiumSourceLink(sourceFile: string, sourceLine: number) {
 }
 
 /**
+ * Maps the logSource to a human readable string representation.
+ * Must be kept in sync with the |LogSource| enum in
+ * optimization_guide_internals/webui/optimization_guide_internals.mojom.
+ * @param logSource
+ * @returns string
+ */
+function getLogSource(logSource: number) {
+  if (logSource == 1) {
+    return 'SERVICE_AND_SETTINGS';
+  }
+  if (logSource == 2) {
+    return 'HINTS';
+  }
+  if (logSource == 3) {
+    return 'MODEL_MANAGEMENT';
+  }
+  if (logSource == 4) {
+    return 'PAGE_CONTENT_ANNOTATIONS';
+  }
+  if (logSource == 5) {
+    return 'HINTS_NOTIFICATIONS';
+  }
+  return logSource.toString();
+}
+
+/**
  * The callback to button#log-messages-dump to save the logs to a file.
  */
 function onLogMessagesDump() {
@@ -82,14 +112,21 @@ function initialize() {
   $('log-messages-dump').addEventListener('click', onLogMessagesDump);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
-      (eventTime: Time, sourceFile: string, sourceLine: number,
-       message: string) => {
+      (eventTime: Time, logSource: number, sourceFile: string,
+       sourceLine: number, message: string) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
         const sourceLocation = getChromiumSourceLink(sourceFile, sourceLine);
-        logMessages.push({eventTime: eventTimeStr, sourceLocation, message});
+        const logSourceStr = getLogSource(logSource);
+        logMessages.push({
+          eventTime: eventTimeStr,
+          logSource: logSourceStr,
+          sourceLocation,
+          message,
+        });
         if (logMessageContainer) {
           const logmessage = logMessageContainer.insertRow();
           logmessage.insertCell().innerHTML = eventTimeStr;
+          logmessage.insertCell().innerHTML = logSourceStr;
           logmessage.insertCell().innerHTML = sourceLocation;
           logmessage.insertCell().innerHTML = message;
         }

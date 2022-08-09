@@ -5,6 +5,7 @@
 
 module optimization_guide_internals.mojom;
 
+import "components/optimization_guide/core/optimization_guide_common.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -18,6 +19,7 @@ interface PageHandlerFactory {
 interface Page {
   // Notifies the page of a log event from the OptimizationGuide service.
   OnLogMessageAdded(mojo_base.mojom.Time event_time,
+                    optimization_guide_common.mojom.LogSource log_source,
                     string source_file,
                     int64 source_line,
                     string message);

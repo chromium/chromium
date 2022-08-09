@@ -238,7 +238,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+        optimization_guide_logger_)
         << "Observer added for OptimizationTarget: " << optimization_target;
   }
 
@@ -247,7 +249,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   if (model_it != optimization_target_model_info_map_.end()) {
     observer->OnModelUpdated(optimization_target, *model_it->second);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+          optimization_guide_logger_)
           << "OnModelFileUpdated for OptimizationTarget: "
           << optimization_target << "\nFile path: "
           << (*model_it->second).GetModelFilePath().AsUTF8Unsafe()
@@ -273,7 +277,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   registered_optimization_targets_and_metadata_.emplace(optimization_target,
                                                         model_metadata);
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+        optimization_guide_logger_)
         << "Registered new OptimizationTarget: " << optimization_target;
   }
 
@@ -412,7 +418,9 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
 
     models_info.push_back(model_info);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+          optimization_guide_logger_)
           << "Fetching models for Optimization Target "
           << model_info.optimization_target();
     }
@@ -489,7 +497,9 @@ void PredictionManager::UpdatePredictionModels(
                     model.model_info().optimization_target()),
             download_url.is_valid());
         if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-          OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          OPTIMIZATION_GUIDE_LOGGER(
+              optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+              optimization_guide_logger_)
               << "Model download required for Optimization Target: "
               << model.model_info().optimization_target();
         }
@@ -514,7 +524,9 @@ void PredictionManager::UpdatePredictionModels(
                           std::make_unique<proto::PredictionModel>(model));
 
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+          optimization_guide_logger_)
           << "Model Download Not Required for target: "
           << model.model_info().optimization_target() << "\nNew Version: "
           << base::NumberToString(model.model_info().version());
@@ -543,7 +555,9 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
   RecordLifecycleState(model.model_info().optimization_target(),
                        ModelDeliveryEvent::kModelDownloaded);
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+        optimization_guide_logger_)
         << "Model Files Downloaded target: "
         << model.model_info().optimization_target()
         << "\nNew Version: " +
@@ -592,7 +606,9 @@ void PredictionManager::NotifyObserversOfNewModel(
   for (auto& observer : observers_it->second) {
     observer.OnModelUpdated(optimization_target, model_info);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,
+          optimization_guide_logger_)
           << "OnModelFileUpdated for target: " << optimization_target
           << "\nFile path: " << model_info.GetModelFilePath().AsUTF8Unsafe()
           << "\nHas metadata: "
