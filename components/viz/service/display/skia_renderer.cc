@@ -322,12 +322,16 @@ sk_sp<SkColorFilter> MakeOpacityFilter(float alpha, sk_sp<SkColorFilter> in) {
   // MakeModeFilter treats fixed color as src, and input color as dst.
   // kDstIn is (srcAlpha * dstColor, srcAlpha * dstAlpha) so this makes the
   // output color equal to input color * alpha.
+  // TODO(michaelludwig): Update to pass alpha_as_color as-is once
+  // skbug.com/13637 is resolved (adds Blend + SkColor4f variation).
   sk_sp<SkColorFilter> opacity =
       SkColorFilters::Blend(alpha_as_color.toSkColor(), SkBlendMode::kDstIn);
-  if (in) {
+  // Opaque (alpha = 1.0) and kDstIn returns nullptr to signal a no-op, so that
+  // case should just return 'in'.
+  if (opacity) {
     return opacity->makeComposed(std::move(in));
   } else {
-    return opacity;
+    return in;
   }
 }
 
