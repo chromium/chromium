@@ -47,7 +47,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
-#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -174,19 +173,6 @@ void PdfViewPluginBase::Email(const std::string& to,
   message.Set("subject", base::EscapeUrlEncodedData(subject, false));
   message.Set("body", base::EscapeUrlEncodedData(body, false));
   SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::Print() {
-  if (!engine())
-    return;
-
-  const bool can_print =
-      engine()->HasPermission(DocumentPermission::kPrintLowQuality) ||
-      engine()->HasPermission(DocumentPermission::kPrintHighQuality);
-  if (!can_print)
-    return;
-
-  InvokePrintDialog();
 }
 
 void PdfViewPluginBase::DocumentLoadComplete() {
@@ -329,12 +315,6 @@ void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   SendMessage(std::move(message));
 }
 
-void PdfViewPluginBase::SendPrintPreviewLoadedNotification() {
-  base::Value::Dict message;
-  message.Set("type", "printPreviewLoaded");
-  SendMessage(std::move(message));
-}
-
 void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {
@@ -395,47 +375,6 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
-}
-
-blink::WebPrintPresetOptions PdfViewPluginBase::GetPrintPresetOptions() {
-  blink::WebPrintPresetOptions options;
-  options.is_scaling_disabled = !engine()->GetPrintScaling();
-  options.copies = engine()->GetCopiesToPrint();
-  options.duplex_mode = engine()->GetDuplexMode();
-  options.uniform_page_size = engine()->GetUniformPageSizePoints();
-  return options;
-}
-
-int PdfViewPluginBase::PrintBegin(const blink::WebPrintParams& print_params) {
-  // The returned value is always equal to the number of pages in the PDF
-  // document irrespective of the printable area.
-  int32_t ret = engine()->GetNumberOfPages();
-  if (!ret)
-    return 0;
-
-  if (!engine()->HasPermission(DocumentPermission::kPrintLowQuality))
-    return 0;
-
-  print_params_ = print_params;
-  if (!engine()->HasPermission(DocumentPermission::kPrintHighQuality))
-    print_params_->rasterize_pdf = true;
-
-  engine()->PrintBegin();
-  return ret;
-}
-
-std::vector<uint8_t> PdfViewPluginBase::PrintPages(
-    const std::vector<int>& page_numbers) {
-  print_pages_called_ = true;
-  return engine()->PrintPages(page_numbers, print_params_.value());
-}
-
-void PdfViewPluginBase::PrintEnd() {
-  if (print_pages_called_)
-    UserMetricsRecordAction("PDF.PrintPage");
-  print_pages_called_ = false;
-  print_params_.reset();
-  engine()->PrintEnd();
 }
 
 void PdfViewPluginBase::RecalculateAreas(double old_zoom,

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -48,6 +49,7 @@ class WebAssociatedURLLoader;
 class WebURL;
 class WebURLRequest;
 struct WebAssociatedURLLoaderOptions;
+struct WebPrintPresetOptions;
 }  // namespace blink
 
 namespace gfx {
@@ -284,6 +286,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
   std::string GetURL() override;
+  void Print() override;
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
@@ -363,7 +366,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetContentRestrictions(int content_restrictions) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
-  void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,
                               const gfx::PointF& right,
@@ -489,6 +491,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Continues loading the next preview page.
   void LoadNextPreviewPage();
+
+  // Sends a notification that the print preview has loaded.
+  void SendPrintPreviewLoadedNotification();
 
   // Sends the thumbnail image data.
   void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
@@ -637,6 +642,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The indices of pages to print.
   std::vector<int> pages_to_print_;
+
+  // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
+  absl::optional<blink::WebPrintParams> print_params_;
+
+  // For identifying actual print operations to avoid double logging of UMA.
+  bool print_pages_called_;
 
   // Whether the plugin is loaded in Print Preview.
   bool is_print_preview_ = false;

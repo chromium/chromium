@@ -28,7 +28,6 @@
 
 namespace blink {
 class WebInputEvent;
-struct WebPrintPresetOptions;
 }  // namespace blink
 
 namespace gfx {
@@ -91,7 +90,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& bcc,
              const std::string& subject,
              const std::string& body) override;
-  void Print() override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
@@ -159,9 +157,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
 
-  // Send a notification that the print preview has loaded.
-  void SendPrintPreviewLoadedNotification();
-
   // Schedules invalidation tasks after painting finishes.
   void InvalidateAfterPaintDone();
 
@@ -215,22 +210,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) = 0;
 
-  // Returns the print preset options for the document.
-  blink::WebPrintPresetOptions GetPrintPresetOptions();
-
-  // Begins a print session with the given `print_params`. A call to
-  // `PrintPages()` can only be made after after a successful call to
-  // `PrintBegin()`. Returns the number of pages required for the print output.
-  // A returned value of 0 indicates failure.
-  int PrintBegin(const blink::WebPrintParams& print_params);
-
   // Prints the pages specified by `page_numbers` using the parameters passed to
   // `PrintBegin()` Returns a vector of bytes containing the printed output. An
   // empty returned value indicates failure.
   std::vector<uint8_t> PrintPages(const std::vector<int>& page_numbers);
-
-  // Ends the print session. Further calls to `PrintPages()` will fail.
-  void PrintEnd();
 
   // Disables browser commands because of restrictions on how the data is to be
   // used (i.e. can't copy/print). `content_restrictions` should have its bits
@@ -240,10 +223,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sends start/stop loading notifications to the plugin's render frame.
   virtual void DidStartLoading() = 0;
   virtual void DidStopLoading() = 0;
-
-  // Requests the plugin's render frame to set up a print dialog for the
-  // document.
-  virtual void InvokePrintDialog() = 0;
 
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.
@@ -368,12 +347,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // The next accessibility page index, used to track interprocess calls when
   // reconstructing the tree for new document layouts.
   int32_t next_accessibility_page_index_ = 0;
-
-  // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
-  absl::optional<blink::WebPrintParams> print_params_;
-
-  // For identifying actual print operations to avoid double logging of UMA.
-  bool print_pages_called_;
 };
 
 }  // namespace chrome_pdf

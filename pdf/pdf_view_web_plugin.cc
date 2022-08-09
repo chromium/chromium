@@ -82,6 +82,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -584,12 +585,29 @@ bool PdfViewWebPlugin::SupportsPaginatedPrint() {
 
 bool PdfViewWebPlugin::GetPrintPresetOptionsFromDocument(
     blink::WebPrintPresetOptions* print_preset_options) {
-  *print_preset_options = GetPrintPresetOptions();
+  print_preset_options->is_scaling_disabled = !engine_->GetPrintScaling();
+  print_preset_options->copies = engine_->GetCopiesToPrint();
+  print_preset_options->duplex_mode = engine_->GetDuplexMode();
+  print_preset_options->uniform_page_size = engine_->GetUniformPageSizePoints();
   return true;
 }
 
 int PdfViewWebPlugin::PrintBegin(const blink::WebPrintParams& print_params) {
-  return PdfViewPluginBase::PrintBegin(print_params);
+  // The returned value is always equal to the number of pages in the PDF
+  // document irrespective of the printable area.
+  int32_t ret = engine_->GetNumberOfPages();
+  if (!ret)
+    return 0;
+
+  if (!engine_->HasPermission(DocumentPermission::kPrintLowQuality))
+    return 0;
+
+  print_params_ = print_params;
+  if (!engine_->HasPermission(DocumentPermission::kPrintHighQuality))
+    print_params_->rasterize_pdf = true;
+
+  engine_->PrintBegin();
+  return ret;
 }
 
 void PdfViewWebPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
@@ -618,9 +636,16 @@ void PdfViewWebPlugin::PrintEnd() {
   if (pages_to_print_.empty())
     return;
 
-  printing_metafile_->InitFromData(PrintPages(pages_to_print_));
+  print_pages_called_ = true;
+  printing_metafile_->InitFromData(
+      engine_->PrintPages(pages_to_print_, print_params_.value()));
 
-  PdfViewPluginBase::PrintEnd();
+  if (print_pages_called_)
+    UserMetricsRecordAction("PDF.PrintPage");
+  print_pages_called_ = false;
+  print_params_.reset();
+  engine_->PrintEnd();
+
   printing_metafile_ = nullptr;
   pages_to_print_.clear();
 }
@@ -876,6 +901,21 @@ void PdfViewWebPlugin::LoadUrl(base::StringPiece url,
   UrlLoader* raw_loader = loader.get();
   raw_loader->Open(request,
                    base::BindOnce(std::move(callback), std::move(loader)));
+}
+
+void PdfViewWebPlugin::Print() {
+  if (!engine_)
+    return;
+
+  const bool can_print =
+      engine_->HasPermission(DocumentPermission::kPrintLowQuality) ||
+      engine_->HasPermission(DocumentPermission::kPrintHighQuality);
+  if (!can_print)
+    return;
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void PdfViewWebPlugin::SubmitForm(const std::string& url,
@@ -1505,12 +1545,6 @@ void PdfViewWebPlugin::DidStopLoading() {
   did_call_start_loading_ = false;
 }
 
-void PdfViewWebPlugin::InvokePrintDialog() {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
-                                weak_factory_.GetWeakPtr()));
-}
-
 void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
                                               int left_height,
                                               const gfx::PointF& right,
@@ -1904,6 +1938,12 @@ void PdfViewWebPlugin::LoadNextPreviewPage() {
 
   if (print_preview_loaded_page_count_ == print_preview_page_count_)
     SendPrintPreviewLoadedNotification();
+}
+
+void PdfViewWebPlugin::SendPrintPreviewLoadedNotification() {
+  base::Value::Dict message;
+  message.Set("type", "printPreviewLoaded");
+  SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
