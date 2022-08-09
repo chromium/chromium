@@ -114,7 +114,7 @@ try_.compilator_builder(
     main_list_view = "try",
     os = os.MAC_DEFAULT,
     experiments = {
-        "luci.buildbucket.omit_python2": 100,
+        "luci.buildbucket.omit_python2": 0,
     },
 )
 
@@ -150,7 +150,7 @@ try_.compilator_builder(
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     experiments = {
-        "luci.buildbucket.omit_python2": 100,
+        "luci.buildbucket.omit_python2": 0,
     },
 )
 
