@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "ui/display/screen.h"
 #endif
 
 class GURL;
@@ -139,6 +140,9 @@ class ShellPlatformDelegate {
 #endif
 
  private:
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+#endif
   // Data held for each Shell instance, since there is one ShellPlatformDelegate
   // for the whole browser process (shared across Shells). This is defined for
   // each platform implementation.

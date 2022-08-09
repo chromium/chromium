@@ -34,12 +34,7 @@ TestScreen::~TestScreen() {
 
 // static
 TestScreen* TestScreen::Get() {
-#if DCHECK_IS_ON()
-  if (Screen::HasScreen())
-    DCHECK_EQ(Screen::GetScreen(), test_screen);
-  else
-    DCHECK(!test_screen);
-#endif
+  DCHECK_EQ(Screen::GetScreen(), test_screen);
   return test_screen;
 }
 

@@ -29,6 +29,10 @@ class PolicyService;
 }  // namespace policy
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/screen.h"
+#endif
+
 namespace ui {
 class Compositor;
 }  // namespace ui
@@ -118,6 +122,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
 #endif
 
  protected:
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+#endif
+
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   HeadlessBrowser::Options options_;
   raw_ptr<HeadlessBrowserMainParts> browser_main_parts_;  // Not owned.

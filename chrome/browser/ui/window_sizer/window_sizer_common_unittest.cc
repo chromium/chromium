@@ -27,10 +27,7 @@ namespace {
 
 class TestScreen : public display::ScreenBase {
  public:
-  TestScreen()
-      : previous_screen_(display::Screen::HasScreen()
-                             ? display::Screen::GetScreen()
-                             : nullptr) {
+  TestScreen() : previous_screen_(display::Screen::GetScreen()) {
     display::Screen::SetScreenInstance(this);
   }
 
@@ -50,7 +47,6 @@ class TestScreen : public display::ScreenBase {
   }
 
  private:
-  // TODO(crbug.com/1350722): Remove this.
   raw_ptr<display::Screen> previous_screen_;
 };
 

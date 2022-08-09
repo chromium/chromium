@@ -31,14 +31,7 @@ Screen::~Screen() = default;
 
 // static
 Screen* Screen::GetScreen() {
-  // Create on the fly on iOS and Mac.
-  //
-  // iOS: iOS's screen is initialized using static functions and difficult to
-  // reset. Just create once.
-  //
-  // macOS: Creating a screen too early during startup can cause a crash on
-  // macos11. https:://crbug.com/1349955.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_IOS)
   if (!g_screen)
     g_screen = CreateNativeScreen();
 #endif
@@ -236,7 +229,7 @@ ScopedNativeScreen::~ScopedNativeScreen() {
 void ScopedNativeScreen::MaybeInit(const base::Location& location) {
   maybe_init_called_ = true;
   if (!Screen::HasScreen()) {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_IOS)
     Screen::GetScreen();
 #else
     screen_ = base::WrapUnique(CreateScreen());
