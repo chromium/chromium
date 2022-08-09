@@ -926,10 +926,9 @@ def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
     with simpleperf.RunSimpleperf(device, device_simpleperf_path, package_name,
                                   process_specifier, thread_specifier,
                                   extra_args, host_simpleperf_out_path):
-      sys.stdout.write('Profiler is running; press Enter to stop...')
+      sys.stdout.write('Profiler is running; press Enter to stop...\n')
       sys.stdin.read(1)
-      sys.stdout.write('Post-processing data...')
-      sys.stdout.flush()
+      sys.stdout.write('Post-processing data...\n')
 
     simpleperf.ConvertSimpleperfToPprof(host_simpleperf_out_path,
                                         host_build_directory, pprof_out_path)
