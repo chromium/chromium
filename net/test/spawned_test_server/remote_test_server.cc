@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -45,6 +46,7 @@ std::string GetServerTypeString(BaseTestServer::Type type) {
   return std::string();
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
 // Returns platform-specific path to the config file for the test server.
 base::FilePath GetTestServerConfigFilePath() {
   base::FilePath dir;
@@ -55,10 +57,19 @@ base::FilePath GetTestServerConfigFilePath() {
 #endif
   return dir.AppendASCII("net-test-server-config");
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // Reads base URL for the test server spawner. That URL is used to control the
 // test server.
-std::string ReadSpawnerUrlFromConfig() {
+std::string GetSpawnerUrlBase() {
+#if BUILDFLAG(IS_FUCHSIA)
+  std::string spawner_url_base(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "remote-test-server-spawner-url-base"));
+  LOG_IF(FATAL, spawner_url_base.empty())
+      << "--remote-test-server-spawner-url-base missing from command line";
+  return spawner_url_base;
+#else   // BUILDFLAG(IS_FUCHSIA)
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath config_path = GetTestServerConfigFilePath();
@@ -79,6 +90,7 @@ std::string ReadSpawnerUrlFromConfig() {
     LOG(FATAL) << "spawner_url_base is not specified in the config";
 
   return *result;
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace
@@ -185,7 +197,7 @@ bool RemoteTestServer::Init(const base::FilePath& document_root) {
   if (document_root.IsAbsolute())
     return false;
 
-  spawner_url_base_ = ReadSpawnerUrlFromConfig();
+  spawner_url_base_ = GetSpawnerUrlBase();
 
   bool thread_started = io_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));

@@ -56,10 +56,16 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     raise Exception('Unmap called for unknown port: %d' % device_port)
 
 
-def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
+def SetupTestServer(target, test_concurrency):
   """Provisions a forwarding test server and configures |target| to use it.
 
-  Returns a Popen object for the test server process."""
+  Args:
+    target: The target to which port forwarding to the test server will be
+      established.
+    test_concurrency: The number of parallel test jobs that will be run.
+
+  Returns a tuple of a Popen object for the test server process and the local
+  url to use on `target` to reach the test server."""
 
   logging.debug('Starting test server.')
   # The TestLauncher can launch more jobs than the limit specified with
@@ -75,15 +81,4 @@ def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
                 spawning_server.server_port)
   logging.debug('Forwarded port is %d' % forwarded_port)
 
-  with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tf:
-    tf.write(
-        json.dumps({'spawner_url_base':
-                    'http://localhost:%d' % forwarded_port}))
-
-    tf.flush()
-    target.PutFile(tf.name,
-                   '/tmp/net-test-server-config',
-                   for_package=for_package,
-                   for_realms=for_realms)
-
-  return spawning_server
+  return (spawning_server, 'http://localhost:%d' % forwarded_port)

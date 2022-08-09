@@ -28,9 +28,11 @@ class RemoteTestServerSpawnerRequest;
 // this spawner communicator. The spawner is implemented in
 // build/util/lib/common/chrome_test_server_spawner.py .
 //
-// URL for the spawner server is discovered by reading config file that's
-// expected to be written on the test device by the test scrips. Location of the
-// config dependends on platform:
+// On Fuchsia, the URL for the spawner server is passed to a test via the
+// --remote-test-server-spawner-url-base switch on the command line. On other
+// platforms, the URL is discovered by reading config file that's expected to be
+// written on the test device by the test scrips. Location of the config
+// dependends on platform:
 //   - Android: DIR_ANDROID_EXTERNAL_STORAGE/net-test-server-config
 //   - other: DIR_TEMP/net-test-server-config
 //

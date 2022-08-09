@@ -379,8 +379,10 @@ def main():
       test_server = None
       if args.enable_test_server:
         assert test_concurrency
-        test_server = SetupTestServer(target, test_concurrency,
-                                      args.package_name, test_realms)
+        (test_server,
+         spawner_url_base) = SetupTestServer(target, test_concurrency)
+        child_args.append('--remote-test-server-spawner-url-base=' +
+                          spawner_url_base)
 
       run_package_args = RunTestPackageArgs.FromCommonArgs(args)
       if args.use_run_test_component:

@@ -4542,9 +4542,9 @@ test("net_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     ]
     sources += [ "base/network_change_notifier_fuchsia_unittest.cc" ]
-    use_cfv2 = false
+    use_cfv1 = false
     additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+        [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }
 
   if (use_nss_certs) {
