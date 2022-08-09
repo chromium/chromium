@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierStatics;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
@@ -143,8 +143,10 @@ public class QualityEnforcer {
                 // We should figure out how to reuse the existing one in OriginVerifier.
                 if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK) {
                     packageName = mClientPackageNameProvider.get();
-                    signature = OriginVerifierStatics.getCertificateSHA256FingerprintForPackage(
-                            packageName);
+                    PackageManager pm = mActivity.getPackageManager();
+                    signature =
+                            PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName)
+                                    .get(0);
                 }
 
                 QualityEnforcerJni.get().reportDevtoolsIssue(tab.getWebContents().getMainFrame(),
