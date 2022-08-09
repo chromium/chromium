@@ -788,6 +788,30 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
     Can't import passwords. Check <ph name="FILENAME"><ex>file_name.csv</ex>$1</ph> and make sure it's formatted correctly.
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_PASSWORD" desc="An error message for a row that wasn't imported, because password was missing. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    A password is required
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_URL" desc="An error message for a row that wasn't imported, because URL was missing. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    A URL is required
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_INVALID_URL" desc="An error message for a row that wasn't imported, because the URL is in an unacceptable format. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    URL format should be https://www.example.com
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_USERNAME" desc="An error message for a row that wasn't imported, because the provided username exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    Username is more than 1000 characters
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_PASSWORD" desc="An error message for a row that wasn't imported, because the provided password exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    Password is more than 1000 characters
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_ACCOUNT" desc="An error message for a row that wasn't imported, because the provided credential is already stored in their Google Password Manager. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    A password for this account is already stored in your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICT_DEVICE" desc="An error message for a row that wasn't imported, because the provided credential is already stored on their device. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    A password for this account is already stored on this device
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
+    Passwords not imported (<ph name="COUNT"><ex>42</ex>$1</ph>)
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can export their passwords outside of Chrome.">
     Export passwords...
   </message>

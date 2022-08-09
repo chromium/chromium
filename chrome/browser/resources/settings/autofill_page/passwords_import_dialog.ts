@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
+import '../site_favicon.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -57,6 +58,8 @@ export class PasswordsImportDialogElement extends
       },
 
       descriptionText_: String,
+
+      results_: Object,
     };
   }
 
@@ -79,6 +82,17 @@ export class PasswordsImportDialogElement extends
   private showChooseFileButton_(): boolean {
     return this.isState_(ImportDialogState.START) ||
         this.isState_(ImportDialogState.ERROR);
+  }
+
+  private showTipBox_(): boolean {
+    // Tip box is only shown in "success" state if all passwords were imported.
+    return this.isState_(ImportDialogState.SUCCESS) &&
+        !this.results_!.failedImports.length;
+  }
+
+  private showFailuresSummary_(): boolean {
+    return this.isState_(ImportDialogState.SUCCESS) &&
+        !!this.results_!.failedImports.length;
   }
 
   /**
@@ -119,6 +133,43 @@ export class PasswordsImportDialogElement extends
 
   private getSuccessTip_(): string {
     return this.i18n('importPasswordsSuccessTip', this.results_!.fileName);
+  }
+
+  private getFailedImportsSummary_(): string {
+    return this.i18n(
+        'importPasswordsFailuresSummary', this.results_!.failedImports.length);
+  }
+
+  private getFailedEntryTextDelimiter_(
+      entry: chrome.passwordsPrivate.ImportEntry): string {
+    if (entry.url && entry.username) {
+      return ' • ';
+    }
+    return '';
+  }
+
+  private getFailedEntryError_(
+      status: chrome.passwordsPrivate.ImportEntryStatus): string {
+    switch (status) {
+      case chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD:
+        return this.i18n('importPasswordsMissingPassword');
+      case chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL:
+        return this.i18n('importPasswordsMissingURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL:
+        return this.i18n('importPasswordsInvalidURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
+        return this.i18n('importPasswordsLongPassword');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
+        return this.i18n('importPasswordsLongUsername');
+      case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE:
+        // TODO(crbug/1325290): for syncing users this should be "account
+        // conflict".
+        return this.i18n('importPasswordsConflictDevice');
+      case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
+        // TODO(crbug/1325290): fill with real data.
+        return this.i18n('importPasswordsConflictAccount', '');
+    }
+    assertNotReached();
   }
 
   private onCancelClick_() {

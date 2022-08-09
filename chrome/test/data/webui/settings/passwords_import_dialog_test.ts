@@ -10,7 +10,7 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -95,6 +95,10 @@ suite('PasswordsImportDialog', function() {
         importDialog.i18n('importPasswordsSuccessTip', 'test.csv'),
         successTip.textContent!.trim());
 
+    // Failed imports summary should not be visible.
+    assertFalse(!!importDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#failuresSummary'));
+
     const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');
     assertTrue(!!done);
     assertEquals(importDialog.i18n('done'), done.textContent!.trim());
@@ -154,6 +158,48 @@ suite('PasswordsImportDialog', function() {
     assertEquals(importDialog.i18n('close'), close.textContent!.trim());
     assertTrue(isVisible(close));
     close.click();
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectSuccessStateWithFailures', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      failedImports: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD,
+          username: 'username',
+          url: 'https://google.com',
+        },
+      ],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    flush();
+    // After the import, the dialog should switch to SUCCESS state.
+    assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
+
+    // Success tip should not be visible.
+    assertFalse(
+        !!importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip'));
+
+    const failuresSummary =
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#failuresSummary');
+    assertTrue(!!failuresSummary);
+
+    assertEquals(
+        importDialog.i18n('importPasswordsFailuresSummary', 1),
+        failuresSummary.textContent!.trim());
+
+    const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');
+    assertTrue(!!done);
+    assertEquals(importDialog.i18n('done'), done.textContent!.trim());
+    assertTrue(isVisible(done));
+    done.click();
     await eventToPromise('close', importDialog);
   });
 });
