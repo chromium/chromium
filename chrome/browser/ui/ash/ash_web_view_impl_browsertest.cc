@@ -13,6 +13,9 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -267,4 +270,46 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
 
   web_view->GoBack();
   EXPECT_DID_CHANGE_CAN_GO_BACK(web_view, /*can_go_back=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
+                       ShouldSetTemporaryZoomLevelToOne) {
+  auto widget = CreateWidget();
+  AshWebView::InitParams init_params;
+  init_params.fix_zoom_level_to_one = true;
+
+  AshWebView* web_view =
+      widget->SetContentsView(AshWebViewFactory::Get()->Create(init_params));
+  AshWebViewImpl* web_view_impl = static_cast<AshWebViewImpl*>(web_view);
+
+  web_view->Navigate(CreateDataUrlWithBody("Hello"));
+  EXPECT_DID_STOP_LOADING(web_view);
+
+  // Confirm that temporary zoom level is set to 1.
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetForWebContents(web_view_impl->web_contents());
+  content::RenderViewHost* render_view_host =
+      web_view_impl->web_contents()->GetRenderViewHost();
+  EXPECT_TRUE(
+      zoom_map->UsesTemporaryZoomLevel(render_view_host->GetProcess()->GetID(),
+                                       render_view_host->GetRoutingID()));
+  EXPECT_DOUBLE_EQ(
+      1.0, content::HostZoomMap::GetZoomLevel(web_view_impl->web_contents()));
+
+  // Navigate to a different url to trigger a RenderViewHost change.
+  web_view->Navigate(CreateDataUrlWithBody("World"));
+  EXPECT_DID_STOP_LOADING(web_view);
+  ASSERT_NE(render_view_host,
+            web_view_impl->web_contents()->GetRenderViewHost());
+
+  // Confirm that temporary zoom level is still applied even if RenderViewHost
+  // gets changed.
+  zoom_map =
+      content::HostZoomMap::GetForWebContents(web_view_impl->web_contents());
+  render_view_host = web_view_impl->web_contents()->GetRenderViewHost();
+  EXPECT_TRUE(
+      zoom_map->UsesTemporaryZoomLevel(render_view_host->GetProcess()->GetID(),
+                                       render_view_host->GetRoutingID()));
+  EXPECT_DOUBLE_EQ(
+      1.0, content::HostZoomMap::GetZoomLevel(web_view_impl->web_contents()));
 }

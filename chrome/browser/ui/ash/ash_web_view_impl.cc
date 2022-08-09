@@ -9,6 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -20,7 +23,16 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
+
+namespace {
+void FixZoomLevelToOne(content::WebContents* web_contents,
+                       content::RenderViewHost* render_view_host) {
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents);
+  zoom_map->SetTemporaryZoomLevel(render_view_host->GetProcess()->GetID(),
+                                  render_view_host->GetRoutingID(), 1.0);
+}
+}  // namespace
 
 AshWebViewImpl::AshWebViewImpl(const InitParams& params) : params_(params) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -178,6 +190,9 @@ void AshWebViewImpl::RenderViewHostChanged(content::RenderViewHost* old_host,
   if (!web_contents_->GetRenderWidgetHostView())
     return;
 
+  if (params_.fix_zoom_level_to_one)
+    FixZoomLevelToOne(web_contents_.get(), new_host);
+
   if (!params_.enable_auto_resize)
     return;
 
@@ -215,6 +230,9 @@ void AshWebViewImpl::InitWebContents(Profile* profile) {
         ->browser_handles_all_top_level_requests = true;
     web_contents_->SyncRendererPrefs();
   }
+
+  if (params_.fix_zoom_level_to_one)
+    FixZoomLevelToOne(web_contents_.get(), web_contents_->GetRenderViewHost());
 }
 
 void AshWebViewImpl::InitLayout(Profile* profile) {

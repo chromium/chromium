@@ -8,6 +8,7 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "base/base64.h"
 
@@ -43,6 +44,7 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
     contents_params.min_size = gfx::Size(width_dip, 1);
     contents_params.max_size = gfx::Size(width_dip, INT_MAX);
     contents_params.suppress_navigation = true;
+    contents_params.fix_zoom_level_to_one = true;
 
     // Create |contents_view_| and retain ownership until it is added to the
     // view hierarchy. If that never happens, it will be still be cleaned up.

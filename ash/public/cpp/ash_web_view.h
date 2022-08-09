@@ -47,6 +47,10 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     // When disabled, no media recording is allowed. It is set to `false` by
     // default as recording media is a privacy sensitive operation.
     bool can_record_media = false;
+
+    // If enabled, AshWebView fixes its zoom level to 1 (100%) for this
+    // AshWebView. This uses zoom level 1 regardless of default zoom level.
+    bool fix_zoom_level_to_one = false;
   };
 
   // An observer which receives AshWebView events.
