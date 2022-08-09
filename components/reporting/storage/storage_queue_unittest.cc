@@ -1823,11 +1823,15 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
 
+  const auto original_total_memory = options_.memory_resource()->GetTotal();
+
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        // Update total memory to a low amount.
+        options_.memory_resource()->Test_SetTotal(100u);
         return TestUploader::SetUp(&waiter, this)
             .Complete(Status(error::RESOURCE_EXHAUSTED,
                              "Insufficient memory for upload"));
@@ -1835,21 +1839,19 @@ TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
       .RetiresOnSaturation();
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
-      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+      .WillOnce(Invoke([&waiter, &original_total_memory,
+                        this](UploaderInterface::UploadReason reason) {
+        // Reset after running upload so it does not affect other tests.
+        options_.memory_resource()->Test_SetTotal(original_total_memory);
         return TestUploader::SetUp(&waiter, this)
             .Required(0, kData[0])
             .Complete();
       }))
       .RetiresOnSaturation();
 
-  // Update total memory to a low amount.
-  const auto original_total_memory = options_.memory_resource()->GetTotal();
-  options_.memory_resource()->Test_SetTotal(100);
-  // Trigger upload.
+  // Trigger upload which will experience insufficient memory.
   task_environment_.FastForwardBy(base::Seconds(1));
-  // Reset after running upload so it does not affect other tests.
-  options_.memory_resource()->Test_SetTotal(original_total_memory);
-  // Trigger another upload.
+  // Trigger another upload resetting the memory resource.
   task_environment_.FastForwardBy(base::Seconds(1));
 }
 
