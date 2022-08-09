@@ -185,15 +185,6 @@ export class OnboardingSelectComponentsPageElement extends
     this.getComponents_();
     enableNextButton(this);
 
-
-
-    // Whenever we tab into the list of components, we need to focus on the one
-    // we were focused on, when we tabbed out.
-    const componentList = this.shadowRoot.querySelector('#componentList');
-    componentList.addEventListener('focusin', (event) => {
-      this.focusOnCurrentComponent_();
-    });
-
     // Hide the gradient when the list is scrolled to the end.
     this.shadowRoot.querySelector('.scroll-container')
         .addEventListener('scroll', (event) => {
