@@ -23,8 +23,7 @@ using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
 constexpr char kTraceCategory[] = "cc,benchmark";
-constexpr int kNumOfCompositorStages =
-    static_cast<int>(StageType::kStageTypeCount) - 1;
+constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount) - 1;
 constexpr int kNumDispatchStages =
     static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
 constexpr base::TimeDelta kDefaultLatencyPredictionDeviationThreshold =
@@ -42,7 +41,7 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       previous_latency_predictions_impl_(base::Microseconds(-1)),
       event_latency_predictions_(
           CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
-                                                    kNumOfCompositorStages)) {
+                                                    kNumOfStages)) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.

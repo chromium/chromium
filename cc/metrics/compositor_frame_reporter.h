@@ -250,12 +250,8 @@ class CC_EXPORT CompositorFrameReporter {
     ~CompositorLatencyInfo();
 
     std::vector<base::TimeDelta> top_level_stages;
-    std::vector<base::TimeDelta> blink_breakdown_stages;
-    std::vector<base::TimeDelta> viz_breakdown_stages;
-
+    // TODO(crbug.com/1334823): add viz and blink breakdown
     base::TimeDelta total_latency;
-    base::TimeDelta total_blink_latency;
-    base::TimeDelta total_viz_latency;
   };
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
