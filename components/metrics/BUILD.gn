@@ -51,8 +51,6 @@ static_library("metrics") {
     "file_metrics_provider.h",
     "form_factor_metrics_provider.cc",
     "form_factor_metrics_provider.h",
-    "histogram_encoder.cc",
-    "histogram_encoder.h",
     "log_decoder.cc",
     "log_decoder.h",
     "log_store.h",
@@ -122,6 +120,7 @@ static_library("metrics") {
   ]
 
   deps = [
+    ":library_support",
     "//base",
     "//base:base_static",
     "//build:branding_buildflags",
@@ -267,14 +266,19 @@ if (!is_ios) {
   }
 }
 
+# Dependency for histogram manager users: cronet and ios/webview
 source_set("library_support") {
-  sources = [
-    "library_support/histogram_manager.cc",
+  public = [
+    "histogram_encoder.h",
     "library_support/histogram_manager.h",
   ]
+  sources = [
+    "histogram_encoder.cc",
+    "library_support/histogram_manager.cc",
+  ]
+
   deps = [
     "//base",
-    "//components/metrics:metrics",
     "//third_party/metrics_proto",
   ]
 }
