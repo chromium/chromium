@@ -119,10 +119,17 @@ void InfoBubble::UpdatePosition() {
   if (!widget)
     return;
 
-  if (!GetAnchorView()->GetVisibleBounds().IsEmpty()) {
+  if (anchor_widget()->IsVisible() &&
+      !GetAnchorView()->GetVisibleBounds().IsEmpty()) {
     SizeToContents();
     widget->SetVisibilityChangedAnimationsEnabled(true);
     widget->ShowInactive();
+#if BUILDFLAG(IS_MAC)
+    // In mac fullscreen for a info bubble on top of another bubble,
+    // explicitly request stacking above the anchored widget, otherwise
+    // the info bubble will be occluded (crbug.com/1348119).
+    widget->StackAboveWidget(anchor_widget());
+#endif
   } else {
     widget->SetVisibilityChangedAnimationsEnabled(false);
     widget->Hide();
