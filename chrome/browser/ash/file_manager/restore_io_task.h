@@ -11,9 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
-#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "chromeos/ash/components/trash_service/public/cpp/trash_info_parser.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -47,10 +45,6 @@ class RestoreIOTask : public IOTask {
  private:
   // Finalises the RestoreIOTask with the `state`.
   void Complete(State state);
-
-  void OnGotFile(chromeos::trash_service::ParseTrashInfoCallback callback,
-                 size_t idx,
-                 base::File file);
 
   // Ensure the metadata file conforms to the following:
   //   - Has a .trashinfo suffix
@@ -122,7 +116,7 @@ class RestoreIOTask : public IOTask {
 
   // Holds the connection open to the `TrashService`. This is a sandboxed
   // process that performs parsing of the trashinfo files.
-  mojo::Remote<chromeos::trash_service::mojom::TrashService> trash_service_;
+  std::unique_ptr<chromeos::trash_service::TrashInfoParser> parser_ = nullptr;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

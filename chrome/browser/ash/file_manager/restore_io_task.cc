@@ -34,10 +34,6 @@ base::File::Error CreateNestedPath(
   return base::File::FILE_OK;
 }
 
-base::File GetReadOnlyFileFromPath(const base::FilePath& path) {
-  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-}
-
 }  // namespace
 
 RestoreIOTask::RestoreIOTask(
@@ -86,11 +82,9 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
       GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;
 
-  auto trash_pending_remote = chromeos::trash_service::LaunchTrashService();
-  trash_service_ = mojo::Remote<chromeos::trash_service::mojom::TrashService>(
-      std::move(trash_pending_remote));
-  trash_service_.set_disconnect_handler(base::BindOnce(
-      &RestoreIOTask::Complete, weak_ptr_factory_.GetWeakPtr(), State::kError));
+  parser_ = std::make_unique<chromeos::trash_service::TrashInfoParser>(
+      base::BindOnce(&RestoreIOTask::Complete, weak_ptr_factory_.GetWeakPtr(),
+                     State::kError));
 
   ValidateTrashInfo(0);
 }
@@ -169,24 +163,8 @@ void RestoreIOTask::OnTrashedFileExists(
           ? progress_.sources[idx].url.path()
           : base_path_.Append(progress_.sources[idx].url.path());
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&GetReadOnlyFileFromPath, trashinfo_path),
-      base::BindOnce(&RestoreIOTask::OnGotFile, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(complete_callback), idx));
-}
-
-void RestoreIOTask::OnGotFile(
-    chromeos::trash_service::ParseTrashInfoCallback callback,
-    size_t idx,
-    base::File file) {
-  if (!file.IsValid()) {
-    LOG(ERROR) << "Supplied file is not valid: " << file.error_details();
-    progress_.sources[idx].error = file.error_details();
-    Complete(State::kError);
-    return;
-  }
-  trash_service_->ParseTrashInfoFile(std::move(file), std::move(callback));
+  parser_->ParseTrashInfoFile(std::move(trashinfo_path),
+                              std::move(complete_callback));
 }
 
 void RestoreIOTask::EnsureParentRestorePathExists(

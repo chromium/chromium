@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 source_set("cpp") {
   sources = [
+    "trash_info_parser.cc",
+    "trash_info_parser.h",
     "trash_service.cc",
     "trash_service.h",
   ]
