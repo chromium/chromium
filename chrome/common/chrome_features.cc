@@ -1053,7 +1053,7 @@ const base::Feature kWebAppManifestPolicyAppIdentityUpdate{
 // policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
 // launch Chrome apps. When disabled, the Ash-chrome will be used instead.
 const base::Feature kChromeKioskEnableLacros{"ChromeKioskEnableLacros",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When this feature flag is enabled together with the LacrosAvailability
 // policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
