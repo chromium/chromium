@@ -179,8 +179,6 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /** @private {!Set} */
       this.routeObservers_ = new Set();
-
-      this.updateTitle_();
     }
 
     /** @param {Object} observer */
@@ -370,6 +368,8 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       } else {
         window.history.replaceState(undefined, '', this.routes_.BASIC.path);
       }
+
+      this.updateTitle_();
     }
 
     /**
