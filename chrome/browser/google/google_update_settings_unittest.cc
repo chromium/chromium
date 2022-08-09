@@ -14,16 +14,39 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 class GoogleUpdateTest : public PlatformTest {
  public:
   GoogleUpdateTest(const GoogleUpdateTest&) = delete;
   GoogleUpdateTest& operator=(const GoogleUpdateTest&) = delete;
 
+#if BUILDFLAG(IS_WIN)
+  void SetUp() override {
+    // Override HKCU to prevent writing to real keys. On Windows, the metrics
+    // reporting consent is stored in the registry, and it is used to determine
+    // the metrics reporting state when it is unset (e.g. during tests, which
+    // start with fresh user data dirs). Otherwise, this may cause flakiness
+    // since tests will sometimes start with metrics reporting enabled and
+    // sometimes disabled.
+    ASSERT_NO_FATAL_FAILURE(
+        override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+
+    PlatformTest::SetUp();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
  protected:
   GoogleUpdateTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
-  ~GoogleUpdateTest() override {}
+  ~GoogleUpdateTest() override = default;
 
  private:
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager override_manager_;
+#endif  // BUILDFLAG(IS_WIN)
+
   base::ScopedPathOverride user_data_dir_override_;
 };
 

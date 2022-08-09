@@ -20,7 +20,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
+#include "base/test/test_reg_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -59,6 +59,17 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
   ~SampledOutClientIdSavedBrowserTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    // Override HKCU to prevent writing to real keys. On Windows, the metrics
+    // reporting consent is stored in the registry, and it is used to determine
+    // the metrics reporting state when it is unset (e.g. during tests, which
+    // start with fresh user data dirs). Otherwise, this may cause flakiness
+    // since tests will sometimes start with metrics reporting enabled and
+    // sometimes disabled.
+    ASSERT_NO_FATAL_FAILURE(
+        override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+#endif  // BUILDFLAG(IS_WIN)
+
     // Because metrics reporting is disabled in non-Chrome-branded builds,
     // IsMetricsReportingEnabled() always returns false. Enable it here for
     // test consistency between Chromium and Chrome builds, otherwise
@@ -82,20 +93,6 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
     PlatformBrowserTest::SetUp();
   }
 
-// TODO(crbug/1334765): Remove this Windows-only hook once other tests that
-// modify the Windows Registry are fixed to not leak into other tests.
-#if BUILDFLAG(IS_WIN)
-  // InProcessBrowserTest overrides:
-  bool SetUpUserDataDirectory() override {
-    // Manually set the metrics reporting pref to false so that we do not use
-    // the default value, which may be true due to the registry being modified
-    // by other tests.
-    base::FilePath local_state_path =
-        metrics::SetUpUserDataDirectoryForTesting(false);
-    return !local_state_path.empty();
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   metrics::MetricsService* metrics_service() {
     return g_browser_process->GetMetricsServicesManager()->GetMetricsService();
   }
@@ -103,6 +100,10 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
   PrefService* local_state() { return g_browser_process->local_state(); }
 
  private:
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager override_manager_;
+#endif  // BUILDFLAG(IS_WIN)
+
   base::test::ScopedFeatureList feature_list_;
 };
 
