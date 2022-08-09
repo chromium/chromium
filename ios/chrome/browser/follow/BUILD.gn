@@ -141,9 +141,17 @@ source_set("browser_agent") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "follow_util_unittest.mm" ]
+  sources = [
+    "follow_java_script_feature_unittest.mm",
+    "follow_util_unittest.mm",
+  ]
   deps = [
+    ":follow",
     ":utils",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/web:web_internal",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
