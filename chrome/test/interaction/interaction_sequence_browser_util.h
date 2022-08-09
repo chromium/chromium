@@ -13,16 +13,15 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace views {
 class WebView;
@@ -320,6 +319,17 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // DOM is undefined).
   bool Exists(const std::string& selector);
   base::Value EvaluateAt(const std::string& where, const std::string& function);
+
+  // Gets the screen bounds for the given element at `where`. The second method
+  // is a convenience method if you do not need to use the Shadow DOM.
+  //
+  // Note that the result is in DIPs and *may* be inaccurate if the screen's
+  // scale factor is not 100% (see discussion in implementation).
+  //
+  // If the element is in a tab or window that is not visible, an empty `Rect`
+  // will be returned.
+  gfx::Rect GetElementBoundsInScreen(const DeepQuery& where);
+  gfx::Rect GetElementBoundsInScreen(const std::string& where);
 
  protected:
   // content::WebContentsObserver:

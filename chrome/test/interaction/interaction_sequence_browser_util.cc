@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,6 +41,7 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
@@ -695,6 +696,60 @@ base::Value InteractionSequenceBrowserUtil::EvaluateAt(
     const std::string& selector,
     const std::string& function) {
   return EvaluateAt(DeepQuery{selector}, function);
+}
+
+gfx::Rect InteractionSequenceBrowserUtil::GetElementBoundsInScreen(
+    const DeepQuery& where) {
+  if (!current_element_)
+    return gfx::Rect();
+
+  views::WebView* web_view = nullptr;
+  if (web_view_data_) {
+    DCHECK(web_view_data_->visible() && web_view_data_->web_view());
+    web_view = web_view_data_->web_view();
+  } else {
+    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    if (!browser ||
+        web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
+      return gfx::Rect();
+    }
+    web_view =
+        BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  }
+  CHECK(web_view);
+
+  // TODO(dfried): Screen bounds returned by GetBoundsInScreen() are in DIPs.
+  // We are also assuming that Element.getBoundingClientRect() also returns a
+  // value in DIPs (this seems to be borne out by anecdotal evidence in online
+  // discussions). However, if that's not the case, either the offset or element
+  // bounds will need to be adjusted by the current display's scale factor.
+  const gfx::Point offset = web_view->GetBoundsInScreen().origin();
+
+  const base::Value result = EvaluateAt(where,
+                                        R"(el => {
+      const rect = el.getBoundingClientRect();
+      return {
+        "x": rect.x,
+        "y": rect.y,
+        "w": rect.width,
+        "h": rect.height
+      };
+    })");
+
+  // This will crash if any of the values are not found, however, since this is
+  // test code that's fine; it *should* crash the test.
+  const auto& dict = result.GetDict();
+  gfx::Rect element_bounds(
+      dict.Find("x")->GetDouble(), dict.Find("y")->GetDouble(),
+      dict.Find("w")->GetDouble(), dict.Find("h")->GetDouble());
+
+  element_bounds.Offset(offset.x(), offset.y());
+  return element_bounds;
+}
+
+gfx::Rect InteractionSequenceBrowserUtil::GetElementBoundsInScreen(
+    const std::string& where) {
+  return GetElementBoundsInScreen(DeepQuery{where});
 }
 
 void InteractionSequenceBrowserUtil::DidStopLoading() {
