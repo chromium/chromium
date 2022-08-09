@@ -33,6 +33,10 @@ class SubscriptionsManager {
   SubscriptionsManager(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // Used for tests. The passed in objects are ordinarily created with
+  // parameters from the non-test constructor.
+  SubscriptionsManager(std::unique_ptr<SubscriptionsServerProxy> server_proxy,
+                       std::unique_ptr<SubscriptionsStorage> storage);
   SubscriptionsManager(const SubscriptionsManager&) = delete;
   SubscriptionsManager& operator=(const SubscriptionsManager&) = delete;
   ~SubscriptionsManager();
@@ -44,6 +48,15 @@ class SubscriptionsManager {
   void Unsubscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
+
+  // For tests only, return init_succeeded_.
+  bool GetInitSucceededForTesting();
+
+  // For tests only, set has_request_running_.
+  void SetHasRequestRunningForTesting(bool has_request_running);
+
+  // For tests only, return whether there are any pending requests.
+  bool HasPendingRequestsForTesting();
 
  private:
   enum class AsyncOperation {

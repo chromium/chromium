@@ -24,3 +24,19 @@ source_set("subscriptions") {
     "//services/network/public/cpp:cpp",
   ]
 }
+
+source_set("subscriptions_unit_tests") {
+  testonly = true
+
+  sources = [ "subscriptions_manager_unittest.cc" ]
+
+  deps = [
+    ":subscriptions",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

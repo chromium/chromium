@@ -25,25 +25,25 @@ class SubscriptionsStorage {
   SubscriptionsStorage();
   SubscriptionsStorage(const SubscriptionsStorage&) = delete;
   SubscriptionsStorage& operator=(const SubscriptionsStorage&) = delete;
-  ~SubscriptionsStorage();
+  virtual ~SubscriptionsStorage();
 
   // Compare the provided subscriptions against local cache and return unique
   // subscriptions that are not in local cache. This is used for subscribe
   // operation.
-  void GetUniqueNonExistingSubscriptions(
+  virtual void GetUniqueNonExistingSubscriptions(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       GetLocalSubscriptionsCallback callback);
 
   // Compare the provided subscriptions against local cache and return unique
   // subscriptions that are already in local cache. This is used for unsubscribe
   // operation.
-  void GetUniqueExistingSubscriptions(
+  virtual void GetUniqueExistingSubscriptions(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       GetLocalSubscriptionsCallback callback);
 
   // Update local cache to keep consistency with |remote_subscriptions| and
   // notify |callback| if it completes successfully.
-  void UpdateStorage(
+  virtual void UpdateStorage(
       SubscriptionType type,
       base::OnceCallback<void(bool)> callback,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);

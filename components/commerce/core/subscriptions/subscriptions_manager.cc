@@ -17,16 +17,24 @@ namespace commerce {
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : weak_ptr_factory_(this) {
-  server_proxy_ = std::make_unique<SubscriptionsServerProxy>(
-      identity_manager, std::move(url_loader_factory));
-  storage_ = std::make_unique<SubscriptionsStorage>();
+    : SubscriptionsManager(std::make_unique<SubscriptionsServerProxy>(
+                               identity_manager,
+                               std::move(url_loader_factory)),
+                           std::make_unique<SubscriptionsStorage>()) {}
+
+SubscriptionsManager::SubscriptionsManager(
+    std::unique_ptr<SubscriptionsServerProxy> server_proxy,
+    std::unique_ptr<SubscriptionsStorage> storage)
+    : server_proxy_(std::move(server_proxy)),
+      storage_(std::move(storage)),
+      weak_ptr_factory_(this) {
 // Avoid duplicate server calls on android. Remove this after we integrate
 // android implementation to shopping service.
 #if !BUILDFLAG(IS_ANDROID)
   InitSubscriptions();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
 SubscriptionsManager::~SubscriptionsManager() = default;
 
 SubscriptionsManager::Request::Request(SubscriptionType type,
@@ -193,6 +201,19 @@ void SubscriptionsManager::HandleManageSubscriptionsResponse(
   } else {
     GetRemoteSubscriptionsAndUpdateStorage(type, std::move(callback));
   }
+}
+
+bool SubscriptionsManager::GetInitSucceededForTesting() {
+  return init_succeeded_;
+}
+
+void SubscriptionsManager::SetHasRequestRunningForTesting(
+    bool has_request_running) {
+  has_request_running_ = has_request_running;
+}
+
+bool SubscriptionsManager::HasPendingRequestsForTesting() {
+  return !pending_requests_.empty();
 }
 
 }  // namespace commerce

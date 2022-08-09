@@ -540,6 +540,7 @@ test("components_unittests") {
     deps += [
       "//components/commerce/core:commerce_heuristics_data_unittests",
       "//components/commerce/core:feature_list_unittests",
+      "//components/commerce/core/subscriptions:subscriptions_unit_tests",
     ]
   }
 
