@@ -192,7 +192,10 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
 
   for (const SavedTabGroupTab& tab : tabs_) {
     dialog_model.AddMenuItem(
-        ui::ImageModel::FromImage(tab.favicon()), tab.title(),
+        tab.favicon().has_value()
+            ? ui::ImageModel::FromImage(tab.favicon().value())
+            : ui::ImageModel(),
+        tab.title().value_or(base::UTF8ToUTF16(tab.url().spec())),
         base::BindRepeating(
             [](GURL url,
                base::RepeatingCallback<content::PageNavigator*()>

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/guid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -137,20 +138,20 @@ gfx::Range TabGroup::ListTabs() const {
 void TabGroup::SaveGroup() {
   std::vector<SavedTabGroupTab> urls;
   const gfx::Range tab_range = ListTabs();
+  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = controller_->GetWebContentsAt(i);
     const GURL& url = web_contents->GetVisibleURL();
-    const std::u16string& tab_title = web_contents->GetTitle();
-    const gfx::Image& favicon =
-        favicon::TabFaviconFromWebContents(web_contents);
-    urls.emplace_back(SavedTabGroupTab(url, tab_title, favicon,
-                                       base::GUID::GenerateRandomV4()));
+    urls.emplace_back(
+        SavedTabGroupTab(url, saved_group_guid)
+            .SetTitle(web_contents->GetTitle())
+            .SetFavicon(favicon::TabFaviconFromWebContents(web_contents)));
   }
 
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
   SavedTabGroup saved_tab_group(visual_data_->title(), visual_data_->color(),
-                                urls, absl::nullopt, id_);
+                                urls, saved_group_guid, id_);
   backend->model()->Add(saved_tab_group);
 }
 

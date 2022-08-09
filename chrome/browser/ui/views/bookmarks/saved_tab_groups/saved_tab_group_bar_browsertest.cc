@@ -37,8 +37,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
 
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
-                          favicon::GetDefaultFavicon(), guid)},
+        {SavedTabGroupTab(GURL("chrome://newtab"), guid)
+             .SetTitle(u"Title")
+             .SetFavicon(favicon::GetDefaultFavicon())},
         guid));
     chrome::OpenSavedTabGroup(browser(), guid, 1);
 
@@ -75,8 +76,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
-                          favicon::GetDefaultFavicon(), guid)},
+        {SavedTabGroupTab(GURL("chrome://newtab"), guid)
+             .SetTitle(u"Title")
+             .SetFavicon(favicon::GetDefaultFavicon())},
         guid));
     chrome::OpenSavedTabGroup(browser(), guid, 1);
 

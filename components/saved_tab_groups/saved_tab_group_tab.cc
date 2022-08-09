@@ -8,13 +8,13 @@
 
 SavedTabGroupTab::SavedTabGroupTab(
     const GURL& url,
-    const std::u16string& title,
-    const gfx::Image& favicon,
     const base::GUID& group_guid,
     SavedTabGroup* group,
     absl::optional<base::GUID> guid,
     absl::optional<base::Time> creation_time_windows_epoch_micros,
-    absl::optional<base::Time> update_time_windows_epoch_micros)
+    absl::optional<base::Time> update_time_windows_epoch_micros,
+    absl::optional<std::u16string> title,
+    absl::optional<gfx::Image> favicon)
     : guid_(guid.has_value() ? guid.value() : base::GUID::GenerateRandomV4()),
       group_guid_(group_guid),
       saved_tab_group_(group),
