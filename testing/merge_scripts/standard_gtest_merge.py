@@ -145,7 +145,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
   if not matching_json_files:
     print('shard %s test output missing' % index, file=sys.stderr)
     return (None, 'shard %s test output was missing' % index)
-  elif len(matching_json_files) > 1:
+  if len(matching_json_files) > 1:
     print('duplicate test output for shard %s' % index, file=sys.stderr)
     return (None, 'shard %s test output was duplicated' % index)
 
@@ -183,7 +183,7 @@ def standard_gtest_merge(
     output_json, summary_json, jsons_to_merge):
 
   output = merge_shard_results(summary_json, jsons_to_merge)
-  with open(output_json, 'wb') as f:
+  with open(output_json, 'w') as f:
     json.dump(output, f)
 
   return 0

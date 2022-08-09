@@ -69,8 +69,8 @@ def merge_test_results(shard_results_list):
 
   if 'seconds_since_epoch' in shard_results_list[0]:
     return _merge_json_test_result_format(shard_results_list)
-  else:
-    return _merge_simplified_json_format(shard_results_list)
+
+  return _merge_simplified_json_format(shard_results_list)
 
 
 def _merge_simplified_json_format(shard_results_list):
@@ -261,8 +261,8 @@ def merge_value(source, dest, key, merge_func):
   try:
     dest[key] = merge_func(source[key], dest[key])
   except MergeException as e:
-    e.message = "MergeFailure for %s\n%s" % (key, e.message)
-    e.args = tuple([e.message] + list(e.args[1:]))
+    message = "MergeFailure for %s\n%s" % (key, e.args[0])
+    e.args = (message,) + e.args[1:]
     raise
   del source[key]
 

@@ -5,6 +5,7 @@
 
 import copy
 import os
+import six
 import sys
 import unittest
 
@@ -162,13 +163,13 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
   maxDiff = None  # Show full diff if assertion fail
 
   def test_merge_tries(self):
-    self.assertEquals(
+    self.assertEqual(
         {'a': 'A', 'b': {'c': 'C'}},
         results_merger.merge_tries(
             {'a': 'A', 'b': {}}, {'b': {'c': 'C'}}))
 
   def test_merge_tries_unmergable(self):
-    with self.assertRaisesRegexp(results_merger.MergeException, "a:b"):
+    with six.assertRaisesRegex(self, results_merger.MergeException, "a:b"):
         results_merger.merge_tries(
             {'a': {'b': 'A'}}, {'a': {'b': 'C'}})
 
@@ -178,7 +179,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
     merged_results = results_merger.merge_test_results(
         [extend(GOOD_JSON_TEST_RESULT_0, metadata1),
          extend(GOOD_JSON_TEST_RESULT_1, metadata2)])
-    self.assertEquals(
+    self.assertEqual(
         merged_results['metadata']['tags'], ['foo', 'bat'])
 
   def test_merge_json_test_results_nop(self):
@@ -190,8 +191,8 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
     for j in good_json_results:
       # Clone so we can check the input dictionaries are not modified
       a = copy.deepcopy(j)
-      self.assertEquals(results_merger.merge_test_results([a]), j)
-      self.assertEquals(a, j)
+      self.assertEqual(results_merger.merge_test_results([a]), j)
+      self.assertEqual(a, j)
 
   def test_merge_json_test_results_invalid_version(self):
     with self.assertRaises(results_merger.MergeException):
@@ -242,7 +243,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
           ])
 
   def test_merge_json_test_results_multiple(self):
-    self.assertEquals(
+    self.assertEqual(
         results_merger.merge_test_results([
             GOOD_JSON_TEST_RESULT_0,
             GOOD_JSON_TEST_RESULT_1,
@@ -251,7 +252,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
         GOOD_JSON_TEST_RESULT_MERGED)
 
   def test_merge_json_test_results_optional_matches(self):
-    self.assertEquals(
+    self.assertEqual(
         results_merger.merge_test_results([
             extend(GOOD_JSON_TEST_RESULT_0, {'path_delimiter': '.'}),
             extend(GOOD_JSON_TEST_RESULT_1, {'path_delimiter': '.'}),
@@ -268,7 +269,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
           ])
 
   def test_merge_json_test_results_optional_count(self):
-    self.assertEquals(
+    self.assertEqual(
         results_merger.merge_test_results([
             extend(GOOD_JSON_TEST_RESULT_0, {'fixable': 1}),
             extend(GOOD_JSON_TEST_RESULT_1, {'fixable': 2}),
@@ -277,7 +278,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
         extend(GOOD_JSON_TEST_RESULT_MERGED, {'fixable': 6}))
 
   def test_merge_nothing(self):
-    self.assertEquals(
+    self.assertEqual(
         results_merger.merge_test_results([]),
         {})
 
