@@ -22,10 +22,10 @@ class SecureEnclaveHelperImpl : public SecureEnclaveHelper {
   // SecureEnclaveHelper:
   base::ScopedCFTypeRef<SecKeyRef> CreateSecureKey(
       CFDictionaryRef attributes) override;
+  base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query) override;
   bool Update(CFDictionaryRef query,
               CFDictionaryRef attributes_to_update) override;
   bool Delete(CFDictionaryRef query) override;
-  bool CheckExists(CFDictionaryRef query) override;
   bool CheckKeychainUnlocked() override;
   bool IsSecureEnclaveSupported() override;
 };

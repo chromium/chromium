@@ -25,9 +25,12 @@ class MockSecureEnclaveHelper : public SecureEnclaveHelper {
               CreateSecureKey,
               (CFDictionaryRef),
               (override));
+  MOCK_METHOD(base::ScopedCFTypeRef<SecKeyRef>,
+              CopyKey,
+              (CFDictionaryRef),
+              (override));
   MOCK_METHOD(bool, Update, (CFDictionaryRef, CFDictionaryRef), (override));
   MOCK_METHOD(bool, Delete, (CFDictionaryRef), (override));
-  MOCK_METHOD(bool, CheckExists, (CFDictionaryRef), (override));
   MOCK_METHOD(bool, CheckKeychainUnlocked, (), (override));
   MOCK_METHOD(bool, IsSecureEnclaveSupported, (), (override));
 };

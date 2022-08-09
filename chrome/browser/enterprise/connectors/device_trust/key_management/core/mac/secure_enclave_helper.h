@@ -25,26 +25,27 @@ class SecureEnclaveHelper {
 
   static std::unique_ptr<SecureEnclaveHelper> Create();
 
-  // Issues the SecKeyCreateRandomKey API to create the secure key with its key
+  // Uses the SecKeyCreateRandomKey API to create the secure key with its key
   // `attributes`. Returns the key or a nullptr on failure.
   virtual base::ScopedCFTypeRef<SecKeyRef> CreateSecureKey(
       CFDictionaryRef attributes) = 0;
 
-  // Issues the SecItemUpdate API to update the the key retrieved with the
+  // Uses the SecItemCopyMatching API to search the keychain using the
+  // `query` dictionary. Returns the reference to the secure key or a nullptr
+  // if the key is not found.
+  virtual base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query) = 0;
+
+  // Uses the SecItemUpdate API to update the the key retrieved with the
   // `query` with its `attributes_to_update`. Returns true if the key
   // attributes were updated successfully and false otherwise.
   virtual bool Update(CFDictionaryRef query,
                       CFDictionaryRef attributes_to_update) = 0;
 
-  // Issues the SecItemDelete API to delete the key retrieved with the `query`.
+  // Uses the SecItemDelete API to delete the key retrieved with the `query`.
   // Returns true if the key was deleted and false otherwise.
   virtual bool Delete(CFDictionaryRef query) = 0;
 
-  // Issues the SecItemCopyMatching API to search the keychain using the
-  // `query` dictionary. Returns true if the key exists and false otherwise.
-  virtual bool CheckExists(CFDictionaryRef query) = 0;
-
-  // Issues the SecKeychainCopyDefault API to check if the keychain is unlocked.
+  // Uses the SecKeychainCopyDefault API to check if the keychain is unlocked.
   // Returns true when the keychain is unlocked and false otherwise.
   virtual bool CheckKeychainUnlocked() = 0;
 

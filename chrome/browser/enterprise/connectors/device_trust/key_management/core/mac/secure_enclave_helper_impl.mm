@@ -35,10 +35,13 @@ bool SecureEnclaveHelperImpl::Delete(CFDictionaryRef query) {
   return SecItemDelete(query) == errSecSuccess;
 }
 
-bool SecureEnclaveHelperImpl::CheckExists(CFDictionaryRef query) {
-  base::ScopedCFTypeRef<CFTypeRef> key;
-  SecItemCopyMatching(query, key.InitializeInto());
-  return key != nullptr;
+base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
+    CFDictionaryRef query) {
+  base::ScopedCFTypeRef<SecKeyRef> key;
+  SecItemCopyMatching(
+      query, const_cast<CFTypeRef*>(
+                 reinterpret_cast<const CFTypeRef*>(key.InitializeInto())));
+  return key;
 }
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.

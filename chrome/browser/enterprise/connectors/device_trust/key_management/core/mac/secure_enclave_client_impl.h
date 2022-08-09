@@ -28,6 +28,7 @@ class SecureEnclaveClientImpl : public SecureEnclaveClient {
 
   // SecureEnclaveClient:
   base::ScopedCFTypeRef<SecKeyRef> CreateTemporaryKey() override;
+  base::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) override;
   bool MoveTemporaryKeyToPermanent() override;
   bool DeleteKey(KeyType type) override;
   bool GetStoredKeyLabel(KeyType type, std::vector<uint8_t>& output) override;

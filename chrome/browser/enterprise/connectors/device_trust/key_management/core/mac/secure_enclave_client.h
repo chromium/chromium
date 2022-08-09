@@ -39,6 +39,10 @@ class SecureEnclaveClient {
   // Creates a new Secure Enclave private key with a temporary key label.
   virtual base::ScopedCFTypeRef<SecKeyRef> CreateTemporaryKey() = 0;
 
+  // Queries for the secure key using its label determined by the key `type`.
+  // Returns the secure key reference or a nullptr if no key was found.
+  virtual base::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) = 0;
+
   // Updates the private key label from the temporary key label to the
   // non-temporary label.
   virtual bool MoveTemporaryKeyToPermanent() = 0;

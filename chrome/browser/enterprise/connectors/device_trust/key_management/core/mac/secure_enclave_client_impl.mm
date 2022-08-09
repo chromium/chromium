@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_helper.h"
@@ -28,11 +29,24 @@ namespace enterprise_connectors {
 
 namespace {
 
+// Returns the key label based on the key `type` if the key type is not
+// supported an empty string is returned.
+base::StringPiece GetLabelFromKeyType(SecureEnclaveClient::KeyType type) {
+  if (type == SecureEnclaveClient::KeyType::kTemporary)
+    return constants::kTemporaryDeviceTrustSigningKeyLabel;
+  if (type == SecureEnclaveClient::KeyType::kPermanent)
+    return constants::kDeviceTrustSigningKeyLabel;
+  return base::StringPiece();
+}
+
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
 // warnings are disabled in the meanwhile.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+// TODO(http://b/241261382): Look for alternatives in ACL creation and validate
+// the new key is stored in the data protection keychain.
 
 // Issues the SecAccessCreate API to create the ACL for the secure key.
 // This ACL allows all Chrome applications access to modify this key
@@ -88,13 +102,14 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
 // Creates the query used for querying the keychain for the secure key
 // reference.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
-    const std::string& label) {
+    SecureEnclaveClient::KeyType type) {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(query, kSecAttrLabel, base::SysUTF8ToCFStringRef(label));
+  CFDictionarySetValue(query, kSecAttrLabel,
+                       base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
   CFDictionarySetValue(query, kSecReturnRef, @YES);
   return query;
 }
@@ -119,6 +134,11 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreateTemporaryKey() {
   return helper_->CreateSecureKey(attributes);
 }
 
+base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
+    KeyType type) {
+  return helper_->CopyKey(CreateQueryForKey(type));
+}
+
 bool SecureEnclaveClientImpl::MoveTemporaryKeyToPermanent() {
   // Deletes an old Secure Enclave key if it exists.
   DeleteKey(SecureEnclaveClient::KeyType::kPermanent);
@@ -131,26 +151,20 @@ bool SecureEnclaveClientImpl::MoveTemporaryKeyToPermanent() {
       attributes_to_update, kSecAttrLabel,
       base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));
 
-  return helper_->Update(
-      CreateQueryForKey(constants::kTemporaryDeviceTrustSigningKeyLabel),
-      attributes_to_update);
+  return helper_->Update(CreateQueryForKey(KeyType::kTemporary),
+                         attributes_to_update);
 }
 
 bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
-  auto* label = (type == KeyType::kTemporary)
-                    ? constants::kTemporaryDeviceTrustSigningKeyLabel
-                    : constants::kDeviceTrustSigningKeyLabel;
-  return helper_->Delete(CreateQueryForKey(label));
+  return helper_->Delete(CreateQueryForKey(type));
 }
 
 bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
                                                 std::vector<uint8_t>& output) {
-  std::string label = (type == KeyType::kTemporary)
-                          ? constants::kTemporaryDeviceTrustSigningKeyLabel
-                          : constants::kDeviceTrustSigningKeyLabel;
-  if (!helper_->CheckExists(CreateQueryForKey(label)))
+  if (!helper_->CopyKey(CreateQueryForKey(type)))
     return false;
 
+  auto label = GetLabelFromKeyType(type);
   output.assign(label.begin(), label.end());
   return true;
 }

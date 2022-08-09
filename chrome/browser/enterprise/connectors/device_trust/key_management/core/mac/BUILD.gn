@@ -6,6 +6,7 @@ source_set("mac") {
   public = [
     "secure_enclave_client.h",
     "secure_enclave_helper.h",
+    "secure_enclave_signing_key.h",
   ]
 
   sources = [
@@ -15,9 +16,14 @@ source_set("mac") {
     "secure_enclave_helper.cc",
     "secure_enclave_helper_impl.h",
     "secure_enclave_helper_impl.mm",
+    "secure_enclave_signing_key.cc",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
@@ -54,7 +60,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "secure_enclave_client_unittest.mm" ]
+  sources = [
+    "secure_enclave_client_unittest.mm",
+    "secure_enclave_signing_key_unittest.mm",
+  ]
 
   deps = [
     ":mac",
