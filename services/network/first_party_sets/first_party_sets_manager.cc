@@ -90,7 +90,7 @@ FirstPartySetsManager::ComputeMetadata(
         &FirstPartySetsManager::ComputeMetadataAndInvoke,
         weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
         party_context, fps_context_config, std::move(callback),
-        base::TimeTicks::Now()));
+        base::ElapsedTimer()));
     return absl::nullopt;
   }
 
@@ -104,12 +104,12 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
     const std::set<net::SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
-    base::TimeTicks enqueued_at) const {
+    base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata",
-                      base::TimeTicks::Now() - enqueued_at);
+                      timer.Elapsed());
 
   std::move(callback).Run(
       ComputeMetadataInternal(site, base::OptionalOrNullptr(top_frame_site),
@@ -191,7 +191,7 @@ FirstPartySetsManager::FindOwner(
   if (!sets_.has_value()) {
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::FindOwnerAndInvoke, weak_factory_.GetWeakPtr(),
-        site, fps_context_config, std::move(callback), base::TimeTicks::Now()));
+        site, fps_context_config, std::move(callback), base::ElapsedTimer()));
     return absl::nullopt;
   }
 
@@ -202,12 +202,12 @@ void FirstPartySetsManager::FindOwnerAndInvoke(
     const net::SchemefulSite& site,
     const FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback,
-    base::TimeTicks enqueued_at) const {
+    base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwner",
-                      base::TimeTicks::Now() - enqueued_at);
+                      timer.Elapsed());
 
   std::move(callback).Run(FindOwnerInternal(site, fps_context_config));
 }
@@ -220,10 +220,9 @@ FirstPartySetsManager::FindOwners(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsManager::FindOwnersAndInvoke,
-                       weak_factory_.GetWeakPtr(), sites, fps_context_config,
-                       std::move(callback), base::TimeTicks::Now()));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySetsManager::FindOwnersAndInvoke, weak_factory_.GetWeakPtr(),
+        sites, fps_context_config, std::move(callback), base::ElapsedTimer()));
     return absl::nullopt;
   }
 
@@ -234,12 +233,12 @@ void FirstPartySetsManager::FindOwnersAndInvoke(
     const base::flat_set<net::SchemefulSite>& sites,
     const FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(FirstPartySetsManager::OwnersResult)> callback,
-    base::TimeTicks enqueued_at) const {
+    base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwners",
-                      base::TimeTicks::Now() - enqueued_at);
+                      timer.Elapsed());
 
   std::move(callback).Run(FindOwnersInternal(sites, fps_context_config));
 }
@@ -276,11 +275,10 @@ void FirstPartySetsManager::InvokePendingQueries() {
 
   base::UmaHistogramCounts10000("Cookie.FirstPartySets.DelayedQueriesCount",
                                 pending_queries_->size());
-  base::UmaHistogramTimes(
-      "Cookie.FirstPartySets.MostDelayedQueryDelta2",
-      first_async_query_time_.has_value()
-          ? base::TimeTicks::Now() - first_async_query_time_.value()
-          : base::TimeDelta());
+  base::UmaHistogramTimes("Cookie.FirstPartySets.MostDelayedQueryDelta2",
+                          first_async_query_timer_.has_value()
+                              ? first_async_query_timer_->Elapsed()
+                              : base::TimeDelta());
 
   while (!pending_queries_->empty()) {
     base::OnceClosure query_task = std::move(pending_queries_->front());
@@ -310,8 +308,8 @@ void FirstPartySetsManager::EnqueuePendingQuery(base::OnceClosure run_query) {
   DCHECK(!sets_.has_value());
   DCHECK(pending_queries_);
 
-  if (!first_async_query_time_.has_value())
-    first_async_query_time_ = {base::TimeTicks::Now()};
+  if (!first_async_query_timer_.has_value())
+    first_async_query_timer_ = {base::ElapsedTimer()};
 
   pending_queries_->push_back(std::move(run_query));
 }

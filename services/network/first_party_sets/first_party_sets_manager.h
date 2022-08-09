@@ -111,7 +111,7 @@ class FirstPartySetsManager {
       const std::set<net::SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
-      base::TimeTicks enqueued_at) const;
+      base::ElapsedTimer timer) const;
 
   // Synchronous version of `ComputeMetadata`, to be run only once the instance
   // is fully initialized.
@@ -138,7 +138,7 @@ class FirstPartySetsManager {
   void FindOwnerAndInvoke(const net::SchemefulSite& site,
                           const FirstPartySetsContextConfig& fps_context_config,
                           base::OnceCallback<void(OwnerResult)> callback,
-                          base::TimeTicks enqueued_at) const;
+                          base::ElapsedTimer timer) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. `fps_context_config` is the
@@ -156,7 +156,7 @@ class FirstPartySetsManager {
       const base::flat_set<net::SchemefulSite>& sites,
       const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(OwnersResult)> callback,
-      base::TimeTicks enqueued_at) const;
+      base::ElapsedTimer timer) const;
 
   // Synchronous version of `FindOwners`, to be run only once the instance is
   // initialized.
@@ -185,8 +185,9 @@ class FirstPartySetsManager {
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The time when the first async query was enqueued, if any. Used for metrics.
-  absl::optional<base::TimeTicks> first_async_query_time_
+  // Timer starting when the first async query was enqueued, if any. Used for
+  // metrics.
+  absl::optional<base::ElapsedTimer> first_async_query_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Timer starting when the instance is constructed. Used for metrics.
