@@ -4791,7 +4791,7 @@
   {
       "name": "omnibox-new-textfield-implementation",
       "owners": ["stkhapugin", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
-      "expiry_milestone": 105
+      "expiry_milestone": 107
   },
   {
     "name": "omnibox-on-device-head-suggestions",
