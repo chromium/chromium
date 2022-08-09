@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -38,6 +41,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/account_id/account_id.h"
@@ -126,6 +130,36 @@ class PublicSessionUserCreationWaiter
 
  private:
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
+};
+
+class KioskProfileLoadFailedWaiter
+    : public KioskLaunchController::KioskProfileLoadFailedObserver {
+ public:
+  KioskProfileLoadFailedWaiter() = default;
+
+  KioskProfileLoadFailedWaiter(const KioskProfileLoadFailedWaiter&) = delete;
+  KioskProfileLoadFailedWaiter& operator=(const KioskProfileLoadFailedWaiter&) =
+      delete;
+
+  ~KioskProfileLoadFailedWaiter() override = default;
+
+  void Wait() {
+    if (!LoginDisplayHost::default_host()) {
+      // LoginDisplayHost instance is destroyed, this means the profile load
+      // failure already took place.
+      return;
+    }
+    LoginDisplayHost::default_host()
+        ->GetKioskLaunchController()
+        ->AddKioskProfileLoadFailedObserver(this);
+    run_loop_.Run();
+  }
+
+  // KioskLaunchController::KioskProfileLoadFailedObserver:
+  void OnKioskProfileLoadFailed() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 class LoginLogoutReporterBrowserTest
@@ -249,6 +283,8 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, GuestLogin) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager->IsLoggedInAsGuest());
 
+  // Check if the record is already enqueued in case it was enqueued before the
+  // |observer| initialization.
   absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
 
   if (!login_record.has_value()) {
@@ -399,7 +435,6 @@ class LoginLogoutReporterKioskBrowserTest
 
     host_resolver()->AddRule("*", "127.0.0.1");
     SessionManagerClient::InitializeFakeInMemory();
-    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
 
     ChromeDeviceSettingsProto& proto(policy_helper_.device_policy()->payload());
     KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
@@ -434,6 +469,8 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager->IsLoggedInAsKioskApp());
 
+  // Check if the record is already enqueued in case it was enqueued before the
+  // |observer| initialization.
   absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
 
   if (!login_record.has_value()) {
@@ -467,6 +504,59 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,
               Eq(LoginLogoutSessionType::KIOSK_SESSION));
   EXPECT_FALSE(logout_record_data.has_affiliated_user());
   EXPECT_TRUE(logout_record_data.has_logout_event());
+}
+
+class LoginLogoutReporterKioskFailedBrowserTest
+    : public LoginLogoutReporterKioskBrowserTest {
+ public:
+  LoginLogoutReporterKioskFailedBrowserTest(
+      const LoginLogoutReporterKioskFailedBrowserTest&) = delete;
+  LoginLogoutReporterKioskFailedBrowserTest& operator=(
+      const LoginLogoutReporterKioskFailedBrowserTest&) = delete;
+
+ protected:
+  LoginLogoutReporterKioskFailedBrowserTest() = default;
+
+  ~LoginLogoutReporterKioskFailedBrowserTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LoginLogoutReporterKioskBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    UserDataAuthClient::InitializeFake();
+    FakeUserDataAuthClient::Get()->set_cryptohome_error(
+        user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
+  }
+};
+
+// Kiosk login failure will cause shutdown and the failure will be reported in
+// in the next session.
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskFailedBrowserTest,
+                       PRE_ReportKioskLoginFailure) {
+  KioskProfileLoadFailedWaiter profile_load_failed_waiter;
+  profile_load_failed_waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskFailedBrowserTest,
+                       ReportKioskLoginFailure) {
+  MissiveClientTestObserver observer(Destination::LOGIN_LOGOUT_EVENTS);
+
+  // Check if the record is already enqueued in case it was enqueued before the
+  // |observer| initialization.
+  absl::optional<Record> login_record = MaybeGetEnqueudLoginLogoutRecord();
+
+  if (!login_record.has_value()) {
+    // Record is not enqueued yet, so wait for it.
+    login_record = GetNextLoginLogoutRecord(&observer);
+  }
+
+  LoginLogoutRecord login_record_data;
+  ASSERT_TRUE(login_record_data.ParseFromString(login_record->data()));
+  EXPECT_THAT(login_record_data.session_type(),
+              Eq(LoginLogoutSessionType::KIOSK_SESSION));
+  EXPECT_FALSE(login_record_data.has_affiliated_user());
+  ASSERT_TRUE(login_record_data.has_login_event());
+  ASSERT_TRUE(login_record_data.login_event().has_failure());
+  EXPECT_FALSE(login_record_data.login_event().failure().has_reason());
 }
 
 }  // namespace
