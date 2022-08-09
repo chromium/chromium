@@ -460,6 +460,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (!allowUndo) {
             notifyOnFinishingMultipleTabClosure(tabs);
         }
+        for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
             closeTab(tab, null, false, false, canUndo, false, false);
         }

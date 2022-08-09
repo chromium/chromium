@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,7 +40,7 @@ public class UndoRefocusHelper implements DestroyObserver {
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private Integer mSelectedTabIdWhenTabClosed;
-    private Boolean mClosedAllTabs;
+    private boolean mWillCloseMultipleTabs;
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private boolean mIsTablet;
@@ -89,24 +90,14 @@ public class UndoRefocusHelper implements DestroyObserver {
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {
             @Override
             public void willCloseTab(Tab tab, boolean animate) {
-                // TODO(crbug.com/1324405) Extract common logic between this method and
-                // willCloseAllTabs into a helper method.
-                if (mClosedAllTabs != null || tab.isIncognito()) return;
+                if (mWillCloseMultipleTabs || tab.isIncognito()) return;
 
                 int tabId = tab.getId();
-                TabModel model = mModelSelector.getModel(false);
-
                 if (!mTabSwitcherActive && mIsTablet) {
                     mTabsClosedFromTabStrip.add(tabId);
                 }
 
-                int selTabIndex = model.index();
-                if (selTabIndex > -1 && selTabIndex < model.getCount()) {
-                    Tab selectedTab = model.getTabAt(selTabIndex);
-                    if (selectedTab != null && tabId == selectedTab.getId()) {
-                        mSelectedTabIdWhenTabClosed = tabId;
-                    }
-                }
+                maybeSetSelectedTabId(tab);
             }
 
             @Override
@@ -119,28 +110,48 @@ public class UndoRefocusHelper implements DestroyObserver {
                 }
             }
 
+            // TODO (crbug.com/1351406) Fix case of undo closing multiple tabs followed by single
+            // tab.
             @Override
-            public void willCloseAllTabs(boolean incognito) {
-                if (!incognito) {
-                    TabModel model = mModelSelector.getCurrentModel();
-                    int selTabIndex = model.index();
-                    mClosedAllTabs = true;
-                    if (selTabIndex > -1 && selTabIndex < model.getCount()) {
-                        Tab tab = model.getTabAt(selTabIndex);
-                        if (tab != null) {
-                            mSelectedTabIdWhenTabClosed = tab.getId();
-                            if (!mTabSwitcherActive && mIsTablet) {
-                                mTabsClosedFromTabStrip.add(tab.getId());
-                            }
-                        }
+            public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+                if (!allowUndo || tabs.size() < 1) return;
+                mWillCloseMultipleTabs = true;
+
+                // Record metric only once for the set.
+                // Use the first id to track the set.
+                if (!mTabSwitcherActive && mIsTablet) {
+                    mTabsClosedFromTabStrip.add(tabs.get(0).getId());
+                }
+                for (Tab tab : tabs) {
+                    if (maybeSetSelectedTabId(tab)) {
+                        break;
                     }
                 }
             }
 
             @Override
+            public void willCloseAllTabs(boolean incognito) {
+                if (incognito) return;
+                int selectedTabIdx = mModelSelector.getModel(false).index();
+                Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
+                maybeSetSelectedTabId(selectedTab);
+                mWillCloseMultipleTabs = true;
+                // Record metric only once for the set.
+                // Use the selected id to track the set.
+                if (!mTabSwitcherActive && mIsTablet) {
+                    mTabsClosedFromTabStrip.add(selectedTab.getId());
+                }
+            }
+
+            @Override
             public void tabClosureUndone(Tab tab) {
-                if (mClosedAllTabs != null) return;
                 int id = tab.getId();
+                if (mWillCloseMultipleTabs) {
+                    // allTabsClosureUndone does not receive set of Ids to pass to record method.
+                    // Hence we record here first.
+                    recordClosureCancellation(id);
+                    return;
+                }
                 recordClosureCancellation(id);
                 if (mSelectedTabIdWhenTabClosed != null && mSelectedTabIdWhenTabClosed == id) {
                     selectPreviouslySelectedTab();
@@ -150,7 +161,6 @@ public class UndoRefocusHelper implements DestroyObserver {
             @Override
             public void allTabsClosureUndone() {
                 if (mSelectedTabIdWhenTabClosed != null) {
-                    recordClosureCancellation(mSelectedTabIdWhenTabClosed);
                     selectPreviouslySelectedTab();
                 }
 
@@ -172,6 +182,20 @@ public class UndoRefocusHelper implements DestroyObserver {
                     resetSelectionsForUndo();
                     mTabsClosedFromTabStrip.clear();
                 }
+            }
+
+            private boolean maybeSetSelectedTabId(Tab tab) {
+                TabModel model = mModelSelector.getModel(false);
+                int tabId = tab.getId();
+                int selTabIndex = model.index();
+                if (selTabIndex > -1 && selTabIndex < model.getCount()) {
+                    Tab selectedTab = model.getTabAt(selTabIndex);
+                    if (selectedTab != null && tabId == selectedTab.getId()) {
+                        mSelectedTabIdWhenTabClosed = tabId;
+                        return true;
+                    }
+                }
+                return false;
             }
 
             private void recordClosureCancellation(int id) {
@@ -226,8 +250,8 @@ public class UndoRefocusHelper implements DestroyObserver {
      * are reset so the next undo closure action does not reselect the reopened tab.
      */
     private void resetSelectionsForUndo() {
+        mWillCloseMultipleTabs = false;
         mSelectedTabIdWhenTabClosed = null;
-        mClosedAllTabs = null;
     }
 
     @VisibleForTesting

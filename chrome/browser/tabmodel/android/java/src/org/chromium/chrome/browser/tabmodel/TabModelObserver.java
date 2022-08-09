@@ -119,8 +119,18 @@ public interface TabModelObserver {
 
     /**
      * Called when an "all tabs" closure will happen.
+     * If multiple tabs are closed, @{@link TabModelObserver#willCloseMultipleTabs(boolean, List)}
+     * is invoked
      */
     default void willCloseAllTabs(boolean incognito) {}
+
+    /**
+     * Called when multiple tabs closure will happen. If "all tabs" are closed at once, @{@link
+     * TabModelObserver#willCloseAllTabs(boolean)} is invoked.
+     * @param allowUndo If undo is allowed on the tab closure.
+     * @param tabs being closed.
+     */
+    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs){};
 
     /**
      * Called when an "all tabs" closure has been committed and can't be undone anymore.

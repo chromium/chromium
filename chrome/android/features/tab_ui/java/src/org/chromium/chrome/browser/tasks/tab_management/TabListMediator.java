@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
@@ -599,6 +600,22 @@ class TabListMediator {
                 }
 
                 int newIndex = mModel.indexFromId(tab.getId());
+                if (newIndex == TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs
+                        && type == TabSelectionType.FROM_UNDO) {
+                    // If a tab in tab group does not exist in model and needs to be selected from
+                    // undo, identify the related TabIds and determine newIndex based on if any of
+                    // the related ids are present in model.
+                    List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
+                    if (!relatedTabIds.isEmpty()) {
+                        for (int i = 0; i < mModel.size(); i++) {
+                            int modelTabId = mModel.get(i).model.get(TAB_ID);
+                            if (relatedTabIds.contains(modelTabId)) {
+                                newIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
                 if (newIndex == TabModel.INVALID_TAB_INDEX) return;
                 mModel.get(newIndex).model.set(TabProperties.IS_SELECTED, true);
                 if (mThumbnailProvider != null && mVisible) {
@@ -1077,6 +1094,12 @@ class TabListMediator {
         TabModelFilter filter =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         return filter == null ? new ArrayList<>() : filter.getRelatedTabList(id);
+    }
+
+    private List<Integer> getRelatedTabsIds(int id) {
+        TabModelFilter filter =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        return filter == null ? new ArrayList<>() : filter.getRelatedTabIds(id);
     }
 
     private int getIndexOfTab(Tab tab, boolean onlyShowRelatedTabs) {

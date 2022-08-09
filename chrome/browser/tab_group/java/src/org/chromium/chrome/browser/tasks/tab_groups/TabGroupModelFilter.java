@@ -527,6 +527,17 @@ public class TabGroupModelFilter extends TabModelFilter {
         return getRelatedTabList(group.getTabIdList());
     }
 
+    @Override
+    public List<Integer> getRelatedTabIds(int tabId) {
+        Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
+        if (tab == null) return super.getRelatedTabIds(tabId);
+
+        int groupId = getRootId(tab);
+        TabGroup group = mGroupIdToGroupMap.get(groupId);
+        if (group == null) return super.getRelatedTabIds(TabModel.INVALID_TAB_INDEX);
+        return Collections.unmodifiableList(group.getTabIdList());
+    }
+
     /**
      * This method returns all tabs in a tab group with reference to {@code tabRootId} as group id.
      *
