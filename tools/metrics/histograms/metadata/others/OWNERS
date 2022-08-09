@@ -5,6 +5,9 @@
 per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 # For display, mouse, and input related histograms.
+# Primary reviewers
+jimmyxgong@chromium.org
+# Secondary reviewers
 zentaro@chromium.org
 # For Conversions.* histograms:
 johnidel@chromium.org
