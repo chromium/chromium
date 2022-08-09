@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_IMPL_ON_GPU_H_
 
-#include <deque>
-#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -507,7 +508,7 @@ class SkiaOutputSurfaceImplOnGpu
   // Overlayed render passes need to keep their write access open until after
   // submit. These will be set in FinishPaintRenderPass() if |is_overlay| is
   // true and destroyed in PostSubmit().
-  std::map<gpu::Mailbox, OverlayPassAccess> overlay_pass_accesses_;
+  base::flat_map<gpu::Mailbox, OverlayPassAccess> overlay_pass_accesses_;
 
   absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
@@ -532,7 +533,7 @@ class SkiaOutputSurfaceImplOnGpu
   // Pending release fence callbacks. These callbacks can be delayed if Vulkan
   // external semaphore type has copy transference, which means importing
   // semaphores has to be delayed until submission.
-  std::deque<std::pair<GrBackendSemaphore,
+  base::circular_deque<std::pair<GrBackendSemaphore,
                        base::OnceCallback<void(gfx::GpuFenceHandle)>>>
       pending_release_fence_cbs_;
 
