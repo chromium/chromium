@@ -73,8 +73,9 @@ void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
 
   // If |group_| has become empty delete it.
   if (group_->IsEmpty()) {
-    outer_->RemoveFromPartiallyFreeList(group_);
-    outer_->RemoveFromAllocList(group_);
+    auto ptr = group_.ExtractAsDangling();
+    outer_->RemoveFromPartiallyFreeList(ptr);
+    outer_->RemoveFromAllocList(ptr);
   }
 
   outer_ = nullptr;

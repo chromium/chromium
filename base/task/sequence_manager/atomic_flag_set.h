@@ -68,8 +68,7 @@ class BASE_EXPORT AtomicFlagSet {
     AtomicFlag(AtomicFlagSet* outer, Group* element, size_t flag_bit);
 
     raw_ptr<AtomicFlagSet, DanglingUntriaged> outer_ = nullptr;
-    raw_ptr<Group, DanglingUntriaged> group_ =
-        nullptr;           // Null when AtomicFlag is invalid.
+    raw_ptr<Group> group_ = nullptr;  // Null when AtomicFlag is invalid.
     size_t flag_bit_ = 0;  // This is 1 << index of this flag within the group.
   };
 
