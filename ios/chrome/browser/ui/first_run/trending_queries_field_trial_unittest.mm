@@ -26,6 +26,7 @@ class TrendingQueriesFieldTrialTest : public PlatformTest {
         {kTrendingQueriesEnabledAllUsersHideShortcutsID, 0},
         {kTrendingQueriesEnabledDisabledFeedID, 0},
         {kTrendingQueriesEnabledSignedOutID, 0},
+        {kTrendingQueriesEnabledNeverShowModuleID, 0},
         {kTrendingQueriesControlID, 0}};
   }
 
@@ -71,6 +72,8 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledAllUsers) {
       kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesSignedOutParam, true));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false));
 }
 
 // Tests kTrendingQueriesEnabledAllUsersHideShortcutsID field trial.
@@ -91,6 +94,8 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledHideShortcuts) {
       kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, true));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesSignedOutParam, true));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false));
 }
 
 // Tests kTrendingQueriesEnabledDisabledFeedID field trial.
@@ -111,6 +116,8 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledDisabledFeed) {
       kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, false));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesSignedOutParam, true));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false));
 }
 
 // Tests kTrendingQueriesEnabledSignedOutID field trial.
@@ -131,4 +138,28 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledSignedOut) {
       kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, true));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesSignedOutParam, false));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false));
+}
+
+// Tests kTrendingQueriesEnabledNeverShowModuleID field trial.
+TEST_F(TrendingQueriesFieldTrialTest, TestEnabledNeverShowModule) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  weight_by_id_[kTrendingQueriesEnabledNeverShowModuleID] = 100;
+  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+      weight_by_id_, low_entropy_provider_, feature_list.get());
+
+  // Substitute the existing feature list with the one with field trial
+  // configurations we are testing, and check assertions.
+  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+  EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesDisabledFeedParam, false));
+  EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesSignedOutParam, false));
+  EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
+      kTrendingQueriesModule, kTrendingQueriesNeverShowModuleParam, false));
 }

@@ -31,6 +31,8 @@ const char kTrendingQueriesEnabledAllUsersHideShortcutsGroup[] =
 const char kTrendingQueriesEnabledDisabledFeedGroup[] =
     "EnabledDisabledFeed-V1";
 const char kTrendingQueriesEnabledSignedOutGroup[] = "EnabledSignedOut-V1";
+const char kTrendingQueriesEnabledNeverShowModuleGroup[] =
+    "EnabledNeverShowModule-V1";
 const char kTrendingQueriesControlGroup[] = "Control-V1";
 const char kTrendingQueriesDefaultGroup[] = "Default";
 
@@ -41,6 +43,7 @@ std::map<variations::VariationID, int> GetGroupWeights() {
       {kTrendingQueriesEnabledAllUsersHideShortcutsID, 0},
       {kTrendingQueriesEnabledDisabledFeedID, 0},
       {kTrendingQueriesEnabledSignedOutID, 0},
+      {kTrendingQueriesEnabledNeverShowModuleID, 0},
       {kTrendingQueriesControlID, 0}};
   switch (GetChannel()) {
     case version_info::Channel::UNKNOWN:
@@ -51,6 +54,7 @@ std::map<variations::VariationID, int> GetGroupWeights() {
       weight_by_id[kTrendingQueriesEnabledAllUsersHideShortcutsID] = 10;
       weight_by_id[kTrendingQueriesEnabledDisabledFeedID] = 10;
       weight_by_id[kTrendingQueriesEnabledSignedOutID] = 10;
+      weight_by_id[kTrendingQueriesEnabledNeverShowModuleID] = 10;
       weight_by_id[kTrendingQueriesControlID] = 10;
       break;
     case version_info::Channel::STABLE:
@@ -89,6 +93,7 @@ int CreateTrendingQueriesTrial(
   params[kTrendingQueriesHideShortcutsParam] = "false";
   params[kTrendingQueriesDisabledFeedParam] = "false";
   params[kTrendingQueriesSignedOutParam] = "false";
+  params[kTrendingQueriesNeverShowModuleParam] = "false";
   base::AssociateFieldTrialParams(kTrendingQueriesModule.name,
                                   kTrendingQueriesEnabledAllUsersGroup, params);
 
@@ -98,6 +103,7 @@ int CreateTrendingQueriesTrial(
   params[kTrendingQueriesHideShortcutsParam] = "true";
   params[kTrendingQueriesDisabledFeedParam] = "false";
   params[kTrendingQueriesSignedOutParam] = "false";
+  params[kTrendingQueriesNeverShowModuleParam] = "false";
   base::AssociateFieldTrialParams(
       kTrendingQueriesModule.name,
       kTrendingQueriesEnabledAllUsersHideShortcutsGroup, params);
@@ -108,6 +114,7 @@ int CreateTrendingQueriesTrial(
   params[kTrendingQueriesHideShortcutsParam] = "false";
   params[kTrendingQueriesDisabledFeedParam] = "true";
   params[kTrendingQueriesSignedOutParam] = "false";
+  params[kTrendingQueriesNeverShowModuleParam] = "false";
   base::AssociateFieldTrialParams(kTrendingQueriesModule.name,
                                   kTrendingQueriesEnabledDisabledFeedGroup,
                                   params);
@@ -118,9 +125,22 @@ int CreateTrendingQueriesTrial(
   params[kTrendingQueriesHideShortcutsParam] = "true";
   params[kTrendingQueriesDisabledFeedParam] = "false";
   params[kTrendingQueriesSignedOutParam] = "true";
+  params[kTrendingQueriesNeverShowModuleParam] = "false";
   base::AssociateFieldTrialParams(kTrendingQueriesModule.name,
                                   kTrendingQueriesEnabledSignedOutGroup,
                                   params);
+
+  config.AddGroup(kTrendingQueriesEnabledNeverShowModuleGroup,
+                  kTrendingQueriesEnabledNeverShowModuleID,
+                  weight_by_id[kTrendingQueriesEnabledNeverShowModuleID]);
+  params[kTrendingQueriesHideShortcutsParam] = "true";
+  params[kTrendingQueriesDisabledFeedParam] = "false";
+  params[kTrendingQueriesSignedOutParam] = "false";
+  params[kTrendingQueriesNeverShowModuleParam] = "true";
+  base::AssociateFieldTrialParams(kTrendingQueriesModule.name,
+                                  kTrendingQueriesEnabledNeverShowModuleGroup,
+                                  params);
+
   scoped_refptr<base::FieldTrial> trial = config.CreateOneTimeRandomizedTrial(
       kTrendingQueriesDefaultGroup, low_entropy_provider);
 
@@ -132,7 +152,8 @@ int CreateTrendingQueriesTrial(
   if (group_name == kTrendingQueriesEnabledAllUsersGroup ||
       group_name == kTrendingQueriesEnabledAllUsersHideShortcutsGroup ||
       group_name == kTrendingQueriesEnabledDisabledFeedGroup ||
-      group_name == kTrendingQueriesEnabledSignedOutGroup) {
+      group_name == kTrendingQueriesEnabledSignedOutGroup ||
+      group_name == kTrendingQueriesEnabledNeverShowModuleGroup) {
     feature_list->RegisterFieldTrialOverride(
         kTrendingQueriesModule.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
         trial.get());
@@ -155,7 +176,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // is needed for explicit flag settings in chrome://flags.
   if (feature_list->IsFeatureOverriddenFromCommandLine(
           kTrendingQueriesModule.name) ||
-      IsTrendingQueriesModuleEnabled()) {
+      base::FeatureList::IsEnabled(kTrendingQueriesModule)) {
     return;
   }
 

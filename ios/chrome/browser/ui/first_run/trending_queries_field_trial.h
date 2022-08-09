@@ -19,6 +19,8 @@ const variations::VariationID kTrendingQueriesEnabledAllUsersHideShortcutsID =
     3350761;
 const variations::VariationID kTrendingQueriesEnabledDisabledFeedID = 3350762;
 const variations::VariationID kTrendingQueriesEnabledSignedOutID = 3350763;
+const variations::VariationID kTrendingQueriesEnabledNeverShowModuleID =
+    4833277;
 const variations::VariationID kTrendingQueriesControlID = 3350764;
 
 }  // namespace
