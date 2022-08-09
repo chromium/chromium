@@ -711,6 +711,28 @@ TEST_F(FuzzyTokenizedStringMatchTest,
   ExpectStrictlyIncreasing(scores);
 }
 
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixOfVaryingLengthMultiToken) {
+  std::u16string text = u"ghijkl abcdef";
+  std::vector<std::u16string> queries = {u"a",    u"ab",    u"abc",
+                                         u"abcd", u"abcde", u"abcdef"};
+
+  std::vector<double> scores;
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores.push_back(relevance);
+  }
+
+  // Intuitively, it seems desirable that, for a fixed text, the longer the
+  // prefix match between text and a query, the greater the relevance score
+  // should be. Check for this behavior here, but revisit the utility of this
+  // later as it relates to text-length agnosticism.
+
+  ExpectStrictlyIncreasing(scores);
+}
+
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPrefixVsNonPrefixSingleToken) {
   std::u16string text = u"abcdefg";
   std::vector<std::u16string> queries = {u"ab", u"bc", u"cd",
@@ -811,6 +833,101 @@ TEST_F(FuzzyTokenizedStringMatchTest,
   //
   //   text:  ababc
   //   query:   abc
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixVsContiguousBlockMultiToken) {
+  std::u16string text = u"abxyz wabc";
+  std::u16string query = u"abc";
+
+  const double relevance = CalculateRelevance(query, text);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+
+  // See also BenchmarkPrefixVsContiguousBlockSingleToken above, for note on
+  // prefix matching vs. longest contiguous block matching.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixVsSameLengthNonPrefixMultiToken) {
+  FuzzyTokenizedStringMatch match;
+  std::u16string text = u"xyzabc abcdef";
+  std::u16string query = u"abc";
+  const double relevance = match.Relevance(
+      TokenizedString(query), TokenizedString(text), kUseWeightedRatio,
+      kUseEditDistance, kPartialMatchPenaltyRate);
+
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+
+  EXPECT_EQ(match.hits().size(), 1u);
+
+  // TODO(crbug.com/1336160): Currently the "abc" of "xyzabc" is matched.
+  // Consider an implementation which instead matches to the "abc" of "abcdef",
+  // i.e.:
+  //
+  //   EXPECT_EQ(match.hits()[0].start(), 7u);
+  //   EXPECT_EQ(match.hits()[0].end(), 10u);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixVariedWordOrderMultiToken) {
+  std::u16string text = u"abcd efgh ijkl";
+  std::vector<std::u16string> queries = {u"abcd ef", u"abcd ij", u"efgh ab",
+                                         u"efgh ij", u"ijkl ab", u"ijkl ef"};
+  std::vector<double> scores;
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores.push_back(relevance);
+  }
+  // Currently, "abcd ef" and "efgh ij" score very highly due to being long
+  // contiguous matches.
+  //
+  // TODO(crbug.com/1336160): Support word order variation, so that we can e.g.:
+  //
+  //   ExpectAllNearlyEqual(scores);
+
+  // TODO(crbug.com/1336160): Consider a score boost for when a matched token is
+  // the first token of both text and query.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixMultipleSameLengthMatchesMultiToken) {
+  FuzzyTokenizedStringMatch match;
+  std::u16string text = u"abcde abfgh abijk";
+  std::u16string query = u"ab";
+
+  const double relevance = match.Relevance(
+      TokenizedString(query), TokenizedString(text), kUseWeightedRatio,
+      kUseEditDistance, kPartialMatchPenaltyRate);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+
+  // Where multiple same-length token prefix matches are possible, prioritize
+  // the earliest match.
+  EXPECT_EQ(match.hits().size(), 1u);
+  EXPECT_EQ(match.hits()[0].start(), 0u);
+  EXPECT_EQ(match.hits()[0].end(), 2u);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixMultiplePossibleVariedLengthMatchesMultiToken) {
+  FuzzyTokenizedStringMatch match;
+  std::u16string text = u"abxyz abcwv abcdt";
+  std::u16string query = u"abcde";
+
+  const double relevance = match.Relevance(
+      TokenizedString(query), TokenizedString(text), kUseWeightedRatio,
+      kUseEditDistance, kPartialMatchPenaltyRate);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+
+  // Expect a single hit, for the "abcd" of "abcdt".
+  EXPECT_EQ(match.hits().size(), 1u);
+  EXPECT_EQ(match.hits()[0].start(), 12u);
+  EXPECT_EQ(match.hits()[0].end(), 16u);
 }
 
 /**********************************************************************
