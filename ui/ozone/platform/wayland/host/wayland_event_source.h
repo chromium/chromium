@@ -209,6 +209,9 @@ class WaylandEventSource : public PlatformEventSource,
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
 
+  // Ensure a valid instance of the PointerScrollData class member.
+  PointerScrollData& EnsurePointerScrollData();
+
   // Set the target to the event, then dispatch the event.
   void SetTargetAndDispatchEvent(Event* event, EventTarget* target);
 
@@ -235,7 +238,7 @@ class WaylandEventSource : public PlatformEventSource,
   absl::optional<gfx::PointF> relative_pointer_location_;
 
   // Accumulates the scroll data within a pointer frame internal.
-  PointerScrollData pointer_scroll_data_;
+  absl::optional<PointerScrollData> pointer_scroll_data_;
 
   // Latest set of pointer scroll data to compute fling scroll.
   // Front is newer, and back is older.

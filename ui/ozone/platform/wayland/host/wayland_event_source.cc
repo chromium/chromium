@@ -313,8 +313,8 @@ void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
 }
 
 void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset) {
-  pointer_scroll_data_.dx += offset.x();
-  pointer_scroll_data_.dy += offset.y();
+  EnsurePointerScrollData().dx += offset.x();
+  EnsurePointerScrollData().dy += offset.y();
 }
 
 void WaylandEventSource::OnResetPointerFlags() {
@@ -331,7 +331,12 @@ const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
 
 void WaylandEventSource::OnPointerFrameEvent() {
   base::TimeTicks now = EventTimeForNow();
-  pointer_scroll_data_.dt = now - last_pointer_frame_time_;
+  if (!pointer_scroll_data_) {
+    last_pointer_frame_time_ = now;
+    return;
+  }
+
+  pointer_scroll_data_->dt = now - last_pointer_frame_time_;
   last_pointer_frame_time_ = now;
 
   int flags = pointer_flags_ | keyboard_modifiers_;
@@ -348,8 +353,8 @@ void WaylandEventSource::OnPointerFrameEvent() {
 
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
-  if (pointer_scroll_data_.dx == 0 && pointer_scroll_data_.dy == 0 &&
-      pointer_scroll_data_.is_axis_stop &&
+  if (pointer_scroll_data_->dx == 0 && pointer_scroll_data_->dy == 0 &&
+      pointer_scroll_data_->is_axis_stop &&
       supports_trackpad_kinetic_scrolling) {
     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
     float vx = initial_velocity.x();
@@ -359,48 +364,44 @@ void WaylandEventSource::OnPointerFrameEvent() {
         pointer_location_, pointer_location_, now, flags, vx, vy, vx, vy,
         kGestureScrollFingerCount);
     SetTargetAndDispatchEvent(&event, target);
-  } else if (pointer_scroll_data_.axis_source) {
-    if (*pointer_scroll_data_.axis_source == WL_POINTER_AXIS_SOURCE_WHEEL ||
-        *pointer_scroll_data_.axis_source ==
+  } else if (pointer_scroll_data_->axis_source) {
+    if (*pointer_scroll_data_->axis_source == WL_POINTER_AXIS_SOURCE_WHEEL ||
+        *pointer_scroll_data_->axis_source ==
             WL_POINTER_AXIS_SOURCE_WHEEL_TILT) {
       MouseWheelEvent event(
-          gfx::Vector2d(pointer_scroll_data_.dx, pointer_scroll_data_.dy),
+          gfx::Vector2d(pointer_scroll_data_->dx, pointer_scroll_data_->dy),
           pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
       SetTargetAndDispatchEvent(&event, target);
-    } else if (*pointer_scroll_data_.axis_source ==
+    } else if (*pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_FINGER ||
-               *pointer_scroll_data_.axis_source ==
+               *pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
-                        EventTimeForNow(), flags, pointer_scroll_data_.dx,
-                        pointer_scroll_data_.dy, pointer_scroll_data_.dx,
-                        pointer_scroll_data_.dy, kGestureScrollFingerCount);
+                        EventTimeForNow(), flags, pointer_scroll_data_->dx,
+                        pointer_scroll_data_->dy, pointer_scroll_data_->dx,
+                        pointer_scroll_data_->dy, kGestureScrollFingerCount);
       SetTargetAndDispatchEvent(&event, target);
     }
 
     if (pointer_scroll_data_set_.size() + 1 > kPointerScrollDataSetMaxSize)
       pointer_scroll_data_set_.pop_back();
-    pointer_scroll_data_set_.push_front(pointer_scroll_data_);
+    pointer_scroll_data_set_.push_front(*pointer_scroll_data_);
   }
 
-  // Reset |pointer_scroll_data_|.
-  pointer_scroll_data_.dx = 0;
-  pointer_scroll_data_.dy = 0;
-  pointer_scroll_data_.is_axis_stop = false;
-  pointer_scroll_data_.axis_source.reset();
+  pointer_scroll_data_.reset();
 }
 
 void WaylandEventSource::OnPointerAxisSourceEvent(uint32_t axis_source) {
-  pointer_scroll_data_.axis_source = axis_source;
+  EnsurePointerScrollData().axis_source = axis_source;
 }
 
 void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
   if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
-    pointer_scroll_data_.dy = 0;
+    EnsurePointerScrollData().dy = 0;
   } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
-    pointer_scroll_data_.dx = 0;
+    EnsurePointerScrollData().dx = 0;
   }
-  pointer_scroll_data_.is_axis_stop = true;
+  EnsurePointerScrollData().is_axis_stop = true;
 }
 
 void WaylandEventSource::OnTouchPressEvent(
@@ -768,6 +769,14 @@ absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
                         /*radius_y=*/1.0f, it->second->force,
                         /*twist=*/0.0f, it->second->tilt.x(),
                         it->second->tilt.y());
+}
+
+WaylandEventSource::PointerScrollData&
+WaylandEventSource::EnsurePointerScrollData() {
+  if (!pointer_scroll_data_)
+    pointer_scroll_data_ = PointerScrollData();
+
+  return *pointer_scroll_data_;
 }
 
 }  // namespace ui
