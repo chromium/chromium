@@ -1124,6 +1124,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2048653237708779538">Toiming pole saadaval</translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2052572566310583903">Installitud teie muudesse seadmetesse</translation>
+<translation id="2053105195397337973">Katsetame uusi viise, kuidas piirata jälgimist, võimaldades saitidel samas blokeerida rämpsreklaamid ja pettused.</translation>
 <translation id="2053312383184521053">Jõudeoleku andmed</translation>
 <translation id="2054240652864153171">Kas kustutada saidi <ph name="SITE_NAME" /> andmed, mis on sektsioonis <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Teid logitakse nendelt saitidelt (sh avatud vahelehtedel) välja</translation>
@@ -5298,7 +5299,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6086846494333236931">Selle installis administraator</translation>
 <translation id="6087746524533454243">Kas otsite brauseri teabe lehte? Külastage saiti</translation>
 <translation id="6087960857463881712">Lahe nägu</translation>
-<translation id="6088535503330933227">Chrome otsib võimalusi, kuidas rämpsreklaame, pettusi ja saitide vahelist jagamist piirata. Samuti prognoosib Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, mida saidid saavad kasutada teile reklaamide kuvamiseks. Saate oma huvisid seadetes hallata.</translation>
 <translation id="608912389580139775">Selle lehe lisamiseks lugemisloendisse klõpsake järjehoidjaikoonil</translation>
 <translation id="6091761513005122595">Jagatava üksuse ühendamine õnnestus.</translation>
 <translation id="6093888419484831006">Värskenduse tühistamine ...</translation>
@@ -5457,7 +5457,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Süsteem: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Värskendus on valmis</translation>
-<translation id="6248988683584659830">Otsinguseaded</translation>
+<translation id="6248988683584659830">Otsige seadetest</translation>
 <translation id="6249200942125593849">a11y haldamine</translation>
 <translation id="6250186368828697007">Üksikasjad on ekraanikuva jagamisel peidetud</translation>
 <translation id="6251870443722440887">GDI nimed</translation>

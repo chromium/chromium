@@ -1133,6 +1133,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2048653237708779538">Action not available</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2052572566310583903">Installed on your other devices</translation>
+<translation id="2053105195397337973">We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="2053312383184521053">Idle State Data</translation>
 <translation id="2054240652864153171">Clear site data for <ph name="SITE_NAME" /> partitioned on <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">You’ll be signed out of these sites, including in open tabs</translation>
@@ -1877,6 +1878,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2727633948226935816">Don't remind me again</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729314457178420145">Also clear browsing data (<ph name="URL" />) which may sign you out of Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="2730029791981212295">Backing up Linux apps and files</translation>
 <translation id="2730901670247399077">Emoji suggestions</translation>
 <translation id="273093730430620027">This page is accessing your camera.</translation>
@@ -5308,7 +5310,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
-<translation id="6088535503330933227">Chrome is exploring ways to limit ad spam, fraud and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> that sites can use to show you ads. You can manage your interests in settings.</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>
 <translation id="6091761513005122595">Share mounted successfully.</translation>
 <translation id="6093888419484831006">Cancelling update...</translation>

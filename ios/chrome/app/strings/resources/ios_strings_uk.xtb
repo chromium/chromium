@@ -406,7 +406,6 @@
 <translation id="4502566650163919158">Перевірити</translation>
 <translation id="4505980578794259603">Остання перевірка: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Закрити заклик до входу</translation>
-<translation id="4511669830082467224">Шукати зображення за допомогою Google</translation>
 <translation id="4526249700380860531">Переглядайте збережені паролі та керуйте ними на сторінці <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>
@@ -678,6 +677,7 @@
 <translation id="6561262006871132942">Наблизити</translation>
 <translation id="6583087784430677195">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Параметри<ph name="END_LINK" /> та перейдіть у розділ "Автозаповнення паролів".</translation>
 <translation id="6585618849026997638">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
+<translation id="6596481460663245319">Шукати зображення за допомогою Google</translation>
 <translation id="6598875554591387303">Сортувати за категорією "Видавець"</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

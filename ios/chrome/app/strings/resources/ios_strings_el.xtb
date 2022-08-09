@@ -406,7 +406,6 @@
 <translation id="4502566650163919158">Έλεγχος τώρα</translation>
 <translation id="4505980578794259603">Τελευταίος έλεγχος: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Κλείσιμο προσφοράς σύνδεσης</translation>
-<translation id="4511669830082467224">Αναζήτηση εικόνας με το Google</translation>
 <translation id="4526249700380860531">Προβολή και διαχείριση των αποθηκευμένων κωδικών πρόσβασης στη διεύθυνση <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
 <translation id="4536418791685807335">Δοκιμάστε να συνδεθείτε ξανά.</translation>
@@ -679,6 +678,7 @@
 <translation id="6561262006871132942">Μεγέθυνση</translation>
 <translation id="6583087784430677195">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στην επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="6585618849026997638">Μπορείτε να επιστρέψετε σε μια σελίδα που είναι σημαντική για εσάς προσθέτοντας έναν σελιδοδείκτη.</translation>
+<translation id="6596481460663245319">Αναζήτηση εικόνας με το Google</translation>
 <translation id="6598875554591387303">Ταξινόμηση με βάση τον εκδότη</translation>
 <translation id="6603393121510733479">Ο οργανισμός σας απενεργοποίησε την απόρρητη περιήγηση.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>

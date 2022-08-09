@@ -406,7 +406,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4502566650163919158">Skontrolovať</translation>
 <translation id="4505980578794259603">Posledná kontrola: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
-<translation id="4511669830082467224">Vyhľadať obrázok Googlom</translation>
 <translation id="4526249700380860531">Zobrazte si a spravujte uložené heslá na stránke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
@@ -678,6 +677,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6583087784430677195">Túto funkciu môžete vypnete v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /> v sekcii Automatické dopĺňanie hesiel.</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
+<translation id="6596481460663245319">Vyhľadať obrázok Googlom</translation>
 <translation id="6598875554591387303">Zoradiť podľa vydavateľa</translation>
 <translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>

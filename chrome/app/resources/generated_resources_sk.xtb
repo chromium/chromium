@@ -1864,6 +1864,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2727633948226935816">Viac nepripomínať</translation>
 <translation id="2727712005121231835">Skutočná veľkosť</translation>
 <translation id="2729314457178420145">Vymazať tiež dáta prehliadania (<ph name="URL" />), po čom vás môže systém odhlásiť z domény Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729327310379176711">Chrome hľadá nové spôsoby, ako zredukovať sledovanie a ešte viac vás chrániť pri prehliadaní. <ph name="ESTIMATE_INTERESTS_LINK" /> a umožňuje vám ich spravovať. Potom ho môžu weby, ktoré navštívite, žiadať o vaše záujmy, aby vám mohli zobrazovať reklamy.</translation>
 <translation id="2730029791981212295">Zálohovanie aplikácií a súborov systému Linux</translation>
 <translation id="2730901670247399077">Návrhy emodži</translation>
 <translation id="273093730430620027">Táto stránka má prístup k vašej kamere.</translation>
@@ -5294,7 +5295,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6086846494333236931">Nainštalované vaším správcom</translation>
 <translation id="6087746524533454243">Hľadáte stránku s informáciami o prehliadači? Prejdite na</translation>
 <translation id="6087960857463881712">Paráda</translation>
-<translation id="6088535503330933227">Chrome hľadá spôsoby, ako obmedziť reklamný spam, podvody a zdieľanie obsahu medzi webmi. Chrome okrem toho <ph name="ESTIMATE_INTERESTS_LINK" />, na základe ktorých vám budú môcť weby zobrazovať reklamy. Záujmy môžete spravovať v nastaveniach.</translation>
 <translation id="608912389580139775">Ak chcete túto stránku pridať do svojho čitateľského zoznamu, kliknite na ikonu uloženia ako záložky</translation>
 <translation id="6091761513005122595">Zdieľané úložisko sa úspešne pripojilo.</translation>
 <translation id="6093888419484831006">Zrušenie aktualizácie...</translation>
