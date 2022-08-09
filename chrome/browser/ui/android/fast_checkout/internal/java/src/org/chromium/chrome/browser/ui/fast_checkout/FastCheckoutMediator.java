@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.view.View;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
@@ -27,6 +28,7 @@ public class FastCheckoutMediator {
     private FastCheckoutComponent.Delegate mDelegate;
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetClosedObserver;
+    private BottomSheetObserver mBottomSheetDismissedObserver;
 
     void initialize(FastCheckoutComponent.Delegate delegate, PropertyModel model,
             BottomSheetController bottomSheetController) {
@@ -41,6 +43,15 @@ public class FastCheckoutMediator {
                     mModel.set(FastCheckoutModel.VISIBLE, true);
                     mBottomSheetController.removeObserver(mBottomSheetClosedObserver);
                 }
+            }
+        };
+
+        mBottomSheetDismissedObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                super.onSheetClosed(reason);
+                dismiss(reason);
+                mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
             }
         };
     }
@@ -61,7 +72,29 @@ public class FastCheckoutMediator {
         }
     }
 
-    public void onDismissed(@StateChangeReason int reason) {
+    /**
+     * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     * @param isVisible A boolean describing whether to show or hide the sheet.
+     * @param content The bottom sheet content to show/hide.
+     * @return True if the request was successful, false otherwise.
+     */
+    public boolean setVisible(boolean isVisible, BottomSheetContent content) {
+        if (isVisible) {
+            mBottomSheetController.addObserver(mBottomSheetDismissedObserver);
+            if (!mBottomSheetController.requestShowContent(content, true)) {
+                mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+                return false;
+            }
+        } else {
+            mBottomSheetController.hideContent(content, true);
+        }
+        return true;
+    }
+
+    /**
+     * Dismisses the current bottom sheet.
+     */
+    public void dismiss(@StateChangeReason int reason) {
         if (!mModel.get(FastCheckoutModel.VISIBLE)) return; // Dismiss only if not dismissed yet.
         // TODO(crbug.com/1334642): Record dismissal metrics.
         mModel.set(FastCheckoutModel.VISIBLE, false);
@@ -78,5 +111,13 @@ public class FastCheckoutMediator {
         return view.getTag() != null
                 && view.getTag().equals(
                         AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
+    }
+
+    /**
+     * Releases the resources used by FastCheckoutMediator.
+     */
+    @MainThread
+    private void destroy() {
+        mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
     }
 }

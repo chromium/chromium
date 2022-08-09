@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -29,10 +28,6 @@ public class FastCheckoutModel {
         int CREDIT_CARDS_SCREEN = 2;
     }
 
-    /** The handler for dismissing the bottom sheet. */
-    public static final PropertyModel.WritableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
     /** Property that indicates the bottom sheet visibility. */
     public static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -44,15 +39,13 @@ public class FastCheckoutModel {
     public static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
             new PropertyModel.WritableIntPropertyKey();
 
-    static PropertyModel createDefaultModel(Callback<Integer> dismissHandler) {
+    static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
-                .with(DISMISS_HANDLER, dismissHandler)
                 .with(CURRENT_SCREEN, ScreenType.HOME_SCREEN)
                 .build();
     }
 
     /** All keys used for the fast checkout bottom sheet. */
-    static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {CURRENT_SCREEN, DISMISS_HANDLER, VISIBLE};
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CURRENT_SCREEN, VISIBLE};
 }

@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
 
 android_library("java") {
   sources = [
@@ -10,18 +13,39 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediator.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutModel.java",
-    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutView.java",
-    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetContent.java",
   ]
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/ui/android/fast_checkout:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/autofill_assistant/android:public_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.ui.fast_checkout"
+}
+
+android_resources("java_resources") {
+  deps = [
+    ":java_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
+  custom_package = "org.chromium.chrome.browser.ui.fast_checkout"
+}
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_fast_checkout_strings.grd"
+  outputs =
+      [ "values/android_fast_checkout_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "values-{{source_name_part}}/android_fast_checkout_strings.xml" ])
 }
