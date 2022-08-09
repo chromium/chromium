@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Whether to enable the Chrome for Testing (CfT) branding flavor. False means
+  # to follow `is_chrome_branded`, true means to select CfT, which implies
+  # `is_chrome_branded = True` with some overrides on top.
+  #
+  # Note: CfT is not intended to be used to run tests in this repository.
+  #
+  # Design doc: https://goo.gle/chrome-for-testing
+  is_chrome_for_testing_branded = false
+}
