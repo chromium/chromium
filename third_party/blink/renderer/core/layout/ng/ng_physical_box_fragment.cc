@@ -193,7 +193,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
       has_fragment_items = true;
   }
 
-  bool has_rare_data = builder->mathml_paint_info_ ||
+  bool has_rare_data = builder->frame_set_layout_data_ ||
+                       builder->mathml_paint_info_ ||
                        builder->table_grid_rect_ ||
                        !builder->table_column_geometries_.IsEmpty() ||
                        builder->table_collapsed_borders_ ||
@@ -581,7 +582,8 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
 }
 
 NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
-    : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
+    : frame_set_layout_data(std::move(builder->frame_set_layout_data_)),
+      mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
   if (!builder->table_column_geometries_.IsEmpty())

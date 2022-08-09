@@ -343,6 +343,7 @@ blink_core_sources_layout = [
   "ng/flex/ng_flex_layout_algorithm.cc",
   "ng/flex/ng_flex_layout_algorithm.h",
   "ng/flex/ng_flex_line.h",
+  "ng/frame_set_layout_data.h",
   "ng/geometry/ng_bfc_offset.cc",
   "ng/geometry/ng_bfc_offset.h",
   "ng/geometry/ng_bfc_rect.h",

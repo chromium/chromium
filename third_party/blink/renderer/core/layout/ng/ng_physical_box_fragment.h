@@ -25,6 +25,7 @@ namespace blink {
 
 class NGBoxFragmentBuilder;
 enum class NGOutlineType;
+struct FrameSetLayoutData;
 
 class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
@@ -388,6 +389,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                                     bool check_same_block_size) const;
 #endif
 
+  const FrameSetLayoutData* GetFrameSetLayoutData() const {
+    return ComputeRareDataAddress()->frame_set_layout_data.get();
+  }
+
   bool HasExtraMathMLPainting() const {
     if (IsMathMLFraction())
       return true;
@@ -487,6 +492,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     explicit RareData(NGBoxFragmentBuilder*);
     void Trace(Visitor*) const;
 
+    const std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // Table rare-data.
