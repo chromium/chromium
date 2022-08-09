@@ -419,6 +419,15 @@ bool EventTarget::AddEventListenerInternal(
   if (options->hasSignal() && options->signal()->aborted())
     return false;
 
+  // Consider `Permissions-Policy: unload`.
+  if (event_type == event_type_names::kUnload &&
+      RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled() &&
+      !GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kUnload,
+          ReportOptions::kReportOnFailure)) {
+    return false;
+  }
+
   // Unload/Beforeunload handlers are not allowed in fenced frames.
   if (event_type == event_type_names::kUnload ||
       event_type == event_type_names::kBeforeunload) {

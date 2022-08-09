@@ -57,6 +57,7 @@ serial
 shared-autofill
 storage-access-api
 sync-xhr
+unload
 usb
 vertical-scroll
 window-placement

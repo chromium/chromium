@@ -7156,6 +7156,7 @@ domain Page
       storage-access-api
       sync-xhr
       trust-token-redemption
+      unload
       usb
       vertical-scroll
       web-share

@@ -1753,6 +1753,11 @@
       name: "Permissions",
       status: "stable",
     },
+    // See https://crbug.com/1324111
+    {
+      name: "PermissionsPolicyUnload",
+      status: "experimental"
+    },
     {
       name: "PermissionsRequestRevoke",
       status: "experimental",

@@ -41097,6 +41097,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="101" label="Bluetooth"/>
   <int value="102" label="FederatedCredentials"/>
   <int value="103" label="SharedStorage"/>
+  <int value="104" label="Unload"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
