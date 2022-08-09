@@ -46,24 +46,9 @@ export const CrosAudioConfigAudioDeviceType = {
 };
 
 /** @type {!ash.audioConfig.mojom.AudioDevice} */
-export const crosAudioConfigFakeSpeaker = {
+export const crosAudioConfigDefaultFakeMicJack = {
   /** @type {bigint} */
-  id: BigInt(10001),
-
-  /** @type {string} */
-  displayName: 'Speaker',
-
-  /** @type {boolean} */
-  isActive: false,
-
-  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
-  deviceType: CrosAudioConfigAudioDeviceType.kInternalSpeaker,
-};
-
-/** @type {!ash.audioConfig.mojom.AudioDevice} */
-export const crosAudioConfigFakeMicJack = {
-  /** @type {bigint} */
-  id: BigInt(10010),
+  id: BigInt(1),
 
   /** @type {string} */
   displayName: 'Mic Jack',
@@ -75,10 +60,56 @@ export const crosAudioConfigFakeMicJack = {
   deviceType: CrosAudioConfigAudioDeviceType.kInternalMic,
 };
 
+/** @type {!ash.audioConfig.mojom.AudioDevice} */
+export const crosAudioConfigActiveFakeSpeaker = {
+  /** @type {bigint} */
+  id: BigInt(2),
+
+  /** @type {string} */
+  displayName: 'Speaker',
+
+  /** @type {boolean} */
+  isActive: true,
+
+  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
+  deviceType: CrosAudioConfigAudioDeviceType.kInternalSpeaker,
+};
+
+/** @type {!ash.audioConfig.mojom.AudioDevice} */
+export const crosAudioConfigInactiveFakeMicJack = {
+  /** @type {bigint} */
+  id: BigInt(3),
+
+  /** @type {string} */
+  displayName: 'Mic Jack',
+
+  /** @type {boolean} */
+  isActive: false,
+
+  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
+  deviceType: CrosAudioConfigAudioDeviceType.kInternalSpeaker,
+};
+
+/** @type {!ash.audioConfig.mojom.AudioDevice} */
+export const crosAudioConfigDefaultFakeSpeaker = {
+  /** @type {bigint} */
+  id: BigInt(4),
+
+  /** @type {string} */
+  displayName: 'Speaker',
+
+  /** @type {boolean} */
+  isActive: false,
+
+  /** @type {!ash.audioConfig.mojom.AudioDeviceType} */
+  deviceType: CrosAudioConfigAudioDeviceType.kInternalSpeaker,
+};
+
 /** @type {!ash.audioConfig.mojom.AudioSystemProperties} */
 export const defaultFakeAudioSystemProperties = {
   /** @type {!Array<!ash.audioConfig.mojom.AudioDevice>} */
-  outputDevices: [crosAudioConfigFakeSpeaker, crosAudioConfigFakeMicJack],
+  outputDevices:
+      [crosAudioConfigDefaultFakeSpeaker, crosAudioConfigDefaultFakeMicJack],
 
   outputVolumePercent: 75,
 

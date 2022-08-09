@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="settings-shared md-select">
   .audio-mute-button {
     margin-inline-end: var(--settings-control-label-spacing);
   }
@@ -67,10 +67,12 @@
 
 <!-- Output section -->
 <template is="dom-if" if="[[showAudioInfo]]">
+  <!-- TODO(crbug.com/1092970): Output section should be hidden if there are no
+  output devices. -->
   <div id="output">
     <h2 id="audioOutputTitle">$i18n{audioOutputTitle}</h2>
     <div id="audioOutputSubsection" class="subsection">
-      <div class="settings-box">
+      <div id="outputVolumeSubsection" class="settings-box">
         <div class="start settings-box-text" id="audioOutputVolumeLabel">
           $i18n{audioVolumeTitle}
         </div>
@@ -100,6 +102,20 @@
             </iron-icon>
           </div>
         </div>
+      </div>
+      <div id="outputDeviceSubsection" class="settings-box">
+        <div class="start settings-box-text" id="audioOutputDeviceLabel">
+          $i18n{audioDeviceTitle}
+        </div>
+        <select id="audioOutputDeviceDropdown" class="md-select"
+            aria-labelledby="audioOutputDeviceLabel">
+          <template is="dom-repeat"
+              items="[[audioSystemProperties_.outputDevices]]">
+            <option value="[[item.id]]" selected="[[item.isActive]]">
+              [[item.displayName]]
+            </option>
+          </template>
+        </select>
       </div>
     </div>
   </div>

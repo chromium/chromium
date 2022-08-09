@@ -2357,6 +2357,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage.">
     Volume
   </message>
+  <message name="IDS_SETTINGS_AUDIO_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage.">
+    Device
+  </message>
 
   <!-- Device pointer page (OS settings) -->
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">

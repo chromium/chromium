@@ -760,6 +760,7 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
       {"audioOutputTitle", IDS_SETTINGS_AUDIO_OUTPUT_TITLE},
       {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
+      {"audioDeviceTitle", IDS_SETTINGS_AUDIO_DEVICE_TITLE},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
