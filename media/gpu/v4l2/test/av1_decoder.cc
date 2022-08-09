@@ -116,172 +116,6 @@ void FillSequenceParams(
   v4l2_seq_params->max_frame_height_minus_1 = seq_header->max_frame_height - 1;
 }
 
-// 5.9.2. Uncompressed header syntax
-void FillFrameParams(struct v4l2_ctrl_av1_frame_header* v4l2_frame_params,
-                     const libgav1::ObuFrameHeader& frm_header) {
-  conditionally_set_u32_flags(&v4l2_frame_params->flags, frm_header.show_frame,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SHOW_FRAME);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.showable_frame,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SHOWABLE_FRAME);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.error_resilient_mode,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ERROR_RESILIENT_MODE);
-  // libgav1 header has |enable_cdf_update| instead of |disable_cdf_update|.
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              !frm_header.enable_cdf_update,
-                              V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_CDF_UPDATE);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.allow_screen_content_tools,
-      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_SCREEN_CONTENT_TOOLS);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.force_integer_mv,
-                              V4L2_AV1_FRAME_HEADER_FLAG_FORCE_INTEGER_MV);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.allow_intrabc,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_INTRABC);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.use_superres,
-                              V4L2_AV1_FRAME_HEADER_FLAG_USE_SUPERRES);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.allow_high_precision_mv,
-      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_HIGH_PRECISION_MV);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.is_motion_mode_switchable,
-      V4L2_AV1_FRAME_HEADER_FLAG_IS_MOTION_MODE_SWITCHABLE);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.use_ref_frame_mvs,
-                              V4L2_AV1_FRAME_HEADER_FLAG_USE_REF_FRAME_MVS);
-  // libgav1 header has |enable_frame_end_update_cdf| instead.
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, !frm_header.enable_frame_end_update_cdf,
-      V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_FRAME_END_UPDATE_CDF);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.tile_info.uniform_spacing,
-                              V4L2_AV1_FRAME_HEADER_FLAG_UNIFORM_TILE_SPACING);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.allow_warped_motion,
-                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_WARPED_MOTION);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.reference_mode_select,
-                              V4L2_AV1_FRAME_HEADER_FLAG_REFERENCE_SELECT);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.reduced_tx_set,
-                              V4L2_AV1_FRAME_HEADER_FLAG_REDUCED_TX_SET);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.skip_mode_frame[0] > 0,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_ALLOWED);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.skip_mode_present,
-                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_PRESENT);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.frame_size_override_flag,
-                              V4L2_AV1_FRAME_HEADER_FLAG_FRAME_SIZE_OVERRIDE);
-  // libgav1 header doesn't have |buffer_removal_time_present_flag|.
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.buffer_removal_time[0] > 0,
-      V4L2_AV1_FRAME_HEADER_FLAG_BUFFER_REMOVAL_TIME_PRESENT);
-  conditionally_set_u32_flags(
-      &v4l2_frame_params->flags, frm_header.frame_refs_short_signaling,
-      V4L2_AV1_FRAME_HEADER_FLAG_FRAME_REFS_SHORT_SIGNALING);
-
-  switch (frm_header.frame_type) {
-    case libgav1::kFrameKey:
-      v4l2_frame_params->frame_type = V4L2_AV1_KEY_FRAME;
-      break;
-    case libgav1::kFrameInter:
-      v4l2_frame_params->frame_type = V4L2_AV1_INTER_FRAME;
-      break;
-    case libgav1::kFrameIntraOnly:
-      v4l2_frame_params->frame_type = V4L2_AV1_INTRA_ONLY_FRAME;
-      break;
-    case libgav1::kFrameSwitch:
-      v4l2_frame_params->frame_type = V4L2_AV1_SWITCH_FRAME;
-      break;
-    default:
-      NOTREACHED() << "Invalid frame type, " << frm_header.frame_type;
-  }
-
-  v4l2_frame_params->order_hint = frm_header.order_hint;
-  v4l2_frame_params->superres_denom = frm_header.superres_scale_denominator;
-  v4l2_frame_params->upscaled_width = frm_header.upscaled_width;
-
-  switch (frm_header.interpolation_filter) {
-    case libgav1::kInterpolationFilterEightTap:
-      v4l2_frame_params->interpolation_filter =
-          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP;
-      break;
-    case libgav1::kInterpolationFilterEightTapSmooth:
-      v4l2_frame_params->interpolation_filter =
-          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP_SMOOTH;
-      break;
-    case libgav1::kInterpolationFilterEightTapSharp:
-      v4l2_frame_params->interpolation_filter =
-          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP_SHARP;
-      break;
-    case libgav1::kInterpolationFilterBilinear:
-      v4l2_frame_params->interpolation_filter =
-          V4L2_AV1_INTERPOLATION_FILTER_BILINEAR;
-      break;
-    case libgav1::kInterpolationFilterSwitchable:
-      v4l2_frame_params->interpolation_filter =
-          V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
-      break;
-    default:
-      NOTREACHED() << "Invalid interpolation filter, "
-                   << frm_header.interpolation_filter;
-  }
-
-  switch (frm_header.tx_mode) {
-    case libgav1::kTxModeOnly4x4:
-      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_ONLY_4X4;
-      break;
-    case libgav1::kTxModeLargest:
-      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_LARGEST;
-      break;
-    case libgav1::kTxModeSelect:
-      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_SELECT;
-      break;
-    default:
-      NOTREACHED() << "Invalid tx mode, " << frm_header.tx_mode;
-  }
-
-  v4l2_frame_params->frame_width_minus_1 = frm_header.width - 1;
-  v4l2_frame_params->frame_height_minus_1 = frm_header.height - 1;
-  v4l2_frame_params->render_width_minus_1 = frm_header.render_width - 1;
-  v4l2_frame_params->render_height_minus_1 = frm_header.render_height - 1;
-
-  v4l2_frame_params->current_frame_id = frm_header.current_frame_id;
-  v4l2_frame_params->primary_ref_frame = frm_header.primary_reference_frame;
-  SafeArrayMemcpy(v4l2_frame_params->buffer_removal_time,
-                  frm_header.buffer_removal_time);
-  v4l2_frame_params->refresh_frame_flags = frm_header.refresh_frame_flags;
-
-  static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
-                    libgav1::kNumReferenceFrameTypes,
-                "Invalid size of |order_hints| array");
-  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
-    v4l2_frame_params->order_hints[i] =
-        base::checked_cast<__u32>(frm_header.reference_order_hint[i]);
-
-  v4l2_frame_params->last_frame_idx =
-      frm_header.reference_frame_index[libgav1::kReferenceFrameLast];
-  v4l2_frame_params->gold_frame_idx =
-      frm_header.reference_frame_index[libgav1::kReferenceFrameGolden];
-
-  static_assert(std::size(decltype(v4l2_frame_params->ref_frame_idx){}) ==
-                    libgav1::kNumInterReferenceFrameTypes,
-                "Invalid size of |ref_frame_idx| array");
-  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++)
-    v4l2_frame_params->ref_frame_idx[i] =
-        base::checked_cast<__u64>(frm_header.reference_frame_index[i]);
-
-  v4l2_frame_params->skip_mode_frame[0] =
-      base::checked_cast<__u8>(frm_header.skip_mode_frame[0]);
-  v4l2_frame_params->skip_mode_frame[1] =
-      base::checked_cast<__u8>(frm_header.skip_mode_frame[1]);
-}
-
 // Section 5.9.11. Loop filter params syntax.
 // Note that |update_ref_delta| and |update_mode_delta| flags in the spec
 // are not needed for V4L2 AV1 API.
@@ -603,6 +437,200 @@ void FillGlobalMotionParams(
   }
 }
 
+// 5.9.2. Uncompressed header syntax
+void FillFrameParams(
+    struct v4l2_ctrl_av1_frame_header* v4l2_frame_params,
+    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const libgav1::ObuFrameHeader& frm_header) {
+  FillLoopFilterParams(&v4l2_frame_params->loop_filter, frm_header.loop_filter);
+
+  FillLoopFilterDeltaParams(&v4l2_frame_params->loop_filter,
+                            frm_header.delta_lf);
+
+  FillQuantizationParams(&v4l2_frame_params->quantization,
+                         frm_header.quantizer);
+
+  FillQuantizerIndexDeltaParams(&v4l2_frame_params->quantization, seq_header,
+                                frm_header);
+
+  FillSegmentationParams(&v4l2_frame_params->segmentation,
+                         frm_header.segmentation);
+
+  const auto color_bitdepth = seq_header->color_config.bitdepth;
+  FillCdefParams(&v4l2_frame_params->cdef, frm_header.cdef,
+                 base::strict_cast<int8_t>(color_bitdepth));
+
+  FillLoopRestorationParams(&v4l2_frame_params->loop_restoration,
+                            frm_header.loop_restoration);
+
+  FillTileInfo(&v4l2_frame_params->tile_info, frm_header.tile_info);
+
+  FillGlobalMotionParams(&v4l2_frame_params->global_motion,
+                         frm_header.global_motion);
+
+  conditionally_set_u32_flags(&v4l2_frame_params->flags, frm_header.show_frame,
+                              V4L2_AV1_FRAME_HEADER_FLAG_SHOW_FRAME);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.showable_frame,
+                              V4L2_AV1_FRAME_HEADER_FLAG_SHOWABLE_FRAME);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.error_resilient_mode,
+                              V4L2_AV1_FRAME_HEADER_FLAG_ERROR_RESILIENT_MODE);
+  // libgav1 header has |enable_cdf_update| instead of |disable_cdf_update|.
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              !frm_header.enable_cdf_update,
+                              V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_CDF_UPDATE);
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, frm_header.allow_screen_content_tools,
+      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_SCREEN_CONTENT_TOOLS);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.force_integer_mv,
+                              V4L2_AV1_FRAME_HEADER_FLAG_FORCE_INTEGER_MV);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.allow_intrabc,
+                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_INTRABC);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.use_superres,
+                              V4L2_AV1_FRAME_HEADER_FLAG_USE_SUPERRES);
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, frm_header.allow_high_precision_mv,
+      V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_HIGH_PRECISION_MV);
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, frm_header.is_motion_mode_switchable,
+      V4L2_AV1_FRAME_HEADER_FLAG_IS_MOTION_MODE_SWITCHABLE);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.use_ref_frame_mvs,
+                              V4L2_AV1_FRAME_HEADER_FLAG_USE_REF_FRAME_MVS);
+  // libgav1 header has |enable_frame_end_update_cdf| instead.
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, !frm_header.enable_frame_end_update_cdf,
+      V4L2_AV1_FRAME_HEADER_FLAG_DISABLE_FRAME_END_UPDATE_CDF);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.tile_info.uniform_spacing,
+                              V4L2_AV1_FRAME_HEADER_FLAG_UNIFORM_TILE_SPACING);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.allow_warped_motion,
+                              V4L2_AV1_FRAME_HEADER_FLAG_ALLOW_WARPED_MOTION);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.reference_mode_select,
+                              V4L2_AV1_FRAME_HEADER_FLAG_REFERENCE_SELECT);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.reduced_tx_set,
+                              V4L2_AV1_FRAME_HEADER_FLAG_REDUCED_TX_SET);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.skip_mode_frame[0] > 0,
+                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_ALLOWED);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.skip_mode_present,
+                              V4L2_AV1_FRAME_HEADER_FLAG_SKIP_MODE_PRESENT);
+  conditionally_set_u32_flags(&v4l2_frame_params->flags,
+                              frm_header.frame_size_override_flag,
+                              V4L2_AV1_FRAME_HEADER_FLAG_FRAME_SIZE_OVERRIDE);
+  // libgav1 header doesn't have |buffer_removal_time_present_flag|.
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, frm_header.buffer_removal_time[0] > 0,
+      V4L2_AV1_FRAME_HEADER_FLAG_BUFFER_REMOVAL_TIME_PRESENT);
+  conditionally_set_u32_flags(
+      &v4l2_frame_params->flags, frm_header.frame_refs_short_signaling,
+      V4L2_AV1_FRAME_HEADER_FLAG_FRAME_REFS_SHORT_SIGNALING);
+
+  switch (frm_header.frame_type) {
+    case libgav1::kFrameKey:
+      v4l2_frame_params->frame_type = V4L2_AV1_KEY_FRAME;
+      break;
+    case libgav1::kFrameInter:
+      v4l2_frame_params->frame_type = V4L2_AV1_INTER_FRAME;
+      break;
+    case libgav1::kFrameIntraOnly:
+      v4l2_frame_params->frame_type = V4L2_AV1_INTRA_ONLY_FRAME;
+      break;
+    case libgav1::kFrameSwitch:
+      v4l2_frame_params->frame_type = V4L2_AV1_SWITCH_FRAME;
+      break;
+    default:
+      NOTREACHED() << "Invalid frame type, " << frm_header.frame_type;
+  }
+
+  v4l2_frame_params->order_hint = frm_header.order_hint;
+  v4l2_frame_params->superres_denom = frm_header.superres_scale_denominator;
+  v4l2_frame_params->upscaled_width = frm_header.upscaled_width;
+
+  switch (frm_header.interpolation_filter) {
+    case libgav1::kInterpolationFilterEightTap:
+      v4l2_frame_params->interpolation_filter =
+          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP;
+      break;
+    case libgav1::kInterpolationFilterEightTapSmooth:
+      v4l2_frame_params->interpolation_filter =
+          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP_SMOOTH;
+      break;
+    case libgav1::kInterpolationFilterEightTapSharp:
+      v4l2_frame_params->interpolation_filter =
+          V4L2_AV1_INTERPOLATION_FILTER_EIGHTTAP_SHARP;
+      break;
+    case libgav1::kInterpolationFilterBilinear:
+      v4l2_frame_params->interpolation_filter =
+          V4L2_AV1_INTERPOLATION_FILTER_BILINEAR;
+      break;
+    case libgav1::kInterpolationFilterSwitchable:
+      v4l2_frame_params->interpolation_filter =
+          V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
+      break;
+    default:
+      NOTREACHED() << "Invalid interpolation filter, "
+                   << frm_header.interpolation_filter;
+  }
+
+  switch (frm_header.tx_mode) {
+    case libgav1::kTxModeOnly4x4:
+      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_ONLY_4X4;
+      break;
+    case libgav1::kTxModeLargest:
+      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_LARGEST;
+      break;
+    case libgav1::kTxModeSelect:
+      v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_SELECT;
+      break;
+    default:
+      NOTREACHED() << "Invalid tx mode, " << frm_header.tx_mode;
+  }
+
+  v4l2_frame_params->frame_width_minus_1 = frm_header.width - 1;
+  v4l2_frame_params->frame_height_minus_1 = frm_header.height - 1;
+  v4l2_frame_params->render_width_minus_1 = frm_header.render_width - 1;
+  v4l2_frame_params->render_height_minus_1 = frm_header.render_height - 1;
+
+  v4l2_frame_params->current_frame_id = frm_header.current_frame_id;
+  v4l2_frame_params->primary_ref_frame = frm_header.primary_reference_frame;
+  SafeArrayMemcpy(v4l2_frame_params->buffer_removal_time,
+                  frm_header.buffer_removal_time);
+  v4l2_frame_params->refresh_frame_flags = frm_header.refresh_frame_flags;
+
+  static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
+                    libgav1::kNumReferenceFrameTypes,
+                "Invalid size of |order_hints| array");
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
+    v4l2_frame_params->order_hints[i] =
+        base::checked_cast<__u32>(frm_header.reference_order_hint[i]);
+
+  v4l2_frame_params->last_frame_idx =
+      frm_header.reference_frame_index[libgav1::kReferenceFrameLast];
+  v4l2_frame_params->gold_frame_idx =
+      frm_header.reference_frame_index[libgav1::kReferenceFrameGolden];
+
+  static_assert(std::size(decltype(v4l2_frame_params->ref_frame_idx){}) ==
+                    libgav1::kNumInterReferenceFrameTypes,
+                "Invalid size of |ref_frame_idx| array");
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++)
+    v4l2_frame_params->ref_frame_idx[i] =
+        base::checked_cast<__u64>(frm_header.reference_frame_index[i]);
+
+  v4l2_frame_params->skip_mode_frame[0] =
+      base::checked_cast<__u8>(frm_header.skip_mode_frame[0]);
+  v4l2_frame_params->skip_mode_frame[1] =
+      base::checked_cast<__u8>(frm_header.skip_mode_frame[1]);
+}
+
 // Section 5.11. Tile Group OBU syntax
 void FillTileGroupParams(
     v4l2_ctrl_av1_tile_group* tile_group_params,
@@ -921,34 +949,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
 
-  FillLoopFilterParams(&v4l2_frame_params.loop_filter,
-                       current_frame_header.loop_filter);
-
-  FillLoopFilterDeltaParams(&v4l2_frame_params.loop_filter,
-                            current_frame_header.delta_lf);
-
-  FillQuantizationParams(&v4l2_frame_params.quantization,
-                         current_frame_header.quantizer);
-
-  FillQuantizerIndexDeltaParams(&v4l2_frame_params.quantization,
-                                current_sequence_header_, current_frame_header);
-
-  FillSegmentationParams(&v4l2_frame_params.segmentation,
-                         current_frame_header.segmentation);
-
-  const auto color_bitdepth = current_sequence_header_->color_config.bitdepth;
-  FillCdefParams(&v4l2_frame_params.cdef, current_frame_header.cdef,
-                 base::strict_cast<int8_t>(color_bitdepth));
-
-  FillLoopRestorationParams(&v4l2_frame_params.loop_restoration,
-                            current_frame_header.loop_restoration);
-
-  FillTileInfo(&v4l2_frame_params.tile_info, current_frame_header.tile_info);
-
-  FillGlobalMotionParams(&v4l2_frame_params.global_motion,
-                         current_frame_header.global_motion);
-
-  FillFrameParams(&v4l2_frame_params, current_frame_header);
+  FillFrameParams(&v4l2_frame_params, current_sequence_header_,
+                  current_frame_header);
 
   // TODO(stevecho): V4L2_CID_STATELESS_AV1_FRAME_HEADER is trending to be
   // changed to V4L2_CID_STATELESS_AV1_FRAME
