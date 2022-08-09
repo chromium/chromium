@@ -3,18 +3,28 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 
-class IframeCspTest : public PaymentRequestPlatformBrowserTestBase {
+class IframeCspTest : public PaymentRequestPlatformBrowserTestBase,
+                      public ::testing::WithParamInterface<bool> {
  public:
-  IframeCspTest() = default;
+  IframeCspTest() {
+    if (WebPaymentAPICSPEnabled()) {
+      features_.InitAndEnableFeature(::features::kWebPaymentAPICSP);
+    } else {
+      features_.InitAndDisableFeature(::features::kWebPaymentAPICSP);
+    }
+  }
+
   ~IframeCspTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -26,11 +36,16 @@ class IframeCspTest : public PaymentRequestPlatformBrowserTestBase {
     ASSERT_TRUE(app_server_.Start());
   }
 
+  bool WebPaymentAPICSPEnabled() const { return GetParam(); }
+
  protected:
   net::EmbeddedTestServer app_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
+IN_PROC_BROWSER_TEST_P(IframeCspTest, Show) {
   NavigateTo("/csp_test_main.html");
 
   content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
@@ -54,8 +69,20 @@ IN_PROC_BROWSER_TEST_F(IframeCspTest, Show) {
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
       {{method_name, &app_server_}}, iframe);
 
-  EXPECT_EQ(true, content::EvalJs(iframe, "checkCanMakePayment()"));
+  if (WebPaymentAPICSPEnabled()) {
+    EXPECT_EQ(
+        "RangeError: Failed to construct 'PaymentRequest': "
+        "https://kylepay.com/webpay payment method identifier violates Content "
+        "Security Policy.",
+        content::EvalJs(iframe, "checkCanMakePayment()"));
+  } else {
+    // CSP is disabled.
+    EXPECT_EQ(true, content::EvalJs(iframe, "checkCanMakePayment()"));
+  }
+
   EXPECT_TRUE(console_observer.messages().empty());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, IframeCspTest, ::testing::Bool());
 
 }  // namespace payments

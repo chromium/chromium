@@ -252,6 +252,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableWebAppManifestId, blink::features::kWebAppEnableManifestId},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
+    {wf::EnableWebPaymentAPICSP, features::kWebPaymentAPICSP},
     {wf::EnablePaymentRequest, features::kWebPayments},
     {wf::EnablePaymentRequestBasicCard, features::kPaymentRequestBasicCard},
     {wf::EnablePercentBasedScrolling, features::kWindowsScrollingPersonality},

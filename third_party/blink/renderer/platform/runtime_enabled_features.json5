@@ -2632,6 +2632,11 @@
       depends_on: ["WebOTP"],
       status: "stable",
     },
+    {
+      name: "WebPaymentAPICSP",
+      origin_trial_feature_name: "WebPaymentAPICSP",
+      origin_trial_allows_third_party: true,
+    },
     // WebShare is enabled by default on Android.
     {
       name: "WebShare",

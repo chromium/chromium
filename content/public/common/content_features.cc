@@ -835,6 +835,10 @@ const base::Feature kSendBeaconThrowForBlobWithNonSimpleType{
 const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable connect-src CSP directive for the Web Payment API.
+const base::Feature kWebPaymentAPICSP{"WebPaymentAPICSP",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable the basic-card payment method from the PaymentRequest API. This has
 // been disabled since M100 and is soon to be removed: crbug.com/1209835.
 const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",

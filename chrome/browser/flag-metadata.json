@@ -6561,6 +6561,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "web-payment-api-csp",
+    "owners": [ "rouslan", "web-payments-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "web-share",
     "owners": [ "mhochk@microsoft.com", "ericwilligers@google.com", "hatalat@microsoft.com" ],
     "expiry_milestone": 114

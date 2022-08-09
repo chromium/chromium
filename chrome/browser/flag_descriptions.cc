@@ -3000,6 +3000,12 @@ const char kWebPaymentsExperimentalFeaturesName[] =
 const char kWebPaymentsExperimentalFeaturesDescription[] =
     "Enable experimental Web Payments API features";
 
+const char kWebPaymentAPICSPName[] = "CSP policy for Web Payment API";
+const char kWebPaymentAPICSPDescription[] =
+    "Enforce Content Security Policy connect-src directive for Web Payment API "
+    "when fetching manifest files, app icons, and service worker JavaScript "
+    "files.";
+
 const char kPaymentRequestBasicCardName[] =
     "PaymentRequest API 'basic-card' method";
 const char kPaymentRequestBasicCardDescription[] =

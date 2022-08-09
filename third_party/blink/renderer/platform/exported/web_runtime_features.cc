@@ -260,6 +260,10 @@ void WebRuntimeFeatures::EnablePaymentApp(bool enable) {
   RuntimeEnabledFeatures::SetPaymentAppEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebPaymentAPICSP(bool enable) {
+  RuntimeEnabledFeatures::SetWebPaymentAPICSPEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnablePaymentRequest(bool enable) {
   RuntimeEnabledFeatures::SetPaymentRequestEnabled(enable);
   if (!enable) {

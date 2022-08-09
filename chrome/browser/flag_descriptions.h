@@ -1683,6 +1683,9 @@ extern const char kWebGpuDeveloperFeaturesDescription[];
 extern const char kWebPaymentsExperimentalFeaturesName[];
 extern const char kWebPaymentsExperimentalFeaturesDescription[];
 
+extern const char kWebPaymentAPICSPName[];
+extern const char kWebPaymentAPICSPDescription[];
+
 extern const char kPaymentRequestBasicCardName[];
 extern const char kPaymentRequestBasicCardDescription[];
 

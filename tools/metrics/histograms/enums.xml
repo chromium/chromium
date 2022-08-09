@@ -59518,6 +59518,7 @@ from previous Chrome versions.
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
   <int value="339671131" label="disable-per-user-timezone"/>
+  <int value="340497722" label="WebPaymentAPICSP:enabled"/>
   <int value="341152650" label="SoundContentSetting:enabled"/>
   <int value="341851350" label="EnableDbusAndX11StatusIcons:enabled"/>
   <int value="342431487" label="VizForWebView:enabled"/>
@@ -61575,6 +61576,7 @@ from previous Chrome versions.
   <int value="1659969202" label="AlignWakeUps:disabled"/>
   <int value="1660002388" label="FilesWebDriveOffice:disabled"/>
   <int value="1660491118" label="AllowAmbientEQ:enabled"/>
+  <int value="1660605883" label="WebPaymentAPICSP:disabled"/>
   <int value="1660772828" label="NtpModulesDragAndDrop:enabled"/>
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661870048" label="SkipUndecryptablePasswords:disabled"/>
