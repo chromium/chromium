@@ -224,8 +224,10 @@ SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {
 
   if (!file_task_runner_->RunsTasksInCurrentSequence()) {
     DeleteSoon(file_task_runner_.get(), quota_reservation_manager_.release());
-    DeleteSoon(file_task_runner_.get(), sandbox_file_util_.release());
+    // `quota_observer_` depends on `sandbox_file_util_` and
+    // `file_system_usage_cache_` so it must be released first.
     DeleteSoon(file_task_runner_.get(), quota_observer_.release());
+    DeleteSoon(file_task_runner_.get(), sandbox_file_util_.release());
     DeleteSoon(file_task_runner_.get(), file_system_usage_cache_.release());
   }
 }
