@@ -95,7 +95,9 @@ bool TabGroup::IsCustomized() const {
 }
 
 bool TabGroup::IsSaved() const {
-  return is_saved_;
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  return backend && backend->model() && backend->model()->Contains(id());
 }
 
 absl::optional<int> TabGroup::GetFirstTab() const {

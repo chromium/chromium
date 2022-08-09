@@ -9,6 +9,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,4 +101,34 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     EXPECT_EQ(saved_tab_group, nullptr);
     EXPECT_EQ(model->count(), original_tab_count);
   }
+}
+
+// Verify the saved status of a group is updated when it is added and removed
+// from the SavedTabGroupModel.
+IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
+                       GroupMarkedAsSavedIfInModel) {
+  SavedTabGroupKeyedService* saved_tab_group_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+  SavedTabGroupModel* stg_model = saved_tab_group_service->model();
+  TabStripModel* model = browser()->tab_strip_model();
+  base::GUID guid = base::GUID::GenerateRandomV4();
+
+  // Add a tab to a new group and expect the new group is not saved.
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), -1, true);
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  EXPECT_FALSE(model->group_model()->GetTabGroup(group_id)->IsSaved());
+
+  // Add the group to the SavedTabGroupModel and expect it is saved.
+  stg_model->Add(SavedTabGroup(std::u16string(u"test_title_1"),
+                               tab_groups::TabGroupColorId::kGrey,
+                               {SavedTabGroupTab(GURL("chrome://newtab"), guid)
+                                    .SetTitle(u"Title")
+                                    .SetFavicon(favicon::GetDefaultFavicon())},
+                               guid, group_id));
+  EXPECT_TRUE(model->group_model()->GetTabGroup(group_id)->IsSaved());
+
+  // Remove the group from the SavedTabGroupModel and expect it is no longer
+  // saved.
+  stg_model->Remove(group_id);
+  EXPECT_FALSE(model->group_model()->GetTabGroup(group_id)->IsSaved());
 }
