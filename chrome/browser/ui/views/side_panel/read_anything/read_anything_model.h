@@ -62,11 +62,11 @@ class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
     virtual void OnAXTreeDistilled(
         const ui::AXTreeUpdate& snapshot,
         const std::vector<ui::AXNodeID>& content_node_ids) = 0;
-    virtual void OnFontSizeChanged(const float new_font_size) = 0;
+    virtual void OnThemeChanged(
+        read_anything::mojom::ReadAnythingThemePtr new_theme) = 0;
   };
 
   ReadAnythingModel();
@@ -91,15 +91,15 @@ class ReadAnythingModel {
 
  private:
   void NotifyAXTreeDistilled();
-  void NotifyFontNameUpdated();
-  void NotifyFontSizeChanged();
+  void NotifyThemeChanged();
 
   // State:
+
+  // Members of read_anything::mojom::ReadAnythingTheme:
   std::string font_name_;
 
-  // Font scale, a double to multiply the default font size by to get the user
-  // preferred font size. This number is opaque to the user.
-  double font_scale_;
+  // A scale multiplier for font size (internal use only, not shown to user).
+  float font_scale_;
 
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.

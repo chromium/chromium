@@ -21,22 +21,16 @@ const ReadAnythingElementBase = WebUIListenerMixin(PolymerElement);
 // check if chrome.readAnything exists prevents runtime errors when the feature
 // is disabled.
 if (chrome.readAnything) {
-  chrome.readAnything.updateFontName = function() {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
-    readAnythingApp.updateFontName();
-  };
-
   chrome.readAnything.updateContent = function() {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
     readAnythingApp.updateContent();
   };
 
-  chrome.readAnything.updateFontSize = function() {
+  chrome.readAnything.updateTheme = function() {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
-    readAnythingApp.updateFontSize();
+    readAnythingApp.updateTheme();
   };
 }
 
@@ -174,14 +168,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  updateFontName() {
+  validatedFontName(): string {
     // Validate that the given font name is a valid choice, or use the default.
     const validFontName = this.validFontNames.find(
         (f: {name: string}) => f.name === chrome.readAnything.fontName);
-    this.fontName_ = validFontName ? validFontName.css : this.defaultFontName;
+    return validFontName ? validFontName.css : this.defaultFontName;
   }
 
-  updateFontSize() {
+  updateTheme() {
+    this.fontName_ = this.validatedFontName();
     this.fontSize_ = chrome.readAnything.fontSize;
   }
 }

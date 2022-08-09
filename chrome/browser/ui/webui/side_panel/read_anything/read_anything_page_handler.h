@@ -21,9 +21,6 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
-using read_anything::mojom::Page;
-using read_anything::mojom::PageHandler;
-
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingPageHandler
 //
@@ -32,7 +29,7 @@ using read_anything::mojom::PageHandler;
 //  This class is created and owned by ReadAnythingUI and has the same lifetime
 //  as the Side Panel view.
 //
-class ReadAnythingPageHandler : public PageHandler,
+class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
                                 public ReadAnythingModel::Observer,
                                 public ReadAnythingCoordinator::Observer {
  public:
@@ -42,18 +39,19 @@ class ReadAnythingPageHandler : public PageHandler,
     virtual void OnUIDestroyed() = 0;
   };
 
-  ReadAnythingPageHandler(mojo::PendingRemote<Page> page,
-                          mojo::PendingReceiver<PageHandler> receiver);
+  ReadAnythingPageHandler(
+      mojo::PendingRemote<read_anything::mojom::Page> page,
+      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver);
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
 
   // ReadAnythingModel::Observer:
-  void OnFontNameUpdated(const std::string& new_font_name) override;
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
-  void OnFontSizeChanged(const float new_font_size) override;
+  void OnThemeChanged(
+      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
@@ -65,8 +63,8 @@ class ReadAnythingPageHandler : public PageHandler,
 
   raw_ptr<Browser> browser_;
 
-  mojo::Receiver<PageHandler> receiver_;
-  mojo::Remote<Page> page_;
+  mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
+  mojo::Remote<read_anything::mojom::Page> page_;
   base::WeakPtrFactory<ReadAnythingPageHandler> weak_pointer_factory_{this};
 };
 

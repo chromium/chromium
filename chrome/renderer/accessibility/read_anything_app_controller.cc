@@ -27,6 +27,9 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
+using read_anything::mojom::ReadAnythingTheme;
+using read_anything::mojom::ReadAnythingThemePtr;
+
 namespace {
 
 // The following methods convert v8::Value types to an AXTreeUpdate. This is not
@@ -197,20 +200,13 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
-void ReadAnythingAppController::OnFontNameChange(
-    const std::string& new_font_name) {
-  font_name_ = new_font_name;
+void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
+  font_name_ = new_theme->font_name;
+  font_size_ = new_theme->font_size;
+
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  std::string script = "chrome.readAnything.updateFontName();";
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
-}
-
-void ReadAnythingAppController::OnFontSizeChanged(const float new_font_size) {
-  font_size_ = new_font_size;
-
-  // TODO: Use v*::Function rather than javascript.
-  std::string script = "chrome.readAnything.updateFontSize();";
+  std::string script = "chrome.readAnything.updateTheme();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
@@ -232,8 +228,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
-      .SetMethod("setFontNameForTesting",
-                 &ReadAnythingAppController::SetFontNameForTesting);
+      .SetMethod("setThemeForTesting",
+                 &ReadAnythingAppController::SetThemeForTesting);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::ContentNodeIds() {
@@ -321,9 +317,9 @@ void ReadAnythingAppController::OnConnected() {
       std::move(page_handler_factory_receiver));
 }
 
-void ReadAnythingAppController::SetFontNameForTesting(
-    std::string new_font_name) {
-  OnFontNameChange(new_font_name);
+void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
+                                                   float font_size) {
+  OnThemeChanged(ReadAnythingTheme::New(font_name, font_size));
 }
 
 void ReadAnythingAppController::SetContentForTesting(

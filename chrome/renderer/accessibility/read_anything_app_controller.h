@@ -66,8 +66,8 @@ class ReadAnythingAppController
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
-  void OnFontNameChange(const std::string& new_font_name) override;
-  void OnFontSizeChanged(const float new_font_size) override;
+  void OnThemeChanged(
+      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // gin templates:
   std::vector<ui::AXNodeID> ContentNodeIds();
@@ -102,7 +102,7 @@ class ReadAnythingAppController
   //   };
   void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
                             std::vector<ui::AXNodeID> content_node_ids);
-  void SetFontNameForTesting(std::string new_font_name);
+  void SetThemeForTesting(const std::string& font_name, float font_size);
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 

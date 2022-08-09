@@ -13,6 +13,10 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "ui/accessibility/ax_tree_update.h"
 
+using read_anything::mojom::Page;
+using read_anything::mojom::PageHandler;
+using read_anything::mojom::ReadAnythingThemePtr;
+
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<Page> page,
     mojo::PendingReceiver<PageHandler> receiver)
@@ -64,11 +68,7 @@ void ReadAnythingPageHandler::OnAXTreeDistilled(
   page_->OnAXTreeDistilled(snapshot, content_node_ids);
 }
 
-void ReadAnythingPageHandler::OnFontNameUpdated(
-    const std::string& new_font_name) {
-  page_->OnFontNameChange(std::move(new_font_name));
-}
-
-void ReadAnythingPageHandler::OnFontSizeChanged(const float new_font_size) {
-  page_->OnFontSizeChanged(new_font_size);
+void ReadAnythingPageHandler::OnThemeChanged(
+    ReadAnythingThemePtr new_theme_ptr) {
+  page_->OnThemeChanged(std::move(new_theme_ptr));
 }

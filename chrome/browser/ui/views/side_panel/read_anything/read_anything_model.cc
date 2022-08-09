@@ -13,6 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 
+using read_anything::mojom::ReadAnythingTheme;
+
 ReadAnythingModel::ReadAnythingModel()
     : font_name_(kReadAnythingDefaultFontName),
       font_scale_(kReadAnythingDefaultFontScale),
@@ -33,9 +35,8 @@ void ReadAnythingModel::Init(std::string& font_name, double font_scale) {
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
-  NotifyFontNameUpdated();
   NotifyAXTreeDistilled();
-  NotifyFontSizeChanged();
+  NotifyThemeChanged();
 }
 
 void ReadAnythingModel::RemoveObserver(Observer* obs) {
@@ -48,7 +49,7 @@ void ReadAnythingModel::SetSelectedFontByIndex(size_t new_index) {
 
   // Update state and notify listeners
   font_name_ = font_model_->GetFontNameAt(new_index);
-  NotifyFontNameUpdated();
+  NotifyThemeChanged();
 }
 
 void ReadAnythingModel::SetDistilledAXTree(
@@ -66,7 +67,7 @@ void ReadAnythingModel::DecreaseTextSize() {
   if (font_scale_ < kReadAnythingMinimumFontScale)
     font_scale_ = kReadAnythingMinimumFontScale;
 
-  NotifyFontSizeChanged();
+  NotifyThemeChanged();
 }
 
 void ReadAnythingModel::IncreaseTextSize() {
@@ -74,13 +75,7 @@ void ReadAnythingModel::IncreaseTextSize() {
   if (font_scale_ > kReadAnythingMaximumFontScale)
     font_scale_ = kReadAnythingMaximumFontScale;
 
-  NotifyFontSizeChanged();
-}
-
-void ReadAnythingModel::NotifyFontNameUpdated() {
-  for (Observer& obs : observers_) {
-    obs.OnFontNameUpdated(font_name_);
-  }
+  NotifyThemeChanged();
 }
 
 void ReadAnythingModel::NotifyAXTreeDistilled() {
@@ -89,9 +84,10 @@ void ReadAnythingModel::NotifyAXTreeDistilled() {
   }
 }
 
-void ReadAnythingModel::NotifyFontSizeChanged() {
+void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnFontSizeChanged(kReadAnythingDefaultFontSize * font_scale_);
+    obs.OnThemeChanged(ReadAnythingTheme::New(
+        font_name_, kReadAnythingDefaultFontSize * font_scale_));
   }
 }
 

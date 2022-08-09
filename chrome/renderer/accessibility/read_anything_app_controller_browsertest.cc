@@ -34,10 +34,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     basic_snapshot_.nodes[3].id = 4;
   }
 
-  void OnFontNameChange(const std::string& new_font_name) {
-    controller_->OnFontNameChange(new_font_name);
+  void SetThemeForTesting(const std::string& font_name, float font_size) {
+    controller_->SetThemeForTesting(font_name, font_size);
   }
-
   void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
                          const std::vector<ui::AXNodeID>& content_node_ids) {
     controller_->OnAXTreeDistilled(snapshot, content_node_ids);
@@ -48,6 +47,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   std::string FontName() { return controller_->FontName(); }
+
+  float FontSize() { return controller_->FontSize(); }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
@@ -89,10 +90,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ReadAnythingAppController* controller_ = nullptr;
 };
 
-TEST_F(ReadAnythingAppControllerTest, FontName) {
+TEST_F(ReadAnythingAppControllerTest, Theme) {
   std::string font_name = "Roboto";
-  OnFontNameChange(font_name);
+  float font_size = 18.0;
+  SetThemeForTesting(font_name, font_size);
   EXPECT_EQ(font_name, FontName());
+  EXPECT_EQ(font_size, FontSize());
 }
 
 TEST_F(ReadAnythingAppControllerTest, ContentNodeIds) {

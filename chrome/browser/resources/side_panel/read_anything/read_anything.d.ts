@@ -14,9 +14,8 @@ declare namespace chrome {
     // the AXTree distillation process.
     let contentNodeIds: number[];
 
-    // A font name, defined in ReadAnythingFontModel.
+    // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
-
     let fontSize: number;
 
     // Returns a list of AXNodeIDs corresponding to the unignored children of
@@ -69,8 +68,8 @@ declare namespace chrome {
     function setContentForTesting(
         snapshotLite: Object, contentNodeIds: number[]): void;
 
-    // Set the font name. Used by tests only.
-    function setFontNameForTesting(newFontName: string): void;
+    // Set the theme. Used by tests only.
+    function setThemeForTesting(fontName: string, fontSize: number): void;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
@@ -80,12 +79,8 @@ declare namespace chrome {
     // and is available to consume.
     function updateContent(): void;
 
-    // Ping that the font name has been changed in the ReadAnythingToolbar and
-    // is available to consume.
-    function updateFontName(): void;
-
-    // Ping that the font size has been changed for the distilled contents and
-    // is available to consume.
-    function updateFontSize(): void;
+    // Ping that the theme choices of the user have been changed using the
+    // toolbar and are ready to consume.
+    function updateTheme(): void;
   }
 }

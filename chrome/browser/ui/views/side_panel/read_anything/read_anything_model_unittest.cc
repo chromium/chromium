@@ -14,21 +14,21 @@
 
 #include "ui/accessibility/accessibility_features.h"
 
+using read_anything::mojom::ReadAnythingThemePtr;
 using testing::_;
 using testing::FloatNear;
 
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
-              OnFontNameUpdated,
-              (const std::string& new_font_name),
-              (override));
-  MOCK_METHOD(void,
               OnAXTreeDistilled,
               (const ui::AXTreeUpdate& snapshot,
                const std::vector<ui::AXNodeID>& content_node_ids),
               (override));
-  MOCK_METHOD(void, OnFontSizeChanged, (const float new_font_size), (override));
+  MOCK_METHOD(void,
+              OnThemeChanged,
+              (ReadAnythingThemePtr new_theme),
+              (override));
 };
 
 class ReadAnythingModelTest : public TestWithBrowserView {
@@ -62,13 +62,11 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnFontNameUpdated(_)).Times(1);
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_1_, OnFontSizeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
 
-  EXPECT_CALL(model_observer_2_, OnFontNameUpdated(_)).Times(1);
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_2_, OnFontSizeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_2_, OnThemeChanged(_)).Times(1);
 
   model_->AddObserver(&model_observer_2_);
 }
@@ -77,17 +75,14 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_1_);
   model_->AddObserver(&model_observer_2_);
 
-  EXPECT_CALL(model_observer_1_, OnFontNameUpdated(_)).Times(1);
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_1_, OnFontSizeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
 
-  EXPECT_CALL(model_observer_2_, OnFontNameUpdated(_)).Times(0);
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnFontSizeChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnThemeChanged(_)).Times(0);
 
-  EXPECT_CALL(model_observer_3_, OnFontNameUpdated(_)).Times(1);
   EXPECT_CALL(model_observer_3_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_3_, OnFontSizeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_3_, OnThemeChanged(_)).Times(1);
 
   model_->RemoveObserver(&model_observer_2_);
   model_->AddObserver(&model_observer_3_);
@@ -96,7 +91,7 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnFontNameUpdated("Serif")).Times(1);
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
 
   model_->SetSelectedFontByIndex(2);
 }
@@ -114,8 +109,7 @@ TEST_F(ReadAnythingModelTest, NotifiationsOnSetDistilledAXTree) {
 TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnFontSizeChanged(FloatNear(14.4, 0.01)))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
 
   model_->DecreaseTextSize();
 
@@ -125,8 +119,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
 TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnFontSizeChanged(FloatNear(21.6, 0.01)))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
 
   model_->IncreaseTextSize();
 

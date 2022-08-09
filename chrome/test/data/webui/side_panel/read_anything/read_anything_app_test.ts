@@ -20,11 +20,17 @@ suite('ReadAnythingAppTest', () => {
     document.body.innerHTML = '';
     readAnythingApp = document.createElement('read-anything-app');
     document.body.appendChild(readAnythingApp);
+    chrome.readAnything.setThemeForTesting('default', 18.0);
   });
 
   function assertFontName(fontFamily: string) {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(fontFamily, getComputedStyle(container!).fontFamily);
+  }
+
+  function assertFontSize(fontSize: string) {
+    const container = readAnythingApp.shadowRoot!.getElementById('container');
+    assertEquals(fontSize, getComputedStyle(container!).fontSize);
   }
 
   function assertContainerInnerHTML(expected: string) {
@@ -33,27 +39,32 @@ suite('ReadAnythingAppTest', () => {
     assertEquals(actual, expected);
   }
 
-  test('updateFontName', () => {
-    chrome.readAnything.setFontNameForTesting('Standard font');
+  test('updateTheme fontName', () => {
+    chrome.readAnything.setThemeForTesting('Standard font', 18.0);
     assertFontName('"Standard font"');
 
-    chrome.readAnything.setFontNameForTesting('Sans-serif');
+    chrome.readAnything.setThemeForTesting('Sans-serif', 18.0);
     assertFontName('sans-serif');
 
-    chrome.readAnything.setFontNameForTesting('Serif');
+    chrome.readAnything.setThemeForTesting('Serif', 18.0);
     assertFontName('serif');
 
-    chrome.readAnything.setFontNameForTesting('Avenir');
+    chrome.readAnything.setThemeForTesting('Avenir', 18.0);
     assertFontName('avenir');
 
-    chrome.readAnything.setFontNameForTesting('Comic Neue');
+    chrome.readAnything.setThemeForTesting('Comic Neue', 18.0);
     assertFontName('"Comic Neue"');
 
-    chrome.readAnything.setFontNameForTesting('Comic Sans MS');
+    chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0);
     assertFontName('"Comic Sans MS"');
 
-    chrome.readAnything.setFontNameForTesting('Poppins');
+    chrome.readAnything.setThemeForTesting('Poppins', 18.0);
     assertFontName('poppins');
+  });
+
+  test('updateTheme fontSize', () => {
+    chrome.readAnything.setThemeForTesting('Standard font', 27.0);
+    assertFontSize('27px');
   });
 
   test('updateContent paragraph', () => {

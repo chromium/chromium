@@ -7,6 +7,16 @@ module read_anything.mojom;
 
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
+// Used to represent the current user choices for the Read Anything visual
+// presentation/theme. This includes font name, size, spacing, and colors.
+struct ReadAnythingTheme {
+  // The name of the user's font choice.
+  string font_name;
+
+  // The px value of the user's font size.
+  float font_size;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -29,9 +39,6 @@ interface Page {
   OnAXTreeDistilled(ax.mojom.AXTreeUpdate snapshot,
                     array<int32> content_node_ids);
 
-  // Send an updated font name to front end.
-  OnFontNameChange(string new_font_name);
-
-  // Send an updated font size to front end.
-  OnFontSizeChanged(float new_font_size);
+  // Send an updated theme to front end.
+  OnThemeChanged(ReadAnythingTheme new_theme);
 };
