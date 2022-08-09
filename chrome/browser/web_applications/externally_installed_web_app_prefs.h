@@ -44,9 +44,6 @@ class ExternallyInstalledWebAppPrefs {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Removes invalid registration for Terminal System App.
-  static void RemoveTerminalPWA(PrefService* pref_service);
-
   explicit ExternallyInstalledWebAppPrefs(PrefService* pref_service);
   ExternallyInstalledWebAppPrefs(const ExternallyInstalledWebAppPrefs&) =
       delete;
