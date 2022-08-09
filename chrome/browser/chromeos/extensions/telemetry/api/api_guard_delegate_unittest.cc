@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -116,6 +117,10 @@ class ApiGuardDelegateTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->is_current_user_device_owner = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
+
     profile()->SetIsMainProfile(true);
     ASSERT_TRUE(profile()->IsMainProfile());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -224,8 +229,9 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  profile()->SetIsMainProfile(false);
-  ASSERT_FALSE(profile()->IsMainProfile());
+  auto params = crosapi::mojom::BrowserInitParams::New();
+  params->is_current_user_device_owner = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
@@ -236,6 +242,22 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("This extension is not run by the device owner", future.Get());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
+  // Don't set the current profile as the main profile.
+  profile()->SetIsMainProfile(false);
+  ASSERT_FALSE(profile()->IsMainProfile());
+
+  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  base::test::TestFuture<std::string> future;
+  api_guard_delegate->CanAccessApi(profile(), extension(),
+                                   future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("This extension is not run by the device owner", future.Get());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ApiGuardDelegateTest, PwaNotOpen) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();

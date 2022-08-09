@@ -32,6 +32,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -122,8 +124,13 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In order to determine device ownership in LaCrOS, we need to check
+  // whether the current Ash user is the device owner (stored in
+  // browser init params) and if the current profile is the same profile
+  // as the one logged into Ash.
   bool IsCurrentUserOwner(content::BrowserContext* context) {
-    return Profile::FromBrowserContext(context)->IsMainProfile();
+    return BrowserParamsProxy::Get()->IsCurrentUserDeviceOwner() &&
+           Profile::FromBrowserContext(context)->IsMainProfile();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

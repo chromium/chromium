@@ -67,6 +67,7 @@ source_set("api") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/lacros",
+      "//chromeos/startup",
       "//components/policy/core/common",
     ]
   }
