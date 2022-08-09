@@ -17,7 +17,7 @@ void SchedulerConfigurationManagerBase::AddObserver(
 }
 
 void SchedulerConfigurationManagerBase::RemoveObserver(
-    const SchedulerConfigurationManagerBase::Observer* obs) {
+    SchedulerConfigurationManagerBase::Observer* obs) {
   observer_list_.RemoveObserver(obs);
 }
 

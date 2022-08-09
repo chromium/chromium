@@ -335,6 +335,15 @@ class CrostiniManager::CrostiniRestarter
 
   mojom::InstallerState stage_ = mojom::InstallerState::kStart;
 
+  base::ScopedObservation<chromeos::SchedulerConfigurationManagerBase,
+                          chromeos::SchedulerConfigurationManagerBase::Observer>
+      scheduler_configuration_manager_observation_{this};
+  base::ScopedObservation<CrostiniManager,
+                          ash::VmShutdownObserver,
+                          &CrostiniManager::AddVmShutdownObserver,
+                          &CrostiniManager::RemoveVmShutdownObserver>
+      vm_shutdown_observation_{this};
+
   base::WeakPtrFactory<CrostiniRestarter> weak_ptr_factory_{this};
 };
 
@@ -350,7 +359,6 @@ CrostiniManager::CrostiniRestarter::CrostiniRestarter(
 }
 
 CrostiniManager::CrostiniRestarter::~CrostiniRestarter() {
-  crostini_manager_->RemoveVmShutdownObserver(this);
   if (!requests_.empty()) {
     // This is triggered by logging out when restarts are in progress.
     LOG(WARNING) << "Destroying with outstanding requests.";
@@ -369,7 +377,7 @@ void CrostiniManager::CrostiniRestarter::Restart() {
     return;
   }
 
-  crostini_manager_->AddVmShutdownObserver(this);
+  vm_shutdown_observation_.Observe(crostini_manager_);
   // TODO(b/205650706): It is possible to invoke a CrostiniRestarter to install
   // Crostini without using the actual installer. We should handle these better.
   RestartSource restart_source = requests_[0].options.restart_source;
@@ -718,7 +726,8 @@ void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
   if (!scheduler_configuration) {
     // Wait for the configuration to become available.
     LOG(WARNING) << "Scheduler configuration is not yet ready";
-    scheduler_configuration_manager->AddObserver(this);
+    scheduler_configuration_manager_observation_.Observe(
+        scheduler_configuration_manager);
     return;
   }
   OnConfigurationSet(scheduler_configuration->first,
@@ -729,13 +738,15 @@ void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
 void CrostiniManager::CrostiniRestarter::OnConfigurationSet(
     bool success,
     size_t num_cores_disabled) {
+  if (ReturnEarlyIfNeeded()) {
+    return;
+  }
+
   // Note: On non-x86_64 devices, the configuration request to debugd always
   // fails. It is WAI, and to support that case, don't log anything even when
   // |success| is false. |num_cores_disabled| is always set regardless of
   // whether the call is successful.
-  g_browser_process->platform_part()
-      ->scheduler_configuration_manager()
-      ->RemoveObserver(this);
+  scheduler_configuration_manager_observation_.Reset();
   num_cores_disabled_ = num_cores_disabled;
 
   guest_os::GuestOsServiceFactory::GetForProfile(profile_)

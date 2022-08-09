@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
   virtual absl::optional<std::pair<bool, size_t>> GetLastReply() const = 0;
 
   void AddObserver(Observer* obs);
-  void RemoveObserver(const Observer* obs);
+  void RemoveObserver(Observer* obs);
 
  protected:
   base::ObserverList<Observer> observer_list_;
