@@ -521,6 +521,14 @@ void AudioNode::disconnect(AudioParam* destination_param,
   DCHECK(IsMainThread());
   BaseAudioContext::GraphAutoLocker locker(context());
 
+  if (context() != destination_param->Context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "cannot disconnect from an AudioParam belonging to a different "
+        "BaseAudioContext.");
+    return;
+  }
+
   if (output_index >= Handler().NumberOfOutputs()) {
     // The output index is out of range. Throw an exception.
     exception_state.ThrowDOMException(
