@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -34,9 +35,10 @@ int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
   int rt = base::LaunchUnitTestsWithOptions(
       argc, argv,
-      1,     // Run tests serially.
-      0,     // Disable batching.
-      true,  // Use job objects.
+      1,                  // Run tests serially.
+      0,                  // Disable batching.
+      true,               // Use job objects.
+      base::DoNothing(),  // No special action on timeout.
       base::BindOnce(&RunHelper, base::Unretained(&test_suite)));
   return rt;
 }

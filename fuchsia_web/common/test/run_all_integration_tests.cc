@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -21,5 +22,6 @@ int main(int argc, char** argv) {
 
   return base::LaunchUnitTestsWithOptions(
       argc, argv, jobs, kDefaultTestBatchLimit, true /* use_job_objects */,
+      base::DoNothing(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

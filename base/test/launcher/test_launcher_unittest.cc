@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -809,7 +810,8 @@ class UnitTestLauncherDelegateTester : public testing::Test {
 
 // Validate delegate produces correct command line.
 TEST_F(UnitTestLauncherDelegateTester, GetCommandLine) {
-  UnitTestLauncherDelegate launcher_delegate(&defaultPlatform, 10u, true);
+  UnitTestLauncherDelegate launcher_delegate(&defaultPlatform, 10u, true,
+                                             DoNothing());
   TestLauncherDelegate* delegate_ptr = &launcher_delegate;
 
   std::vector<std::string> test_names(5, "Tests");
@@ -1049,7 +1051,8 @@ TEST_F(ResultWatcherTest, PollWithClockJumpForward) {
 
 // Validate delegate sets batch size correctly.
 TEST_F(UnitTestLauncherDelegateTester, BatchSize) {
-  UnitTestLauncherDelegate launcher_delegate(&defaultPlatform, 15u, true);
+  UnitTestLauncherDelegate launcher_delegate(&defaultPlatform, 15u, true,
+                                             DoNothing());
   TestLauncherDelegate* delegate_ptr = &launcher_delegate;
   EXPECT_EQ(delegate_ptr->GetBatchSize(), 15u);
 }

@@ -151,6 +151,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
                             int default_batch_limit,
                             size_t retry_limit,
                             bool use_job_objects,
+                            RepeatingClosure timeout_callback,
                             OnceClosure gtest_init) {
   base::test::AllowCheckIsTestToBeCalled();
 
@@ -218,7 +219,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
 
   DefaultUnitTestPlatformDelegate platform_delegate;
   UnitTestLauncherDelegate delegate(&platform_delegate, batch_limit,
-                                    use_job_objects);
+                                    use_job_objects, timeout_callback);
   TestLauncher launcher(&delegate, parallel_jobs, retry_limit);
   bool success = launcher.Run();
 
@@ -277,6 +278,7 @@ int LaunchUnitTests(int argc,
   }
   return LaunchUnitTestsInternal(std::move(run_test_suite), parallel_jobs,
                                  kDefaultTestBatchLimit, retry_limit, true,
+                                 DoNothing(),
                                  BindOnce(&InitGoogleTestChar, &argc, argv));
 }
 
@@ -285,7 +287,7 @@ int LaunchUnitTestsSerially(int argc,
                             RunTestSuiteCallback run_test_suite) {
   CommandLine::Init(argc, argv);
   return LaunchUnitTestsInternal(std::move(run_test_suite), 1U,
-                                 kDefaultTestBatchLimit, 1U, true,
+                                 kDefaultTestBatchLimit, 1U, true, DoNothing(),
                                  BindOnce(&InitGoogleTestChar, &argc, argv));
 }
 
@@ -294,10 +296,12 @@ int LaunchUnitTestsWithOptions(int argc,
                                size_t parallel_jobs,
                                int default_batch_limit,
                                bool use_job_objects,
+                               RepeatingClosure timeout_callback,
                                RunTestSuiteCallback run_test_suite) {
   CommandLine::Init(argc, argv);
   return LaunchUnitTestsInternal(std::move(run_test_suite), parallel_jobs,
                                  default_batch_limit, 1U, use_job_objects,
+                                 timeout_callback,
                                  BindOnce(&InitGoogleTestChar, &argc, argv));
 }
 
@@ -314,6 +318,7 @@ int LaunchUnitTests(int argc,
   }
   return LaunchUnitTestsInternal(std::move(run_test_suite), parallel_jobs,
                                  kDefaultTestBatchLimit, 1U, use_job_objects,
+                                 DoNothing(),
                                  BindOnce(&InitGoogleTestWChar, &argc, argv));
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -369,10 +374,12 @@ std::string DefaultUnitTestPlatformDelegate::GetWrapperForChildGTestProcess() {
 UnitTestLauncherDelegate::UnitTestLauncherDelegate(
     UnitTestPlatformDelegate* platform_delegate,
     size_t batch_limit,
-    bool use_job_objects)
+    bool use_job_objects,
+    RepeatingClosure timeout_callback)
     : platform_delegate_(platform_delegate),
       batch_limit_(batch_limit),
-      use_job_objects_(use_job_objects) {}
+      use_job_objects_(use_job_objects),
+      timeout_callback_(timeout_callback) {}
 
 UnitTestLauncherDelegate::~UnitTestLauncherDelegate() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -414,6 +421,10 @@ TimeDelta UnitTestLauncherDelegate::GetTimeout() {
 
 size_t UnitTestLauncherDelegate::GetBatchSize() {
   return batch_limit_;
+}
+
+void UnitTestLauncherDelegate::OnTestTimedOut(const CommandLine& cmd_line) {
+  timeout_callback_.Run();
 }
 
 }  // namespace base

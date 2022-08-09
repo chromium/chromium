@@ -40,11 +40,15 @@ int LaunchUnitTestsSerially(int argc,
 // |default_batch_limit| is the default size of test batch
 // (use 0 to disable batching).
 // |use_job_objects| determines whether to use job objects.
+// |timeout_callback| is called each time a test batch times out. It can be used
+// as a cue to print additional debugging information about the test system,
+// such as log files or the names of running processes.
 int LaunchUnitTestsWithOptions(int argc,
                                char** argv,
                                size_t parallel_jobs,
                                int default_batch_limit,
                                bool use_job_objects,
+                               RepeatingClosure timeout_callback,
                                RunTestSuiteCallback run_test_suite);
 
 #if BUILDFLAG(IS_WIN)
@@ -128,7 +132,8 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
  public:
   UnitTestLauncherDelegate(UnitTestPlatformDelegate* delegate,
                            size_t batch_limit,
-                           bool use_job_objects);
+                           bool use_job_objects,
+                           RepeatingClosure timeout_callback);
 
   UnitTestLauncherDelegate(const UnitTestLauncherDelegate&) = delete;
   UnitTestLauncherDelegate& operator=(const UnitTestLauncherDelegate&) = delete;
@@ -151,6 +156,8 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   size_t GetBatchSize() override;
 
+  void OnTestTimedOut(const CommandLine& cmd_line) override;
+
   ThreadChecker thread_checker_;
 
   raw_ptr<UnitTestPlatformDelegate> platform_delegate_;
@@ -160,6 +167,9 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   // Determines whether we use job objects on Windows.
   bool use_job_objects_;
+
+  // Callback to invoke when a test process times out.
+  RepeatingClosure timeout_callback_;
 };
 
 // We want to stop throwing away duplicate test filter file flags, but we're

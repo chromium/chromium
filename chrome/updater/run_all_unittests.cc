@@ -14,6 +14,7 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/updater/test/integration_test_commands.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -102,7 +103,9 @@ int main(int argc, char** argv) {
 
   base::TestSuite test_suite(argc, argv);
   chrome::RegisterPathProvider();
-  return base::LaunchUnitTestsSerially(
-      argc, argv,
+  return base::LaunchUnitTestsWithOptions(
+      argc, argv, 1, 10, true, base::BindRepeating([]() {
+        updater::test::CreateIntegrationTestCommands()->PrintLog();
+      }),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

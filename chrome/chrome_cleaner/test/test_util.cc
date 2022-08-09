@@ -17,6 +17,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -166,7 +167,7 @@ int RunChromeCleanerTestSuite(int argc,
       argc, argv,
       /*parallel_jobs=*/1U,        // Like LaunchUnitTestsSerially
       /*default_batch_limit=*/10,  // Like LaunchUnitTestsSerially
-      use_job_objects,
+      use_job_objects, base::DoNothing(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
   if (!IsSandboxedProcess())
