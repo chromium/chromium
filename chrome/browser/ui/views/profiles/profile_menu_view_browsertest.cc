@@ -1190,6 +1190,40 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_UnconsentedPrimaryAccountError,
   RunTest();
 }
 
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+// The two additional profiles created in the PRE_ test should be disabled and
+// thus, not appear in  this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_SecondaryProfilesDisabled[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+        ProfileMenuViewBase::ActionableItem::kAddressesButton,
+        ProfileMenuViewBase::ActionableItem::kSigninButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+
+PROFILE_MENU_CLICK_TEST(kActionableItems_SecondaryProfilesDisabled,
+                        ProfileMenuClickTest_SecondaryProfilesDisabled) {
+  // Check that the setup was successful.
+  ASSERT_FALSE(g_browser_process->local_state()->GetBoolean(
+      prefs::kLacrosSecondaryProfilesAllowed));
+
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SecondaryProfilesDisabled,
+                       PRE_ProfileMenuClickTest_SecondaryProfilesDisabled) {
+  // Add two additional profiles, which later shouldn't be clickable.
+  CreateAdditionalProfile();
+  CreateAdditionalProfile();
+
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kLacrosSecondaryProfilesAllowed, false);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.

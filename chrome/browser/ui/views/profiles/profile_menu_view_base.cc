@@ -174,6 +174,16 @@ ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
                                         size);
 }
 
+const gfx::ImageSkia ProfileManagementImageFromIcon(
+    const gfx::VectorIcon& icon,
+    const ui::ColorProvider* color_provider) {
+  constexpr float kIconToImageRatio = 0.75f;
+  constexpr int kIconSize = 20;
+  const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
+  gfx::ImageSkia image = ImageForMenu(icon, kIconToImageRatio, icon_color);
+  return SizeImage(image, kIconSize);
+}
+
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
  public:
@@ -250,6 +260,27 @@ class FeatureButtonIconView : public views::ImageView {
   const float icon_to_image_ratio_;
 };
 
+class ProfileManagementFeatureButton : public HoverButton {
+ public:
+  METADATA_HEADER(ProfileManagementFeatureButton);
+  ProfileManagementFeatureButton(PressedCallback callback,
+                                 const gfx::VectorIcon& icon,
+                                 const std::u16string& clickable_text)
+      : HoverButton(std::move(callback), clickable_text), icon_(icon) {}
+
+  // HoverButton:
+  void OnThemeChanged() override {
+    HoverButton::OnThemeChanged();
+    SetImage(STATE_NORMAL,
+             ProfileManagementImageFromIcon(icon_, GetColorProvider()));
+  }
+
+ private:
+  const gfx::VectorIcon& icon_;
+};
+BEGIN_METADATA(ProfileManagementFeatureButton, HoverButton)
+END_METADATA
+
 class ProfileManagementIconView : public views::ImageView {
  public:
   explicit ProfileManagementIconView(const gfx::VectorIcon& icon)
@@ -259,11 +290,7 @@ class ProfileManagementIconView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
-    constexpr float kIconToImageRatio = 0.75f;
-    constexpr int kIconSize = 20;
-    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
-    gfx::ImageSkia image = ImageForMenu(icon_, kIconToImageRatio, icon_color);
-    SetImage(SizeImage(image, kIconSize));
+    SetImage(ProfileManagementImageFromIcon(icon_, GetColorProvider()));
   }
 
  private:
@@ -765,11 +792,11 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   label->SetHandlesTooltips(false);
 }
 
-void ProfileMenuViewBase::AddSelectableProfile(
-    const ui::ImageModel& image_model,
-    const std::u16string& name,
-    bool is_guest,
-    base::RepeatingClosure action) {
+void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
+                                              const std::u16string& name,
+                                              bool is_guest,
+                                              bool is_enabled,
+                                              base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
   if (!selectable_profiles_container_->GetLayoutManager()) {
     selectable_profiles_container_->SetLayoutManager(
@@ -792,6 +819,8 @@ void ProfileMenuViewBase::AddSelectableProfile(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
           sized_image, name));
+
+  button->SetEnabled(is_enabled);
 
   if (!is_guest && !first_profile_button_)
     first_profile_button_ = button;
@@ -816,6 +845,23 @@ void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
           icon, text));
 }
 
+void ProfileMenuViewBase::AddProfileManagementManagedHint(
+    const gfx::VectorIcon& icon,
+    const std::u16string& text) {
+  // Initialize layout if this is the first time a button is added.
+  if (!profile_mgmt_shortcut_features_container_->GetLayoutManager()) {
+    profile_mgmt_shortcut_features_container_->SetLayoutManager(
+        CreateBoxLayout(views::BoxLayout::Orientation::kHorizontal,
+                        views::BoxLayout::CrossAxisAlignment::kCenter,
+                        gfx::Insets::TLBR(0, 0, 0, kMenuEdgeMargin)));
+  }
+
+  views::ImageView* icon_button =
+      profile_mgmt_shortcut_features_container_->AddChildView(
+          std::make_unique<ProfileManagementIconView>(icon));
+  icon_button->SetTooltipText(text);
+}
+
 void ProfileMenuViewBase::AddProfileManagementFeatureButton(
     const gfx::VectorIcon& icon,
     const std::u16string& text,
@@ -827,11 +873,11 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
             views::BoxLayout::Orientation::kVertical));
   }
 
-  auto icon_button = std::make_unique<ProfileManagementIconView>(icon);
-  profile_mgmt_features_container_->AddChildView(std::make_unique<HoverButton>(
-      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                          base::Unretained(this), std::move(action)),
-      std::move(icon_button), text));
+  profile_mgmt_features_container_->AddChildView(
+      std::make_unique<ProfileManagementFeatureButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this), std::move(action)),
+          icon, text));
 }
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(

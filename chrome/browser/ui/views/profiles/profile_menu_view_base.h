@@ -125,13 +125,16 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                         const gfx::VectorIcon& icon = gfx::kNoneIcon,
                         float icon_to_image_ratio = 1.0f);
   void SetProfileManagementHeading(const std::u16string& heading);
-  void AddSelectableProfile(const ui::ImageModel& image_model,
-                            const std::u16string& name,
-                            bool is_guest,
-                            base::RepeatingClosure action);
+  void AddAvailableProfile(const ui::ImageModel& image_model,
+                           const std::u16string& name,
+                           bool is_guest,
+                           bool is_enabled,
+                           base::RepeatingClosure action);
   void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
                                                  const std::u16string& text,
                                                  base::RepeatingClosure action);
+  void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
+                                       const std::u16string& text);
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure action);

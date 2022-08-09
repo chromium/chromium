@@ -168,7 +168,7 @@ void ProfileMenuView::BuildMenu() {
   if (!(profile->IsGuestSession())) {
     SetProfileManagementHeading(
         l10n_util::GetStringUTF16(IDS_PROFILES_LIST_PROFILES_TITLE));
-    BuildSelectableProfiles();
+    BuildAvailableProfiles();
     BuildProfileManagementFeatureButtons();
   }
 #endif
@@ -647,7 +647,12 @@ void ProfileMenuView::BuildFeatureButtons() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void ProfileMenuView::BuildSelectableProfiles() {
+void ProfileMenuView::BuildAvailableProfiles() {
+  bool profiles_selectable = true;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  profiles_selectable = profiles::AreSecondaryProfilesAllowed();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   auto profile_entries = g_browser_process->profile_manager()
                              ->GetProfileAttributesStorage()
                              .GetAllProfilesAttributesSortedByName();
@@ -658,11 +663,12 @@ void ProfileMenuView::BuildSelectableProfiles() {
     if (profile_entry->IsOmitted())
       continue;
 
-    AddSelectableProfile(
+    AddAvailableProfile(
         ui::ImageModel::FromImage(
             profile_entry->GetAvatarIcon(profiles::kMenuAvatarIconSize)),
         profile_entry->GetName(),
         /*is_guest=*/false,
+        /*is_enabled=*/profiles_selectable,
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
                             base::Unretained(this), profile_entry->GetPath()));
   }
@@ -671,22 +677,34 @@ void ProfileMenuView::BuildSelectableProfiles() {
 
   if (!browser()->profile()->IsGuestSession() &&
       profiles::IsGuestModeEnabled()) {
-    AddSelectableProfile(
+    AddAvailableProfile(
         profiles::GetGuestAvatar(),
         l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME),
         /*is_guest=*/true,
+        /*is_enabled=*/true,
         base::BindRepeating(&ProfileMenuView::OnGuestProfileButtonClicked,
                             base::Unretained(this)));
   }
 }
 
 void ProfileMenuView::BuildProfileManagementFeatureButtons() {
-  AddProfileManagementShortcutFeatureButton(
-      vector_icons::kSettingsIcon,
-      l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
-      base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
-                          base::Unretained(this)));
+  bool profiles_selectable = true;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  profiles_selectable = profiles::AreSecondaryProfilesAllowed();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  if (profiles_selectable) {
+    AddProfileManagementShortcutFeatureButton(
+        vector_icons::kSettingsIcon,
+        l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
+        base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
+                            base::Unretained(this)));
+  } else {
+    AddProfileManagementManagedHint(
+        vector_icons::kBusinessIcon,
+        l10n_util::GetStringUTF16(
+            IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
+  }
   if (profiles::IsProfileCreationAllowed()) {
     AddProfileManagementFeatureButton(
         kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
