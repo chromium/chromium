@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
@@ -42,7 +43,8 @@ import java.util.concurrent.TimeUnit;
  * Unit test for {@link BrandingController} and {@link SharedPreferencesBrandingTimeStorage}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class, ShadowPostTask.class})
+@Config(manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class, ShadowPostTask.class, ShadowToast.class})
 @LooperMode(Mode.PAUSED)
 public class BrandingControllerUnitTest {
     private static final int TEST_BRANDING_CADENCE = 10_000;
@@ -84,6 +86,7 @@ public class BrandingControllerUnitTest {
         SharedPreferencesBrandingTimeStorage.getInstance().resetForTesting();
         ShadowPostTask.reset();
         ShadowSystemClock.reset();
+        ShadowToast.reset();
     }
 
     @Test
@@ -92,14 +95,11 @@ public class BrandingControllerUnitTest {
                 .newBrandingController()
                 .assertBrandingDecisionMade(null)
                 .idleMainLooper() // Finish branding checker
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
                 .assertShownEmptyLocationBar(false)
                 .onToolbarInitialized()
                 .assertShownEmptyLocationBar(true)
-                .assertShownBrandingLocationBar(true)
-                .assertShownRegularLocationBar(false)
-                .advanceMills(BrandingController.TOTAL_BRANDING_DELAY_MS)
-                .idleMainLooper() // Finish toolbar branding
+                .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
     }
 
@@ -109,30 +109,28 @@ public class BrandingControllerUnitTest {
                 .newBrandingController()
                 .idleMainLooper() // Finish branding checker.
                 .onToolbarInitialized()
-                .advanceMills(BrandingController.TOTAL_BRANDING_DELAY_MS)
-                .idleMainLooper() // Finish toolbar branding.
-                .assertShownBrandingLocationBar(true)
+                .assertShownToastBranding(true)
+                .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true)
                 // Start 2nd branding immediately.
                 .newBrandingController()
                 .idleMainLooper()
                 .assertBrandingDecisionMade(BrandingDecision.NONE)
                 .onToolbarInitialized()
+                .assertShownToastBranding(false)
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
     }
 
     @Test
-    public void testBrandingWorkflow_ShowBrandingPassingCadence() {
+    public void testBrandingWorkflow_ShowToolbarBranding() {
         new BrandingCheckTester()
                 .newBrandingController()
                 .idleMainLooper() // Finish branding checker.
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
                 .onToolbarInitialized()
-                .advanceMills(BrandingController.TOTAL_BRANDING_DELAY_MS)
-                .idleMainLooper() // Finish toolbar branding.
-                .assertShownBrandingLocationBar(true)
+                .assertShownToastBranding(true)
                 .assertShownRegularLocationBar(true)
                 // Start 2nd branding with delay.
                 .advanceMills(TEST_BRANDING_CADENCE + 1)
@@ -140,7 +138,11 @@ public class BrandingControllerUnitTest {
                 .idleMainLooper() // Finish branding checker.
                 .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
                 .onToolbarInitialized()
-                .assertShownBrandingLocationBar(true);
+                .assertShownBrandingLocationBar(true)
+                .assertShownToastBranding(false)
+                .advanceMills(BrandingController.TOTAL_BRANDING_DELAY_MS + 1)
+                .idleMainLooper() // Finish toolbar branding
+                .assertShownRegularLocationBar(true);
     }
 
     @Test
@@ -153,11 +155,8 @@ public class BrandingControllerUnitTest {
                 .assertShownBrandingLocationBar(false)
                 .advanceMills(300)
                 .idleMainLooper() // Finish branding checker.
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
-                .assertShownBrandingLocationBar(true)
-                .assertShownRegularLocationBar(false)
-                .advanceMills(1501) // BrandingController.TOTAL_BRANDING_DELAY_MS = 1800 - 300 + 1
-                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownToastBranding(true)
                 .assertShownRegularLocationBar(true);
     }
 
@@ -167,18 +166,18 @@ public class BrandingControllerUnitTest {
                 .newBrandingController()
                 .onToolbarInitialized()
                 .idleMainLooper()
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownToastBranding(true)
                 .newBrandingController()
                 .onToolbarInitialized()
                 .advanceMills(TEST_MAX_TOOLBAR_BLANK_TIMEOUT)
                 .idleMainLooper() // Branding checker is finished, but timed out comes first.
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
-                .assertShownBrandingLocationBar(true)
-                .assertShownRegularLocationBar(false)
-                .advanceMills(801) // BrandingController.TOTAL_BRANDING_DELAY_MS -
-                                   // TEST_MAX_TOOLBAR_BLANK_TIMEOUT + 1 = 801
-                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
                 .assertShownRegularLocationBar(true);
+
+        // BrandingController.TOTAL_BRANDING_DELAY_MS - TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 800
+        assertEquals(
+                "Toast duration is different.", 800, ShadowToast.getLatestToast().getDuration());
     }
 
     class BrandingCheckTester {
@@ -188,6 +187,7 @@ public class BrandingControllerUnitTest {
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
             mToolbarBrandingDelegate = mock(ToolbarBrandingDelegate.class);
+            ShadowToast.reset(); // Reset the shadow toast so the toast shown count resets.
             return this;
         }
 
@@ -209,6 +209,12 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester assertBrandingDecisionMade(@BrandingDecision Integer decision) {
             assertEquals("BrandingDecision is different.", decision,
                     mBrandingController.getBrandingDecisionForTest());
+            return this;
+        }
+
+        public BrandingCheckTester assertShownToastBranding(boolean shown) {
+            assertEquals("Toast shown count does not match.", shown ? 1 : 0,
+                    ShadowToast.shownToastCount());
             return this;
         }
 

@@ -118,8 +118,8 @@ public class BrandingCheckerUnitTest {
 
         mainLooper().idle();
         long showBrandingTime = SystemClock.elapsedRealtime();
-        assertEquals("Branding is checked for new package, BrandingDecision should be TOOLBAR. ",
-                BrandingDecision.TOOLBAR, callbackDelegate.getBrandingDecision());
+        assertEquals("Branding is checked for new package, BrandingDecision should be TOAST. ",
+                BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Show branding time is different.", showBrandingTime,
                 mStorage.get(NEW_APPLICATION));
     }
@@ -141,7 +141,7 @@ public class BrandingCheckerUnitTest {
         mainLooper().idle();
         long showBrandingTime = SystemClock.elapsedRealtime();
         assertEquals("Branding check canceled, BrandingDecision should be the test default. ",
-                BrandingDecision.TOOLBAR, callbackDelegate.getBrandingDecision());
+                BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Show branding time is different.", showBrandingTime, mStorage.get(PACKAGE_1));
     }
 
@@ -153,7 +153,7 @@ public class BrandingCheckerUnitTest {
 
         mainLooper().idle();
         assertEquals("Package is invalid, BrandingDecision should be the test default. ",
-                BrandingDecision.TOOLBAR, callbackDelegate.getBrandingDecision());
+                BrandingDecision.TOAST, callbackDelegate.getBrandingDecision());
         assertEquals("Branding time should not record for invalid package.", -1,
                 mStorage.get(INVALID_PACKAGE));
     }
@@ -190,7 +190,7 @@ public class BrandingCheckerUnitTest {
     private BrandingChecker createBrandingChecker(
             String packageName, CallbackDelegate callbackDelegate) {
         return new BrandingChecker(mContext, packageName, mStorage, callbackDelegate::notifyCalled,
-                TEST_BRANDING_CADENCE, BrandingDecision.TOOLBAR);
+                TEST_BRANDING_CADENCE, BrandingDecision.TOAST);
     }
 
     private ShadowLooper mainLooper() {

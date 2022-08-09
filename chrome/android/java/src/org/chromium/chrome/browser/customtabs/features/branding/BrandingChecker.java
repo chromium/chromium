@@ -109,9 +109,9 @@ class BrandingChecker extends AsyncTask<Integer> {
 
     private @BrandingDecision int makeBrandingDecisionFromLaunchTime(
             long startTime, long lastBrandingShowTime) {
-        // TODO(crrev.com/c/3769601): Support toast branding.
-        if (lastBrandingShowTime == BRANDING_TIME_NOT_FOUND
-                || startTime - lastBrandingShowTime >= mBrandingCadence) {
+        if (lastBrandingShowTime == BRANDING_TIME_NOT_FOUND) {
+            return BrandingDecision.TOAST;
+        } else if (startTime - lastBrandingShowTime >= mBrandingCadence) {
             return BrandingDecision.TOOLBAR;
         } else {
             return BrandingDecision.NONE;

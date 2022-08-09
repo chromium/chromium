@@ -6,17 +6,22 @@ package org.chromium.chrome.browser.customtabs.features.branding;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.view.LayoutInflater;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -53,8 +58,10 @@ public class BrandingController {
     private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
             new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
+    private final Context mContext;
 
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
+    private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsBrandingShowing;
 
@@ -64,12 +71,13 @@ public class BrandingController {
      * @param packageName The package name for the embedded app.
      */
     public BrandingController(Context context, String packageName) {
+        mContext = context;
         mBrandingDecision.onAvailable((decision) -> maybeMakeBrandingDecision());
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
         mBrandingChecker = new BrandingChecker(context, packageName,
                 SharedPreferencesBrandingTimeStorage.getInstance(), mBrandingDecision::set,
-                BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOOLBAR);
+                BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
     }
 
@@ -105,13 +113,20 @@ public class BrandingController {
 
         @BrandingDecision
         int brandingDecision = mBrandingDecision.get();
-        if (BrandingDecision.NONE == brandingDecision) {
-            mToolbarBrandingDelegate.showRegularToolbar();
-            return;
+        switch (brandingDecision) {
+            case BrandingDecision.NONE:
+                mToolbarBrandingDelegate.showRegularToolbar();
+                break;
+            case BrandingDecision.TOOLBAR:
+                showToolbarBranding(remainingBrandingTime);
+                break;
+            case BrandingDecision.TOAST:
+                mToolbarBrandingDelegate.showRegularToolbar();
+                showToastBranding(remainingBrandingTime);
+                break;
+            default:
+                assert false : "Unreachable state!";
         }
-
-        // TODO(wenyufu): Support toast branding.
-        showToolbarBranding(remainingBrandingTime);
     }
 
     private void showToolbarBranding(long durationMs) {
@@ -126,9 +141,24 @@ public class BrandingController {
                 mCallbackController.makeCancelable(hideToolbarBranding), durationMs);
     }
 
+    private void showToastBranding(long durationMs) {
+        String appName = mContext.getResources().getString(R.string.app_name);
+        String toastText =
+                mContext.getResources().getString(R.string.twa_running_in_chrome_template, appName);
+        TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
+                R.layout.custom_tabs_toast_branding_layout, null, false);
+        runInChromeTextView.setText(toastText);
+        mToast = new Toast(mContext, /*toastView*/ runInChromeTextView);
+        mToast.setDuration((int) durationMs);
+        mToast.show();
+    }
+
     /** Destroy this instance an cancel all scheduled callbacks */
     public void destroy() {
         mCallbackController.destroy();
+        if (mToast != null) {
+            mToast.cancel();
+        }
     }
 
     @VisibleForTesting
