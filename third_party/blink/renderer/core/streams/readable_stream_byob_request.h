@@ -23,7 +23,7 @@ class ReadableStreamBYOBRequest : public ScriptWrappable {
                             NotShared<DOMUint8Array> view);
 
   // https://streams.spec.whatwg.org/#rs-byob-request-view
-  NotShared<DOMArrayBufferView> view(ExceptionState&) const;
+  NotShared<DOMArrayBufferView> view() const;
 
   // https://streams.spec.whatwg.org/#rs-byob-request-respond
   void respond(ScriptState*, uint64_t bytes_written, ExceptionState&);

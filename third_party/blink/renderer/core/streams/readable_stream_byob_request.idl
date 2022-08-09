@@ -6,7 +6,7 @@
 [
     Exposed=(Window,Worker,Worklet)
 ] interface ReadableStreamBYOBRequest {
-    [RaisesException] readonly attribute ArrayBufferView? view;
+    readonly attribute ArrayBufferView? view;
 
     [CallWith=ScriptState, RaisesException] void respond([EnforceRange] unsigned long long bytesWritten);
     [CallWith=ScriptState, RaisesException] void respondWithNewView(ArrayBufferView view);
