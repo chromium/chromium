@@ -23,10 +23,6 @@
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #endif

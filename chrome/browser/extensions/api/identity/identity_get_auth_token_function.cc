@@ -40,20 +40,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_util.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "components/user_manager/user_manager.h"
 #endif
 
 namespace extensions {
@@ -841,26 +829,6 @@ void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "GetAccessToken", this);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::IsRunningInForcedAppMode()) {
-    std::string app_client_id;
-    std::string app_client_secret;
-    if (ash::UserSessionManager::GetInstance()->GetAppModeChromeClientOAuthInfo(
-            &app_client_id, &app_client_secret)) {
-      token_key_account_access_token_fetcher_ =
-          identity_manager->CreateAccessTokenFetcherForClient(
-              token_key_.account_info.account_id, app_client_id,
-              app_client_secret, kExtensionsIdentityAPIOAuthConsumerName,
-              signin::ScopeSet(),
-              base::BindOnce(
-                  &IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted,
-                  base::Unretained(this)),
-              signin::AccessTokenFetcher::Mode::kImmediate);
-      return;
-    }
-  }
-#endif
-
   token_key_account_access_token_fetcher_ =
       identity_manager->CreateAccessTokenFetcherForAccount(
           token_key_.account_info.account_id,

@@ -241,13 +241,6 @@ class UserSessionManager
                           const std::string& public_session_locale,
                           const std::string& public_session_input_method);
 
-  // Gets/sets Chrome OAuth client id and secret for kiosk app mode. The default
-  // values can be overridden with kiosk auth file.
-  bool GetAppModeChromeClientOAuthInfo(std::string* chrome_client_id,
-                                       std::string* chrome_client_secret);
-  void SetAppModeChromeClientOAuthInfo(const std::string& chrome_client_id,
-                                       const std::string& chrome_client_secret);
-
   // Thin wrapper around StartupBrowserCreator::LaunchBrowser().  Meant to be
   // used in a Task posted to the UI thread.  Once the browser is launched the
   // login host is deleted.
@@ -438,8 +431,7 @@ class UserSessionManager
 
   // Callback for Profile::CREATE_STATUS_INITIALIZED profile state.
   // Profile is created, extensions and promo resources are initialized.
-  void UserProfileInitialized(Profile* profile,
-                              const AccountId& account_id);
+  void UserProfileInitialized(Profile* profile, const AccountId& account_id);
 
   // Callback to resume profile creation after transferring auth data from
   // the authentication profile.
@@ -602,11 +594,6 @@ class UserSessionManager
   // Set of user_id for those users that we should restore authentication
   // session when notified about online state change.
   SigninSessionRestoreStateSet pending_signin_restore_sessions_;
-
-  // Kiosk mode related members.
-  // Chrome oauth client id and secret - override values for kiosk mode.
-  std::string chrome_client_id_;
-  std::string chrome_client_secret_;
 
   // Per-user-session Input Methods states.
   std::map<Profile*,
