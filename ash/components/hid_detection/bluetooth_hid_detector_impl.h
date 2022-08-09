@@ -135,6 +135,11 @@ class BluetoothHidDetectorImpl
   InputDevicesStatus input_devices_status_;
   State state_ = kNotStarted;
 
+  // This is a counter used to emit a count of the number of pairing attempts
+  // that occur while HID detection is active. The count is reset to zero each
+  // time a HID detection session is started.
+  size_t num_pairing_attempts_ = 0;
+
   mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
       cros_bluetooth_config_remote_;
   mojo::Receiver<chromeos::bluetooth_config::mojom::SystemPropertiesObserver>
