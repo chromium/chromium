@@ -479,54 +479,11 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 07/2021.
-#if BUILDFLAG(IS_MAC)
-const char kPasswordRecovery[] = "password_manager.password_recovery";
-#endif
-const char kWasSignInPasswordPromoClicked[] =
-    "profile.was_sign_in_password_promo_clicked";
-const char kNumberSignInPasswordPromoShown[] =
-    "profile.number_sign_in_password_promo_shown";
-const char kSignInPasswordPromoRevive[] =
-    "profile.sign_in_password_promo_revive";
-const char kGuestProfilesNumCreated[] = "profile.guest_profiles_created";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-constexpr char kProfileSwitchInterceptionDeclinedPref[] =
-    "signin.ProfileSwitchInterceptionDeclinedPref";
 const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
 #endif
 
-const char kSuggestionsBlocklist[] = "suggestions.blacklist";
-const char kSuggestionsData[] = "suggestions.data";
-const char kUserAgentClientHintsEnabled[] =
-    "policy.user_agent_client_hints_enabled";
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Deprecated 07/2021.
-const char kExtensionCheckupOnStartup[] = "extensions.checkup_on_startup";
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 07/2021
-const char kCloudPrintDeprecationWarningsSuppressed[] =
-    "cloud_print.deprecation_warnings_suppressed";
-
-// Deprecated 07/2021.
-const char kForceEnablePrivetPrinting[] =
-    "printing.force_enable_privet_printing";
-#endif
-
-// Deprecated 07/2021.
-const char kAccountStorageExists[] = "profile.password_account_storage_exists";
-
-// Deprecated 07/2021.
-const char kUserLanguageProfile[] = "language_profile";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 08/2021.
-const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
-    "account_manager.num_times_migration_ran_successfully";
-
 // Deprecated 07/2022.
 // The name of a boolean pref that determines whether we can show the folder
 // selection user nudge for the screen capture tool. When this pref is false, it
@@ -549,9 +506,6 @@ const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
 // Deprecated 09/2021.
 const char kAutofillAcceptSaveCreditCardPromptState[] =
     "autofill.accept_save_credit_card_prompt_state";
-const char kPrivacyBudgetActiveSurfaces[] = "privacy_budget.active_surfaces";
-const char kPrivacyBudgetRetiredSurfaces[] = "privacy_budget.retired_surfaces";
-const char kPrivacyBudgetSeed[] = "privacy_budget.randomizer_seed";
 const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -805,13 +759,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  registry->RegisterBooleanPref(kUserAgentClientHintsEnabled, true);
-
   registry->RegisterBooleanPref(kCloudPolicyOverridesPlatformPolicy, false);
-
-  registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
-  registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
-  registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
 
   registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
@@ -864,8 +812,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kAccountManagerNumTimesMigrationRanSuccessfully,
-                                0);
   registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
                                 /*default_value=*/true);
   ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
@@ -897,36 +843,9 @@ void RegisterProfilePrefsForMigration(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterTimePref(kPasswordRecovery, base::Time());
-#endif
-
-  registry->RegisterBooleanPref(kWasSignInPasswordPromoClicked, false);
-  registry->RegisterIntegerPref(kNumberSignInPasswordPromoShown, 0);
-  registry->RegisterBooleanPref(kSignInPasswordPromoRevive, false);
-  registry->RegisterIntegerPref(kGuestProfilesNumCreated, 1);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
   registry->RegisterDictionaryPref(kDiceMigrationCompletePref);
 #endif
-
-  registry->RegisterStringPref(kSuggestionsBlocklist, std::string());
-  registry->RegisterStringPref(kSuggestionsData, std::string());
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry->RegisterBooleanPref(kExtensionCheckupOnStartup, false);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kCloudPrintDeprecationWarningsSuppressed,
-                                false);
-  registry->RegisterBooleanPref(kForceEnablePrivetPrinting, false);
-#endif
-
-  registry->RegisterBooleanPref(kAccountStorageExists, false);
-
-  registry->RegisterDictionaryPref(kUserLanguageProfile);
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(kNtpSearchSuggestionsBlocklist);
@@ -1676,14 +1595,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 07/2021
-  local_state->ClearPref(kUserAgentClientHintsEnabled);
-
-  // Added 08/2021
-  local_state->ClearPref(kPrivacyBudgetActiveSurfaces);
-  local_state->ClearPref(kPrivacyBudgetRetiredSurfaces);
-  local_state->ClearPref(kPrivacyBudgetSeed);
-
   // Added 09/2021.
   local_state->ClearPref(kCloudPolicyOverridesPlatformPolicy);
 
@@ -1799,41 +1710,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Added 07/2021
-#if BUILDFLAG(IS_MAC)
-  profile_prefs->ClearPref(kPasswordRecovery);
-#endif
-  profile_prefs->ClearPref(kWasSignInPasswordPromoClicked);
-  profile_prefs->ClearPref(kNumberSignInPasswordPromoShown);
-  profile_prefs->ClearPref(kSignInPasswordPromoRevive);
-  profile_prefs->ClearPref(kGuestProfilesNumCreated);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  profile_prefs->ClearPref(kProfileSwitchInterceptionDeclinedPref);
-#endif
-
-  profile_prefs->ClearPref(kSuggestionsBlocklist);
-  profile_prefs->ClearPref(kSuggestionsData);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Added 2021/07.
-  profile_prefs->ClearPref(kExtensionCheckupOnStartup);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 2021/07
-  profile_prefs->ClearPref(kCloudPrintDeprecationWarningsSuppressed);
-  profile_prefs->ClearPref(kForceEnablePrivetPrinting);
-#endif
-
-  // Added 2021/07.
-  profile_prefs->ClearPref(kAccountStorageExists);
-
-  // Added 07/2021
-  profile_prefs->ClearPref(kUserLanguageProfile);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 08/2021.
-  profile_prefs->ClearPref(kAccountManagerNumTimesMigrationRanSuccessfully);
   // Added 07/2022.
   profile_prefs->ClearPref(kCanShowFolderSelectionNudge);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
