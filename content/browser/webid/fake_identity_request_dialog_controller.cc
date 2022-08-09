@@ -24,10 +24,9 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     DismissCallback dismiss_callback) {
   DCHECK_GT(accounts.size(), 0ul);
   // Use the provided account, if any. Otherwise use the first one.
-  if (selected_account_)
-    std::move(on_selected).Run(*selected_account_, /* is_sign_in= */ true);
-  else
-    std::move(dismiss_callback).Run(DismissReason::OTHER);
+  std::move(on_selected)
+      .Run(selected_account_ ? *selected_account_ : accounts[0].id,
+           /* is_sign_in= */ true);
 }
 
 }  // namespace content

@@ -122,6 +122,8 @@ promise_test(async t => {
 }, "Test the abort signal");
 
 promise_test(async t => {
+  await set_fedcm_cookie();
+
   let controller = new AbortController();
   const first_cred = navigator.credentials.get({
     identity: test_options.identity,

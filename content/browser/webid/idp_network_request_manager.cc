@@ -335,18 +335,6 @@ void OnJsonParsed(
   std::move(parse_json_callback).Run(parsing_error, std::move(result));
 }
 
-void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,
-                     IdpNetworkRequestManager::DownloadCallback callback,
-                     std::unique_ptr<std::string> response_body) {
-  auto* response_info = url_loader->ResponseInfo();
-  int response_code = response_info && response_info->headers
-                          ? response_info->headers->response_code()
-                          : -1;
-
-  url_loader.reset();
-  std::move(callback).Run(std::move(response_body), response_code);
-}
-
 void OnDownloadedJson(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
     std::unique_ptr<std::string> response_body,
@@ -715,11 +703,28 @@ void IdpNetworkRequestManager::DownloadUrl(
     DownloadCallback callback,
     size_t max_download_size) {
   network::SimpleURLLoader* url_loader_ptr = url_loader.get();
+  // Callback is a member of IdpNetworkRequestManager in order to cancel
+  // callback if IdpNetworkRequestManager object is destroyed prior to callback
+  // being run.
   url_loader_ptr->DownloadToString(
       loader_factory_.get(),
-      base::BindOnce(&OnDownloadedUrl, std::move(url_loader),
+      base::BindOnce(&IdpNetworkRequestManager::OnDownloadedUrl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
                      std::move(callback)),
       max_download_size);
+}
+
+void IdpNetworkRequestManager::OnDownloadedUrl(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    IdpNetworkRequestManager::DownloadCallback callback,
+    std::unique_ptr<std::string> response_body) {
+  auto* response_info = url_loader->ResponseInfo();
+  int response_code = response_info && response_info->headers
+                          ? response_info->headers->response_code()
+                          : -1;
+
+  url_loader.reset();
+  std::move(callback).Run(std::move(response_body), response_code);
 }
 
 void IdpNetworkRequestManager::FetchClientMetadata(
