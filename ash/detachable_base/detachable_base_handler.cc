@@ -213,14 +213,17 @@ DetachableBaseHandler::GetLastUsedDeviceForUser(const UserInfo& user) const {
   if (user.is_ephemeral)
     return "";
 
-  const base::Value* detachable_base_info =
-      local_state_->GetDictionary(prefs::kDetachableBaseDevices);
-  const base::Value* last_used = detachable_base_info->FindPathOfType(
-      {GetKeyForPrefs(user.account_id), kLastUsedByUserPrefKey},
-      base::Value::Type::STRING);
-  if (!last_used)
+  const base::Value::Dict& detachable_base_info =
+      local_state_->GetValueDict(prefs::kDetachableBaseDevices);
+  const base::Value::Dict* account_info =
+      detachable_base_info.FindDictByDottedPath(
+          GetKeyForPrefs(user.account_id));
+  if (!account_info)
     return "";
-  return last_used->GetString();
+  const std::string* last_used =
+      account_info->FindString(kLastUsedByUserPrefKey);
+
+  return last_used ? *last_used : "";
 }
 
 void DetachableBaseHandler::NotifyPairingStatusChanged() {
