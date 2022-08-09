@@ -20,6 +20,7 @@ namespace enterprise_connectors {
 
 // Feature flags for individual event types.
 extern const base::Feature kExtensionEventsEnabled;
+extern const base::Feature kBrowserCrashEventsEnabled;
 
 // The settings for a report service obtained from a connector policy.
 class ReportingServiceSettings {
@@ -38,6 +39,7 @@ class ReportingServiceSettings {
 
   static constexpr char kExtensionInstallEvent[] =
       "browserExtensionInstallEvent";
+  static constexpr char kBrowserCrashEvent[] = "browserCrashEvent";
 
   // All events that the reporting connector supports.
   static const constexpr char* kAllReportingEvents[] = {
@@ -50,6 +52,7 @@ class ReportingServiceSettings {
       extensions::SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
       extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
       kExtensionInstallEvent,
+      kBrowserCrashEvent,
   };
 
  private:

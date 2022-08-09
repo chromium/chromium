@@ -13,6 +13,8 @@ namespace enterprise_connectors {
 
 const base::Feature kExtensionEventsEnabled{"ExtensionEventsEnabled",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kBrowserCrashEventsEnabled{
+    "BrowserCrashEventsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 namespace {
 
 constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
