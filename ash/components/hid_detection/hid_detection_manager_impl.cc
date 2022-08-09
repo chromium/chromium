@@ -107,6 +107,7 @@ void HidDetectionManagerImpl::InputDeviceRemoved(const std::string& id) {
 
   HID_LOG(EVENT) << "Input device removed, id: " << id
                  << ", name: " << device_id_to_device_map_[id]->name;
+  hid_detection::RecordHidDisconnected(*device_id_to_device_map_[id]);
   device_id_to_device_map_.erase(id);
   bool was_connected_hid_disconnected_ = false;
 
