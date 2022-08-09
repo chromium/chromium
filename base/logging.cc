@@ -25,6 +25,11 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
+#if !BUILDFLAG(IS_NACL)
+#include "base/auto_reset.h"
+#include "base/debug/crash_logging.h"
+#endif  // !BUILDFLAG(IS_NACL)
+
 #if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include "base/debug/leak_annotations.h"
 #endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
@@ -456,6 +461,39 @@ void WriteToFd(int fd, const char* data, size_t length) {
   }
 }
 
+void SetLogFatalCrashKey(LogMessage* log_message) {
+#if !BUILDFLAG(IS_NACL)
+  // In case of an out-of-memory condition, this code could be reentered when
+  // constructing and storing the key. Using a static is not thread-safe, but if
+  // multiple threads are in the process of a fatal crash at the same time, this
+  // should work.
+  static bool guarded = false;
+  if (guarded)
+    return;
+
+  base::AutoReset<bool> guard(&guarded, true);
+
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "LOG_FATAL", base::debug::CrashKeySize::Size1024);
+  base::debug::SetCrashKeyString(crash_key, log_message->BuildCrashString());
+
+#endif  // !BUILDFLAG(IS_NACL)
+}
+
+std::string BuildCrashString(const char* file,
+                             int line,
+                             const char* message_without_prefix) {
+  // Only log last path component.
+  if (file) {
+    const char* slash = strrchr(file, '/');
+    if (slash) {
+      file = slash + 1;
+    }
+  }
+
+  return base::StringPrintf("%s:%d: %s", file, line, message_without_prefix);
+}
+
 }  // namespace
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -685,6 +723,9 @@ LogMessage::~LogMessage() {
   TRACE_LOG_MESSAGE(
       file_, base::StringPiece(str_newline).substr(message_start_), line_);
 
+  if (severity_ == LOGGING_FATAL)
+    SetLogFatalCrashKey(this);
+
   // Give any log message handler first dibs on the message.
   if (g_log_message_handler &&
       g_log_message_handler(severity_, file_, line_, message_start_,
@@ -907,21 +948,8 @@ LogMessage::~LogMessage() {
 }
 
 std::string LogMessage::BuildCrashString() const {
-  return BuildCrashString(file(), line(), str().c_str() + message_start_);
-}
-
-std::string LogMessage::BuildCrashString(const char* file,
-                                         int line,
-                                         const char* message_without_prefix) {
-  // Only log last path component.
-  if (file) {
-    const char* slash = strrchr(file, '/');
-    if (slash) {
-      file = slash + 1;
-    }
-  }
-
-  return base::StringPrintf("%s:%d: %s", file, line, message_without_prefix);
+  return logging::BuildCrashString(file(), line(),
+                                   str().c_str() + message_start_);
 }
 
 // writes the common header info to the stream

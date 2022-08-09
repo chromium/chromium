@@ -68,36 +68,6 @@ base::FilePath* g_database_path;
 
 crashpad::CrashReportDatabase* g_database;
 
-bool LogMessageHandler(int severity,
-                       const char* file,
-                       int line,
-                       size_t message_start,
-                       const std::string& string) {
-  // Only handle FATAL.
-  if (severity != logging::LOG_FATAL) {
-    return false;
-  }
-
-  // In case of an out-of-memory condition, this code could be reentered when
-  // constructing and storing the key. Using a static is not thread-safe, but if
-  // multiple threads are in the process of a fatal crash at the same time, this
-  // should work.
-  static bool guarded = false;
-  if (guarded) {
-    return false;
-  }
-  base::AutoReset<bool> guard(&guarded, true);
-
-  CHECK_LE(message_start, string.size());
-  static crashpad::StringAnnotation<512> crash_key("LOG_FATAL");
-  crash_key.Set(logging::LogMessage::BuildCrashString(
-      file, line, string.c_str() + message_start));
-
-  // Rather than including the code to force the crash here, allow the caller to
-  // do it.
-  return false;
-}
-
 void InitializeDatabasePath(const base::FilePath& database_path) {
   DCHECK(!g_database_path);
 
@@ -197,8 +167,6 @@ bool InitializeCrashpadImpl(bool initial_client,
   static crashpad::StringAnnotation<24> platform("platform");
   platform.Set(base::SysInfo::HardwareModelName());
 #endif  // !BUILDFLAG(IS_IOS)
-
-  logging::SetLogMessageHandler(LogMessageHandler);
 
   // If clients called CRASHPAD_SIMULATE_CRASH() instead of
   // base::debug::DumpWithoutCrashing(), these dumps would appear as crashes in

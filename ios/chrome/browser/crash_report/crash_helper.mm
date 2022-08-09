@@ -80,43 +80,6 @@ void ProcessIntermediateDumps() {
   crash_reporter::StartProcessingPendingReports();
 }
 
-// Callback for logging::SetLogMessageHandler
-bool FatalMessageHandler(int severity,
-                         const char* file,
-                         int line,
-                         size_t message_start,
-                         const std::string& str) {
-  // Do not handle non-FATAL.
-  if (severity != logging::LOG_FATAL)
-    return false;
-
-  // In case of OOM condition, this code could be reentered when
-  // constructing and storing the key.  Using a static is not
-  // thread-safe, but if multiple threads are in the process of a
-  // fatal crash at the same time, this should work.
-  static bool guarded = false;
-  if (guarded)
-    return false;
-
-  base::AutoReset<bool> guard(&guarded, true);
-
-  // Only log last path component.  This matches logging.cc.
-  if (file) {
-    const char* slash = strrchr(file, '/');
-    if (slash)
-      file = slash + 1;
-  }
-
-  NSString* fatal_value = [NSString
-      stringWithFormat:@"%s:%d: %s", file, line, str.c_str() + message_start];
-  static crash_reporter::CrashKeyString<2550> key("LOG_FATAL");
-  key.Set(base::SysNSStringToUTF8(fatal_value));
-
-  // Rather than including the code to force the crash here, allow the
-  // caller to do it.
-  return false;
-}
-
 // Called after Breakpad finishes uploading each report.
 void UploadResultHandler(NSString* report_id, NSError* error) {
   base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
@@ -153,7 +116,6 @@ void Start() {
   // Notifying the PathService on the location of the crashes so that crashes
   // can be displayed to the user on the about:crashes page.  Use the app group
   // so crashes can be shared by plugins.
-  logging::SetLogMessageHandler(&FatalMessageHandler);
   if (common::CanUseCrashpad()) {
     base::PathService::Override(ios::DIR_CRASH_DUMPS,
                                 common::CrashpadDumpLocation());
