@@ -1,5 +1,5 @@
 AXWebArea
 ++AXGroup
-++++AXImage AXDescription='svg' AXHelp='SVG Title Tag'
+++++AXGroup AXDescription='svg' AXHelp='SVG Title Tag'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Test'

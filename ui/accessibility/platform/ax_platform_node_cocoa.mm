@@ -685,16 +685,22 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (BOOL)isImage {
-  bool isImage =
+  bool has_image_semantics =
       ui::IsImage(_node->GetRole()) &&
-      !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback);
-  DCHECK(!([[self accessibilityRole] isEqualToString:NSAccessibilityImageRole] ^
-           isImage))
-      << "Internal and native roles do not match when determining if this "
-         "object is an image. "
-      << "Chrome role: " << ui::ToString(_node->GetRole())
-      << ", NSAccessibility role: " << [self accessibilityRole];
-  return isImage;
+      !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback) &&
+      !_node->GetChildCount() &&
+      _node->GetNameFrom() != ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+#if DCHECK_IS_ON()
+  bool is_native_image =
+      [[self accessibilityRole] isEqualToString:NSAccessibilityImageRole];
+  DCHECK_EQ(is_native_image, has_image_semantics)
+      << "\nPresence/lack of native image role do not match the expected "
+         "internal semantics:"
+      << "\n* Chrome role: " << ui::ToString(_node->GetRole())
+      << "\n* NSAccessibility role: " << [self accessibilityRole]
+      << "\n* AXNode: " << *_node;
+#endif
+  return has_image_semantics;
 }
 
 - (NSString*)getName {
