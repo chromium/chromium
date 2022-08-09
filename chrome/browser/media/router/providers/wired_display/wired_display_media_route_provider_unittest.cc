@@ -34,6 +34,8 @@ namespace media_router {
 
 namespace {
 
+static constexpr int kFrameTreeNodeId = 1;
+
 class MockCallback {
  public:
   MOCK_METHOD4(CreateRoute,
@@ -331,8 +333,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
               Start(presentation_id, GURL(kPresentationSource)));
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -367,8 +369,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
   // Create a route for |presentation_id|.
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -396,8 +398,8 @@ TEST_F(WiredDisplayMediaRouteProviderTest, ExitFullscreenOnDisplayRemoved) {
 
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), "presentationId",
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 

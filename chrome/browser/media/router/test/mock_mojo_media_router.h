@@ -62,13 +62,12 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
   MOCK_METHOD2(
       GetMirroringServiceHostForTab,
-      void(int32_t target_tab_id,
+      void(int32_t frame_tree_node_id,
            mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
                receiver));
-  MOCK_METHOD3(
+  MOCK_METHOD2(
       GetMirroringServiceHostForDesktop,
-      void(int32_t initiator_tab_id,
-           const std::string& desktop_stream_id,
+      void(const std::string& desktop_stream_id,
            mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
                receiver));
   MOCK_METHOD3(

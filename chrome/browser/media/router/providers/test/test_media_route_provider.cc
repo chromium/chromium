@@ -71,7 +71,7 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
                                          const std::string& sink_id,
                                          const std::string& presentation_id,
                                          const url::Origin& origin,
-                                         int32_t tab_id,
+                                         int32_t frame_tree_node_id,
                                          base::TimeDelta timeout,
                                          bool incognito,
                                          CreateRouteCallback callback) {
@@ -85,8 +85,8 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
                        GetWeakPtr(), std::move(callback)),
         delay_);
   } else {
-    DVLOG(2) << "CreateRoute with origin: " << origin << " and tab ID "
-             << tab_id;
+    DVLOG(2) << "CreateRoute with origin: " << origin
+             << " and FrameTreeNode ID " << frame_tree_node_id;
     MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
                      std::string("Test Route"), true);
     route.set_presentation_id(presentation_id);
@@ -115,7 +115,7 @@ void TestMediaRouteProvider::CreateRouteTimeOut(CreateRouteCallback callback) {
 void TestMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const std::string& presentation_id,
                                        const url::Origin& origin,
-                                       int32_t tab_id,
+                                       int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
                                        bool incognito,
                                        JoinRouteCallback callback) {

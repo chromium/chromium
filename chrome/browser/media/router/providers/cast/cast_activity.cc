@@ -30,15 +30,16 @@ void CastActivity::SetRouteIsConnecting(bool is_connecting) {
 mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
     const CastMediaSource& source,
     const url::Origin& origin,
-    int tab_id) {
+    int frame_tree_node_id) {
   const std::string& client_id = source.client_id();
   DCHECK(!base::Contains(connected_clients_, client_id));
   std::unique_ptr<CastSessionClient> client =
       client_factory_for_test_
-          ? client_factory_for_test_->MakeClientForTest(client_id, origin,
-                                                        tab_id)
+          ? client_factory_for_test_->MakeClientForTest(  // IN-TEST
+                client_id, origin, frame_tree_node_id)
           : std::make_unique<CastSessionClientImpl>(
-                client_id, origin, tab_id, source.auto_join_policy(), this);
+                client_id, origin, frame_tree_node_id,
+                source.auto_join_policy(), this);
   auto presentation_connection = client->Init();
   connected_clients_.emplace(client_id, std::move(client));
 
@@ -167,7 +168,8 @@ void CastActivity::HandleLeaveSession(const std::string& client_id) {
   auto& client = *client_it->second;
   std::vector<std::string> leaving_client_ids;
   for (const auto& pair : connected_clients_) {
-    if (pair.second->MatchesAutoJoinPolicy(client.origin(), client.tab_id()))
+    if (pair.second->MatchesAutoJoinPolicy(client.origin(),
+                                           client.frame_tree_node_id()))
       leaving_client_ids.push_back(pair.first);
   }
 

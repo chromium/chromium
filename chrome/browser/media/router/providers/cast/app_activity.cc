@@ -160,12 +160,13 @@ bool AppActivity::CanJoinSession(const CastMediaSource& cast_source,
 
 bool AppActivity::HasJoinableClient(AutoJoinPolicy policy,
                                     const url::Origin& origin,
-                                    int tab_id) const {
+                                    int frame_tree_node_id) const {
   return std::any_of(connected_clients_.begin(), connected_clients_.end(),
-                     [policy, &origin, tab_id](const auto& client) {
-                       return IsAutoJoinAllowed(policy, origin, tab_id,
-                                                client.second->origin(),
-                                                client.second->tab_id());
+                     [policy, &origin, frame_tree_node_id](const auto& client) {
+                       return IsAutoJoinAllowed(
+                           policy, origin, frame_tree_node_id,
+                           client.second->origin(),
+                           client.second->frame_tree_node_id());
                      });
 }
 

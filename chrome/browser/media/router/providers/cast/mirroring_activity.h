@@ -48,7 +48,7 @@ class MirroringActivity : public CastActivity,
                     const std::string& app_id,
                     cast_channel::CastMessageHandler* message_handler,
                     CastSessionTracker* session_tracker,
-                    int target_tab_id,
+                    int frame_tree_node_id,
                     const CastSinkExtraData& cast_data,
                     OnStopCallback callback);
   ~MirroringActivity() override;
@@ -114,6 +114,9 @@ class MirroringActivity : public CastActivity,
   absl::optional<base::Time> did_start_mirroring_timestamp_;
 
   const absl::optional<MirroringType> mirroring_type_;
+
+  // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
+  const int frame_tree_node_id_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};

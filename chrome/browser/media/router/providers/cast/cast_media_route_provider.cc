@@ -106,7 +106,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                                          const std::string& sink_id,
                                          const std::string& presentation_id,
                                          const url::Origin& origin,
-                                         int32_t tab_id,
+                                         int32_t frame_tree_node_id,
                                          base::TimeDelta timeout,
                                          bool incognito,
                                          CreateRouteCallback callback) {
@@ -136,15 +136,15 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
         mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
     return;
   }
-
   activity_manager_->LaunchSession(*cast_source, *sink, presentation_id, origin,
-                                   tab_id, incognito, std::move(callback));
+                                   frame_tree_node_id, incognito,
+                                   std::move(callback));
 }
 
 void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const std::string& presentation_id,
                                        const url::Origin& origin,
-                                       int32_t tab_id,
+                                       int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
                                        bool incognito,
                                        JoinRouteCallback callback) {
@@ -175,9 +175,9 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
                             mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     return;
   }
-
-  activity_manager_->JoinSession(*cast_source, presentation_id, origin, tab_id,
-                                 incognito, std::move(callback));
+  activity_manager_->JoinSession(*cast_source, presentation_id, origin,
+                                 frame_tree_node_id, incognito,
+                                 std::move(callback));
 }
 
 void CastMediaRouteProvider::TerminateRoute(const std::string& route_id,

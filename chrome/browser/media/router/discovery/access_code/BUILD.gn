@@ -67,6 +67,7 @@ if (!is_android) {
       "//components/signin/public/base:base",
       "//components/signin/public/identity_manager:identity_manager",
       "//components/user_manager:user_manager",
+      "//content/public/browser",
       "//services/preferences/public/cpp:cpp",
     ]
   }

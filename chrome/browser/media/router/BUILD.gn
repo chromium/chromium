@@ -39,7 +39,6 @@ static_library("media_router_feature") {
     "//content/public/common",
     "//crypto",
     "//media",
-    "//ui/base:buildflags",
   ]
 }
 
@@ -69,7 +68,6 @@ static_library("router") {
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
-    "//components/sessions:sessions",
   ]
   sources = [
     "chrome_media_router_factory.cc",
@@ -80,27 +78,22 @@ static_library("router") {
 
   if (!is_android) {
     deps += [
+      # We can't depend on //chrome/browser/ui due to introducing a cyclic
+      # dependency. Remove this target from the `allow_circular_includes_from`
+      # list in chrome/browser/ui/BUILD.gn once the issues is resolved.
+      # TODO(crbug.com/1030821): Resolve circular dependencies.
+
       "discovery:discovery",
-      "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//components/embedder_support:browser_util",
       "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
-
-      # We can't depend on //chrome/browser/ui due to introducing a cyclic
-      # dependency, so we have to depend on this directly to fix include
-      # resolution for browser.h, which is used in media_router_mojo_impl.cc.
-      # TODO(crbug.com/1030821): Resolve circular dependencies
-      "//components/paint_preview/buildflags",
-      "//components/signin/public/base:signin_buildflags",
-      "//components/translate/content/common",
       "//components/ukm/content:content",
       "//components/version_info:version_info",
       "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
-      "//ui/base:buildflags",
     ]
 
     public_deps += [ "//components/media_router/common/mojom:logger" ]

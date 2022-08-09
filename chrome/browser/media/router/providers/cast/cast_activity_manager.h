@@ -80,14 +80,14 @@ class CastActivityManager : public CastActivityManagerBase,
                      const MediaSinkInternal& sink,
                      const std::string& presentation_id,
                      const url::Origin& origin,
-                     int tab_id,
+                     int frame_tree_node_id,
                      bool incognito,
                      mojom::MediaRouteProvider::CreateRouteCallback callback);
 
   void JoinSession(const CastMediaSource& cast_source,
                    const std::string& presentation_id,
                    const url::Origin& origin,
-                   int tab_id,
+                   int frame_tree_node_id,
                    bool incognito,
                    mojom::MediaRouteProvider::JoinRouteCallback callback);
 
@@ -128,8 +128,6 @@ class CastActivityManager : public CastActivityManagerBase,
       const std::string& route_id,
       mojom::MediaRouteProvider::TerminateRouteCallback callback) override;
 
-  const MediaRoute* FindMirroringRouteForTab(int32_t tab_id);
-
   void SendRouteMessage(const std::string& media_route_id,
                         const std::string& message);
 
@@ -156,7 +154,7 @@ class CastActivityManager : public CastActivityManagerBase,
       const MediaSinkInternal& sink,
       const std::string& presentation_id,
       const url::Origin& origin,
-      int tab_id,
+      int frame_tree_node_id,
       bool incognito,
       mojom::MediaRouteProvider::CreateRouteCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
@@ -171,7 +169,7 @@ class CastActivityManager : public CastActivityManagerBase,
         const CastMediaSource& cast_source,
         const MediaSinkInternal& sink,
         const url::Origin& origin,
-        int tab_id,
+        int frame_tree_node_id,
         const absl::optional<base::Value> app_params,
         mojom::MediaRouteProvider::CreateRouteCallback callback);
     DoLaunchSessionParams(const DoLaunchSessionParams& other) = delete;
@@ -192,8 +190,9 @@ class CastActivityManager : public CastActivityManagerBase,
     // The origin of the Cast SDK client. Used for auto-join.
     url::Origin origin;
 
-    // The tab ID of the Cast SDK client. Used for auto-join.
-    int tab_id;
+    // The FrameTreeNodeId of the WebContents of the Cast SDK client. Used for
+    // Mirroring and auto-join.
+    int frame_tree_node_id;
 
     // The JSON object sent from the Cast SDK.
     absl::optional<base::Value> app_params;
@@ -241,7 +240,7 @@ class CastActivityManager : public CastActivityManagerBase,
 
   AppActivity* FindActivityForAutoJoin(const CastMediaSource& cast_source,
                                        const url::Origin& origin,
-                                       int tab_id);
+                                       int frame_tree_node_id);
   bool CanJoinSession(const AppActivity& activity,
                       const CastMediaSource& cast_source,
                       bool incognito) const;
@@ -264,12 +263,12 @@ class CastActivityManager : public CastActivityManagerBase,
                               const std::string& app_id);
   CastActivity* AddMirroringActivity(const MediaRoute& route,
                                      const std::string& app_id,
-                                     int tab_id,
+                                     const int frame_tree_node_id,
                                      const CastSinkExtraData& cast_data);
 
   // Returns a sink used to convert a mirroring activity to a cast activity.
   // If no conversion should occur, returns absl::nullopt.
-  absl::optional<MediaSinkInternal> ConvertMirrorToCast(int tab_id);
+  absl::optional<MediaSinkInternal> ConvertMirrorToCast(int frame_tree_node_id);
 
   std::string ChooseAppId(const CastMediaSource& source,
                           const MediaSinkInternal& sink) const;
@@ -286,12 +285,13 @@ class CastActivityManager : public CastActivityManagerBase,
   // there is a AppActivity.
   AppActivityMap app_activities_;
 
-  // Mapping from tab IDs to the active route for that tab.  This map is used to
-  // ensure that there is at most one active route for each tab.  Removing this
-  // map and the code that uses it will allow a tab to be cast to multiple
-  // receivers, but there may be unintended consequences, such as confusing
-  // users or causing performance problems on low-end devices.
-  base::flat_map<int, MediaRoute::Id> routes_by_tab_;
+  // Mapping from FrameTreeNode IDs to the active routes for that main frame.
+  // This map is used to ensure that there is at most one active route for each
+  // main frame. Removing this map and the code that uses it will allow a
+  // main frame to be cast to multiple receivers, but there may be unintended
+  // consequences, such as confusing users or causing performance problems on
+  // low-end devices.
+  base::flat_map<int, MediaRoute::Id> routes_by_frame_;
 
   // Information for a session that will be launched once |this| is notified
   // that the existing session on the receiver has been removed. We only store

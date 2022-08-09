@@ -327,11 +327,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
   void GetMirroringServiceHostForTab(
-      int32_t target_tab_id,
+      int32_t frame_tree_node_id,
       mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver)
       override;
   void GetMirroringServiceHostForDesktop(
-      int32_t initiator_tab_id,
       const std::string& desktop_stream_id,
       mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver)
       override;

@@ -47,41 +47,43 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                    const std::string& sink_id,
                    const std::string& presentation_id,
                    const url::Origin& origin,
-                   int tab_id,
+                   int frame_tree_node_id,
                    base::TimeDelta timeout,
                    bool incognito,
                    CreateRouteCallback callback) override {
-    CreateRouteInternal(source_urn, sink_id, presentation_id, origin, tab_id,
-                        timeout, incognito, callback);
+    CreateRouteInternal(source_urn, sink_id, presentation_id, origin,
+                        frame_tree_node_id, timeout, incognito, callback);
   }
-  MOCK_METHOD8(CreateRouteInternal,
-               void(const std::string& source_urn,
-                    const std::string& sink_id,
-                    const std::string& presentation_id,
-                    const url::Origin& origin,
-                    int tab_id,
-                    base::TimeDelta timeout,
-                    bool incognito,
-                    CreateRouteCallback& callback));
+  MOCK_METHOD(void,
+              CreateRouteInternal,
+              (const std::string& source_urn,
+               const std::string& sink_id,
+               const std::string& presentation_id,
+               const url::Origin& origin,
+               int frame_tree_node_id,
+               base::TimeDelta timeout,
+               bool incognito,
+               CreateRouteCallback& callback));
   void JoinRoute(const std::string& source_urn,
                  const std::string& presentation_id,
                  const url::Origin& origin,
-                 int tab_id,
+                 int frame_tree_node_id,
                  base::TimeDelta timeout,
                  bool incognito,
                  JoinRouteCallback callback) override {
-    JoinRouteInternal(source_urn, presentation_id, origin, tab_id, timeout,
-                      incognito, callback);
+    JoinRouteInternal(source_urn, presentation_id, origin, frame_tree_node_id,
+                      timeout, incognito, callback);
   }
-  MOCK_METHOD7(JoinRouteInternal,
-               void(const std::string& source_urn,
-                    const std::string& presentation_id,
-                    const url::Origin& origin,
-                    int tab_id,
-                    base::TimeDelta timeout,
-                    bool incognito,
-                    JoinRouteCallback& callback));
-  MOCK_METHOD1(DetachRoute, void(const std::string& route_id));
+  MOCK_METHOD(void,
+              JoinRouteInternal,
+              (const std::string& source_urn,
+               const std::string& presentation_id,
+               const url::Origin& origin,
+               int frame_tree_node_id,
+               base::TimeDelta timeout,
+               bool incognito,
+               JoinRouteCallback& callback));
+  MOCK_METHOD(void, DetachRoute, (const std::string& route_id));
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override {
     TerminateRouteInternal(route_id, callback);

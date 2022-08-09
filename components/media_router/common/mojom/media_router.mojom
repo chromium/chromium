@@ -253,9 +253,9 @@ interface MediaRouteProvider {
   // may be overridden by a provider implementation. The presentation ID will
   // be used by the presentation API to refer to the created route.
   //
-  // |origin| and |tab_id| may be passed in for enforcing same-origin and/or
-  // same-tab scopes. Use -1 as |tab_id| in cases where the request is not
-  // made on behalf of a tab.
+  // |origin| and |frame_tree_node_id| may be passed in for enforcing
+  // same-origin and/or same-tab scopes. Use -1 as |frame_tree_node_id| in
+  // cases where the request is not made on behalf of a tab.
   //
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
@@ -270,12 +270,13 @@ interface MediaRouteProvider {
   //
   // |result_code| will be set to OK if successful, or an error code if an error
   // occurred.
-  // TODO(btolsch): Consolidate result params into struct.
+  // TODO(crbug.com/1346066): Consolidate parameters into a struct.
+  // TODO(crbug.com/1351184): Make |frame_tree_node_id| optional.
   CreateRoute(string media_source,
               string sink_id,
               string original_presentation_id,
               url.mojom.Origin origin,
-              int32 tab_id,
+              int32 frame_tree_node_id,
               mojo_base.mojom.TimeDelta timeout,
               bool off_the_record) =>
                   (MediaRoute? route,
@@ -286,8 +287,8 @@ interface MediaRouteProvider {
   // Requests a connection to an established route for |media_source| given
   // by |presentation_id|.
   //
-  // |origin| and |tab_id| are used for validating same-origin/tab scopes;
-  // see CreateRoute for additional documentation.
+  // |origin| and |frame_tree_node_id| are used for validating same-origin/tab
+  // scopes; see CreateRoute for additional documentation.
   //
   // If |timeout| is positive, it will be used in place of the default timeout
   // defined by Media Route Provider Manager.
@@ -302,10 +303,12 @@ interface MediaRouteProvider {
   //
   // |result_code| will be set to OK if successful, or an error code if an error
   // occurred.
+  // TODO(crbug.com/1346066): Consolidate parameters into a struct.
+  // TODO(crbug.com/1351184): Make |frame_tree_node_id| optional.
   JoinRoute(string media_source,
             string presentation_id,
             url.mojom.Origin origin,
-            int32 tab_id,
+            int32 frame_tree_node_id,
             mojo_base.mojom.TimeDelta timeout,
             bool off_the_record) =>
                 (MediaRoute? route,
@@ -447,10 +450,9 @@ interface MediaRouter {
   GetLogsAsString() => (string logs);
 
   // Called to get a mirroring.mojom.MirroringServiceHost.
-  GetMirroringServiceHostForTab(int32 target_tab_id,
+ GetMirroringServiceHostForTab(int32 frame_tree_node_id,
       pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
   GetMirroringServiceHostForDesktop(
-      int32 initiator_tab_id,  // The tab used to register the stream.
       string desktop_stream_id,
       pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
   GetMirroringServiceHostForOffscreenTab(

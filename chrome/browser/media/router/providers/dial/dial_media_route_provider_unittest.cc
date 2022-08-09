@@ -36,6 +36,10 @@ using ::testing::SaveArg;
 
 namespace media_router {
 
+namespace {
+static constexpr int kFrameTreeNodeId = 1;
+}
+
 class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
  public:
   TestDialMediaSinkServiceImpl()
@@ -150,7 +154,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     // CreateRoute, but MR will add the route returned in the response.
     EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _)).Times(0);
     provider_->CreateRoute(
-        source_id, sink_id, presentation_id, origin_, 1, base::TimeDelta(),
+        source_id, sink_id, presentation_id, origin_, kFrameTreeNodeId,
+        base::TimeDelta(),
         /* off_the_record */ false,
         base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
                        base::Unretained(this),
@@ -203,7 +208,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
         client_incognito ? *client_incognito : route_->is_off_the_record();
 
     provider_->JoinRoute(
-        source, presentation, origin, /*tab_id*/ 5, base::TimeDelta(),
+        source, presentation, origin, kFrameTreeNodeId, base::TimeDelta(),
         incognito,
         base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
                        base::Unretained(this), expected_result));

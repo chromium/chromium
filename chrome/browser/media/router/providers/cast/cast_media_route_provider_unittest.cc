@@ -39,7 +39,7 @@ constexpr char kCastSource[] =
     "\"mobile\"}";
 static constexpr char kPresentationId[] = "presentationId";
 static constexpr char kOrigin[] = "https://www.youtube.com";
-static constexpr int kTabId = 1;
+static constexpr int kFrameTreeNodeId = 1;
 static constexpr base::TimeDelta kRouteTimeout = base::Seconds(30);
 
 base::Value MakeReceiverStatus() {
@@ -194,7 +194,8 @@ TEST_F(CastMediaRouteProviderTest, BroadcastRequest) {
 TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSink) {
   // Sink does not exist.
   provider_->CreateRoute(
-      kCastSource, "sinkId", kPresentationId, origin_, kTabId, kRouteTimeout,
+      kCastSource, "sinkId", kPresentationId, origin_, kFrameTreeNodeId,
+      kRouteTimeout,
       /* incognito */ false,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
@@ -206,8 +207,8 @@ TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSource) {
   media_sink_service_.AddOrUpdateSink(sink);
 
   provider_->CreateRoute(
-      "invalidSource", sink.sink().id(), kPresentationId, origin_, kTabId,
-      kRouteTimeout, /* incognito */ false,
+      "invalidSource", sink.sink().id(), kPresentationId, origin_,
+      kFrameTreeNodeId, kRouteTimeout, /* incognito */ false,
       base::BindOnce(&CastMediaRouteProviderTest::ExpectCreateRouteFailure,
                      base::Unretained(this),
                      mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER));
@@ -226,7 +227,7 @@ TEST_F(CastMediaRouteProviderTest, CreateRoute) {
         launch_session_callback_ = std::move(callback);
       }));
   provider_->CreateRoute(
-      kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
+      kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
       kRouteTimeout, /* incognito */ false,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,
@@ -245,7 +246,7 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
         launch_session_callback_ = std::move(callback);
       }));
   provider_->CreateRoute(
-      kCastSource, sink.sink().id(), kPresentationId, origin_, kTabId,
+      kCastSource, sink.sink().id(), kPresentationId, origin_, kFrameTreeNodeId,
       kRouteTimeout, /* incognito */ false,
       base::BindOnce(
           &CastMediaRouteProviderTest::ExpectCreateRouteSuccessAndSetRoute,

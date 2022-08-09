@@ -95,7 +95,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
     const std::string& sink_id,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int32_t tab_id,
+    int32_t frame_tree_node_id,
     base::TimeDelta timeout,
     bool off_the_record,
     CreateRouteCallback callback) {
@@ -132,7 +132,7 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
     const std::string& media_source,
     const std::string& presentation_id,
     const url::Origin& origin,
-    int32_t tab_id,
+    int32_t frame_tree_node_id,
     base::TimeDelta timeout,
     bool off_the_record,
     JoinRouteCallback callback) {

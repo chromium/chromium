@@ -1844,6 +1844,7 @@ static_library("ui") {
       "//ui/base/dragdrop/mojom:mojom_headers",
     ]
 
+    # TODO(crbug.com/1030821): Resolve circular dependencies.
     allow_circular_includes_from += [ "//chrome/browser/media/router" ]
 
     if (use_ozone && !is_chromeos_ash) {

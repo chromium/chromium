@@ -20,7 +20,7 @@ class CastSessionClientImpl : public CastSessionClient,
  public:
   CastSessionClientImpl(const std::string& client_id,
                         const url::Origin& origin,
-                        int tab_id,
+                        int frame_tree_node_id,
                         AutoJoinPolicy auto_join_policy,
                         CastActivity* activity);
   ~CastSessionClientImpl() override;
@@ -36,7 +36,8 @@ class CastSessionClientImpl : public CastSessionClient,
   void CloseConnection(
       blink::mojom::PresentationConnectionCloseReason close_reason) override;
   void TerminateConnection() override;
-  bool MatchesAutoJoinPolicy(url::Origin origin, int tab_id) const override;
+  bool MatchesAutoJoinPolicy(url::Origin origin,
+                             int frame_tree_node_id) const override;
   void SendErrorCodeToClient(int sequence_number,
                              CastInternalMessage::ErrorCode error_code,
                              absl::optional<std::string> description) override;

@@ -83,7 +83,8 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
                                          const std::string& sink_id,
                                          const std::string& presentation_id,
                                          const url::Origin& origin,
-                                         int32_t tab_id,
+                                         int32_t frame_tree_node_id,
+
                                          base::TimeDelta timeout,
                                          bool incognito,
                                          CreateRouteCallback callback) {
@@ -152,7 +153,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
 void DialMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        const std::string& presentation_id,
                                        const url::Origin& origin,
-                                       int32_t tab_id,
+                                       int32_t frame_tree_node_id,
                                        base::TimeDelta timeout,
                                        bool incognito,
                                        JoinRouteCallback callback) {
