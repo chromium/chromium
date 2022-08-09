@@ -1976,11 +1976,11 @@
     # Cast Linux takes very long in linking, possibly due to being on GCE
     # (crbug/794423).
     'cast_release_bot_reclient': [
-      'cast', 'release_bot_reclient', 'minimal_symbols',
+      'cast_receiver', 'cast_os', 'release_bot_reclient', 'minimal_symbols',
     ],
 
     'cast_release_trybot': [
-      'cast', 'release_trybot',
+      'cast_receiver', 'cast_os', 'release_trybot',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [
@@ -3789,6 +3789,10 @@
 
     'cast_audio': {
       'gn_args': 'is_cast_audio_only=true'
+    },
+
+    'cast_os': {
+      'gn_args': 'is_castos=true'
     },
 
     'cast_receiver': {
