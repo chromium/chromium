@@ -2344,11 +2344,6 @@ bool BrowserView::IsBookmarkBarAnimating() const {
 }
 
 bool BrowserView::IsTabStripEditable() const {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (webui_tab_strip_)
-    return webui_tab_strip_->IsTabStripEditable();
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
   return tabstrip_->IsTabStripEditable();
 }
 
