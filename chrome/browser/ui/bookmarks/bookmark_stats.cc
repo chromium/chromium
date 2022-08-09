@@ -15,8 +15,8 @@ using bookmarks::BookmarkNode;
 namespace {
 
 bool IsBookmarkBarLocation(BookmarkLaunchLocation location) {
-  return location == BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR ||
-         location == BOOKMARK_LAUNCH_LOCATION_BAR_SUBFOLDER;
+  return location == BookmarkLaunchLocation::kAttachedBar ||
+         location == BookmarkLaunchLocation::kSubfolder;
 }
 
 auto GetMetricProfile(const Profile* profile) {
@@ -33,15 +33,14 @@ void RecordBookmarkLaunch(BookmarkLaunchLocation location,
                           profile_metrics::BrowserProfileType profile_type) {
   if (IsBookmarkBarLocation(location)) {
     base::RecordAction(base::UserMetricsAction("ClickedBookmarkBarURLButton"));
-  } else if (location == BOOKMARK_LAUNCH_LOCATION_APP_MENU) {
+  } else if (location == BookmarkLaunchLocation::kAppMenu) {
     base::RecordAction(
         base::UserMetricsAction("WrenchMenu_Bookmarks_LaunchURL"));
-  } else if (location == BOOKMARK_LAUNCH_LOCATION_TOP_MENU) {
+  } else if (location == BookmarkLaunchLocation::kTopMenu) {
     base::RecordAction(base::UserMetricsAction("TopMenu_Bookmarks_LaunchURL"));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Bookmarks.LaunchLocation", location,
-                            BOOKMARK_LAUNCH_LOCATION_LIMIT);
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.LaunchLocation", location);
 
   UMA_HISTOGRAM_ENUMERATION("Bookmarks.UsageCountPerProfileType", profile_type);
 }
@@ -66,13 +65,11 @@ void RecordBookmarkAppsPageOpen(BookmarkLaunchLocation location) {
 }
 
 void RecordBookmarkEdited(BookmarkLaunchLocation location) {
-  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EditLocation", location,
-                            BOOKMARK_LAUNCH_LOCATION_LIMIT);
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EditLocation", location);
 }
 
 void RecordBookmarkRemoved(BookmarkLaunchLocation location) {
-  UMA_HISTOGRAM_ENUMERATION("Bookmarks.RemovedLocation", location,
-                            BOOKMARK_LAUNCH_LOCATION_LIMIT);
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.RemovedLocation", location);
 }
 
 void RecordBookmarksAdded(const Profile* profile) {

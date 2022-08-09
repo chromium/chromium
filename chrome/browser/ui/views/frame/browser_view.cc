@@ -4325,8 +4325,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 
   if (command_id == IDC_BOOKMARK_THIS_TAB) {
     UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint",
-                              BOOKMARK_ENTRY_POINT_ACCELERATOR,
-                              BOOKMARK_ENTRY_POINT_LIMIT);
+                              BookmarkEntryPoint::kAccelerator);
   }
   if (command_id == IDC_NEW_TAB &&
       browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {

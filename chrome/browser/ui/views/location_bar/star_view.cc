@@ -84,20 +84,19 @@ void StarView::UpdateImpl() {
 }
 
 void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
-  BookmarkEntryPoint entry_point = BOOKMARK_ENTRY_POINT_STAR_MOUSE;
+  BookmarkEntryPoint entry_point = BookmarkEntryPoint::kStarMouse;
   switch (execute_source) {
     case EXECUTE_SOURCE_MOUSE:
-      entry_point = BOOKMARK_ENTRY_POINT_STAR_MOUSE;
+      entry_point = BookmarkEntryPoint::kStarMouse;
       break;
     case EXECUTE_SOURCE_KEYBOARD:
-      entry_point = BOOKMARK_ENTRY_POINT_STAR_KEY;
+      entry_point = BookmarkEntryPoint::kStarKey;
       break;
     case EXECUTE_SOURCE_GESTURE:
-      entry_point = BOOKMARK_ENTRY_POINT_STAR_GESTURE;
+      entry_point = BookmarkEntryPoint::kStarGesture;
       break;
   }
-  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point,
-                            BOOKMARK_ENTRY_POINT_LIMIT);
+  UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point);
 }
 
 void StarView::ExecuteCommand(ExecuteSource source) {

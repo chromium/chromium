@@ -17,51 +17,51 @@ struct BookmarkNodeData;
 // This enum is used for the Bookmarks.EntryPoint histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum BookmarkEntryPoint {
-  BOOKMARK_ENTRY_POINT_ACCELERATOR,
-  BOOKMARK_ENTRY_POINT_STAR_GESTURE,
-  BOOKMARK_ENTRY_POINT_STAR_KEY,
-  BOOKMARK_ENTRY_POINT_STAR_MOUSE,
+enum class BookmarkEntryPoint {
+  kAccelerator = 0,
+  kStarGesture = 1,
+  kStarKey = 2,
+  kStarMouse = 3,
 
-  BOOKMARK_ENTRY_POINT_LIMIT  // Keep this last.
+  kMaxValue = kStarMouse
 };
 
 // This enum is used for the Bookmarks.LaunchLocation histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum BookmarkLaunchLocation {
-  BOOKMARK_LAUNCH_LOCATION_NONE,
-  BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR = 0,
-  // BOOKMARK_LAUNCH_LOCATION_DETACHED_BAR = 1, (deprecated)
+enum class BookmarkLaunchLocation {
+  kNone,
+  kAttachedBar = 0,
+  // kDetachedBar = 1, (deprecated)
   // These two are kind of sub-categories of the bookmark bar. Generally
   // a launch from a context menu or subfolder could be classified in one of
   // the other two bar buckets, but doing so is difficult because the menus
   // don't know of their greater place in Chrome.
-  BOOKMARK_LAUNCH_LOCATION_BAR_SUBFOLDER = 2,
-  BOOKMARK_LAUNCH_LOCATION_CONTEXT_MENU = 3,
+  kSubfolder = 2,
+  kContextMenu = 3,
 
   // Bookmarks menu within app menu.
-  BOOKMARK_LAUNCH_LOCATION_APP_MENU = 4,
+  kAppMenu = 4,
   // Bookmark manager.
-  BOOKMARK_LAUNCH_LOCATION_MANAGER = 5,
+  kManager = 5,
   // Autocomplete suggestion.
-  BOOKMARK_LAUNCH_LOCATION_OMNIBOX = 6,
+  kOmnibox = 6,
   // System application menu (e.g. on Mac).
-  BOOKMARK_LAUNCH_LOCATION_TOP_MENU = 7,
+  kTopMenu = 7,
 
   // Bookmarks top level folder (i.e. bookmarks bar, other bookmarks) within the
   // side panel.
-  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_FOLDER = 8,
+  kSidePanelFolder = 8,
   // Bookmarks subfolder within the side panel.
-  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_SUBFOLDER = 9,
+  kSidePanelSubfolder = 9,
   // Reading list tab within the side panel.
-  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST = 10,
+  kSidePanelPendingList = 10,
   // Reading list bubble in the bookmarks bar.
-  BOOKMARK_LAUNCH_LOCATION_READING_LIST_DIALOG = 11,
+  kReadingListDialog = 11,
   // Context menu for a bookmark node in the side panel.
-  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU = 12,
+  kSidePanelContextMenu = 12,
 
-  BOOKMARK_LAUNCH_LOCATION_LIMIT  // Keep this last.
+  kMaxValue = kSidePanelContextMenu
 };
 
 // Records the launch of a bookmark for UMA purposes.

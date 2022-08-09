@@ -191,7 +191,7 @@ void ReadingListPageHandler::OpenURL(
   base::RecordAction(
       base::UserMetricsAction("SidePanel.ReadingList.Navigation"));
   RecordBookmarkLaunch(
-      BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST,
+      BookmarkLaunchLocation::kSidePanelPendingList,
       profile_metrics::GetBrowserProfileType(Profile::FromWebUI(web_ui_)));
 }
 

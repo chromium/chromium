@@ -1334,7 +1334,7 @@ void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
                                 ui::DispositionFromEventFlags(event.flags()),
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   page_navigator_->OpenURL(params);
-  RecordBookmarkAppsPageOpen(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
+  RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
@@ -1346,7 +1346,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   chrome::OpenAllIfAllowed(browser_, {node},
                            ui::DispositionFromEventFlags(event.flags()), false);
   RecordBookmarkLaunch(
-      BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR,
+      BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
 }
 
@@ -1356,11 +1356,11 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
   // opens all bookmarks in the folder in new tabs.
   if ((event.flags() & ui::EF_MIDDLE_MOUSE_BUTTON) ||
       (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
-    RecordBookmarkFolderLaunch(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
+    RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
     chrome::OpenAllIfAllowed(
         browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false);
   } else {
-    RecordBookmarkFolderOpen(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
+    RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
     const size_t start_index = (node == bookmark_model_->bookmark_bar_node())
                                    ? GetFirstHiddenNodeIndex()
                                    : 0;
@@ -1412,7 +1412,7 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
 
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       GetWidget(), browser_, browser_->profile(),
-      BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR, parent, nodes, close_on_remove);
+      BookmarkLaunchLocation::kAttachedBar, parent, nodes, close_on_remove);
   context_menu_->RunMenuAt(point, source_type);
 }
 

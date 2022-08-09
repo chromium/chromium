@@ -1249,7 +1249,7 @@ void AppMenu::CreateBookmarkMenu() {
   bookmark_menu_delegate_->Init(this, bookmark_menu_,
                                 model->bookmark_bar_node(), 0,
                                 BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                BOOKMARK_LAUNCH_LOCATION_APP_MENU);
+                                BookmarkLaunchLocation::kAppMenu);
 }
 
 size_t AppMenu::ModelIndexFromCommandId(int command_id) const {

@@ -51,7 +51,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             this,
             browser,
             browser->profile(),
-            BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU,
+            BookmarkLaunchLocation::kSidePanelContextMenu,
             bookmark->parent(),
             {bookmark}))) {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
@@ -142,8 +142,8 @@ void BookmarksPageHandler::OpenBookmark(
   chrome::OpenAllIfAllowed(browser, {bookmark_node}, open_location, false);
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
   RecordBookmarkLaunch(
-      parent_folder_depth > 0 ? BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_SUBFOLDER
-                              : BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_FOLDER,
+      parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
+                              : BookmarkLaunchLocation::kSidePanelFolder,
       profile_metrics::GetBrowserProfileType(browser->profile()));
 }
 

@@ -605,7 +605,7 @@ void RealboxHandler::OpenAutocompleteMatch(
 
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
   if (bookmark_model->IsBookmarked(match.destination_url)) {
-    RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX,
+    RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                          profile_metrics::GetBrowserProfileType(profile_));
   }
 

@@ -70,7 +70,7 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
     BookmarkLaunchLocation location,
     WindowOpenDisposition disposition) {
   switch (location) {
-    case BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR:
+    case BookmarkLaunchLocation::kAttachedBar:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return &kBookmarkBarNewBackgroundTab;
@@ -81,7 +81,7 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
         default:
           return nullptr;
       }
-    case BOOKMARK_LAUNCH_LOCATION_APP_MENU:
+    case BookmarkLaunchLocation::kAppMenu:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return &kAppMenuBookmarksNewBackgroundTab;
@@ -92,7 +92,7 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
         default:
           return nullptr;
       }
-    case BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU:
+    case BookmarkLaunchLocation::kSidePanelContextMenu:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return &kSidePanelBookmarksNewBackgroundTab;

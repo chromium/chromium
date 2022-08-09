@@ -36,7 +36,7 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
       bookmark_bar_(nullptr) {
   menu_delegate_->Init(this, nullptr, node, start_child_index,
                        BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                       BOOKMARK_LAUNCH_LOCATION_BAR_SUBFOLDER);
+                       BookmarkLaunchLocation::kSubfolder);
   int run_type = 0;
   if (for_drop)
     run_type |= views::MenuRunner::FOR_DROP;
