@@ -119,6 +119,9 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
   out_head->was_fetched_via_spdy = response.was_fetched_via_spdy;
   out_head->has_range_requested = response.has_range_requested;
   out_head->auth_challenge_info = response.auth_challenge_info;
+
+  // Constructed responses are always same-origin as the requesting client.
+  out_head->timing_allow_passed = true;
   SaveResponseHeaders(response, out_head);
 }
 
