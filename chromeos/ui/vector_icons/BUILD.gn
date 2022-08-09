@@ -52,6 +52,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "straighten.icon",
     "timer.icon",
     "translate.icon",
+    "unfloat_button.icon",
     "window_control_back.icon",
     "window_control_bottom_snapped.icon",
     "window_control_dezoom.icon",

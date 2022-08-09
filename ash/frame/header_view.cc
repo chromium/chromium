@@ -217,6 +217,15 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
   } else if (key == aura::client::kShowStateKey) {
     frame_header_->OnShowStateChanged(
         window->GetProperty(aura::client::kShowStateKey));
+  } else if (key == chromeos::kWindowStateTypeKey) {
+    // Float state is an ash specific state that changes the header UI. It isn't
+    // a show state so we need to watch the window state type key as well.
+    if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
+            chromeos::WindowStateType::kFloated ||
+        static_cast<chromeos::WindowStateType>(old) ==
+            chromeos::WindowStateType::kFloated) {
+      frame_header_->OnFloatStateChanged();
+    }
   }
 }
 

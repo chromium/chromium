@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Called when frame show state is changed.
   void OnShowStateChanged(ui::WindowShowState show_state);
 
+  void OnFloatStateChanged();
+
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
   void SetCenterButton(chromeos::FrameCenterButton* view);

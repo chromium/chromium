@@ -354,6 +354,24 @@ void FrameCaptionButtonContainerView::UpdateSizeButtonTooltip(
                         : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
 }
 
+void FrameCaptionButtonContainerView::UpdateFloatButton() {
+  // This may be called during widget initialization.
+  if (!float_button_ || !GetWidget())
+    return;
+
+  const bool floated = GetWidget()->GetNativeWindow()->GetProperty(
+                           kWindowStateTypeKey) == WindowStateType::kFloated;
+  float_button_->SetTooltipText(
+      floated
+          // TODO(sammiequon|shidi): Update this to the correct string once UX
+          // writing has a decision.
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
+          : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  SetButtonImage(
+      views::CAPTION_BUTTON_ICON_FLOAT,
+      floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
+}
+
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   if (custom_button_)
     custom_button_->SetPreferredSize(size);
@@ -542,22 +560,9 @@ void FrameCaptionButtonContainerView::FloatButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(Animate::kNo);
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-  aura::Window* window = GetWidget()->GetNativeWindow();
-  WindowStateType old_state = window->GetProperty(kWindowStateTypeKey);
-  // Toggle float current window.
-  FloatControllerBase::Get()->ToggleFloat(window);
-  UpdateCaptionButtonState(true);
 
-  // Update the tooltip if float/unfloat has been successful.
-  WindowStateType new_state = window->GetProperty(kWindowStateTypeKey);
-  if (new_state != old_state) {
-    float_button_->SetTooltipText(
-        new_state == WindowStateType::kFloated
-            // TODO(sammiequon|shidi): Update this to the correct string once UX
-            // writing has a decision.
-            ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
-            : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
-  }
+  // Toggle float current window.
+  FloatControllerBase::Get()->ToggleFloat(GetWidget()->GetNativeWindow());
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {

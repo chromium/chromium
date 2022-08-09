@@ -688,9 +688,6 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
   }
 
   if (key == chromeos::kWindowStateTypeKey) {
-    if (!chromeos::TabletState::Get()->InTabletMode())
-      return;
-
     // Update the window controls if we are entering or exiting float state.
     const bool enter_floated = IsFloated();
     const bool exit_floated = static_cast<chromeos::WindowStateType>(old) ==
@@ -698,7 +695,12 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     if (!enter_floated && !exit_floated)
       return;
 
+    if (frame_header_)
+      frame_header_->OnFloatStateChanged();
     ResetWindowControls();
+
+    if (!chromeos::TabletState::Get()->InTabletMode())
+      return;
 
     // Additionally updates immersive mode for PWA/SWA so that we show the title
     // bar when floated, and hide the title bar otherwise.

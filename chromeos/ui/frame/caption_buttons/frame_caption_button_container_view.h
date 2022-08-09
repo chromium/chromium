@@ -130,6 +130,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   void UpdateSizeButtonTooltip(bool use_restore_frame);
 
+  // Updates the float button's image and tooltip.
+  void UpdateFloatButton();
+
   // Sets the size of the buttons in this container.
   void SetButtonSize(const gfx::Size& size);
 
