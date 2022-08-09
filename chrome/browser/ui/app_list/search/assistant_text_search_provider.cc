@@ -55,6 +55,7 @@ class AssistantTextSearchResult : public ChromeSearchResult {
     SetResultType(ash::AppListSearchResultType::kAssistantText);
     SetMetricsType(ash::SearchResultType::ASSISTANT_OMNIBOX_RESULT);
     SetTitle(text);
+    SetDetails(l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT, text));
     SetIcon(IconInfo(

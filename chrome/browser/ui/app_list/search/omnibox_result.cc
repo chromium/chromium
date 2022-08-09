@@ -23,6 +23,7 @@
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/util.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -241,19 +242,23 @@ void OmniboxResult::UpdateTitleAndDetails() {
                                           search_result_->contents_type));
 
     if (IsRichEntity()) {
-      // Only set the details text for rich entities. This prevents default
-      // descriptions such as "Google Search" from being added.
       SetDetails(description_);
       SetDetailsTags(TagsForTextWithMatchTags(
           query_, description_, search_result_->description_type));
-    }
 
-    if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search)) {
+      // Append the search engine to the accessible name only.
       const std::u16string accessible_name =
           details().empty() ? title()
                             : base::StrCat({title(), u", ", details()});
       SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, accessible_name,
+          GetDefaultSearchEngineName(
+              TemplateURLServiceFactory::GetForProfile(profile_))));
+    } else if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search)) {
+      // For non-rich-entity results, put the search engine into the details
+      // field. Tags are not used since this does not change with the query.
+      SetDetails(l10n_util::GetStringFUTF16(
+          IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION,
           GetDefaultSearchEngineName(
               TemplateURLServiceFactory::GetForProfile(profile_))));
     }

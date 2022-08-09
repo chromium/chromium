@@ -63,6 +63,7 @@ class AssistantTextSearchProviderTest
     EXPECT_LT(index, LastResults().size());
     auto* result = LastResults().at(0).get();
     EXPECT_EQ(result->title(), base::UTF8ToUTF16(text));
+    EXPECT_EQ(result->details(), u"Google Assistant");
     EXPECT_EQ(result->id(), "googleassistant_text://" + text);
     EXPECT_EQ(result->accessible_name(),
               base::UTF8ToUTF16(text + ", Google Assistant"));

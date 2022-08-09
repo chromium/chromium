@@ -118,6 +118,16 @@ bool ImageSkiasEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
 }
 
 // Returns true if the given text vector has one text entry that equals the
+// given text, and no tags.
+bool IsSingletonTextVectorNoTags(
+    const std::vector<ash::SearchResultTextItem>& v,
+    const std::u16string& text) {
+  return v.size() == 1 &&
+         v[0].GetType() == ash::SearchResultTextItemType::kString &&
+         v[0].GetText() == text && v[0].GetTextTags().empty();
+}
+
+// Returns true if the given text vector has one text entry that equals the
 // given text, and tags that match the given tags.
 //
 // Would use an absl::Span to capture static array lengths, but absl isn't yet
@@ -460,21 +470,24 @@ TEST_F(OmniboxResultTest, RichEntityText) {
   EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
 }
 
-// Test that there is no description, but an accessible name, for search
-// results.
+// Test that search results put the search engine in the description, and have
+// no accessible name.
 TEST_F(OmniboxResultTest, SearchResultText) {
   // Uses the default example contents and description.
   const auto result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
 
-  // Title should be populated, but details shouldn't be.
+  // Title should be populated.
   EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
                                     kExampleContents,
                                     kExpectedExampleContentsTags));
-  EXPECT_TRUE(result->details_text_vector().empty());
+  // Details should contain the search engine. This test relies on the test
+  // environment having Google as the default search engine.
+  EXPECT_TRUE(IsSingletonTextVectorNoTags(result->details_text_vector(),
+                                          u"Google Search"));
 
-  // Accessible name should be set.
-  EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
+  // Accessible name should not be set.
+  EXPECT_TRUE(result->accessible_name().empty());
 }
 
 }  // namespace test
