@@ -324,6 +324,7 @@ vs-chromium-project.txt
 /tools/tryserver
 /tools/win/link_limiter/build
 /ui/file_manager/internal
+/ui/file_manager/tsconfig.json
 /ui/keyboard/keyboard_mojom_bindings.xml
 /ui/surface/surface.xml
 /ui/surface/surface_gpu_tests.xml
