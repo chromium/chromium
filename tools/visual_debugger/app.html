@@ -437,7 +437,7 @@
     });
 
     document.querySelector('#live').addEventListener('click', () => {
-      player.freezeFrame(DrawFrame.count());
+      player.freezeFrame(DrawFrame.frameBuffer.numFrames - 1);
       player.play();
       has_disconnected = false;
       live.setAttribute('style', 'visibility:hidden');
