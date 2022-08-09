@@ -695,6 +695,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // Does not show the dialog if the user has left the page. e.g. they may
       // open a new tab before browser is ready to show the dialog.
       if (!is_visible) {
+        fedcm_metrics_->RecordRequestTokenStatus(
+            TokenStatus::kRpPageNotVisible);
         CompleteRequest(FederatedAuthRequestResult::kError, "",
                         /*should_delay_callback=*/true);
         return;

@@ -41174,6 +41174,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="27" label="ManifestListTooBig"/>
   <int value="28" label="DisabledEmbargo"/>
   <int value="29" label="UserInterfaceTimedOut"/>
+  <int value="30" label="RpPageNotVisible"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
