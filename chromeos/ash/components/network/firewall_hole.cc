@@ -17,7 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -121,4 +121,4 @@ FirewallHole::FirewallHole(PortType type,
       interface_(interface),
       lifeline_fd_(std::move(lifeline_fd)) {}
 
-}  // namespace chromeos
+}  // namespace ash

@@ -146,7 +146,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
           listener_receiver,
       const ppapi::host::ReplyMessageContext& context,
       const PP_NetAddress_Private& net_address,
-      std::unique_ptr<chromeos::FirewallHole> hole);
+      std::unique_ptr<ash::FirewallHole> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void StartPendingSend();
   void Close();
@@ -227,8 +227,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::FirewallHole,
-                  content::BrowserThread::DeleteOnUIThread>
+  std::unique_ptr<ash::FirewallHole, content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
   // Allows for cancellation of opening a hole in the firewall in the case the
   // network service crashes.

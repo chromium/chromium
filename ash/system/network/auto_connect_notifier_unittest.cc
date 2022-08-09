@@ -46,9 +46,9 @@ class AutoConnectNotifierTest : public AshTestBase {
   ~AutoConnectNotifierTest() override = default;
 
   void SetUp() override {
-    chromeos::SystemTokenCertDbStorage::Initialize();
-    chromeos::NetworkCertLoader::Initialize();
-    chromeos::NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
+    SystemTokenCertDbStorage::Initialize();
+    NetworkCertLoader::Initialize();
+    NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
     network_config_helper_ = std::make_unique<
@@ -75,8 +75,8 @@ class AutoConnectNotifierTest : public AshTestBase {
     AshTestBase::TearDown();
     network_config_helper_.reset();
     network_handler_test_helper_.reset();
-    chromeos::NetworkCertLoader::Shutdown();
-    chromeos::SystemTokenCertDbStorage::Shutdown();
+    NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
   }
 
   void NotifyConnectToNetworkRequested() {

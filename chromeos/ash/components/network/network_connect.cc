@@ -25,7 +25,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -554,4 +554,4 @@ NetworkConnect::NetworkConnect() = default;
 
 NetworkConnect::~NetworkConnect() = default;
 
-}  // namespace chromeos
+}  // namespace ash

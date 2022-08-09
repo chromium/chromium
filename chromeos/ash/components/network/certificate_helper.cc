@@ -16,8 +16,7 @@
 #include "net/cert/nss_cert_database_chromeos.h"
 #include "net/cert/x509_util_nss.h"
 
-namespace chromeos {
-namespace certificate {
+namespace ash::certificate {
 
 namespace {
 
@@ -93,5 +92,4 @@ std::string GetCertAsciiNameOrNickname(CERTCertificate* cert_handle) {
   return Stringize(CERT_GetCommonName(&cert_handle->subject), alternative_text);
 }
 
-}  // namespace certificate
-}  // namespace chromeos
+}  // namespace ash::certificate

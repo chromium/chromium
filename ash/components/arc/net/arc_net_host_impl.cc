@@ -83,7 +83,7 @@ ash::NetworkProfileHandler* GetNetworkProfileHandler() {
   return chromeos::NetworkHandler::Get()->network_profile_handler();
 }
 
-const chromeos::NetworkProfile* GetNetworkProfile() {
+const ash::NetworkProfile* GetNetworkProfile() {
   return GetNetworkProfileHandler()->GetProfileForUserhash(
       chromeos::LoginState::Get()->primary_user_hash());
 }

@@ -17,7 +17,7 @@
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class SystemTokenCertDbStorageTest : public testing::Test {
  public:
@@ -200,4 +200,4 @@ TEST_F(SystemTokenCertDbStorageTest, RequestingDatabaseFailsAfterReset) {
       get_system_token_cert_db_callback_wrapper_2.IsDbRetrievalSucceeded());
 }
 
-}  // namespace chromeos
+}  // namespace ash

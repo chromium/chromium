@@ -41,7 +41,7 @@ const char kCellularGuid[] = "cellular1_guid";
 const char kNotificationId[] = "chrome://settings/internet/mobile_data";
 const char kTestUserName[] = "test-user@example.com";
 
-class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
+class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
  public:
   NetworkConnectTestDelegate() {}
 
@@ -82,13 +82,13 @@ class MobileDataNotificationsTest : public testing::Test {
     SetupNetworkShillState();
     base::RunLoop().RunUntilIdle();
     network_connect_delegate_ = std::make_unique<NetworkConnectTestDelegate>();
-    chromeos::NetworkConnect::Initialize(network_connect_delegate_.get());
+    ash::NetworkConnect::Initialize(network_connect_delegate_.get());
     mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
   }
 
   void TearDown() override {
     mobile_data_notifications_.reset();
-    chromeos::NetworkConnect::Shutdown();
+    ash::NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
     profile_manager_.reset();
     user_manager_enabler_.reset();
@@ -180,7 +180,7 @@ TEST_F(MobileDataNotificationsTest, SimpleSetup) {
 TEST_F(MobileDataNotificationsTest, NotificationAlreadyShown) {
   pref_service()->SetBoolean(prefs::kShowMobileDataNotification, false);
 
-  chromeos::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
+  ash::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
   // Wait for async ConnectToNetworkId to take effect.
   base::RunLoop().RunUntilIdle();
 
@@ -191,7 +191,7 @@ TEST_F(MobileDataNotificationsTest, NotificationAlreadyShown) {
 TEST_F(MobileDataNotificationsTest, DisplayNotification) {
   pref_service()->SetBoolean(prefs::kShowMobileDataNotification, true);
 
-  chromeos::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
+  ash::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
   // Wait for async ConnectToNetworkId to take effect.
   base::RunLoop().RunUntilIdle();
 
@@ -202,7 +202,7 @@ TEST_F(MobileDataNotificationsTest, DisplayNotification) {
 TEST_F(MobileDataNotificationsTest, TogglesPref) {
   pref_service()->SetBoolean(prefs::kShowMobileDataNotification, true);
 
-  chromeos::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
+  ash::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
   // Wait for async ConnectToNetworkId to take effect.
   base::RunLoop().RunUntilIdle();
 
@@ -213,7 +213,7 @@ TEST_F(MobileDataNotificationsTest, TogglesPref) {
 // connected.
 TEST_F(MobileDataNotificationsTest, SessionUpdateDisplayNotification) {
   // Set up cellular network, don't trigger notification.
-  chromeos::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
+  ash::NetworkConnect::Get()->ConnectToNetworkId(kCellularGuid);
   pref_service()->SetBoolean(prefs::kShowMobileDataNotification, false);
   // Process network observer update.
   base::RunLoop().RunUntilIdle();

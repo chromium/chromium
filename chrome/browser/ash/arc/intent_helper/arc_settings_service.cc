@@ -568,7 +568,7 @@ void ArcSettingsServiceImpl::SyncLocationServiceEnabled() const {
 // multi-network support so we should sync per-network proxy configuration.
 void ArcSettingsServiceImpl::SyncProxySettings() const {
   std::unique_ptr<ProxyConfigDictionary> proxy_config_dict =
-      chromeos::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
+      ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
           GetPrefs(), g_browser_process->local_state());
 
   ProxyPrefs::ProxyMode mode;

@@ -546,7 +546,7 @@ void CertStoreServiceTest::CheckInstalledCerts(
       std::string hex_encoded_id =
           base::HexEncode(cert_id.data(), cert_id.size());
       EXPECT_EQ(hex_encoded_id,
-                chromeos::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
+                ash::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
                     nss_cert.get(), &slot_id));
       EXPECT_TRUE(PlaceholdersContainIdAndSlot(cert_id, cert.test_data.slot));
       break;

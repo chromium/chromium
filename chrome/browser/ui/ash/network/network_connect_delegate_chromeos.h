@@ -18,8 +18,7 @@ namespace chromeos {
 class NetworkStateNotifier;
 }
 
-class NetworkConnectDelegateChromeOS
-    : public chromeos::NetworkConnect::Delegate {
+class NetworkConnectDelegateChromeOS : public ash::NetworkConnect::Delegate {
  public:
   NetworkConnectDelegateChromeOS();
 

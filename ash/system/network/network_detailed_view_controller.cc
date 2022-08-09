@@ -181,7 +181,7 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
           UserMetricsAction("StatusArea_Network_ConnectConfigured"));
       LogUserNetworkEvent(*network.get());
       RecordNetworkRowClickedAction(NetworkRowClickedAction::kConnectToNetwork);
-      chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
+      NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;
     }
   }

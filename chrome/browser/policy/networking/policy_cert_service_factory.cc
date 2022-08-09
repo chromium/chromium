@@ -33,8 +33,7 @@ namespace {
 // Returns the PolicyCertificateProvider that should be used for |profile|.
 // May return nullptr, which should be treated as no policy-provided
 // certificates set.
-chromeos::PolicyCertificateProvider* GetPolicyCertificateProvider(
-    Profile* profile) {
+ash::PolicyCertificateProvider* GetPolicyCertificateProvider(Profile* profile) {
   if (ash::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return g_browser_process->platform_part()
         ->browser_policy_connector_ash()
@@ -47,7 +46,7 @@ chromeos::PolicyCertificateProvider* GetPolicyCertificateProvider(
 KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  chromeos::PolicyCertificateProvider* policy_certificate_provider =
+  ash::PolicyCertificateProvider* policy_certificate_provider =
       GetPolicyCertificateProvider(profile);
   if (!policy_certificate_provider)
     return nullptr;
@@ -87,7 +86,7 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
 KeyedService* BuildServiceInstanceLacros(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  chromeos::PolicyCertificateProvider* policy_certificate_provider =
+  ash::PolicyCertificateProvider* policy_certificate_provider =
       UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
   if (!policy_certificate_provider)
     return nullptr;

@@ -275,7 +275,7 @@ void PepperTCPServerSocketMessageFilter::OpenFirewallHole(
 
 void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
     const ppapi::host::ReplyMessageContext& context,
-    std::unique_ptr<chromeos::FirewallHole> hole) {
+    std::unique_ptr<ash::FirewallHole> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";

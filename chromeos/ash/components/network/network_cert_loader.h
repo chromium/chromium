@@ -22,7 +22,7 @@ namespace net {
 class NSSCertDatabase;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for loading certificates once the TPM is
 // initialized. It is expected to be constructed on the UI thread and public
@@ -276,12 +276,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   base::WeakPtrFactory<NetworkCertLoader> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::NetworkCertLoader;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkCertLoader;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CERT_LOADER_H_

@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 
 std::string NetworkProfile::ToDebugString() const {
   if (type() == NetworkProfile::TYPE_SHARED) {
@@ -22,4 +22,4 @@ std::string NetworkProfile::ToDebugString() const {
   return std::string();
 }
 
-}  // namespace chromeos
+}  // namespace ash

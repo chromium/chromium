@@ -19,7 +19,7 @@
 #include "components/onc/onc_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -272,4 +272,4 @@ const ProfilePolicies::NetworkPolicy* ProfilePolicies::FindPolicy(
   return iter != guid_to_policy_.end() ? &(iter->second) : nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

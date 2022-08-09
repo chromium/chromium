@@ -11,7 +11,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 // Required to register an observer from the constructor of
 // net::NSSCertDatabase.
@@ -89,4 +89,4 @@ TEST_F(CertificateHelperTest, GetTypeServer) {
   EXPECT_EQ(net::SERVER_CERT, certificate::GetCertType(cert.get()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

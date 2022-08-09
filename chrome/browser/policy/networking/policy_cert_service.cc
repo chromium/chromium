@@ -36,7 +36,7 @@ PolicyCertService::~PolicyCertService() {
 
 PolicyCertService::PolicyCertService(
     Profile* profile,
-    chromeos::PolicyCertificateProvider* policy_certificate_provider,
+    ash::PolicyCertificateProvider* policy_certificate_provider,
     bool may_use_profile_wide_trust_anchors)
     : profile_(profile),
       policy_certificate_provider_(policy_certificate_provider),

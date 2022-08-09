@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // ipconfig types (see flimflam/files/doc/ipconfig-api.txt)
 enum IPConfigType {
@@ -44,6 +44,6 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkIPConfig {
 
 typedef std::vector<NetworkIPConfig> NetworkIPConfigVector;
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_IP_CONFIG_H_

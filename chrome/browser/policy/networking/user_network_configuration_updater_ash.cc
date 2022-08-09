@@ -49,9 +49,8 @@ void GetNssCertDatabaseOnIOThread(
 
 UserNetworkConfigurationUpdaterAsh::~UserNetworkConfigurationUpdaterAsh() {
   // NetworkCertLoader may be not initialized in tests.
-  if (chromeos::NetworkCertLoader::IsInitialized()) {
-    chromeos::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(
-        nullptr);
+  if (ash::NetworkCertLoader::IsInitialized()) {
+    ash::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(nullptr);
   }
 }
 
@@ -126,8 +125,8 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
   // primary profile. This assumes that a |UserNetworkConfigurationUpdaterAsh|
   // is only created for the primary profile. NetworkCertLoader may be not
   // initialized in tests.
-  if (chromeos::NetworkCertLoader::IsInitialized())
-    chromeos::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(this);
+  if (ash::NetworkCertLoader::IsInitialized())
+    ash::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(this);
 
   // Set profile-wide expansions for policy networks (i.e. those that apply to
   // all networks in this profile). Note that this does currently not apply

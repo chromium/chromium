@@ -207,8 +207,7 @@ TEST_F(CertificateManagerModelTest, ListsClientCertsFromPlatform) {
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
-class FakePolicyCertificateProvider
-    : public chromeos::PolicyCertificateProvider {
+class FakePolicyCertificateProvider : public ash::PolicyCertificateProvider {
  public:
   void AddPolicyProvidedCertsObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);

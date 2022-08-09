@@ -722,8 +722,7 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
     ASSERT_EQ(network->guid(),
               FakeShillManagerClient::kFakeEthernetNetworkGuid);
 
-    chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict,
-                                                     *network);
+    proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
     base::RunLoop().RunUntilIdle();
   }
 

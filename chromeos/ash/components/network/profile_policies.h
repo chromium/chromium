@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Stores network policies for a shill profile.
 // Understands some ONC (OpenNetworkConfiguration) concepts such as
@@ -200,11 +200,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   base::flat_map<std::string, std::string> profile_wide_expansions_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::ProfilePolicies;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PROFILE_POLICIES_H_

@@ -58,7 +58,7 @@ constexpr char kNetworkConnectionDetails[] =
 const std::string kNetworkTechnologyWiFi = "WiFi";
 const std::string kNetworkTechnologyMobile = "Mobile";
 
-class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
+class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
  public:
   NetworkConnectTestDelegate() {}
 
@@ -96,7 +96,7 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
 
     // Creating a service here, since we would be testing that wifi,
     // networks which can be connected to are actually connected to. This
-    // checks that chromeos::NetworkConnect eventually connects us to the
+    // checks that NetworkConnect eventually connects us to the
     // network.
     wifi_service_path_ =
         network_state_helper()->ConfigureService(base::StringPrintf(
@@ -106,7 +106,7 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
             kWifi));
 
     network_connect_delegate_ = std::make_unique<NetworkConnectTestDelegate>();
-    chromeos::NetworkConnect::Initialize(network_connect_delegate_.get());
+    NetworkConnect::Initialize(network_connect_delegate_.get());
     AshTestBase::SetUp();
 
     feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
@@ -119,7 +119,7 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
   void TearDown() override {
     network_detailed_view_controller_.reset();
     AshTestBase::TearDown();
-    chromeos::NetworkConnect::Shutdown();
+    NetworkConnect::Shutdown();
     chromeos::NetworkHandler::Shutdown();
     network_connect_delegate_.reset();
   }

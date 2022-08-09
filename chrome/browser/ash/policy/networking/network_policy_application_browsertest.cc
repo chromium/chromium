@@ -217,14 +217,14 @@ class ScopedNetworkPolicyApplicationObserver
 };
 
 class ScopedNetworkCertLoaderRefreshWaiter
-    : public chromeos::NetworkCertLoader::Observer {
+    : public ash::NetworkCertLoader::Observer {
  public:
   ScopedNetworkCertLoaderRefreshWaiter() {
-    chromeos::NetworkCertLoader::Get()->AddObserver(this);
+    ash::NetworkCertLoader::Get()->AddObserver(this);
   }
 
   ~ScopedNetworkCertLoaderRefreshWaiter() override {
-    chromeos::NetworkCertLoader::Get()->RemoveObserver(this);
+    ash::NetworkCertLoader::Get()->RemoveObserver(this);
   }
 
   void OnCertificatesLoaded() override { run_loop_.Quit(); }
@@ -339,8 +339,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
                   const std::string& key_filename) {
     // Before importing, configure NetworkCertLoader to assume that all
     // certificates can be used for network authentication.
-    chromeos::NetworkCertLoader::Get()
-        ->ForceAvailableForNetworkAuthForTesting();
+    ash::NetworkCertLoader::Get()->ForceAvailableForNetworkAuthForTesting();
 
     net::ScopedCERTCertificate cert;
     // Import testing key pair and certificate.

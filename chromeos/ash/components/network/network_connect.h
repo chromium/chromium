@@ -8,14 +8,14 @@
 #include <string>
 
 #include "base/component_export.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_type_pattern.h"
 
 namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
+
+class NetworkTypePattern;
 
 // NetworkConnect is a state machine designed to handle the complex UI flows
 // associated with connecting to a network (and related tasks). Any showing
@@ -81,9 +81,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // Enables or disables a network technology. If |technology| refers to
   // cellular and the device cannot be enabled due to a SIM lock, this function
   // will launch the SIM unlock dialog.
-  virtual void SetTechnologyEnabled(
-      const chromeos::NetworkTypePattern& technology,
-      bool enabled_state) = 0;
+  virtual void SetTechnologyEnabled(const NetworkTypePattern& technology,
+                                    bool enabled_state) = 0;
 
   // Determines whether or not a network requires a connection to activate or
   // setup and either shows a notification or opens the mobile setup dialog.
@@ -115,11 +114,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   NetworkConnect();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash
-namespace ash {
-using ::chromeos::NetworkConnect;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkConnect;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECT_H_

@@ -17,7 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kFixedPacUrl[] = "http://fixed/";
@@ -123,4 +123,4 @@ TEST_F(ProxyConfigServiceImplTest, UsesNestedProxyConfigService) {
   proxy_tracker.DetachFromPrefService();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,8 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -18,7 +16,11 @@ namespace dbus {
 class ObjectPath;
 }
 
-namespace ash::cellular_setup {
+namespace ash {
+
+class CellularESimProfile;
+
+namespace cellular_setup {
 
 class Euicc;
 class ESimManager;
@@ -117,6 +119,7 @@ class ESimProfile : public mojom::ESimProfile {
   base::WeakPtrFactory<ESimProfile> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::cellular_setup
+}  // namespace cellular_setup
+}  // namespace ash
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_PROFILE_H_

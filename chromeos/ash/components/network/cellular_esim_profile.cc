@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Keys used by ToDictionaryValue() and FromDictionaryValue().
@@ -116,4 +116,4 @@ bool CellularESimProfile::operator!=(const CellularESimProfile& other) const {
   return !(*this == other);
 }
 
-}  // namespace chromeos
+}  // namespace ash

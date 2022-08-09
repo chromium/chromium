@@ -11,7 +11,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
 
-using chromeos::FirewallHole;
+using ::ash::FirewallHole;
 using content::BrowserContext;
 
 namespace extensions {

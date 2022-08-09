@@ -11,8 +11,7 @@
 #include "base/component_export.h"
 #include "net/cert/cert_type.h"
 
-namespace chromeos {
-namespace certificate {
+namespace ash::certificate {
 
 // Selected functions from chrome/common/net/x509_certificate_model.cc
 
@@ -50,12 +49,6 @@ std::string GetCertAsciiSubjectCommonName(CERTCertificate* cert_handle);
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string GetCertAsciiNameOrNickname(CERTCertificate* cert_handle);
 
-}  // namespace certificate
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace certificate = ::chromeos::certificate;
-}
+}  // namespace ash::certificate
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CERTIFICATE_HELPER_H_

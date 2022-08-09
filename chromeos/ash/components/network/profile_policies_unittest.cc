@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -584,4 +584,4 @@ TEST(ProfilePoliciesTest, SetResolvedClientCertificateUnknownGuid) {
   EXPECT_FALSE(change_had_effect);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -26,7 +26,7 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -120,4 +120,4 @@ void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,
 
 }  // namespace proxy_config
 
-}  // namespace chromeos
+}  // namespace ash

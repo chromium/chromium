@@ -194,8 +194,8 @@ void NetworkSettingsServiceAsh::DetermineEffectiveProxy() {
   if (!pref_service)
     return;
   crosapi::mojom::ProxyConfigPtr new_proxy_config = ProxyConfigToCrosapiProxy(
-      chromeos::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
-          pref_service, local_state_)
+      ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(pref_service,
+                                                                  local_state_)
           .get(),
       cached_wpad_url_);
 

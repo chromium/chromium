@@ -24,7 +24,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class FakePolicyCertificateProvider : public PolicyCertificateProvider {
@@ -873,4 +873,4 @@ TEST_F(NetworkCertLoaderTest, NoUpdateWhenShuttingDown) {
   ASSERT_EQ(0U, GetAndResetCertificatesLoadedEventsCount());
 }
 
-}  // namespace chromeos
+}  // namespace ash

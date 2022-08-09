@@ -24,10 +24,13 @@ class BrowserContext;
 }  // namespace content
 
 #if BUILDFLAG(IS_CHROMEOS)
+namespace ash {
+class PolicyCertificateProvider;
+}
+
 namespace chromeos {
 class CertificateProvider;
-class PolicyCertificateProvider;
-}  // namespace chromeos
+}
 #endif
 
 // CertificateManagerModel provides the data to be displayed in the certificate
@@ -126,8 +129,7 @@ class CertificateManagerModel {
   struct Params {
 #if BUILDFLAG(IS_CHROMEOS)
     // May be nullptr.
-    raw_ptr<chromeos::PolicyCertificateProvider> policy_certs_provider =
-        nullptr;
+    raw_ptr<ash::PolicyCertificateProvider> policy_certs_provider = nullptr;
     // May be nullptr.
     std::unique_ptr<chromeos::CertificateProvider>
         extension_certificate_provider;

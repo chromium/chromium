@@ -91,8 +91,8 @@ bool IsLoopbackAddress(const net::IPAddress& address) {
 }  // namespace
 
 void OpenFirewallHole(const net::IPEndPoint& address,
-                      chromeos::FirewallHole::PortType type,
-                      chromeos::FirewallHole::OpenCallback callback) {
+                      ash::FirewallHole::PortType type,
+                      ash::FirewallHole::OpenCallback callback) {
   if (IsLoopbackAddress(address.address())) {
     std::move(callback).Run(nullptr);
     return;
@@ -103,19 +103,19 @@ void OpenFirewallHole(const net::IPEndPoint& address,
   // can be resolved by the address, but the best solution would be to update
   // firewalld to allow filtering by destination address, not just destination
   // port. iptables already support it.
-  chromeos::FirewallHole::Open(type, address.port(), std::string(),
-                               std::move(callback));
+  ash::FirewallHole::Open(type, address.port(), std::string(),
+                          std::move(callback));
 }
 
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         chromeos::FirewallHole::OpenCallback callback) {
-  OpenFirewallHole(address, chromeos::FirewallHole::PortType::TCP,
+                         ash::FirewallHole::OpenCallback callback) {
+  OpenFirewallHole(address, ash::FirewallHole::PortType::TCP,
                    std::move(callback));
 }
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         chromeos::FirewallHole::OpenCallback callback) {
-  OpenFirewallHole(address, chromeos::FirewallHole::PortType::UDP,
+                         ash::FirewallHole::OpenCallback callback) {
+  OpenFirewallHole(address, ash::FirewallHole::PortType::UDP,
                    std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

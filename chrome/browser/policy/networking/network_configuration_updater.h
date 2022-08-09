@@ -34,7 +34,7 @@ class PolicyMap;
 // (that will be propagated to the network service). Provides entry points for
 // handling client certificates and network configurations in subclasses.
 // Does not handle proxy settings.
-class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
+class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
                                     public PolicyService::Observer {
  public:
   NetworkConfigurationUpdater(const NetworkConfigurationUpdater&) = delete;
@@ -51,11 +51,11 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
 
   // The observer interface sends notifications about changes in server and
   // authority certificates.
-  // chromeos::PolicyCertificateProvider:
+  // ash::PolicyCertificateProvider:
   void AddPolicyProvidedCertsObserver(
-      chromeos::PolicyCertificateProvider::Observer* observer) override;
+      ash::PolicyCertificateProvider::Observer* observer) override;
   void RemovePolicyProvidedCertsObserver(
-      chromeos::PolicyCertificateProvider::Observer* observer) override;
+      ash::PolicyCertificateProvider::Observer* observer) override;
   net::CertificateList GetAllServerAndAuthorityCertificates(
       const chromeos::onc::CertificateScope& scope) const override;
   net::CertificateList GetAllAuthorityCertificates(
@@ -149,8 +149,8 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
 
   // Observer list for notifying about ONC-provided server and CA certificate
   // changes.
-  base::ObserverList<chromeos::PolicyCertificateProvider::Observer,
-                     true>::Unchecked observer_list_;
+  base::ObserverList<ash::PolicyCertificateProvider::Observer, true>::Unchecked
+      observer_list_;
 };
 
 }  // namespace policy

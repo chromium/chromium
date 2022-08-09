@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
   CellularESimProfile profile(CellularESimProfile::State::kPending,
@@ -48,4 +48,4 @@ TEST(CellularESimProfileTest, InvalidDictionary) {
   EXPECT_FALSE(from_dictionary);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -17,7 +17,7 @@ NetworkingPrivateUIDelegateChromeOS::~NetworkingPrivateUIDelegateChromeOS() {}
 
 void NetworkingPrivateUIDelegateChromeOS::ShowAccountDetails(
     const std::string& guid) const {
-  chromeos::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
+  ash::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
 }  // namespace extensions

@@ -10,8 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/smb_client/discovery/netbios_client_interface.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/ash/components/network/firewall_hole.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -28,6 +26,9 @@ class NetworkContext;
 }  // namespace network
 
 namespace ash {
+
+class FirewallHole;
+
 namespace smb_client {
 
 // NetBiosClient handles a NetBios Name Query Request.

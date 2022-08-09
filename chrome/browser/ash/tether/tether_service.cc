@@ -108,7 +108,7 @@ TetherService::TetherService(
       notification_presenter_(
           std::make_unique<chromeos::tether::TetherNotificationPresenter>(
               profile_,
-              chromeos::NetworkConnect::Get())),
+              NetworkConnect::Get())),
       gms_core_notifications_state_tracker_(
           std::make_unique<GmsCoreNotificationsStateTrackerImpl>()),
       tether_host_fetcher_(
@@ -156,7 +156,7 @@ void TetherService::StartTetherIfPossible() {
       gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
       network_state_handler_,
       chromeos::NetworkHandler::Get()->managed_network_configuration_handler(),
-      chromeos::NetworkConnect::Get(),
+      NetworkConnect::Get(),
       chromeos::NetworkHandler::Get()->network_connection_handler(), adapter_,
       session_manager_);
 }

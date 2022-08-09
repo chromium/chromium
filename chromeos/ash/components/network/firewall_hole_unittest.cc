@@ -14,8 +14,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::chromeos::FakePermissionBrokerClient;
 
 void CopyFirewallHole(base::RunLoop* run_loop,
                       std::unique_ptr<FirewallHole>* out_hole,
@@ -86,4 +88,4 @@ TEST_F(FirewallHoleTest, DenyUdpPortAccess) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

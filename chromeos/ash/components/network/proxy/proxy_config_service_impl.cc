@@ -26,7 +26,7 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -281,4 +281,4 @@ void ProxyConfigServiceImpl::DetermineEffectiveConfigFromDefaultNetwork() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

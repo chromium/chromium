@@ -43,8 +43,8 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   ~CellularSetupNotifierTest() override = default;
 
   void SetUp() override {
-    chromeos::SystemTokenCertDbStorage::Initialize();
-    chromeos::NetworkCertLoader::Initialize();
+    SystemTokenCertDbStorage::Initialize();
+    NetworkCertLoader::Initialize();
     chromeos::shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
@@ -69,8 +69,8 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     chromeos::NetworkHandler::Shutdown();
     hermes_clients::Shutdown();
     chromeos::shill_clients::Shutdown();
-    chromeos::NetworkCertLoader::Shutdown();
-    chromeos::SystemTokenCertDbStorage::Shutdown();
+    NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
   }
 
   // Returns the cellular setup notification if it is shown, and null if it is

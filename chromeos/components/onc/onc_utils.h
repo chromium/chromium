@@ -126,6 +126,7 @@ bool ResolveServerCertRefsInNetwork(const CertPEMsByGUIDMap& certs_by_guid,
 
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
 namespace ash::onc {
+using ::chromeos::onc::ExpandStringsInOncObject;
 using ::chromeos::onc::FillInHexSSIDField;
 using ::chromeos::onc::FillInHexSSIDFieldsInOncObject;
 using ::chromeos::onc::MaskCredentialsInOncObject;

@@ -28,7 +28,7 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -471,4 +471,4 @@ void PolicyApplicator::NotifyConfigurationHandlerAndFinish() {
   handler_->OnPoliciesApplied(profile_, new_cellular_policy_guids_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

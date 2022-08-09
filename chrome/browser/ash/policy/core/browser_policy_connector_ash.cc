@@ -257,8 +257,8 @@ void BrowserPolicyConnectorAsh::Init(
           ash::CrosSettings::Get(),
           DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher());
   // NetworkCertLoader may be not initialized in tests.
-  if (chromeos::NetworkCertLoader::IsInitialized()) {
-    chromeos::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(
+  if (ash::NetworkCertLoader::IsInitialized()) {
+    ash::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(
         device_network_configuration_updater_.get());
   }
 
@@ -345,9 +345,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   system_proxy_handler_.reset();
 
   // NetworkCertLoader may be not initialized in tests.
-  if (chromeos::NetworkCertLoader::IsInitialized()) {
-    chromeos::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(
-        nullptr);
+  if (ash::NetworkCertLoader::IsInitialized()) {
+    ash::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(nullptr);
   }
   device_network_configuration_updater_.reset();
 

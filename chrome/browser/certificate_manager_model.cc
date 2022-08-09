@@ -304,7 +304,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
 #if BUILDFLAG(IS_CHROMEOS)
 // Provides certificates installed through enterprise policy.
 class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
-                          chromeos::PolicyCertificateProvider::Observer {
+                          ash::PolicyCertificateProvider::Observer {
  public:
   // Defines which policy-provided certificates this CertsSourcePolicy instance
   // should yield.
@@ -318,7 +318,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
   };
 
   CertsSourcePolicy(base::RepeatingClosure certs_source_updated_callback,
-                    chromeos::PolicyCertificateProvider* policy_certs_provider,
+                    ash::PolicyCertificateProvider* policy_certs_provider,
                     Mode mode)
       : CertsSource(certs_source_updated_callback),
         policy_certs_provider_(policy_certs_provider),
@@ -333,7 +333,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
     policy_certs_provider_->RemovePolicyProvidedCertsObserver(this);
   }
 
-  // chromeos::PolicyCertificateProvider::Observer
+  // ash::PolicyCertificateProvider::Observer
   void OnPolicyProvidedCertsChanged() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Refresh();
@@ -400,7 +400,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
     SetCertInfos(std::move(cert_infos));
   }
 
-  raw_ptr<chromeos::PolicyCertificateProvider> policy_certs_provider_;
+  raw_ptr<ash::PolicyCertificateProvider> policy_certs_provider_;
   Mode mode_;
 };
 

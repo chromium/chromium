@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -131,4 +131,4 @@ std::string NetworkUIData::GetONCSourceAsString() const {
   return EnumToString(kONCSourceTable, onc_source_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

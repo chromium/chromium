@@ -119,8 +119,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the class is migrated
-using ::chromeos::ProxyConfigServiceImpl;
 using ::content::BrowserThread;
 
 // A string pref that gets set when a device local account is removed but a

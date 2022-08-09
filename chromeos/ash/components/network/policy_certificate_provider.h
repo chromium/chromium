@@ -17,7 +17,7 @@ class X509Certificate;
 using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 }  // namespace net
 
-namespace chromeos {
+namespace ash {
 
 // An interface for a class which makes server and authority certificates
 // available from enterprise policy. Clients of this interface can register as
@@ -70,6 +70,6 @@ class PolicyCertificateProvider {
       const = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_

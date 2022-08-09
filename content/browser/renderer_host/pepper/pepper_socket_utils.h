@@ -45,10 +45,10 @@ bool CanUseSocketAPIs(bool external_plugin,
 
 // Returns true if the open operation is in progress.
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         chromeos::FirewallHole::OpenCallback callback);
+                         ash::FirewallHole::OpenCallback callback);
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         chromeos::FirewallHole::OpenCallback callback);
+                         ash::FirewallHole::OpenCallback callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Annotations for TCP and UDP network requests. Defined here to make it easier

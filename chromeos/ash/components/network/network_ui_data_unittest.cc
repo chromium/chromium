@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(NetworkUIDataTest, ONCSource) {
   base::Value ui_data_dict(base::Value::Type::DICTIONARY);
@@ -30,4 +30,4 @@ TEST(NetworkUIDataTest, ONCSource) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

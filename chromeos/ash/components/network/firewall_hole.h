@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class works with the Chrome OS permission broker to open a port in the
 // system firewall. It is closed on destruction.
@@ -58,11 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FirewallHole {
   base::ScopedFD lifeline_fd_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FirewallHole;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_

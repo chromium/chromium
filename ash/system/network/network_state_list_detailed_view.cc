@@ -297,7 +297,7 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
         RecordNetworkRowClickedAction(
             NetworkRowClickedAction::kConnectToNetwork);
       }
-      chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
+      NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;
     }
   }

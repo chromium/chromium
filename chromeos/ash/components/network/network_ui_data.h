@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Helper for accessing and setting values in the network's UI data dictionary.
 // Accessing values is done via static members that take the network as an
@@ -51,11 +51,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   base::Value user_settings_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::NetworkUIData;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UI_DATA_H_

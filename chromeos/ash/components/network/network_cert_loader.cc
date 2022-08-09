@@ -28,7 +28,7 @@
 #include "net/cert/nss_cert_database_chromeos.h"
 #include "net/cert/x509_util_nss.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -591,4 +591,4 @@ void NetworkCertLoader::OnPolicyProvidedCertsChanged() {
   UpdateCertificates();
 }
 
-}  // namespace chromeos
+}  // namespace ash

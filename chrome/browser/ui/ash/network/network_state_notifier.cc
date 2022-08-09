@@ -642,7 +642,7 @@ void NetworkStateNotifier::ShowSimUnlockSettings() {
 
 void NetworkStateNotifier::ShowCarrierAccountDetail(
     const std::string& network_id) {
-  NetworkConnect::Get()->ShowCarrierAccountDetail(network_id);
+  ash::NetworkConnect::Get()->ShowCarrierAccountDetail(network_id);
 }
 
 }  // namespace chromeos

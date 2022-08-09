@@ -28,7 +28,7 @@ class SingleThreadTaskRunner;
 // settings (pushed from PrefProxyConfigTrackerImpl) as overrides to the proxy
 // configuration determined by a baseline delegate ProxyConfigService on
 // non-ChromeOS platforms. ChromeOS has its own implementation of overrides in
-// chromeos::ProxyConfigServiceImpl.
+// ash::ProxyConfigServiceImpl.
 class ProxyConfigServiceImpl : public net::ProxyConfigService,
                                public net::ProxyConfigService::Observer {
  public:

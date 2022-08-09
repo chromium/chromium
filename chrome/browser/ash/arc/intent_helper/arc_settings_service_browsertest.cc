@@ -306,8 +306,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
                                            ->network_state_handler()
                                            ->GetNetworkState(service_path);
     ASSERT_TRUE(network);
-    chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict,
-                                                     *network);
+    ash::proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
   }
 
   std::unique_ptr<FakeIntentHelperInstance> fake_intent_helper_instance_;
@@ -608,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoSourcesTest) {
                                          ->network_state_handler()
                                          ->DefaultNetwork();
   ASSERT_TRUE(network);
-  chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
+  ash::proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
   RunUntilIdle();
 
   base::Value expected_proxy_config(base::Value::Type::DICTIONARY);

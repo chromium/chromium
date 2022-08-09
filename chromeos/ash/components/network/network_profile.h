@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfile {
   enum Type {
@@ -33,11 +33,11 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfile {
   std::string ToDebugString() const;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::NetworkProfile;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkProfile;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_H_

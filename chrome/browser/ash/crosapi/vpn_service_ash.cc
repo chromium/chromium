@@ -208,7 +208,7 @@ void VpnServiceForExtensionAsh::CreateConfiguration(
 
   // Since the API is only designed to be used with the primary profile, it's
   // safe to get the hash of the primary profile here.
-  const chromeos::NetworkProfile* profile =
+  const ash::NetworkProfile* profile =
       chromeos::NetworkHandler::Get()
           ->network_profile_handler()
           ->GetProfileForUserhash(ash::ProfileHelper::GetUserIdHashFromProfile(

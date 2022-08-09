@@ -29,7 +29,7 @@ using testing::AnyNumber;
 using testing::NiceMock;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -339,4 +339,4 @@ TEST_F(NetworkConnectTest, ConnectToCellularNetwork_SimLocked) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

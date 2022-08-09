@@ -23,8 +23,8 @@ NearbyConnectionsFirewallHoleFactory::~NearbyConnectionsFirewallHoleFactory() =
 void NearbyConnectionsFirewallHoleFactory::OpenFirewallHole(
     const ash::nearby::TcpServerSocketPort& port,
     OpenFirewallHoleCallback callback) {
-  chromeos::FirewallHole::Open(
-      chromeos::FirewallHole::PortType::TCP, port.port(),
+  ash::FirewallHole::Open(
+      ash::FirewallHole::PortType::TCP, port.port(),
       /*interface=*/std::string(),
       base::BindOnce(
           &NearbyConnectionsFirewallHoleFactory::OnFirewallHoleOpened,
@@ -34,7 +34,7 @@ void NearbyConnectionsFirewallHoleFactory::OpenFirewallHole(
 void NearbyConnectionsFirewallHoleFactory::OnFirewallHoleOpened(
     const ash::nearby::TcpServerSocketPort& port,
     OpenFirewallHoleCallback callback,
-    std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
+    std::unique_ptr<ash::FirewallHole> firewall_hole) {
   if (!firewall_hole) {
     LOG(ERROR) << "NearbyConnectionsFirewallHoleFactory::" << __func__
                << ": Failed to open TCP firewall hole on port " << port.port();

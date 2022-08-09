@@ -81,12 +81,12 @@ void NetworkConfigurationUpdater::OnPolicyServiceInitialized(
 }
 
 void NetworkConfigurationUpdater::AddPolicyProvidedCertsObserver(
-    chromeos::PolicyCertificateProvider::Observer* observer) {
+    ash::PolicyCertificateProvider::Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
 void NetworkConfigurationUpdater::RemovePolicyProvidedCertsObserver(
-    chromeos::PolicyCertificateProvider::Observer* observer) {
+    ash::PolicyCertificateProvider::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 

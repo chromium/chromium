@@ -155,7 +155,7 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
       PrefService* pref_service,
       chromeos::NetworkStateHandler* network_state_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-      chromeos::NetworkConnect* network_connect,
+      NetworkConnect* network_connect,
       NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
@@ -297,7 +297,7 @@ class TetherServiceTest : public testing::Test {
     fake_notification_presenter_ = nullptr;
     mock_timer_ = nullptr;
 
-    chromeos::NetworkConnect::Initialize(nullptr);
+    NetworkConnect::Initialize(nullptr);
 
     TestingProfile::Builder builder;
     profile_ = builder.Build();
@@ -391,7 +391,7 @@ class TetherServiceTest : public testing::Test {
               shutdown_reason_verified_);
 
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::NetworkConnect::Shutdown();
+    NetworkConnect::Shutdown();
   }
 
   void SetPrimaryUserLoggedIn() {

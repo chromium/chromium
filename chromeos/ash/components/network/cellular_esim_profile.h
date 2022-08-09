@@ -12,7 +12,7 @@
 #include "dbus/object_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Metadata representing an eSIM profile.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
@@ -92,11 +92,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   std::string activation_code_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::CellularESimProfile;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_ESIM_PROFILE_H_

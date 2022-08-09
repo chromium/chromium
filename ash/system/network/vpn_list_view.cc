@@ -290,9 +290,8 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     if (IsVpnConfigAllowed()) {
       disconnect_button_ = TrayPopupUtils::CreateTrayPopupButton(
           // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
-          base::BindRepeating(
-              &chromeos::NetworkConnect::DisconnectFromNetworkId,
-              base::Unretained(chromeos::NetworkConnect::Get()), guid_),
+          base::BindRepeating(&NetworkConnect::DisconnectFromNetworkId,
+                              base::Unretained(NetworkConnect::Get()), guid_),
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT));
       disconnect_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));

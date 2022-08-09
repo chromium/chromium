@@ -141,7 +141,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // NetworkConnect handles the network connection state machine for the UI.
   network_connect_delegate_ =
       std::make_unique<NetworkConnectDelegateChromeOS>();
-  chromeos::NetworkConnect::Initialize(network_connect_delegate_.get());
+  ash::NetworkConnect::Initialize(network_connect_delegate_.get());
 
   cast_config_controller_media_router_ =
       std::make_unique<CastConfigControllerMediaRouter>();
@@ -367,8 +367,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   ambient_client_.reset();
 
   cast_config_controller_media_router_.reset();
-  if (chromeos::NetworkConnect::IsInitialized())
-    chromeos::NetworkConnect::Shutdown();
+  if (ash::NetworkConnect::IsInitialized())
+    ash::NetworkConnect::Shutdown();
   network_connect_delegate_.reset();
   user_profile_loaded_observer_.reset();
 }

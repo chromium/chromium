@@ -230,7 +230,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
-                            std::unique_ptr<chromeos::FirewallHole> hole);
+                            std::unique_ptr<ash::FirewallHole> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SendBindReply(const ppapi::host::ReplyMessageContext& context,
@@ -315,7 +315,7 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   net::IPEndPoint bind_output_ip_endpoint_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
+  std::unique_ptr<ash::FirewallHole> firewall_hole_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Bitwise-or of SocketOption flags. This stores the state about whether

@@ -120,7 +120,7 @@ constexpr const char* const
 
 TetherNotificationPresenter::TetherNotificationPresenter(
     Profile* profile,
-    NetworkConnect* network_connect)
+    ash::NetworkConnect* network_connect)
     : profile_(profile),
       network_connect_(network_connect),
       settings_ui_delegate_(base::WrapUnique(new SettingsUiDelegateImpl())) {}

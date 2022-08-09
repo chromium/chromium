@@ -20,12 +20,11 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_type_pattern.h"
 
 namespace ash {
+
+class NetworkState;
+class NetworkTypePattern;
 
 // Struct for passing wifi access point data.
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) WifiAccessPoint {

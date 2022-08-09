@@ -2163,7 +2163,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountWarnings, NoLoginWarningShown) {
 
 class ManagedSessionsTest : public DeviceLocalAccountTest {
  protected:
-  class CertsObserver : public chromeos::PolicyCertificateProvider::Observer {
+  class CertsObserver : public ash::PolicyCertificateProvider::Observer {
    public:
     explicit CertsObserver(base::OnceClosure on_change)
         : on_change_(std::move(on_change)) {}

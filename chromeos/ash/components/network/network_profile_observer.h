@@ -5,10 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_profile.h"
-
 namespace ash {
+
+struct NetworkProfile;
 
 class NetworkProfileObserver {
  public:

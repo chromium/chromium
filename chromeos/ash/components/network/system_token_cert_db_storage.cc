@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "net/cert/nss_cert_database.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -114,4 +114,4 @@ void SystemTokenCertDbStorage::OnSystemTokenDbRetrievalTimeout() {
       /*nss_cert_database=*/nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash
