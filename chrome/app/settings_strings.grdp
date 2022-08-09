@@ -319,8 +319,14 @@
   <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD" desc="The text shown in the secondary action menu button to direct users to pay.google.com to edit the information of credit cards stored in Google Payments.">
     Edit in Google Pay
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_AVAILABLE_LABEL" desc="The text shown next to the card summary to indicate that a virtual card is available for enrollment for the credit card. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Virtual card available
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENABLED_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been generated for the credit card and is enabled. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     (Virtual card enabled)
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TURNED_ON_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been enabled for the credit card. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Virtual card turned on
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE" desc="The text shown as the title of the virtual card unenroll dialog.">
     Remove your virtual card
