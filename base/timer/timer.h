@@ -112,8 +112,8 @@ class BASE_EXPORT TimerBase {
   // TaskEnvironment::TimeSource::MOCK_TIME.
   virtual void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
 
-  // Call this method to stop and cancel the timer. It is a no-op if the timer
-  // is not running.
+  // Call this method to stop the timer and cancel all previously scheduled
+  // tasks. It is a no-op if the timer is not running.
   virtual void Stop();
 
  protected:
