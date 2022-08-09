@@ -282,6 +282,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     boolean canScroll =
                             scrollView.canScrollVertically(-1) || scrollView.canScrollVertically(1);
+                    mScrollableContent.setImportantForAccessibility(canScroll
+                                    ? View.IMPORTANT_FOR_ACCESSIBILITY_YES
+                                    : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
                     mScrollableContent.setClipChildren(canScroll);
                     mRootViewContainer.setClipChildren(canScroll);
                 });
