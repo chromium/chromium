@@ -67,7 +67,7 @@ LevelDBSnapshot::LevelDBSnapshot(TransactionalLevelDBDatabase* db)
     : db_(db->db()), snapshot_(db_->GetSnapshot()) {}
 
 LevelDBSnapshot::~LevelDBSnapshot() {
-  db_->ReleaseSnapshot(snapshot_);
+  db_->ReleaseSnapshot(snapshot_.ExtractAsDangling());
 }
 
 // static

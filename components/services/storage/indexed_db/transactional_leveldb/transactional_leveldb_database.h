@@ -51,7 +51,7 @@ class LevelDBSnapshot {
 
  private:
   raw_ptr<leveldb::DB, DanglingUntriaged> db_;
-  raw_ptr<const leveldb::Snapshot, DanglingUntriaged> snapshot_;
+  raw_ptr<const leveldb::Snapshot> snapshot_;
 };
 
 class TransactionalLevelDBDatabase
