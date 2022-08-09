@@ -92,16 +92,16 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @interface AppState () <AppStateObserver> {
   // Browser launcher to launch browser in different states.
   __weak id<BrowserLauncher> _browserLauncher;
+
   // UIApplicationDelegate for the application.
   __weak MainApplicationDelegate* _mainApplicationDelegate;
 
-  // YES if the app is currently in the process of terminating.
-  BOOL _appIsTerminating;
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
+
   // YES if cookies are currently being flushed to disk.
   BOOL _savingCookies;
 }

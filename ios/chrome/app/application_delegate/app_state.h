@@ -101,6 +101,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // orientation.
 @property(nonatomic, readonly) BOOL portraitOnly;
 
+// YES if the application is getting terminated.
+@property(nonatomic, readonly) BOOL appIsTerminating;
+
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
 // the browser.

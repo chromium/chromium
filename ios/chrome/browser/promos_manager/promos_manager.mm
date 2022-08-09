@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 
-#import <iostream>  // TODO(crbug.com/1347825): Remove import
-
-#import "base/json/json_writer.h"  // TODO(crbug.com/1347825): Remove import
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
