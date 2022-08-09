@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 
 namespace blink {
 
@@ -122,14 +121,14 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   bool UserResize(const MouseEvent& event);
   void SetIsResizing(bool is_resizing);
-  void StartResizing(const LayoutFrameSet::GridAxis& axis,
+  void StartResizing(const Vector<LayoutUnit>& sizes,
                      int position,
                      ResizeAxis& resize_axis);
-  void ContinueResizing(const LayoutFrameSet::GridAxis& axis,
+  void ContinueResizing(const Vector<LayoutUnit>& sizes,
                         int position,
                         ResizeAxis& resize_axis);
-  int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;
-  int HitTestSplit(const LayoutFrameSet::GridAxis& axis, int position) const;
+  int SplitPosition(const Vector<LayoutUnit>& sizes, int split) const;
+  int HitTestSplit(const Vector<LayoutUnit>& sizes, int position) const;
 
   void FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
                         wtf_size_t r,
