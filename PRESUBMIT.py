@@ -2305,12 +2305,19 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     # might not use Gerrit.
     if not input_api.gerrit or input_api.no_diffs:
         return []
-    if (input_api.change.issue and input_api.gerrit.IsOwnersOverrideApproved(
-            input_api.change.issue)):
-        # Skip OWNERS check when Owners-Override label is approved. This is intended
-        # for global owners, trusted bots, and on-call sheriffs. Review is still
-        # required for these changes.
+    if 'PRESUBMIT_SKIP_NETWORK' in input_api.environ:
         return []
+    try:
+        if (input_api.change.issue and
+                input_api.gerrit.IsOwnersOverrideApproved(
+                input_api.change.issue)):
+            # Skip OWNERS check when Owners-Override label is approved. This is
+            # intended for global owners, trusted bots, and on-call sheriffs.
+            # Review is still required for these changes.
+            return []
+    except Exception as e:
+      return [output_api.PresubmitPromptWarning(
+              'Failed to retrieve owner override status - %s' % str(e))]
 
     virtual_depended_on_files = set()
 
