@@ -693,16 +693,16 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
   }
 
   // Round up the test frames as if they were the user's open tabs.
-  std::vector<content::RenderFrameHost*> frame_hosts;
-  frame_hosts.reserve(frame_to_config_.size());
+  std::vector<content::WeakDocumentPtr> weak_documents;
+  weak_documents.reserve(frame_to_config_.size());
   for (const auto& config_it : frame_to_config_) {
-    frame_hosts.push_back(config_it.first);
+    weak_documents.emplace_back(config_it.first->GetWeakDocumentPtr());
   }
 
   // Calculate the diff between the notes in the frames and the notes in the
   // metadata.
   const std::vector<std::unique_ptr<FrameUserNoteChanges>>& actual_diffs =
-      CalculateNoteChanges(*note_service_, frame_hosts, metadata_snapshot);
+      CalculateNoteChanges(*note_service_, weak_documents, metadata_snapshot);
 
   std::unordered_set<content::RenderFrameHost*> frames_with_diff;
   for (const std::unique_ptr<FrameUserNoteChanges>& diff : actual_diffs) {

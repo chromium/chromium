@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace content {
-class RenderFrameHost;
+class WeakDocumentPtr;
 }  // namespace content
 
 namespace user_notes {
@@ -25,7 +25,7 @@ class UserNoteService;
 // don't match the metadata.
 std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
     const UserNoteService& note_service,
-    const std::vector<content::RenderFrameHost*>& rfhs,
+    const std::vector<content::WeakDocumentPtr>& documents,
     const UserNoteMetadataSnapshot& metadata_snapshot);
 
 }  // namespace user_notes

@@ -145,11 +145,10 @@ class UserNoteService : public KeyedService,
   // Private helpers used when processing note storage changes. Marked virtual
   // for tests to override.
   virtual void OnNoteMetadataFetchedForNavigation(
-      const std::vector<content::RenderFrameHost*>& all_frames,
-      const content::RenderFrameHost* navigated_frame,
+      const std::vector<content::WeakDocumentPtr>& all_frames,
       UserNoteMetadataSnapshot metadata_snapshot);
   virtual void OnNoteMetadataFetched(
-      const std::vector<content::RenderFrameHost*>& all_frames,
+      const std::vector<content::WeakDocumentPtr>& all_frames,
       UserNoteMetadataSnapshot metadata_snapshot);
   virtual void OnNoteModelsFetched(
       const IdSet& new_notes,

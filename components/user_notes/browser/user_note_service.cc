@@ -14,6 +14,7 @@
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace user_notes {
@@ -68,12 +69,12 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
 
   DCHECK(UserNoteManager::GetForPage(rfh->GetPage()));
 
-  std::vector<content::RenderFrameHost*> frames = {rfh};
+  std::vector<content::WeakDocumentPtr> frames = {rfh->GetWeakDocumentPtr()};
   UserNoteStorage::UrlSet urls = {rfh->GetLastCommittedURL()};
   storage_->GetNoteMetadataForUrls(
       std::move(urls),
       base::BindOnce(&UserNoteService::OnNoteMetadataFetchedForNavigation,
-                     weak_ptr_factory_.GetWeakPtr(), frames, rfh));
+                     weak_ptr_factory_.GetWeakPtr(), frames));
 }
 
 void UserNoteService::OnNoteInstanceAddedToPage(
@@ -259,15 +260,18 @@ void UserNoteService::OnNotesChanged() {
   std::vector<content::RenderFrameHost*> all_frames =
       delegate_->GetAllFramesForUserNotes();
   UserNoteStorage::UrlSet urls;
+  std::vector<content::WeakDocumentPtr> all_frames_weak;
+  all_frames_weak.reserve(all_frames.size());
 
   for (content::RenderFrameHost* frame : all_frames) {
     urls.emplace(frame->GetLastCommittedURL());
+    all_frames_weak.emplace_back(frame->GetWeakDocumentPtr());
   }
 
   storage_->GetNoteMetadataForUrls(
       std::move(urls),
       base::BindOnce(&UserNoteService::OnNoteMetadataFetched,
-                     weak_ptr_factory_.GetWeakPtr(), all_frames));
+                     weak_ptr_factory_.GetWeakPtr(), all_frames_weak));
 }
 
 void UserNoteService::InitializeNewNoteForCreation(
@@ -378,13 +382,19 @@ void UserNoteService::InitializeNewNoteForCreation(
 }
 
 void UserNoteService::OnNoteMetadataFetchedForNavigation(
-    const std::vector<content::RenderFrameHost*>& all_frames,
-    const content::RenderFrameHost* navigated_frame,
+    const std::vector<content::WeakDocumentPtr>& all_frames,
     UserNoteMetadataSnapshot metadata_snapshot) {
   DCHECK(all_frames.size() == 1u);
 
-  if (delegate_->IsFrameInActiveTab(all_frames[0])) {
-    UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(all_frames[0]);
+  content::RenderFrameHost* rfh = all_frames[0].AsRenderFrameHostIfValid();
+
+  if (!rfh) {
+    // The navigated frame is no longer valid.
+    return;
+  }
+
+  if (delegate_->IsFrameInActiveTab(rfh)) {
+    UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
     DCHECK(ui);
 
     // TODO(crbug.com/1313967): For now, always invalidate the UI if the tab is
@@ -415,7 +425,7 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
 }
 
 void UserNoteService::OnNoteMetadataFetched(
-    const std::vector<content::RenderFrameHost*>& all_frames,
+    const std::vector<content::WeakDocumentPtr>& all_frames,
     UserNoteMetadataSnapshot metadata_snapshot) {
   std::vector<std::unique_ptr<FrameUserNoteChanges>> note_changes =
       CalculateNoteChanges(*this, all_frames, metadata_snapshot);

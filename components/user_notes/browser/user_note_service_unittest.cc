@@ -140,13 +140,12 @@ class MockUserNoteService : public UserNoteService {
 
   MOCK_METHOD(void,
               OnNoteMetadataFetchedForNavigation,
-              (const std::vector<content::RenderFrameHost*>& all_frames,
-               const content::RenderFrameHost* navigated_frame,
+              (const std::vector<content::WeakDocumentPtr>& all_frames,
                UserNoteMetadataSnapshot metadata_snapshot),
               (override));
   MOCK_METHOD(void,
               OnNoteMetadataFetched,
-              (const std::vector<content::RenderFrameHost*>& all_frames,
+              (const std::vector<content::WeakDocumentPtr>& all_frames,
                UserNoteMetadataSnapshot metadata_snapshot),
               (override));
   MOCK_METHOD(void,
@@ -172,15 +171,14 @@ class MockUserNoteService : public UserNoteService {
   }
 
   void CallBaseClassOnNoteMetadataFetchedForNavigation(
-      const std::vector<content::RenderFrameHost*>& all_frames,
-      const content::RenderFrameHost* navigated_frame,
+      const std::vector<content::WeakDocumentPtr>& all_frames,
       UserNoteMetadataSnapshot metadata_snapshot) {
     UserNoteService::OnNoteMetadataFetchedForNavigation(
-        all_frames, navigated_frame, std::move(metadata_snapshot));
+        all_frames, std::move(metadata_snapshot));
   }
 
   void CallBaseClassOnNoteMetadataFetched(
-      const std::vector<content::RenderFrameHost*>& all_frames,
+      const std::vector<content::WeakDocumentPtr>& all_frames,
       UserNoteMetadataSnapshot metadata_snapshot) {
     UserNoteService::OnNoteMetadataFetched(all_frames,
                                            std::move(metadata_snapshot));
@@ -283,6 +281,14 @@ class UserNoteServiceTest : public UserNoteBaseTest {
       frames.emplace_back(wc->GetPrimaryMainFrame());
     }
     return frames;
+  }
+
+  std::vector<content::WeakDocumentPtr> GetAllFramesInUseAsWeakPtr() {
+    std::vector<content::WeakDocumentPtr> weak_documents;
+    for (content::RenderFrameHost* rfh : GetAllFramesInUse()) {
+      weak_documents.emplace_back(rfh->GetWeakDocumentPtr());
+    }
+    return weak_documents;
   }
 
   raw_ptr<MockUserNoteService> mock_service_;
@@ -531,15 +537,12 @@ TEST_F(UserNoteServiceTest, OnFrameNavigated) {
   EXPECT_CALL(*storage_, GetNotesById).Times(0);
 
   // Configure service mock.
-  std::vector<content::RenderFrameHost*> all_frames_result;
-  const content::RenderFrameHost* navigated_frame_result;
+  std::vector<content::WeakDocumentPtr> all_frames_result;
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
       .Times(1)
-      .WillOnce([&](const std::vector<content::RenderFrameHost*>& all_frames,
-                    const content::RenderFrameHost* navigated_frame,
+      .WillOnce([&](const std::vector<content::WeakDocumentPtr>& all_frames,
                     UserNoteMetadataSnapshot metadata_snapshot) {
         all_frames_result.assign(all_frames.begin(), all_frames.end());
-        navigated_frame_result = navigated_frame;
       });
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
@@ -553,8 +556,10 @@ TEST_F(UserNoteServiceTest, OnFrameNavigated) {
   // Mocks ensure callbacks are invoked synchronously, so expectations can be
   // immediately verified.
   ASSERT_EQ(all_frames_result.size(), 1u);
-  EXPECT_EQ(all_frames_result[0], frame);
-  EXPECT_EQ(navigated_frame_result, frame);
+  content::RenderFrameHost* rfh =
+      all_frames_result[0].AsRenderFrameHostIfValid();
+  EXPECT_NE(rfh, nullptr);
+  EXPECT_EQ(rfh, frame);
 
   const UserNoteStorage::UrlSet& requested_urls =
       storage_->requested_metadata_urls();
@@ -621,7 +626,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
 
   // Simulate the service receiving the metadata snapshot after a navigation.
   note_service_->OnNoteMetadataFetchedForNavigation(
-      GetAllFramesInUse(), GetAllFramesInUse()[0], std::move(snapshot));
+      GetAllFramesInUseAsWeakPtr(), std::move(snapshot));
 }
 
 // After a navigation to a document that has user notes, but isn't in the
@@ -672,7 +677,7 @@ TEST_F(UserNoteServiceTest,
 
   // Simulate the service receiving the metadata snapshot after a navigation.
   note_service_->OnNoteMetadataFetchedForNavigation(
-      GetAllFramesInUse(), GetAllFramesInUse()[0], std::move(snapshot));
+      GetAllFramesInUseAsWeakPtr(), std::move(snapshot));
 }
 
 // After a navigation to a document that doesn't have user notes but is in the
@@ -735,7 +740,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
   // Simulate the service receiving the empty metadata snapshot after a
   // navigation.
   note_service_->OnNoteMetadataFetchedForNavigation(
-      GetAllFramesInUse(), GetAllFramesInUse()[0], UserNoteMetadataSnapshot());
+      GetAllFramesInUseAsWeakPtr(), UserNoteMetadataSnapshot());
 }
 
 // After a navigation to a document that doesn't have user notes, but isn't in
@@ -788,7 +793,7 @@ TEST_F(UserNoteServiceTest,
   // Simulate the service receiving the empty metadata snapshot after a
   // navigation.
   note_service_->OnNoteMetadataFetchedForNavigation(
-      GetAllFramesInUse(), GetAllFramesInUse()[0], UserNoteMetadataSnapshot());
+      GetAllFramesInUseAsWeakPtr(), UserNoteMetadataSnapshot());
 }
 
 // Tests that the service requests the right models from the storage after
@@ -868,7 +873,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetched) {
 
   // Simulate the storage returning the metadata snapshot to the service
   // callback.
-  note_service_->OnNoteMetadataFetched(GetAllFramesInUse(),
+  note_service_->OnNoteMetadataFetched(GetAllFramesInUseAsWeakPtr(),
                                        std::move(snapshot));
 
   // Mocks ensure callbacks are invoked synchronously, so expectations can be
