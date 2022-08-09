@@ -30,10 +30,27 @@ namespace {
 // thread for each transport.
 class AsyncTransport : public ObjectImpl<AsyncTransport, Object::kTransport> {
  public:
+  enum class NodeType {
+    kBroker,
+    kNonBroker,
+  };
+
+  struct TransportType {
+    NodeType local;
+    NodeType remote;
+  };
+
+  explicit AsyncTransport(const TransportType& type) : type_(type) {}
+
+  NodeType local_type() const { return type_.local; }
+  NodeType remote_type() const { return type_.remote; }
+
   using Pair = std::pair<Ref<AsyncTransport>, Ref<AsyncTransport>>;
-  static Pair CreatePair() {
-    Pair pair{MakeRefCounted<AsyncTransport>(),
-              MakeRefCounted<AsyncTransport>()};
+  static Pair CreatePair(NodeType node0_type, NodeType node1_type) {
+    Pair pair{MakeRefCounted<AsyncTransport>(
+                  TransportType{.local = node0_type, .remote = node1_type}),
+              MakeRefCounted<AsyncTransport>(
+                  TransportType{.local = node1_type, .remote = node0_type})};
     std::tie(pair.second->peer_, pair.first->peer_) = pair;
     return pair;
   }
@@ -164,6 +181,8 @@ class AsyncTransport : public ObjectImpl<AsyncTransport, Object::kTransport> {
     }
   }
 
+  const TransportType type_;
+
   Ref<AsyncTransport> peer_;
   IpczHandle transport_ = IPCZ_INVALID_HANDLE;
   IpczTransportActivityHandler handler_;
@@ -176,15 +195,18 @@ class AsyncTransport : public ObjectImpl<AsyncTransport, Object::kTransport> {
       std::make_unique<absl::Notification>();
 };
 
-IpczResult IPCZ_API CreateTransports(IpczDriverHandle,
-                                     IpczDriverHandle,
+IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
+                                     IpczDriverHandle transport1,
                                      uint32_t,
                                      const void*,
-                                     IpczDriverHandle* transport0,
-                                     IpczDriverHandle* transport1) {
-  auto [first, second] = AsyncTransport::CreatePair();
-  *transport0 = Object::ReleaseAsHandle(std::move(first));
-  *transport1 = Object::ReleaseAsHandle(std::move(second));
+                                     IpczDriverHandle* new_transport0,
+                                     IpczDriverHandle* new_transport1) {
+  auto* target0 = AsyncTransport::FromHandle(transport0);
+  auto* target1 = AsyncTransport::FromHandle(transport1);
+  auto [first, second] = AsyncTransport::CreatePair(target0->remote_type(),
+                                                    target1->remote_type());
+  *new_transport0 = Object::ReleaseAsHandle(std::move(first));
+  *new_transport1 = Object::ReleaseAsHandle(std::move(second));
   return IPCZ_RESULT_OK;
 }
 
@@ -216,6 +238,29 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle transport,
   return IPCZ_RESULT_OK;
 }
 
+IpczResult IPCZ_API SerializeWithForcedBrokering(IpczDriverHandle handle,
+                                                 IpczDriverHandle transport,
+                                                 uint32_t flags,
+                                                 const void* options,
+                                                 void* data,
+                                                 size_t* num_bytes,
+                                                 IpczDriverHandle* handles,
+                                                 size_t* num_handles) {
+  auto* target = AsyncTransport::FromHandle(transport);
+  if (!target) {
+    return IPCZ_RESULT_ABORTED;
+  }
+
+  if (target->local_type() == AsyncTransport::NodeType::kNonBroker &&
+      target->remote_type() == AsyncTransport::NodeType::kNonBroker) {
+    // Force ipcz to relay driver objects through a broker.
+    return IPCZ_RESULT_PERMISSION_DENIED;
+  }
+
+  return kSingleProcessReferenceDriverBase.Serialize(
+      handle, transport, flags, options, data, num_bytes, handles, num_handles);
+}
+
 }  // namespace
 
 // Note that this driver inherits most of its implementation from the baseline
@@ -235,5 +280,30 @@ const IpczDriver kAsyncReferenceDriver = {
     kSingleProcessReferenceDriverBase.MapSharedMemory,
     kSingleProcessReferenceDriverBase.GenerateRandomBytes,
 };
+
+const IpczDriver kAsyncReferenceDriverWithForcedBrokering = {
+    sizeof(kAsyncReferenceDriverWithForcedBrokering),
+    kSingleProcessReferenceDriverBase.Close,
+    SerializeWithForcedBrokering,
+    kSingleProcessReferenceDriverBase.Deserialize,
+    CreateTransports,
+    ActivateTransport,
+    DeactivateTransport,
+    Transmit,
+    kSingleProcessReferenceDriverBase.AllocateSharedMemory,
+    kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
+    kSingleProcessReferenceDriverBase.DuplicateSharedMemory,
+    kSingleProcessReferenceDriverBase.MapSharedMemory,
+    kSingleProcessReferenceDriverBase.GenerateRandomBytes,
+};
+
+AsyncTransportPair CreateAsyncTransportPair() {
+  AsyncTransport::Pair transports = AsyncTransport::CreatePair(
+      AsyncTransport::NodeType::kBroker, AsyncTransport::NodeType::kNonBroker);
+  return {
+      .broker = Object::ReleaseAsHandle(std::move(transports.first)),
+      .non_broker = Object::ReleaseAsHandle(std::move(transports.second)),
+  };
+}
 
 }  // namespace ipcz::reference_drivers

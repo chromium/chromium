@@ -21,7 +21,10 @@ enum class HandleType : uint32_t {
   // DriverObject array and wraps it as a Box object.
   kBox = 1,
 
-  // TODO: Add an enumeration for relayed boxes.
+  // A placeholder for a box handle in a split parcel transmission. This occurs
+  // in the directly transmitted half of the parcel, and it signifies the
+  // existence of a corresponding DriverObject in the relayed half.
+  kRelayedBox = 2,
 };
 
 }  // namespace ipcz

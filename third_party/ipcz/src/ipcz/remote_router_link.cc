@@ -113,6 +113,7 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
 
   size_t num_portals = 0;
   absl::InlinedVector<DriverObject, 2> driver_objects;
+  bool must_relay_driver_objects = false;
   for (Ref<APIObject>& object : objects) {
     switch (object->object_type()) {
       case APIObject::kPortal:
@@ -122,10 +123,9 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
       case APIObject::kBox: {
         Box* box = Box::FromObject(object.get());
         ABSL_ASSERT(box);
-
-        // TODO: Support object relay when direct transmission is impossible.
-        ABSL_ASSERT(box->object().CanTransmitOn(*node_link()->transport()));
-
+        if (!box->object().CanTransmitOn(*node_link()->transport())) {
+          must_relay_driver_objects = true;
+        }
         driver_objects.push_back(std::move(box->object()));
         break;
       }
@@ -134,6 +134,20 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
         break;
     }
   }
+
+  // If driver objects will require relaying through the broker, then the parcel
+  // must be split into two separate messages: one for the driver objects (which
+  // will be relayed), and one for the rest of the message (which will transmit
+  // directly).
+  //
+  // This ensures that many side effects of message receipt are well-ordered
+  // with other transmissions on the same link from the same thread. Namely,
+  // since a thread may send a message which introduces a new remote Router on a
+  // new sublink, followed immediately by a message which targets that Router,
+  // it is critical that both messages arrive in the order they were sent. If
+  // one of the messages is relayed while the other is not, ordering could not
+  // be guaranteed.
+  const bool must_split_parcel = must_relay_driver_objects;
 
   // Allocate all the arrays in the message. Note that each allocation may
   // relocate the parcel data in memory, so views into these arrays should not
@@ -174,7 +188,8 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
       }
 
       case APIObject::kBox:
-        handle_types[i] = HandleType::kBox;
+        handle_types[i] =
+            must_split_parcel ? HandleType::kRelayedBox : HandleType::kBox;
         break;
 
       default:
@@ -183,8 +198,20 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
     }
   }
 
-  accept.params().driver_objects =
-      accept.AppendDriverObjects(absl::MakeSpan(driver_objects));
+  if (must_split_parcel) {
+    msg::AcceptParcelDriverObjects accept_objects;
+    accept_objects.params().sublink = sublink_;
+    accept_objects.params().sequence_number = parcel.sequence_number();
+    accept_objects.params().driver_objects =
+        accept_objects.AppendDriverObjects(absl::MakeSpan(driver_objects));
+
+    DVLOG(4) << "Transmitting objects for " << parcel.Describe() << " over "
+             << Describe();
+    node_link()->Transmit(accept_objects);
+  } else {
+    accept.params().driver_objects =
+        accept.AppendDriverObjects(absl::MakeSpan(driver_objects));
+  }
 
   DVLOG(4) << "Transmitting " << parcel.Describe() << " over " << Describe();
 

@@ -20,6 +20,8 @@
     ~name();                                                     \
     bool Deserialize(const DriverTransport::RawMessage& message, \
                      const DriverTransport& transport);          \
+    bool DeserializeRelayed(absl::Span<const uint8_t> data,      \
+                            absl::Span<DriverObject> objects);   \
                                                                  \
     static constexpr internal::ParamMetadata kMetadata[] = {
 #define IPCZ_MSG_END() \

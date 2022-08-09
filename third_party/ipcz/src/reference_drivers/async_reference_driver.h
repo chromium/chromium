@@ -15,6 +15,19 @@ namespace ipcz::reference_drivers {
 // production driver, without the complexity of a multiprocess environment.
 extern const IpczDriver kAsyncReferenceDriver;
 
+// Mostly the same as kAsyncReferenceDriver, but rejects direct transmission of
+// driver handles between non-broker nodes. This forces ipcz to relay such
+// messages through the broker.
+extern const IpczDriver kAsyncReferenceDriverWithForcedBrokering;
+
+// Creates a new pair of async transport endpoints, one for a broker and one
+// for a non-broker.
+struct AsyncTransportPair {
+  IpczDriverHandle broker;
+  IpczDriverHandle non_broker;
+};
+AsyncTransportPair CreateAsyncTransportPair();
+
 }  // namespace ipcz::reference_drivers
 
 #endif  // IPCZ_SRC_DRIVERS_ASYNC_REFERENCE_DRIVER_H_

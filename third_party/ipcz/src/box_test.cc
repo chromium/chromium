@@ -136,6 +136,7 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxBetweenNonBrokersClient1) {
     EXPECT_EQ(kMessage2, GetBlobContents(blob_handle));
   }
 
+  WaitForDirectRemoteLink(q);
   CloseAll({q, b});
 }
 
@@ -160,6 +161,7 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxBetweenNonBrokersClient2) {
     EXPECT_EQ(IPCZ_RESULT_OK, Put(p, kMessage1, {&box, 1}));
   }
 
+  WaitForDirectRemoteLink(p);
   CloseAll({p, b});
 }
 

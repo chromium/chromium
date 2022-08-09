@@ -11,6 +11,7 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -145,6 +146,13 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // non-broker node that previously requested an introduction to `name` if
   // the broker could not satisfy the request.
   bool CancelIntroduction(const NodeName& name);
+
+  // Relays a message to its destination on behalf of `from_node`.
+  bool RelayMessage(const NodeName& from_node, msg::RelayMessage& relay);
+
+  // Attempts to dispatch a relayed message from the broker as if it came from
+  // the relay source directly.
+  bool AcceptRelayedMessage(msg::AcceptRelayedMessage& accept);
 
   // Drops this node's link to the named node, if one exists.
   void DropLink(const NodeName& name);

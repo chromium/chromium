@@ -121,6 +121,12 @@ const IpczDriver& TestNode::GetDriver() const {
     case DriverMode::kAsyncDelegatedAlloc:
       return reference_drivers::kAsyncReferenceDriver;
 
+    case DriverMode::kAsyncObjectBrokering:
+      return reference_drivers::kAsyncReferenceDriverWithForcedBrokering;
+
+    case DriverMode::kAsyncObjectBrokeringAndDelegatedAlloc:
+      return reference_drivers::kAsyncReferenceDriverWithForcedBrokering;
+
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
     case DriverMode::kMultiprocess:
       return reference_drivers::kMultiprocessReferenceDriver;
@@ -146,7 +152,8 @@ void TestNode::Initialize(DriverMode driver_mode,
 
 void TestNode::ConnectToBroker(absl::Span<IpczHandle> portals) {
   uint32_t flags = IPCZ_CONNECT_NODE_TO_BROKER;
-  if (driver_mode_ == DriverMode::kAsyncDelegatedAlloc) {
+  if (driver_mode_ == DriverMode::kAsyncDelegatedAlloc ||
+      driver_mode_ == DriverMode::kAsyncObjectBrokeringAndDelegatedAlloc) {
     flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
   }
   IpczDriverHandle transport =
@@ -222,6 +229,18 @@ Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
 }
 
 TestNode::TransportPair TestNode::CreateTransports() {
+  if (driver_mode_ == DriverMode::kAsync ||
+      driver_mode_ == DriverMode::kAsyncDelegatedAlloc ||
+      driver_mode_ == DriverMode::kAsyncObjectBrokering ||
+      driver_mode_ == DriverMode::kAsyncObjectBrokeringAndDelegatedAlloc) {
+    reference_drivers::AsyncTransportPair transports =
+        reference_drivers::CreateAsyncTransportPair();
+    return {
+        .ours = transports.broker,
+        .theirs = transports.non_broker,
+    };
+  }
+
   TransportPair transports;
   const IpczResult result = GetDriver().CreateTransports(
       IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,

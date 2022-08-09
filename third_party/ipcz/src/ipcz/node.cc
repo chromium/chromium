@@ -291,6 +291,31 @@ bool Node::CancelIntroduction(const NodeName& name) {
   return true;
 }
 
+bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
+  ABSL_ASSERT(type_ == Type::kBroker);
+  auto link = GetLink(relay.params().destination);
+  if (!link) {
+    return true;
+  }
+
+  absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.params().data);
+  msg::AcceptRelayedMessage accept;
+  accept.params().source = from_node;
+  accept.params().data = accept.AllocateArray<uint8_t>(data.size());
+  memcpy(accept.GetArrayData(accept.params().data), data.data(), data.size());
+  accept.params().driver_objects =
+      accept.AppendDriverObjects(relay.driver_objects());
+  link->Transmit(accept);
+  return true;
+}
+
+bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
+  if (auto link = GetLink(accept.params().source)) {
+    link->DispatchRelayedMessage(accept);
+  }
+  return true;
+}
+
 void Node::DropLink(const NodeName& name) {
   Ref<NodeLink> link;
   bool lost_broker = false;

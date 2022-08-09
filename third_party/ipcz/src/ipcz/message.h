@@ -342,6 +342,19 @@ class IPCZ_ALIGN(8) Message {
                                  data_.data());
   }
 
+  // Common helper for vaidation of an incoming message header and basic data
+  // payload size.
+  bool CopyDataAndValidateHeader(absl::Span<const uint8_t> data);
+
+  // Common helper to validate an encoded parameter structure against a specific
+  // message definition. Must only be called on a Message with `data_` already
+  // populated, the header already validated, and DriverObjects already
+  // deserialized into `driver_objects_`.
+  bool ValidateParameters(
+      size_t params_size,
+      uint32_t params_current_version,
+      absl::Span<const internal::ParamMetadata> params_metadata);
+
   // Attempts to deserialize a message from raw `data` and `handles` into `this`
   // message object, given the `params_size`, `params_current_version` and
   // `params_metadata`, which are all generated from message macros at build
@@ -355,6 +368,19 @@ class IPCZ_ALIGN(8) Message {
       absl::Span<const internal::ParamMetadata> params_metadata,
       const DriverTransport::RawMessage& message,
       const DriverTransport& transport);
+
+  // Attempts to deserialize a message from raw `data`, given a set of already
+  // deserialized DriverObjects in `objects`. The objects and data here have
+  // been extracted from a message relayed opaquely through the broker. While
+  // each DriverObject has already been validated and deserialized, the
+  // message-specific parameter data and object-field assignments must be
+  // validated here.
+  bool DeserializeFromRelay(
+      size_t params_size,
+      uint32_t params_current_version,
+      absl::Span<const internal::ParamMetadata> params_metadata,
+      absl::Span<const uint8_t> data,
+      absl::Span<DriverObject> objects);
 
   // Raw serialized data for this message. This always begins with MessageHeader
   // (or potentially some newer or older version thereof), whose actual size

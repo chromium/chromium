@@ -140,6 +140,25 @@ IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
 IPCZ_MSG_END()
 
+// Conveys partial parcel contents, namely just its attached driver objects.
+// When a parcel with driver objects cannot be transmitted directly to its
+// destination, this message is split off and relayed through the broker while
+// the rest of the parcel contents are sent directly, without the objects
+// attached. The receiving node can reconstitute the full parcel once both
+// messages are received.
+IPCZ_MSG_BEGIN(AcceptParcelDriverObjects, IPCZ_MSG_ID(21), IPCZ_MSG_VERSION(0))
+  // The SublinkId linking the source and destination Routers along the
+  // transmitting NodeLink.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The SequenceNumber of this parcel within the transmitting portal's outbound
+  // parcel sequence (and the receiving portal's inbound parcel sequence.)
+  IPCZ_MSG_PARAM(SequenceNumber, sequence_number)
+
+  // The driver objects to be accepted.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
+IPCZ_MSG_END()
+
 // Notifies a node that the route has been closed on one side. This message
 // always pertains to the side of the route opposite of the router receiving it,
 // guaranteed by the fact that the closed side of the route only transmits this
@@ -366,6 +385,33 @@ IPCZ_MSG_END()
 IPCZ_MSG_BEGIN(ProvideMemory, IPCZ_MSG_ID(65), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(uint32_t, size)
   IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
+IPCZ_MSG_END()
+
+// Sends a message payload to the broker to be relayed to another node. Used to
+// relay messages which carry driver objects through the broker when they cannot
+// be transmitted directly between their source and destination nodes.
+IPCZ_MSG_BEGIN(RelayMessage, IPCZ_MSG_ID(66), IPCZ_MSG_VERSION(0))
+  // The node to which this message's contents should ultimately be relayed.
+  IPCZ_MSG_PARAM(NodeName, destination)
+
+  // The actual serialized message to be relayed, including its own header.
+  IPCZ_MSG_PARAM_ARRAY(uint8_t, data)
+
+  // The set of driver objects to be relayed along with `data`.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
+IPCZ_MSG_END()
+
+// Relays a message payload from an intermediate broker to its destination. This
+// is the continuation of RelayMessage above. Must only be accepted on a broker.
+IPCZ_MSG_BEGIN(AcceptRelayedMessage, IPCZ_MSG_ID(67), IPCZ_MSG_VERSION(0))
+  // The node which originally requested that the broker relay this message.
+  IPCZ_MSG_PARAM(NodeName, source)
+
+  // The full serialized data of the relayed message.
+  IPCZ_MSG_PARAM_ARRAY(uint8_t, data)
+
+  // The set of driver objects relayed along with `data`.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
 IPCZ_MSG_END()
 
 IPCZ_MSG_END_INTERFACE()
