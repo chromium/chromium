@@ -112,6 +112,14 @@ public class PasswordStoreBridge {
     }
 
     /**
+     * Empties the password store.
+     */
+    @VisibleForTesting
+    public void clearAllPasswords() {
+        PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
+    }
+
+    /**
      * Destroys its C++ counterpart.
      */
     public void destroy() {
@@ -155,6 +163,7 @@ public class PasswordStoreBridge {
         int getPasswordStoreCredentialsCount(long nativePasswordStoreBridge);
         void getAllCredentials(
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);
+        void clearAllPasswords(long nativePasswordStoreBridge);
         void destroy(long nativePasswordStoreBridge);
     }
 }

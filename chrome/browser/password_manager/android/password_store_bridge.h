@@ -45,6 +45,9 @@ class PasswordStoreBridge
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& java_credentials) const;
 
+  // Called by Java to clear all stored passwords.
+  void ClearAllPasswords(JNIEnv* env);
+
   // Called by Java to destroy `this`.
   void Destroy(JNIEnv* env);
 
