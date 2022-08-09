@@ -112,9 +112,8 @@ void SigninInterceptFirstRunExperienceDialog::
         const AccountInfo& account_info,
         signin::SigninChoiceCallback callback) {
   // This is a brand new profile. Skip the enterprise confirmation.
-  // TODO(crbug.com/1282157): Do not show the sync promo if either
-  // - PromotionalTabsEnabled policy is set to False, or
-  // - the user went through the Profile Separation dialog.
+  // TODO(crbug.com/1282157): Do not show the sync promo if
+  // PromotionalTabsEnabled policy is set to False
   std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
 }
 
@@ -123,6 +122,14 @@ void SigninInterceptFirstRunExperienceDialog::
         base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
             callback) {
   if (!dialog_) {
+    std::move(callback).Run(LoginUIService::ABORT_SYNC);
+    return;
+  }
+
+  if (dialog_->is_forced_intercept_) {
+    // Don't show the sync promo to users who went through the forced
+    // interception.
+    dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
     std::move(callback).Run(LoginUIService::ABORT_SYNC);
     return;
   }
@@ -214,11 +221,7 @@ SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::Show() {
   RecordDialogEvent(DialogEvent::kStart);
-  // Don't show the sync promo to the users who went through the forced
-  // interception.
-  Step first_step =
-      is_forced_intercept_ ? Step::kProfileCustomization : Step::kTurnOnSync;
-  DoNextStep(Step::kStart, first_step);
+  DoNextStep(Step::kStart, Step::kTurnOnSync);
 }
 
 SigninInterceptFirstRunExperienceDialog::
