@@ -309,20 +309,10 @@ class AccessCodeCastSinkService : public KeyedService,
 
   net::BackoffEntry::Policy backoff_policy_;
 
-  // Map of callbacks that we are currently waiting to alert callers about the
-  // completion of discovery. This cannot be done until all routes on any given
-  // sink are terminated.
-  std::map<MediaSink::Id, AddSinkResultCallback> pending_callbacks_;
-
   // Map of sink_ids keyed to a value of expiration timers for the current
   // session (this is updated when the profile session or network is changed).
   std::map<MediaSink::Id, std::unique_ptr<base::OneShotTimer>>
       current_session_expiration_timers_;
-
-  // Set of devices that have expired but still have an open route. These
-  // devices are removed from the media router AND removed from the pref
-  // service.
-  std::set<MediaSink::Id> pending_expirations_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

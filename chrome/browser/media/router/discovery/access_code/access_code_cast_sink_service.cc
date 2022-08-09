@@ -250,13 +250,10 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
   // the sink if a new route wasn't established during the pause.
   auto route = GetActiveRoute(sink->id());
 
-  // If a sink is pending expiration that means we can
-  // remove it from the media router.
-  if (!route.has_value() && pending_expirations_.count(sink->id())) {
-    RemoveSinkIdFromAllEntries(sink->id());
-    RemoveAndDisconnectMediaSinkFromRouter(sink);
-    pending_expirations_.erase(sink->id());
-  }
+  // If there is no active route, check manually if the device should be
+  // instantly expired.
+  if (!route.has_value())
+    CheckMediaSinkForExpiration(sink->id());
 }
 
 void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
@@ -666,7 +663,6 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSinkInternal& sink) {
                 "route has "
                 "ended.",
             sink.id());
-    pending_expirations_.insert(sink.id());
     return;
   }
   RemoveSinkIdFromAllEntries(sink.id());
@@ -814,7 +810,6 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
   if (!GetAccessCodeCastEnabledPref(prefs_)) {
     RemoveAndDisconnectExistingSinksOnNetwork();
     ResetExpirationTimers();
-    pending_expirations_.clear();
     pref_updater_->ClearDevicesDict();
     pref_updater_->ClearDeviceAddedTimeDict();
   }

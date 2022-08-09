@@ -219,6 +219,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   // Test to see that an AccessCode cast sink will be removed after the session
   // is ended.
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+  SetDeviceDurationPrefForTest(base::Seconds(10));
 
   // Add a non-access code cast sink to media router and route list.
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
@@ -239,6 +240,11 @@ TEST_F(AccessCodeCastSinkServiceTest,
   MediaRoute media_route_access = CreateRouteForTesting(access_code_sink2);
 
   route_list.push_back(media_route_access);
+
+  mock_cast_media_sink_service_impl()->AddSinkForTest(access_code_sink2);
+  access_code_cast_sink_service_->SetExpirationTimer(&access_code_sink2);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&access_code_sink2);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
   // Expect that the removed_route_id_ member variable has not changes since no
   // route was removed.
@@ -278,14 +284,15 @@ TEST_F(AccessCodeCastSinkServiceTest,
       media_route_access.media_route_id());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
+  // Expire the access code cast sink while the route is still active.
+  task_environment_.AdvanceClock(base::Seconds(100));
+
   access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
       &access_code_sink2);
-  // Expect that there is a pending attempt to examine the sink to see if it
-  // should be expired.
+
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(access_code_sink2));
-  access_code_cast_sink_service_->pending_expirations_.insert(
-      access_code_sink2.id());
+
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -856,7 +863,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersNetworkChange) {
   EXPECT_TRUE(access_code_cast_sink_service_
                   ->current_session_expiration_timers_[cast_sink3.id()]
                   ->IsRunning());
-  EXPECT_TRUE(access_code_cast_sink_service_->pending_expirations_.empty());
+
   FastForwardUiAndIoTasks();
   content::RunAllTasksUntilIdle();
 }
