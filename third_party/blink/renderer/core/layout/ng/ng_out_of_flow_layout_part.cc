@@ -361,9 +361,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const auto& grid_style = containing_grid.StyleRef();
     const auto& placement_data = containing_grid.CachedPlacementData();
 
-    GridItemData grid_item(candidate.Node(), grid_style,
-                           grid_style.GetWritingMode());
-
+    GridItemData grid_item(candidate.Node(), grid_style);
     return {grid_style.GetWritingDirection(),
             NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
                 NGGridPlacement(grid_style, placement_data), grid_layout_data,

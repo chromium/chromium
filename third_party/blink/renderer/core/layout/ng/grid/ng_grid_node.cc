@@ -44,9 +44,8 @@ GridItems NGGridNode::ConstructGridItems(
   const int initial_order = ComputedStyleInitialValues::InitialOrder();
 
   for (auto child = FirstChild(); child; child = child.NextSibling()) {
-    auto* grid_item = MakeGarbageCollected<GridItemData>(
-        To<NGBlockNode>(child), container_style,
-        container_style.GetWritingMode());
+    auto* grid_item = MakeGarbageCollected<GridItemData>(To<NGBlockNode>(child),
+                                                         container_style);
 
     // Order all of our in-flow children by their order property.
     if (!grid_item->IsOutOfFlow()) {

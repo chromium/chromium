@@ -3518,8 +3518,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
       continue;
 
     absl::optional<LogicalRect> containing_block_rect;
-    GridItemData out_of_flow_item(To<NGBlockNode>(child), container_style,
-                                  ConstraintSpace().GetWritingMode());
+    GridItemData out_of_flow_item(To<NGBlockNode>(child), container_style);
 
     if (out_of_flow_item.IsGridContainingBlock()) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(

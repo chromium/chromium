@@ -29,9 +29,7 @@ struct OutOfFlowItemPlacement {
 };
 
 struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
-  GridItemData(const NGBlockNode node,
-               const ComputedStyle& container_style,
-               const WritingMode container_writing_mode);
+  GridItemData(const NGBlockNode node, const ComputedStyle& container_style);
 
   void SetAlignmentFallback(const GridTrackSizingDirection track_direction,
                             const ComputedStyle& container_style,
