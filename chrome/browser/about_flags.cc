@@ -6790,11 +6790,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensCameraAssistedSearchVariations,
                                     "LensCameraAssistedSearch")},
 
-    {"location-bar-model-optimizations",
-     flag_descriptions::kLocationBarModelOptimizationsName,
-     flag_descriptions::kLocationBarModelOptimizationsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kLocationBarModelOptimizations)},
-
     {"enable-iph", flag_descriptions::kEnableIphName,
      flag_descriptions::kEnableIphDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feature_engagement::kEnableIPH)},

@@ -65,7 +65,7 @@ import org.chromium.url.ShadowGURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowTrustedCdn.class})
-@DisableFeatures({ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
+@DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
@@ -299,7 +299,7 @@ public class LocationBarModelUnitTest {
         verify(mLocationBarDataObserver).onSecurityStateChanged();
     }
 
-    @EnableFeatures({ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
+    @EnableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
     @Test
     @MediumTest
     public void testSpannableCache() {

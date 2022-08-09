@@ -1744,11 +1744,6 @@ const char kLensCameraAssistedSearchDescription[] =
     "Enable an entry point to Google Lens to allow users to search what they "
     "see using their mobile camera.";
 
-const char kLocationBarModelOptimizationsName[] =
-    "LocationBarModel optimizations";
-const char kLocationBarModelOptimizationsDescription[] =
-    "Cache commonly used data in LocationBarModel to improve performance";
-
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =

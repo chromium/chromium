@@ -53,7 +53,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS,
-        ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
+        ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
 public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;

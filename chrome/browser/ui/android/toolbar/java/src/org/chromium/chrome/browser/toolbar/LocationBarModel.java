@@ -204,7 +204,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      */
     public void initializeWithNative() {
         mOptimizationsEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS);
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS);
         mLastUsedNonOTRProfile = Profile.getLastUsedRegularProfile();
         if (mOptimizationsEnabled) {
             mSpannableDisplayTextCache = new LruCache<>(LRU_CACHE_SIZE);
