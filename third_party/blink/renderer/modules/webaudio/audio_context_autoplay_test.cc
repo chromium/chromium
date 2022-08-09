@@ -54,11 +54,9 @@ class MockWebAudioDeviceForAutoplayTest : public WebAudioDevice {
 class AudioContextAutoplayTestPlatform : public TestingPlatformSupport {
  public:
   std::unique_ptr<WebAudioDevice> CreateAudioDevice(
-      unsigned number_of_input_channels,
-      unsigned number_of_channels,
+      unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      WebAudioDevice::RenderCallback*,
-      const WebString& device_id) override {
+      WebAudioDevice::RenderCallback*) override {
     return std::make_unique<MockWebAudioDeviceForAutoplayTest>(
         AudioHardwareSampleRate(), AudioHardwareBufferSize());
   }

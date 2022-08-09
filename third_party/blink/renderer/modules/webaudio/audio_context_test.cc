@@ -48,11 +48,9 @@ class MockWebAudioDeviceForAudioContext : public WebAudioDevice {
 class AudioContextTestPlatform : public TestingPlatformSupport {
  public:
   std::unique_ptr<WebAudioDevice> CreateAudioDevice(
-      unsigned number_of_input_channels,
-      unsigned number_of_channels,
+      unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      WebAudioDevice::RenderCallback*,
-      const WebString& device_id) override {
+      WebAudioDevice::RenderCallback*) override {
     double buffer_size = 0;
     const double interactive_size = AudioHardwareBufferSize();
     const double balanced_size = AudioHardwareBufferSize() * 2;

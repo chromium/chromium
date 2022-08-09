@@ -465,20 +465,18 @@ base::TimeDelta RendererBlinkPlatformImpl::GetHungRendererDelay() {
 }
 
 std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
-    unsigned input_channels,
-    unsigned channels,
+    unsigned output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
-    WebAudioDevice::RenderCallback* callback,
-    const blink::WebString& input_device_id) {
-  // The |channels| does not exactly identify the channel layout of the
+    WebAudioDevice::RenderCallback* callback) {
+  // The |output_channels| does not exactly identify the channel layout of the
   // device. The switch statement below assigns a best guess to the channel
   // layout based on number of channels.
-  media::ChannelLayout layout = media::GuessChannelLayout(channels);
+  media::ChannelLayout layout = media::GuessChannelLayout(output_channels);
   if (layout == media::CHANNEL_LAYOUT_UNSUPPORTED)
     layout = media::CHANNEL_LAYOUT_DISCRETE;
 
   return RendererWebAudioDeviceImpl::Create(
-      layout, channels, latency_hint, callback,
+      layout, output_channels, latency_hint, callback,
       /*session_id=*/base::UnguessableToken());
 }
 

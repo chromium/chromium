@@ -104,12 +104,9 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
                                 number_of_output_channels));
   SendLogMessage(
       String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
-  // Create WebAudioDevice. blink::WebAudioDevice is designed to support the
-  // local input (e.g. loopback from OS audio system), but Chromium's media
-  // renderer does not support it currently. Thus, we use zero for the number
-  // of input channels.
+
   web_audio_device_ = Platform::Current()->CreateAudioDevice(
-      0, number_of_output_channels, latency_hint, this, String());
+      number_of_output_channels, latency_hint, this);
   DCHECK(web_audio_device_);
 
   callback_buffer_size_ = web_audio_device_->FramesPerBuffer();
