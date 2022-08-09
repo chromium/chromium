@@ -1056,22 +1056,20 @@ testcase.recentsEmptyFolderMessage = async () => {
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
   await navigateToRecent(appId);
   // All filter is on by default.
-  await waitForEmptyFolderMessage(appId, 'Your recent files will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent files');
   // Activates to audio filter.
   await remoteCall.waitAndClickElement(appId, [`[file-type-filter="audio"]`]);
-  await waitForEmptyFolderMessage(
-      appId, 'Your recent audio files will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent audio files');
   // Activates to documents filter.
   await remoteCall.waitAndClickElement(
       appId, [`[file-type-filter="document"]`]);
-  await waitForEmptyFolderMessage(
-      appId, 'Your recent documents will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent documents');
   // Activates to images filter.
   await remoteCall.waitAndClickElement(appId, [`[file-type-filter="image"]`]);
-  await waitForEmptyFolderMessage(appId, 'Your recent images will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent images');
   // Activates to videos filter.
   await remoteCall.waitAndClickElement(appId, [`[file-type-filter="video"]`]);
-  await waitForEmptyFolderMessage(appId, 'Your recent videos will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent videos');
 };
 
 
@@ -1086,5 +1084,5 @@ testcase.recentsEmptyFolderMessageAfterDeletion = async () => {
   const files = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
   await remoteCall.waitForFiles(appId, files);
   await deleteFile(appId, ENTRIES.beautiful.nameText);
-  await waitForEmptyFolderMessage(appId, 'Your recent files will appear here');
+  await waitForEmptyFolderMessage(appId, 'No recent files');
 };

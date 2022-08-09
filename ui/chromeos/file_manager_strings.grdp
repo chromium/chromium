@@ -117,19 +117,19 @@
     Older
   </message>
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_FOLDER" desc="Empty state message for all filter in Recent view.">
-    Your recent files will appear here
+    No recent files
   </message>
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_IMAGES_FOLDER" desc="Empty state message for image filter in Recent view.">
-    Your recent images will appear here
+    No recent images
   </message>
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_AUDIO_FOLDER" desc="Empty state message for audio filter in Recent view.">
-    Your recent audio files will appear here
+    No recent audio files
   </message>
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_VIDEOS_FOLDER" desc="Empty state message for video filter in Recent view.">
-    Your recent videos will appear here
+    No recent videos
   </message>
   <message name="IDS_FILE_BROWSER_RECENT_EMPTY_DOCUMENTS_FOLDER" desc="Empty state message for document filter in Recent view.">
-    Your recent documents will appear here
+    No recent documents
   </message>
   <message name="IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL" desc="Parallels local directory label.">
     Windows files
