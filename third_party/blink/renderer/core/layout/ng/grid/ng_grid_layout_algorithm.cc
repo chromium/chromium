@@ -490,12 +490,12 @@ LayoutUnit NGGridLayoutAlgorithm::Baseline(
   // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
   if (track_direction == kForColumns) {
     const wtf_size_t set_index = grid_item.column_set_indices.begin;
-    return (grid_item.column_baseline_type == BaselineType::kMajor)
+    return (grid_item.column_baseline_group == BaselineGroup::kMajor)
                ? layout_data.Columns()->MajorBaseline(set_index)
                : layout_data.Columns()->MinorBaseline(set_index);
   } else {
     const wtf_size_t set_index = grid_item.row_set_indices.begin;
-    return (grid_item.row_baseline_type == BaselineType::kMajor)
+    return (grid_item.row_baseline_group == BaselineGroup::kMajor)
                ? layout_data.Rows()->MajorBaseline(set_index)
                : layout_data.Rows()->MinorBaseline(set_index);
   }
@@ -1444,7 +1444,6 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
   DCHECK(grid_items && track_collection);
 
   const auto track_direction = track_collection->Direction();
-  const bool is_for_columns = track_direction == kForColumns;
 
   track_collection->ResetBaselines();
 
@@ -1455,13 +1454,10 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     // alignment context along that axis", so we only need to look at the first
     // index for baseline/first-baseline support.
     // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-    const auto baseline_type = is_for_columns ? grid_item.column_baseline_type
-                                              : grid_item.row_baseline_type;
-    const wtf_size_t set_index = is_for_columns
-                                     ? grid_item.column_set_indices.begin
-                                     : grid_item.row_set_indices.begin;
+    const auto baseline_group = grid_item.BaselineGroup(track_direction);
+    const wtf_size_t set_index = grid_item.SetIndices(track_direction).begin;
 
-    if (baseline_type == BaselineType::kMajor)
+    if (baseline_group == BaselineGroup::kMajor)
       track_collection->SetMajorBaseline(set_index, candidate_baseline);
     else
       track_collection->SetMinorBaseline(set_index, candidate_baseline);

@@ -15,7 +15,7 @@ namespace blink {
 class NGGridPlacement;
 
 enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
-enum class BaselineType { kMajor, kMinor };
+enum class BaselineGroup { kMajor, kMinor };
 enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 struct GridItemIndices {
@@ -66,6 +66,12 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   void ComputeOutOfFlowItemPlacement(
       const NGGridLayoutTrackCollection& track_collection,
       const NGGridPlacement& grid_placement);
+
+  enum BaselineGroup BaselineGroup(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? column_baseline_group
+                                            : row_baseline_group;
+  }
 
   const GridItemIndices& SetIndices(
       const GridTrackSizingDirection track_direction) const {
@@ -176,8 +182,8 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   NGAutoBehavior inline_auto_behavior;
   NGAutoBehavior block_auto_behavior;
 
-  BaselineType column_baseline_type;
-  BaselineType row_baseline_type;
+  enum BaselineGroup column_baseline_group;
+  enum BaselineGroup row_baseline_group;
 
   TrackSpanProperties column_span_properties;
   TrackSpanProperties row_span_properties;

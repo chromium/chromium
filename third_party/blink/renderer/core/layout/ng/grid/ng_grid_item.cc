@@ -124,7 +124,7 @@ AxisEdge AxisEdgeFromItemPosition(const bool is_inline_axis,
 //
 // TODO(kschmi): Some of these conditions are non-intuitive, so investigate
 // whether these conditions are correct or if the test expectations are off.
-BaselineType DetermineBaselineType(
+BaselineGroup DetermineBaselineGroup(
     const GridTrackSizingDirection track_direction,
     const WritingMode container_writing_mode,
     const WritingMode child_writing_mode) {
@@ -152,7 +152,7 @@ BaselineType DetermineBaselineType(
       is_major = true;
       break;
   }
-  return is_major ? BaselineType::kMajor : BaselineType::kMinor;
+  return is_major ? BaselineGroup::kMajor : BaselineGroup::kMinor;
 }
 
 }  // namespace
@@ -186,10 +186,10 @@ GridItemData::GridItemData(const NGBlockNode node,
 
   const auto container_writing_mode = container_style.GetWritingMode();
   const auto item_writing_mode = style.GetWritingMode();
-  column_baseline_type = DetermineBaselineType(
+  column_baseline_group = DetermineBaselineGroup(
       kForColumns, container_writing_mode, item_writing_mode);
-  row_baseline_type = DetermineBaselineType(kForRows, container_writing_mode,
-                                            item_writing_mode);
+  row_baseline_group = DetermineBaselineGroup(kForRows, container_writing_mode,
+                                              item_writing_mode);
 }
 
 void GridItemData::SetAlignmentFallback(
