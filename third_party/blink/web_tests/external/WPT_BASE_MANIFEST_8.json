@@ -2031,6 +2031,13 @@
         {}
        ]
       ],
+      "nested-with-multicol-table-cell.html": [
+       "abb99c6201dee7b45170791e0eab6915d692552a",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-with-oof-inside-fixed-width.html": [
        "d53286ebe90bd784e6f0c0e2d02a6bf77548eaf3",
        [
@@ -105145,6 +105152,32 @@
        {}
       ]
      ],
+     "baseline-synthesis-003.html": [
+      "98f0e7c2374b5dbe9cd288f13baffdacd806b357",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "baseline-synthesis-004.html": [
+      "36c116c2dce4688f145e6362e15444515ce62048",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "canvas-contain-size.html": [
       "66fb7261e8fc0d965765c5ba93c48fc3167d9017",
       [
@@ -108320,7 +108353,7 @@
       ]
      ],
      "flexbox-break-request-horiz-001a.html": [
-      "613acd27ec46ee05ac05871c4532f15c916bcd84",
+      "583f461bc21eefa3ce19e014aa421c7af3040649",
       [
        null,
        [
@@ -108333,7 +108366,7 @@
       ]
      ],
      "flexbox-break-request-horiz-001b.html": [
-      "3ef143639e44eecf46cde92454da06a119d6bed0",
+      "545c8c4c6d3a202cd6b6b6fb581b7e6f608a08f9",
       [
        null,
        [
@@ -108372,7 +108405,7 @@
       ]
      ],
      "flexbox-break-request-vert-001a.html": [
-      "5be8d5307bd55d87135793eb8f3e9c210ee8e692",
+      "57fd0d5eb92fbc7f143265f9deefd38dffce3ef9",
       [
        null,
        [
@@ -108385,7 +108418,7 @@
       ]
      ],
      "flexbox-break-request-vert-001b.html": [
-      "87ba97a687e244b306901f3d6fec79aaf0a29a22",
+      "8c5a88683d9e482926c549436613b80f3bc28806",
       [
        null,
        [
@@ -152506,12 +152539,12 @@
       ]
      ],
      "lang-pseudo-class-across-shadow-boundaries.html": [
-      "f54e8cba6fced83776620ae66d7295aabf410d79",
+      "ec1e156498102e6d2384ddfe61f54296ef143d95",
       [
        null,
        [
         [
-         "/css/css-pseudo/marker-and-other-pseudo-elements-ref.html",
+         "/css/css-pseudo/lang-pseudo-class-across-shadow-boundaries-ref.html",
          "=="
         ]
        ],
@@ -268705,7 +268738,7 @@
       []
      ],
      "flexbox-break-request-horiz-001-ref.html": [
-      "642c1e3d1c996e66957e6a37fe8a137cec2bcdb4",
+      "da5469d37299cdc2ed782b2b053ed388cd0732c1",
       []
      ],
      "flexbox-break-request-horiz-002-ref.html": [
@@ -268713,7 +268746,7 @@
       []
      ],
      "flexbox-break-request-vert-001-ref.html": [
-      "a9a286770bc8d5bfe054a84797af0eb5d8be45b9",
+      "849fdef228a40ed1ebd6ce37b34642b59e2df2ab",
       []
      ],
      "flexbox-break-request-vert-002-ref.html": [
@@ -299298,6 +299331,10 @@
       "eaca3f49fd15840a3688a10a91b56524566893c5",
       []
      ],
+     "garbage-collect.js": [
+      "d2e3449c05e298836444c9e6fce903158bb0bed8",
+      []
+     ],
      "my-custom-element-html-document.html": [
       "b9bfdf90a2d9ae6f2731451b45554ecb70f366d6",
       []
@@ -300785,7 +300822,7 @@
       []
      ],
      "multitest.js": [
-      "656ea07a6d3ae58cea1a7bd66c87e51d951c23c4",
+      "157a9c71f4574c9116439d305e909a616416f860",
       []
      ],
      "outdent.js": [
@@ -320239,20 +320276,16 @@
     },
     "data-driven": {
      "README.md": [
-      "60c415f18633e2bf36d2b2e052ca8ab18493debb",
+      "abf059e46816e650fdedf7f1635dd95bb28d805e",
       []
      ],
      "resources": {
-      "data-base-url.json": [
-       "81fcf087425c70eefa7d3c3465be59684fb1a521",
-       []
-      ],
-      "empty-import-map-internal.json": [
-       "42033a2c07947f90ee779db5ec58d251958796ba",
+      "data-url-prefix.json": [
+       "980f6e005f6e160735c4659f14fde9b4ec6bbaf7",
        []
       ],
       "empty-import-map.json": [
-       "ff85a6d69d5ded8d4fb917ae767748d8903bc4e7",
+       "f488759aa4aefc146aa7c4c1e61c0557d5901e00",
        []
       ],
       "overlapping-entries.json": [
@@ -320320,18 +320353,18 @@
        []
       ],
       "test-helper-iframe.js": [
-       "597955fea1f9dc115b6910df59fbb0c5edc1d008",
+       "3f38a5f0faac3ad9114adc9786c112badb8c04fa",
        []
       ],
       "test-helper.js": [
-       "579fd52da8c1b034788ed760ab3744dae34e9fde",
+       "e89b639ca042b28c09cfb852705df6d9eecfa600",
        []
       ],
       "tricky-specifiers.json": [
        "998fe7fb67dba2ad132ef9f8499b929419f323a5",
        []
       ],
-      "url-specifiers-schemes-internal.json": [
+      "url-specifiers-schemes.json": [
        "58a97642c2bd81690d6b9703de5688996cd306eb",
        []
       ],
@@ -320340,10 +320373,6 @@
        []
       ]
      },
-     "service-worker.js": [
-      "68f293bfbfb49796fff247f1259f4d9076b7287e",
-      []
-     ],
      "tools": {
       "format_json.py": [
        "6386d418de1199df47a2f97376b7dbb38f4bbb28",
@@ -322315,7 +322344,7 @@
     ]
    },
    "lint.ignore": [
-    "8f035b9f956933e5977b82e91154489a54e2a7bc",
+    "6c93ccafb44b1fe2e58e69e4dd2aac166df9de64",
     []
    ],
    "loading": {
@@ -325387,6 +325416,10 @@
       ],
       "permissions-policy-trust-token-redemption.html": [
        "db24b04824c235027095205ac9cc051066e921ed",
+       []
+      ],
+      "unload-helper.js": [
+       "9739ead69d6d5864ef1753cdaec888a9cae87905",
        []
       ],
       "vertical-scroll-scrollable-content.html": [
@@ -404702,6 +404735,13 @@
        {}
       ]
      ],
+     "ElementInternals-target-element-is-held-strongly.html": [
+      "7119d5f9ebe95eced4b550dd8c394f685103e7a8",
+      [
+       null,
+       {}
+      ]
+     ],
      "ElementInternals-validation.html": [
       "4890cee7212cc2ab422dd98ab7e55c40ad9c25bc",
       [
@@ -477571,7 +477611,7 @@
         ]
        ],
        "form-validation-willValidate.html": [
-        "ccd1cf09b907bf91f0454f8bb84d04cdf83a18bd",
+        "c1abf76b6564546ca2d1edd386a884f54c670bb0",
         [
          null,
          {}
@@ -477764,7 +477804,7 @@
         ]
        ],
        "implicit-submission.optional.html": [
-        "7e7d2f0323101730edd065d09fc3961bc57c4e9e",
+        "379a4396ac96d0ec8134d67db482d2b551041a49",
         [
          null,
          {
@@ -490121,31 +490161,47 @@
      ]
     },
     "data-driven": {
-     "parsing-internal.https.html": [
-      "7d45ae8c33bd1f9d11616b3a14085ee8aa218aca",
+     "resolving.html": [
+      "bcf3d1de7e028923c0b7f06770522eb2dec174d7",
       [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "resolving-internal.https.html": [
-      "d75bebba47531c721dc6764bdb22a017120565bb",
+       "import-maps/data-driven/resolving.html?data-url-prefix.json",
+       {}
+      ],
       [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "resolving.https.html": [
-      "40b7ef5dae5010cf39b1df38e3dce5b96c3d62df",
+       "import-maps/data-driven/resolving.html?empty-import-map.json",
+       {}
+      ],
       [
-       null,
-       {
-        "timeout": "long"
-       }
+       "import-maps/data-driven/resolving.html?overlapping-entries.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?packages-via-trailing-slashes.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?resolving-null.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?scopes-exact-vs-prefix.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?scopes.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?tricky-specifiers.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?url-specifiers-schemes.json",
+       {}
+      ],
+      [
+       "import-maps/data-driven/resolving.html?url-specifiers.json",
+       {}
       ]
      ]
     },
@@ -506700,6 +506756,120 @@
        {}
       ]
      ],
+     "unload-allowed-by-default.tentative.window.js": [
+      "68ce11befdfc512e17ae9aaa7b4bf427cbae08c6",
+      [
+       "permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "'unload' Policy : allowed by default"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "./resources/unload-helper.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "unload-disallowed-subframe.tentative.window.js": [
+      "d7eb3d4d736b4ed74104c5785de4a2a46297a608",
+      [
+       "permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "'unload' Policy : allowed in main frame but disallowed in subframe"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "./resources/unload-helper.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "unload-disallowed.tentative.window.js": [
+      "2eb14d4a1e6b631825cc6d42bb14b4d18bd59fa8",
+      [
+       "permissions-policy/experimental-features/unload-disallowed.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "'unload' Policy : disallowed when header is ()"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "./resources/unload-helper.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "vertical-scroll-scrollintoview.tentative.html": [
       "4f78dd914ad4ab9e76fad9ed190942f1888d63b3",
       [
@@ -523148,7 +523318,7 @@
      ]
     ],
     "sanitizer-sanitize.https.tentative.html": [
-     "66d8db9d4c0b4a42d9921212e7ba5781656f6e81",
+     "82eaeb48329f235a833aa8b8120bd6f08e64f90d",
      [
       null,
       {}
@@ -525668,7 +525838,7 @@
      ]
     ],
     "enrollment.https.html": [
-     "d9e86918afb30880046e234d90946c6da4ff39f2",
+     "7a370aa7b7ebecdcebb832f8e54f284ac5011b85",
      [
       null,
       {

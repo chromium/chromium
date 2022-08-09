@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 348 tests; 306 PASS, 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 348 tests; 309 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandIndeterm("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandState("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandValue("inserttext") before
@@ -218,7 +218,7 @@ PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]<
 PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("delete", false, "") return value
 PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
 PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<b>a</b>" not in array ["<div><b>a</b></div>", "<div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML
 PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
 PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
 FAIL [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
@@ -241,7 +241,7 @@ PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext
 PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("insertparagraph", false, "") return value
 PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
 PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<br><div><b>a</b></div>" not in array ["<div><br></div><div><b>a</b></div>", "<div><br></div><div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML
 PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
 PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
 FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
@@ -264,7 +264,7 @@ PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div>
 PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("insertparagraph", false, "") return value
 PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
 PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<br><div><b>a</b></div>" not in array ["<div><br></div><div><b>a</b></div>", "<div><br></div><div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML
 PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
 PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
 FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
