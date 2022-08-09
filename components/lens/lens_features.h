@@ -53,7 +53,7 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
 
 // Enables footer for the unified side panel
-extern const base::FeatureParam<bool> kEnableLensSidePanelFooter;
+extern const base::Feature kLensUnifiedSidePanelFooter;
 
 // Enables Lens fullscreen search on Desktop platforms.
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;

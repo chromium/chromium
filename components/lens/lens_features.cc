@@ -25,6 +25,9 @@ const base::Feature kLensTransparentImagesFix{
 const base::Feature kLensSearchImageInScreenshotSharing{
     "LensSearchImageInScreenshotSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kLensUnifiedSidePanelFooter{
+    "LensUnifiedSidePanelFooter", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -33,9 +36,6 @@ const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
 
 const base::FeatureParam<bool> kEnableSidePanelForLens{
     &kLensStandalone, "enable-side-panel", true};
-
-const base::FeatureParam<bool> kEnableLensSidePanelFooter{
-    &kLensStandalone, "enable-lens-side-panel-footer", true};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
@@ -83,7 +83,7 @@ bool GetEnableUKMLoggingForImageSearch() {
 }
 
 bool GetEnableLensSidePanelFooter() {
-  return kEnableLensSidePanelFooter.Get();
+  return base::FeatureList::IsEnabled(kLensUnifiedSidePanelFooter);
 }
 
 int GetMaxPixelsForRegionSearch() {

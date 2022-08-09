@@ -58,9 +58,9 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     base::test::ScopedFeatureList features;
     features.InitWithFeaturesAndParameters(
         {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"},
-           {lens::features::kEnableLensSidePanelFooter.name, "true"}}},
-         {features::kUnifiedSidePanel, {{}}}},
+          {{lens::features::kEnableSidePanelForLens.name, "true"}}},
+         {features::kUnifiedSidePanel, {{}}},
+         {lens::features::kLensUnifiedSidePanelFooter, {{}}}},
         {});
     InProcessBrowserTest::SetUp();
   }
