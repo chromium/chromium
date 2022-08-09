@@ -651,8 +651,7 @@ void PolicyUIHandler::FileSelectionCanceled(void* params) {
 
 void PolicyUIHandler::SendPolicies() {
   if (IsJavascriptAllowed())
-    FireWebUIListener("policies-updated", base::Value(GetPolicyNames()),
-                      base::Value(GetPolicyValues()));
+    FireWebUIListener("policies-updated", GetPolicyNames(), GetPolicyValues());
 }
 
 void PolicyUIHandler::OnRefreshPoliciesDone() {

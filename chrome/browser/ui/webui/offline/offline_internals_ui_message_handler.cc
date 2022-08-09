@@ -92,9 +92,9 @@ void OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages(
   std::string callback_id = args[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  base::Value::ConstListView offline_ids_from_arg = args[1].GetListDeprecated();
-  for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
-    std::string value = offline_ids_from_arg[i].GetString();
+  const base::Value::List& offline_ids_from_arg = args[1].GetList();
+  for (const auto& arg : offline_ids_from_arg) {
+    std::string value = arg.GetString();
     int64_t int_value;
     base::StringToInt64(value, &int_value);
     offline_ids.push_back(int_value);
@@ -115,9 +115,9 @@ void OfflineInternalsUIMessageHandler::HandleDeleteSelectedRequests(
   std::string callback_id = args[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  base::Value::ConstListView offline_ids_from_arg = args[1].GetListDeprecated();
-  for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
-    std::string value = offline_ids_from_arg[i].GetString();
+  const base::Value::List& offline_ids_from_arg = args[1].GetList();
+  for (const auto& arg : offline_ids_from_arg) {
+    std::string value = arg.GetString();
     int64_t int_value;
     base::StringToInt64(value, &int_value);
     offline_ids.push_back(int_value);
@@ -172,8 +172,7 @@ void OfflineInternalsUIMessageHandler::HandleStoredPagesCallback(
            b.FindKey({"creationTime"})->GetDouble();
   });
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(results)));
+  ResolveJavascriptCallback(base::Value(callback_id), results);
 }
 
 void OfflineInternalsUIMessageHandler::HandleRequestQueueCallback(
@@ -193,8 +192,7 @@ void OfflineInternalsUIMessageHandler::HandleRequestQueueCallback(
     save_page_request.Set("requestOrigin", request->request_origin());
     save_page_requests.Append(std::move(save_page_request));
   }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(save_page_requests)));
+  ResolveJavascriptCallback(base::Value(callback_id), save_page_requests);
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetRequestQueue(
@@ -207,7 +205,7 @@ void OfflineInternalsUIMessageHandler::HandleGetRequestQueue(
         &OfflineInternalsUIMessageHandler::HandleRequestQueueCallback,
         weak_ptr_factory_.GetWeakPtr(), callback_id));
   } else {
-    base::ListValue results;
+    base::Value::List results;
     ResolveJavascriptCallback(base::Value(callback_id), results);
   }
 }
@@ -222,7 +220,7 @@ void OfflineInternalsUIMessageHandler::HandleGetStoredPages(
         &OfflineInternalsUIMessageHandler::HandleStoredPagesCallback,
         weak_ptr_factory_.GetWeakPtr(), callback_id));
   } else {
-    base::ListValue results;
+    base::Value::List results;
     ResolveJavascriptCallback(base::Value(callback_id), results);
   }
 }
@@ -450,20 +448,20 @@ void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  base::DictionaryValue result;
-  result.SetBoolKey("modelIsLogging",
-                    offline_page_model_
-                        ? offline_page_model_->GetLogger()->GetIsLogging()
-                        : false);
-  result.SetBoolKey("queueIsLogging",
-                    request_coordinator_
-                        ? request_coordinator_->GetLogger()->GetIsLogging()
-                        : false);
+  base::Value::Dict result;
+  result.Set("modelIsLogging",
+             offline_page_model_
+                 ? offline_page_model_->GetLogger()->GetIsLogging()
+                 : false);
+  result.Set("queueIsLogging",
+             request_coordinator_
+                 ? request_coordinator_->GetLogger()->GetIsLogging()
+                 : false);
   bool prefetch_logging = false;
   if (prefetch_service_) {
     prefetch_logging = prefetch_service_->GetLogger()->GetIsLogging();
   }
-  result.SetBoolKey("prefetchIsLogging", prefetch_logging);
+  result.Set("prefetchIsLogging", prefetch_logging);
   ResolveJavascriptCallback(callback_id, result);
 }
 
@@ -481,7 +479,7 @@ void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
     prefetch_service_->GetLogger()->GetLogs(&logs);
   std::sort(logs.begin(), logs.end());
 
-  base::ListValue result;
+  base::Value::List result;
   for (const std::string& log : logs) {
     result.Append(log);
   }

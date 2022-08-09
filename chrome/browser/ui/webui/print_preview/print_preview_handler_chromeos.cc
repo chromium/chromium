@@ -44,18 +44,18 @@ namespace printing {
 
 namespace {
 
-base::Value PrintServersConfigMojomToValue(
+base::Value::Dict PrintServersConfigMojomToValue(
     crosapi::mojom::PrintServersConfigPtr config) {
-  base::Value ui_print_servers(base::Value::Type::LIST);
+  base::Value::List ui_print_servers;
   for (const auto& print_server : config->print_servers) {
-    base::Value ui_print_server(base::Value::Type::DICTIONARY);
-    ui_print_server.SetStringKey("id", print_server->id);
-    ui_print_server.SetStringKey("name", print_server->name);
+    base::Value::Dict ui_print_server;
+    ui_print_server.Set("id", print_server->id);
+    ui_print_server.Set("name", print_server->name);
     ui_print_servers.Append(std::move(ui_print_server));
   }
-  base::Value ui_print_servers_config(base::Value::Type::DICTIONARY);
-  ui_print_servers_config.SetKey("printServers", std::move(ui_print_servers));
-  ui_print_servers_config.SetBoolKey(
+  base::Value::Dict ui_print_servers_config;
+  ui_print_servers_config.Set("printServers", std::move(ui_print_servers));
+  ui_print_servers_config.Set(
       "isSingleServerFetchingMode",
       config->fetching_mode ==
           ash::ServerPrintersFetchingMode::kSingleServerOnly);
@@ -216,8 +216,7 @@ void PrintPreviewHandlerChromeOS::SendPrinterSetup(
     if (policies_value)
       response.Set("policies", std::move(*policies_value));
   }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(response)));
+  ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
 PrintPreviewHandler* PrintPreviewHandlerChromeOS::GetPrintPreviewHandler() {

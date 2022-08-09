@@ -64,13 +64,12 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
       entry.Set(
           "confidence",
           autocomplete_action_predictor_->CalculateConfidenceForDbEntry(it));
-      db.Append(base::Value(std::move(entry)));
+      db.Append(std::move(entry));
     }
     dict.Set("db", std::move(db));
   }
 
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            base::Value(std::move(dict)));
+  ResolveJavascriptCallback(args[0] /* callback_id */, dict);
 }
 
 void PredictorsHandler::RequestResourcePrefetchPredictorDb(
@@ -98,8 +97,7 @@ void PredictorsHandler::RequestResourcePrefetchPredictorDb(
     }
   }
 
-  ResolveJavascriptCallback(args[0] /* callback_id */,
-                            base::Value(std::move(dict)));
+  ResolveJavascriptCallback(args[0] /* callback_id */, dict);
 }
 
 void PredictorsHandler::AddOriginDataMapToListValue(
@@ -121,7 +119,7 @@ void PredictorsHandler::AddOriginDataMapToListValue(
       origin.Set("accessed_network", o.accessed_network());
       origin.Set("score",
                  ResourcePrefetchPredictorTables::ComputeOriginScore(o));
-      origins.Append(base::Value(std::move(origin)));
+      origins.Append(std::move(origin));
     }
     main.Set("origins", std::move(origins));
     db->Append(std::move(main));

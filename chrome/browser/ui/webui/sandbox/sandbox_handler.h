@@ -38,7 +38,7 @@ class SandboxHandler : public content::WebUIMessageHandler {
 
   // The ID of the callback that will get invoked with the sandbox list.
   base::Value sandbox_diagnostics_callback_id_;
-  base::Value browser_processes_;
+  base::Value::List browser_processes_;
   base::Value sandbox_policies_;
 
   // Always keep this the last member of this class to make sure it's the

@@ -26,36 +26,34 @@ using content::RenderProcessHost;
 namespace sandbox_handler {
 namespace {
 
-base::Value FetchBrowserChildProcesses() {
+base::Value::List FetchBrowserChildProcesses() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value browser_processes(base::Value::Type::LIST);
+  base::Value::List browser_processes;
 
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
     // Only add processes that have already started, i.e. with valid handles.
     if (!process_data.GetProcess().IsValid())
       continue;
-    base::Value proc(base::Value::Type::DICTIONARY);
-    proc.SetPath("processId", base::Value(base::strict_cast<double>(
-                                  process_data.GetProcess().Pid())));
-    proc.SetPath("processType",
-                 base::Value(content::GetProcessTypeNameInEnglish(
-                     process_data.process_type)));
-    proc.SetPath("name", base::Value(process_data.name));
-    proc.SetPath("metricsName", base::Value(process_data.metrics_name));
-    proc.SetPath(
-        "sandboxType",
-        base::Value(sandbox::policy::SandboxWin::GetSandboxTypeInEnglish(
-            process_data.sandbox_type)));
+    base::Value::Dict proc;
+    proc.Set("processId",
+             base::strict_cast<double>(process_data.GetProcess().Pid()));
+    proc.Set("processType",
+             content::GetProcessTypeNameInEnglish(process_data.process_type));
+    proc.Set("name", process_data.name);
+    proc.Set("metricsName", process_data.metrics_name);
+    proc.Set("sandboxType",
+             sandbox::policy::SandboxWin::GetSandboxTypeInEnglish(
+                 process_data.sandbox_type));
     browser_processes.Append(std::move(proc));
   }
 
   return browser_processes;
 }
 
-base::Value FetchRenderHostProcesses() {
+base::Value::List FetchRenderHostProcesses() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value renderer_processes(base::Value::Type::LIST);
+  base::Value::List renderer_processes;
 
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
@@ -64,26 +62,23 @@ base::Value FetchRenderHostProcesses() {
     if (!host->GetProcess().IsValid())
       continue;
 
-    base::Value proc(base::Value::Type::DICTIONARY);
-    proc.SetPath(
-        "processId",
-        base::Value(base::strict_cast<double>(host->GetProcess().Pid())));
+    base::Value::Dict proc;
+    proc.Set("processId", base::strict_cast<double>(host->GetProcess().Pid()));
     renderer_processes.Append(std::move(proc));
   }
 
   return renderer_processes;
 }
 
-base::Value FeatureToValue(const base::Feature& feature) {
-  base::Value feature_info(base::Value::Type::DICTIONARY);
-  feature_info.SetPath("name", base::Value(feature.name));
-  feature_info.SetPath("enabled",
-                       base::Value(base::FeatureList::IsEnabled(feature)));
+base::Value::Dict FeatureToValue(const base::Feature& feature) {
+  base::Value::Dict feature_info;
+  feature_info.Set("name", feature.name);
+  feature_info.Set("enabled", base::FeatureList::IsEnabled(feature));
   return feature_info;
 }
 
-base::Value FetchSandboxFeatures() {
-  base::Value features(base::Value::Type::LIST);
+base::Value::List FetchSandboxFeatures() {
+  base::Value::List features;
   features.Append(FeatureToValue(sandbox::policy::features::kGpuAppContainer));
   features.Append(FeatureToValue(sandbox::policy::features::kGpuLPAC));
   features.Append(
@@ -143,11 +138,11 @@ void SandboxHandler::GetRendererProcessesAndFinish() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto renderer_processes = FetchRenderHostProcesses();
-  base::Value results(base::Value::Type::DICTIONARY);
-  results.SetPath("browser", std::move(browser_processes_));
-  results.SetPath("policies", std::move(sandbox_policies_));
-  results.SetPath("renderer", std::move(renderer_processes));
-  results.SetPath("features", FetchSandboxFeatures());
+  base::Value::Dict results;
+  results.Set("browser", std::move(browser_processes_));
+  results.Set("policies", std::move(sandbox_policies_));
+  results.Set("renderer", std::move(renderer_processes));
+  results.Set("features", FetchSandboxFeatures());
   ResolveJavascriptCallback(sandbox_diagnostics_callback_id_,
                             std::move(results));
 }

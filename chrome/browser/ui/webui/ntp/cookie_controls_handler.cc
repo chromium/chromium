@@ -86,11 +86,11 @@ void CookieControlsHandler::OnThirdPartyCookieBlockingPolicyChanged() {
 }
 
 void CookieControlsHandler::SendCookieControlsUIChanges() {
-  base::DictionaryValue dict;
-  dict.SetBoolKey("enforced", service_->ShouldEnforceCookieControls());
-  dict.SetBoolKey("checked", service_->GetToggleCheckedValue());
-  dict.SetStringKey(
-      "icon", GetEnforcementIcon(service_->GetCookieControlsEnforcement()));
-  dict.SetStringKey("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
+  base::Value::Dict dict;
+  dict.Set("enforced", service_->ShouldEnforceCookieControls());
+  dict.Set("checked", service_->GetToggleCheckedValue());
+  dict.Set("icon",
+           GetEnforcementIcon(service_->GetCookieControlsEnforcement()));
+  dict.Set("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
   FireWebUIListener("cookie-controls-changed", dict);
 }
