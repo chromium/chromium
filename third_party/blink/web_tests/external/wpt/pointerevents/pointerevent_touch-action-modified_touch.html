@@ -42,7 +42,7 @@
       document.body.addEventListener("pointerdown", () => target.parentElement.removeChild(target));
       document.body.addEventListener("pointercancel", () => pointercancel_received = true);
 
-      var detected_pointertypes = {};
+      let detected_pointertypes = {};
       add_completion_callback(showPointerTypes);
 
       promise_test(async () => {
