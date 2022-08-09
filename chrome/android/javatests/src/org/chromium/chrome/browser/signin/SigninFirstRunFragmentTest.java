@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
@@ -169,6 +170,8 @@ public class SigninFirstRunFragmentTest {
     private IdentityServicesProvider mIdentityServicesProviderMock;
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
+    @Mock
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
 
     private Promise<Void> mNativeInitializationPromise;
     private FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
@@ -938,6 +941,21 @@ public class SigninFirstRunFragmentTest {
         callbackHelper.waitForFirst();
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
         verify(mFirstRunPageDelegateMock).exitFirstRun();
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWithMetricsReportingDisabled() throws Exception {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+        launchActivityWithFragment();
+
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test

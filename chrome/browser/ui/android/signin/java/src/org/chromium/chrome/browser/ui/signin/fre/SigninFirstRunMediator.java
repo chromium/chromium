@@ -159,28 +159,30 @@ public class SigninFirstRunMediator
     }
 
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
-        mAllowCrashUpload = !isMetricsReportingDisabledByPolicy();
-
         mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
-        mModel.set(SigninFirstRunProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
-        final boolean isSigninSupported = ExternalAuthUtils.getInstance().canUseGooglePlayServices()
-                && !IdentityServicesProvider.get()
+
+        boolean isSigninDisabledByPolicy = false;
+        boolean isMetricsReportingDisabledByPolicy = false;
+        if (hasPolicies) {
+            isSigninDisabledByPolicy =
+                    IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())
                             .isSigninDisabledByPolicy();
-        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
+            isMetricsReportingDisabledByPolicy =
+                    !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
 
-        if (!mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy()) {
-            // If metrics reporting is disabled by policy then there is at least one policy.
-            // Therefore, policies have loaded and frePolicy is not null.
-            assert hasPolicies;
-
-            final FrePolicy frePolicy = mModel.get(SigninFirstRunProperties.FRE_POLICY);
-            frePolicy.metricsReportingDisabledByPolicy = true;
+            final FrePolicy frePolicy = new FrePolicy();
+            frePolicy.metricsReportingDisabledByPolicy = isMetricsReportingDisabledByPolicy;
+            mModel.set(SigninFirstRunProperties.FRE_POLICY, frePolicy);
         }
 
-        final boolean isChild = mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
+                ExternalAuthUtils.getInstance().canUseGooglePlayServices()
+                        && !isSigninDisabledByPolicy);
+        mAllowCrashUpload = !isMetricsReportingDisabledByPolicy;
+
         mModel.set(SigninFirstRunProperties.FOOTER_STRING,
-                getFooterString(isMetricsReportingDisabledByPolicy()));
+                getFooterString(isMetricsReportingDisabledByPolicy));
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -214,12 +216,6 @@ public class SigninFirstRunMediator
 
     private void openUmaDialog() {
         new FreUMADialogCoordinator(mContext, mModalDialogManager, this, mAllowCrashUpload);
-    }
-
-    private boolean isMetricsReportingDisabledByPolicy() {
-        @Nullable
-        FrePolicy frePolicy = mModel.get(SigninFirstRunProperties.FRE_POLICY);
-        return frePolicy != null && frePolicy.metricsReportingDisabledByPolicy;
     }
 
     /**
@@ -363,8 +359,6 @@ public class SigninFirstRunMediator
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
-        mModel.set(SigninFirstRunProperties.FOOTER_STRING,
-                getFooterString(isMetricsReportingDisabledByPolicy()));
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }
