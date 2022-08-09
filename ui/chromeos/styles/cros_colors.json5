@@ -341,7 +341,7 @@
     },
     /* button-icon */
     button_icon_color_primary: {
-      light: "$google_grey_200",
+      light: "$white",
       dark: "$google_grey_900",
     },
     button_icon_color_primary_disabled: {
@@ -397,6 +397,11 @@
     /* slider */
     slider_color_active: "$color_prominent",
     slider_color_inactive: "$color_secondary",
+    slider_label_background_color: "$color_prominent",
+    slider_label_text_color: {
+      light: "$white",
+      dark: "$google_grey_900",
+    },
     slider_track_color_active: "rgba($slider_color_active.rgb, $second_tone_opacity)",
     slider_track_color_inactive: "rgba($slider_color_inactive.rgb, $second_tone_opacity)",
 
