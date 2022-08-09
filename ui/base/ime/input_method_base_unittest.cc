@@ -135,6 +135,16 @@ class MockInputMethodBase : public InputMethodBase {
   void CancelComposition(const TextInputClient* client) override {}
   bool IsCandidatePopupOpen() const override { return false; }
 
+#if BUILDFLAG(IS_WIN)
+  bool OnUntranslatedIMEMessage(
+      const CHROME_MSG event,
+      InputMethod::NativeEventResult* result) override {
+    return false;
+  }
+  void OnInputLocaleChanged() override {}
+  bool IsInputLocaleCJK() const override { return false; }
+#endif
+
   // InputMethodBase:
   void OnWillChangeFocusedClient(TextInputClient* focused_before,
                                  TextInputClient* focused) override {

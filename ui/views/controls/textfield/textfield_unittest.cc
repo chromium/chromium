@@ -162,6 +162,16 @@ class MockInputMethod : public ui::InputMethodBase {
       count_show_virtual_keyboard_++;
   }
 
+#if BUILDFLAG(IS_WIN)
+  bool OnUntranslatedIMEMessage(
+      const CHROME_MSG event,
+      InputMethod::NativeEventResult* result) override {
+    return false;
+  }
+  void OnInputLocaleChanged() override {}
+  bool IsInputLocaleCJK() const override { return false; }
+#endif
+
   bool untranslated_ime_message_called() const {
     return untranslated_ime_message_called_;
   }

@@ -48,20 +48,6 @@ void InputMethodBase::OnBlur() {
 
 void InputMethodBase::OnTouch(ui::EventPointerType pointerType) {}
 
-#if BUILDFLAG(IS_WIN)
-bool InputMethodBase::OnUntranslatedIMEMessage(
-    const CHROME_MSG event,
-    InputMethod::NativeEventResult* result) {
-  return false;
-}
-
-void InputMethodBase::OnInputLocaleChanged() {}
-
-bool InputMethodBase::IsInputLocaleCJK() const {
-  return false;
-}
-#endif
-
 void InputMethodBase::SetFocusedTextInputClient(TextInputClient* client) {
   SetFocusedTextInputClientInternal(client);
 }
