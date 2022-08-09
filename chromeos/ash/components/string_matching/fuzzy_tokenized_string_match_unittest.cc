@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +15,10 @@
 namespace ash::string_matching {
 
 namespace {
+
+// An upper limit for the purposes of catching regressions. Not for benchmarking
+// of typical expected time performance, which is much faster.
+constexpr base::TimeDelta kCalculationTimeUpperBound = base::Milliseconds(20);
 
 constexpr double kEps = 1e-5;
 constexpr double kCompleteMatchScore = 1.0;
@@ -928,6 +933,94 @@ TEST_F(FuzzyTokenizedStringMatchTest,
   EXPECT_EQ(match.hits().size(), 1u);
   EXPECT_EQ(match.hits()[0].start(), 12u);
   EXPECT_EQ(match.hits()[0].end(), 16u);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkStressTestLongText) {
+  // Same as BenchmarkStressTestLongQuery, with the roles of text and query
+  // reversed.
+
+  std::u16string text(300, 'a');
+
+  std::u16string query_high_match(25, 'a');
+  std::u16string query_low_match(u"bbbbbcccccbbbbbaaaaabbbbbcccccbbbbb");
+  std::u16string query_no_match(25, 'b');
+  std::vector<std::u16string> queries = {query_high_match, query_low_match,
+                                         query_no_match};
+
+  for (const auto& query : queries) {
+    base::Time start_time = base::Time::NowFromSystemTime();
+    const double relevance = CalculateRelevance(query, text);
+    base::TimeDelta elapsed_time = base::Time::NowFromSystemTime() - start_time;
+
+    EXPECT_LT(elapsed_time, kCalculationTimeUpperBound);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    VLOG(1) << "Elapsed time (ms): " << elapsed_time.InMillisecondsF();
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkStressTestLongQuery) {
+  // Same as BenchmarkStressTestLongText, with the roles of text and query
+  // reversed.
+  std::u16string query(300, 'a');
+
+  std::u16string text_high_match(25, 'a');
+  std::u16string text_low_match(u"bbbbbcccccbbbbbaaaaabbbbbcccccbbbbb");
+  std::u16string text_no_match(25, 'b');
+  std::vector<std::u16string> texts = {text_high_match, text_low_match,
+                                       text_no_match};
+
+  for (const auto& text : texts) {
+    base::Time start_time = base::Time::NowFromSystemTime();
+    const double relevance = CalculateRelevance(query, text);
+    base::TimeDelta elapsed_time = base::Time::NowFromSystemTime() - start_time;
+
+    EXPECT_LT(elapsed_time, kCalculationTimeUpperBound);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+    VLOG(1) << "Elapsed time (ms): " << elapsed_time.InMillisecondsF();
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkStressTestLongTextLongQuery) {
+  std::u16string text(300, 'a');
+
+  std::u16string query_high_match(300, 'a');
+  std::u16string query_low_match = std::u16string(140, 'b') +
+                                   std::u16string(20, 'a') +
+                                   std::u16string(140, 'b');
+  std::u16string query_no_match(300, 'b');
+  std::vector<std::u16string> queries = {query_high_match, query_low_match,
+                                         query_no_match};
+
+  for (const auto& query : queries) {
+    base::Time start_time = base::Time::NowFromSystemTime();
+    const double relevance = CalculateRelevance(query, text);
+    base::TimeDelta elapsed_time = base::Time::NowFromSystemTime() - start_time;
+
+    EXPECT_LT(elapsed_time, kCalculationTimeUpperBound);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    VLOG(1) << "Elapsed time (ms): " << elapsed_time.InMillisecondsF();
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkStressTestManyTokens) {
+  std::u16string text =
+      u"aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm nnn ooo ppp qqq "
+      u"rrr sss ttt uuu vvv www xxx yyy zzz";
+  std::u16string query =
+      u"zzz yyy xxx www vvv uuu ttt sss rrr qqq ppp ooo nnn mmm lll kkk jjj "
+      u"iii hhh ggg fff eee ddd ccc bbb aaa";
+
+  base::Time start_time = base::Time::NowFromSystemTime();
+  const double relevance = CalculateRelevance(query, text);
+  base::TimeDelta elapsed_time = base::Time::NowFromSystemTime() - start_time;
+
+  EXPECT_LT(elapsed_time, kCalculationTimeUpperBound);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+  VLOG(1) << "Elapsed time (ms): " << elapsed_time.InMillisecondsF();
 }
 
 /**********************************************************************
