@@ -135,7 +135,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
   // <if expr="_google_chrome">
   suite(spell_check_page_metrics_test_browser.TestNames.SpellCheckMetricsOfficialBuild, function() {
-    test('records when selecing basic spell check', async () => {
+    test('records when selecting basic spell check', async () => {
       spellCheckPage.setPrefValue('spellcheck.use_spelling_service', true);
       const basicServiceSelect = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#spellingServiceDisable');
@@ -148,7 +148,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
         await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
     });
 
-    test('records when selecing enhanced spell check', async () => {
+    test('records when selecting enhanced spell check', async () => {
       spellCheckPage.setPrefValue('spellcheck.use_spelling_service', false);
       const enhancedServiceSelect = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#spellingServiceEnable');

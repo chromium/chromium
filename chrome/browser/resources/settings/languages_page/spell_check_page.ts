@@ -139,7 +139,7 @@ export class SettingsSpellCheckPageElement extends
 
   private onSelectedSpellingServiceChange_() {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
-      this.prefs.spellcheck.use_spelling_service ?
+      this.prefs.spellcheck.use_spelling_service.value ?
           LanguageSettingsActionType.SELECT_ENHANCED_SPELL_CHECK :
           LanguageSettingsActionType.SELECT_BASIC_SPELL_CHECK);
   }
