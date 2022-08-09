@@ -3575,7 +3575,13 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(infobar_container_);
   if (download_shelf_)
     panes->push_back(download_shelf_->GetView());
-// TODO(crbug.com/1055150): Implement for mac.
+  if (right_aligned_side_panel_)
+    panes->push_back(right_aligned_side_panel_);
+  if (lens_side_panel_)
+    panes->push_back(lens_side_panel_);
+  if (side_search_side_panel_)
+    panes->push_back(side_search_side_panel_);
+  // TODO(crbug.com/1055150): Implement for mac.
   panes->push_back(contents_web_view_);
   if (devtools_web_view_->GetVisible())
     panes->push_back(devtools_web_view_);

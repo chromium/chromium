@@ -8,13 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
-#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 class BrowserView;
 
-class SidePanel : public views::View,
+class SidePanel : public views::AccessiblePaneView,
                   public views::ViewObserver,
                   public views::ResizeAreaDelegate {
  public:
