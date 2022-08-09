@@ -83,11 +83,6 @@ void SimpleMainThreadScheduler::AddTaskObserver(
 void SimpleMainThreadScheduler::RemoveTaskObserver(
     base::TaskObserver* task_observer) {}
 
-NonMainThreadSchedulerImpl*
-SimpleMainThreadScheduler::AsNonMainThreadScheduler() {
-  return nullptr;
-}
-
 MainThreadScheduler* SimpleMainThreadScheduler::ToMainThreadScheduler() {
   return this;
 }

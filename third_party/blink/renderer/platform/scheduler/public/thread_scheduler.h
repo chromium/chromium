@@ -26,10 +26,8 @@ class TaskObserver;
 }
 
 namespace blink {
-namespace scheduler {
-class NonMainThreadSchedulerImpl;
-}
 
+class CompositorThreadScheduler;
 class MainThreadScheduler;
 class RAILModeObserver;
 
@@ -44,7 +42,7 @@ class PLATFORM_EXPORT ThreadScheduler {
 
   // Returns compositor thread scheduler for the compositor thread
   // of the current process.
-  static ThreadScheduler* CompositorThreadScheduler();
+  static blink::CompositorThreadScheduler* CompositorThreadScheduler();
 
   virtual ~ThreadScheduler() = default;
 
@@ -100,13 +98,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   CompositorTaskRunner() = 0;
 
-  // Returns a task runner for input-blocking tasks on the compositor thread.
-  // (For input tasks on the main thread, use WebWidgetScheduler instead.)
-  virtual scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() {
-    NOTREACHED();
-    return nullptr;
-  }
-
   // Returns a default task runner. This is basically same as the default task
   // runner, but is explicitly allowed to run JavaScript. We plan to forbid V8
   // execution on per-thread task runners (crbug.com/913912). If you need to
@@ -115,18 +106,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   // a temporal step.
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   DeprecatedDefaultTaskRunner() = 0;
-
-  // Creates a AgentGroupScheduler implementation. Must be called from the
-  // main thread.
-  virtual std::unique_ptr<scheduler::WebAgentGroupScheduler>
-  CreateAgentGroupScheduler() = 0;
-
-  // The current active AgentGroupScheduler is set when the task gets
-  // started (i.e., OnTaskStarted) and unset when the task gets
-  // finished (i.e., OnTaskCompleted). GetCurrentAgentGroupScheduler()
-  // returns nullptr in task observers.
-  virtual scheduler::WebAgentGroupScheduler*
-  GetCurrentAgentGroupScheduler() = 0;
 
   // Returns the current time recognized by the scheduler, which may perhaps
   // be based on a real or virtual time domain. Used by Timer.
@@ -159,8 +138,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual MainThreadScheduler* ToMainThreadScheduler() { return nullptr; }
 
   // Test helpers.
-
-  virtual scheduler::NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() = 0;
 
   virtual void InitializeTaskAttributionTracker(
       std::unique_ptr<scheduler::TaskAttributionTracker>) {}

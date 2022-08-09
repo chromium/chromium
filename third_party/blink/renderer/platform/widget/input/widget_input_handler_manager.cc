@@ -29,7 +29,7 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
@@ -189,7 +189,7 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    ThreadScheduler* compositor_thread_scheduler,
+    CompositorThreadScheduler* compositor_thread_scheduler,
     scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
     bool uses_input_handler,
     bool allow_scroll_resampling) {
@@ -220,7 +220,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    ThreadScheduler* compositor_thread_scheduler,
+    CompositorThreadScheduler* compositor_thread_scheduler,
     scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
     bool allow_scroll_resampling)
     : widget_(std::move(widget)),

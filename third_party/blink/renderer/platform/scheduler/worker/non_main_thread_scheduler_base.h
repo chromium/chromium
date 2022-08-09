@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_IMPL_H_
-
-#include <memory>
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_BASE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_BASE_H_
 
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -24,25 +22,14 @@ namespace base {
 class LazyNow;
 }
 
-namespace blink {
-namespace scheduler {
+namespace blink::scheduler {
 
-class WorkerSchedulerProxy;
-
-class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadScheduler,
-                                                   public ThreadSchedulerBase {
+class PLATFORM_EXPORT NonMainThreadSchedulerBase : public ThreadSchedulerBase {
  public:
-  NonMainThreadSchedulerImpl(const NonMainThreadSchedulerImpl&) = delete;
-  NonMainThreadSchedulerImpl& operator=(const NonMainThreadSchedulerImpl&) =
+  NonMainThreadSchedulerBase(const NonMainThreadSchedulerBase&) = delete;
+  NonMainThreadSchedulerBase& operator=(const NonMainThreadSchedulerBase&) =
       delete;
-  ~NonMainThreadSchedulerImpl() override;
-
-  // |sequence_manager| and |proxy| must remain valid for the entire lifetime of
-  // this object.
-  static std::unique_ptr<NonMainThreadSchedulerImpl> Create(
-      ThreadType thread_type,
-      base::sequence_manager::SequenceManager* sequence_manager,
-      WorkerSchedulerProxy* proxy);
+  ~NonMainThreadSchedulerBase() override;
 
   // Performs initialization that must occur after the constructor of all
   // subclasses has run. Must be invoked before any other method. Must be
@@ -66,53 +53,20 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadScheduler,
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
   const base::TickClock* GetTickClock() const override;
 
-  // ThreadScheduler implementation.
-  // TODO(yutak): Some functions are only meaningful in main thread. Move them
-  // to MainThreadScheduler.
-  void PostIdleTask(const base::Location& location,
-                    Thread::IdleTask task) override;
-  void PostNonNestableIdleTask(const base::Location& location,
-                               Thread::IdleTask task) override;
-  void PostDelayedIdleTask(const base::Location& location,
-                           base::TimeDelta delay,
-                           Thread::IdleTask task) override;
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  void SetV8Isolate(v8::Isolate* isolate) override;
-
   // Returns base::TimeTicks::Now() by default.
-  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
-
-  NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
-    return this;
-  }
-
-  // The following virtual methods are defined in *both* WebThreadScheduler
-  // and ThreadScheduler, with identical interfaces and semantics. They are
-  // overriden in a subclass, effectively implementing the virtual methods
-  // in both classes at the same time. This is allowed in C++, as long as
-  // there is only one final overrider (i.e. definitions in base classes are
-  // not used in instantiated objects, since otherwise they may have multiple
-  // definitions of the virtual function in question).
-  //
-  // virtual void Shutdown();
+  base::TimeTicks MonotonicallyIncreasingVirtualTime();
 
   scoped_refptr<NonMainThreadTaskQueue> CreateTaskQueue(
       const char* name,
       bool can_be_throttled = false);
 
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
-      override;
-
  protected:
-  static void RunIdleTask(Thread::IdleTask task, base::TimeTicks deadline);
-
-  // ThreadSchedulerImpl:
+  // ThreadSchedulerBase:
   WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
 
   // |sequence_manager| must remain valid for the entire lifetime of
   // this object.
-  explicit NonMainThreadSchedulerImpl(
+  explicit NonMainThreadSchedulerBase(
       base::sequence_manager::SequenceManager* sequence_manager,
       TaskType default_task_type);
 
@@ -127,7 +81,6 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadScheduler,
   WTF::Vector<base::OnceClosure> on_task_completion_callbacks_;
 };
 
-}  // namespace scheduler
-}  // namespace blink
+}  // namespace blink::scheduler
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_BASE_H_

@@ -363,8 +363,9 @@ void SwapRemoteFrame(
 WebViewHelper::WebViewHelper(
     CreateTestWebFrameWidgetCallback create_web_frame_callback)
     : web_view_(nullptr),
-      agent_group_scheduler_(
-          blink::ThreadScheduler::Current()->CreateAgentGroupScheduler()),
+      agent_group_scheduler_(blink::ThreadScheduler::Current()
+                                 ->ToMainThreadScheduler()
+                                 ->CreateAgentGroupScheduler()),
       platform_(Platform::Current()) {
   DocumentLoader::DisableCodeCacheForTesting();
   CreateTestWebFrameWidgetCallback create_callback =

@@ -14,7 +14,7 @@ using base::sequence_manager::TaskQueue;
 
 NonMainThreadSchedulerHelper::NonMainThreadSchedulerHelper(
     base::sequence_manager::SequenceManager* sequence_manager,
-    NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+    NonMainThreadSchedulerBase* non_main_thread_scheduler,
     TaskType default_task_type)
     : SchedulerHelper(sequence_manager),
       non_main_thread_scheduler_(non_main_thread_scheduler),

@@ -83,6 +83,7 @@ class CPUTimeBudgetPool;
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerBase,
       public MainThreadScheduler,
+      public WebThreadScheduler,
       public IdleHelper::Delegate,
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
@@ -209,9 +210,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
-    return nullptr;
-  }
   void SetV8Isolate(v8::Isolate* isolate) override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
 
@@ -263,11 +261,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       bool has_visible_render_widget_with_touch_handler) override;
 
   // ThreadSchedulerImpl implementation:
-  scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
   const base::TickClock* GetTickClock() const override;
   MainThreadSchedulerHelper& GetHelper() override { return helper_; }
 
+  scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner();
   base::TimeTicks NowTicks() const;
 
   TaskAttributionTracker* GetTaskAttributionTracker() override {

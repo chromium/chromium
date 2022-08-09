@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
 
 #include <memory>
 #include <utility>
@@ -19,37 +19,38 @@ namespace blink {
 
 namespace {
 
-scheduler::CompositorThreadScheduler* g_compositor_thread_scheduler = nullptr;
+scheduler::CompositorThreadSchedulerImpl* g_compositor_thread_scheduler =
+    nullptr;
 
 }  // namespace
 
 // static
-ThreadScheduler* ThreadScheduler::CompositorThreadScheduler() {
+blink::CompositorThreadScheduler* ThreadScheduler::CompositorThreadScheduler() {
   return g_compositor_thread_scheduler;
 }
 
 namespace scheduler {
 
-CompositorThreadScheduler::CompositorThreadScheduler(
+CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
     base::sequence_manager::SequenceManager* sequence_manager)
-    : NonMainThreadSchedulerImpl(sequence_manager,
+    : NonMainThreadSchedulerBase(sequence_manager,
                                  TaskType::kCompositorThreadTaskQueueDefault),
       compositor_metrics_helper_(GetHelper().HasCPUTimingForEachTask()) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
 }
 
-CompositorThreadScheduler::~CompositorThreadScheduler() {
+CompositorThreadSchedulerImpl::~CompositorThreadSchedulerImpl() {
   DCHECK_EQ(g_compositor_thread_scheduler, this);
   g_compositor_thread_scheduler = nullptr;
 }
 
 scoped_refptr<NonMainThreadTaskQueue>
-CompositorThreadScheduler::DefaultTaskQueue() {
+CompositorThreadSchedulerImpl::DefaultTaskQueue() {
   return GetHelper().DefaultNonMainThreadTaskQueue();
 }
 
-void CompositorThreadScheduler::OnTaskCompleted(
+void CompositorThreadSchedulerImpl::OnTaskCompleted(
     NonMainThreadTaskQueue* worker_task_queue,
     const base::sequence_manager::Task& task,
     base::sequence_manager::TaskQueue::TaskTiming* task_timing,
@@ -60,7 +61,7 @@ void CompositorThreadScheduler::OnTaskCompleted(
 }
 
 scoped_refptr<scheduler::SingleThreadIdleTaskRunner>
-CompositorThreadScheduler::IdleTaskRunner() {
+CompositorThreadSchedulerImpl::IdleTaskRunner() {
   // TODO(flackr): This posts idle tasks as regular tasks. We need to create
   // an idle task runner with the semantics we want for the compositor thread
   // which runs them after the current frame has been drawn before the next
@@ -70,55 +71,87 @@ CompositorThreadScheduler::IdleTaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::V8TaskRunner() {
+CompositorThreadSchedulerImpl::V8TaskRunner() {
   NOTREACHED();
   return nullptr;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::InputTaskRunner() {
+CompositorThreadSchedulerImpl::InputTaskRunner() {
   return GetHelper().InputTaskRunner();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::CompositorTaskRunner() {
+CompositorThreadSchedulerImpl::CompositorTaskRunner() {
   return GetHelper().DefaultTaskRunner();
 }
 
-bool CompositorThreadScheduler::CanExceedIdleDeadlineIfRequired() const {
+bool CompositorThreadSchedulerImpl::CanExceedIdleDeadlineIfRequired() const {
   return false;
 }
 
-bool CompositorThreadScheduler::ShouldYieldForHighPriorityWork() {
+bool CompositorThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
   return false;
 }
 
-void CompositorThreadScheduler::AddTaskObserver(
+void CompositorThreadSchedulerImpl::AddTaskObserver(
     base::TaskObserver* task_observer) {
   GetHelper().AddTaskObserver(task_observer);
 }
 
-void CompositorThreadScheduler::RemoveTaskObserver(
+void CompositorThreadSchedulerImpl::RemoveTaskObserver(
     base::TaskObserver* task_observer) {
   GetHelper().RemoveTaskObserver(task_observer);
 }
 
-void CompositorThreadScheduler::Shutdown() {
-}
+void CompositorThreadSchedulerImpl::Shutdown() {}
 
-void CompositorThreadScheduler::OnIdleTaskPosted() {}
+void CompositorThreadSchedulerImpl::OnIdleTaskPosted() {}
 
-base::TimeTicks CompositorThreadScheduler::WillProcessIdleTask() {
+base::TimeTicks CompositorThreadSchedulerImpl::WillProcessIdleTask() {
   // TODO(flackr): Return the next frame time as the deadline instead.
   // TODO(flackr): Ensure that oilpan GC does happen on the compositor thread
   // even though we will have no long idle periods. https://crbug.com/609531
   return base::TimeTicks::Now() + base::Milliseconds(16.7);
 }
 
-void CompositorThreadScheduler::DidProcessIdleTask() {}
+void CompositorThreadSchedulerImpl::DidProcessIdleTask() {}
 
-base::TimeTicks CompositorThreadScheduler::NowTicks() {
+base::TimeTicks CompositorThreadSchedulerImpl::NowTicks() {
   return base::TimeTicks::Now();
+}
+
+void CompositorThreadSchedulerImpl::PostIdleTask(const base::Location& location,
+                                                 Thread::IdleTask task) {
+  IdleTaskRunner()->PostIdleTask(location, std::move(task));
+}
+
+void CompositorThreadSchedulerImpl::PostNonNestableIdleTask(
+    const base::Location& location,
+    Thread::IdleTask task) {
+  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
+}
+
+void CompositorThreadSchedulerImpl::PostDelayedIdleTask(
+    const base::Location& location,
+    base::TimeDelta delay,
+    Thread::IdleTask task) {
+  IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
+}
+
+base::TimeTicks
+CompositorThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
+  return NowTicks();
+}
+
+void CompositorThreadSchedulerImpl::SetV8Isolate(v8::Isolate* isolate) {
+  NonMainThreadSchedulerBase::SetV8Isolate(isolate);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace scheduler

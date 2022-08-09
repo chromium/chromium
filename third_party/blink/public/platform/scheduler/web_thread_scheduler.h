@@ -30,20 +30,16 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   WebThreadScheduler& operator=(const WebThreadScheduler&) = delete;
   virtual ~WebThreadScheduler();
 
-  // ==== Functions for any scheduler =========================================
-  //
-  // Functions below work on a scheduler instance on any thread.
-
-  // Shuts down the scheduler by dropping any remaining pending work in the work
-  // queues. After this call any work posted to the task runners will be
-  // silently dropped.
-  virtual void Shutdown() = 0;
-
   // ==== Functions for the main thread scheduler  ============================
   //
   // Virtual functions below should only be called against the scheduler on
   // the main thread. They have default implementation that only does
   // NOTREACHED(), and are overridden only by the main thread scheduler.
+
+  // Shuts down the scheduler by dropping any remaining pending work in the work
+  // queues. After this call any work posted to the task runners will be
+  // silently dropped.
+  virtual void Shutdown() = 0;
 
   // If |message_pump| is null caller must have registered one using
   // base::MessageLoop.

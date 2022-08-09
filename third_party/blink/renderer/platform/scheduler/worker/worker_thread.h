@@ -24,7 +24,7 @@ class ThreadScheduler;
 namespace blink {
 namespace scheduler {
 
-class NonMainThreadSchedulerImpl;
+class NonMainThreadSchedulerBase;
 class WorkerSchedulerProxy;
 
 // Thread implementation for a thread created by Blink. Although the name says
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
   ThreadScheduler* Scheduler() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
 
-  scheduler::NonMainThreadSchedulerImpl* GetNonMainThreadScheduler() {
+  scheduler::NonMainThreadSchedulerBase* GetNonMainThreadScheduler() {
     return thread_->GetNonMainThreadScheduler();
   }
 
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
   void ShutdownOnThread() override;
 
  protected:
-  virtual std::unique_ptr<NonMainThreadSchedulerImpl>
+  virtual std::unique_ptr<NonMainThreadSchedulerBase>
   CreateNonMainThreadScheduler(
       base::sequence_manager::SequenceManager* sequence_manager);
 
@@ -66,7 +66,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
   class SimpleThreadImpl final : public base::SimpleThread {
    public:
     using NonMainThreadSchedulerFactory = base::OnceCallback<
-        std::unique_ptr<scheduler::NonMainThreadSchedulerImpl>(
+        std::unique_ptr<scheduler::NonMainThreadSchedulerBase>(
             base::sequence_manager::SequenceManager*)>;
 
     explicit SimpleThreadImpl(const WTF::String& name_prefix,
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     }
 
     // Attention: Can only be called from the worker thread.
-    scheduler::NonMainThreadSchedulerImpl* GetNonMainThreadScheduler() {
+    scheduler::NonMainThreadSchedulerBase* GetNonMainThreadScheduler() {
       DCHECK(GetDefaultTaskRunner()->RunsTasksInCurrentSequence());
       return non_main_thread_scheduler_.get();
     }
@@ -114,7 +114,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
     scoped_refptr<base::sequence_manager::TaskQueue> internal_task_queue_;
-    std::unique_ptr<scheduler::NonMainThreadSchedulerImpl>
+    std::unique_ptr<scheduler::NonMainThreadSchedulerBase>
         non_main_thread_scheduler_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
     base::RunLoop* run_loop_;

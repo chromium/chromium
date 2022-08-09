@@ -77,7 +77,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -200,8 +200,10 @@ SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
       // smaller granularity. There is an active effort to mitigate
       // this which is called "Memory Cache Per Context"
       // (https://crbug.com/1127971).
-      agent_group_scheduler_(
-          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()),
+      agent_group_scheduler_(Thread::MainThread()
+                                 ->Scheduler()
+                                 ->ToMainThreadScheduler()
+                                 ->CreateAgentGroupScheduler()),
       has_pending_timeline_rewind_(false) {}
 
 SVGImage::~SVGImage() {

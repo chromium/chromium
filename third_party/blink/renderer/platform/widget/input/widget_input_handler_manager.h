@@ -34,9 +34,9 @@ namespace scheduler {
 class WidgetScheduler;
 }  // namespace scheduler
 
+class CompositorThreadScheduler;
 class SynchronousCompositorRegistry;
 class SynchronousCompositorProxyRegistry;
-class ThreadScheduler;
 class WebInputEventAttribution;
 class WidgetBase;
 
@@ -84,7 +84,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      ThreadScheduler* compositor_thread_scheduler,
+      CompositorThreadScheduler* compositor_thread_scheduler,
       scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
       bool needs_input_handler,
       bool allow_scroll_resampling);
@@ -198,7 +198,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      ThreadScheduler* compositor_thread_scheduler,
+      CompositorThreadScheduler* compositor_thread_scheduler,
       scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
       bool allow_scroll_resampling);
   void InitInputHandler();

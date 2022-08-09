@@ -72,7 +72,7 @@ class WorkerThreadForTest : public WorkerThread {
     completion->Signal();
   }
 
-  std::unique_ptr<NonMainThreadSchedulerImpl> CreateNonMainThreadScheduler(
+  std::unique_ptr<NonMainThreadSchedulerBase> CreateNonMainThreadScheduler(
       base::sequence_manager::SequenceManager* manager) override {
     auto scheduler = std::make_unique<WorkerThreadSchedulerForTest>(
         manager, worker_scheduler_proxy(), throtting_state_changed_);

@@ -2,36 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_IMPL_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_metrics_helper.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
 
 namespace base {
 class LazyNow;
 class TaskObserver;
-}
+}  // namespace base
 
 namespace blink {
 namespace scheduler {
 
-class PLATFORM_EXPORT CompositorThreadScheduler
-    : public NonMainThreadSchedulerImpl,
+class PLATFORM_EXPORT CompositorThreadSchedulerImpl
+    : public CompositorThreadScheduler,
+      public NonMainThreadSchedulerBase,
       public SingleThreadIdleTaskRunner::Delegate {
  public:
-  explicit CompositorThreadScheduler(
+  explicit CompositorThreadSchedulerImpl(
       base::sequence_manager::SequenceManager* sequence_manager);
-  CompositorThreadScheduler(const CompositorThreadScheduler&) = delete;
-  CompositorThreadScheduler& operator=(const CompositorThreadScheduler&) =
-      delete;
+  CompositorThreadSchedulerImpl(const CompositorThreadSchedulerImpl&) = delete;
+  CompositorThreadSchedulerImpl& operator=(
+      const CompositorThreadSchedulerImpl&) = delete;
 
-  ~CompositorThreadScheduler() override;
+  ~CompositorThreadSchedulerImpl() override;
 
   // NonMainThreadSchedulerImpl:
   scoped_refptr<NonMainThreadTaskQueue> DefaultTaskQueue() override;
@@ -43,19 +45,29 @@ class PLATFORM_EXPORT CompositorThreadScheduler
 
   // WebThreadScheduler:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   bool ShouldYieldForHighPriorityWork() override;
   bool CanExceedIdleDeadlineIfRequired() const override;
   void AddTaskObserver(base::TaskObserver* task_observer) override;
   void RemoveTaskObserver(base::TaskObserver* task_observer) override;
+  void PostIdleTask(const base::Location&, Thread::IdleTask) override;
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta delay,
+                           Thread::IdleTask) override;
+  void PostNonNestableIdleTask(const base::Location&,
+                               Thread::IdleTask) override;
   void AddRAILModeObserver(RAILModeObserver*) override {}
   void RemoveRAILModeObserver(RAILModeObserver const*) override {}
+  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
+      override;
+  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
+  void SetV8Isolate(v8::Isolate* isolate) override;
   void Shutdown() override;
 
-  // ThreadSchedulerImpl:
-  scoped_refptr<scheduler::SingleThreadIdleTaskRunner> IdleTaskRunner()
-      override;
+  // CompositorThreadScheduler:
+  scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
+
+  scoped_refptr<scheduler::SingleThreadIdleTaskRunner> IdleTaskRunner();
 
   // SingleThreadIdleTaskRunner::Delegate:
   void OnIdleTaskPosted() override;
@@ -70,4 +82,4 @@ class PLATFORM_EXPORT CompositorThreadScheduler
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_IMPL_H_

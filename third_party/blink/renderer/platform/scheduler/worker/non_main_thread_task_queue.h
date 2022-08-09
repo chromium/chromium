@@ -18,7 +18,7 @@ namespace scheduler {
 
 using TaskQueue = base::sequence_manager::TaskQueue;
 
-class NonMainThreadSchedulerImpl;
+class NonMainThreadSchedulerBase;
 
 class PLATFORM_EXPORT NonMainThreadTaskQueue
     : public base::RefCountedThreadSafe<NonMainThreadTaskQueue> {
@@ -27,7 +27,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   NonMainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const TaskQueue::Spec& spec,
-      NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+      NonMainThreadSchedulerBase* non_main_thread_scheduler,
       bool can_be_throttled);
   ~NonMainThreadTaskQueue();
 
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   absl::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.
-  NonMainThreadSchedulerImpl* non_main_thread_scheduler_;
+  NonMainThreadSchedulerBase* non_main_thread_scheduler_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used to determine the task queue priority.

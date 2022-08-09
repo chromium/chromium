@@ -267,9 +267,6 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
   void AddTaskObserver(base::TaskObserver*) override {}
   void RemoveTaskObserver(base::TaskObserver*) override {}
-  NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
-    return nullptr;
-  }
   blink::MainThreadScheduler* ToMainThreadScheduler() override { return this; }
   void SetV8Isolate(v8::Isolate* isolate) override {}
 

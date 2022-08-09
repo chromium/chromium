@@ -47,8 +47,8 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -74,8 +74,10 @@ DummyPageHolder::DummyPageHolder(
     base::OnceCallback<void(Settings&)> setting_overrider,
     const base::TickClock* clock)
     : enable_mock_scrollbars_(true),
-      agent_group_scheduler_(
-          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()) {
+      agent_group_scheduler_(Thread::MainThread()
+                                 ->Scheduler()
+                                 ->ToMainThreadScheduler()
+                                 ->CreateAgentGroupScheduler()) {
   if (!chrome_client)
     chrome_client = &GetStaticEmptyChromeClientInstance();
   page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_);

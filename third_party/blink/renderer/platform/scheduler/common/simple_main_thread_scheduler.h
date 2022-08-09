@@ -76,7 +76,6 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void RemoveTaskObserver(base::TaskObserver*) override;
 
   // Return nullptr.
-  NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override;
   MainThreadScheduler* ToMainThreadScheduler() override;
 
   void SetV8Isolate(v8::Isolate* isolate) override {}

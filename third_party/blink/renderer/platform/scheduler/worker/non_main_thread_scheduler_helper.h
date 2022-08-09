@@ -13,7 +13,7 @@
 namespace blink {
 namespace scheduler {
 
-class NonMainThreadSchedulerImpl;
+class NonMainThreadSchedulerBase;
 
 // TODO(carlscab): This class is not really needed and should be removed
 class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
@@ -23,7 +23,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
   // entire lifetime of this object.
   NonMainThreadSchedulerHelper(
       base::sequence_manager::SequenceManager* manager,
-      NonMainThreadSchedulerImpl* non_main_thread_scheduler,
+      NonMainThreadSchedulerBase* non_main_thread_scheduler,
       TaskType default_task_type);
   NonMainThreadSchedulerHelper(const NonMainThreadSchedulerHelper&) = delete;
   NonMainThreadSchedulerHelper& operator=(const NonMainThreadSchedulerHelper&) =
@@ -46,7 +46,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
   void ShutdownAllQueues() override;
 
  private:
-  NonMainThreadSchedulerImpl* non_main_thread_scheduler_;  // NOT OWNED
+  NonMainThreadSchedulerBase* non_main_thread_scheduler_;  // NOT OWNED
   const scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> input_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;

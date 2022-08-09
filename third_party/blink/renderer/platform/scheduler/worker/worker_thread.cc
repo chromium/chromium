@@ -61,15 +61,16 @@ void WorkerThread::Init() {
   thread_->StartAsync();
 }
 
-std::unique_ptr<NonMainThreadSchedulerImpl>
+std::unique_ptr<NonMainThreadSchedulerBase>
 WorkerThread::CreateNonMainThreadScheduler(
     base::sequence_manager::SequenceManager* sequence_manager) {
-  return NonMainThreadSchedulerImpl::Create(thread_type_, sequence_manager,
-                                            worker_scheduler_proxy_.get());
+  return std::make_unique<WorkerThreadScheduler>(thread_type_, sequence_manager,
+                                                 worker_scheduler_proxy_.get());
 }
 
 blink::ThreadScheduler* WorkerThread::Scheduler() {
-  return thread_->GetNonMainThreadScheduler();
+  return static_cast<WorkerThreadScheduler*>(
+      thread_->GetNonMainThreadScheduler());
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> WorkerThread::GetTaskRunner()

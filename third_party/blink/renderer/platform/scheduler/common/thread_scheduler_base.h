@@ -33,15 +33,9 @@ class AutoAdvancingVirtualTimeDomain;
 // This class does not implement the public ThreadScheduler interface
 // but provides functionality so that subclasses such as MainThreadScheduler
 // can extend ThreadScheduler and not end up in with diamond inheritenance.
-class PLATFORM_EXPORT ThreadSchedulerBase : public WebThreadScheduler,
-                                            public VirtualTimeController,
+class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
                                             public SchedulerHelper::Observer {
  public:
-  // Returns the idle task runner. Tasks posted to this runner may be reordered
-  // relative to other task types and may be starved for an arbitrarily long
-  // time if no idle time is available.
-  virtual scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() = 0;
-
   virtual scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() = 0;
 
   virtual const base::TickClock* GetTickClock() const = 0;
@@ -54,7 +48,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public WebThreadScheduler,
   void SetV8Isolate(v8::Isolate* isolate) { isolate_ = isolate; }
   v8::Isolate* isolate() const { return isolate_; }
 
-  void Shutdown() override;
+  void Shutdown();
 
   // VirtualTimeController implementation.
   base::TimeTicks EnableVirtualTime(base::Time initial_time) override;

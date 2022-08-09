@@ -99,7 +99,7 @@ WorkerThreadScheduler::WorkerThreadScheduler(
     ThreadType thread_type,
     base::sequence_manager::SequenceManager* sequence_manager,
     WorkerSchedulerProxy* proxy)
-    : NonMainThreadSchedulerImpl(sequence_manager,
+    : NonMainThreadSchedulerBase(sequence_manager,
                                  TaskType::kWorkerThreadTaskQueueDefault),
       thread_type_(thread_type),
       idle_helper_queue_(
@@ -319,6 +319,37 @@ WorkerThreadScheduler::GetWorkerSchedulersForTesting() {
 void WorkerThreadScheduler::PerformMicrotaskCheckpoint() {
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
+}
+
+void WorkerThreadScheduler::PostIdleTask(const base::Location& location,
+                                         Thread::IdleTask task) {
+  IdleTaskRunner()->PostIdleTask(location, std::move(task));
+}
+
+void WorkerThreadScheduler::PostNonNestableIdleTask(
+    const base::Location& location,
+    Thread::IdleTask task) {
+  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
+}
+
+void WorkerThreadScheduler::PostDelayedIdleTask(const base::Location& location,
+                                                base::TimeDelta delay,
+                                                Thread::IdleTask task) {
+  IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
+}
+
+base::TimeTicks WorkerThreadScheduler::MonotonicallyIncreasingVirtualTime() {
+  return base::TimeTicks::Now();
+}
+
+void WorkerThreadScheduler::SetV8Isolate(v8::Isolate* isolate) {
+  NonMainThreadSchedulerBase::SetV8Isolate(isolate);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+WorkerThreadScheduler::DeprecatedDefaultTaskRunner() {
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace scheduler
