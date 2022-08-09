@@ -91,6 +91,21 @@ struct StructTraits<ash::personalization_app::mojom::UserInfoDataView,
 };
 
 template <>
+struct StructTraits<
+    ash::personalization_app::mojom::DeprecatedSourceInfoDataView,
+    ash::default_user_image::DeprecatedSourceInfo> {
+  static const std::u16string& author(
+      const ash::default_user_image::DeprecatedSourceInfo&
+          deprecated_source_info);
+  static const GURL& website(
+      const ash::default_user_image::DeprecatedSourceInfo&
+          deprecated_source_info);
+  static bool Read(
+      ash::personalization_app::mojom::DeprecatedSourceInfoDataView data,
+      ash::default_user_image::DeprecatedSourceInfo* out);
+};
+
+template <>
 struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
                     ash::default_user_image::DefaultUserImage> {
   static int index(
@@ -98,6 +113,9 @@ struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   static const std::u16string& title(
       const ash::default_user_image::DefaultUserImage& default_user_image);
   static const GURL& url(
+      const ash::default_user_image::DefaultUserImage& default_user_image);
+  static const absl::optional<ash::default_user_image::DeprecatedSourceInfo>&
+  source_info(
       const ash::default_user_image::DefaultUserImage& default_user_image);
   static bool Read(
       ash::personalization_app::mojom::DefaultUserImageDataView data,

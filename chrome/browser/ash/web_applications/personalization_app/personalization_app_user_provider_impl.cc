@@ -306,7 +306,6 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
         LOG(ERROR) << "Invalid image index received";
         break;
       }
-      // TODO(b/218602268) support deprecated user image text fields.
       UpdateUserImageObserver(
           ash::personalization_app::mojom::UserImage::NewDefaultImage(
               ash::default_user_image::GetDefaultUserImage(image_index)));

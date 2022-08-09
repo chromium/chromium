@@ -9,7 +9,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, teardownElement, toString16} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -105,15 +105,6 @@ suite('GooglePhotosPhotosTest', function() {
   /** Returns a |string| from the specified |value|. */
   function toString(value: String16): string {
     return value.data.map(c => String.fromCodePoint(c)).join('');
-  }
-
-  /** Returns a |String16| from the specified |value|. */
-  function toString16(value: string): String16 {
-    const data = [];
-    for (let i = 0; i < value.length; ++i) {
-      data[i] = value.charCodeAt(i);
-    }
-    return {data};
   }
 
   /**

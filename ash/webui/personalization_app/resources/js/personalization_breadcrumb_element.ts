@@ -25,14 +25,7 @@ import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personaliza
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {inBetween, isNonEmptyArray} from './utils.js';
-
-/**
- * Checks if argument is a string with non-zero length.
- */
-function isNonEmptyString(maybeString: unknown): maybeString is string {
-  return typeof maybeString === 'string' && maybeString.length > 0;
-}
+import {inBetween, isNonEmptyArray, isNonEmptyString} from './utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {

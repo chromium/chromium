@@ -239,13 +239,12 @@ void ChangePictureHandler::SendSelectedImage() {
         result.Set("url",
                    default_user_image::GetDefaultImageUrl(previous_image_index_)
                        .spec());
-        auto source_info = default_user_image::GetDefaultImageSourceInfo(
-            previous_image_index_);
+        auto source_info =
+            default_user_image::GetDeprecatedDefaultImageSourceInfo(
+                previous_image_index_);
         if (source_info.has_value()) {
-          result.Set("author", l10n_util::GetStringUTF16(
-                                   std::move(source_info.value().author_id)));
-          result.Set("website", l10n_util::GetStringUTF16(
-                                    std::move(source_info.value().website_id)));
+          result.Set("author", std::move(source_info.value().author));
+          result.Set("website", source_info.value().website.spec());
         }
         FireWebUIListener("preview-deprecated-image", result);
       }

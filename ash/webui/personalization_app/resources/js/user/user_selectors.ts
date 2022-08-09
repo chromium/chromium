@@ -84,7 +84,7 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
     case 'externalImage':
       return bufferToPngObjectUrl(userImage.externalImage!);
     default:
-      console.warn('Unknown image type received', key);
+      console.error('Unknown image type received', key);
       return null;
   }
 }

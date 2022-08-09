@@ -10,6 +10,7 @@
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -17,7 +18,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {decodeString16} from '../utils.js';
+import {decodeString16, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {initializeUserData} from './user_controller.js';
 import {UserImageObserver} from './user_image_observer.js';
@@ -135,8 +136,28 @@ export class UserPreview extends WithPersonalizationStore {
       return this.i18n('googleProfilePhoto');
     }
 
-    console.warn('Unknown image type received');
+    console.error('Unknown image type received');
     return '';
+  }
+
+  private shouldShowDeprecatedImageSourceInfo_(image: UserImage|null): boolean {
+    return !!image && !!image.defaultImage && !!image.defaultImage.sourceInfo &&
+        isNonEmptyArray(image.defaultImage.sourceInfo.author.data) &&
+        isNonEmptyString(image.defaultImage.sourceInfo.website.url);
+  }
+
+  private getDeprecatedAuthor_(image: UserImage): string {
+    assert(
+        image && image.defaultImage && image.defaultImage.sourceInfo,
+        'only called for deprecated default images with sourceInfo');
+    return decodeString16(image.defaultImage.sourceInfo.author);
+  }
+
+  private getDeprecatedWebsite_(image: UserImage): string {
+    assert(
+        image && image.defaultImage && image.defaultImage.sourceInfo,
+        'only called for deprecated default images with sourceInfo');
+    return image.defaultImage.sourceInfo.website.url;
   }
 }
 

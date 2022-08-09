@@ -47,8 +47,14 @@ mojom("mojom") {
           move_only = true
         },
         {
+          mojom = "ash.personalization_app.mojom.DeprecatedSourceInfo"
+          cpp = "ash::default_user_image::DeprecatedSourceInfo"
+          move_only = true
+        },
+        {
           mojom = "ash.personalization_app.mojom.DefaultUserImage"
           cpp = "ash::default_user_image::DefaultUserImage"
+          move_only = true
         },
         {
           mojom = "ash.personalization_app.mojom.AnimationTheme"

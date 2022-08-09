@@ -8,6 +8,7 @@
  */
 
 import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
@@ -70,4 +71,13 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
     wallpaperProvider,
     personalizationStore,
   };
+}
+
+/** Returns a |String16| from the specified |value|. */
+export function toString16(value: string): String16 {
+  const data = [];
+  for (let i = 0; i < value.length; ++i) {
+    data[i] = value.charCodeAt(i);
+  }
+  return {data};
 }

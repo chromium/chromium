@@ -281,6 +281,29 @@ bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
   return data.ReadEmail(&out->email) && data.ReadName(&out->name);
 }
 
+const std::u16string&
+StructTraits<ash::personalization_app::mojom::DeprecatedSourceInfoDataView,
+             ash::default_user_image::DeprecatedSourceInfo>::
+    author(const ash::default_user_image::DeprecatedSourceInfo&
+               deprecated_source_info) {
+  return deprecated_source_info.author;
+}
+
+const GURL&
+StructTraits<ash::personalization_app::mojom::DeprecatedSourceInfoDataView,
+             ash::default_user_image::DeprecatedSourceInfo>::
+    website(const ash::default_user_image::DeprecatedSourceInfo&
+                deprecated_source_info) {
+  return deprecated_source_info.website;
+}
+
+bool StructTraits<ash::personalization_app::mojom::DeprecatedSourceInfoDataView,
+                  ash::default_user_image::DeprecatedSourceInfo>::
+    Read(ash::personalization_app::mojom::DeprecatedSourceInfoDataView data,
+         ash::default_user_image::DeprecatedSourceInfo* out) {
+  return data.ReadAuthor(&out->author) && data.ReadWebsite(&out->website);
+}
+
 int StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
                  ash::default_user_image::DefaultUserImage>::
     index(const ash::default_user_image::DefaultUserImage& default_user_image) {
@@ -301,13 +324,21 @@ StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   return default_user_image.url;
 }
 
+const absl::optional<ash::default_user_image::DeprecatedSourceInfo>&
+StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+             ash::default_user_image::DefaultUserImage>::
+    source_info(
+        const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.source_info;
+}
+
 bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
                   ash::default_user_image::DefaultUserImage>::
     Read(ash::personalization_app::mojom::DefaultUserImageDataView data,
          ash::default_user_image::DefaultUserImage* out) {
   out->index = data.index();
-
-  return data.ReadTitle(&out->title) && data.ReadUrl(&out->url);
+  return data.ReadTitle(&out->title) && data.ReadUrl(&out->url) &&
+         data.ReadSourceInfo(&out->source_info);
 }
 
 MojomAnimationTheme

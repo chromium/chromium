@@ -5,11 +5,11 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {Paths, UserImage, UserPreview} from 'chrome://personalization/js/personalization_app.js';
+import {DefaultUserImage, Paths, UserImage, UserPreview} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, teardownElement, toString16} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
 
@@ -141,5 +141,34 @@ suite('UserPreviewTest', function() {
     // Does show enterprise icon.
     assertTrue(!!userPreviewElement!.shadowRoot!.getElementById(
         'enterpriseIconContainer'));
+  });
+
+  test('displays author and website source info if present', async () => {
+    personalizationStore.data.user.image = userProvider.image;
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement);
+
+    // Image has no sourceInfo so should be missing.
+    assertFalse(!!userPreviewElement.shadowRoot!.getElementById('sourceInfo'));
+
+    const deprecatedDefaultImage: DefaultUserImage = {
+      index: 2,
+      title: toString16('title'),
+      url: {url: 'data://test_url'},
+      sourceInfo: {
+        author: toString16('author example'),
+        website: {url: 'website example'},
+      },
+    };
+    personalizationStore.data.user.image = {
+      defaultImage: deprecatedDefaultImage,
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(userPreviewElement);
+
+    // |sourceInfo| element should now exist.
+    const a = userPreviewElement.shadowRoot!.getElementById('sourceInfo');
+    assertEquals('website example', a!.getAttribute('href'));
+    assertEquals('author example', a!.querySelector('span')!.innerText);
   });
 });

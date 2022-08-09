@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/default_user_image.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -40,6 +41,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -497,6 +499,29 @@ TEST_F(PersonalizationAppUserProviderImplTest, SetsUserImageManagedByPolicy) {
   // Changes back to enterprise managed.
   user_image_manager()->OnExternalDataSet(policy::key::kUserAvatarImage);
   EXPECT_TRUE(is_enterprise_managed());
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest,
+       SendsDeprecatedAuthorAndWebsite) {
+  constexpr int kDeprecatedImageWithSourceInfoIndex = 19;
+  user_image_manager()->SaveUserDefaultImageIndex(
+      kDeprecatedImageWithSourceInfoIndex);
+  SetUserImageObserver();
+
+  absl::optional<default_user_image::DeprecatedSourceInfo>
+      expected_source_info =
+          default_user_image::GetDeprecatedDefaultImageSourceInfo(
+              kDeprecatedImageWithSourceInfoIndex);
+  ASSERT_TRUE(expected_source_info.has_value())
+      << "Image index " << kDeprecatedImageWithSourceInfoIndex
+      << " must have associated source info";
+
+  EXPECT_TRUE(current_user_image()->is_default_image());
+
+  EXPECT_EQ(expected_source_info->author,
+            current_user_image()->get_default_image().source_info->author);
+  EXPECT_EQ(expected_source_info->website,
+            current_user_image()->get_default_image().source_info->website);
 }
 
 class PersonalizationAppUserProviderImplWithMockTest

@@ -20,8 +20,7 @@ namespace gfx {
 class ImageSkia;
 }
 
-namespace ash {
-namespace default_user_image {
+namespace ash::default_user_image {
 
 // Enumeration of user image eligibility states.
 enum class Eligibility {
@@ -29,15 +28,6 @@ enum class Eligibility {
   kDeprecated,
   // The image is eligible.
   kEligible,
-};
-
-// Source info of the default user image.
-struct DefaultImageSourceInfo {
-  // Message IDs of author info.
-  const int author_id;
-
-  // Message IDs of website info.
-  const int website_id;
 };
 
 // Number of default images.
@@ -91,10 +81,12 @@ base::Value::List GetCurrentImageSetAsListValue();
 
 // Returns the source info of the default user image with specified index.
 // Returns nullopt if there is no source info.
-absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(size_t index);
+// Only a small number of deprecated user images have associated
+// |DeprecatedSourceInfo|, and none of them can be selected by users now.
+absl::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
+    size_t index);
 
-}  // namespace default_user_image
-}  // namespace ash
+}  // namespace ash::default_user_image
 
 // TODO(https://crbug.com/1164001): remove once the migration is finished.
 namespace chromeos {

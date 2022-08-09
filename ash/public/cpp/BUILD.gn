@@ -114,6 +114,7 @@ component("cpp") {
     "clipboard_history_controller.h",
     "clipboard_image_model_factory.cc",
     "clipboard_image_model_factory.h",
+    "default_user_image.cc",
     "default_user_image.h",
     "desk_template.cc",
     "desk_template.h",

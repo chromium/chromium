@@ -348,6 +348,17 @@ struct UserInfo {
   string name;
 };
 
+// Additional attribution information for several deprecated user image choices.
+// These avatars are no longer able to be selected by users, but some users may
+// still have one set as their chosen avatar image.
+struct DeprecatedSourceInfo {
+  // The name of the author that created the avatar image.
+  mojo_base.mojom.String16 author;
+
+  // The website of the author.
+  url.mojom.Url website;
+};
+
 // A default user image stored on the device that can be set as the user's
 // device avatar image.
 struct DefaultUserImage {
@@ -359,6 +370,9 @@ struct DefaultUserImage {
 
   // A url to display the image. Typically |chrome://theme/IDR_LOGIN_DEFAULT_X|.
   url.mojom.Url url;
+
+  // Additional information about the source of the avatar.
+  DeprecatedSourceInfo? source_info;
 };
 
 // An empty struct that is just used to indicate the presence of a profile

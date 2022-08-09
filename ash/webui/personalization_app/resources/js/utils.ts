@@ -54,6 +54,13 @@ export function isNonEmptyArray(maybeArray: unknown): maybeArray is unknown[] {
 }
 
 /**
+ * Checks if argument is a string with non-zero length.
+ */
+export function isNonEmptyString(maybeString: unknown): maybeString is string {
+  return typeof maybeString === 'string' && maybeString.length > 0;
+}
+
+/**
  * Checks if a number is within a range.
  */
 export function inBetween(

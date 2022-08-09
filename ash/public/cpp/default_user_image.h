@@ -8,18 +8,54 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace default_user_image {
+namespace ash::default_user_image {
+
+// Only relevant for a few deprecated avatar images that users can no longer
+// select.
+struct ASH_PUBLIC_EXPORT DeprecatedSourceInfo {
+ public:
+  DeprecatedSourceInfo();
+  DeprecatedSourceInfo(std::u16string author, GURL website);
+
+  DeprecatedSourceInfo(DeprecatedSourceInfo&&);
+  DeprecatedSourceInfo& operator=(DeprecatedSourceInfo&&);
+
+  DeprecatedSourceInfo(const DeprecatedSourceInfo&) = delete;
+  DeprecatedSourceInfo& operator=(const DeprecatedSourceInfo&) = delete;
+
+  ~DeprecatedSourceInfo();
+
+  std::u16string author;
+  GURL website;
+};
 
 struct ASH_PUBLIC_EXPORT DefaultUserImage {
+ public:
+  DefaultUserImage();
+  DefaultUserImage(int index,
+                   std::u16string title,
+                   GURL url,
+                   absl::optional<DeprecatedSourceInfo> source_info);
+
+  DefaultUserImage(DefaultUserImage&&);
+  DefaultUserImage& operator=(DefaultUserImage&&);
+
+  DefaultUserImage(const DefaultUserImage&) = delete;
+  DefaultUserImage& operator=(const DefaultUserImage&) = delete;
+
+  ~DefaultUserImage();
+
   int index;
   std::u16string title;
   GURL url;
+  // Deprecated. Only used for older avatar images that users can no longer
+  // select.
+  absl::optional<DeprecatedSourceInfo> source_info;
 };
 
-}  // namespace default_user_image
-}  // namespace ash
+}  // namespace ash::default_user_image
 
 #endif  // ASH_PUBLIC_CPP_DEFAULT_USER_IMAGE_H_
