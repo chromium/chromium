@@ -111,7 +111,9 @@ void GrpcResourceDataSource::ReadResourceFile(
 
 // The Path can either be a filename or a remote url string starting with "?".
 // Examples - "?remote_url=https://google.com", "fonts.css".
-std::string GrpcResourceDataSource::GetMimeType(const std::string& path) {
+std::string GrpcResourceDataSource::GetMimeType(const GURL& url) {
+  const std::string path = content::URLDataSource::URLToRequestPath(url);
+
   if (!for_webui_) {
     std::string mime_type;
     base::FilePath::StringType file_ext =

@@ -42,7 +42,9 @@ void CastResourceDataSource::StartDataRequest(
                                 base::BindOnce(&GotData, std::move(callback)));
 }
 
-std::string CastResourceDataSource::GetMimeType(const std::string& path) {
+std::string CastResourceDataSource::GetMimeType(const GURL& url) {
+  const std::string path = content::URLDataSource::URLToRequestPath(url);
+
   if (!for_webui_) {
     std::string mime_type;
     base::FilePath::StringType file_ext =

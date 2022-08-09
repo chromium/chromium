@@ -18,7 +18,8 @@ class GrpcResourceDataSourceTest : public ::testing::Test {
 
  protected:
   std::string GetMimeType(const std::string& path) {
-    return grpc_resource_data_source_.GetMimeType(path);
+    const GURL url("chrome://chrome/" + path);
+    return grpc_resource_data_source_.GetMimeType(url);
   }
 
   std::string GetAccessControlAllowOriginForOrigin(const std::string& origin) {

@@ -37,7 +37,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
 
   // Determines whether the Url request is allowed.
   bool ShouldServiceRequest(const GURL& url,
