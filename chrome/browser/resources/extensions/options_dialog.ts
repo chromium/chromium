@@ -74,7 +74,10 @@ export class ExtensionsOptionsDialogElement extends PolymerElement {
    * into account the window width/height.
    */
   private updateDialogSize_() {
-    const headerHeight = this.$.body.offsetTop;
+    let headerHeight = this.$.body.offsetTop;
+    if (this.$.body.assignedSlot && this.$.body.assignedSlot.parentElement) {
+      headerHeight = this.$.body.assignedSlot.parentElement.offsetTop;
+    }
     const maxHeight =
         Math.min(0.9 * window.innerHeight, OptionsDialogMaxHeight);
     const effectiveHeight =
