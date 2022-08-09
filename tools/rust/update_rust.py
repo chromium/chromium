@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = 'db8086eb'
+RUST_REVISION = '55f46419'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-07-14.
@@ -45,7 +45,7 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = 'llvmorg-16-init-572-gdde41c6c-4'
+FALLBACK_CLANG_VERSION = None
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
