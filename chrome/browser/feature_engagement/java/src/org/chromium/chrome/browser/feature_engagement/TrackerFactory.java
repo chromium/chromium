@@ -29,6 +29,7 @@ public final class TrackerFactory {
      */
     public static Tracker getTrackerForProfile(Profile profile) {
         if (sTestTracker != null) return sTestTracker;
+        if (profile == null) return null;
 
         return TrackerFactoryJni.get().getTrackerForProfile(profile);
     }
