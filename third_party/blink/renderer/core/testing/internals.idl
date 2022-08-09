@@ -417,15 +417,7 @@
     // element mechanism.
     [RaisesException] void addEmbedderCustomElementName(DOMString name);
 
-    // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
-    // Throws TypeError on error.
-    // Used for testing Import Maps https://github.com/domenic/import-maps
-    [RaisesException] DOMString resolveModuleSpecifier(DOMString specifier, DOMString base_url, Document document);
-
     // Returns the current serialized import map of the Document.
-    // TODO(crbug.com/927181): Currently this returns the "imports" value,
-    // because Blink doesn't support scopes yet. Update this once scopes are
-    // implemented.
     [RaisesException] DOMString getParsedImportMap(Document document);
 
     // Sets the scale for devtools device emulation.

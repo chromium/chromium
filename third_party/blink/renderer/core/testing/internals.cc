@@ -3738,35 +3738,6 @@ void Internals::addEmbedderCustomElementName(const AtomicString& name,
   CustomElement::AddEmbedderCustomElementNameForTesting(name, exception_state);
 }
 
-String Internals::resolveModuleSpecifier(const String& specifier,
-                                         const String& base_url_string,
-                                         Document* document,
-                                         ExceptionState& exception_state) {
-  Modulator* modulator =
-      Modulator::From(ToScriptStateForMainWorld(document->GetFrame()));
-
-  if (!modulator) {
-    V8ThrowException::ThrowTypeError(
-        v8::Isolate::GetCurrent(),
-        "Failed to resolve module specifier " + specifier + ": No modulator");
-    return NullURL();
-  }
-
-  const KURL base_url = document->CompleteURL(base_url_string);
-  String failure_reason = "Failed";
-  const KURL result =
-      modulator->ResolveModuleSpecifier(specifier, base_url, &failure_reason);
-
-  if (!result.IsValid()) {
-    V8ThrowException::ThrowTypeError(v8::Isolate::GetCurrent(),
-                                     "Failed to resolve module specifier " +
-                                         specifier + ": " + failure_reason);
-    return NullURL();
-  }
-
-  return result.GetString();
-}
-
 String Internals::getParsedImportMap(Document* document,
                                      ExceptionState& exception_state) {
   Modulator* modulator =
